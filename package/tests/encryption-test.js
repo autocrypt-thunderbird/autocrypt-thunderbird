@@ -18,7 +18,7 @@ test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, errorMsgObj, importedKeysObj);
+  EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
   const parentWindow = JSUnit.createStubWindow();
   const plainText = "Hello there!";
   const strikeAccount = "strike.devtest@gmail.com";
@@ -46,7 +46,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, errorMsgObj, importedKeysObj);
+  EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
   const parentWindow = JSUnit.createStubWindow();
   const plainText = "Hello there!";
   const strikeAccount = "strike.devtest@gmail.com";

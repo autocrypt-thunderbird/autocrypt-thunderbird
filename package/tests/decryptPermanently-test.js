@@ -108,12 +108,12 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
 
 var loadSecretKey = function() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(null, secretKey, [], {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, [], {});
 };
 
 var loadPublicKey = function() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
-  EnigmailKeyRing.importKeyFromFile(null, publicKey, [], {});
+  EnigmailKeyRing.importKeyFromFile(publicKey, [], {});
 };
 
 function stringFromUrl(url) {

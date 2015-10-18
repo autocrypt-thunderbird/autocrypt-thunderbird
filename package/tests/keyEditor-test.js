@@ -86,7 +86,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
   const errorMsgObj = {};
   const importedKeysObj = {};
   const window = JSUnit.createStubWindow();
-  const importResult = EnigmailKeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
+  const importResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
 
   const createDate = EnigmailTime.getDateTime(1430756251, true, false);
 
@@ -114,12 +114,11 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
 })));
 
 function importKeys() {
-  var window = JSUnit.createStubWindow();
   var publicKey = do_get_file("resources/dev-strike.asc", false);
   var secretKey = do_get_file("resources/dev-strike.sec", false);
   var errorMsgObj = {};
   var importedKeysObj = {};
-  var publicImportResult = EnigmailKeyRing.importKeyFromFile(window, publicKey, errorMsgObj, importedKeysObj);
-  var secretImportResult = EnigmailKeyRing.importKeyFromFile(window, secretKey, errorMsgObj, importedKeysObj);
+  var publicImportResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  var secretImportResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
   return [publicImportResult, secretImportResult];
 }

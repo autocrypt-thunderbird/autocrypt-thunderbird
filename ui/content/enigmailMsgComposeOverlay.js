@@ -796,7 +796,7 @@ Enigmail.msg = {
     var exitCodeObj = {};
     var errorMsgObj = {};
 
-    EnigmailKeyRing.extractKey(window, 0, uid.join(" "), tmpFile /*.path */ , exitCodeObj, errorMsgObj);
+    EnigmailKeyRing.extractKey(0, uid.join(" "), tmpFile /*.path */ , exitCodeObj, errorMsgObj);
     if (exitCodeObj.value !== 0) {
       EnigmailDialog.alert(window, errorMsgObj.value);
       return null;

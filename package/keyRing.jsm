@@ -354,7 +354,7 @@ var EnigmailKeyRing = {
     return ret;
   },
 
-  importKeyFromFile: function(parent, inputFile, errorMsgObj, importedKeysObj) {
+  importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
     var command = EnigmailGpg.agentPath;
     var args = EnigmailGpg.getStandardArgs(true);
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
@@ -675,7 +675,6 @@ var EnigmailKeyRing = {
   /**
    * Export public and possibly secret key(s) to a file
    *
-   * @param parent       nsIWindow
    * @param exportFlags  Integer  - if nsIEnigmail.EXTRACT_SECRET_KEY is provided, secret keys are exported
    * @param userId       String   - space or comma separated list of keys to export. Specification by
    *                                key ID, fingerprint, or userId
@@ -685,7 +684,7 @@ var EnigmailKeyRing = {
    *
    * @return String - if outputFile is NULL, the key block data; "" if a file is written
    */
-  extractKey: function(parent, exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
+  extractKey: function(exportFlags, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["-a", "--export"]).
@@ -1068,7 +1067,6 @@ var EnigmailKeyRing = {
   /**
    * Generate a new key pair with GnuPG
    *
-   * @parent:     nsIWindow  - parent window (not used anymore)
    * @name:       String     - name part of UID
    * @comment:    String     - comment part of UID (brackets are added)
    * @comment:    String     - email part of UID (<> will be added)
@@ -1083,7 +1081,7 @@ var EnigmailKeyRing = {
    *
    * @return: handle to process
    */
-  generateKey: function(parent, name, comment, email, expiryDate, keyLength, keyType,
+  generateKey: function(name, comment, email, expiryDate, keyLength, keyType,
     passphrase, listener) {
     EnigmailLog.WRITE("keyRing.jsm: generateKey:\n");
 

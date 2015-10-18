@@ -687,7 +687,7 @@ function enigCreateKeyMsg() {
   // save file
   var exitCodeObj = {};
   var errorMsgObj = {};
-  EnigmailKeyRing.extractKey(window, 0, "0x" + keyList.join(" 0x"), tmpFile, exitCodeObj, errorMsgObj);
+  EnigmailKeyRing.extractKey(0, "0x" + keyList.join(" 0x"), tmpFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
     EnigAlert(errorMsgObj.value);
     return;
@@ -910,7 +910,7 @@ function enigmailExportKeys() {
   var keyListStr = "0x" + getSelectedKeyIds().join(" 0x");
   var exitCodeObj = {};
   var errorMsgObj = {};
-  EnigmailKeyRing.extractKey(window, exportFlags, keyListStr, outFile, exitCodeObj, errorMsgObj);
+  EnigmailKeyRing.extractKey(exportFlags, keyListStr, outFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
     EnigAlert(EnigGetString("saveKeysFailed") + "\n\n" + errorMsgObj.value);
   }
@@ -931,7 +931,7 @@ function enigmailImportKeysFromFile() {
 
   var errorMsgObj = {};
   var keyListObj = {};
-  var exitCode = EnigmailKeyRing.importKeyFromFile(window, inFile, errorMsgObj, keyListObj);
+  var exitCode = EnigmailKeyRing.importKeyFromFile(inFile, errorMsgObj, keyListObj);
   if (exitCode !== 0) {
     EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
   }
@@ -1026,7 +1026,7 @@ function enigmailCopyToClipbrd() {
   }
   var exitCodeObj = {};
   var errorMsgObj = {};
-  var keyData = EnigmailKeyRing.extractKey(window, 0, "0x" + keyList.join(" 0x"), null, exitCodeObj, errorMsgObj);
+  var keyData = EnigmailKeyRing.extractKey(0, "0x" + keyList.join(" 0x"), null, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
     EnigAlert(EnigGetString("copyToClipbrdFailed") + "\n\n" + errorMsgObj.value);
     return;

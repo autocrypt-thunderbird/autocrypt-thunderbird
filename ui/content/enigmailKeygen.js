@@ -395,7 +395,7 @@ function enigmailKeygenStart() {
   };
 
   try {
-    gKeygenRequest = EnigmailKeyRing.generateKey(window,
+    gKeygenRequest = EnigmailKeyRing.generateKey(
       EnigmailData.convertFromUnicode(userName),
       EnigmailData.convertFromUnicode(comment),
       EnigmailData.convertFromUnicode(userEmail),

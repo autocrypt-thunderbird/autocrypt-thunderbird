@@ -20,7 +20,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails(
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
-  const importResult = EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, errorMsgObj, importedKeysObj);
+  const importResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
   Assert.assertContains(importedKeysObj.value, "65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(importResult, 0, errorMsgObj);
   const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
@@ -29,7 +29,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails(
 
 test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
-  const importResult = EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
+  const importResult = EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   const keyDetails = getKeyListEntryOfKey("0xD535623BB60E9E71");
 
 
@@ -54,8 +54,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
 test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
 
   // search for key ID
   let k = EnigmailKeyRing.getKeyById("0x9CE311C4");
@@ -97,8 +97,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
 test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
   EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
   Assert.equal(secretKeyList, null);
   Assert.notEqual(userIdList, null);
@@ -110,8 +110,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
 test(withTestGpgHome(withEnigmail(function shouldCleanupInvalidateUserIdList() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
   EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
   EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
   EnigmailKeyRing.invalidateUserIdList();
@@ -357,9 +357,9 @@ const KeyRingHelper = {
     }
     let keyListObj = {};
     EnigmailKeyRing._createAndSortKeyList(testKeyList, [],
-                                          keyListObj, // OUT
-                                          "validity", // sorted acc. to key validity
-                                          -1); // descending
+      keyListObj, // OUT
+      "validity", // sorted acc. to key validity
+      -1); // descending
 
     gKeyListObj = keyListObj;
     Assert.notEqual(keyListObj, null);
@@ -473,15 +473,15 @@ test(function testGetValidKeysForMultipleRecipients() {
 
   // some matching keys:
   minTrustLevel = "?";
-  addrs = [ "full@enigmail-test.de", 
-            "multiple-onefull@enigmail-test.de", 
-            "multiple-twofull@enigmail-test.de", 
-            "multiple-onemarginal@enigmail-test.de", 
-            "withsubkey-uid1@enigmail-test.de",
-            "withsubkey-uid2@enigmail-test.de",
-          ];
+  addrs = ["full@enigmail-test.de",
+    "multiple-onefull@enigmail-test.de",
+    "multiple-twofull@enigmail-test.de",
+    "multiple-onemarginal@enigmail-test.de",
+    "withsubkey-uid1@enigmail-test.de",
+    "withsubkey-uid2@enigmail-test.de",
+  ];
   details = {};
-  keys = []; 
+  keys = [];
   keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
@@ -496,12 +496,12 @@ test(function testGetValidKeysForMultipleRecipients() {
 
   // some non-matching keys:
   minTrustLevel = "?";
-  addrs = [ "no-encrypt@enigmail-test.de", 
-            "disabled@enigmail-test.de",
-            "multiple-nofull@enigmail-test.de", 
-          ];
+  addrs = ["no-encrypt@enigmail-test.de",
+    "disabled@enigmail-test.de",
+    "multiple-nofull@enigmail-test.de",
+  ];
   details = {};
-  keys = []; 
+  keys = [];
   keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, true);
   Assert.equal(keys.length, 0);
@@ -513,12 +513,12 @@ test(function testGetValidKeysForMultipleRecipients() {
 
   // just two keys:
   minTrustLevel = "?";
-  addrs = [ "0x0040EEEE00010001",
-            "0x0003AAAA00010001",
-            "0003AAAA00010001",
-          ];
+  addrs = ["0x0040EEEE00010001",
+    "0x0003AAAA00010001",
+    "0003AAAA00010001",
+  ];
   details = {};
-  keys = []; 
+  keys = [];
   keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
@@ -531,10 +531,9 @@ test(function testGetValidKeysForMultipleRecipients() {
   // disabled key:
   // - this BEHAVIOR is PROBABLY WRONG:
   minTrustLevel = "?";
-  addrs = [ "0005AAAA00010001",
-          ];
+  addrs = ["0005AAAA00010001", ];
   details = {};
-  keys = []; 
+  keys = [];
   keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
   Assert.equal(keyMissing, false);
   Assert.notEqual(keys, null);
@@ -542,4 +541,3 @@ test(function testGetValidKeysForMultipleRecipients() {
   Assert.equal(keys[0], "0x0005AAAA00010001");
   Assert.equal(details.errArray.length, 0);
 });
-

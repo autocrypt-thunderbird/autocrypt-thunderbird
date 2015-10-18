@@ -468,7 +468,7 @@ function importKeyFiles() {
 
   var errorMsgObj = {};
   var keyListObj = {};
-  exitCode = EnigmailKeyRing.importKeyFromFile(window, gPubkeyFile.value, errorMsgObj, keyListObj);
+  exitCode = EnigmailKeyRing.importKeyFromFile(gPubkeyFile.value, errorMsgObj, keyListObj);
   if (exitCode !== 0) {
     EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
     return false;
@@ -478,7 +478,7 @@ function importKeyFiles() {
   if (document.getElementById("privateKeysFile").value.trim().length > 0) {
     EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles - private Keys\n");
 
-    exitCode = EnigmailKeyRing.importKeyFromFile(window, gSeckeyFile.value, errorMsgObj, keyListObj);
+    exitCode = EnigmailKeyRing.importKeyFromFile(gSeckeyFile.value, errorMsgObj, keyListObj);
     if (exitCode !== 0) {
       EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
       return false;
@@ -862,7 +862,7 @@ function wizardGenKey() {
   };
 
   try {
-    gKeygenRequest = EnigmailKeyRing.generateKey(window,
+    gKeygenRequest = EnigmailKeyRing.generateKey(
       EnigmailData.convertFromUnicode(userName),
       "",
       EnigmailData.convertFromUnicode(userEmail),

@@ -18,7 +18,7 @@ test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
   let secretKeyFile = do_get_file("resources", false);
   secretKeyFile.append("dev-strike.sec");
   const importedKeysObj = {};
-  let r = EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKeyFile, {}, importedKeysObj);
+  let r = EnigmailKeyRing.importKeyFromFile(secretKeyFile, {}, importedKeysObj);
   Assert.equal(0, r);
   var encryptResult = "-----BEGIN PGP MESSAGE-----\n" +
     "Version: GnuPG v2.0.22 (GNU/Linux)\n" +
