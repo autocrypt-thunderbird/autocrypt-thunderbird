@@ -457,7 +457,9 @@ MimeVerify.prototype = {
 
     gConv.setData(data, data.length);
     try {
+      this.mimeSvc.onStartRequest(null, null);
       this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+      this.mimeSvc.onStopRequest(null, null, 0);
     }
     catch (ex) {
       EnigmailLog.ERROR("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
