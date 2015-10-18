@@ -57,9 +57,11 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(JSUnit.createStubWindow(), secretKey, {}, {});
 
+  // search for key ID
   let k = EnigmailKeyRing.getKeyById("0x9CE311C4");
   Assert.equal(k.subKeys[0].keyId, "D535623BB60E9E71");
 
+  // search for subkey ID
   k = EnigmailKeyRing.getKeyById("0xD535623BB60E9E71");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
@@ -67,7 +69,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   EnigmailKeyRing.clearCache();
   Assert.equal(gKeyListObj.keySortList.length, 0);
 
-  k = EnigmailKeyRing.getKeyByFingerprint("65537E212DC19025AD38EDB2781617319CE311C4");
+  // search for fingerprint
+  k = EnigmailKeyRing.getKeyById("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
   k = EnigmailKeyRing.getKeyById("65537e212DC19025AD38EDB2781617319CE311C4");
@@ -310,7 +313,7 @@ test(function shouldCreateKeyListObject() {
   ];
 
   let keyListObj = {};
-  EnigmailKeyRing.createAndSortKeyList(keyInfo, secKeyInfo,
+  EnigmailKeyRing._createAndSortKeyList(keyInfo, secKeyInfo,
     keyListObj, // OUT
     "validity", // sorted acc. to key validity
     -1); // descending
@@ -353,10 +356,10 @@ const KeyRingHelper = {
       }
     }
     let keyListObj = {};
-    EnigmailKeyRing.createAndSortKeyList(testKeyList, [],
-                                         keyListObj, // OUT
-                                         "validity", // sorted acc. to key validity
-                                         -1); // descending
+    EnigmailKeyRing._createAndSortKeyList(testKeyList, [],
+                                          keyListObj, // OUT
+                                          "validity", // sorted acc. to key validity
+                                          -1); // descending
 
     gKeyListObj = keyListObj;
     Assert.notEqual(keyListObj, null);
@@ -404,7 +407,9 @@ test(function testGetValidKeyForOneRecipient() {
   // disabled key:
   // - no details because it would take time to check details of such a key
   minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
-  details = {all: ""};
+  details = {
+    all: ""
+  };
   key = EnigmailKeyRing.getValidKeyForRecipient("disabled@enigmail-test.de", minTrustLevelIndex, details);
   Assert.equal(key, null);
   Assert.equal(details.msg, null);

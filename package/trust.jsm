@@ -40,6 +40,8 @@
 
 "use strict";
 
+Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+
 const EXPORTED_SYMBOLS = ["EnigmailTrust"];
 
 
@@ -100,5 +102,48 @@ const EnigmailTrust = {
     else {
       return keyObj.keyTrust;
     }
+  },
+
+  getTrustLabel: function(trustCode) {
+    let keyTrust;
+    switch (trustCode) {
+      case 'q':
+        keyTrust = EnigmailLocale.getString("keyValid.unknown");
+        break;
+      case 'i':
+        keyTrust = EnigmailLocale.getString("keyValid.invalid");
+        break;
+      case 'd':
+      case 'D':
+        keyTrust = EnigmailLocale.getString("keyValid.disabled");
+        break;
+      case 'r':
+        keyTrust = EnigmailLocale.getString("keyValid.revoked");
+        break;
+      case 'e':
+        keyTrust = EnigmailLocale.getString("keyValid.expired");
+        break;
+      case 'n':
+        keyTrust = EnigmailLocale.getString("keyTrust.untrusted");
+        break;
+      case 'm':
+        keyTrust = EnigmailLocale.getString("keyTrust.marginal");
+        break;
+      case 'f':
+        keyTrust = EnigmailLocale.getString("keyTrust.full");
+        break;
+      case 'u':
+        keyTrust = EnigmailLocale.getString("keyTrust.ultimate");
+        break;
+      case 'g':
+        keyTrust = EnigmailLocale.getString("keyTrust.group");
+        break;
+      case '-':
+        keyTrust = "-";
+        break;
+      default:
+        keyTrust = "";
+    }
+    return keyTrust;
   }
 };

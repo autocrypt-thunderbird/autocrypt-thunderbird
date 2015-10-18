@@ -71,7 +71,6 @@ Components.utils.import("resource://enigmail/passwordCheck.jsm");
 
 
 // The compatible Enigmime version
-var gEnigmimeVersion = "1.4";
 var gEnigmailSvc;
 var gEnigPromptSvc;
 
@@ -508,13 +507,6 @@ function EnigGetTrustCode(keyObj) {
   return EnigmailTrust.getTrustCode(keyObj);
 }
 
-// Load the key list into memory
-// sortDirection: 1 = ascending / -1 = descending
-
-function EnigLoadKeyList(refresh, keyListObj, sortColumn, sortDirection) {
-  return EnigmailKeyRing.loadKeyList(window, refresh, keyListObj, sortColumn, sortDirection);
-}
-
 function EnigEditKeyTrust(userIdArr, keyIdArr) {
   return EnigmailWindows.editKeyTrust(window, userIdArr, keyIdArr);
 }
@@ -631,46 +623,7 @@ function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
 
 // return the label of trust for a given trust code
 function EnigGetTrustLabel(trustCode) {
-  var keyTrust;
-  switch (trustCode) {
-    case 'q':
-      keyTrust = EnigGetString("keyValid.unknown");
-      break;
-    case 'i':
-      keyTrust = EnigGetString("keyValid.invalid");
-      break;
-    case 'd':
-    case 'D':
-      keyTrust = EnigGetString("keyValid.disabled");
-      break;
-    case 'r':
-      keyTrust = EnigGetString("keyValid.revoked");
-      break;
-    case 'e':
-      keyTrust = EnigGetString("keyValid.expired");
-      break;
-    case 'n':
-      keyTrust = EnigGetString("keyTrust.untrusted");
-      break;
-    case 'm':
-      keyTrust = EnigGetString("keyTrust.marginal");
-      break;
-    case 'f':
-      keyTrust = EnigGetString("keyTrust.full");
-      break;
-    case 'u':
-      keyTrust = EnigGetString("keyTrust.ultimate");
-      break;
-    case 'g':
-      keyTrust = EnigGetString("keyTrust.group");
-      break;
-    case '-':
-      keyTrust = "-";
-      break;
-    default:
-      keyTrust = "";
-  }
-  return keyTrust;
+  return EnigmailTrust.getTrustLabel(trustCode);
 }
 
 function EnigGetDateTime(dateNum, withDate, withTime) {

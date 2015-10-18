@@ -1,3 +1,5 @@
+/*global Components: false, window: false, document: false */
+/*jshint -W097 */
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -34,26 +36,42 @@
  * ***** END LICENSE BLOCK ***** *
  */
 
+"use strict";
+
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+
 var gRepaintCount = 0;
 var gKeyId;
+
+/* imports from enigmailCommon.js: */
+/* global EnigGetTrustLabel: false */
+
+
+function appendUid(uidStr) {
+  let uidCont = document.getElementById("uidContainer");
+  let l = document.createElement("label");
+  l.setAttribute("value", uidStr);
+  uidCont.appendChild(l);
+}
 
 function onLoad() {
   window.addEventListener("MozAfterPaint", resizeDlg, false);
 
-  var keyListObj = {};
-  EnigLoadKeyList(false, keyListObj);
+  let key = EnigmailKeyRing.getKeyById(window.arguments[0].keyId);
+  gKeyId = key.keyId;
 
-  var userIdList = window.arguments[0].userId.split(/\r?\n/);
-  gKeyId = window.arguments[0].keyId;
-  var uid = document.getElementById("uidContainer");
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-  for (var i = 0; i < userIdList.length; i++) {
-    var l = document.createElement("label");
-    l.setAttribute("value", userIdList[i]);
-    uid.appendChild(l);
+  appendUid(key.userId);
+  for each(let su in key.SubUserIds) {
+    if (su.type === "uid") {
+      appendUid(su.userId);
+    }
   }
-  document.getElementById("keyId").setAttribute("value", EnigGetString("keyId") + ": 0x" + gKeyId);
-  document.getElementById("keyValidity").setAttribute("value", EnigGetTrustLabel(EnigGetTrustCode(keyListObj.keyList[gKeyId])));
+  document.getElementById("keyId").setAttribute("value", EnigmailLocale.getString("keyId") + ": 0x" + gKeyId);
+  document.getElementById("keyValidity").setAttribute("value", EnigmailTrust.getTrustLabel(key.keyTrust));
 }
 
 function resizeDlg(event) {
@@ -69,5 +87,5 @@ function removeListener() {
 }
 
 function displayKeyProps() {
-  EnigDisplayKeyDetails(gKeyId, false);
+  EnigmailWindows.openKeyDetails(window, gKeyId, false);
 }
