@@ -339,39 +339,34 @@ test(function shouldCreateKeyListObject() {
   Assert.notEqual(details.msg, null);
 });
 
+
 const KeyRingHelper = {
-  loadKeyList: function() {
+  loadTestKeyList: function() {
     const pkFile = do_get_file("resources/pub-keys.asc", false);
     let publicKeys = EnigmailFiles.readFile(pkFile);
     let rows = publicKeys.split("\n");
-    let result = [];
+    let testKeyList = [];
     for (let i = 0; i < rows.length; ++i) {
       let row = rows[i];
       if (row !== "" && row[0] != "#") {
-        result.push(row);
+        testKeyList.push(row);
       }
     }
-    return result;
+    let keyListObj = {};
+    EnigmailKeyRing.createAndSortKeyList(testKeyList, [],
+                                         keyListObj, // OUT
+                                         "validity", // sorted acc. to key validity
+                                         -1); // descending
+
+    gKeyListObj = keyListObj;
+    Assert.notEqual(keyListObj, null);
+    Assert.notEqual(keyListObj.keySortList, null);
+    Assert.notEqual(keyListObj.keySortList.length, null);
   }
 };
 
-test(function shouldCreateKeyListObject() {
-  let keyList = KeyRingHelper.loadKeyList();
-  let keyListObj = {};
-  EnigmailKeyRing.createAndSortKeyList(keyList, [],
-    keyListObj, // OUT
-    "validity", // sorted acc. to key validity
-    -1); // descending
-
-  gKeyListObj = keyListObj;
-  Assert.notEqual(keyListObj, null);
-  Assert.notEqual(keyListObj.keySortList, null);
-  Assert.notEqual(keyListObj.keySortList.length, null);
-  //Assert.equal(keyListObj.keySortList.length, 1);
-  //Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@enigmail-test.de>");
-  //Assert.equal(keyListObj.keySortList[0].keyId, "DEF9FC808A3FF001");
-  //Assert.notEqual(keyListObj.keyList, null);
-  //Assert.equal(keyListObj.keyList.DEF9FC808A3FF001.userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
+test(function testGetValidKeyForOneRecipient() {
+  KeyRingHelper.loadTestKeyList();
 
   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
   let minTrustLevelIndex = null;
@@ -460,3 +455,86 @@ test(function shouldCreateKeyListObject() {
   Assert.equal(key, "0040EEEE00010001");
   Assert.equal(details.msg, null);
 });
+
+test(function testGetValidKeysForMultipleRecipients() {
+  KeyRingHelper.loadTestKeyList();
+
+  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+  let minTrustLevel = null;
+  let details = null;
+  let addrs = null;
+  let keys = null;
+  let keyMissing = null;
+
+  // some matching keys:
+  minTrustLevel = "?";
+  addrs = [ "full@enigmail-test.de", 
+            "multiple-onefull@enigmail-test.de", 
+            "multiple-twofull@enigmail-test.de", 
+            "multiple-onemarginal@enigmail-test.de", 
+            "withsubkey-uid1@enigmail-test.de",
+            "withsubkey-uid2@enigmail-test.de",
+          ];
+  details = {};
+  keys = []; 
+  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  Assert.equal(keyMissing, false);
+  Assert.notEqual(keys, null);
+  Assert.equal(keys.length, 6);
+  Assert.equal(keys[0], "0x0003AAAA00010001");
+  Assert.equal(keys[1], "0x0030AAAA00020001");
+  Assert.equal(keys[2], "0x0034AAAA00020001");
+  Assert.equal(keys[3], "0x0031AAAA00020001");
+  Assert.equal(keys[4], "0x0040EEEE00010001");
+  Assert.equal(keys[5], "0x0040EEEE00010001");
+  Assert.equal(details.errArray.length, 0);
+
+  // some non-matching keys:
+  minTrustLevel = "?";
+  addrs = [ "no-encrypt@enigmail-test.de", 
+            "disabled@enigmail-test.de",
+            "multiple-nofull@enigmail-test.de", 
+          ];
+  details = {};
+  keys = []; 
+  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  Assert.equal(keyMissing, true);
+  Assert.equal(keys.length, 0);
+  Assert.notEqual(details, null);
+  Assert.equal(details.errArray.length, 3);
+  Assert.equal(details.errArray[0].msg, "ProblemNoKey");
+  Assert.equal(details.errArray[1].msg, "ProblemNoKey");
+  Assert.equal(details.errArray[2].msg, "ProblemMultipleKeys");
+
+  // just two keys:
+  minTrustLevel = "?";
+  addrs = [ "0x0040EEEE00010001",
+            "0x0003AAAA00010001",
+            "0003AAAA00010001",
+          ];
+  details = {};
+  keys = []; 
+  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  Assert.equal(keyMissing, false);
+  Assert.notEqual(keys, null);
+  Assert.equal(keys.length, 3);
+  Assert.equal(keys[0], "0x0040EEEE00010001");
+  Assert.equal(keys[1], "0x0003AAAA00010001");
+  Assert.equal(keys[2], "0x0003AAAA00010001");
+  Assert.equal(details.errArray.length, 0);
+
+  // disabled key:
+  // - this BEHAVIOR is PROBABLY WRONG:
+  minTrustLevel = "?";
+  addrs = [ "0005AAAA00010001",
+          ];
+  details = {};
+  keys = []; 
+  keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);
+  Assert.equal(keyMissing, false);
+  Assert.notEqual(keys, null);
+  Assert.equal(keys.length, 1);
+  Assert.equal(keys[0], "0x0005AAAA00010001");
+  Assert.equal(details.errArray.length, 0);
+});
+
