@@ -8,7 +8,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailCore"];
+var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

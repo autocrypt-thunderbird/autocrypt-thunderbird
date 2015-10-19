@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailVerifyAttachment"];
+var EXPORTED_SYMBOLS = ["EnigmailVerifyAttachment"];
 
 const Cu = Components.utils;
 

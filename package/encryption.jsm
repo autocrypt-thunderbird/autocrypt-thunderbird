@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailEncryption"];
+var EXPORTED_SYMBOLS = ["EnigmailEncryption"];
 
 Components.utils.import("resource://enigmail/core.jsm");
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
@@ -194,7 +194,8 @@ const EnigmailEncryption = {
 
   encryptMessageStart: function(win, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
     hashAlgorithm, sendFlags, listener, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + EnigmailData.bytesToHex(EnigmailData.pack(sendFlags, 4)) + ")\n");
+    EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + EnigmailData.bytesToHex(
+      EnigmailData.pack(sendFlags, 4)) + ")\n");
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 

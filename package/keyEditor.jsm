@@ -52,7 +52,7 @@ Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGp
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
-const EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
+var EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

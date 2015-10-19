@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailOS"];
+var EXPORTED_SYMBOLS = ["EnigmailOS"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

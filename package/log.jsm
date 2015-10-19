@@ -43,7 +43,7 @@ Components.utils.import("resource://enigmail/pipeConsole.jsm");
 Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/os.jsm");
 
-const EXPORTED_SYMBOLS = ["EnigmailLog"];
+var EXPORTED_SYMBOLS = ["EnigmailLog"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -120,7 +120,8 @@ const EnigmailLog = {
     }
 
     var d = new Date();
-    var datStr = d.getFullYear() + "-" + withZeroes(d.getMonth() + 1, 2) + "-" + withZeroes(d.getDate(), 2) + " " + withZeroes(d.getHours(), 2) + ":" + withZeroes(d.getMinutes(), 2) + ":" + withZeroes(d.getSeconds(), 2) + "." + withZeroes(d.getMilliseconds(), 3) + " ";
+    var datStr = d.getFullYear() + "-" + withZeroes(d.getMonth() + 1, 2) + "-" + withZeroes(d.getDate(), 2) + " " + withZeroes(d.getHours(), 2) + ":" + withZeroes(d.getMinutes(), 2) + ":" +
+      withZeroes(d.getSeconds(), 2) + "." + withZeroes(d.getMilliseconds(), 3) + " ";
     if (EnigmailLog.level >= 4)
       dump(datStr + str);
 

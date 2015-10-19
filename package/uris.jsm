@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailURIs"];
+var EXPORTED_SYMBOLS = ["EnigmailURIs"];
 
 const Cu = Components.utils;
 

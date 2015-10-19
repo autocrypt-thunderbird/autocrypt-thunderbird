@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailDialog"];
+var EXPORTED_SYMBOLS = ["EnigmailDialog"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

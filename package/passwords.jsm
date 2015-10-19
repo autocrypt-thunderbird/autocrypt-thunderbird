@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailPassword"];
+var EXPORTED_SYMBOLS = ["EnigmailPassword"];
 
 const Cu = Components.utils;
 

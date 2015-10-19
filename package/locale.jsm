@@ -39,7 +39,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailLocale"];
+var EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
 Components.utils.import("resource://enigmail/log.jsm");
 

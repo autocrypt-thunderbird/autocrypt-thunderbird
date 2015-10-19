@@ -50,7 +50,7 @@ Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
 const EC = EnigmailCore;
 
-const EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
+var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

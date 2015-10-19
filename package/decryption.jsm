@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailDecryption"];
+var EXPORTED_SYMBOLS = ["EnigmailDecryption"];
 
 const Ci = Components.interfaces;
 const Cu = Components.utils;

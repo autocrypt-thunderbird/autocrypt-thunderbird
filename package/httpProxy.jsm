@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailHttpProxy"];
+var EXPORTED_SYMBOLS = ["EnigmailHttpProxy"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

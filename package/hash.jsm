@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailHash"];
+var EXPORTED_SYMBOLS = ["EnigmailHash"];
 
 const Cu = Components.utils;
 

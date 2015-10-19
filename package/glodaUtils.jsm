@@ -13,7 +13,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["GlodaUtils"];
+var EXPORTED_SYMBOLS = ["GlodaUtils"];
 
 const Cu = Components.utils;
 

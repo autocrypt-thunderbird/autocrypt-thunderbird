@@ -42,7 +42,7 @@
 
 Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-const EXPORTED_SYMBOLS = ["EnigmailTrust"];
+var EXPORTED_SYMBOLS = ["EnigmailTrust"];
 
 
 // trust flags according to GPG documentation:

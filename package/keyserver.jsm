@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
+var EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

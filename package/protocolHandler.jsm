@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
+var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://enigmail/core.jsm");

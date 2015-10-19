@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailTimer"];
+var EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

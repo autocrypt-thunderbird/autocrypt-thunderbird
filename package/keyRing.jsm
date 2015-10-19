@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailKeyRing"];
+var EXPORTED_SYMBOLS = ["EnigmailKeyRing"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

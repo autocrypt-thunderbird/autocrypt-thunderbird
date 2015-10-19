@@ -21,7 +21,7 @@ Components.utils.import("resource://enigmail/decryption.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
-const EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
+var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
 
 
 const Cc = Components.classes;

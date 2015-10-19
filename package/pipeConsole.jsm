@@ -35,7 +35,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailConsole"];
+var EXPORTED_SYMBOLS = ["EnigmailConsole"];
 
 const MAX_SIZE = 32768;
 var dataCache = "";

@@ -10,7 +10,7 @@
  Promise from the various potential sources
 */
 
-const EXPORTED_SYMBOLS = ["Promise"];
+var EXPORTED_SYMBOLS = ["Promise"];
 
 const Cu = Components.utils;
 

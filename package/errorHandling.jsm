@@ -49,7 +49,7 @@ Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/data.jsm");
 Cu.import("resource://enigmail/core.jsm");
 
-const EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
+var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 
 const nsIEnigmail = Ci.nsIEnigmail;
 

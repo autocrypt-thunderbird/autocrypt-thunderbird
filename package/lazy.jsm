@@ -8,7 +8,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailLazy"];
+var EXPORTED_SYMBOLS = ["EnigmailLazy"];
 
 const EnigmailLazy = {
   loader: function(component, name) {

@@ -67,7 +67,7 @@ Cu.import("resource://enigmail/glodaMime.jsm");
 
 var EC = EnigmailCore;
 
-const EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
+var EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

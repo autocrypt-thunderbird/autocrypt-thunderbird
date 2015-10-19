@@ -25,7 +25,7 @@ Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 
-const EXPORTED_SYMBOLS = ["EnigmailVerify"];
+var EXPORTED_SYMBOLS = ["EnigmailVerify"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

@@ -39,7 +39,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailGpgAgent"];
+var EXPORTED_SYMBOLS = ["EnigmailGpgAgent"];
 
 const Cu = Components.utils;
 

@@ -13,7 +13,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["msgHdrToMimeMessage",
+var EXPORTED_SYMBOLS = ["msgHdrToMimeMessage",
   "MimeMessage", "MimeContainer",
   "MimeBody", "MimeUnknown",
   "MimeMessageAttachment"

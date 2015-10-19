@@ -51,7 +51,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-const EXPORTED_SYMBOLS = ["EnigmailFuncs"];
+var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 var gTxtConverter = null;
 

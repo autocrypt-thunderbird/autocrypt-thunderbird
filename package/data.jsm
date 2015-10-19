@@ -40,7 +40,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailData"];
+var EXPORTED_SYMBOLS = ["EnigmailData"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

@@ -41,7 +41,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailCard"];
+var EXPORTED_SYMBOLS = ["EnigmailCard"];
 
 const Cu = Components.utils;
 
