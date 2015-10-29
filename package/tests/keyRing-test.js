@@ -99,10 +99,10 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
+  getUserIdList(false, false, {}, {}, {});
   Assert.equal(secretKeyList, null);
   Assert.notEqual(userIdList, null);
-  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
+  getUserIdList(true, false, {}, {}, {});
   Assert.notEqual(secretKeyList, null);
   Assert.notEqual(userIdList, null);
 })));
@@ -112,8 +112,8 @@ test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
-  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
+  getUserIdList(false, false, {}, {}, {});
+  getUserIdList(true, false, {}, {}, {});
   EnigmailKeyRing.clearCache();
   Assert.equal(secretKeyList, null);
   Assert.equal(userIdList, null);
@@ -285,8 +285,8 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     null, {});
   const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
-  EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
-  EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
+  getUserIdList(false, false, {}, {}, {});
+  getUserIdList(true, false, {}, {}, {});
   Assert.notEqual(userIdList, null);
   Assert.notEqual(secretKeyList, null);
 })));
@@ -313,7 +313,7 @@ test(function shouldCreateKeyListObject() {
   ];
 
   let keyListObj = {};
-  EnigmailKeyRing._createAndSortKeyList(keyInfo, secKeyInfo,
+  createAndSortKeyList(keyInfo, secKeyInfo,
     keyListObj, // OUT
     "validity", // sorted acc. to key validity
     -1); // descending
@@ -356,7 +356,7 @@ const KeyRingHelper = {
       }
     }
     let keyListObj = {};
-    EnigmailKeyRing._createAndSortKeyList(testKeyList, [],
+    createAndSortKeyList(testKeyList, [],
       keyListObj, // OUT
       "validity", // sorted acc. to key validity
       -1); // descending
