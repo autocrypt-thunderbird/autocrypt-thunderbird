@@ -198,7 +198,7 @@ function engmailGenerateCardKey() {
   window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
     "", "dialog,modal,centerscreen");
 
-  EnigmailKeyRing.invalidateUserIdList();
+  EnigmailKeyRing.clearCache();
   onLoad();
 }
 

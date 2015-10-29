@@ -246,7 +246,7 @@ function enigStatusError() {
 
 function enigCloseDialog() {
   if (window.arguments[RESULT].importedKeys > 0) {
-    EnigmailKeyRing.invalidateUserIdList();
+    EnigmailKeyRing.clearCache();
   }
 
   document.getElementById("enigmailSearchKeyDlg").cancelDialog();

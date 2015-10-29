@@ -160,7 +160,7 @@ function importOk(c) {
 
   let importFlag = Number(lineSplit[1]);
   if (importFlag & (1 | 2 | 8)) {
-    EnigmailCore.getKeyRing().invalidateUserIdList();
+    EnigmailCore.getKeyRing().clearCache();
   }
 }
 

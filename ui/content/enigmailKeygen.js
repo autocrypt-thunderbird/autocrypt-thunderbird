@@ -238,7 +238,7 @@ function saveRevCert(inputKeyFile, keyId, uid, resolve, reject) {
 }
 
 function closeAndReset() {
-  EnigmailKeyRing.invalidateUserIdList();
+  EnigmailKeyRing.clearCache();
   window.close();
 }
 

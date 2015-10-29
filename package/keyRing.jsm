@@ -378,7 +378,7 @@ var EnigmailKeyRing = {
 
     if (exitCodeObj.value === 0) {
       // Normal
-      EnigmailKeyRing.invalidateUserIdList();
+      EnigmailKeyRing.clearCache();
 
       var statusLines = statusMsg.split(/\r?\n/);
 
@@ -431,14 +431,6 @@ var EnigmailKeyRing = {
     }
 
     return r;
-  },
-
-  /**
-   * @deprecated - use clearCache instead
-   */
-  invalidateUserIdList: function() {
-    // clean the userIdList to force reloading the list at next usage
-    this.clearCache();
   },
 
   /**
@@ -798,7 +790,7 @@ var EnigmailKeyRing = {
 
     if (exitCodeObj.value === 0) {
       // Normal return
-      EnigmailKeyRing.invalidateUserIdList();
+      EnigmailKeyRing.clearCache();
       if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
         const matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
         if (matches && (matches.length > 3)) {
@@ -1146,7 +1138,7 @@ var EnigmailKeyRing = {
           keygenProcess = null;
           try {
             if (result.exitCode === 0) {
-              EnigmailKeyRing.invalidateUserIdList();
+              EnigmailKeyRing.clearCache();
             }
             listener.onStopRequest(result.exitCode);
           }

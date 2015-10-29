@@ -107,14 +107,14 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   Assert.notEqual(userIdList, null);
 })));
 
-test(withTestGpgHome(withEnigmail(function shouldCleanupInvalidateUserIdList() {
+test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
   EnigmailKeyRing._getUserIdList(false, false, {}, {}, {});
   EnigmailKeyRing._getUserIdList(true, false, {}, {}, {});
-  EnigmailKeyRing.invalidateUserIdList();
+  EnigmailKeyRing.clearCache();
   Assert.equal(secretKeyList, null);
   Assert.equal(userIdList, null);
 })));

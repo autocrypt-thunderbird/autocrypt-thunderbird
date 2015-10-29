@@ -146,7 +146,7 @@ const EnigmailKeyServer = {
         done: function(result) {
           try {
             if (result.exitCode === 0 && isDownload) {
-              EnigmailKeyRing.invalidateUserIdList();
+              EnigmailKeyRing.clearCache();
             }
             if (exitCode === null) {
               exitCode = result.exitCode;

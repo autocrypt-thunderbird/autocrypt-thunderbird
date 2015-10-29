@@ -901,7 +901,7 @@ function wizardKeygenTerminate(exitCode) {
 
 
   enigmailKeygenCloseRequest();
-  EnigmailKeyRing.invalidateUserIdList();
+  EnigmailKeyRing.clearCache();
 
   document.getElementById("revCertBox").removeAttribute("hidden");
 }

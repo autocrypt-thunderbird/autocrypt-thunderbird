@@ -464,7 +464,7 @@ const EnigmailWindows = {
     win.openDialog("chrome://enigmail/content/keyDetailsDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.refresh) {
-      EnigmailKeyRing.invalidateUserIdList();
+      EnigmailKeyRing.clearCache();
     }
   },
 
