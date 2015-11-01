@@ -9,10 +9,10 @@
 "use strict";
 
 /* global EnigmailFiles: false */
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, secretKeyList: false, gKeyListObj: true, userIdList: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
 Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 
-
+/* global getUserIdList: false, createAndSortKeyList: false */
 
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
@@ -99,12 +99,11 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  getUserIdList(false, false, {}, {}, {});
-  Assert.equal(secretKeyList, null);
-  Assert.notEqual(userIdList, null);
-  getUserIdList(true, false, {}, {}, {});
-  Assert.notEqual(secretKeyList, null);
-  Assert.notEqual(userIdList, null);
+  let l = "";
+  l = getUserIdList(false, {}, {}, {});
+  Assert.notEqual(l, null);
+  getUserIdList(true, {}, {}, {});
+  Assert.notEqual(l, null);
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {
@@ -112,11 +111,10 @@ test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  getUserIdList(false, false, {}, {}, {});
-  getUserIdList(true, false, {}, {}, {});
+  EnigmailKeyRing.getAllKeys();
+  Assert.notEqual(gKeyListObj.keyList.length, 0);
   EnigmailKeyRing.clearCache();
-  Assert.equal(secretKeyList, null);
-  Assert.equal(userIdList, null);
+  Assert.equal(gKeyListObj.keyList.length, 0);
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails() {
@@ -285,10 +283,8 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     null, {});
   const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
-  getUserIdList(false, false, {}, {}, {});
-  getUserIdList(true, false, {}, {}, {});
-  Assert.notEqual(userIdList, null);
-  Assert.notEqual(secretKeyList, null);
+  EnigmailKeyRing.getAllKeys();
+  Assert.notEqual(gKeyListObj.keyList.length, 0);
 })));
 
 test(function shouldCreateKeyListObject() {

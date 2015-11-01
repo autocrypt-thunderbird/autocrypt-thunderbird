@@ -92,8 +92,6 @@ const UNKNOWN_SIGNATURE = "[User ID not found]";
 const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
 
-let userIdList = null;
-let secretKeyList = null;
 let keygenProcess = null;
 let gKeyListObj = null;
 
@@ -164,7 +162,7 @@ var EnigmailKeyRing = {
    */
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keySortList.length === 0) {
-      let a = loadKeyList(win, false, gKeyListObj, sortColumn, sortDirection);
+      let a = loadKeyList(win, gKeyListObj, sortColumn, sortDirection);
     }
     else {
       if (sortColumn) {
@@ -443,9 +441,6 @@ var EnigmailKeyRing = {
       keyList: [],
       keySortList: []
     };
-
-    userIdList = null;
-    secretKeyList = null;
   },
 
 
@@ -1047,58 +1042,40 @@ var EnigmailKeyRing = {
 /**
  * returns the output of --with-colons --list[-secret]-keys
  */
-function getUserIdList(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMsgObj) {
-  if (refresh ||
-    (secretOnly && secretKeyList === null) ||
-    ((!secretOnly) && userIdList === null)) {
-    let args = EnigmailGpg.getStandardArgs(true);
+function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
-    if (secretOnly) {
-      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
-    }
-    else {
-      if (refresh) EnigmailKeyRing.clearCache();
-      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
-    }
-
-    statusFlagsObj.value = 0;
-
-    const cmdErrorMsgObj = {};
-    let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
-
-    if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
-      // ignore exit code as recommended by GnuPG authors
-      exitCodeObj.value = 0;
-    }
-
-    if (exitCodeObj.value !== 0) {
-      errorMsgObj.value = EnigmailLocale.getString("badCommand");
-      if (cmdErrorMsgObj.value) {
-        errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
-        errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-      }
-
-      return "";
-    }
-
-    listText = listText.replace(/(\r\n|\r)/g, "\n");
-    if (secretOnly) {
-      secretKeyList = listText;
-      return listText;
-    }
-    userIdList = listText;
-  }
-  else {
-    exitCodeObj.value = 0;
-    statusFlagsObj.value = 0;
-    errorMsgObj.value = "";
-  }
+  let args = EnigmailGpg.getStandardArgs(true);
 
   if (secretOnly) {
-    return secretKeyList;
+    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
+  }
+  else {
+    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
   }
 
-  return userIdList;
+  statusFlagsObj.value = 0;
+
+  const cmdErrorMsgObj = {};
+  let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
+
+  if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
+    // ignore exit code as recommended by GnuPG authors
+    exitCodeObj.value = 0;
+  }
+
+  if (exitCodeObj.value !== 0) {
+    errorMsgObj.value = EnigmailLocale.getString("badCommand");
+    if (cmdErrorMsgObj.value) {
+      errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+    }
+
+    return "";
+  }
+
+  listText = listText.replace(/(\r\n|\r)/g, "\n");
+
+  return listText;
 }
 
 
@@ -1107,11 +1084,10 @@ function getUserIdList(secretOnly, refresh, exitCodeObj, statusFlagsObj, errorMs
  *
  * @win        - |object| parent window for displaying error messages
  * @secretOnly - |boolean| true: get secret keys / false: get public keys
- * @refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
  *
  * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
  */
-function obtainKeyList(win, secretOnly, refresh) {
+function obtainKeyList(win, secretOnly) {
   EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
   let userList = null;
@@ -1120,7 +1096,6 @@ function obtainKeyList(win, secretOnly, refresh) {
     const errorMsgObj = {};
 
     userList = getUserIdList(secretOnly,
-      refresh,
       exitCodeObj, {},
       errorMsgObj);
     if (exitCodeObj.value !== 0) {
@@ -1210,7 +1185,7 @@ function getKeyListEntryOfKey(keyId) {
   let statusFlags = {};
   let errorMsg = {};
   let exitCodeObj = {};
-  let listText = getUserIdList(false, false, exitCodeObj, statusFlags, errorMsg);
+  let listText = getUserIdList(false, exitCodeObj, statusFlags, errorMsg);
 
   // listText contains lines such as:
   // tru::0:1407688184:1424970931:3:1:5
@@ -1262,7 +1237,6 @@ function getKeyListEntryOfKey(keyId) {
  * Load the key list into memory and return it sorted by a specified column
  *
  * @param win        - |object|  holding the parent window for displaying error messages
- * @param refresh    - |boolean| if true, cache is cleared and all keys are loaded from GnuPG
  * @param keyListObj - |object|  holding the resulting key list
  * @param sortColumn - |string|  containing the column name for sorting. One of:
  *                               userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
@@ -1271,7 +1245,7 @@ function getKeyListEntryOfKey(keyId) {
  *
  * no return value
  */
-function loadKeyList(win, refresh, keyListObj, sortColumn, sortDirection) {
+function loadKeyList(win, keyListObj, sortColumn, sortDirection) {
   EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
 
   if (!sortColumn) sortColumn = "userid";
@@ -1279,16 +1253,17 @@ function loadKeyList(win, refresh, keyListObj, sortColumn, sortDirection) {
 
   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
 
-  var aGpgUserList = obtainKeyList(win, false, refresh);
+  var aGpgUserList = obtainKeyList(win, false);
   if (!aGpgUserList) return;
 
-  var aGpgSecretsList = obtainKeyList(win, true, refresh);
-  if (!aGpgSecretsList && !refresh) {
+  var aGpgSecretsList = obtainKeyList(win, true);
+  if (!aGpgSecretsList) {
     if (EnigmailDialog.confirmDlg(EnigmailLocale.getString("noSecretKeys"),
         EnigmailLocale.getString("keyMan.button.generateKey"),
         EnigmailLocale.getString("keyMan.button.skip"))) {
       EnigmailWindows.openKeyGen();
-      loadKeyList(win, true, keyListObj);
+      EnigmailKeyRing.clearCache();
+      loadKeyList(win, keyListObj);
     }
   }
 
