@@ -3430,16 +3430,10 @@ Enigmail.msg = {
 
         //EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
 
-        // MULTILINE MATCHING ON
-        RegExp.multiline = true;
-
-        escText = escText.replace(/^From /g, "~From ");
-        escText = escText.replace(/^>/g, "|");
-        escText = escText.replace(/^[ \t]+$/g, "");
-        escText = escText.replace(/^ /g, "~ ");
-
-        // MULTILINE MATCHING OFF
-        RegExp.multiline = false;
+        escText = escText.replace(/^From /gm, "~From ");
+        escText = escText.replace(/^>/gm, "|");
+        escText = escText.replace(/^[ \t]+$/gm, "");
+        escText = escText.replace(/^ /gm, "~ ");
 
         //EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: escText = '"+escText+"'\n");
         // Replace plain text and get it again
@@ -3962,37 +3956,31 @@ Enigmail.msg = {
     var indentRegexp;
 
     if (indentStr) {
-      // MULTILINE MATCHING ON
-      RegExp.multiline = true;
-
       if (indentStr == "> ") {
         // replace ">> " with "> > " to allow correct quoting
-        pgpBlock = pgpBlock.replace(/^>>/g, "> >");
+        pgpBlock = pgpBlock.replace(/^>>/gm, "> >");
       }
 
       // Delete indentation
-      indentRegexp = new RegExp("^" + indentStr, "g");
+      indentRegexp = new RegExp("^" + indentStr, "gm");
 
       pgpBlock = pgpBlock.replace(indentRegexp, "");
       //tail     =     tail.replace(indentRegexp, "");
 
       if (indentStr.match(/[ \t]*$/)) {
-        indentStr = indentStr.replace(/[ \t]*$/g, "");
-        indentRegexp = new RegExp("^" + indentStr + "$", "g");
+        indentStr = indentStr.replace(/[ \t]*$/gm, "");
+        indentRegexp = new RegExp("^" + indentStr + "$", "gm");
 
         pgpBlock = pgpBlock.replace(indentRegexp, "");
       }
 
 
       // Handle blank indented lines
-      pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*$/g, "");
+      pgpBlock = pgpBlock.replace(/^[ \t]*>[ \t]*$/gm, "");
       //tail     =     tail.replace(/^[ \t]*>[ \t]*$/g, "");
 
       // Trim leading space in tail
-      tail = tail.replace(/^\s*\n/, "\n");
-
-      // MULTILINE MATCHING OFF
-      RegExp.multiline = false;
+      tail = tail.replace(/^\s*\n/m, "\n");
     }
 
     if (tail.search(/\S/) < 0) {

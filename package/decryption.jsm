@@ -499,15 +499,13 @@ const EnigmailDecryption = {
       endIndexObj.value - beginIndexObj.value + 1);
 
     if (indentStrObj.value) {
-      RegExp.multiline = true;
-      var indentRegexp = new RegExp("^" + indentStrObj.value, "g");
+      var indentRegexp = new RegExp("^" + indentStrObj.value, "gm");
       pgpBlock = pgpBlock.replace(indentRegexp, "");
       if (indentStrObj.value.substr(-1) == " ") {
-        var indentRegexpStr = "^" + indentStrObj.value.replace(/ $/, "$");
-        indentRegexp = new RegExp(indentRegexpStr, "g");
+        var indentRegexpStr = "^" + indentStrObj.value.replace(/ $/m, "$");
+        indentRegexp = new RegExp(indentRegexpStr, "gm");
         pgpBlock = pgpBlock.replace(indentRegexp, "");
       }
-      RegExp.multiline = false;
     }
 
     // HACK to better support messages from Outlook: if there are empty lines, drop them
@@ -617,9 +615,7 @@ const EnigmailDecryption = {
       statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
 
       if (verifyOnly && indentStrObj.value) {
-        RegExp.multiline = true;
-        plainText = plainText.replace(/^/g, indentStrObj.value);
-        RegExp.multiline = false;
+        plainText = plainText.replace(/^/gm, indentStrObj.value);
       }
 
       return EnigmailDecryption.inlineInnerVerification(parent, uiFlags, plainText,
