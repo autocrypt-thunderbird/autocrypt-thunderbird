@@ -94,6 +94,7 @@ const KEYTYPE_RSA = 2;
 
 let keygenProcess = null;
 let gKeyListObj = null;
+let gKeyIndex = [];
 
 /*
 
@@ -162,7 +163,7 @@ var EnigmailKeyRing = {
    */
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keySortList.length === 0) {
-      let a = loadKeyList(win, gKeyListObj, sortColumn, sortDirection);
+      loadKeyList(win, sortColumn, sortDirection);
     }
     else {
       if (sortColumn) {
@@ -231,63 +232,15 @@ var EnigmailKeyRing = {
       keyId = keyId.substr(2);
     }
 
-    switch (keyId.length) {
-      case 16:
-        s = new RegExp("^" + keyId + "$", "i");
-        break;
-      case 40:
-      case 32:
-        if (keyId.search(/^[0-9a-f]+$/i) === 0) {
-          return this.getKeyByFingerprint(keyId);
-        }
-        else {
-          EnigmailLog.ERROR("keyRing.jsm: getKeyById: invalid keyId '" + keyId + "'\n");
-          throw Components.results.NS_ERROR_FAILURE;
-        }
-        break;
-      default:
-        s = new RegExp(keyId + "$", "i");
-    }
-
     this.getAllKeys(); // ensure keylist is loaded;
 
-    for (let i in gKeyListObj.keyList) {
-      if (gKeyListObj.keyList[i].keyId.search(s) >= 0) {
-        return gKeyListObj.keyList[i];
-      }
-      for (let j in gKeyListObj.keyList[i].subKeys) {
-        if (gKeyListObj.keyList[i].subKeys[j].keyId.search(s) >= 0) {
-          return gKeyListObj.keyList[i];
-        }
-      }
+    let keyObj = gKeyIndex[keyId];
+
+    if (keyObj === undefined) {
+      keyObj = gKeyIndex["SK-" + keyId];
     }
 
-    return null;
-  },
-
-  /**
-   * get 1st key object that matches a given fingerprint
-   *
-   * @param keyId - String: key Id (8 or 16 characters), optionally preceeded with "0x"
-   *
-   * @return Object - found KeyObject or null if key not found
-   */
-  getKeyByFingerprint: function(fpr) {
-    if (fpr.search(/^0x/) === 0) {
-      fpr = fpr.substr(2);
-    }
-
-    this.getAllKeys(); // ensure keylist is loaded;
-
-    let s = new RegExp("^" + fpr + "$", "i");
-
-    for (let i in gKeyListObj.keyList) {
-      if (gKeyListObj.keyList[i].fpr.search(s) === 0) {
-        return gKeyListObj.keyList[i];
-      }
-    }
-
-    return null;
+    return keyObj ? keyObj : null;
   },
 
   /**
@@ -441,6 +394,8 @@ var EnigmailKeyRing = {
       keyList: [],
       keySortList: []
     };
+
+    gKeyIndex = [];
   },
 
 
@@ -1237,7 +1192,6 @@ function getKeyListEntryOfKey(keyId) {
  * Load the key list into memory and return it sorted by a specified column
  *
  * @param win        - |object|  holding the parent window for displaying error messages
- * @param keyListObj - |object|  holding the resulting key list
  * @param sortColumn - |string|  containing the column name for sorting. One of:
  *                               userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
  *                              Null will sort by userid.
@@ -1245,11 +1199,8 @@ function getKeyListEntryOfKey(keyId) {
  *
  * no return value
  */
-function loadKeyList(win, keyListObj, sortColumn, sortDirection) {
+function loadKeyList(win, sortColumn, sortDirection) {
   EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
-
-  if (!sortColumn) sortColumn = "userid";
-  if (!sortDirection) sortDirection = 1;
 
   const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
 
@@ -1263,11 +1214,11 @@ function loadKeyList(win, keyListObj, sortColumn, sortDirection) {
         EnigmailLocale.getString("keyMan.button.skip"))) {
       EnigmailWindows.openKeyGen();
       EnigmailKeyRing.clearCache();
-      loadKeyList(win, keyListObj);
+      loadKeyList(win, sortColumn, sortDirection);
     }
   }
 
-  createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection);
+  createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection);
 }
 
 
@@ -1486,10 +1437,32 @@ function createKeyObjects(keyListString, keyListObj) {
   }
 }
 
-function createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortColumn, sortDirection) {
+function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection) {
   EnigmailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
 
-  createKeyObjects(aGpgUserList, keyListObj);
+  if (typeof sortColumn !== "string") sortColumn = "userid";
+  if (!sortDirection) sortDirection = 1;
+
+  createKeyObjects(aGpgUserList, gKeyListObj);
+
+  // create a hash-index on key ID (8 and 16 characters and fingerprint)
+  // in a single array
+
+  gKeyIndex = [];
+
+  for (let i in gKeyListObj.keyList) {
+    let k = gKeyListObj.keyList[i];
+    gKeyIndex[k.keyId] = k;
+    gKeyIndex[k.fpr] = k;
+    gKeyIndex[k.keyId.substr(-8, 8)] = k;
+
+    // add subkeys, prefixed with SK-
+    for (let j in k.subKeys) {
+      EnigmailLog.DEBUG(" *** " + k.subKeys[j].keyId + "\n");
+
+      gKeyIndex["SK-" + k.subKeys[j].keyId] = k;
+    }
+  }
 
   // search and mark keys that have secret keys
   for (let i = 0; i < aGpgSecretsList.length; i++) {
@@ -1504,7 +1477,7 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, keyListObj, sortCol
     }
   }
 
-  keyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), keyListObj, sortDirection));
+  gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
 }
 
 /************************ IMPLEMENTATION of KeyObject ************************/

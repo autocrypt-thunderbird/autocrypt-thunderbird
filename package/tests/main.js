@@ -18,10 +18,10 @@ do_subtest("gpgAgent-test.js");
 do_subtest("enigmail-test.js");
 do_subtest("files-test.js");
 do_subtest("streams-test.js");
-do_subtest("keyEditor-test.js");
 
 // NOTE: DO NOT comment this out (otherwise rules-test.js does no longer work)
 do_subtest("keyRing-test.js");
+do_subtest("keyEditor-test.js");
 
 do_subtest("locale-test.js");
 do_subtest("log-test.js");

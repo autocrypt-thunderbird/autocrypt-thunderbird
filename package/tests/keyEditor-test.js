@@ -101,7 +101,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
     "781617319CE311C4",
     5,
     function() {
-      const result = EnigmailKeyRing.getAllSecretKeys();
+      let result = EnigmailKeyRing.getAllSecretKeys();
       Assert.equal(result.length, 1);
       Assert.equal(result[0].userId, expectedKey[0].userId);
       Assert.equal(result[0].keyId, expectedKey[0].keyId);

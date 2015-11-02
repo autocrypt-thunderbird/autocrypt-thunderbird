@@ -73,9 +73,6 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   k = EnigmailKeyRing.getKeyById("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
-  k = EnigmailKeyRing.getKeyById("65537e212DC19025AD38EDB2781617319CE311C4");
-  Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
-
   let s = k.signatures;
 
   let fpr = "DB54FB278F6AE719DE0DE881B17D4C762F5752A9";
@@ -90,7 +87,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   ka = EnigmailKeyRing.getAllSecretKeys();
   Assert.equal(ka.length, 1);
 
-  ka = EnigmailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71");
+  ka = EnigmailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71"); // the space is on purpose(!)
   Assert.equal(ka.length, 2);
 })));
 
@@ -99,10 +96,10 @@ test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);
   EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
   EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  let l = "";
+  let l = null;
   l = getUserIdList(false, {}, {}, {});
   Assert.notEqual(l, null);
-  getUserIdList(true, {}, {}, {});
+  l = getUserIdList(true, {}, {}, {});
   Assert.notEqual(l, null);
 })));
 
@@ -308,13 +305,11 @@ test(function shouldCreateKeyListObject() {
     "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
   ];
 
-  let keyListObj = {};
   createAndSortKeyList(keyInfo, secKeyInfo,
-    keyListObj, // OUT
     "validity", // sorted acc. to key validity
     -1); // descending
 
-  gKeyListObj = keyListObj;
+  let keyListObj = gKeyListObj;
   Assert.notEqual(keyListObj, null);
   Assert.notEqual(keyListObj.keySortList, null);
   Assert.notEqual(keyListObj.keySortList.length, null);
@@ -351,13 +346,11 @@ const KeyRingHelper = {
         testKeyList.push(row);
       }
     }
-    let keyListObj = {};
     createAndSortKeyList(testKeyList, [],
-      keyListObj, // OUT
       "validity", // sorted acc. to key validity
       -1); // descending
 
-    gKeyListObj = keyListObj;
+    let keyListObj = gKeyListObj;
     Assert.notEqual(keyListObj, null);
     Assert.notEqual(keyListObj.keySortList, null);
     Assert.notEqual(keyListObj.keySortList.length, null);
