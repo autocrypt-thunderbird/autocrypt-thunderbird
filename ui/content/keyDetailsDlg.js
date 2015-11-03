@@ -106,7 +106,7 @@ function reloadData() {
       photoImg.setAttribute("hidden", "true");
     }
 
-    if (keyObj.SubUserIds.length > 0) {
+    if (keyObj.hasSubUserIds()) {
       document.getElementById("alsoknown").removeAttribute("collapsed");
       createUidData(uidList, keyObj);
     }
@@ -142,11 +142,11 @@ function reloadData() {
 
 
 function createUidData(listNode, keyDetails) {
-  for (let i = 0; i < keyDetails.SubUserIds.length; i++) {
-    if (keyDetails.SubUserIds[i].type === "uid") {
+  for (let i = 1; i < keyDetails.userIds.length; i++) {
+    if (keyDetails.userIds[i].type === "uid") {
       let item = document.createElement("listitem");
-      item.setAttribute("label", keyDetails.SubUserIds[i].userId);
-      if ("dre".search(keyDetails.SubUserIds[i].keyTrust) >= 0) {
+      item.setAttribute("label", keyDetails.userIds[i].userId);
+      if ("dre".search(keyDetails.userIds[i].keyTrust) >= 0) {
         item.setAttribute("disabled", "true");
       }
       listNode.appendChild(item);

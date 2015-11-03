@@ -115,9 +115,10 @@ let gSubkeyIndex = [];
     - algorithm       - public key algorithm type
     - keySize         - size of public key
     - type            - "pub" or "grp"
-    - SubUserIds  - [Array]:
-                      * userId     - additional User ID
+    - userIds  - [Array]: - Contains ALL UIDs (including the primary UID)
+                      * userId     - User ID
                       * keyTrust   - trust level of user ID
+                      * uidFpr     - fingerprint of the user ID
                       * type       - one of "uid" (regular user ID), "uat" (photo)
                       * uatNum     - photo number (starting with 0 for each key)
     - subKeys     - [Array]:
@@ -262,16 +263,11 @@ var EnigmailKeyRing = {
     for (let i in gKeyListObj.keyList) {
       let k = gKeyListObj.keyList[i];
 
-      if (k.userId.search(s) >= 0) {
-        res.push(gKeyListObj.keyList[i]);
-      }
-      else {
-        for (let j in k.SubUserIds) {
-          if (k.SubUserIds[j].type === "uid" && k.SubUserIds[j].userId.search(s) >= 0) {
-            if (!onlyValidUid || (!EnigmailTrust.isInvalid(k.SubUserIds[j].keyTrust))) {
-              res.push(k);
-              continue;
-            }
+      for (let j in k.userIds) {
+        if (k.userIds[j].type === "uid" && k.userIds[j].userId.search(s) >= 0) {
+          if (!onlyValidUid || (!EnigmailTrust.isInvalid(k.userIds[j].keyTrust))) {
+            res.push(k);
+            continue;
           }
         }
       }
@@ -372,7 +368,7 @@ var EnigmailKeyRing = {
       keyObj.keyId = keyObj.userId;
       var grpMembers = EnigmailData.convertGpgToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
       for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
-        keyObj.SubUserIds.push({
+        keyObj.userIds.push({
           userId: grpMembers[grpIdx],
           keyTrust: "q"
         });
@@ -422,24 +418,22 @@ var EnigmailKeyRing = {
         hideInvalidUid = false;
       }
 
-      r.push(keyObj.userId); // main user ID is valid by definition (or key is not valid)
-
-      for (let i in keyObj.SubUserIds) {
-        if (keyObj.SubUserIds[i].type !== "uat") {
+      for (let i in keyObj.userIds) {
+        if (keyObj.userIds[i].type !== "uat") {
           if (hideInvalidUid) {
-            let thisTrust = TRUSTLEVELS_SORTED.indexOf(keyObj.SubUserIds[i].keyTrust);
+            let thisTrust = TRUSTLEVELS_SORTED.indexOf(keyObj.userIds[i].keyTrust);
             if (thisTrust > maxTrustLevel) {
-              r = [keyObj.SubUserIds[i].userId];
+              r = [keyObj.userIds[i].userId];
               maxTrustLevel = thisTrust;
             }
             else if (thisTrust === maxTrustLevel) {
-              r.push(keyObj.SubUserIds[i].userId);
+              r.push(keyObj.userIds[i].userId);
             }
             // else do not add uid
           }
-          else if (!EnigmailTrust.isInvalid(keyObj.SubUserIds[i].keyTrust) || !hideInvalidUid) {
+          else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
             // UID valid  OR  key not valid, but invalid keys allowed
-            r.push(keyObj.SubUserIds[i].userId);
+            r.push(keyObj.userIds[i].userId);
           }
         }
       }
@@ -878,8 +872,8 @@ var EnigmailKeyRing = {
       // check against the sub user ID
       // (if we are here, the primary user ID didn't match)
       // - Note: sub user IDs have NO owner trust
-      for (var subUidIdx = 0; subUidIdx < keyObj.SubUserIds.length; subUidIdx++) {
-        var subUidObj = keyObj.SubUserIds[subUidIdx];
+      for (var subUidIdx = 1; subUidIdx < keyObj.userIds.length; subUidIdx++) {
+        var subUidObj = keyObj.userIds[subUidIdx];
         var subUserId = subUidObj.userId.toLowerCase();
         var subUidTrust = subUidObj.keyTrust;
         var subUidTrustIndex = TRUSTLEVELS_SORTED.indexOf(subUidTrust);
@@ -1384,13 +1378,12 @@ function createKeyObjects(keyListString, keyListObj) {
               keyObj.keyTrust = listRow[KEY_TRUST_ID];
             }
           }
-          else {
-            keyObj.SubUserIds.push({
-              userId: EnigmailData.convertGpgToUnicode(listRow[USERID_ID]),
-              keyTrust: listRow[KEY_TRUST_ID],
-              type: "uid"
-            });
-          }
+          keyObj.userIds.push({
+            userId: EnigmailData.convertGpgToUnicode(listRow[USERID_ID]),
+            keyTrust: listRow[KEY_TRUST_ID],
+            uidFpr: listRow[UID_ID],
+            type: "uid"
+          });
           break;
         case "sub":
           keyObj.subKeys.push({
@@ -1408,9 +1401,10 @@ function createKeyObjects(keyListString, keyListObj) {
         case "uat":
           if (listRow[USERID_ID].indexOf("1 ") === 0) {
             const userId = EnigmailLocale.getString("userAtt.photo");
-            keyObj.SubUserIds.push({
+            keyObj.userIds.push({
               userId: userId,
               keyTrust: listRow[KEY_TRUST_ID],
+              uidFpr: listRow[UID_ID],
               type: "uat",
               uatNum: uatNum
             });
@@ -1507,7 +1501,7 @@ function KeyObject(lineArr) {
     this.keySize = "";
   }
   this.type = lineArr[ENTRY_ID];
-  this.SubUserIds = [];
+  this.userIds = [];
   this.subKeys = [];
   this.fpr = "";
   this.photoAvailable = false;
@@ -1554,6 +1548,20 @@ KeyObject.prototype = {
     }
 
     return cp;
+  },
+
+  /**
+   * Does the key have secondary user IDs?
+   *
+   * @return: Boolean - true if yes; false if no
+   */
+  hasSubUserIds: function() {
+    let nUid = 0;
+    for (let i in this.userIds) {
+      if (this.userIds[i].type === "uid") ++nUid;
+    }
+
+    return nUid >= 2;
   }
 };
 

@@ -185,9 +185,9 @@ function enigmailBuildList(refresh) {
     var uatChildren = document.createElement("treechildren");
     uatItem.appendChild(uatChildren);
 
-    for (var subkey = 0; subkey < keyObj.SubUserIds.length; subkey++) {
+    for (var subkey = 1; subkey < keyObj.userIds.length; subkey++) {
       var subItem = enigUserSelCreateRow(keyObj, subkey, gKeySortList[i].keyNum);
-      if (keyObj.SubUserIds[subkey].type == "uat") {
+      if (keyObj.userIds[subkey].type == "uat") {
         uatItem.setAttribute("container", "true");
         uatCell.setAttribute("label", EnigGetString("keylist.hasPhotos"));
         uatChildren.appendChild(subItem);
@@ -246,17 +246,17 @@ function enigUserSelCreateRow(keyObj, subKeyNum, keyNum) {
   }
   else {
     // secondary user id
-    keyObj.SubUserIds[subKeyNum].userId = keyObj.SubUserIds[subKeyNum].userId;
-    userCol.setAttribute("label", keyObj.SubUserIds[subKeyNum].userId);
-    treeItem.setAttribute("keytype", keyObj.SubUserIds[subKeyNum].type);
-    if (keyObj.SubUserIds[subKeyNum].type == "uid")
+    keyObj.userIds[subKeyNum].userId = keyObj.userIds[subKeyNum].userId;
+    userCol.setAttribute("label", keyObj.userIds[subKeyNum].userId);
+    treeItem.setAttribute("keytype", keyObj.userIds[subKeyNum].type);
+    if (keyObj.userIds[subKeyNum].type == "uid")
       treeItem.setAttribute("uidNum", subKeyNum);
-    if (keyObj.SubUserIds[subKeyNum].type == "uat") {
-      treeItem.setAttribute("uatNum", keyObj.SubUserIds[subKeyNum].uatNum);
+    if (keyObj.userIds[subKeyNum].type == "uat") {
+      treeItem.setAttribute("uatNum", keyObj.userIds[subKeyNum].uatNum);
     }
     keyCol.setAttribute("label", "");
     typeCol.setAttribute("label", "");
-    keyTrust = keyObj.SubUserIds[subKeyNum].keyTrust;
+    keyTrust = keyObj.userIds[subKeyNum].keyTrust;
   }
   var keyTrustLabel = EnigGetTrustLabel(keyTrust);
 
@@ -748,7 +748,7 @@ function createNewMail() {
 
         if (keyType == "uid") {
           var uidNum = Number(gUserList.view.getItemAtIndex(r).getAttribute("uidNum"));
-          addresses.push(keyObj.SubUserIds[uidNum].userId);
+          addresses.push(keyObj.userIds[uidNum].userId);
         }
         else
           addresses.push(gKeyList[keyNum].userId);
@@ -1382,9 +1382,15 @@ function enigApplyFilter() {
     let keyObj = gKeyList[node.getAttribute("keyNum")];
     var uid = keyObj.userId;
     var showNode = false;
-    if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
-      showNode = true;
+
+    // does a user ID (partially) match?
+    for (let idx = 0; idx < keyObj.userIds.length; idx++) {
+      uid = keyObj.userIds[idx].userId;
+      if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
+        showNode = true;
+      }
     }
+
     // does the full fingerprint (without spaces) match?
     // - no partial match check because this is special for the collapsed spaces inside the fingerprint
     if (showNode === false && fpr && keyObj.fpr.toLowerCase() == fpr) {
@@ -1394,18 +1400,9 @@ function enigApplyFilter() {
     if (showNode === false && keyObj.fpr.toLowerCase().indexOf(searchTxt) >= 0) {
       showNode = true;
     }
-    // does a sub user (partially) match?
-    if (showNode === false) {
-      for (var subUidIdx = 0; subUidIdx < keyObj.SubUserIds.length; subUidIdx++) {
-        uid = keyObj.SubUserIds[subUidIdx].userId;
-        if (uid.toLowerCase().indexOf(searchTxt) >= 0) {
-          showNode = true;
-        }
-      }
-    }
     // does a sub key of (partially) match?
     if (showNode === false) {
-      for (var subKeyIdx = 0; subKeyIdx < keyObj.subKeys.length; subKeyIdx++) {
+      for (let subKeyIdx = 0; subKeyIdx < keyObj.subKeys.length; subKeyIdx++) {
         subkey = keyObj.subKeys[subKeyIdx].keyId;
         if (subkey.toLowerCase().indexOf(searchTxt) >= 0) {
           showNode = true;

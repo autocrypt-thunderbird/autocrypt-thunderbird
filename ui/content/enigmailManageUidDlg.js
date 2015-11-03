@@ -98,9 +98,8 @@ function reloadUidList() {
   if (keyObj) {
     gUserId = keyObj.userId;
 
-    appendUid(uidList, keyObj, 1);
-    for (var i = 0; i < keyObj.SubUserIds.length; i++) {
-      appendUid(uidList, keyObj.SubUserIds[i], i + 2);
+    for (var i = 0; i < keyObj.userIds.length; i++) {
+      appendUid(uidList, keyObj.userIds[i], i + 1);
     }
   }
 

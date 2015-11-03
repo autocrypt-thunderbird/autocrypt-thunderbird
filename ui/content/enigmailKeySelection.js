@@ -464,18 +464,18 @@ function buildList(refresh) {
       }
 
       if (!hideExpired || aUserList[i].activeState < 2) {
-        if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].SubUserIds.length) {
-          for (let user = 0; user < aUserList[i].SubUserIds.length; user++) {
-            if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
+        if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].hasSubUserIds()) {
+          for (let user = 1; user < aUserList[i].userIds.length; user++) {
+            if (KEY_NOT_VALID.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
               if (aUserList[i].activeState < 2 || gAllowExpired) {
                 // add uid's for valid keys
                 try {
-                  mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId);
+                  mailAddr = EnigStripEmail(aUserList[i].userIds[user].userId);
                 }
                 catch (ex) {
-                  mailAddr = EnigStripEmail(aUserList[i].SubUserIds[user].userId.replace(/\"/g, ""));
+                  mailAddr = EnigStripEmail(aUserList[i].userIds[user].userId.replace(/\"/g, ""));
                 }
-                if (uidNotValid.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
+                if (uidNotValid.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
                   aValidUsers.push(mailAddr);
                   aUserList[i].valid = true;
                   escapedMailAddr = mailAddr.replace(escapeRegExp, "\\$1");
@@ -494,8 +494,8 @@ function buildList(refresh) {
   catch (ex) {
     EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in buildList:\n");
     EnigmailLog.ERROR("  userId=" + aUserList[i].userId + " expiry=" + aUserList[i].expiryTime + "\n");
-    if ((typeof user) == "number" && (typeof aUserList[i].SubUserIds[user].userId) == "string") {
-      EnigmailLog.ERROR("  subUserId=" + aUserList[i].SubUserIds[user].userId + "\n");
+    if ((typeof user) == "number" && (typeof aUserList[i].userIds[user].userId) == "string") {
+      EnigmailLog.ERROR("  subUserId=" + aUserList[i].userIds[user].userId + "\n");
     }
   }
 
@@ -526,11 +526,11 @@ function buildTreeView(aUserList, hideExpired, secretOnly) {
       else {
         treeItem = enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust, aUserList[i].uidValid);
       }
-      if (aUserList[i].SubUserIds.length) {
+      if (aUserList[i].hasSubUserIds()) {
         var subChildren = document.createElement("treechildren");
-        for (let user = 0; user < aUserList[i].SubUserIds.length; user++) {
-          if (KEY_NOT_VALID.indexOf(aUserList[i].SubUserIds[user].keyTrust) < 0) {
-            var subItem = enigUserSelCreateRow(aUserList[i], -1, aUserList[i].SubUserIds[user].userId, "", "", aUserList[i].SubUserIds[user].keyTrust, true);
+        for (let user = 1; user < aUserList[i].userIds.length; user++) {
+          if (KEY_NOT_VALID.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
+            var subItem = enigUserSelCreateRow(aUserList[i], -1, aUserList[i].userIds[user].userId, "", "", aUserList[i].userIds[user].keyTrust, true);
             subChildren.appendChild(subItem);
           }
         }
