@@ -95,7 +95,7 @@ const KEYTYPE_RSA = 2;
 let keygenProcess = null;
 let gKeyListObj = null;
 let gKeyIndex = [];
-
+let gSubkeyIndex = [];
 /*
 
   This module operates with a Key Store (array) containing objects with the following properties:
@@ -237,10 +237,10 @@ var EnigmailKeyRing = {
     let keyObj = gKeyIndex[keyId];
 
     if (keyObj === undefined) {
-      keyObj = gKeyIndex["SK-" + keyId];
+      keyObj = gSubkeyIndex[keyId];
     }
 
-    return keyObj ? keyObj : null;
+    return keyObj !== undefined ? keyObj : null;
   },
 
   /**
@@ -396,6 +396,7 @@ var EnigmailKeyRing = {
     };
 
     gKeyIndex = [];
+    gSubkeyIndex = [];
   },
 
 
@@ -1449,6 +1450,7 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
   // in a single array
 
   gKeyIndex = [];
+  gSubkeyIndex = [];
 
   for (let i in gKeyListObj.keyList) {
     let k = gKeyListObj.keyList[i];
@@ -1456,11 +1458,9 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
     gKeyIndex[k.fpr] = k;
     gKeyIndex[k.keyId.substr(-8, 8)] = k;
 
-    // add subkeys, prefixed with SK-
+    // add subkeys
     for (let j in k.subKeys) {
-      EnigmailLog.DEBUG(" *** " + k.subKeys[j].keyId + "\n");
-
-      gKeyIndex["SK-" + k.subKeys[j].keyId] = k;
+      gSubkeyIndex[k.subKeys[j].keyId] = k;
     }
   }
 
