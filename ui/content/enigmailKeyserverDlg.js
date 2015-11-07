@@ -60,13 +60,20 @@ function onLoad() {
 
   var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
   var menulist = document.getElementById("selectedServer");
+  var selected;
 
   for (var i = 0; i < keyservers.length; i++) {
-    if (keyservers[i].length > 0) {
+    if (keyservers[i].length > 0 &&
+      (!window.arguments[0].upload ||
+        keyservers[i].slice(0, 10) != "keybase://")) {
       menulist.appendItem(keyservers[i]);
+
+      if (selected === undefined) {
+        selected = keyservers[i];
+      }
     }
   }
-  document.getElementById("selectedServer").value = keyservers[0];
+  document.getElementById("selectedServer").value = selected;
 }
 
 function onAccept() {
