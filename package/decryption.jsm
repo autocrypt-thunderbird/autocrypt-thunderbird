@@ -729,8 +729,35 @@ const EnigmailDecryption = {
 
       if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),
           EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
-        exitCodeObj.value = EnigmailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
-        statusFlagsObj.value = nsIEnigmail.IMPORTED_KEY;
+
+        var preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
+        var exitStatus = 0;
+
+        if (errorMsgObj.value === "") {
+          if (preview.length > 0) {
+            if (preview.length == 1) {
+              exitStatus = EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
+            }
+            else {
+              exitStatus = EnigmailDialog.confirmDlg(parent,
+                EnigmailLocale.getString("doImportMultiple", [
+                  preview.map(function(a) {
+                    return "\t" + a.name + " (" + a.id + ")";
+                  }).
+                  join("\n")
+                ]));
+            }
+
+            if (exitStatus) {
+              exitCodeObj.value = EnigmailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
+              statusFlagsObj.value = nsIEnigmail.IMPORTED_KEY;
+            }
+            else {
+              exitCodeObj.value = 0;
+              statusFlagsObj.value = nsIEnigmail.DISPLAY_MESSAGE;
+            }
+          }
+        }
       }
       else {
         exitCodeObj.value = 0;

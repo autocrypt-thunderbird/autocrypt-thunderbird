@@ -264,6 +264,16 @@ const EnigmailFiles = {
     return EnigmailFiles.getTempDirObj().path;
   },
 
+  createTempDir: function(name) {
+    var localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+
+    localFile.initWithPath(EnigmailFiles.getTempDir());
+    localFile.append(name);
+    localFile.create(Ci.nsIFile.DIRECTORY_TYPE, 509 /* = 0775 */ );
+
+    return localFile;
+  },
+
   /**
    *  Write data to a file
    *  @filePath |string| or |nsIFile| object - the file to be created

@@ -2133,15 +2133,43 @@ Enigmail.msg = {
     }
 
     if (callbackArg.actionType == "importKey") {
-      try {
-        exitStatus = EnigmailKeyRing.importKey(parent, false, callbackArg.data, "", errorMsgObj);
-      }
-      catch (ex) {}
-      if (exitStatus === 0) {
-        EnigmailDialog.longAlert(window, EnigmailLocale.getString("successKeyImport") + "\n\n" + errorMsgObj.value);
+      var preview = EnigmailKey.getKeyListFromKeyBlock(callbackArg.data, errorMsgObj);
+
+      if (errorMsgObj.value === "") {
+        if (preview.length > 0) {
+          if (preview.length == 1) {
+            exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
+          }
+          else {
+            exitStatus = EnigmailDialog.confirmDlg(window,
+              EnigmailLocale.getString("doImportMultiple", [
+                preview.map(function(a) {
+                  return "\t" + a.name + " (" + a.id + ")";
+                }).
+                join("\n")
+              ]));
+          }
+
+          if (exitStatus) {
+            try {
+              exitStatus = EnigmailKeyRing.importKey(parent, false, callbackArg.data, "", errorMsgObj);
+            }
+            catch (ex) {}
+
+            if (exitStatus === 0) {
+              EnigmailDialog.longAlert(window, EnigmailLocale.getString("successKeyImport") + "\n\n" + errorMsgObj.value);
+            }
+            else {
+              EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
+            }
+          }
+        }
+        else {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound") + "\n" + errorMsgObj.value);
+        }
       }
       else {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("previewFailed") + "\n" + errorMsgObj.value);
       }
 
       return;
