@@ -41,6 +41,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailRules"];
+
 Components.utils.import("resource://enigmail/funcs.jsm");
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/os.jsm");
@@ -49,8 +51,6 @@ Components.utils.import("resource://enigmail/app.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-
-var EXPORTED_SYMBOLS = ["EnigmailRules"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -68,7 +68,7 @@ const rulesListHolder = {
   rulesList: null
 };
 
-const EnigmailRules = {
+var EnigmailRules = {
 
   getRulesFile: function() {
     EnigmailLog.DEBUG("rules.jsm: getRulesFile()\n");
@@ -187,7 +187,7 @@ const EnigmailRules = {
   },
 
   DEBUG_EmailList: function(name, list) {
-    EnigmailLog.DEBUG  ("           " + name + ":\n");
+    EnigmailLog.DEBUG("           " + name + ":\n");
     for (let i = 0; i < list.length; i++) {
       let elem = list[i];
       let str = "            [" + i + "]: ";
@@ -221,7 +221,7 @@ const EnigmailRules = {
    * @return:  false if error occurred or processing was canceled
    */
   mapAddrsToKeys: function(emailAddrsStr, startDialogForMissingKeys, window,
-                           matchedKeysObj, flagsObj) {
+    matchedKeysObj, flagsObj) {
     EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): emailAddrsStr=\"" + emailAddrsStr + "\" startDialogForMissingKeys=" + startDialogForMissingKeys + "\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -234,7 +234,7 @@ const EnigmailRules = {
     // initialize return value and the helper variables for them:
     matchedKeysObj.value = "";
     flagsObj.value = false;
-    let flags = {};  // object to be able to modify flags in subfunction
+    let flags = {}; // object to be able to modify flags in subfunction
     flags.sign = EnigmailConstants.ENIG_UNDEF; // default sign flag is: maybe
     flags.encrypt = EnigmailConstants.ENIG_UNDEF; // default encrypt flag is: maybe
     flags.pgpMime = EnigmailConstants.ENIG_UNDEF; // default pgpMime flag is: maybe
@@ -246,7 +246,7 @@ const EnigmailRules = {
     // - elements will be moved
     //   - to addrKeysList  if a matching rule with keys was found
     //   - to addrNoKeyList if a rule with "do not process further rules" ("." as key) applies
-    let emailAddrList = (","+emailAddrsStr+",").split(/\s*,\s*/);
+    let emailAddrList = ("," + emailAddrsStr + ",").split(/\s*,\s*/);
     // TODO: we split with , and spaces around
     //       BUT what if , is in "..." part of an email?
     //       => use lists!!!
@@ -256,14 +256,17 @@ const EnigmailRules = {
       if (orig) {
         let addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
         if (addr) {
-          let elem = { orig: orig, addr: addr };
+          let elem = {
+            orig: orig,
+            addr: addr
+          };
           openList.push(elem);
         }
       }
     }
     //this.DEBUG_EmailList("openList", openList);
-    let addrKeysList = [];   // NEW: list of found email addresses and their associated keys
-    let addrNoKeyList = [];  // NEW: list of email addresses that have no key according to rules
+    let addrKeysList = []; // NEW: list of found email addresses and their associated keys
+    let addrNoKeyList = []; // NEW: list of email addresses that have no key according to rules
 
     // process recipient rules
     let rulesListObj = {};
@@ -292,11 +295,11 @@ const EnigmailRules = {
             }
             if (!rule.negate) {
               rule.keyId = node.getAttribute("keyId");
-              rule.sign    = node.getAttribute("sign");
+              rule.sign = node.getAttribute("sign");
               rule.encrypt = node.getAttribute("encrypt");
               rule.pgpMime = node.getAttribute("pgpMime");
               this.mapRuleToKeys(rule,
-                                 openList, flags, addrKeysList, addrNoKeyList);
+                openList, flags, addrKeysList, addrNoKeyList);
             }
             // no negate rule handling (turned off in dialog)
           }
@@ -328,14 +331,14 @@ const EnigmailRules = {
           inputObj.options = "";
           inputObj.command = "add";
           window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "",
-                            "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+            "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled === true) {
             return false;
           }
 
           if (!resultObj.negate) {
             this.mapRuleToKeys(resultObj,
-                               openList, flags, addrKeysList, addrNoKeyList);
+              openList, flags, addrKeysList, addrNoKeyList);
           }
           // no negate rule handling (turned off in dialog)
         }
@@ -391,24 +394,24 @@ const EnigmailRules = {
   },
 
   mapRuleToKeys: function(rule,
-                          openList, flags, addrKeysList, addrNoKeyList) {
+    openList, flags, addrKeysList, addrNoKeyList) {
     //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let ruleIndex = 0; ruleIndex < ruleList.length; ++ruleIndex) {
-      let ruleEmailElem = ruleList[ruleIndex];  // ruleEmailElem has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
+      let ruleEmailElem = ruleList[ruleIndex]; // ruleEmailElem has format such as '{name@qqq.de}' or '@qqq' or '{name' or '@qqq.de}'
       //EnigmailLog.DEBUG("   process ruleElem: '" + ruleEmailElem + "'\n");
       for (let openIndex = 0; openIndex < openList.length; ++openIndex) {
         let addr = openList[openIndex].addr;
         // search with { and } around because these are used a begin and end markers in the rules:
-        let idx = ('{'+addr+'}').indexOf(ruleEmailElem);
+        let idx = ('{' + addr + '}').indexOf(ruleEmailElem);
         if (idx >= 0) {
           if (ruleEmailElem == rule.email) {
             EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
-                              "') found matching rule element '" + ruleEmailElem + "'\n");
+              "') found matching rule element '" + ruleEmailElem + "'\n");
           }
           else {
             EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
-                              "') found matching rule element '" + ruleEmailElem + "' from '" + rule.email + "'\n");
+              "') found matching rule element '" + ruleEmailElem + "' from '" + rule.email + "'\n");
           }
 
           // process rule:
@@ -424,14 +427,14 @@ const EnigmailRules = {
           //          => then we only process the flags
 
           // process sign/encrypt/ppgMime settings
-          flags.sign    = this.combineFlagValues(flags.sign,    Number(rule.sign));
+          flags.sign = this.combineFlagValues(flags.sign, Number(rule.sign));
           flags.encrypt = this.combineFlagValues(flags.encrypt, Number(rule.encrypt));
           flags.pgpMime = this.combineFlagValues(flags.pgpMime, Number(rule.pgpMime));
 
           if (rule.keyId) {
             // move found address from openAdresses to corresponding list (with keys added)
             let elem = openList.splice(openIndex, 1)[0];
-            --openIndex;   // IMPORTANT because we remove element in the array we iterate on
+            --openIndex; // IMPORTANT because we remove element in the array we iterate on
             if (rule.keyId != ".") {
               // keys exist: assign keys as comma-separated string
               let ids = rule.keyId.replace(/[ ,;]+/g, ", ");
