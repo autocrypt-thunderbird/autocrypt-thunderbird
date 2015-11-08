@@ -306,31 +306,8 @@ function backupPrefs() {
 
   var maybe_file = EnigFilePicker(EnigGetString("pickBackupFile"), "", true, "json", "enigmail.json", null);
   if (maybe_file !== null) {
-    // user preference
-    var prefObj = EnigmailPrefs.getAllPrefs();
-
-    // per-recipient rules (aka pgpRules.xml)
-    var rulesFile = EnigmailRules.getRulesFile();
-    if (rulesFile.exists()) {
-      prefObj.rules = EnigmailFiles.readFile(rulesFile);
-    }
-    else {
-      prefObj.rules = "";
-    }
-
-    // serialize everything to UTF-8 encoded JSON.
-    var strm = Components.classes["@mozilla.org/network/file-output-stream;1"]
-      .createInstance(Components.interfaces.nsIFileOutputStream);
-    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
-      .createInstance(Components.interfaces.nsIJSON);
-
-    try {
-      strm.init(maybe_file, -1, -1, 0);
-      nativeJSON.encodeToStream(strm, "UTF-8", false, prefObj);
-      strm.close();
-
-    }
-    catch (ex) {
+    let r = EnigmailPrefs.backupPrefs(maybe_file);
+    if (r !== 0) {
       EnigError(EnigGetString("cantWriteBackupFile"));
     }
   }
