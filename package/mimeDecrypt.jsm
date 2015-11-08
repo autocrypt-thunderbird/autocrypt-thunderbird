@@ -6,6 +6,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
+
 /**
  *  Module for handling PGP/MIME encrypted messages
  *  implemented as an XPCOM object
@@ -20,9 +22,6 @@ Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-
-var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
-
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

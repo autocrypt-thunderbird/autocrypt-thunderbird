@@ -40,6 +40,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
+
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -51,8 +53,6 @@ Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailE
 Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-
-var EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

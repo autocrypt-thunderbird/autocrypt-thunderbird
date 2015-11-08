@@ -39,11 +39,11 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailLog"];
+
 Components.utils.import("resource://enigmail/pipeConsole.jsm");
 Components.utils.import("resource://enigmail/files.jsm");
 Components.utils.import("resource://enigmail/os.jsm");
-
-var EXPORTED_SYMBOLS = ["EnigmailLog"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

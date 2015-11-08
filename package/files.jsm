@@ -239,6 +239,11 @@ const EnigmailFiles = {
     return fileNameStr;
   },
 
+  /**
+   * get the temporary folder
+   *
+   * @return nsIFile object holding a reference to the temp directory
+   */
   getTempDirObj: function() {
     const TEMPDIR_PROP = "TmpD";
 
@@ -260,16 +265,33 @@ const EnigmailFiles = {
     }
   },
 
+  /**
+   * get the temporary folder as string
+   *
+   * @return String containing the temp directory name
+   */
   getTempDir: function() {
     return EnigmailFiles.getTempDirObj().path;
   },
 
-  createTempDir: function(name) {
-    var localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+  /**
+   * create a new folder as subfolder of the temporary directory
+   *
+   * @param dirName  String  - name of subfolder
+   * @param unique   Boolean - if true, the directory is guaranteed to be unique
+   *
+   * @return nsIFile object holding a reference to the created directory
+   */
+  createTempSubDir: function(dirName, unique = false) {
+    let localFile = EnigmailFiles.getTempDirObj().clone();
 
-    localFile.initWithPath(EnigmailFiles.getTempDir());
-    localFile.append(name);
-    localFile.create(Ci.nsIFile.DIRECTORY_TYPE, 509 /* = 0775 */ );
+    localFile.append(dirName);
+    if (unique) {
+      localFile.createUnique(Ci.nsIFile.DIRECTORY_TYPE, 509 /* = 0775 */ );
+    }
+    else {
+      localFile.create(Ci.nsIFile.DIRECTORY_TYPE, 509 /* = 0775 */ );
+    }
 
     return localFile;
   },
@@ -307,5 +329,33 @@ const EnigmailFiles = {
   getFilePathReadonly: function(nsFileObj, creationMode) {
     if (creationMode === null) creationMode = NS_RDONLY;
     return nsFileObj.path;
+  },
+
+  /**
+   * Create an empty ZIP file
+   *
+   * @param nsFileObj - nsIFile object: reference to the file to be created
+   *
+   * @return nsIZipWriter object allow to perform write operations on the ZIP file
+   */
+  createZipFile: function(nsFileObj) {
+    let zipW = Cc['@mozilla.org/zipwriter;1'].createInstance(Ci.nsIZipWriter);
+    zipW.open(nsFileObj, NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE);
+
+    return zipW;
+  },
+
+  /**
+   * Open a ZIP file for reading
+   *
+   * @param nsFileObj - nsIFile object: reference to the file to be created
+   *
+   * @return nsIZipReader object allow to perform read operations on the ZIP file
+   */
+  openZipFile: function(nsFileObj) {
+    let zipR = Cc['@mozilla.org/zip-reader;1'].createInstance(Ci.nsIZipReader);
+    zipR.open(nsFileObj, NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE);
+
+    return zipR;
   }
 };

@@ -193,7 +193,7 @@ var EnigmailKey = {
 
     const pgpBlock = keyBlockStr.substr(beginIndexObj.value,
       endIndexObj.value - beginIndexObj.value + 1);
-    const tempDir = EnigmailFiles.createTempDir("enigmail_import");
+    const tempDir = EnigmailFiles.createTempSubDir("enigmail_import");
     const tempPath = EnigmailFiles.getFilePath(tempDir);
     const args = EnigmailGpg.getStandardArgs(true).concat([
       "--import",

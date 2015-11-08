@@ -6,11 +6,12 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailVerify"];
+
 /**
  *  Module for handling PGP/MIME signed messages
  *  implemented as JS module
  */
-
 
 // TODO: Missing features
 //   - don't attempt to validate forwarded messages unless message is being viewed
@@ -24,8 +25,6 @@ Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: 
 Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
-
-var EXPORTED_SYMBOLS = ["EnigmailVerify"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

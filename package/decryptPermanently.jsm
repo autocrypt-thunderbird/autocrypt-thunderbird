@@ -40,6 +40,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
+
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
@@ -66,8 +68,6 @@ Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: fa
 Cu.import("resource://enigmail/glodaMime.jsm");
 
 var EC = EnigmailCore;
-
-var EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

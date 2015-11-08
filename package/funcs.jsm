@@ -38,6 +38,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
+
 /*
  * Common Enigmail crypto-related GUI functionality
  *
@@ -50,8 +52,6 @@ const Cu = Components.utils;
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-
-var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 var gTxtConverter = null;
 

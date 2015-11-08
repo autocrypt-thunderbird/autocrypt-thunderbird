@@ -41,6 +41,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
+
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
@@ -48,8 +50,6 @@ Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/data.jsm");
 Cu.import("resource://enigmail/core.jsm");
-
-var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 
 const nsIEnigmail = Ci.nsIEnigmail;
 

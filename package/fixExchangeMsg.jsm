@@ -39,6 +39,8 @@
 
 "use strict";
 
+var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
+
 const Cu = Components.utils;
 
 Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -49,8 +51,6 @@ Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
 const EC = EnigmailCore;
-
-var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

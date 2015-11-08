@@ -115,6 +115,7 @@ let gSubkeyIndex = [];
     - algorithm       - public key algorithm type
     - keySize         - size of public key
     - type            - "pub" or "grp"
+    - hasSubUserIds()
     - userIds  - [Array]: - Contains ALL UIDs (including the primary UID)
                       * userId     - User ID
                       * keyTrust   - trust level of user ID
@@ -456,9 +457,12 @@ var EnigmailKeyRing = {
    */
   extractKey: function(includeSecretKey, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["-a", "--export"]).
-    concat(userId.split(/[ ,\t]+/));
+    let args = EnigmailGpg.getStandardArgs(true).
+    concat(["-a", "--export"]);
+
+    if (userId) {
+      args = args.concat(userId.split(/[ ,\t]+/));
+    }
 
     const cmdErrorMsgObj = {};
     let keyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
@@ -479,10 +483,12 @@ var EnigmailKeyRing = {
     }
 
     if (includeSecretKey) {
-      const secretArgs = EnigmailGpg.getStandardArgs(true).
-      concat(["-a", "--export-secret-keys"]).
-      concat(userId.split(/[ ,\t]+/));
+      let secretArgs = EnigmailGpg.getStandardArgs(true).
+      concat(["-a", "--export-secret-keys"]);
 
+      if (userId) {
+        secretArgs = secretArgs.concat(userId.split(/[ ,\t]+/));
+      }
       const secKeyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, secretArgs, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
 
       if ((exitCodeObj.value === 0) && !secKeyBlock) {
@@ -514,6 +520,30 @@ var EnigmailKeyRing = {
       return "";
     }
     return keyBlock;
+  },
+
+  /**
+   * Export the ownertrust database from GnuPG
+   * @param outputFile        String or nsIFile - output file name or Object - or NULL
+   * @param exitCodeObj       Object   - o.value will contain exit code
+   * @param errorMsgObj       Object   - o.value will contain error message from GnuPG
+   *
+   * @return String - if outputFile is NULL, the key block data; "" if a file is written
+   */
+  extractOwnerTrust: function(outputFile, exitCodeObj, errorMsgObj) {
+    let args = EnigmailGpg.getStandardArgs(true).concat(["--export-ownertrust"]);
+
+    let trustData = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, errorMsgObj);
+
+    if (outputFile) {
+      if (!EnigmailFiles.writeFileContents(outputFile, trustData, DEFAULT_FILE_PERMS)) {
+        exitCodeObj.value = -1;
+        errorMsgObj.value = EnigmailLocale.getString("fileWriteFailed", [outputFile]);
+      }
+      return "";
+    }
+
+    return trustData;
   },
 
   /**
