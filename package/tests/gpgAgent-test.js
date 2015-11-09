@@ -305,6 +305,7 @@ test(withEnigmail(function detectGpgAgentSetsAgentInfoFromEnvironmentVariable(en
   });
 }));
 
+
 test(withEnigmail(function detectGpgAgentWithNoAgentInfoInEnvironment(enigmail) {
   withEnvironment({}, function(e) {
     enigmail.environment = e;
@@ -324,3 +325,12 @@ test(withEnigmail(function detectGpgAgentWithAutostartFeatureWillDoNothing(enigm
     });
   });
 }));
+
+//getGpgHomeDir
+test(withTestGpgHome(withEnigmail(function shouldGetGpgHomeDir() {
+  let homedirExpected = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
+
+  Assert.ok(EnigmailGpgAgent.gpgAgentInfo.preStarted);
+  let homeDir = EnigmailGpgAgent.getGpgHomeDir();
+  Assert.equal(homedirExpected, homeDir);
+})));

@@ -337,6 +337,53 @@ const EnigmailGpgAgent = {
     }
   },
 
+  /**
+   * Determine the "gpg home dir", i.e. the directory where gpg.conf and the keyring are
+   * stored
+   *
+   * @return String - directory name, or NULL (in case the command did not succeed)
+   */
+  getGpgHomeDir: function() {
+    if (EnigmailGpgAgent.gpgconfPath === null) return null;
+
+    const command = EnigmailGpgAgent.gpgconfPath;
+    let args = ["--list-dirs"];
+
+    let exitCode = -1;
+    let outStr = "";
+    EnigmailLog.DEBUG("enigmail.js: Enigmail.setAgentPath: calling subprocess with '" + command.path + "'\n");
+
+    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+
+    const proc = {
+      command: command,
+      arguments: args,
+      environment: EnigmailCore.getEnvList(),
+      charset: null,
+      done: function(result) {
+        exitCode = result.exitCode;
+        outStr = result.stdout;
+      },
+      mergeStderr: false
+    };
+
+    try {
+      subprocess.call(proc).wait();
+    }
+    catch (ex) {
+      EnigmailLog.ERROR("enigmail.js: Enigmail.getGpgHomeDir: subprocess.call failed with '" + ex.toString() + "'\n");
+      EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
+      throw ex;
+    }
+
+    let m = outStr.match(/^(homedir:)(.*)$/mi);
+    if (m && m.length > 2) {
+      return m[2];
+    }
+
+    return null;
+  },
+
   setAgentPath: function(domWindow, esvc) {
     let agentPath = "";
     try {
