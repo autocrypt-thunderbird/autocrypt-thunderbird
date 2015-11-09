@@ -35,7 +35,7 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
-Components.utils.import("resource://enigmail/rules.jsm");
+Components.utils.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBackup: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
@@ -306,7 +306,7 @@ function backupPrefs() {
 
   var maybe_file = EnigFilePicker(EnigGetString("pickBackupFile"), "", true, "json", "enigmail.json", null);
   if (maybe_file !== null) {
-    let r = EnigmailPrefs.backupPrefs(maybe_file);
+    let r = EnigmailConfigBackup.backupPrefs(maybe_file);
     if (r !== 0) {
       EnigError(EnigGetString("cantWriteBackupFile"));
     }
@@ -319,32 +319,7 @@ function restorePrefs() {
 
   var maybe_file = EnigFilePicker(EnigGetString("loadBackupFile"), "", false, "json", "enigmail.json", null);
   if (maybe_file !== null) {
-    // Profile must be a single UTF-8 encoded JSON object.
-    var strm = Components.classes["@mozilla.org/network/file-input-stream;1"]
-      .createInstance(Components.interfaces.nsIFileInputStream);
-    var nativeJSON = Components.classes["@mozilla.org/dom/json;1"]
-      .createInstance(Components.interfaces.nsIJSON);
-
-    try {
-      strm.init(maybe_file, -1, -1, 0);
-      var prefObj = nativeJSON.decodeFromStream(strm, "UTF-8", false);
-      strm.close();
-
-      var nsIPB = Components.interfaces.nsIPrefBranch;
-      var branch = EnigmailPrefs.getPrefBranch();
-
-      // Set all options recorded in the JSON file.
-      for (var name in prefObj) {
-        if (name == "rules") {
-          EnigmailRules.loadRulesFromString(prefObj[name]);
-          EnigmailRules.saveRulesFile();
-        }
-        else {
-          EnigSetPref(name, prefObj[name]);
-        }
-      }
-    }
-    catch (ex) {
+    if (EnigmailConfigBackup.restorePrefs(maybe_file) !== 0) {
       EnigError(EnigGetString("cantReadBackupFile"));
     }
   }

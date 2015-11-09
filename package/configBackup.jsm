@@ -29,15 +29,14 @@ var EnigmailConfigBackup = {
     EnigmailLog.DEBUG("prefs.jsm: backupPrefs\n");
 
     // user preference
-    var prefObj = EnigmailPrefs.getAllPrefs();
+    let prefObj = {
+      enigmailPrefs: EnigmailPrefs.getAllPrefs()
+    };
 
     // per-recipient rules (aka pgpRules.xml)
     var rulesFile = EnigmailRules.getRulesFile();
     if (rulesFile.exists()) {
       prefObj.rules = EnigmailFiles.readFile(rulesFile);
-    }
-    else {
-      prefObj.rules = "";
     }
 
     // serialize everything to UTF-8 encoded JSON.
@@ -79,17 +78,19 @@ var EnigmailConfigBackup = {
       var branch = EnigmailPrefs.getPrefBranch();
 
       // Set all options recorded in the JSON file.
-      for (let name in prefObj) {
-        if (name === "rules") {
-          EnigmailRules.loadRulesFromString(prefObj[name]);
-          EnigmailRules.saveRulesFile();
-        }
-        else {
-          EnigmailPrefs.setPref(name, prefObj[name]);
-        }
+      for (let name in prefObj.enigmailPrefs) {
+        EnigmailPrefs.setPref(name, prefObj.enigmailPrefs[name]);
       }
+
+      if ("rules" in prefObj) {
+        EnigmailRules.loadRulesFromString(prefObj.rules);
+        EnigmailRules.saveRulesFile();
+      }
+
     }
     catch (ex) {
+      EnigmailLog.ERROR("prefs.jsm: restorePrefs - exception " + ex.toString() + "\n");
+
       return -1;
     }
 
