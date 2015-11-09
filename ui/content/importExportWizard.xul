@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<wizard id="enigmailImportExportWizard"
+        title="&enigmail.setupWiz.title;"
+        onwizardcancel="return onCancel();"
+        onload="onLoad();"
+        minheight="500px"
+        minwidth="700px"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/importExportWizard.js"/>
+
+  <!-- Introduction Page -->
+  <wizardpage id="pgIntro" pageid="pgIntro"
+              next="pgExport"
+              label="&enigmail.setupWiz.pgIntro.title;">
+    <description>
+      This wizard allows to transfer the Enigmail settings including all of your keys to
+      a new computer. This is done in two steps:
+      <html:ol><html:li>export your data from your old computer</html:li>
+      <html:li>import the data to your new computer.</html:li>
+    </html:ol>
+    </description>
+
+    <separator/>
+
+    <label value="Please select:"/>
+
+    <radiogroup id="selectOperationLbl" value="1">
+      <radio id="selectOperation"
+             label="This is my old computer"
+             oncommand="setExport()"
+             selected="true"
+             value="0"/>
+       <radio id="startNow_no"
+             label="This is my new computer"
+             oncommand="setImport()"
+             value="1"/>
+    </radiogroup>
+  </wizardpage>
+
+  <wizardpage id="pgExport" pageid="pgExport"
+              next="pgExportDone"
+              onpageadvanced="return doExport()"
+              label="Save all of your Enigmail Settings">
+      <label value="export"/>
+
+      <label class="label" value="Specify file to save" id="exportFileLbl"/>
+
+      <hbox align="center">
+        <textbox id="exportFile" size="30" aria-labelledby="exportFileLbl" readonly="true"/>
+        <button id="browseExportFile"
+                label="&enigmail.browse.label;"
+          oncommand="browseExportFile('exportFile', gWorkFile);"/>
+      </hbox>
+
+      <hbox id="progressBox" hidden="true">
+        <description>
+          Saving in progress. You might be asked for the passphrase(s) of your key(s).
+        </description>
+        <progressmeter id="installProgress" mode="undetermined"/>
+      </hbox>
+  </wizardpage>
+
+  <wizardpage id="pgExportDone" pageid="pgExportDone"
+              next=""
+              label="&enigmail.setupWiz.pgIntro.title;">
+      <label value="export completed"/>
+  </wizardpage>
+
+  <wizardpage id="pgImport" pageid="pgImport"
+              next="pgImportDone"
+              label="&enigmail.setupWiz.pgIntro.title;">
+      <label value="Import"/>
+  </wizardpage>
+
+  <wizardpage id="pgImportDone" pageid="pgImportDone"
+              next=""
+              label="&enigmail.setupWiz.pgIntro.title;">
+      <label value="import completed"/>
+  </wizardpage>
+
+</wizard>
