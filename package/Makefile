@@ -24,6 +24,7 @@ MODFILES = \
            attachment.jsm \
            card.jsm \
            commandLine.jsm \
+           configBackup.jsm \
            configure.jsm \
            constants.jsm \
            data.jsm \
