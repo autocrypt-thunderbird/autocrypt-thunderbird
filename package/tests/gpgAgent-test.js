@@ -9,7 +9,9 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+/*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false,
+  withTestGpgHome: false, osUtils: false, EnigmailFiles */
 
 testing("gpgAgent.jsm"); /*global EnigmailGpgAgent: false, EnigmailOS: false */
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
