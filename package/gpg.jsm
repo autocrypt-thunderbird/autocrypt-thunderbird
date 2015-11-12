@@ -141,7 +141,7 @@ const EnigmailGpg = {
    */
   getStandardArgs: function(withBatchOpts) {
     // return the arguments to pass to every GnuPG subprocess
-    let r = ["--charset", "utf-8", "--display-charset", "utf-8"]; // mandatory parameter to add in all cases
+    let r = ["--charset", "utf-8", "--display-charset", "utf-8", "--use-agent"]; // mandatory parameter to add in all cases
 
     try {
       let p = EnigmailPrefs.getPref("agentAdditionalParam").replace(/\\\\/g, "\\");
