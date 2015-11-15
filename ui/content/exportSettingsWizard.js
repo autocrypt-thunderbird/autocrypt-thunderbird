@@ -41,8 +41,8 @@ function onCancel() {
 }
 
 function browseExportFile(referencedId) {
-  var filePath = EnigmailDialog.filePicker(window, "Set export file name",
-    "", true, "*.zip", "Enigmail-export.zip", ["Enigmail Settings", "*.zip"]);
+  var filePath = EnigmailDialog.filePicker(window, EnigmailLocale.getString("specifyExportFile"),
+    "", true, "*.zip", EnigmailLocale.getString("defaultBackupFileName") + ".zip", [EnigmailLocale.getString("enigmailSettings"), "*.zip"]);
 
   if (filePath) {
 
@@ -105,7 +105,9 @@ function doExport(tmpDir) {
     gpgConfgFile.append("gpg.conf");
   }
 
-  zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
+  if (gpgConfgFile.exists()) {
+    zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
+  }
   zipW.close();
 
   tmpDir.remove(true);

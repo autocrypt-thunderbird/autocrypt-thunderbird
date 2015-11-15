@@ -353,8 +353,8 @@ const EnigmailFiles = {
    * @return nsIZipReader object allow to perform read operations on the ZIP file
    */
   openZipFile: function(nsFileObj) {
-    let zipR = Cc['@mozilla.org/zip-reader;1'].createInstance(Ci.nsIZipReader);
-    zipR.open(nsFileObj, NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE);
+    let zipR = Cc['@mozilla.org/libjar/zip-reader;1'].createInstance(Ci.nsIZipReader);
+    zipR.open(nsFileObj);
 
     return zipR;
   }
