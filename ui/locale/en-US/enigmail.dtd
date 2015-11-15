@@ -790,3 +790,20 @@
 <!ENTITY enigmail.savelogfile.label                   "Save Log to File ...">
 
 <!ENTITY enigmail.filterEditor.moveError.label       "Actions that follow the 'Decrypt Permanently' action are not supported.">
+
+<!-- Export wizard -->
+<!ENTITY enigmail.exportWiz.title                    "Export your Enigmail Settings">
+<!ENTITY enigmail.exportWiz.pgIntro.title            "Welcome to the Export Settings Wizard">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1            "This wizard allows to transfer the Enigmail settings including all of your OpenPGP
+                                                      keys to a new computer. This is done in two steps:
+                                                      <html:ol>
+                                                        <html:li>export your data from your old computer using this wizard</html:li>
+                                                        <html:li>import the data to your new computer using the Setup Wizard.</html:li>
+                                                      </html:ol>">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "Please specify the export file:">
+<!ENTITY enigmail.exportWiz.pgExport.title           "Exporting Enigmail Settings">
+<!ENTITY enigmail.exportWiz.pgExport.exporting       "Saving in progress. You might be asked for the passphrase(s) of your key(s).">
+<!ENTITY enigmail.exportWiz.pgExport.done            "Your OpenPGP keys and your Enigmail settings are now saved.
+                                                      Please transfer the generated file to your new computer, launch
+                                                      Thunderbird and start the Setup Wizard from the Enigmail menu.">
+<!ENTITY enigmail.exportWiz.pgExport.failed          "An error occurred during the export. The settings could not be exported.">

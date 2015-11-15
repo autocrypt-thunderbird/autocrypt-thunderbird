@@ -17,6 +17,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
 Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 var osUtils = {};
 Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
@@ -26,52 +27,42 @@ var gWorkFile = {
 };
 
 function getWizard() {
-  return document.getElementById("enigmailImportExportWizard");
+  return document.getElementById("overallWizard");
 }
 
-function setNextPage(pageId) {
+function enableNext(status) {
   let wizard = getWizard();
-  wizard.currentPage.next = pageId;
+  wizard.canAdvance = status;
 }
 
-function setExport() {
-  setNextPage("pgExport");
-}
-
-function setImport() {
-  setNextPage("pgImport");
-}
 
 function onCancel() {
   return true;
 }
 
-
-
-function browseExportFile(referencedId, referencedVar) {
+function browseExportFile(referencedId) {
   var filePath = EnigmailDialog.filePicker(window, "Set export file name",
-    "", true, "*.enig", "", ["Enigmail Settings", "*.enig"]);
+    "", true, "*.zip", "Enigmail-export.zip", ["Enigmail Settings", "*.zip"]);
 
   if (filePath) {
-    document.getElementById(referencedId).value = filePath.path;
-    referencedVar.file = filePath;
+
+    if (filePath.exists()) filePath.normalize();
+
+    if ((filePath.exists() && !filePath.isDirectory() && filePath.isWritable()) ||
+      (!filePath.exists() && filePath.parent.isWritable())) {
+      document.getElementById(referencedId).value = filePath.path;
+      gWorkFile.file = filePath;
+    }
+    else {
+      EnigmailDialog.alert(window, EnigmailLocale.getString("cannotWriteToFile", filePath.path));
+    }
   }
+
+  enableNext(gWorkFile.file !== null);
 }
 
-function doExport() {
-  EnigmailLog.DEBUG("importExportWizard: doExport\n");
-  let svc = EnigmailCore.getService();
+function doExport(tmpDir) {
 
-  if (!svc) return false;
-
-  if (!gWorkFile.file) return;
-
-  //let wizard = getWizard();
-  //wizard.canAdvance = false;
-  document.getElementById("progressBox").removeAttribute("hidden");
-
-
-  let tmpDir = EnigmailFiles.createTempSubDir("enig-exp", true);
   let exitCodeObj = {},
     errorMsgObj = {};
 
@@ -82,7 +73,7 @@ function doExport() {
 
   EnigmailKeyRing.extractKey(true, null, keyRingFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
-    EnigmailDialog.alert(window, "Error while exporting");
+    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
 
@@ -90,21 +81,21 @@ function doExport() {
   otFile.append("ownertrust.txt");
   EnigmailKeyRing.extractOwnerTrust(otFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
-    EnigmailDialog.alert(window, "Error while exporting");
+    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
 
   let prefsFile = tmpDir.clone();
   prefsFile.append("prefs.json");
   if (EnigmailConfigBackup.backupPrefs(prefsFile) !== 0) {
-    EnigmailDialog.alert(window, "Error while exporting");
+    EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
 
   let homeDir = EnigmailGpgAgent.getGpgHomeDir();
   let gpgConfgFile = null;
-
   let zipW = EnigmailFiles.createZipFile(gWorkFile.file);
+
   zipW.addEntryFile("keyring.asc", Ci.nsIZipWriter.COMPRESSION_DEFAULT, keyRingFile, false);
   zipW.addEntryFile("ownertrust.txt", Ci.nsIZipWriter.COMPRESSION_DEFAULT, otFile, false);
   zipW.addEntryFile("prefs.json", Ci.nsIZipWriter.COMPRESSION_DEFAULT, prefsFile, false);
@@ -118,10 +109,60 @@ function doExport() {
   zipW.close();
 
   tmpDir.remove(true);
+  document.getElementById("doneMessage").removeAttribute("hidden");
 
-  //wizard.canAdvance = true;
   return true;
 }
 
+function exportFailed() {
+  let wizard = getWizard();
+  wizard.getButton("cancel").removeAttribute("disabled");
+  wizard.canRewind = true;
+  document.getElementById("errorMessage").removeAttribute("hidden");
 
-function onLoad() {}
+  return false;
+}
+
+function startExport() {
+  EnigmailLog.DEBUG("importExportWizard: doExport\n");
+  document.getElementById("errorMessage").setAttribute("hidden", "true");
+
+  let wizard = getWizard();
+  wizard.canAdvance = false;
+  wizard.canRewind = false;
+  wizard.getButton("finish").setAttribute("disabled", "true");
+
+  let svc = EnigmailCore.getService();
+  if (!svc) return exportFailed();
+
+  if (!gWorkFile.file) return exportFailed();
+
+  let tmpDir = EnigmailFiles.createTempSubDir("enig-exp", true);
+
+  wizard.getButton("cancel").setAttribute("disabled", "true");
+  document.getElementById("spinningWheel").removeAttribute("hidden");
+
+  let retVal = false;
+
+  try {
+    retVal = doExport(tmpDir);
+  }
+  catch (ex) {}
+
+  // stop spinning the wheel
+  document.getElementById("spinningWheel").setAttribute("hidden", "true");
+
+  if (retVal) {
+    wizard.getButton("finish").removeAttribute("disabled");
+    wizard.canAdvance = true;
+  }
+  else {
+    exportFailed();
+  }
+
+  return retVal;
+}
+
+function onLoad() {
+  enableNext(false);
+}

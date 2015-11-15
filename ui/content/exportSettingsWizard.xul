@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<wizard id="overallWizard"
+        title="&enigmail.exportWiz.title;"
+        onwizardcancel="return onCancel();"
+        onload="return onLoad();"
+        minheight="300px"
+        minwidth="400px"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/exportSettingsWizard.js"/>
+
+  <!-- Introduction Page -->
+  <wizardpage id="pgIntro" pageid="pgIntro"
+              next="pgExport"
+              label="&enigmail.exportWiz.pgIntro.title;">
+    <description>
+      &enigmail.exportWiz.pgIntro.desc1;
+    </description>
+
+    <separator/>
+
+    <label class="label" value="&enigmail.exportWiz.pgIntro.specifyFile;" id="exportFileLbl"/>
+
+    <hbox align="center">
+      <textbox id="exportFile" size="30" aria-labelledby="exportFileLbl" readonly="true"/>
+      <button id="browseExportFile"
+              label="&enigmail.browse.label;"
+        oncommand="browseExportFile('exportFile');"/>
+    </hbox>
+  </wizardpage>
+
+  <wizardpage id="pgExport" pageid="pgExport"
+              next=""
+              onpageshow="return startExport();"
+              label="&enigmail.exportWiz.pgExport.title;">
+    <vbox>
+      <description>
+        &enigmail.exportWiz.pgExport.exporting;
+      </description>
+
+      <separator/>
+
+      <hbox flex="0" id="spinningWheel" hidden="true">
+        <spacer flex="1"/>
+        <image class="enigmailWheel enigmailSpinning"/>
+        <spacer flex="1"/>
+      </hbox>
+
+      <description id="doneMessage" hidden="true">
+        &enigmail.exportWiz.pgExport.done;
+      </description>
+
+      <description id="errorMessage" hidden="true">
+        &enigmail.exportWiz.pgExport.failed;
+      </description>
+    </vbox>
+  </wizardpage>
+
+</wizard>
