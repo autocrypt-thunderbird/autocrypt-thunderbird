@@ -332,7 +332,6 @@ test(withEnigmail(function detectGpgAgentWithAutostartFeatureWillDoNothing(enigm
 test(withTestGpgHome(withEnigmail(function shouldGetGpgHomeDir() {
   let homedirExpected = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
 
-  Assert.ok(EnigmailGpgAgent.gpgAgentInfo.preStarted);
   let homeDir = EnigmailGpgAgent.getGpgHomeDir();
   Assert.equal(homedirExpected, homeDir);
 })));
