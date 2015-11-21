@@ -248,11 +248,15 @@ MimeVerify.prototype = {
     }
 
     if (this.writeMode == 2) {
-      if (this.keepData.indexOf("--" + this.boundary + "--") >= 0) {
+      let i = this.keepData.indexOf("--" + this.boundary + "--");
+      if (i >= 0) {
         // ensure that we keep everything until we got the "end" boundary
+        if (this.keepData[i - 2] == '\r' && this.keepData[i - 1] == '\n') {
+          --i;
+        }
+        this.keepData = this.keepData.substr(0, i - 1);
         this.writeMode = 3;
       }
-
     }
 
     if (this.writeMode == 3) {
