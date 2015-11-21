@@ -684,6 +684,7 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I prefer a standard configuration (recommended for beginners)">
 <!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I prefer an extended configuration (recommended for advanced users)">
 <!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "I prefer a manual configuration (recommended for experts)">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "I want to import my settings from a a previous installation">
 
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
@@ -761,6 +762,10 @@
                                                       For this purpose, you need a revocation certificate.
                                                       <html:br/>You will be prompted to enter your password for this.">
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Create Revocation Certificate">
+
+<!-- wizard: import settings from previous installation -->
+<!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">

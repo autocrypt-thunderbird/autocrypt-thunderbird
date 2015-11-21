@@ -217,7 +217,7 @@ var EnigmailPrefs = {
        * agentPath is system-depend, configuredVersion build-depend and
        * advancedUser must be set in order to save the profile.
        */
-      if (name == "agentPath" || name == "configuredVersion" || name == "advancedUser") {
+      if (name == "agentPath" || name == "configuredVersion") {
         continue;
       }
 

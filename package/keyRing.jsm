@@ -317,7 +317,7 @@ var EnigmailKeyRing = {
     var exitCodeObj = {};
 
     var output = EnigmailExecution.execCmd(command, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-    EnigmailLog.ERROR("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: error=" + errorMsgObj.value + "\n");
+    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: error=" + errorMsgObj.value + "\n");
 
     var statusMsg = statusMsgObj.value;
 
@@ -544,6 +544,26 @@ var EnigmailKeyRing = {
     }
 
     return trustData;
+  },
+
+  /**
+   * Import the ownertrust database into GnuPG
+   * @param inputFile        String or nsIFile - input file name or Object - or NULL
+   * @param errorMsgObj       Object   - o.value will contain error message from GnuPG
+   *
+   * @return exit code
+   */
+  importOwnerTrust: function(inputFile, errorMsgObj) {
+    let args = EnigmailGpg.getStandardArgs(true).concat(["--import-ownertrust"]);
+
+    let exitCodeObj = {};
+    try {
+      let trustData = EnigmailFiles.readFile(inputFile);
+      EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
+    }
+    catch (ex) {}
+
+    return exitCodeObj.value;
   },
 
   /**

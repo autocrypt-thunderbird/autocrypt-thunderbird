@@ -35,6 +35,13 @@
 
 // const Ec is already defined in enigmailKeygen.js
 
+Components.utils.import("resource://enigmail/files.jsm");
+Components.utils.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
 var gLastDirection = 0;
 var gWizardUserMode = "beginner";
 var gEnigAccountMgr;
@@ -42,6 +49,9 @@ var gPubkeyFile = {
   value: null
 };
 var gSeckeyFile = {
+  value: null
+};
+var gImportSettingsFile = {
   value: null
 };
 var gCreateNewKey = false;
@@ -204,6 +214,8 @@ function onAfterPgWelcome() {
         break;
       case "expert":
         return "pgExpert";
+      case "import":
+        return "pgImportSettings";
     }
   }
   else {
@@ -450,6 +462,18 @@ function browseKeyFile(referencedId, referencedVar) {
     referencedVar.value = filePath;
   }
 }
+
+function browseBackupFile(referencedId, referencedVar) {
+  var filePath = EnigFilePicker(EnigGetString("setupWizard.importSettingsFile"),
+    "", false, "*.zip", EnigmailLocale.getString("defaultBackupFileName") + ".zip", [EnigmailLocale.getString("enigmailSettings"), "*.zip"]);
+
+  if (filePath) {
+    document.getElementById(referencedId).value = EnigGetFilePath(filePath);
+    referencedVar.value = filePath;
+    getWizard().canAdvance = true;
+  }
+}
+
 
 function importKeyFiles() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles\n");
@@ -1063,7 +1087,8 @@ function wizardGetSelectedIdentity() {
 
 function applyWizardSettings() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: applyWizardSettings\n");
-  //  debugger;
+
+  if (gWizardUserMode === "import") return;
 
   loadLastPage();
 
@@ -1193,4 +1218,115 @@ function setImportKeys() {
 // Helper function
 function getServersForIdentity(accMgr, identity) {
   return accMgr.getServersForIdentity(identity);
+}
+
+// ensure GpgHomeDir exists.
+
+function ensureGpgHomeDir() {
+  let homeDirPath = EnigmailGpgAgent.getGpgHomeDir();
+  if (!homeDirPath) throw "no gpghome dir";
+
+  let homeDir = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+  homeDir.initWithPath(homeDirPath);
+
+  if (!homeDir.exists()) {
+    homeDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0x1C0);
+    return {
+      homeDir: homeDir,
+      existed: false
+    };
+  }
+  homeDir.normalize();
+  if (!homeDir.isDirectory()) {
+    EnigAlert("not a directory");
+    throw "not a directory";
+  }
+  return {
+    homeDir: homeDir,
+    existed: false
+  };
+}
+// import from backup file
+
+function importSettings() {
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings\n");
+  let importFile = gImportSettingsFile.value;
+  if (!importFile.exists()) return false;
+
+  importFile.normalize();
+  if (!importFile.isFile()) return false;
+
+  let zipR;
+  try {
+    zipR = EnigmailFiles.openZipFile(importFile);
+  }
+  catch (ex) {
+    EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
+    return false;
+  }
+
+  let cfg = ensureGpgHomeDir();
+  try {
+    if (cfg.existed) {
+      if (!EnigConfirm("directory exists already")) {
+        return false;
+      }
+    }
+  }
+  catch (ex) {
+    return false;
+  }
+
+  let tmpDir = EnigmailFiles.createTempSubDir("enig-imp", true);
+
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: tmpDir=" + tmpDir.path + "\n");
+
+  let files = ["keyring.asc", "ownertrust.txt", "prefs.json"];
+
+  // check if mandatory files are included
+  for (let i in files) {
+    if (!zipR.hasEntry(files[i])) {
+      EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
+      return false;
+    }
+  }
+
+  // append optional files
+  files.push("gpg.conf");
+
+  for (let i in files) {
+    if (zipR.hasEntry(files[i])) {
+      EnigmailLog.DEBUG("enigmailSetupWizard.js: extracting " + files[i] + "\n");
+      let outF = tmpDir.clone();
+      outF.append(files[i]);
+      zipR.extract(files[i], outF);
+    }
+  }
+
+
+  let tmpFile = tmpDir.clone();
+  tmpFile.append("keyring.asc");
+  let errorMsgObj = {},
+    importedKeysObj = {};
+  EnigmailKeyRing.importKeyFromFile(tmpFile, errorMsgObj, importedKeysObj);
+  tmpFile = tmpDir.clone();
+  tmpFile.append("ownertrust.txt");
+  EnigmailKeyRing.importOwnerTrust(tmpFile, errorMsgObj);
+
+  tmpFile = tmpDir.clone();
+  tmpFile.append("gpg.conf");
+  if (tmpFile.exists()) {
+    try {
+      tmpFile.moveTo(cfg.homeDir, "gpg.conf");
+    }
+    catch (ex) {}
+  }
+
+  tmpFile = tmpDir.clone();
+  tmpFile.append("prefs.json");
+  EnigmailConfigBackup.restorePrefs(tmpFile);
+
+  tmpDir.remove(true);
+
+  return true;
 }

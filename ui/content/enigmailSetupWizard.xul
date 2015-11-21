@@ -116,6 +116,11 @@
              label="&enigmail.setupWiz.pgWelcome.manualMode;"
              oncommand="onSetSelectMode('expert')"
              value="3"/>
+      <!-- separator/>
+      <radio id="selectMode_import"
+             label="&enigmail.setupWiz.pgWelcome.importSettings;"
+             oncommand="onSetSelectMode('import')"
+             value="4"/ -->
     </radiogroup>
   </wizardpage>
 
@@ -405,6 +410,22 @@
 
   </wizardpage>
 
+
+  <wizardpage id="pgImportSettings" pageid="pgImportSettings"
+              next="pgComplete"
+              onpageshow="disableNext(true);"
+              onpageadvanced="return importSettings();"
+              label="&enigmail.setupWiz.pgImportSettings.title;">
+    <vbox>
+      <label class="label" value="&enigmail.setupWiz.pgImportSettings.fileName;" id="importFileLbl"/>
+      <hbox align="center">
+        <textbox id="importFile" size="30" aria-labelledby="importFileLbl" readonly="true"/>
+        <button id="browseBackupFile"
+                label="&enigmail.browse.label;"
+          oncommand="browseBackupFile('importFile', gImportSettingsFile);"/>
+      </hbox>
+    </vbox>
+  </wizardpage>
 
   <!-- End page Page -->
   <wizardpage id="pgComplete" pageid="pgComplete"
