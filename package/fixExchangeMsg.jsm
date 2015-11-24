@@ -242,7 +242,7 @@ const EnigmailFixExchangeMsg = {
    */
   getCorrectedExchangeBodyData: function(bodyData, boundary) {
     EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: boundary='" + boundary + "'\n");
-    let boundRx = new RegExp("^--" + boundary, "ym");
+    let boundRx = new RegExp("^--" + boundary, "gm");
     let match = boundRx.exec(bodyData);
 
     if (match.index < 0) {
@@ -299,7 +299,7 @@ const EnigmailFixExchangeMsg = {
    */
   getCorrectediPGMailBodyData: function(bodyData, boundary) {
     EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: boundary='" + boundary + "'\n");
-    let boundRx = new RegExp("^--" + boundary, "ym");
+    let boundRx = new RegExp("^--" + boundary, "gm");
     let match = boundRx.exec(bodyData);
 
     if (match.index < 0) {

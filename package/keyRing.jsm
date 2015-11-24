@@ -1203,7 +1203,7 @@ function getKeyListEntryOfKey(keyId) {
 
   // find area of key entries in key list
   // note: if subkey matches, key entry starts before
-  let regexPub = new RegExp("^pub:", "ym");
+  let regexPub = new RegExp("^pub:", "gm");
   let startPos;
 
   if (listText[foundPos] == "p") { // ^pub:

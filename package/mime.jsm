@@ -213,7 +213,7 @@ const EnigmailMime = {
     if (bound === "") return null;
 
     // search for "outer" MIME delimiter(s)
-    let r = new RegExp("^--" + bound, "ym");
+    let r = new RegExp("^--" + bound, "mg");
 
     let startPos = -1;
     let endPos = -1;
@@ -230,7 +230,7 @@ const EnigmailMime = {
       endPos = match.index;
     }
 
-    if (startPos < 0 || endPos < 0) return;
+    if (startPos < 0 || endPos < 0) return null;
 
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     headers.initialize(contentData.substring(0, startPos));
