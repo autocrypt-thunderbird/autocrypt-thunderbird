@@ -600,7 +600,7 @@ var EnigmailKeyRing = {
       endIndexObj.value - beginIndexObj.value + 1);
 
     if (isInteractive) {
-      if (!EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import"))) {
+      if (!(EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import")))) {
         errorMsgObj.value = EnigmailLocale.getString("failCancel");
         return -1;
       }
