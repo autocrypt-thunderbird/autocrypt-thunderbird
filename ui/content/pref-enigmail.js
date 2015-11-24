@@ -302,28 +302,11 @@ function resetPrefs() {
 
 // Serializes various Enigmail settings into a separate file.
 function backupPrefs() {
-  EnigmailLog.DEBUG("pref-enigmail.js: backupPrefs\n");
 
-  var maybe_file = EnigFilePicker(EnigGetString("pickBackupFile"), "", true, "json", "enigmail.json", null);
-  if (maybe_file !== null) {
-    let r = EnigmailConfigBackup.backupPrefs(maybe_file);
-    if (r !== 0) {
-      EnigError(EnigGetString("cantWriteBackupFile"));
-    }
-  }
+  window.open("chrome://enigmail/content/exportSettingsWizard.xul",
+    "", "chrome,centerscreen,resizable,modal");
 }
 
-// Loads settings saved with backupPrefs() into Enigmail.
-function restorePrefs() {
-  EnigmailLog.DEBUG("pref-enigmail.js: restorePrefs\n");
-
-  var maybe_file = EnigFilePicker(EnigGetString("loadBackupFile"), "", false, "json", "enigmail.json", null);
-  if (maybe_file !== null) {
-    if (EnigmailConfigBackup.restorePrefs(maybe_file) !== 0) {
-      EnigError(EnigGetString("cantReadBackupFile"));
-    }
-  }
-}
 
 function disableManually(disable) {
   var elems = [

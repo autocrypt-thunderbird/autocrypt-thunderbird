@@ -51,8 +51,8 @@
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.resetPrefs.tooltip     "Set all Enigmail preferences back to their default value.">
 
-<!ENTITY enigmail.backupPrefsButton.label "Save Profile">
-<!ENTITY enigmail.backupPrefs.tooltip     "Save all Enigmail preferences except which certificate to use by default and GnuPG's location into a file.">
+<!ENTITY enigmail.backupPrefsButton.label "Export Settings and Keys">
+<!ENTITY enigmail.backupPrefs.tooltip     "Save all Enigmail preferences including your OpenPGP keys to a file.">
 
 <!ENTITY enigmail.restorePrefsButton.label "Load Profile">
 <!ENTITY enigmail.restorePrefs.tooltip     "Loads Enigmail preferences except which certificate to use by default and GnuPG's location from a file.">
@@ -684,7 +684,7 @@
 <!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I prefer a standard configuration (recommended for beginners)">
 <!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I prefer an extended configuration (recommended for advanced users)">
 <!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "I prefer a manual configuration (recommended for experts)">
-<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "I want to import my settings from a a previous installation">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "I want to import my settings from a previous installation">
 
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
@@ -765,7 +765,15 @@
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc     "Enigmail allows to transfer all its settings including your OpenPGP
+                                                      keys to a new computer. This is done in two steps:
+                                                      <html:ol>
+                                                        <html:li>export your data from your old computer using the backup wizard from the Enigmail Preferences</html:li>
+                                                        <html:li>import the data to your new computer using this wizard.</html:li>
+                                                      </html:ol>">
 <!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importing keys and applying settings">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error    "An error ocurred during importing. Your settings could not be applied.">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
@@ -799,7 +807,7 @@
 <!-- Export wizard -->
 <!ENTITY enigmail.exportWiz.title                    "Export your Enigmail Settings">
 <!ENTITY enigmail.exportWiz.pgIntro.title            "Welcome to the Export Settings Wizard">
-<!ENTITY enigmail.exportWiz.pgIntro.desc1            "This wizard allows to transfer the Enigmail settings including all of your OpenPGP
+<!ENTITY enigmail.exportWiz.pgIntro.desc1            "Enigmail allows to transfer all its settings including your OpenPGP
                                                       keys to a new computer. This is done in two steps:
                                                       <html:ol>
                                                         <html:li>export your data from your old computer using this wizard</html:li>

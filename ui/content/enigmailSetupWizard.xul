@@ -116,11 +116,11 @@
              label="&enigmail.setupWiz.pgWelcome.manualMode;"
              oncommand="onSetSelectMode('expert')"
              value="3"/>
-      <!-- separator/>
+      <separator/>
       <radio id="selectMode_import"
              label="&enigmail.setupWiz.pgWelcome.importSettings;"
              oncommand="onSetSelectMode('import')"
-             value="4"/ -->
+             value="4"/>
     </radiogroup>
   </wizardpage>
 
@@ -417,6 +417,10 @@
               onpageadvanced="return importSettings();"
               label="&enigmail.setupWiz.pgImportSettings.title;">
     <vbox>
+      <description>
+        &enigmail.setupWiz.pgImportSettings.desc;
+      </description>
+      <separator/>
       <label class="label" value="&enigmail.setupWiz.pgImportSettings.fileName;" id="importFileLbl"/>
       <hbox align="center">
         <textbox id="importFile" size="30" aria-labelledby="importFileLbl" readonly="true"/>
@@ -424,6 +428,24 @@
                 label="&enigmail.browse.label;"
           oncommand="browseBackupFile('importFile', gImportSettingsFile);"/>
       </hbox>
+
+      <vbox id="importInProgress" hidden="true">
+        <separator/>
+        <description>
+          &enigmail.setupWiz.pgImportSettings.importing;
+        </description>
+
+        <separator/>
+        <hbox flex="0" id="spinningWheel">
+          <spacer flex="1"/>
+          <image class="enigmailWheel enigmailSpinning"/>
+          <spacer flex="1"/>
+        </hbox>
+      </vbox>
+
+      <description id="errorMessage" hidden="true">
+        &enigmail.setupWiz.pgImportSettings.error;
+      </description>
     </vbox>
   </wizardpage>
 

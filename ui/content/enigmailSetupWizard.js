@@ -1237,24 +1237,39 @@ function ensureGpgHomeDir() {
     };
   }
   homeDir.normalize();
+
   if (!homeDir.isDirectory()) {
     EnigAlert("not a directory");
     throw "not a directory";
   }
   return {
     homeDir: homeDir,
-    existed: false
+    existed: true
   };
 }
 // import from backup file
 
 function importSettings() {
+  let r = doImportSettings();
+  document.getElementById("importInProgress").setAttribute("hidden", "true");
+
+  if (!r) {
+    document.getElementById("errorMessage").removeAttribute("hidden");
+  }
+
+  return r;
+}
+
+function doImportSettings() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings\n");
   let importFile = gImportSettingsFile.value;
   if (!importFile.exists()) return false;
 
   importFile.normalize();
   if (!importFile.isFile()) return false;
+
+  document.getElementById("errorMessage").setAttribute("hidden", "true");
+  document.getElementById("importInProgress").removeAttribute("hidden");
 
   let zipR;
   try {
@@ -1265,13 +1280,9 @@ function importSettings() {
     return false;
   }
 
-  let cfg = ensureGpgHomeDir();
+  let cfg;
   try {
-    if (cfg.existed) {
-      if (!EnigConfirm("directory exists already")) {
-        return false;
-      }
-    }
+    cfg = ensureGpgHomeDir();
   }
   catch (ex) {
     return false;
@@ -1315,18 +1326,45 @@ function importSettings() {
 
   tmpFile = tmpDir.clone();
   tmpFile.append("gpg.conf");
+
   if (tmpFile.exists()) {
-    try {
-      tmpFile.moveTo(cfg.homeDir, "gpg.conf");
+    let doCfgFile = true;
+    if (cfg.existed) {
+      let cfgFile = cfg.homeDir.clone();
+      cfgFile.append("gpg.conf");
+      if (cfgFile.exists()) {
+        if (!EnigConfirm(EnigGetString("setupWizard.gpgConfExists"), EnigGetString("dlg.button.overwrite"), EnigGetString("dlg.button.skip"))) {
+          doCfgFile = false;
+        }
+      }
     }
-    catch (ex) {}
+
+    try {
+      if (doCfgFile) tmpFile.moveTo(cfg.homeDir, "gpg.conf");
+    }
+    catch (ex) {
+      EnigmailLog.DEBUG("error with gpg.conf " + ex.toString() + "\n");
+    }
+  }
+  else {
+    EnigmailLog.DEBUG("no gpg.conf file\n");
   }
 
   tmpFile = tmpDir.clone();
   tmpFile.append("prefs.json");
-  EnigmailConfigBackup.restorePrefs(tmpFile);
+  let r = EnigmailConfigBackup.restorePrefs(tmpFile);
+
+  if (r.retVal === 0 && r.unmatchedIds.length > 0) {
+    displayUnmatchedIds(r.unmatchedIds);
+  }
 
   tmpDir.remove(true);
 
   return true;
+}
+
+
+function displayUnmatchedIds(emailArr) {
+  EnigAlert("The following identities of your old setup could not be matched:\n- " + emailArr.join("\n- ") +
+    "\nThe settings for these identities were skipped.");
 }
