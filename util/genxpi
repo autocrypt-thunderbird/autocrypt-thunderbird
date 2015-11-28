@@ -110,6 +110,7 @@ zip --must-match\
     modules/dialog.jsm \
     modules/encryption.jsm \
     modules/core.jsm \
+    modules/configBackup.jsm \
     modules/errorHandling.jsm \
     modules/funcs.jsm \
     modules/gpgAgent.jsm \
