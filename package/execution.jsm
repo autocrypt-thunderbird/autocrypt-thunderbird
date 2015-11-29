@@ -55,6 +55,7 @@ Cu.import("resource://enigmail/subprocess.jsm");
 Cu.import("resource://enigmail/errorHandling.jsm");
 Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 
@@ -268,6 +269,7 @@ const EnigmailExecution = {
     }
 
     errorMsgObj.value = EnigmailErrorHandling.parseErrorOutput(errOutput, retStatusObj);
+
     statusFlagsObj.value = retStatusObj.statusFlags;
     statusMsgObj.value = retStatusObj.statusMsg;
     var blockSeparation = retStatusObj.blockSeparation;

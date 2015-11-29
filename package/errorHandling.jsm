@@ -50,6 +50,8 @@ Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/data.jsm");
 Cu.import("resource://enigmail/core.jsm");
+Cu.import("resource://enigmail/system.jsm"); /* global EnigmailSystem: false */
+
 
 const nsIEnigmail = Ci.nsIEnigmail;
 
@@ -350,7 +352,7 @@ function parseErrorOutputWith(c) {
   c.retStatusObj.statusFlags = c.statusFlags;
   if (c.retStatusObj.statusMsg.length === 0) c.retStatusObj.statusMsg = c.statusArray.join("\n");
   if (c.errorMsg.length === 0) {
-    c.errorMsg = c.errArray.map(EnigmailData.convertGpgToUnicode, EnigmailData).join("\n");
+    c.errorMsg = c.errArray.map(EnigmailSystem.convertNativeToUnicode, EnigmailSystem).join("\n");
   }
 
   if ((c.statusFlags & Ci.nsIEnigmail.CARDCTRL) && c.errCode > 0) {

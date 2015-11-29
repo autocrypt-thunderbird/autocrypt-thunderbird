@@ -66,6 +66,7 @@ MODFILES = \
            promise.jsm \
            rules.jsm \
            streams.jsm \
+					 system.jsm \
            time.jsm \
            timer.jsm \
            trust.jsm \

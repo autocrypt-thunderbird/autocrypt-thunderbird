@@ -147,6 +147,7 @@ zip --must-match\
     modules/subprocess.jsm \
     modules/subprocess_worker_unix.js \
     modules/subprocess_worker_win.js \
+    modules/system.jsm \
     modules/time.jsm \
     modules/timer.jsm \
     modules/trust.jsm \

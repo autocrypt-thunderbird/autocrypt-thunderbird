@@ -105,7 +105,7 @@ function doExport(tmpDir) {
     gpgConfgFile.append("gpg.conf");
   }
 
-  if (gpgConfgFile.exists()) {
+  if (gpgConfgFile && gpgConfgFile.exists()) {
     zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
   }
   zipW.close();
