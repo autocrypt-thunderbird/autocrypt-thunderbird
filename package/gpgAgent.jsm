@@ -57,6 +57,7 @@ Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -97,7 +98,35 @@ function extractAgentInfo(fullStr) {
   }
 }
 
-const EnigmailGpgAgent = {
+function getHomedirFromParam(param) {
+  let i = param.search(/--homedir/);
+  if (i >= 0) {
+    param = param.substr(i + 9);
+
+    let m = param.match(/^(\s*)([^\\]".+[^\\]")/);
+    if (m && m.length > 2) {
+      param = m[2].substr(1);
+      let j = param.search(/[^\\]"/);
+      return param.substr(1, j);
+    }
+
+    m = param.match(/^(\s*)([^\\]'.+[^\\]')/);
+    if (m && m.length > 2) {
+      param = m[2].substr(1);
+      let j = param.search(/[^\\]'/);
+      return param.substr(1, j);
+    }
+
+    m = param.match(/^(\s*)(\S+)/);
+    if (m && m.length > 2) {
+      return m[2];
+    }
+  }
+
+  return null;
+}
+
+var EnigmailGpgAgent = {
   agentType: "",
   agentPath: null,
   connGpgAgentPath: null,
@@ -317,7 +346,6 @@ const EnigmailGpgAgent = {
             const m = EnigmailGpgAgent.getAgentMaxIdle();
             if (m > -1) maxIdle = m;
           }
-
         }
       }
     }
@@ -344,6 +372,16 @@ const EnigmailGpgAgent = {
    * @return String - directory name, or NULL (in case the command did not succeed)
    */
   getGpgHomeDir: function() {
+
+
+    let param = EnigmailPrefs.getPref("agentAdditionalParam");
+
+    if (param) {
+      let hd = getHomedirFromParam(param);
+
+      if (hd) return hd;
+    }
+
     if (EnigmailGpgAgent.gpgconfPath === null) return null;
 
     const command = EnigmailGpgAgent.gpgconfPath;
@@ -526,6 +564,8 @@ const EnigmailGpgAgent = {
       throw ex;
     }
     EnigmailLog.DEBUG("  enigmail> DONE\n");
+
+    outStr = EnigmailSystem.convertNativeToUnicode(outStr);
 
     if (exitCode !== 0) {
       EnigmailLog.ERROR("enigmail.js: Enigmail.setAgentPath: gpg failed with exitCode " + exitCode + " msg='" + outStr + " " + errStr + "'\n");

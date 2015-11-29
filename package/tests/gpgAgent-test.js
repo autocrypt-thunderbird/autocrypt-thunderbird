@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false,
   withTestGpgHome: false, osUtils: false, EnigmailFiles */
 
-testing("gpgAgent.jsm"); /*global EnigmailGpgAgent: false, EnigmailOS: false */
+testing("gpgAgent.jsm"); /*global EnigmailGpgAgent: false, EnigmailOS: false, getHomedirFromParam: false */
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 
@@ -335,3 +335,18 @@ test(withTestGpgHome(withEnigmail(function shouldGetGpgHomeDir() {
   let homeDir = EnigmailGpgAgent.getGpgHomeDir();
   Assert.equal(homedirExpected, homeDir);
 })));
+
+// getHomedirFromParam
+test(function shouldGetHomedirFromParam() {
+  let hd = getHomedirFromParam('--homedir /some1/path');
+  Assert.equal(hd, "/some1/path");
+
+  hd = getHomedirFromParam('--opt1 --homedir /some2/path --opt2');
+  Assert.equal(hd, "/some2/path");
+
+  hd = getHomedirFromParam('--opt1 --homedir   "C:\\My Path\\is\\Very \\"long 1\\"" --opt2');
+  Assert.equal(hd, 'C:\\My Path\\is\\Very \\"long 1\\"');
+
+  hd = getHomedirFromParam('--opt1 --homedir "C:\\My Path\\is\\Very \\"long 2\\"" --opt2 "Some \\"more\\" fun"');
+  Assert.equal(hd, 'C:\\My Path\\is\\Very \\"long 2\\"');
+});
