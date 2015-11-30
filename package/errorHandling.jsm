@@ -352,7 +352,9 @@ function parseErrorOutputWith(c) {
   c.retStatusObj.statusFlags = c.statusFlags;
   if (c.retStatusObj.statusMsg.length === 0) c.retStatusObj.statusMsg = c.statusArray.join("\n");
   if (c.errorMsg.length === 0) {
-    c.errorMsg = c.errArray.map(EnigmailSystem.convertNativeToUnicode, EnigmailSystem).join("\n");
+    c.errorMsg = c.errArray.map(function f(str, idx) {
+      return EnigmailSystem.convertNativeToUnicode(str);
+    }, EnigmailSystem).join("\n");
   }
 
   if ((c.statusFlags & Ci.nsIEnigmail.CARDCTRL) && c.errCode > 0) {

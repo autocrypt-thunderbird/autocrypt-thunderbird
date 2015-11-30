@@ -20,6 +20,52 @@ const Ci = Components.interfaces;
 var gKernel32Dll = null;
 var gSystemCharset = null;
 
+const CODEPAGE_MAPPING = {
+  "855": "IBM855",
+  "866": "IBM866",
+  "874": "ISO-8859-11",
+  "932": "Shift_JIS",
+  "936": "GB2312",
+  "950": "BIG5",
+  "1200": "UTF-16LE",
+  "1201": "UTF-16BE",
+  "1250": "windows-1250",
+  "1251": "windows-1251",
+  "1252": "windows-1252",
+  "1253": "windows-1253",
+  "1254": "windows-1254",
+  "1255": "windows-1255",
+  "1256": "windows-1256",
+  "1257": "windows-1257",
+  "1258": "windows-1258",
+  "20866": "KOI8-R",
+  "20932": "EUC-JP",
+  "28591": "ISO-8859-1",
+  "28592": "ISO-8859-2",
+  "28593": "ISO-8859-3",
+  "28594": "ISO-8859-4",
+  "28595": "ISO-8859-5",
+  "28596": "ISO-8859-6",
+  "28597": "ISO-8859-7",
+  "28598": "ISO-8859-8",
+  "28599": "ISO-8859-9",
+  "28603": "ISO-8859-13",
+  "28605": "ISO-8859-15",
+  "38598": "ISO-8859-8",
+  "50220": "ISO-2022-JP",
+  "50221": "ISO-2022-JP",
+  "50222": "ISO-2022-JP",
+  "50225": "ISO-2022-KR",
+  "50227": "ISO-2022-CN",
+  "50229": "ISO-2022-CN",
+  "51932": "EUC-JP",
+  "51949": "EUC-KR",
+  "52936": "HZ-GB2312",
+  "65000": "UTF-7",
+  "65001": "UTF-8"
+};
+
+
 /**
  * Get the default codepage that is set on Windows (which equals to the chatset of the console output of gpg)
  */
@@ -40,7 +86,7 @@ function getWindowsCopdepage() {
 
   output = output.replace(/^(.* )([0-9]+)[\r\n]*$/, "$2");
 
-  return Number(output);
+  return output;
 }
 
 /**
@@ -118,17 +164,23 @@ var EnigmailSystem = {
    * applying an appropriate charset conversion
    *
    * @param str   String - input string in native charset
+   * @param cs    String - [Optional] character set (Unix), or codepage (Windows).
+   *                       If not specified, determine the system default.
    *
    * @param String - output in Unicode format. If something failed, the unmodified
    *                 input isreturned.
    */
 
-  convertNativeToUnicode: function(str) {
+  convertNativeToUnicode: function(str, cs) {
     try {
-      let cs = this.determineSystemCharset();
+      if (!cs) cs = this.determineSystemCharset();
 
       if (EnigmailOS.isWin32) {
-        return this.winConvertNativeToUnichar(str, cs);
+        if (cs in CODEPAGE_MAPPING) {
+          return EnigmailData.convertToUnicode(str, CODEPAGE_MAPPING[cs]);
+        }
+        else
+          return EnigmailData.convertToUnicode(this.winConvertNativeToUnichar(str, Number(cs)), "UTF-8");
       }
       else {
         return EnigmailData.convertToUnicode(str, cs);

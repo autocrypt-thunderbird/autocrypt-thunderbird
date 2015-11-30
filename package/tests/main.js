@@ -10,6 +10,7 @@
 
 do_subtest("armor-test.js");
 do_subtest("data-test.js");
+do_subtest("system-test.js");
 do_subtest("decryption-test.js");
 do_subtest("decryptPermanently-test.js");
 do_subtest("encryption-test.js");
