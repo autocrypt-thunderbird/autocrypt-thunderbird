@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false,
   withTestGpgHome: false, osUtils: false, unescape: false */
 
-testing("system.jsm"); /*global EnigmailSystem: false */
+testing("system.jsm"); /*global EnigmailSystem: false, Cc: false, Ci: false */
 component("enigmail/os.jsm"); /*global EnigmailOS: false */
 
 
