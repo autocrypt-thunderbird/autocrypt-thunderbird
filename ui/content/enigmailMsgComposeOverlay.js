@@ -2809,6 +2809,8 @@ Enigmail.msg = {
         return this.saveDraftMessage();
     }
 
+    this.unsetAdditionalHeader("x-enigmail-draft-status");
+
     var msgCompFields = gMsgCompose.compFields;
     var newsgroups = msgCompFields.newsgroups; // Check if sending to any newsgroups
 
@@ -3658,6 +3660,19 @@ Enigmail.msg = {
     }
   },
 
+  unsetAdditionalHeader: function(hdr) {
+    if ("otherRandomHeaders" in gMsgCompose.compFields) {
+      // TB <= 36
+      let h = gMsgCompose.compFields.otherRandomHeaders;
+      let r = new RegExp("^(" + hdr + ":)(.*)$", "im");
+      let m = h.replace(r, "").replace(/(\r\n)+/, "\r\n");
+      gMsgCompose.compFields.otherRandomHeaders = m;
+    }
+    else {
+      gMsgCompose.compFields.deleteHeader(hdr);
+    }
+  },
+
   modifyCompFields: function() {
 
     const HEADERMODE_KEYID = 0x01;
@@ -3671,7 +3686,7 @@ Enigmail.msg = {
 
       if (this.identity.getBoolAttribute("enablePgp")) {
         if (EnigmailPrefs.getPref("addHeaders")) {
-          this.setAdditionalHeader("X-Enigmail-Version: ", EnigmailApp.getVersion());
+          this.setAdditionalHeader("X-Enigmail-Version", EnigmailApp.getVersion());
         }
         var pgpHeader = "";
         var openPgpHeaderMode = this.identity.getIntAttribute("openPgpHeaderMode");
