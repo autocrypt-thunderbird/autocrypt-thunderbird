@@ -699,7 +699,7 @@ function enigCreateKeyMsg() {
   var keyAttachment = Cc["@mozilla.org/messengercompose/attachment;1"].createInstance(Ci.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
   if (keyList.length == 1) {
-    keyAttachment.name = "0x" + gKeyList[keyList[0]].keyId.substr(-8, 8) + ".asc";
+    keyAttachment.name = "0x" + keyList[0].substr(-8, 8) + ".asc";
   }
   else {
     keyAttachment.name = "pgpkeys.asc";
