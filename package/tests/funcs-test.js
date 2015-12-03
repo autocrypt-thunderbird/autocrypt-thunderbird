@@ -14,44 +14,44 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("funcs.jsm");
 
 var EnigmailFuncsTests = {
-  testStripEmail(str,res) {
+  testStripEmail(str, res) {
     let addr;
     addr = EnigmailFuncs.stripEmail(str);
-    Assert.equal(addr,res);
+    Assert.equal(addr, res);
   }
 };
 
 test(function stripEmail() {
   EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff",
-                                    "a@b.de");
+    "a@b.de");
 
   EnigmailFuncsTests.testStripEmail("\"some stuff\" a@b.de",
-                                    "a@b.de");
+    "a@b.de");
 
   EnigmailFuncsTests.testStripEmail("\"some, stuff\" a@b.de",
-                                    "a@b.de");
+    "a@b.de");
 
   EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
-                                    "a@b.de,xy@a.xx");
+    "a@b.de,xy@a.xx");
 
   EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
-                                    "a@b.de,aa@bb.de");
+    "a@b.de,aa@bb.de");
 
   EnigmailFuncsTests.testStripEmail("    ,,,,;;;; , ; , ;",
-                                    "");
+    "");
 
   EnigmailFuncsTests.testStripEmail(";",
-                                    "");
+    "");
 
 
   EnigmailFuncsTests.testStripEmail("    ,,oneRule,;;; , ;",
-                                    "oneRule");
+    "oneRule");
 
   EnigmailFuncsTests.testStripEmail("    ,,,nokey,;;;; , nokey2 ; , ;",
-                                    "nokey,nokey2");
+    "nokey,nokey2");
 
   EnigmailFuncsTests.testStripEmail(",,,newsgroupa ",
-                                    "newsgroupa");
+    "newsgroupa");
 
   // test invalid email addresses:
   Assert.throws(
@@ -66,5 +66,3 @@ test(function stripEmail() {
   );
 
 });
-
-
