@@ -498,6 +498,24 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
   height: 25px;
 }
 
+.enigmailKeyImportHeader {
+	font-weight: bold;
+	color: #888;
+}
+
+.enigmailKeyImportCaption {
+	font-size: 2.5em;
+	color: green;
+}
+
+.enigmailKeyImportKeyId {
+	color: blue;
+}
+
+.enigmailKeyImportKeyId:hover {
+	text-decoration: underline;
+}
+
 treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {
   font-weight: bold;
 }

@@ -130,6 +130,7 @@ function onLoad() {
         break;
     }
   }
+
   return true;
 }
 
@@ -324,9 +325,8 @@ function enigImportKeys(connType, txt, errorTxt) {
         enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return;
-  }
-  else if (gEnigRequest.errorTxt) {
-    EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(gEnigRequest.errorTxt));
+  } else if (gEnigRequest.errorTxt) {
+    EnigmailDialog.keyImportDlg(window, gEnigRequest.dlKeyList);
   }
 
   gEnigRequest.httpInProgress = false;
@@ -936,3 +936,4 @@ function ignoreUid(uid) {
   const ignoreList = "{Test 555 <sdfg@gga.com>}";
   return (ignoreList.indexOf("{" + trim(uid) + "}") >= 0);
 }
+

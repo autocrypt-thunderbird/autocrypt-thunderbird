@@ -401,6 +401,46 @@ const EnigmailDialog = {
   },
 
   /**
+   * Displays a dialog with success/failure information after importing
+   * keys.
+   *
+   * @win:           nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:          String    - message text
+   * @checkBoxLabel: String    - if not null, display checkbox with text; the
+   *                             checkbox state is returned in checkedObj.value
+   * @button-Labels: String    - use "&" to indicate access key
+   *     use "buttonType:label" or ":buttonType" to indicate special button types
+   *        (buttonType is one of cancel, help, extra1, extra2)
+   * @checkedObj:    Object    - holding the checkbox value
+   *
+   * @return: 0-2: button Number pressed
+   *          -1: ESC or close window button pressed
+   *
+   */
+  keyImportDlg: function(win, keyList, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
+    var result = {
+      value: -1,
+      checked: false
+    };
+
+    if (!win) {
+      win = EnigmailWindows.getBestParentWin();
+    }
+
+    win.openDialog("chrome://enigmail/content/enigmailKeyImportInfo.xul", "",
+      "chrome,dialog,modal,centerscreen,resizable", {
+        keyList: keyList,
+        checkboxLabel: checkBoxLabel,
+        button1: okLabel,
+      },
+      result);
+
+    if (checkBoxLabel) {
+      checkedObj.value = result.checked;
+    }
+    return result.value;
+  },
+  /**
    * return a pre-initialized prompt service
    */
   getPromptSvc: function() {

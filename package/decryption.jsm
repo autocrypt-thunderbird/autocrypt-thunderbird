@@ -731,6 +731,7 @@ const EnigmailDecryption = {
           EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
 
         var preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
+        exitCodeObj.keyList = preview;
         var exitStatus = 0;
 
         if (errorMsgObj.value === "") {

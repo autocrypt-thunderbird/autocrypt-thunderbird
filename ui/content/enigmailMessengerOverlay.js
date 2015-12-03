@@ -2157,7 +2157,10 @@ Enigmail.msg = {
             catch (ex) {}
 
             if (exitStatus === 0) {
-              EnigmailDialog.longAlert(window, EnigmailLocale.getString("successKeyImport") + "\n\n" + errorMsgObj.value);
+              var keyList = preview.map(function(a) {
+                return a.id;
+              });
+              EnigmailDialog.keyImportDlg(window, keyList);
             }
             else {
               EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
@@ -2200,7 +2203,13 @@ Enigmail.msg = {
     }
     if (exitStatus) {
       if (statusFlagsObj.value & nsIEnigmail.IMPORTED_KEY) {
-        EnigmailDialog.longAlert(window, EnigmailLocale.getString("successKeyImport") + "\n\n" + errorMsgObj.value);
+
+        if( exitCodeObj.keyList ) {
+          var keyList = exitCodeObj.keyList.map(function(a) {
+            return a.id;
+          });
+          EnigmailDialog.keyImportDlg(window, keyList);
+        }
       }
       else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
         HandleSelectedAttachments('open');
