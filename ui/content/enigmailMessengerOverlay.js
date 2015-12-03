@@ -2204,11 +2204,11 @@ Enigmail.msg = {
     if (exitStatus) {
       if (statusFlagsObj.value & nsIEnigmail.IMPORTED_KEY) {
 
-        if( exitCodeObj.keyList ) {
-          var keyList = exitCodeObj.keyList.map(function(a) {
+        if (exitCodeObj.keyList) {
+          let importKeyList = exitCodeObj.keyList.map(function(a) {
             return a.id;
           });
-          EnigmailDialog.keyImportDlg(window, keyList);
+          EnigmailDialog.keyImportDlg(window, importKeyList);
         }
       }
       else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {

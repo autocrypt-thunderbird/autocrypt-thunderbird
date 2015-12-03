@@ -325,7 +325,8 @@ function enigImportKeys(connType, txt, errorTxt) {
         enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return;
-  } else if (gEnigRequest.errorTxt) {
+  }
+  else if (gEnigRequest.errorTxt) {
     EnigmailDialog.keyImportDlg(window, gEnigRequest.dlKeyList);
   }
 
@@ -936,4 +937,3 @@ function ignoreUid(uid) {
   const ignoreList = "{Test 555 <sdfg@gga.com>}";
   return (ignoreList.indexOf("{" + trim(uid) + "}") >= 0);
 }
-

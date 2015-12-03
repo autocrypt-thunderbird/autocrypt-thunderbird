@@ -1,0 +1,217 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+function onLoad() {
+  var dlg = document.getElementById("enigmailKeyImportInfo");
+
+  let i;
+
+  dlg.getButton("help").setAttribute("hidden", "true");
+  dlg.getButton("cancel").setAttribute("hidden", "true");
+  dlg.getButton("extra1").setAttribute("hidden", "true");
+  dlg.getButton("extra2").setAttribute("hidden", "true");
+  dlg.setAttribute("title", EnigmailLocale.getString("importInfoTitle"));
+
+  if (window.screen.width > 500) {
+    dlg.setAttribute("maxwidth", window.screen.width - 150);
+  }
+
+  if (window.screen.height > 300) {
+    dlg.setAttribute("maxheight", window.screen.height - 100);
+  }
+
+  var keyList = window.arguments[0].keyList;
+  var button1 = window.arguments[0].button1;
+  var button2 = window.arguments[0].button2;
+  var button3 = window.arguments[0].button3;
+  var checkboxLabel = window.arguments[0].checkboxLabel;
+  if (button1) {
+    setButton(0, button1);
+  }
+
+  if (checkboxLabel) {
+    var prefCheck = document.getElementById("theCheckBox");
+    prefCheck.setAttribute("label", checkboxLabel);
+    prefCheck.removeAttribute("hidden");
+  }
+
+  for (i = 0, keys = []; i < keyList.length; i++) {
+    var keyId = keyList[i];
+
+    if (keyId.search(/^0x/) === 0) {
+      keyId = keyId.substr(2).toUpperCase();
+    }
+    var keyObj = EnigmailKeyRing.getKeyById(keyId);
+    if (keyObj && keyObj.fpr) {
+      keys.push(buildKeyGroupBox(keyObj));
+    }
+  }
+
+  dlg.getButton("accept").focus();
+
+  let onClickFunc = function(event) {
+    let keyId = event.target.getAttribute("keyid");
+    EnigmailWindows.openKeyDetails(window, keyId, false);
+  };
+
+  var textbox = document.getElementById("keyInfo");
+  for (i = 0; i < keys.length; i++) {
+    textbox.appendChild(keys[i]);
+    keys[i].addEventListener('click', onClickFunc, true);
+  }
+  if (!keys.length) {
+    EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(enigRequest.errorTxt));
+  }
+  EnigmailEvents.dispatchEvent(resizeDlg, 0);
+}
+
+function buildKeyGroupBox(keyObj) {
+
+  var groupBox = document.createElement("groupbox"),
+    caption = document.createElement("caption"),
+    userid = document.createElement("label"),
+    infoGrid = document.createElement("grid"),
+    infoColumns = document.createElement("columns"),
+    infoColId = document.createElement("column"),
+    infoColDate = document.createElement("column"),
+    infoRows = document.createElement("rows"),
+    infoRowHead = document.createElement("row"),
+    infoRowBody = document.createElement("row"),
+    infoLabelH1 = document.createElement("label"),
+    infoLabelH2 = document.createElement("label"),
+    infoLabelB1 = document.createElement("label"),
+    infoLabelB2 = document.createElement("label"),
+    fprGrid = document.createElement("grid"),
+    fprLabel = document.createElement("label"),
+    fprColumns = document.createElement("columns"),
+    fprRows = document.createElement("rows"),
+    fprRow1 = document.createElement("row"),
+    fprRow2 = document.createElement("row");
+
+  userid.setAttribute("value", keyObj.userId);
+  userid.setAttribute("class", "enigmailKeyImportUserId");
+  caption.setAttribute("label", EnigmailLocale.getString("importInfoSuccess"));
+  caption.setAttribute("class", "enigmailKeyImportCaption");
+  infoLabelH1.setAttribute("value", EnigmailLocale.getString("importInfoBits"));
+  infoLabelH2.setAttribute("value", EnigmailLocale.getString("importInfoCreated"));
+  infoLabelB1.setAttribute("value", keyObj.keySize + "/" + keyObj.keyId.substr(-8, 8));
+  infoLabelB1.setAttribute("keyid", keyObj.keyId);
+  infoLabelB1.setAttribute("class", "enigmailKeyImportKeyId");
+  infoLabelB2.setAttribute("value", keyObj.created);
+
+  infoRowHead.appendChild(infoLabelH1);
+  infoRowHead.appendChild(infoLabelH2);
+  infoRowHead.setAttribute("class", "enigmailKeyImportHeader");
+  infoRowBody.appendChild(infoLabelB1);
+  infoRowBody.appendChild(infoLabelB2);
+  infoRows.appendChild(infoRowHead);
+  infoRows.appendChild(infoRowBody);
+  infoColumns.appendChild(infoColId);
+  infoColumns.appendChild(infoColDate);
+  infoGrid.appendChild(infoColumns);
+  infoGrid.appendChild(infoRows);
+
+  fprLabel.setAttribute("value", EnigmailLocale.getString("importInfoFpr"));
+  fprLabel.setAttribute("class", "enigmailKeyImportHeader");
+  for (var i = 0; i < keyObj.fpr.length; i += 4) {
+    var label = document.createElement("label");
+    label.setAttribute("value", keyObj.fpr.substr(i, 4));
+    if (i < keyObj.fpr.length / 2) {
+      fprColumns.appendChild(document.createElement("column"));
+      fprRow1.appendChild(label);
+    }
+    else {
+      fprRow2.appendChild(label);
+    }
+  }
+
+  fprRows.appendChild(fprRow1);
+  fprRows.appendChild(fprRow2);
+  fprGrid.appendChild(fprColumns);
+  fprGrid.appendChild(fprRows);
+  groupBox.appendChild(caption);
+  groupBox.appendChild(userid);
+  groupBox.appendChild(infoGrid);
+  groupBox.appendChild(fprLabel);
+  groupBox.appendChild(fprGrid);
+
+  return groupBox;
+}
+
+function resizeDlg() {
+
+  var txt = document.getElementById("keyInfo");
+  var box = document.getElementById("outerbox");
+  var dlg = document.getElementById("enigmailKeyImportInfo");
+
+  var deltaWidth = window.outerWidth - box.clientWidth;
+  var newWidth = txt.scrollWidth + deltaWidth + 20;
+
+  if (newWidth > window.screen.width - 50) {
+    newWidth = window.screen.width - 50;
+  }
+
+  txt.style["white-space"] = "pre-wrap";
+  window.outerWidth = newWidth;
+
+  var textHeight = txt.scrollHeight;
+  var boxHeight = box.clientHeight;
+  var deltaHeight = window.outerHeight - boxHeight;
+
+  var newHeight = textHeight + deltaHeight + 20;
+
+
+  if (newHeight > window.screen.height - 100) {
+    newHeight = window.screen.height - 100;
+  }
+
+  window.outerHeight = newHeight;
+}
+
+function centerDialog() {
+  if (EnigmailOS.getOS() != "Darwin")
+    document.getElementById("enigmailKeyImportInfo").centerWindowOnScreen();
+}
+
+function setButton(buttonId, label) {
+  var labelType = "extra" + buttonId.toString();
+  if (labelType == "extra0") labelType = "accept";
+
+  var dlg = document.getElementById("enigmailKeyImportInfo");
+  var elem = dlg.getButton(labelType);
+
+  var i = label.indexOf(":");
+  if (i === 0) {
+    elem = dlg.getButton(label.substr(1));
+    elem.setAttribute("hidden", "false");
+    elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
+    return;
+  }
+  if (i > 0) {
+    labelType = label.substr(0, i);
+    label = label.substr(i + 1);
+    elem = dlg.getButton(labelType);
+  }
+  i = label.indexOf("&");
+  if (i >= 0) {
+    var c = label.substr(i + 1, 1);
+    if (c != "&") {
+      elem.setAttribute("accesskey", c);
+    }
+    label = label.substr(0, i) + label.substr(i + 1);
+  }
+  elem.setAttribute("label", label);
+  elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
+  elem.removeAttribute("hidden");
+}
+
+function dlgClose(buttonNumber) {
+  window.arguments[1].value = buttonNumber;
+  window.arguments[1].checked = (document.getElementById("theCheckBox").getAttribute("checked") == "true");
+  window.close();
+}
+
+function checkboxCb() {
+  // do nothing
+}
