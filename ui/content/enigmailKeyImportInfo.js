@@ -58,7 +58,7 @@ function onLoad() {
   var textbox = document.getElementById("keyInfo");
   for (i = 0; i < keys.length; i++) {
     textbox.appendChild(keys[i]);
-    keys[i].addEventListener('click', onClickFunc, true);
+    keys[i].getElementsByClassName("enigmailKeyImportKeyId")[0].addEventListener('click', onClickFunc, true);
   }
   if (!keys.length) {
     EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(enigRequest.errorTxt));
