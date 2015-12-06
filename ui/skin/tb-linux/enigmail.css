@@ -506,14 +506,13 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
 	color: green;
 }
 
-.enigmailKeyImportKeyId {
+.enigmailKeyImportDetails {
 	color: blue;
 }
 
-.enigmailKeyImportKeyId:hover {
+.enigmailKeyImportDetails:hover {
 	text-decoration: underline;
 }
-
 
 treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {
   font-weight: bold;

@@ -434,11 +434,11 @@
 	color: green;
 }
 
-.enigmailKeyImportKeyId {
+.enigmailKeyImportDetails {
 	color: blue;
 }
 
-.enigmailKeyImportKeyId:hover {
+.enigmailKeyImportDetails:hover {
 	text-decoration: underline;
 }
 

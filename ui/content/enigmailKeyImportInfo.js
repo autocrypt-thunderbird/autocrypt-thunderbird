@@ -36,39 +36,61 @@ function onLoad() {
     prefCheck.removeAttribute("hidden");
   }
 
-  for (i = 0, keys = []; i < keyList.length; i++) {
-    var keyId = keyList[i];
-
-    if (keyId.search(/^0x/) === 0) {
-      keyId = keyId.substr(2).toUpperCase();
-    }
-    var keyObj = EnigmailKeyRing.getKeyById(keyId);
-    if (keyObj && keyObj.fpr) {
-      keys.push(buildKeyGroupBox(keyObj));
-    }
-  }
-
-  dlg.getButton("accept").focus();
-
   let onClickFunc = function(event) {
     let keyId = event.target.getAttribute("keyid");
     EnigmailWindows.openKeyDetails(window, keyId, false);
   };
 
-  var textbox = document.getElementById("keyInfo");
-  for (i = 0; i < keys.length; i++) {
-    textbox.appendChild(keys[i]);
-    keys[i].getElementsByClassName("enigmailKeyImportKeyId")[0].addEventListener('click', onClickFunc, true);
+  for (i = 0, keys = []; i < keyList.length; i++) {
+    let keyId = keyList[i];
+
+    if (keyId.search(/^0x/) === 0) {
+      keyId = keyId.substr(2).toUpperCase();
+    }
+    let keyObj = EnigmailKeyRing.getKeyById(keyId);
+    if (keyObj && keyObj.fpr) {
+      let keyGroupBox = buildKeyGroupBox(keyObj);
+      keyGroupBox.getElementsByClassName("enigmailKeyImportDetails")[0].addEventListener('click', onClickFunc, true);
+      keys.push(keyGroupBox);
+    }
   }
-  if (!keys.length) {
-    EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(enigRequest.errorTxt));
+
+  dlg.getButton("accept").focus();
+
+  if (keys.length) {
+    let keysInfoBox = document.getElementById("keyInfo"),
+      keysGrid = document.createElement("grid"),
+      keysRows = document.createElement("rows"),
+      keysCols = document.createElement("columns");
+
+    for (i = 0; i < 3; i++) {
+      keysCols.appendChild(document.createElement("column"));
+    }
+
+    let keysRow;
+    for (i = 0; i < keys.length; i++) {
+      if ((i % 3) === 0) {
+        keysRow = document.createElement("row");
+        keysRows.appendChild(keysRow);
+      }
+      keysRow.appendChild(keys[i]);
+    }
+
+    keysGrid.appendChild(keysRows);
+    keysGrid.appendChild(keysCols);
+    keysInfoBox.appendChild(keysGrid);
   }
+  else {
+    EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(EnigmailLocale.getString("importInfoNoKeys")));
+  }
+
   EnigmailEvents.dispatchEvent(resizeDlg, 0);
 }
 
 function buildKeyGroupBox(keyObj) {
 
-  var groupBox = document.createElement("groupbox"),
+  let i,
+    groupBox = document.createElement("groupbox"),
     caption = document.createElement("caption"),
     userid = document.createElement("label"),
     infoGrid = document.createElement("grid"),
@@ -80,8 +102,10 @@ function buildKeyGroupBox(keyObj) {
     infoRowBody = document.createElement("row"),
     infoLabelH1 = document.createElement("label"),
     infoLabelH2 = document.createElement("label"),
+    infoLabelH3 = document.createElement("label"),
     infoLabelB1 = document.createElement("label"),
     infoLabelB2 = document.createElement("label"),
+    infoLabelB3 = document.createElement("label"),
     fprGrid = document.createElement("grid"),
     fprLabel = document.createElement("label"),
     fprColumns = document.createElement("columns"),
@@ -95,16 +119,20 @@ function buildKeyGroupBox(keyObj) {
   caption.setAttribute("class", "enigmailKeyImportCaption");
   infoLabelH1.setAttribute("value", EnigmailLocale.getString("importInfoBits"));
   infoLabelH2.setAttribute("value", EnigmailLocale.getString("importInfoCreated"));
-  infoLabelB1.setAttribute("value", keyObj.keySize + "/" + keyObj.keyId.substr(-8, 8));
-  infoLabelB1.setAttribute("keyid", keyObj.keyId);
-  infoLabelB1.setAttribute("class", "enigmailKeyImportKeyId");
+  infoLabelH3.setAttribute("value", "");
+  infoLabelB1.setAttribute("value", keyObj.keySize);
   infoLabelB2.setAttribute("value", keyObj.created);
+  infoLabelB3.setAttribute("value", EnigmailLocale.getString("importInfoDetails"));
+  infoLabelB3.setAttribute("keyid", keyObj.keyId);
+  infoLabelB3.setAttribute("class", "enigmailKeyImportDetails");
 
   infoRowHead.appendChild(infoLabelH1);
   infoRowHead.appendChild(infoLabelH2);
+  infoRowHead.appendChild(infoLabelH3);
   infoRowHead.setAttribute("class", "enigmailKeyImportHeader");
   infoRowBody.appendChild(infoLabelB1);
   infoRowBody.appendChild(infoLabelB2);
+  infoRowBody.appendChild(infoLabelB3);
   infoRows.appendChild(infoRowHead);
   infoRows.appendChild(infoRowBody);
   infoColumns.appendChild(infoColId);
@@ -114,7 +142,7 @@ function buildKeyGroupBox(keyObj) {
 
   fprLabel.setAttribute("value", EnigmailLocale.getString("importInfoFpr"));
   fprLabel.setAttribute("class", "enigmailKeyImportHeader");
-  for (var i = 0; i < keyObj.fpr.length; i += 4) {
+  for (i = 0; i < keyObj.fpr.length; i += 4) {
     var label = document.createElement("label");
     label.setAttribute("value", keyObj.fpr.substr(i, 4));
     if (i < keyObj.fpr.length / 2) {
