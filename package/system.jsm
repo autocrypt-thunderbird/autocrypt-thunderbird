@@ -71,9 +71,15 @@ const CODEPAGE_MAPPING = {
  */
 function getWindowsCopdepage() {
   let output = "";
+  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+  let sysRoot = env.get("SystemRoot");
+
+  if (!sysRoot || sysRoot.length === 0) {
+    sysRoot = "C:\\windows";
+  }
 
   let p = subprocess.call({
-    command: "C:\\windows\\system32\\chcp.com",
+    command: sysRoot + "\\system32\\chcp.com",
     arguments: [],
     environment: [],
     charset: null,
@@ -179,15 +185,21 @@ var EnigmailSystem = {
         if (cs in CODEPAGE_MAPPING) {
           return EnigmailData.convertToUnicode(str, CODEPAGE_MAPPING[cs]);
         }
-        else
-          return EnigmailData.convertToUnicode(this.winConvertNativeToUnichar(str, Number(cs)), "UTF-8");
+        else {
+          let charSetNum = Number(cs);
+          if (Number.isNaN(charSetNum)) {
+            return EnigmailData.convertToUnicode(str, cs);
+          }
+          else
+            return EnigmailData.convertToUnicode(this.winConvertNativeToUnichar(str, Number(cs)), "UTF-8");
+        }
       }
       else {
         return EnigmailData.convertToUnicode(str, cs);
       }
     }
     catch (ex) {
-      return ex.toString();
+      return str;
     }
   },
 
