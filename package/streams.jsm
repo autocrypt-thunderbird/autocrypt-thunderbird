@@ -116,7 +116,15 @@ const EnigmailStreams = {
       const netUtil = ioServ.QueryInterface(Ci.nsINetUtil);
       const newCharset = {};
       const hadCharset = {};
-      const mimeType = netUtil.parseContentType(contentType, newCharset, hadCharset);
+      let mimeType;
+      try {
+        // Gecko >= 43
+        mimeType = netUtil.parseResponseContentType(contentType, newCharset, hadCharset);
+      }
+      catch (ex) {
+        // Gecko < 43
+        mimeType = netUtil.parseContentType(contentType, newCharset, hadCharset);
+      }
       contentCharset = newCharset.value;
     }
 
