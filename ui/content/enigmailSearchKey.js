@@ -308,7 +308,7 @@ function enigImportKeys(connType, txt, errorTxt) {
       gEnigRequest.errorTxt = EnigmailErrorHandling.parseErrorOutput(errorTxt, resStatusObj) + "\n";
     }
 
-    if (errorTxt.search(/^\[GNUPG:\] IMPORT_RES/m) >= 0) {
+    if (errorTxt.search(/^\[GNUPG:\] IMPORT_RES [^0]/m) >= 0) {
       window.arguments[RESULT].importedKeys++;
     }
   }
@@ -326,8 +326,11 @@ function enigImportKeys(connType, txt, errorTxt) {
     }
     return;
   }
-  else if (gEnigRequest.errorTxt) {
+  else if (window.arguments[RESULT].importedKeys > 0) {
     EnigmailDialog.keyImportDlg(window, gEnigRequest.dlKeyList);
+  }
+  else if (gEnigRequest.errorTxt) {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
   }
 
   gEnigRequest.httpInProgress = false;

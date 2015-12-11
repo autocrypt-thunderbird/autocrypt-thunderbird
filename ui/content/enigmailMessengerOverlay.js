@@ -2319,7 +2319,7 @@ Enigmail.msg = {
 
   // download keys
   handleUnknownKey: function() {
-    var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId.substr(8, 8);
+    var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId;
     var inputObj = {
       searchList: [pubKeyId]
     };
