@@ -18,6 +18,7 @@ Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
 Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 
 var osUtils = {};
 Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
@@ -165,6 +166,22 @@ function startExport() {
   return retVal;
 }
 
+function checkAdditionalParam() {
+  let param = EnigmailPrefs.getPref("agentAdditionalParam");
+
+  if (param) {
+    if (param.search(/--(homedir|trustdb-name|options)/) >= 0 || param.search(/--(primary-|secret-)?keyring/) >= 0) {
+      EnigmailDialog.alert(null, EnigmailLocale.getString("homedirParamNotSUpported"));
+      return false;
+    }
+  }
+  return true;
+}
+
 function onLoad() {
   enableNext(false);
+
+  if (!checkAdditionalParam()) {
+    window.close();
+  }
 }
