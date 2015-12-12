@@ -67,8 +67,16 @@ function onLoad() {
   let winOptions = EnigGetWindowOptions();
   if ("skipIntro" in winOptions) {
     if (winOptions.skipIntro == "true") {
-      var wizard = getWizard();
+      let wizard = getWizard();
       wizard.goTo("pgWelcome");
+    }
+  }
+  else if ("doRestore" in winOptions) {
+    if (winOptions.doRestore == "true") {
+      let wizard = getWizard();
+
+      gWizardUserMode = "import";
+      wizard.goTo("pgImportSettings");
     }
   }
 }

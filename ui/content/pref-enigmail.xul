@@ -163,11 +163,12 @@
 
   <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">
-      <tab id="basicTab"     label="&enigmail.basic.label;"/>
-      <tab id="sendingTab"   label="&enigmail.sending.label;"/>
-      <tab id="keySelTab"    label="&enigmail.keySel.label;" advanced="true"/>
-      <tab id="advancedTab"  label="&enigmail.advanced.label;" advanced="true"/>
-      <tab id="keyserverTab" label="&enigmail.keyserver.label;" advanced="true"/>
+      <tab id="basicTab"      label="&enigmail.basic.label;"/>
+      <tab id="sendingTab"    label="&enigmail.sending.label;"/>
+      <tab id="keySelTab"     label="&enigmail.keySel.label;" advanced="true"/>
+      <tab id="advancedTab"   label="&enigmail.advanced.label;" advanced="true"/>
+      <tab id="keyserverTab"  label="&enigmail.keyserver.label;" advanced="true"/>
+      <tab id="backupRestore" label="&enigmail.backupRestore.label;"/>
     </tabs>
 
     <tabpanels flex="1" id="enigPrefTabPanel">
@@ -244,10 +245,6 @@
 
           <vbox autostretch="never" align="end">
             <hbox>
-              <button id="backupPrefs"
-                    label="&enigmail.backupPrefsButton.label;"
-                    tooltip="backupPrefs.tooltip"
-                    oncommand="backupPrefs();"/>
              <button id="resetPrefs"
                       label="&enigmail.resetPrefsButton.label;"
                       tooltip="resetPrefs.tooltip"
@@ -471,6 +468,33 @@
             <textbox id="enigmail_autoKeyRetrieve" size="35" aria-labelledby="autoKeyRetrieveLabel1 autoKeyRetrieveLabel2"/>
           </vbox>
 
+      </vbox>
+
+      <!-- Backup/Restore Panel -->
+      <vbox id="backupRestoreTab">
+
+        <vbox flex="1">
+          <description>
+            &enigmail.backupRestore.desc;
+          </description>
+
+          <separator/>
+
+          <hbox>
+            <button id="backupPrefs"
+                label="&enigmail.backupPrefsButton.label;"
+                tooltip="&enigmail.backupPrefs.tooltip;"
+                oncommand="backupPrefs();"/>
+          </hbox>
+          <separator/>
+
+          <hbox>
+            <button id="restorePrefs"
+                label="&enigmail.restorePrefsButton.label;"
+                tooltip="&enigmail.restorePrefs.tooltip;"
+                oncommand="restorePrefs();"/>
+          </hbox>
+        </vbox>
       </vbox>
 
     </tabpanels>

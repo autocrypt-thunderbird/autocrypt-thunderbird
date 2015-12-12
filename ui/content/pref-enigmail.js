@@ -308,6 +308,12 @@ function backupPrefs() {
 }
 
 
+function restorePrefs() {
+
+  window.open("chrome://enigmail/content/enigmailSetupWizard.xul?doRestore=true",
+    "", "chrome,centerscreen,resizable,modal");
+}
+
 function disableManually(disable) {
   var elems = [
     "enigmail_keepSettingsForReply",

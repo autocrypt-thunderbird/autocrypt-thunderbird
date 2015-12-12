@@ -54,15 +54,20 @@
 <!ENTITY enigmail.backupPrefsButton.label "Export Settings and Keys">
 <!ENTITY enigmail.backupPrefs.tooltip     "Save all Enigmail preferences including your OpenPGP keys to a file.">
 
+<!ENTITY enigmail.restorePrefsButton.label "Reestore Settings and Keys">
+<!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
+
+
 <!ENTITY enigmail.restorePrefsButton.label "Load Profile">
 <!ENTITY enigmail.restorePrefs.tooltip     "Loads Enigmail preferences except which certificate to use by default and GnuPG's location from a file.">
+<!ENTITY enigmail.backupRestore.desc       "Export (backup) your and Restore your Enigmail settings including your OpenPGP keys.">
 
 <!ENTITY enigmail.basic.label            "Basic">
 <!ENTITY enigmail.sending.label          "Sending">
 <!ENTITY enigmail.keySel.label           "Key Selection">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
 <!ENTITY enigmail.advanced.label         "Advanced">
-<!ENTITY enigmail.debug.label            "Debugging">
+<!ENTITY enigmail.backupRestore.label    "Backup/Restore">
 
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
 
