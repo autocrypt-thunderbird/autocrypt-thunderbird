@@ -54,7 +54,6 @@ Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
@@ -96,6 +95,8 @@ let keygenProcess = null;
 let gKeyListObj = null;
 let gKeyIndex = [];
 let gSubkeyIndex = [];
+
+var EnigmailDialog = null;
 /*
 
   This module operates with a Key Store (array) containing objects with the following properties:
@@ -600,7 +601,7 @@ var EnigmailKeyRing = {
       endIndexObj.value - beginIndexObj.value + 1);
 
     if (isInteractive) {
-      if (!(EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import")))) {
+      if (!(getDialog().confirmDlg(parent, EnigmailLocale.getString("importKeyConfirm"), EnigmailLocale.getString("keyMan.button.import")))) {
         errorMsgObj.value = EnigmailLocale.getString("failCancel");
         return -1;
       }
@@ -1038,6 +1039,15 @@ var EnigmailKeyRing = {
 
 /************************ INTERNAL FUNCTIONS ************************/
 
+function getDialog() {
+  if (!EnigmailDialog) {
+    let r = {};
+    Cu.import("resource://enigmail/dialog.jsm", r);
+    EnigmailDialog = r.EnigmailDialog;
+  }
+
+  return EnigmailDialog;
+}
 
 /**
  * returns the output of --with-colons --list[-secret]-keys
@@ -1099,7 +1109,7 @@ function obtainKeyList(win, secretOnly) {
       exitCodeObj, {},
       errorMsgObj);
     if (exitCodeObj.value !== 0) {
-      EnigmailDialog.alert(win, errorMsgObj.value);
+      getDialog().alert(win, errorMsgObj.value);
       return null;
     }
   }
@@ -1254,7 +1264,7 @@ function loadKeyList(win, sortColumn, sortDirection) {
 
   var aGpgSecretsList = obtainKeyList(win, true);
   if (!aGpgSecretsList) {
-    if (EnigmailDialog.confirmDlg(EnigmailLocale.getString("noSecretKeys"),
+    if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
         EnigmailLocale.getString("keyMan.button.generateKey"),
         EnigmailLocale.getString("keyMan.button.skip"))) {
       EnigmailWindows.openKeyGen();
