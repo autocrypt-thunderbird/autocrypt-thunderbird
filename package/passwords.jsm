@@ -46,8 +46,13 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
+
 
 const gpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const getLocale = EnigmailLazy.loader("enigmail/locale.jsm", "EnigmailLocale");
 
 const EnigmailPassword = {
   /*
@@ -78,7 +83,46 @@ const EnigmailPassword = {
   },
 
   clearPassphrase: function(win) {
-    // TODO: it's referred to in one place and used to be in EnigmailCommon but has probably disappeared
-    // It seems this functionality has been removed in almost all places.
+    // clear all passphrases from gpg-agent by reloading the config
+    if (!EnigmailCore.getService()) return;
+
+    if (!gpgAgent().useGpgAgent()) {
+      return;
+    }
+
+    let exitCode = -1;
+    let isError = 0;
+
+    const proc = {
+      command: gpgAgent().connGpgAgentPath,
+      arguments: [],
+      charset: null,
+      environment: EnigmailCore.getEnvList(),
+      stdin: function(pipe) {
+        pipe.write("RELOADAGENT\n");
+        pipe.write("/bye\n");
+        pipe.close();
+      },
+      stdout: function(data) {
+        if (data.search(/^ERR/m) >= 0) {
+          ++isError;
+        }
+      },
+      done: function(result) {
+        exitCode = result.exitCode;
+      }
+    };
+
+    try {
+      subprocess.call(proc).wait();
+    }
+    catch (ex) {}
+
+    if (isError === 0) {
+      getDialog().alert(win, getLocale().getString("passphraseCleared"));
+    }
+    else {
+      getDialog().alert(win, getLocale().getString("cannotClearPassphrase"));
+    }
   }
 };
