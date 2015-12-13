@@ -60,6 +60,9 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+
 
 const nsIEnigmail = Ci.nsIEnigmail;
 
@@ -96,7 +99,6 @@ let gKeyListObj = null;
 let gKeyIndex = [];
 let gSubkeyIndex = [];
 
-var EnigmailDialog = null;
 /*
 
   This module operates with a Key Store (array) containing objects with the following properties:
@@ -1038,16 +1040,6 @@ var EnigmailKeyRing = {
 
 
 /************************ INTERNAL FUNCTIONS ************************/
-
-function getDialog() {
-  if (!EnigmailDialog) {
-    let r = {};
-    Cu.import("resource://enigmail/dialog.jsm", r);
-    EnigmailDialog = r.EnigmailDialog;
-  }
-
-  return EnigmailDialog;
-}
 
 /**
  * returns the output of --with-colons --list[-secret]-keys
