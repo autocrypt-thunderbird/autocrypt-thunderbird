@@ -95,6 +95,8 @@
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
 <!ENTITY enigmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
 
+<!ENTITY enigmail.autoKeyServerSelection.label     "Always use first keyserver">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip   "Take the first keyserver from the list as default.">
 
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with Enigmail">

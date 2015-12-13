@@ -2321,7 +2321,8 @@ Enigmail.msg = {
   handleUnknownKey: function() {
     var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId;
     var inputObj = {
-      searchList: [pubKeyId]
+      searchList: [pubKeyId],
+      autoKeyServer: EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null
     };
     var resultObj = {};
     EnigmailWindows.downloadKeys(window, inputObj, resultObj);

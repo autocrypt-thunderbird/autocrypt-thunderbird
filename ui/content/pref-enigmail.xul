@@ -80,6 +80,9 @@
     <tooltip id="wrapHtmlBeforeSend.tooltip">
       <description>&enigmail.wrapHtmlBeforeSend.tooltip;</description>
     </tooltip>
+    <tooltip id="autoKeyServerSelection.tooltip">
+      <description>&enigmail.autoKeyServerSelection.tooltip;</description>
+    </tooltip>
 
     <!-- sending preferences: accepted keys -->
     <tooltip id="acceptedKeysTrusted.tooltip">
@@ -459,6 +462,10 @@
             <textbox id="enigmail_keyserver"/>
             <label value="&enigmail.keyservers.sample;" style="font-style: italic;"/>
           </vbox>
+
+          <checkbox id="enigmail_autoKeyServerSelection"
+                    label="&enigmail.autoKeyServerSelection.label;"
+                    tooltip="autoKeyServerSelection.tooltip"/>
 
           <separator/>
 

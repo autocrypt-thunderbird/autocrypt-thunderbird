@@ -966,21 +966,6 @@ function enigmailImportKeysFromFile() {
 }
 
 
-function enigmailSearchKeys() {
-
-  var inputObj = {
-    searchList: ""
-  };
-  var resultObj = {};
-
-  EnigDownloadKeys(inputObj, resultObj);
-
-  if (resultObj.importedKeys > 0) {
-    enigmailRefreshKeys();
-  }
-
-}
-
 function enigmailManageUids() {
   var keyList = enigmailGetSelectedKeys();
   var inputObj = {
@@ -1110,7 +1095,7 @@ function enigmailSearchKey() {
 
 
 function enigmailUploadKeys() {
-  enigmailKeyServerAcess(nsIEnigmail.UPLOAD_KEY, enigmailUploadKeysCb);
+  enigmailKeyServerAccess(nsIEnigmail.UPLOAD_KEY, enigmailUploadKeysCb);
 }
 
 function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
@@ -1126,7 +1111,7 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
 }
 
 function enigmailReceiveKey() {
-  enigmailKeyServerAcess(nsIEnigmail.DOWNLOAD_KEY, enigmailReceiveKeyCb);
+  enigmailKeyServerAccess(nsIEnigmail.DOWNLOAD_KEY, enigmailReceiveKeyCb);
 }
 
 function enigmailRefreshAllKeys() {
@@ -1143,7 +1128,7 @@ function enigmailRefreshAllKeys() {
     doIt = true;
   }
 
-  if (doIt) enigmailKeyServerAcess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+  if (doIt) enigmailKeyServerAccess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
 }
 
 // Iterate through contact emails and download them
@@ -1212,7 +1197,8 @@ function enigmailDowloadContactKeysEngine() {
   }
 
   var inputObj = {
-    searchList: emails
+    searchList: emails,
+    autoKeyServer: EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null
   };
   var resultObj = {};
 
@@ -1500,7 +1486,7 @@ function enigApplyFilter() {
 //
 // ----- keyserver related functionality ----
 //
-function enigmailKeyServerAcess(accessType, callbackFunc) {
+function enigmailKeyServerAccess(accessType, callbackFunc) {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
@@ -1536,8 +1522,15 @@ function enigmailKeyServerAcess(accessType, callbackFunc) {
     inputObj.keyId = "";
   }
 
-  window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-    "", "dialog,modal,centerscreen", inputObj, resultObj);
+  let autoKeyServer = EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null;
+  if (autoKeyServer) {
+    resultObj.value = autoKeyServer;
+  }
+  else {
+    window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+      "", "dialog,modal,centerscreen", inputObj, resultObj);
+  }
+
   if (!resultObj.value) {
     return;
   }

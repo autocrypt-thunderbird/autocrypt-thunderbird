@@ -875,7 +875,8 @@ function newRecipientRule() {
 
 function searchMissingKeys() {
   var inputObj = {
-    searchList: gKeysNotFound
+    searchList: gKeysNotFound,
+    autoKeyServer: EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null
   };
   var resultObj = {};
 

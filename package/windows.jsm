@@ -497,8 +497,14 @@ const EnigmailWindows = {
 
     const keysrvObj = {};
 
-    win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-      "", "dialog,modal,centerscreen", valueObj, keysrvObj);
+    if (inputObj.searchList && inputObj.autoKeyServer) {
+      keysrvObj.value = inputObj.autoKeyServer;
+    }
+    else {
+      win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+        "", "dialog,modal,centerscreen", valueObj, keysrvObj);
+    }
+
     if (!keysrvObj.value) {
       return;
     }

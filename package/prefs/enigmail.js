@@ -126,6 +126,9 @@ pref("extensions.enigmail.keyManShowAllKeys", true);
 // list of keyservers to use
 pref("extensions.enigmail.keyserver", "pool.sks-keyservers.net, keys.gnupg.net, pgp.mit.edu");
 
+// auto select the first keyserver in the key server list
+pref("extensions.enigmail.autoKeyServerSelection", true);
+
 // keep passphrase for ... minutes
 pref("extensions.enigmail.maxIdleMinutes", 5);
 
