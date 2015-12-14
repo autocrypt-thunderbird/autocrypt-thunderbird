@@ -274,7 +274,7 @@ const EnigmailGpg = {
   },
 
   signingAlgIdToString: function(id) {
-    // RFC 4880 Sec. 9.1 and RFC 6637 Sec. 5
+    // RFC 4880 Sec. 9.1, RFC 6637 Sec. 5 and draft-koch-eddsa-for-openpgp-03 Sec. 8
     switch (parseInt(id)) {
       case 1:
       case 2:
@@ -288,6 +288,10 @@ const EnigmailGpg = {
         return "ECDH";
       case 19:
         return "ECDSA";
+      case 20:
+        return "ELG";
+      case 22:
+        return "EDDSA";
       default:
         return EnigmailLocale.getString("unknownSigningAlg", [parseInt(id)]);
     }
