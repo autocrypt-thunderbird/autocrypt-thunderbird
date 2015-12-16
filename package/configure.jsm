@@ -1,4 +1,3 @@
-/*global Components: false, EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/*global Components: false */
 
 "use strict";
 
@@ -14,6 +14,10 @@ var EXPORTED_SYMBOLS = ["EnigmailConfigure"];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
+
+
+/*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
+/*global dump: false */
 
 Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/prefs.jsm");
@@ -158,7 +162,10 @@ function upgradeCustomHeaders() {
   catch (ex) {}
 }
 
-function upgradePgpMime() {
+/**
+ * Change from global PGP/MIME setting to per-identity setting
+ */
+function upgradeOldPgpMime() {
   var pgpMimeMode = false;
   try {
     pgpMimeMode = (EnigmailPrefs.getPref("usePGPMimeOption") == 2);
@@ -168,32 +175,40 @@ function upgradePgpMime() {
   }
 
   try {
-    if (pgpMimeMode) {
-      var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
-      try {
-        // Gecko >= 20
-        for (var i = 0; i < accountManager.allIdentities.length; i++) {
-          var id = accountManager.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
-          if (id.getBoolAttribute("enablePgp")) {
-            id.setBoolAttribute("pgpMimeMode", true);
-          }
-        }
-      }
-      catch (ex) {
-        // Gecko < 20
-        for (var i = 0; i < accountManager.allIdentities.Count(); i++) {
-          var id = accountManager.allIdentities.QueryElementAt(i, Ci.nsIMsgIdentity);
-          if (id.getBoolAttribute("enablePgp")) {
-            id.setBoolAttribute("pgpMimeMode", true);
-          }
-        }
+    var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+    for (var i = 0; i < accountManager.allIdentities.length; i++) {
+      var id = accountManager.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
+      if (id.getBoolAttribute("enablePgp")) {
+        id.setBoolAttribute("pgpMimeMode", pgpMimeMode);
       }
     }
+
     EnigmailPrefs.getPrefBranch().clearUserPref("usePGPMimeOption");
   }
   catch (ex) {}
 }
 
+/**
+ * Change the default to PGP/MIME for all accounts, except mailnews
+ * and except if expert mode is on
+ */
+function defaultPgpMime() {
+  if (!EnigmailPrefs.getPref("advancedUser")) {
+
+    let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+    for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+      let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+      if (ac.incomingServer.type.search(/(pop3|imap|movemail)/) >= 0) {
+
+        for (let i = 0; i < ac.identities.length; i++) {
+          let id = ac.identities.queryElementAt(i, Ci.nsIMsgIdentity);
+          id.setBoolAttribute("pgpMimeMode", true);
+        }
+      }
+    }
+  }
+}
 
 const EnigmailConfigure = {
   configureEnigmail: function(win, startingPreferences) {
@@ -209,7 +224,7 @@ const EnigmailConfigure = {
         if (oldVer < "0.95") {
           try {
             upgradeHeadersView();
-            upgradePgpMime();
+            upgradeOldPgpMime();
             upgradeRecipientsSelection();
           }
           catch (ex) {}
@@ -218,9 +233,6 @@ const EnigmailConfigure = {
           upgradeCustomHeaders();
         }
         if (vc.compare(oldVer, "1.7a1pre") < 0) {
-          // MISSING:
-          // - upgrade extensions.enigmail.recipientsSelection
-          //   to      extensions.enigmail.assignKeys*
           // 1: rules only
           //     => assignKeysByRules true; rest false
           // 2: rules & email addresses (normal)
@@ -257,11 +269,16 @@ const EnigmailConfigure = {
                   });
               }
             }, 100);
+        }
 
+        if (vc.compare(oldVer, "1.9a2pre") < 0) {
+          defaultPgpMime();
         }
       }
     }
-    catch (ex) {}
+    catch (ex) {
+      dump("Error: " + ex.toString());
+    }
 
     EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
     EnigmailPrefs.savePrefs();
