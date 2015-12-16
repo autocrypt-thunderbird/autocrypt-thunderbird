@@ -209,9 +209,7 @@ PgpMimeEncrypt.prototype = {
     if (this.cryptoMode == MIME_SIGNED) this.signedHeaders1(false);
     if (this.cryptoMode == MIME_ENCRYPTED) this.encryptedHeaders();
 
-    if (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
-      this.writeSecureHeaders();
-    }
+    this.writeSecureHeaders();
   },
 
   writeSecureHeaders: function() {
@@ -290,17 +288,17 @@ PgpMimeEncrypt.prototype = {
       }
     }
 
-
-
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader + '"\r\n' + allHdr + '\r\n' +
-      "--" + this.encHeader + "\r\n" +
-      'Content-Type: text/rfc822-headers; charset="utf-8";\r\n' +
-      ' protected-headers="v1,' + this.msgCompFields.messageId + '"\r\n' +
-      'Content-Disposition: inline\r\n' +
-      'Content-Transfer-Encoding: base64\r\n\r\n' +
-      EnigmailData.encodeBase64(visibleHdr) +
-      "\r\n--" + this.encHeader + "\r\n";
+      "--" + this.encHeader + "\r\n";
 
+    if (this.cryptoMode == MIME_ENCRYPTED && this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
+      w += 'Content-Type: text/rfc822-headers; charset="utf-8";\r\n' +
+        ' protected-headers="v1"\r\n' +
+        'Content-Disposition: inline\r\n' +
+        'Content-Transfer-Encoding: base64\r\n\r\n' +
+        EnigmailData.encodeBase64(visibleHdr) +
+        "\r\n--" + this.encHeader + "\r\n";
+    }
     this.writeToPipe(w);
 
     if (this.cryptoMode == MIME_SIGNED) this.writeOut(w);
