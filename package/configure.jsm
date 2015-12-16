@@ -189,24 +189,29 @@ function upgradeOldPgpMime() {
 }
 
 /**
- * Change the default to PGP/MIME for all accounts, except mailnews
- * and except if expert mode is on
+ * Change the default to PGP/MIME for all accounts, except nntp
  */
 function defaultPgpMime() {
-  if (!EnigmailPrefs.getPref("advancedUser")) {
+  let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+  let changedSomething = false;
 
-    let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+  for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+    let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+    if (ac.incomingServer.type.search(/(pop3|imap|movemail)/) >= 0) {
 
-    for (let acct = 0; acct < accountManager.accounts.length; acct++) {
-      let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
-      if (ac.incomingServer.type.search(/(pop3|imap|movemail)/) >= 0) {
-
-        for (let i = 0; i < ac.identities.length; i++) {
-          let id = ac.identities.queryElementAt(i, Ci.nsIMsgIdentity);
-          id.setBoolAttribute("pgpMimeMode", true);
+      for (let i = 0; i < ac.identities.length; i++) {
+        let id = ac.identities.queryElementAt(i, Ci.nsIMsgIdentity);
+        if (id.getBoolAttribute("enablePgp") && !id.getBoolAttribute("pgpMimeMode")) {
+          changedSomething = true;
         }
+        id.setBoolAttribute("pgpMimeMode", true);
       }
     }
+  }
+
+  if (EnigmailPrefs.getPref("advancedUser") && changedSomething) {
+    EnigmailDialog.alert(null,
+      EnigmailLocale.getString("preferences.defaultToPgpMime"));
   }
 }
 
