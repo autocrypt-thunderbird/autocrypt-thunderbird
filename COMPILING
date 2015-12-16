@@ -5,7 +5,6 @@ Prerequisites
 -------------
 In order to build Enigmail you will need the following helper tools:
 - GNU make 3.81 or newer
-- a C-89 compliant compiler (gcc or cc)
 - zip
 - python 2.7 or newer
 - perl 5 or newer
@@ -16,11 +15,5 @@ Building
 Execute the following commands:
  ./configure
  make
-
-Packaging
----------
-
-Execute:
- make xpi
 
 The resulting XPI file can be found in the "build" directory.
