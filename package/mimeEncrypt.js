@@ -279,7 +279,7 @@ PgpMimeEncrypt.prototype = {
 
     // special handling for references and in-reply-to
 
-    if (this.enigSecurityInfo.originalReferences.length > 0) {
+    if (this.enigSecurityInfo.originalReferences && this.enigSecurityInfo.originalReferences.length > 0) {
       allHdr += jsmime.headeremitter.emitStructuredHeader("references", this.enigSecurityInfo.originalReferences, {});
 
       let bracket = this.enigSecurityInfo.originalReferences.lastIndexOf("<");
