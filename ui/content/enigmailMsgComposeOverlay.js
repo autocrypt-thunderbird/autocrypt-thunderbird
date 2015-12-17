@@ -399,9 +399,11 @@ Enigmail.msg = {
     var msgFlags;
     var msgUri = null;
     var msgIsDraft = false;
+
     this.determineSendFlagId = null;
     this.disableSmime = false;
     this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
+    this.enableUndoEncryption(false);
 
     this.displayProtectHeadersStatus();
 
@@ -809,6 +811,17 @@ Enigmail.msg = {
     }
   },
 
+  enableUndoEncryption: function(newStatus) {
+    let eue = document.getElementById("enigmail_undo_encryption");
+
+    if (newStatus) {
+      eue.removeAttribute("disabled");
+    }
+    else
+      eue.setAttribute("disabled", "true");
+  },
+
+
   /**
    *  undo the encryption or signing; get back the original (unsigned/unencrypted) text
    *
@@ -825,6 +838,7 @@ Enigmail.msg = {
       }
       else {
         this.replaceEditorText(this.processed.origText);
+        this.enableUndoEncryption(false);
       }
       this.processed = null;
 
@@ -3457,6 +3471,7 @@ Enigmail.msg = {
 
         // Decode ciphertext from charset to unicode and overwrite
         this.replaceEditorText(EnigmailData.convertToUnicode(cipherText, charset));
+        this.enableUndoEncryption(true);
 
         // Save original text (for undo)
         this.processed = {
@@ -3468,6 +3483,7 @@ Enigmail.msg = {
       else {
         // Restore original text
         this.replaceEditorText(origText);
+        this.enableUndoEncryption(false);
 
         if (sendInfo.sendFlags & (ENCRYPT | SIGN)) {
           // Encryption/signing failed
