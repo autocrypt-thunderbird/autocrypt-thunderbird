@@ -296,11 +296,6 @@ Enigmail.hdrView = {
           statusInfo += si;
           statusLine = si + EnigmailLocale.getString("clickDetailsButton");
         }
-        //if (statusFlags & nsIEnigmail.INLINE_KEY) {
-        //  statusLine = statusInfo + EnigmailLocale.getString("clickDecrypt");
-        //} else {
-        //  statusLine = statusInfo + EnigmailLocale.getString("clickPen");
-        //}
         if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
           statusInfo += "\n" + EnigmailLocale.getString("keyNeeded", [keyId]); // "public key ... needed"
         }
@@ -409,8 +404,8 @@ Enigmail.hdrView = {
       this.enigmailBox.removeAttribute("collapsed");
       this.displayExtendedStatus(true);
 
-      if (Enigmail.msg.securityInfo.keyId &&
-        (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      if ((Enigmail.msg.securityInfo.keyId && (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
+        (statusFlags & nsIEnigmail.INLINE_KEY)) {
         document.getElementById("enigmail_importKey").removeAttribute("hidden");
       }
       else {

@@ -2289,8 +2289,16 @@ Enigmail.msg = {
     EnigmailDecryptPermanently.dispatchMessages(msgHdrs, destFolder.URI, false, false);
   },
 
-  // download keys
+  // download or import keys
   handleUnknownKey: function() {
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    // handline keys embedded in message body
+
+    if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.INLINE_KEY) {
+      return Enigmail.msg.messageDecrypt(null, false);
+    }
+
     var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId;
     var inputObj = {
       searchList: [pubKeyId],

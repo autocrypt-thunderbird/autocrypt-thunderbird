@@ -487,7 +487,7 @@ const EnigmailDecryption = {
 
     if (publicKey) {
       if (!allowImport) {
-        errorMsgObj.value = EnigmailLocale.getString("decryptToImport");
+        errorMsgObj.value = EnigmailLocale.getString("keyInMessageBody");
         statusFlagsObj.value |= nsIEnigmail.DISPLAY_MESSAGE;
         statusFlagsObj.value |= nsIEnigmail.INLINE_KEY;
 
