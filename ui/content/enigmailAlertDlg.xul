@@ -32,7 +32,7 @@
 
   <vbox align="center" flex="1" style="overflow:auto" id="outerbox">
     <hbox align="center" flex="1">
-      <description flex="1" id="msgtext" style="plain;white-space: pre"/>
+      <textbox flex="1" id="msgtext" class="plain" style="white-space: pre;" readonly="true"/>
     </hbox>
   </vbox>
 

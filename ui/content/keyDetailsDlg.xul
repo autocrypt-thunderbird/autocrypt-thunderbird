@@ -44,16 +44,18 @@
         <rows>
           <row>
             <label value="&enigmail.keyDetails.userId.label;" control="userId"/>
-            <label id="userId" value="?"/>
+            <textbox id="userId" class="plain" style="white-space: pre;"
+              readonly="true" value="?" multiline="false" size="60"/>
           </row>
           <row>
             <label value="&enigmail.keyDetails.keyType.label;" control="keyType"/>
-            <label id="keyType" value="?"/>
+            <textbox id="keyType" class="plain" style="white-space: pre;"
+              readonly="true" value="?" multiline="false" size="60"/>
           </row>
           <row>
             <label value="&enigmail.keyDetails.fingerprint.label;" control="fingerprint"/>
-            <label id="fingerprint" value="?"
-              style="-moz-user-select: text; -moz-user-focus: normal;"/>
+            <textbox id="fingerprint" class="plain" style="white-space: pre;"
+              readonly="true" value="?" multiline="false" size="60"/>
           </row>
         </rows>
       </grid>
