@@ -225,7 +225,7 @@ EnigmailMimeDecrypt.prototype = {
           let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
 
 
-          if ((!this.backgroundJob) && currUrlSpec != manUrlSpec) {
+          if ((!this.backgroundJob) && currUrlSpec.indexOf(manUrlSpec) !== 0) {
             return this.handleManualDecrypt();
           }
         }
