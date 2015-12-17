@@ -274,7 +274,7 @@ const EnigmailDecryption = {
                 sigUserId = matches[2];
               }
               else {
-                // ERRSIG entry => signature found but key revoked
+                // ERRSIG entry => signature found but key not usable or unavailable
                 matches = errLines[j].match(errsigPat);
                 if (matches && (matches.length > 2)) {
                   if (signed) {
@@ -377,13 +377,12 @@ const EnigmailDecryption = {
 
       if (goodOrExpOrRevSignature) {
         retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefGood", [sigUserId]);
-        /* + ", " +
-                                                                                                       EnigmailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
+        /* + ", " + EnigmailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
       }
       else {
-        retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefBad", [sigUserId]);
-        /*+ ", " +
-                                                                                                      EnigmailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
+        if (sigUserId.length > 0) {
+          retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefBad", [sigUserId]);
+        }
         if (!exitCode)
           exitCode = 1;
       }
