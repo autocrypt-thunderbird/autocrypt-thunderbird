@@ -95,10 +95,10 @@ function onLoad() {
   else {
     switch (gEnigRequest.requestType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
+        newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, enigScanKeys);
+        newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
         break;
     }
   }
@@ -163,13 +163,13 @@ function startDownload() {
     gEnigRequest.errorTxt = "";
     switch (gEnigRequest.requestType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, enigImportKeys);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        enigNewGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, enigImportKeys);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, enigImportKeys);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
         break;
     }
 
@@ -210,14 +210,14 @@ function onCancel() {
 }
 
 
-function enigStatusError() {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigStatusError\n");
+function statusError() {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: statusError\n");
   gEnigRequest.httpInProgress = false;
   EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyserverConn", this.channel.originalURI.prePath));
-  enigCloseDialog();
+  closeDialog();
 }
 
-function enigCloseDialog() {
+function closeDialog() {
   if (window.arguments[RESULT].importedKeys > 0) {
     EnigmailKeyRing.clearCache();
   }
@@ -226,21 +226,21 @@ function enigCloseDialog() {
   window.close();
 }
 
-function enigStatusLoadedKeybase(event) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigStatusLoadedKeybase\n");
+function statusLoadedKeybase(event) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
 
   if (this.status === 200) {
     this.requestCallbackFunc(ENIG_CONN_TYPE_KEYBASE, this.responseText, "");
   }
   else {
     EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", this.statusText));
-    enigCloseDialog();
+    closeDialog();
     return;
   }
 }
 
-function enigStatusLoaded(event) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigStatusLoaded\n");
+function statusLoadedKeybase(event) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
 
   if (this.status == 200) {
     // de-HTMLize the result
@@ -253,26 +253,26 @@ function enigStatusLoaded(event) {
   }
   else if (this.statusText != "OK") {
     EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", this.statusText));
-    enigCloseDialog();
+    closeDialog();
     return;
   }
 
 }
 
 
-function enigImportKeys(connType, txt, errorTxt) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigImportKeys\n");
+function importKeys(connType, txt, errorTxt) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: importKeys\n");
 
   gEnigRequest.keyNum++;
   gEnigRequest.progressMeter.mode = "determined";
   gEnigRequest.progressMeter.value = (100 * gEnigRequest.keyNum / gEnigRequest.dlKeyList.length).toFixed(0);
 
   if (connType == ENIG_CONN_TYPE_KEYBASE) {
-    enigImportKeybaseKeys(txt);
+    importKeybaseKeys(txt);
   }
   else {
     if (errorTxt.search(/^\[GNUPG:\] IMPORT_RES/m) < 0) {
-      if (!enigImportHtmlKeys(txt)) return;
+      if (!importHtmlKeys(txt)) return;
     }
     else if (errorTxt) {
       let resStatusObj = {};
@@ -288,13 +288,13 @@ function enigImportKeys(connType, txt, errorTxt) {
   if (gEnigRequest.dlKeyList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        enigNewGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        enigNewHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return;
   }
@@ -307,30 +307,37 @@ function enigImportKeys(connType, txt, errorTxt) {
 
   gEnigRequest.httpInProgress = false;
 
-  enigCloseDialog();
+  closeDialog();
 }
 
-function enigImportHtmlKeys(txt) {
-  var errorMsgObj = {};
+function importHtmlKeys(txt) {
+  let errorMsgObj = {};
 
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return false;
-
-  var r = EnigmailKeyRing.importKey(window, true, txt,
-    gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
-    errorMsgObj);
-  if (errorMsgObj.value)
-    EnigmailDialog.alert(window, errorMsgObj.value);
-  if (r === 0) {
-    window.arguments[RESULT].importedKeys++;
-    return true;
+  if (txt.length === 0) {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
   }
+  else {
+    let enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return false;
+
+    let r = EnigmailKeyRing.importKey(window, true, txt, gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1], errorMsgObj);
+
+    if (r === 0) {
+      window.arguments[RESULT].importedKeys++;
+      return true;
+    }
+    else if (errorMsgObj.value) {
+      EnigmailDialog.alert(window, errorMsgObj.value);
+    }
+  }
+
+  closeDialog();
   return false;
 }
 
-function enigImportKeybaseKeys(txt) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigImportKeybaseKeys\n");
+function importKeybaseKeys(txt) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: importKeybaseKeys\n");
   var errorMsgObj = {};
 
   var enigmailSvc = GetEnigmailSvc();
@@ -363,8 +370,8 @@ function enigImportKeybaseKeys(txt) {
 }
 
 
-function enigNewHttpRequest(requestType, requestCallbackFunc) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigNewHttpRequest\n");
+function newHttpRequest(requestType, requestCallbackFunc) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: newHttpRequest\n");
 
   switch (gEnigRequest.protocol) {
     case "hkp":
@@ -382,7 +389,7 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
       if (!EnigmailPrefs.getPref("useGpgKeysTool"))
         msg += " " + EnigmailLocale.getString("gpgkeysDisabled");
       EnigmailDialog.alert(window, msg);
-      enigCloseDialog();
+      closeDialog();
       return;
   }
 
@@ -419,13 +426,13 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
 
   gEnigRequest.httpInProgress = true;
   httpReq.open("GET", reqCommand);
-  httpReq.onerror = enigStatusError;
+  httpReq.onerror = statusError;
 
   if (gEnigRequest.protocol == "keybase") {
-    httpReq.onload = enigStatusLoadedKeybase;
+    httpReq.onload = statusLoadedKeybase;
   }
   else {
-    httpReq.onload = enigStatusLoaded;
+    httpReq.onload = statusLoadedKeybase;
   }
 
   httpReq.requestCallbackFunc = requestCallbackFunc;
@@ -434,8 +441,8 @@ function enigNewHttpRequest(requestType, requestCallbackFunc) {
 }
 
 
-function enigScanKeys(connType, htmlTxt) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigScanKeys\n");
+function scanKeys(connType, htmlTxt) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: scanKeys\n");
 
   gEnigRequest.keyNum++;
   gEnigRequest.progressMeter.mode = "determined";
@@ -455,14 +462,14 @@ function enigScanKeys(connType, htmlTxt) {
       enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
       break;
     case ENIG_CONN_TYPE_GPGKEYS:
-      enigScanGpgKeys(EnigmailData.convertGpgToUnicode(htmlTxt));
+      scanGpgKeys(EnigmailData.convertGpgToUnicode(htmlTxt));
       break;
     case ENIG_CONN_TYPE_KEYBASE:
       EnigmailLog.DEBUG("enigmailSearchKey.js: htmlTxt: " + htmlTxt + "\n");
       var resp = JSON.parse(htmlTxt);
 
       if (resp.status.code === 0) {
-        enigScanKeybaseKeys(resp.completions);
+        scanKeybaseKeys(resp.completions);
       }
       else {
         EnigmailDialog.alert(window, "Internal Error: " + resp.status.name);
@@ -476,24 +483,24 @@ function enigScanKeys(connType, htmlTxt) {
   if (gEnigRequest.searchList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        enigNewHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
+        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        enigNewGpgKeysRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return true;
   }
 
   gEnigRequest.httpInProgress = false;
-  enigPopulateList(gEnigRequest.keyList);
+  populateList(gEnigRequest.keyList);
   document.getElementById("progress.box").setAttribute("hidden", "true");
   document.getElementById("selall-button").removeAttribute("hidden");
   if (gEnigRequest.keyList.length === 0) {
     EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
-    enigCloseDialog();
+    closeDialog();
   }
 
   document.getElementById("dialog.accept").removeAttribute("disabled");
@@ -501,8 +508,8 @@ function enigScanKeys(connType, htmlTxt) {
   return true;
 }
 
-function enigScanKeybaseKeys(completions) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigScanKeybaseKeys\n");
+function scanKeybaseKeys(completions) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: scanKeybaseKeys\n");
 
   for (var hit in completions) {
     if (completions[hit] && completions[hit].components.key_fingerprint !== undefined) {
@@ -582,8 +589,8 @@ function unescapeAndConvert(txt) {
   return EnigmailData.convertToUnicode(unescape(txt), "utf-8");
 }
 
-function enigScanGpgKeys(txt) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigScanGpgKeys\n");
+function scanGpgKeys(txt) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: scanGpgKeys\n");
   EnigmailLog.DEBUG("got text: " + txt + "\n");
 
   // protocol version 0: GnuPG 1.2 and older versions of GnuPG 1.4.x
@@ -672,8 +679,8 @@ function enigScanGpgKeys(txt) {
 
 // interaction with gpgkeys_xxx
 
-function enigNewGpgKeysRequest(requestType, callbackFunction) {
-  EnigmailLog.DEBUG("enigmailSearchkey.js: enigNewGpgKeysRequest\n");
+function newHttpRequest(requestType, callbackFunction) {
+  EnigmailLog.DEBUG("enigmailSearchkey.js: newHttpRequest\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
@@ -689,7 +696,7 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
 
   var procListener = {
     done: function(exitCode) {
-      enigmailGpgkeysTerminate(exitCode);
+      gpgkeysTerminate(exitCode);
     },
     stdout: function(data) {
       gOutputData += data;
@@ -714,7 +721,7 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
 
   if (gEnigRequest.protocol == "keybase") {
     gEnigRequest.requestType = ENIG_CONN_TYPE_KEYBASE;
-    enigNewHttpRequest(requestType, enigScanKeys);
+    newHttpRequest(requestType, scanKeys);
   }
   else {
     var errorMsgObj = {};
@@ -731,11 +738,11 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
         case "http":
         case "https":
           gEnigRequest.requestType = ENIG_CONN_TYPE_HTTP;
-          enigNewHttpRequest(requestType, enigScanKeys);
+          newHttpRequest(requestType, scanKeys);
           return;
         default:
           EnigmailDialog.alert(window, EnigmailLocale.getString("gpgKeysFailed", gEnigRequest.protocol));
-          enigCloseDialog();
+          closeDialog();
           return;
       }
     }
@@ -745,8 +752,8 @@ function enigNewGpgKeysRequest(requestType, callbackFunction) {
 }
 
 
-function enigmailGpgkeysTerminate(exitCode) {
-  EnigmailLog.DEBUG("enigmailSearchkey.js: enigmailGpgkeysTerminate: exitCode=" + exitCode + "\n");
+function gpgkeysTerminate(exitCode) {
+  EnigmailLog.DEBUG("enigmailSearchkey.js: gpgkeysTerminate: exitCode=" + exitCode + "\n");
 
   gEnigRequest.gpgkeysRequest = null;
 
@@ -765,8 +772,8 @@ function enigmailGpgkeysTerminate(exitCode) {
 
 // GUI related stuff
 
-function enigPopulateList(keyList) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigPopulateList\n");
+function populateList(keyList) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: populateList\n");
 
   var sortUsers = function(a, b) {
     if (a.uid[0] < b.uid[0]) {
@@ -806,12 +813,12 @@ function enigPopulateList(keyList) {
   var treeItem;
 
   for (var i = 0; i < keyList.length; i++) {
-    treeItem = enigUserSelCreateRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, keyList[i].status);
+    treeItem = createListRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, keyList[i].status);
     if (keyList[i].uid.length > 1) {
       treeItem.setAttribute("container", "true");
       var subChildren = document.createElement("treechildren");
       for (j = 1; j < keyList[i].uid.length; j++) {
-        var subItem = enigUserSelCreateRow(keyList[i].keyId, true, keyList[i].uid[j], "", keyList[i].status);
+        var subItem = createListRow(keyList[i].keyId, true, keyList[i].uid[j], "", keyList[i].status);
         subChildren.appendChild(subItem);
       }
       treeItem.appendChild(subChildren);
@@ -825,8 +832,8 @@ function enigPopulateList(keyList) {
   }
 }
 
-function enigUserSelCreateRow(keyId, subKey, userId, dateField, trustStatus) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigUserSelCreateRow\n");
+function createListRow(keyId, subKey, userId, dateField, trustStatus) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: createListRow\n");
   var selectCol = document.createElement("treecell");
   selectCol.setAttribute("id", "indicator");
   var expCol = document.createElement("treecell");
@@ -878,8 +885,8 @@ function enigUserSelCreateRow(keyId, subKey, userId, dateField, trustStatus) {
   return treeItem;
 }
 
-function enigmailKeySelCallback(event) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: enigmailKeySelCallback\n");
+function keySelectCallback(event) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: keySelectCallback\n");
 
   var Tree = document.getElementById("enigmailKeySel");
   var row = {};

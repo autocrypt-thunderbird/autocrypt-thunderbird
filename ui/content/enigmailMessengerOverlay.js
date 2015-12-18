@@ -861,7 +861,8 @@ Enigmail.msg = {
   messageParseCallback: function(msgText, contentEncoding, charset, interactive,
     importOnly, messageUrl, signature, retry,
     head, tail, msgUriSpec) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: " + interactive + ", " + interactive + ", importOnly=" + importOnly + ", charset=" + charset + ", msgUrl=" + messageUrl +
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: " + interactive + ", " + interactive + ", importOnly=" + importOnly + ", charset=" + charset + ", msgUrl=" +
+      messageUrl +
       ", retry=" + retry + ", signature='" + signature + "'\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -1332,9 +1333,6 @@ Enigmail.msg = {
       }
 
       return true;
-    }
-    else {
-      EnigmailDialog.alert(window, "PGPMail");
     }
 
     return false;
@@ -2289,16 +2287,24 @@ Enigmail.msg = {
     EnigmailDecryptPermanently.dispatchMessages(msgHdrs, destFolder.URI, false, false);
   },
 
-  // download or import keys
-  handleUnknownKey: function() {
+  importAttachedKeys: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: importAttachedKeys\n");
+
+    let keyFound = false;
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-    // handline keys embedded in message body
-
-    if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.INLINE_KEY) {
-      return Enigmail.msg.messageDecrypt(null, false);
+    for (let i in currentAttachments) {
+      if (currentAttachments[i].contentType.search(/application\/pgp-keys/i) >= 0) {
+        // found attached key
+        this.handleAttachment("importKey", currentAttachments[i]);
+        keyFound = true;
+      }
     }
 
+    return keyFound;
+  },
+
+  importKeyFromKeyserver: function() {
     var pubKeyId = "0x" + Enigmail.msg.securityInfo.keyId;
     var inputObj = {
       searchList: [pubKeyId],
@@ -2307,9 +2313,27 @@ Enigmail.msg = {
     var resultObj = {};
     EnigmailWindows.downloadKeys(window, inputObj, resultObj);
 
+
     if (resultObj.importedKeys > 0) {
-      this.messageReload(false);
+      return true;
     }
+  },
+
+  // download or import keys
+  handleUnknownKey: function() {
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    let imported = false;
+    // handline keys embedded in message body
+
+    if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.INLINE_KEY) {
+      return Enigmail.msg.messageDecrypt(null, false);
+    }
+
+    imported = this.importAttachedKeys();
+    if (!imported) imported = this.importKeyFromKeyserver();
+
+    if (imported) this.messageReload(false);
   }
 };
 

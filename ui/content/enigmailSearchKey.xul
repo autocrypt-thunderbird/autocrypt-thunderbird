@@ -36,7 +36,7 @@
     <tree id="enigmailKeySel" flex="1"
       hidecolumnpicker="false"
       style="height:350px"
-      onclick="enigmailKeySelCallback(event);">
+      onclick="keySelectCallback(event);">
 
       <keyset id="winKeys">
         <key id="key_selectAll" key="&enigmail.keySearch.selectAll.key;"

@@ -82,6 +82,8 @@ function onLoad() {
   }
   else {
     EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(EnigmailLocale.getString("importInfoNoKeys")));
+    EnigmailEvents.dispatchEvent(window.close, 0);
+    return;
   }
 
   EnigmailEvents.dispatchEvent(resizeDlg, 0);

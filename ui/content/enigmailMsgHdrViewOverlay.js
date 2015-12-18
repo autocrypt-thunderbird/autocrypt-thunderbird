@@ -119,7 +119,6 @@ Enigmail.hdrView = {
     if (gFolderDisplay.selectedMessageUris && gFolderDisplay.selectedMessageUris.length > 0) {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
     }
-    var bodyElement = document.getElementById("messagepanebox");
 
     if (!errorMsg) errorMsg = "";
 
@@ -381,15 +380,28 @@ Enigmail.hdrView = {
       statusArr: statusArr,
       statusInfo: statusInfo,
       fullStatusInfo: fullStatusInfo,
-      blockSeparation: blockSeparation
+      blockSeparation: blockSeparation,
+      xtraStatus: xtraStatus
     };
 
-    var statusText = document.getElementById("enigmailStatusText");
-    var expStatusText = document.getElementById("expandedEnigmailStatusText");
-    var icon = document.getElementById("enigToggleHeaderView2");
+    this.displayStatusBar();
+    this.updateMsgDb();
 
-    if (statusArr.length > 0) {
-      expStatusText.value = statusArr[0];
+  },
+
+  displayStatusBar: function() {
+    const nsIEnigmail = EnigmailConstants.nsIEnigmail;
+
+    let statusText = document.getElementById("enigmailStatusText");
+    let expStatusText = document.getElementById("expandedEnigmailStatusText");
+    let icon = document.getElementById("enigToggleHeaderView2");
+    let bodyElement = document.getElementById("messagepanebox");
+
+    let secInfo = Enigmail.msg.securityInfo;
+    let statusFlags = secInfo.statusFlags;
+
+    if (secInfo.statusArr.length > 0) {
+      expStatusText.value = secInfo.statusArr[0];
       expStatusText.setAttribute("state", "true");
       icon.removeAttribute("collapsed");
     }
@@ -399,12 +411,12 @@ Enigmail.hdrView = {
       icon.setAttribute("collapsed", "true");
     }
 
-    if (statusLine) {
-      this.setStatusText(statusLine + " ");
+    if (secInfo.statusLine) {
+      this.setStatusText(secInfo.statusLine + " ");
       this.enigmailBox.removeAttribute("collapsed");
       this.displayExtendedStatus(true);
 
-      if ((Enigmail.msg.securityInfo.keyId && (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
+      if ((secInfo.keyId && (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) ||
         (statusFlags & nsIEnigmail.INLINE_KEY)) {
         document.getElementById("enigmail_importKey").removeAttribute("hidden");
       }
@@ -484,15 +496,14 @@ Enigmail.hdrView = {
       }
 
       // special handling after trying to fix buggy mail format (see buggyExchangeEmailContent in code)
-      if (xtraStatus && xtraStatus == "buggyMailFormat") {
+      if (secInfo.xtraStatus && secInfo.xtraStatus == "buggyMailFormat") {
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelBuggyMailFormat");
       }
 
-      this.updateMsgDb();
-
-
     }
-    catch (ex) {}
+    catch (ex) {
+      EnigmailLog.writeException("displayStatusBar", ex);
+    }
   },
 
   dispSecurityContext: function() {
@@ -537,7 +548,6 @@ Enigmail.hdrView = {
       "keyMgmtDispKeyDetails",
       "importpublickey");
   },
-
 
   setSenderStatus: function(elemSign, elemTrust, elemPhoto, elemKeyProps, elemImportKey) {
 

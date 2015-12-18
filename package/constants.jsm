@@ -36,5 +36,8 @@ const EnigmailConstants = {
 
   MIME_HANDLER_UNDEF: 0,
   MIME_HANDLER_SMIME: 1,
-  MIME_HANDLER_PGPMIME: 2
+  MIME_HANDLER_PGPMIME: 2,
+
+  nsIEnigmail: Components.interfaces.nsIEnigmail
+
 };
