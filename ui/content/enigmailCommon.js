@@ -688,6 +688,7 @@ function EnigGetHttpUri(aEvent) {
   // getHttpUri main function
 
   let href = hRefForClickEvent(aEvent);
+  if (!href) return null;
 
   EnigmailLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='" + href + "'\n");
 
