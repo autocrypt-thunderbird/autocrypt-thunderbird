@@ -679,15 +679,20 @@ Enigmail.msg = {
     let bc = document.getElementById("enigmail-bc-attach");
     let attachIcon = document.getElementById("button-enigmail-attach");
 
-    if (this.attachOwnKeyObj.appendAttachment) {
-      bc.setAttribute("addPubkey", "true");
-      bc.setAttribute("checked", "true");
-      this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyYes");
+    if (this.allowAttachOwnKey() === 0) {
+      this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyDisabled");
     }
     else {
-      bc.setAttribute("addPubkey", "false");
-      bc.removeAttribute("checked");
-      this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyNo");
+      if (this.attachOwnKeyObj.appendAttachment) {
+        bc.setAttribute("addPubkey", "true");
+        bc.setAttribute("checked", "true");
+        this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyYes");
+      }
+      else {
+        bc.setAttribute("addPubkey", "false");
+        bc.removeAttribute("checked");
+        this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyNo");
+      }
     }
     attachIcon.setAttribute("tooltiptext", this.statusAttachOwnKey);
 
@@ -1694,15 +1699,7 @@ Enigmail.msg = {
       this.inlinePGPStr = EnigmailLocale.getString("inlinePGPNormal");
     }
 
-    let allowAttachOwnKey = false;
-    if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
-      let keyIdValue = this.identity.getCharAttribute("pgpkeyId");
-      if (keyIdValue.search(/^ *(0x)?[0-9a-fA-F]* *$/) === 0) {
-        allowAttachOwnKey = true;
-      }
-    }
-
-    if (allowAttachOwnKey) {
+    if (this.allowAttachOwnKey() === 1) {
       attachBroadcaster.removeAttribute("disabled");
     }
     else {
@@ -1711,6 +1708,29 @@ Enigmail.msg = {
 
   },
 
+  /**
+   * determine if own key may be attached.
+   * @result: Number:
+   *          -1: account not enabled for Enigmail
+   *           0: account enabled but key mode set to "by Email address"
+   *           1: account enabled; key specified
+   */
+  allowAttachOwnKey: function() {
+
+    let allow = -1;
+
+    if (this.getAccDefault("enabled")) {
+      allow = 0;
+      if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
+        let keyIdValue = this.identity.getCharAttribute("pgpkeyId");
+        if (keyIdValue.search(/^ *(0x)?[0-9a-fA-F]* *$/) === 0) {
+          allow = 1;
+        }
+      }
+    }
+
+    return allow;
+  },
 
   /* compute whether to sign/encrypt according to current rules and sendMode
    * - without any interaction, just to process resulting status bar icons
