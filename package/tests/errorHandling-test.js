@@ -15,6 +15,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withT
 testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Cc: false, Ci: false */
 component("enigmail/os.jsm"); /*global EnigmailOS: false */
 component("enigmail/system.jsm"); /*global EnigmailSystem: false */
+component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 // simulate Unix, and UTF-8 (works on all systems)
 EnigmailOS.isWin32 = false;
@@ -103,7 +104,7 @@ test(function shouldHandleErrorOutput() {
     "gpg: [stdin]: clearsign failed: Operation cancelled\n";
   const retStatusObj = {};
   EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
-  Assert.assertContains(retStatusObj.statusMsg, "Missing Passphrase");
+  Assert.assertContains(retStatusObj.statusMsg, EnigmailLocale.getString("missingPassphrase"));
   Assert.equal(retStatusObj.extendedStatus, "");
 });
 

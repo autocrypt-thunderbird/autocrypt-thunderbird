@@ -78,8 +78,8 @@ let gSubkeyIndex = [];
     - expiry          - Expiry date as printable string
     - expiryTime      - Expiry time as seconds after 01/01/1970
     - created         - Key creation date as printable string
-    - keyTrust        - key trust code as provided by GnuPG
-    - keyUseFor       - key usage type as provided by GnuPG
+    - keyTrust        - key trust code as provided by GnuPG (calculated key validity)
+    - keyUseFor       - key usage type as provided by GnuPG (key capabilities)
     - ownerTrust      - owner trust as provided by GnuPG
     - photoAvailable  - [Boolean] true if photo is available
     - secretAvailable - [Boolean] true if secret key is available
@@ -1582,6 +1582,155 @@ KeyObject.prototype = {
     }
 
     return nUid >= 2;
+  },
+
+  /**
+   * Determine if the public key is valid. If not, return a description why it's not
+   *
+   * @return Object:
+   *   - keyValid: Boolean (true if key is valid)
+   *   - reason: String (explanation of invalidity)
+   */
+  getPubKeyValidity: function() {
+    let retVal = {
+      keyValid: false,
+      reason: ""
+    };
+    if (this.keyTrust.search(/r/i) >= 0) {
+      // public key revoked
+      retVal.reason = EnigmailLocale.getString("keyRing.pubKeyRevoked", [this.userId, "0x" + this.keyId]);
+    }
+    else if (this.keyTrust.search(/e/i) >= 0) {
+      // public key expired
+      retVal.reason = EnigmailLocale.getString("keyRing.pubKeyExpired", [this.userId, "0x" + this.keyId]);
+    }
+    else if (this.keyTrust.search(/d/i) >= 0 || this.keyUseFor.search(/D/i) >= 0) {
+      // public key disabled
+      retVal.reason = EnigmailLocale.getString("keyRing.keyDisabled", [this.userId, "0x" + this.keyId]);
+    }
+    else if (this.keyTrust.search(/i/i) >= 0) {
+      // public key invalid
+      retVal.reason = EnigmailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
+    }
+    else
+      retVal.keyValid = true;
+
+    return retVal;
+  },
+
+
+  /**
+   * Check whether a key can be used for signing and return a description of why not
+   *
+   * @return Object:
+   *   - keyValid: Boolean (true if key is valid)
+   *   - reason: String (explanation of invalidity)
+   */
+  getSigningValidity: function() {
+    let retVal = this.getPubKeyValidity();
+
+    if (!retVal.keyValid) return retVal;
+
+    if (!this.secretAvailable) {
+      retVal.reason = EnigmailLocale.getString("keyRing.noSecretKey", [this.userId, "0x" + this.keyId]);
+      retVal.keyValid = false;
+    }
+    else if (this.keyUseFor.search(/S/) < 0) {
+      retVal.keyValid = false;
+
+      if (this.keyTrust.search(/u/i) < 0) {
+        // public key invalid
+        retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
+      }
+      else {
+        let expired = 0,
+          revoked = 0,
+          unusable = 0,
+          found = 0;
+        // public key is valid; check for signing subkeys
+        for (let sk in this.subKeys) {
+          if (this.subKeys[sk].keyUseFor.search(/[sS]/) >= 0) {
+            // found subkey usable for signing
+            ++found;
+            if (this.subKeys[sk].keyTrust.search(/e/i) >= 0) ++expired;
+            if (this.subKeys[sk].keyTrust.search(/r/i) >= 0) ++revoked;
+            if (this.subKeys[sk].keyTrust.search(/[di\-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
+          }
+        }
+
+        if (found > 0 && (expired > 0 || revoked > 0)) {
+          if (found === expired) {
+            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysExpired", [this.userId, "0x" + this.keyId]);
+          }
+          else if (found === revoked) {
+            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysRevoked", [this.userId, "0x" + this.keyId]);
+          }
+          else {
+            retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysUnusable", [this.userId, "0x" + this.keyId]);
+          }
+        }
+        else
+          retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForSigning", [this.userId, "0x" + this.keyId]);
+      }
+    }
+
+    return retVal;
+  },
+
+
+  /**
+   * Check whether a key can be used for encryption and return a description of why not
+   *
+   * @return Object:
+   *   - keyValid: Boolean (true if key is valid)
+   *   - reason: String (explanation of invalidity)
+   */
+  getEncryptionValidity: function() {
+    let retVal = this.getPubKeyValidity();
+
+    if (!retVal.keyValid) return retVal;
+
+    if (this.keyUseFor.search(/E/) < 0) {
+      retVal.keyValid = false;
+
+      if (this.keyTrust.search(/u/i) < 0) {
+        // public key invalid
+        retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
+      }
+      else {
+        let expired = 0,
+          revoked = 0,
+          unusable = 0,
+          found = 0;
+        // public key is valid; check for signing subkeys
+
+        for (let sk in this.subKeys) {
+          if (this.subKeys[sk].keyUseFor.search(/[eE]/) >= 0) {
+            // found subkey usable for signing
+            ++found;
+            if (this.subKeys[sk].keyTrust.search(/e/i) >= 0) ++expired;
+            if (this.subKeys[sk].keyTrust.search(/r/i) >= 0) ++revoked;
+            if (this.subKeys[sk].keyTrust.search(/[di\-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
+          }
+        }
+
+        if (found > 0 && (expired > 0 || revoked > 0)) {
+          if (found === expired) {
+            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysExpired", [this.userId, "0x" + this.keyId]);
+          }
+          else if (found === revoked) {
+            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysRevoked", [this.userId, "0x" + this.keyId]);
+          }
+          else {
+            retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysUnusable", [this.userId, "0x" + this.keyId]);
+          }
+        }
+        else
+          retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForEncryption", [this.userId, "0x" + this.keyId]);
+      }
+    }
+
+    return retVal;
   }
 };
 

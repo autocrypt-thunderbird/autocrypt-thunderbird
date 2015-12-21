@@ -563,7 +563,8 @@ PgpMimeEncrypt.prototype = {
 
     let retStatusObj = {};
 
-    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.statusStr,
+    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.enigSecurityInfo.senderEmailAddr,
+      this.statusStr,
       exitCode,
       this.enigSecurityInfo.UIFlags,
       this.enigSecurityInfo.sendFlags,

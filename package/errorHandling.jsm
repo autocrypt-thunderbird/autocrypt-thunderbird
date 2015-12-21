@@ -18,6 +18,8 @@ Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/data.jsm");
 Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/system.jsm"); /* global EnigmailSystem: false */
+Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 
 
 const nsIEnigmail = Ci.nsIEnigmail;
@@ -106,25 +108,87 @@ function missingPassphrase(c) {
   c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
   c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
   c.flag = 0;
-  EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: missing passphrase" + "\n");
-  c.retStatusObj.statusMsg += "Missing Passphrase\n";
+  EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase" + "\n");
+  c.retStatusObj.statusMsg += EnigmailLocale.getString("missingPassphrase") + "\n";
 }
+
 
 function invalidSignature(c) {
   var lineSplit = c.statusLine.split(/ +/);
   c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
   c.flag = 0;
-  EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: detected invalid sender: " + lineSplit[2] + " / code: " + lineSplit[1] + "\n");
-  c.retStatusObj.statusMsg += EnigmailLocale.getString("gnupg.invalidKey.desc", [lineSplit[2]]);
+
+  let keySpec = lineSplit[2];
+
+  if (keySpec) {
+    EnigmailLog.DEBUG("errorHandling.jsm: invalidSignature: detected invalid sender: " + keySpec + " / code: " + lineSplit[1] + "\n");
+
+    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
+      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      if (!key) {
+        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+      }
+      else {
+        let r = key.getSigningValidity();
+        if (!r.keyValid) c.retStatusObj.errorMsg += r.reason;
+      }
+    }
+    else {
+      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      if (!keys || keys.length === 0) {
+        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+      }
+      else {
+        for (let i in keys) {
+          let r = keys[i].getSigningValidity();
+          if (!r.keyValid) c.retStatusObj.errorMsg += r.reason + "\n";
+        }
+      }
+    }
+  }
+}
+
+function invalidRecipient(c) {
+  var lineSplit = c.statusLine.split(/ +/);
+  c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+  c.flag = 0;
+
+  let keySpec = lineSplit[2];
+  EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid recipient " + keySpec + " / code: " + lineSplit[1] + "\n");
+
+  if (keySpec) {
+    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
+      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      if (!key) {
+        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+      }
+      else {
+        let r = key.getEncryptionValidity();
+        if (!r.keyValid) c.retStatusObj.errorMsg += r.reason;
+      }
+    }
+    else {
+      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      if (!keys || keys.length === 0) {
+        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+      }
+      else {
+        for (let i in keys) {
+          let r = keys[i].getEncryptionValidity();
+          if (!r.keyValid) c.retStatusObj.errorMsg += r.reason + "\n";
+        }
+      }
+    }
+  }
 }
 
 function importOk(c) {
   var lineSplit = c.statusLine.split(/ +/);
   if (lineSplit.length > 1) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: key imported: " + lineSplit[2] + "\n");
+    EnigmailLog.DEBUG("errorHandling.jsm: importOk: key imported: " + lineSplit[2] + "\n");
   }
   else {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: key without FPR imported\n");
+    EnigmailLog.DEBUG("errorHandling.jsm: importOk: key without FPR imported\n");
   }
 
   let importFlag = Number(lineSplit[1]);
@@ -169,6 +233,7 @@ function setupFailureLookup() {
   result[Ci.nsIEnigmail.CARDCTRL] = cardControl;
   result[Ci.nsIEnigmail.UNVERIFIED_SIGNATURE] = unverifiedSignature;
   result[Ci.nsIEnigmail.MISSING_PASSPHRASE] = missingPassphrase;
+  result[gStatusFlags.INV_RECP] = invalidRecipient;
   result[gStatusFlags.INV_SGNR] = invalidSignature;
   result[gStatusFlags.IMPORT_OK] = importOk;
   return result;
@@ -302,7 +367,7 @@ function buildErrorMessageForCardCtrl(c, errCode, detectedCard) {
 }
 
 function parseErrorOutputWith(c) {
-  EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: status message: \n" + c.errOutput + "\n");
+  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: status message: \n" + c.errOutput + "\n");
 
   c.errLines = splitErrorOutput(c.errOutput);
 
@@ -329,9 +394,8 @@ function parseErrorOutputWith(c) {
     c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
   }
 
-  EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput: statusFlags = " + EnigmailData.bytesToHex(EnigmailData.pack(c.statusFlags, 4)) + "\n");
-
-  EnigmailLog.DEBUG("enigmailCommon.jsm: parseErrorOutput(): return with c.errorMsg = " + c.errorMsg + "\n");
+  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: statusFlags = " + EnigmailData.bytesToHex(EnigmailData.pack(c.statusFlags, 4)) + "\n");
+  EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: return with c.errorMsg = " + c.errorMsg + "\n");
   return c.errorMsg;
 }
 

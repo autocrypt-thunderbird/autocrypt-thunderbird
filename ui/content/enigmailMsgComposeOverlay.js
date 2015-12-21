@@ -2728,13 +2728,13 @@ Enigmail.msg = {
       testStatusFlagsObj,
       testErrorMsgObj);
 
-    if (testStatusFlagsObj.value) {
+    if (testStatusFlagsObj.statusMsg) {
       // check if own key is invalid
       let s = new RegExp("^INV_RECP [0-9]+ \\<?" + fromAddr + "\\>?", "m");
-      if (testErrorMsgObj.value.search(s) >= 0) {
+      if (testStatusFlagsObj.statusMsg.search(s) >= 0) {
         EnigmailDialog.alert(window,
           EnigmailLocale.getString("saveDraftError") + "\n\n" +
-          EnigmailLocale.getString("errorOwnKeyUnusable", [fromAddr]));
+          testErrorMsgObj.value);
         return false;
       }
     }
@@ -3508,14 +3508,13 @@ Enigmail.msg = {
         if (sendInfo.sendFlags & (ENCRYPT | SIGN)) {
           // Encryption/signing failed
 
-          if (errorMsgObj.value) {
+          /*if (statusFlagsObj.statusMsg) {
             // check if own key is invalid
-            let s = new RegExp("^\\[GNUPG:\\] INV_(RECP|SGNR) [0-9]+ \\<?" + sendInfo.fromAddr + "\\>?", "m");
-            if (errorMsgObj.value.search(s) >= 0) {
-              EnigmailDialog.alert(window, EnigmailLocale.getString("errorKeyUnusable", [sendInfo.fromAddr]));
-              return false;
+            let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ \\<?" + sendInfo.fromAddr + "\\>?", "m");
+            if (statusFlagsObj.statusMsg.search(s) >= 0) {
+              errorMsgObj.value += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
             }
-          }
+          }*/
 
           this.sendAborted(window, errorMsgObj);
           return false;

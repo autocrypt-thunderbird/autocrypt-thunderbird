@@ -208,7 +208,7 @@ const EnigmailEncryption = {
     return proc;
   },
 
-  encryptMessageEnd: function(stderrStr, exitCode, uiFlags, sendFlags, outputLen, retStatusObj) {
+  encryptMessageEnd: function(fromMailAddr, stderrStr, exitCode, uiFlags, sendFlags, outputLen, retStatusObj) {
     EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageEnd: uiFlags=" + uiFlags + ", sendFlags=" + EnigmailData.bytesToHex(EnigmailData.pack(sendFlags, 4)) + ", outputLen=" + outputLen + "\n");
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
@@ -247,25 +247,21 @@ const EnigmailEncryption = {
       exitCode = correctedExitCode;
     }
 
-    if (exitCode === 0) {
-      // Normal return
-      return 0;
-    }
-
-    // Error processing
     EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
 
-
-    if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+    if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
+      let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ \\<?" + fromMailAddr + "\\>?", "m");
+      if (retStatusObj.statusMsg.search(s) >= 0) {
+        retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
+      }
+    }
+    else if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
       retStatusObj.errorMsg = EnigmailLocale.getString("badPhrase");
     }
     else if (retStatusObj.statusFlags & nsIEnigmail.INVALID_RECIPIENT) {
       retStatusObj.errorMsg = retStatusObj.statusMsg;
     }
-    else if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
-      retStatusObj.errorMsg = retStatusObj.statusMsg;
-    }
-    else {
+    else if (exitCode !== 0) {
       retStatusObj.errorMsg = EnigmailLocale.getString("badCommand");
     }
 
@@ -329,12 +325,13 @@ const EnigmailEncryption = {
     inspector.enterNestedEventLoop(0);
 
     var retStatusObj = {};
-    exitCodeObj.value = EnigmailEncryption.encryptMessageEnd(EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
+    exitCodeObj.value = EnigmailEncryption.encryptMessageEnd(fromMailAddr, EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
       uiFlags, sendFlags,
       listener.stdoutData.length,
       retStatusObj);
 
     statusFlagsObj.value = retStatusObj.statusFlags;
+    statusFlagsObj.statusMsg = retStatusObj.statusMsg;
     errorMsgObj.value = retStatusObj.errorMsg;
 
 

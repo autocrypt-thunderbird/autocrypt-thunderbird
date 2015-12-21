@@ -11,6 +11,7 @@
 /* global EnigmailFiles: false */
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
 Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
+component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 /* global getUserIdList: false, createAndSortKeyList: false */
 
@@ -529,4 +530,75 @@ test(function testGetValidKeysForMultipleRecipients() {
   Assert.equal(keys.length, 1);
   Assert.equal(keys[0], "0x0005AAAA00010001");
   Assert.equal(details.errArray.length, 0);
+});
+
+test(function shouldGetKeyValidityErrors() {
+  // from: gpg2 --with-fingerprint --fixed-list-mode --with-colons --list-keys
+  let keyInfo = [
+    // Key 1: Revoked key
+    "tru::1:1443339321:1451577200:3:1:5",
+    "pub:r:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::sca:",
+    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
+    "uid:r::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@enigmail-test.net>:",
+    "sub:r:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
+
+    // Key 2: valid public key, usable for signing, with expired subkeys for encryption
+    "pub:u:1024:17:F05B29A5CEFE4B70:1136219252:::u:::scaSCA:::::::",
+    "fpr:::::::::6D67E7817D588BEA263F41B9F05B29A5CEFE4B70:",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@enigmail-test.net>:::::::::",
+    "sub:e:2048:1:B2417304FFC57041:1136219469:1199291469:::::e::::::",
+    "sub:e:2048:1:770EA47A1DB0E8B0:1136221524:1293901524:::::s::::::",
+    "sub:e:2048:1:805B29A5CEFB2B70:1199298291:1262370291:::::e::::::",
+    "sub:e:2048:1:0F6B6901667E633C:1262537932:1325437132:::::e::::::",
+
+    // Key 3: valid public key, usable subkey for encryption, no secret key
+    "pub:u:1024:17:86345DFA372ADB32:1136219252:::u:::scESC:::::::",
+    "fpr:::::::::9876E7817D588BEA263F41B986345DFA372ADB32:",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 3 <user3@enigmail-test.net>:::::::::",
+    "sub:u:2048:1:B2417304FFC57041:1136219469::::::s::::::",
+    "sub:u:2048:1:770EA47A1DB0E8B0:1136221524::::::e::::::",
+  ];
+
+  // from: gpg2 --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys
+  let secKeyInfo = [
+    // Key 1
+    "sec::4096:1:DEF9FC808A3FF001:1388513885:1546188604:::::::::",
+    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
+    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@enigmail-test.net>:",
+    "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::",
+    // Key 2
+    "sec:u:1024:17:F05B29A5CEFE4B70:1136219252:1507997328::u:::scaSCA:::::::",
+    "fpr:::::::::6D67E7817D588BEA263F41B9F05B29A5CEFE4B70:",
+    "uid:u::::1446568426::560DE55D9C611718F777EDD11A84F126CCD71965::User ID 2 <user2@enigmail-test.net>:::::::::",
+    "ssb:e:2048:1:B2417304FFC57041:1136219469:1199291469:::::e::::::",
+    "ssb:e:2048:1:770EA47A1DB0E8B0:1136221524:1293901524:::::s::::::",
+    "ssb:e:2048:1:805B29A5CEFB2B70:1199298291:1262370291:::::e::::::",
+    "ssb:e:2048:1:0F6B6901667E633C:1262537932:1325437132:::::e::::::",
+    // NO Key 3
+  ];
+
+  createAndSortKeyList(keyInfo, secKeyInfo,
+    "validity", // sorted acc. to key validity
+    -1); // descending
+
+  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+  let result = key.getSigningValidity();
+  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.pubKeyRevoked", [key.userId, "0x" + key.keyId]));
+
+  key = EnigmailKeyRing.getKeyById("F05B29A5CEFE4B70");
+  result = key.getEncryptionValidity();
+  Assert.equal(result.keyValid, false);
+  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.encSubKeysExpired", [key.userId, "0x" + key.keyId]));
+
+  result = key.getSigningValidity();
+  Assert.equal(result.keyValid, true);
+
+  key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
+  result = key.getSigningValidity();
+  Assert.equal(result.keyValid, false);
+  Assert.equal(result.reason, EnigmailLocale.getString("keyRing.noSecretKey", [key.userId, "0x" + key.keyId]));
+
+  result = key.getEncryptionValidity();
+  Assert.equal(result.keyValid, true);
+
 });

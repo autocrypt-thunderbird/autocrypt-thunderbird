@@ -75,7 +75,7 @@ const EnigmailHash = {
       const exitCode = listener.exitCode;
 
       const retStatusObj = {};
-      let exitCode2 = EnigmailEncryption.encryptMessageEnd(listener.stderrData, exitCode,
+      let exitCode2 = EnigmailEncryption.encryptMessageEnd(fromMailAddr, listener.stderrData, exitCode,
         testUiFlags, sendFlags, 10,
         retStatusObj);
 
