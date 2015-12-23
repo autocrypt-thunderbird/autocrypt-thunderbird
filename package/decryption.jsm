@@ -160,6 +160,11 @@ const EnigmailDecryption = {
       exitCode = -1;
     }
 
+    if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE && retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
+      EnigmailDialog.alert(null, statusMsg);
+      return -1;
+    }
+
     var errLines;
     if (statusMsg) {
       errLines = statusMsg.split(/\r?\n/);

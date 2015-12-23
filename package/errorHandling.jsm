@@ -55,12 +55,19 @@ const gStatusFlags = {
   SIG_CREATED: nsIEnigmail.SIG_CREATED,
   END_ENCRYPTION: nsIEnigmail.END_ENCRYPTION,
   INV_SGNR: 0x100000000,
-  IMPORT_OK: 0x200000000
+  IMPORT_OK: 0x200000000,
+  FAILURE: 0x400000000
 };
 
-
+/**
+ * Special treatment for some ERROR messages from GnuPG
+ *
+ * extendedStatus are preceeded by "disp:" if an error message is set in statusMsg
+ *
+ * isError is set to true if this is a hard error that makes further
+ * processing of the status codes useless
+ */
 function handleError(c) {
-  // special treatment for some ERROR messages
   /*
     check_hijacking: gpg-agent was hijacked by some other process (like gnome-keyring)
     proc_pkt.plaintext: multiple plaintexts seen
@@ -69,6 +76,7 @@ function handleError(c) {
     card_key_generate: key generation failed (card)
     key_generate: key generation failed
     keyserver_send: keyserver send failed
+    get_passphrase: gpg-agent cannot query the passphrase from pinentry (GnuPG 2.0.x)
   */
 
   var lineSplit = c.statusLine.split(/ +/);
@@ -76,13 +84,24 @@ function handleError(c) {
     // TODO: we might display some warning to the user
     switch (lineSplit[1]) {
       case "check_hijacking":
-        c.retStatusObj.extendedStatus += "invalid_gpg_agent ";
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:invalid_gpg_agent ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
+        break;
+      case "get_passphrase":
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
         break;
       case "proc_pkt.plaintext":
         c.retStatusObj.extendedStatus += "multiple_plaintexts ";
+        c.isError = true;
         break;
       case "pkdecrypt_failed":
         c.retStatusObj.extendedStatus += "pubkey_decrypt ";
+        c.isError = true;
         break;
       case "keyedit.passwd":
         c.retStatusObj.extendedStatus += "passwd_change_failed ";
@@ -93,6 +112,7 @@ function handleError(c) {
         break;
       case "keyserver_send":
         c.retStatusObj.extendedStatus += "keyserver_send_failed ";
+        c.isError = true;
         break;
       default:
         return false;
@@ -101,6 +121,25 @@ function handleError(c) {
   }
   else {
     return false;
+  }
+}
+
+// handle GnuPG FAILURE message (GnuPG 2.1.10 and newer)
+function failureMessage(c) {
+  let lineSplit = c.statusLine.split(/ +/);
+  if (lineSplit.length >= 3) {
+    let errNum = Number(lineSplit[2]);
+    let sourceSystem = errNum >> 24;
+    let errorCode = errNum & 0xFFFFFF;
+
+    switch (errorCode) {
+      case 85: // no pinentry
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
+        break;
+    }
   }
 }
 
@@ -114,6 +153,7 @@ function missingPassphrase(c) {
 
 
 function invalidSignature(c) {
+  if (c.isError) return;
   var lineSplit = c.statusLine.split(/ +/);
   c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
   c.flag = 0;
@@ -149,6 +189,7 @@ function invalidSignature(c) {
 }
 
 function invalidRecipient(c) {
+  if (c.isError) return;
   var lineSplit = c.statusLine.split(/ +/);
   c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
   c.flag = 0;
@@ -236,6 +277,7 @@ function setupFailureLookup() {
   result[gStatusFlags.INV_RECP] = invalidRecipient;
   result[gStatusFlags.INV_SGNR] = invalidSignature;
   result[gStatusFlags.IMPORT_OK] = importOk;
+  result[gStatusFlags.FAILURE] = failureMessage;
   return result;
 }
 
@@ -300,7 +342,7 @@ function parseErrorLine(errLine, c) {
     var matches = c.statusLine.match(/^((\w+)\b)/);
 
     if (matches && (matches.length > 1)) {
-      var isError = (matches[1] == "ERROR");
+      let isError = (matches[1] == "ERROR");
       (isError ? handleError : handleFailure)(c, matches[1]);
     }
   }
@@ -370,12 +412,14 @@ function parseErrorOutputWith(c) {
   EnigmailLog.DEBUG("errorHandling.jsm: parseErrorOutputWith: status message: \n" + c.errOutput + "\n");
 
   c.errLines = splitErrorOutput(c.errOutput);
+  c.isError = false; // set to true if a hard error was found
 
   // parse all error lines
   c.inDecryptionFailed = false; // to save details of encryption failed messages
   for (var j = 0; j < c.errLines.length; j++) {
     var errLine = c.errLines[j];
     parseErrorLine(errLine, c);
+    if (c.isError) break;
   }
 
   detectForgedInsets(c);

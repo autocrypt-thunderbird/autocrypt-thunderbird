@@ -250,9 +250,14 @@ const EnigmailEncryption = {
     EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
 
     if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
-      let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ \\<?" + fromMailAddr + "\\>?", "m");
-      if (retStatusObj.statusMsg.search(s) >= 0) {
-        retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
+      if (retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
+        retStatusObj.errorMsg = retStatusObj.statusMsg;
+      }
+      else {
+        let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ \\<?" + fromMailAddr + "\\>?", "m");
+        if (retStatusObj.statusMsg.search(s) >= 0) {
+          retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
+        }
       }
     }
     else if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
