@@ -66,13 +66,6 @@
         <textbox id="passphraseRepeat" type="password" />
       </hbox>
     </row>
-
-    <row>
-      <hbox align="center">
-        <label control="keyComment" value="&enigmail.keyComment.label;" />
-      </hbox>
-      <textbox id="keyComment" />
-    </row>
   </rows>
 </grid>
 

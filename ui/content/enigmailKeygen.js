@@ -288,9 +288,6 @@ function enigmailKeygenStart() {
     passphrase = "";
   }
 
-  var commentElement = document.getElementById("keyComment");
-  var comment = commentElement.value;
-
   var noExpiry = document.getElementById("noExpiry");
   var expireInput = document.getElementById("expireInput");
   var timeScale = document.getElementById("timeScale");
@@ -327,9 +324,6 @@ function enigmailKeygenStart() {
   }
 
   var idString = userName;
-
-  if (comment)
-    idString += " (" + comment + ")";
 
   idString += " <" + userEmail + ">";
 
@@ -368,7 +362,7 @@ function enigmailKeygenStart() {
   try {
     gKeygenRequest = EnigmailKeyRing.generateKey(
       EnigmailData.convertFromUnicode(userName),
-      EnigmailData.convertFromUnicode(comment),
+      "", // user id comment
       EnigmailData.convertFromUnicode(userEmail),
       expiryTime,
       keySize,

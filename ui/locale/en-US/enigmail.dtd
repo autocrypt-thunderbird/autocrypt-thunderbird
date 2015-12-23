@@ -3,7 +3,6 @@
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Generate OpenPGP Key">
 <!ENTITY enigmail.useForSigning.label     "Use generated key for the selected identity">
-<!ENTITY enigmail.keyComment.label        "Comment">
 <!ENTITY enigmail.keyNoPassphrase.label   "No passphrase">
 <!ENTITY enigmail.keyPassphrase.label     "Passphrase">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Passphrase (repeat)">
@@ -433,7 +432,6 @@
 <!ENTITY enigmail.addUidDlg.title                  "Enigmail - Add User ID">
 <!ENTITY enigmail.addUidDlg.name.label             "Name">
 <!ENTITY enigmail.addUidDlg.email.label            "Email">
-<!ENTITY enigmail.addUidDlg.comment.label          "Comment (optional)">
 
 <!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Owner Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">

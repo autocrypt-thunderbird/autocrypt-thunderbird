@@ -140,9 +140,6 @@ function startKeyGen() {
     }
   }
 
-  var commentElement = document.getElementById("keyComment");
-  var comment = commentElement.value;
-
   var noExpiry = document.getElementById("noExpiry");
   var expireInput = document.getElementById("expireInput");
   var timeScale = document.getElementById("timeScale");
@@ -195,7 +192,7 @@ function startKeyGen() {
   EnigmailKeyEditor.genCardKey(window,
     userName,
     userEmail,
-    comment,
+    "", // user id comment
     valid,
     passphrase,
     generateObserver,

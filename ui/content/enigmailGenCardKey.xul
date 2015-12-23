@@ -75,13 +75,6 @@
 
       <row>
         <hbox align="center">
-          <label control="keyComment" value="&enigmail.keyComment.label;" />
-        </hbox>
-        <textbox id="keyComment" />
-      </row>
-
-      <row>
-        <hbox align="center">
           <label value="&enigmail.keyGen.expire.label;" control="expireInput"/>
         </hbox>
         <hbox align="center">

@@ -13,7 +13,6 @@ Components.utils.import("resource://enigmail/dialog.jsm");
 function onAccept() {
   var name = document.getElementById("addUid_name");
   var email = document.getElementById("addUid_email");
-  var comment = document.getElementById("addUid_comment");
 
   if ((email.value.search(/^ *$/) === 0) || (name.value.search(/^ *$/) === 0)) {
     EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.nameOrEmailError"));
@@ -27,10 +26,7 @@ function onAccept() {
     EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.invalidEmailError"));
     return false;
   }
-  if (comment.value.search(/[()]/) >= 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("addUidDlg.commentError"));
-    return false;
-  }
+
   var enigmailSvc = EnigmailCore.getService();
   if (!enigmailSvc) {
     EnigmailDialog.alert(window, EnigmailLocale.getString("accessError"));
@@ -41,7 +37,7 @@ function onAccept() {
     window.arguments[0].keyId,
     EnigmailData.convertFromUnicode(name.value),
     EnigmailData.convertFromUnicode(email.value),
-    EnigmailData.convertFromUnicode(comment.value),
+    "", // user id comment
     function _addUidCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         EnigmailDialog.alert(window, EnigmailLocale.getString("addUidFailed") + "\n\n" + errorMsg);
