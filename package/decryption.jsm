@@ -154,7 +154,7 @@ const EnigmailDecryption = {
     }
 
     var statusMsg = retStatusObj.statusMsg;
-    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj.statusFlags);
+    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj);
     if ((exitCode === 0) && !noOutput && !outputLen &&
       ((retStatusObj.statusFlags & (STATUS_DECRYPTION_OK | STATUS_GOODSIG)) === 0)) {
       exitCode = -1;

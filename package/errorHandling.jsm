@@ -60,12 +60,52 @@ const gStatusFlags = {
 };
 
 /**
+ * Handling of specific error codes from GnuPG
+ *
+ * @param c           Object - the retStatusObj
+ * @param errorNumber String - the error number as printed by GnuPG
+ */
+function handleErrorCode(c, errorNumber) {
+  if (errorNumber && errorNumber.search(/^[0-9]+$/) === 0) {
+    let errNum = Number(errorNumber);
+    let sourceSystem = errNum >> 24;
+    let errorCode = errNum & 0xFFFFFF;
+
+    switch (errorCode) {
+      case 77: // no agent
+      case 78: // agent error
+      case 80: // assuan server fault
+      case 81: // assuan error
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
+        break;
+      case 85: // no pinentry
+      case 86: // pinentry error
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
+        break;
+      case 92: // no dirmngr
+      case 93: // dirmngr error
+        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.dirmngrError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.isError = true;
+        break;
+    }
+  }
+}
+
+/**
  * Special treatment for some ERROR messages from GnuPG
  *
  * extendedStatus are preceeded by "disp:" if an error message is set in statusMsg
  *
- * isError is set to true if this is a hard error that makes further
- * processing of the status codes useless
+ * isError is set to true if this is a hard error that makes further processing of
+ * the status codes useless
  */
 function handleError(c) {
   /*
@@ -81,12 +121,18 @@ function handleError(c) {
 
   var lineSplit = c.statusLine.split(/ +/);
   if (lineSplit.length > 0) {
-    // TODO: we might display some warning to the user
+
+    if (lineSplit.length >= 3) {
+      // first check if the error code is a specifically treated hard failure
+      handleErrorCode(c, lineSplit[2]);
+      if (c.isError) return true;
+    }
+
     switch (lineSplit[1]) {
       case "check_hijacking":
         c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
         c.retStatusObj.extendedStatus += "disp:invalid_gpg_agent ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.gpgAgentInvalid") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
         c.isError = true;
         break;
       case "get_passphrase":
@@ -101,7 +147,7 @@ function handleError(c) {
         break;
       case "pkdecrypt_failed":
         c.retStatusObj.extendedStatus += "pubkey_decrypt ";
-        c.isError = true;
+        handleErrorCode(c, lineSplit[2]);
         break;
       case "keyedit.passwd":
         c.retStatusObj.extendedStatus += "passwd_change_failed ";
@@ -128,18 +174,7 @@ function handleError(c) {
 function failureMessage(c) {
   let lineSplit = c.statusLine.split(/ +/);
   if (lineSplit.length >= 3) {
-    let errNum = Number(lineSplit[2]);
-    let sourceSystem = errNum >> 24;
-    let errorCode = errNum & 0xFFFFFF;
-
-    switch (errorCode) {
-      case 85: // no pinentry
-        c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
-        c.retStatusObj.extendedStatus += "disp:get_passphrase ";
-        c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
-        c.isError = true;
-        break;
-    }
+    handleErrorCode(c, lineSplit[2]);
   }
 }
 

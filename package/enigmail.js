@@ -111,7 +111,7 @@ function initializeAgentInfo() {
 }
 
 function failureOn(ex, status) {
-  status.initializationError = EnigmailLocale.getString("enigmimeNotAvail");
+  status.initializationError = EnigmailLocale.getString("enigmailNotAvailable");
   EnigmailLog.ERROR("enigmail.js: Enigmail.initialize: Error - " + status.initializationError + "\n");
   EnigmailLog.DEBUG("enigmail.js: Enigmail.initialize: exception=" + ex.toString() + "\n");
   throw Components.results.NS_ERROR_FAILURE;

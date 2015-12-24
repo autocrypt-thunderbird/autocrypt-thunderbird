@@ -241,7 +241,7 @@ const EnigmailExecution = {
     statusMsgObj.value = retStatusObj.statusMsg;
     var blockSeparation = retStatusObj.blockSeparation;
 
-    exitCodeObj.value = EnigmailExecution.fixExitCode(exitCodeObj.value, statusFlagsObj.value);
+    exitCodeObj.value = EnigmailExecution.fixExitCode(exitCodeObj.value, statusFlagsObj);
 
     if (blockSeparation.indexOf(" ") > 0) {
       exitCodeObj.value = 2;
@@ -255,13 +255,15 @@ const EnigmailExecution = {
   /**
    * Fix the exit code of GnuPG (which may be wrong in some circumstances)
    *
-   * @exitCode:    Number - the exitCode obtained from GnuPG
-   * @statusFlags: Numebr - the statusFlags as calculated by parseErrorOutput()
+   * @exitCode:       Number - the exitCode obtained from GnuPG
+   * @statusFlagsObj: Object - the statusFlagsObj as received from parseErrorOutput()
    *
    * @return: Number - fixed exit code
    */
-  fixExitCode: function(exitCode, statusFlags) {
-    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.fixExitCode: agentType: " + EnigmailExecution.agentType + " exitCode: " + exitCode + " statusFlags " + statusFlags + "\n");
+  fixExitCode: function(exitCode, statusFlagsObj) {
+    EnigmailLog.DEBUG("execution.jsm: EnigmailExecution.fixExitCode: agentType: " + EnigmailExecution.agentType + " exitCode: " + exitCode + " statusFlags " + statusFlagsObj.statusFlags + "\n");
+
+    let statusFlags = statusFlagsObj.statusFlags;
 
     if (exitCode !== 0) {
       if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
@@ -283,6 +285,9 @@ const EnigmailExecution = {
     }
     else {
       if (statusFlags & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_ARMOR)) {
+        exitCode = 1;
+      }
+      else if (typeof(statusFlagsObj.extendedStatus) === "string" && statusFlagsObj.extendedStatus.search(/\bdisp:/) >= 0) {
         exitCode = 1;
       }
     }

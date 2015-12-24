@@ -272,7 +272,7 @@ Enigmail.hdrView = {
       else if (statusFlags & (nsIEnigmail.BAD_SIGNATURE |
           nsIEnigmail.EXPIRED_SIGNATURE |
           nsIEnigmail.EXPIRED_KEY_SIGNATURE)) {
-        statusInfo = EnigmailLocale.getString("failedSig");
+        statusInfo = EnigmailLocale.getString("unverifiedSig");
         statusLine = statusInfo + EnigmailLocale.getString("clickDetailsButton");
       }
       else if (statusFlags & nsIEnigmail.DECRYPTION_INCOMPLETE) {
@@ -443,9 +443,9 @@ Enigmail.hdrView = {
       if ((statusFlags & nsIEnigmail.BAD_SIGNATURE) &&
         !(statusFlags & nsIEnigmail.GOOD_SIGNATURE)) {
         // Display untrusted/bad signature icon
-        gSignedUINode.setAttribute("signed", "notok");
-        this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
-        this.statusBar.setAttribute("signed", "notok");
+        gSignedUINode.setAttribute("signed", "unknown");
+        this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
+        this.statusBar.setAttribute("signed", "unknown");
       }
       else if ((statusFlags & nsIEnigmail.GOOD_SIGNATURE) &&
         (statusFlags & nsIEnigmail.TRUSTED_IDENTITY) &&

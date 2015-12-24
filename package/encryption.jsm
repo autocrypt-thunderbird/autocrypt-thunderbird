@@ -228,7 +228,7 @@ const EnigmailEncryption = {
 
     EnigmailErrorHandling.parseErrorOutput(stderrStr, retStatusObj);
 
-    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj.statusFlags);
+    exitCode = EnigmailExecution.fixExitCode(exitCode, retStatusObj);
     if ((exitCode === 0) && !outputLen) {
       exitCode = -1;
     }
