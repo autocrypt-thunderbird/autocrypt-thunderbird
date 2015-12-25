@@ -168,9 +168,11 @@ test(function shouldHandleEncryptionFailedNoPublicKey() {
     "[GNUPG:] INV_RECP 0 iapazmino@thoughtworks.com\n" +
     "gpg: salida3.xtxt: encryption failed: No public key";
 
-  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
+  const o = {};
+  const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, o);
 
   Assert.assertContains(result, "No public key");
+  Assert.equal(o.errorMsg, EnigmailLocale.getString("keyError.keySpecNotFound", "iapazmino@thoughtworks.com"));
 });
 
 test(function shouldHandleErrors() {
@@ -185,4 +187,29 @@ test(function shouldHandleErrors() {
   const result = EnigmailErrorHandling.parseErrorOutput(errorOutput, {});
 
   Assert.assertContains(result, "Invalid IPC response");
+});
+
+test(function shouldHandleInvalidSender() {
+  const errorOutput = "gpg: skipped \"0x12345678\": No secret key\n" +
+    "[GNUPG:] INV_SGNR 9 0x12345678\n" +
+    "[GNUPG:] FAILURE sign 17\n" +
+    "gpg: signing failed: No secret key\n";
+
+  const retStatusObj = {};
+  EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
+
+  Assert.assertContains(retStatusObj.errorMsg, EnigmailLocale.getString("keyError.keyIdNotFound", "0x12345678"));
+});
+
+test(function shouldHandleFailures() {
+  const errorOutput = "[GNUPG:] BEGIN_SIGNING H2\n" +
+    "[gpg: signing failed: No pinentry\n" +
+    "[GNUPG:] FAILURE sign 67108949\n" +
+    "gpg: [stdin]: clearsign failed: No pinentry\n";
+
+  const retStatusObj = {};
+  EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
+
+  Assert.ok((retStatusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) !== 0);
+  Assert.assertContains(retStatusObj.statusMsg, EnigmailLocale.getString("errorHandling.pinentryError"));
 });

@@ -284,7 +284,8 @@ const EnigmailExecution = {
       }
     }
     else {
-      if (statusFlags & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_ARMOR)) {
+      if (statusFlags & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_ARMOR |
+          nsIEnigmail.MISSING_PASSPHRASE | nsIEnigmail.BAD_PASSPHRASE)) {
         exitCode = 1;
       }
       else if (typeof(statusFlagsObj.extendedStatus) === "string" && statusFlagsObj.extendedStatus.search(/\bdisp:/) >= 0) {

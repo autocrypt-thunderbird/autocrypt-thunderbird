@@ -258,10 +258,10 @@ const EnigmailEncryption = {
         if (retStatusObj.statusMsg.search(s) >= 0) {
           retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
         }
+        else if (retStatusObj.statusMsg.length > 0) {
+          retStatusObj.errorMsg = retStatusObj.statusMsg;
+        }
       }
-    }
-    else if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-      retStatusObj.errorMsg = EnigmailLocale.getString("badPhrase");
     }
     else if (retStatusObj.statusFlags & nsIEnigmail.INVALID_RECIPIENT) {
       retStatusObj.errorMsg = retStatusObj.statusMsg;

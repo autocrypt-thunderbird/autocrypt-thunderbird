@@ -59,6 +59,28 @@ const gStatusFlags = {
   FAILURE: 0x400000000
 };
 
+// taken from libgpg-error: gpg-error.h
+const GPG_SOURCE_SYSTEM = {
+  GPG_ERR_SOURCE_UNKNOWN: 0,
+  GPG_ERR_SOURCE_GCRYPT: 1,
+  GPG_ERR_SOURCE_GPG: 2,
+  GPG_ERR_SOURCE_GPGSM: 3,
+  GPG_ERR_SOURCE_GPGAGENT: 4,
+  GPG_ERR_SOURCE_PINENTRY: 5,
+  GPG_ERR_SOURCE_SCD: 6,
+  GPG_ERR_SOURCE_GPGME: 7,
+  GPG_ERR_SOURCE_KEYBOX: 8,
+  GPG_ERR_SOURCE_KSBA: 9,
+  GPG_ERR_SOURCE_DIRMNGR: 10,
+  GPG_ERR_SOURCE_GSTI: 11,
+  GPG_ERR_SOURCE_GPA: 12,
+  GPG_ERR_SOURCE_KLEO: 13,
+  GPG_ERR_SOURCE_G13: 14,
+  GPG_ERR_SOURCE_ASSUAN: 15,
+  GPG_ERR_SOURCE_TLS: 17,
+  GPG_ERR_SOURCE_ANY: 31
+};
+
 /**
  * Handling of specific error codes from GnuPG
  *
@@ -72,6 +94,19 @@ function handleErrorCode(c, errorNumber) {
     let errorCode = errNum & 0xFFFFFF;
 
     switch (errorCode) {
+      case 11: // bad Passphrase
+      case 87: // bad PIN
+        badPassphrase(c);
+        break;
+      case 177: // no passphrase
+      case 178: // no PIN
+        missingPassphrase(c);
+        break;
+      case 99: // operation canceled
+        if (sourceSystem === GPG_SOURCE_SYSTEM.GPG_ERR_SOURCE_PINENTRY) {
+          missingPassphrase(c);
+        }
+        break;
       case 77: // no agent
       case 78: // agent error
       case 80: // assuan server fault
@@ -94,6 +129,18 @@ function handleErrorCode(c, errorNumber) {
         c.retStatusObj.extendedStatus += "disp:get_passphrase ";
         c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.dirmngrError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
         c.isError = true;
+        break;
+      case 2:
+      case 3:
+      case 149:
+      case 188:
+        c.statusFlags |= Ci.nsIEnigmail.UNKNOWN_ALGO;
+        break;
+      case 15:
+        c.statusFlags |= Ci.nsIEnigmail.BAD_ARMOR;
+        break;
+      case 58:
+        c.statusFlags |= Ci.nsIEnigmail.NODATA;
         break;
     }
   }
@@ -184,6 +231,16 @@ function missingPassphrase(c) {
   c.flag = 0;
   EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase" + "\n");
   c.retStatusObj.statusMsg += EnigmailLocale.getString("missingPassphrase") + "\n";
+}
+
+function badPassphrase(c) {
+  c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
+  if (!c.statusFlags & Ci.nsIEnigmail.BAD_MESSAGE) {
+    c.statusFlags |= Ci.nsIEnigmail.BAD_MESSAGE;
+    c.flag = 0;
+    EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: bad passphrase" + "\n");
+    c.retStatusObj.statusMsg += EnigmailLocale.getString("badPhrase") + "\n";
+  }
 }
 
 
@@ -309,6 +366,7 @@ function setupFailureLookup() {
   result[Ci.nsIEnigmail.CARDCTRL] = cardControl;
   result[Ci.nsIEnigmail.UNVERIFIED_SIGNATURE] = unverifiedSignature;
   result[Ci.nsIEnigmail.MISSING_PASSPHRASE] = missingPassphrase;
+  result[Ci.nsIEnigmail.BAD_PASSPHRASE] = badPassphrase;
   result[gStatusFlags.INV_RECP] = invalidRecipient;
   result[gStatusFlags.INV_SGNR] = invalidSignature;
   result[gStatusFlags.IMPORT_OK] = importOk;
@@ -333,6 +391,7 @@ function handleFailure(c, errorFlag) {
 
 function newContext(errOutput, retStatusObj) {
   retStatusObj.statusMsg = "";
+  retStatusObj.errorMsg = "";
   retStatusObj.extendedStatus = "";
   retStatusObj.blockSeparation = "";
 
