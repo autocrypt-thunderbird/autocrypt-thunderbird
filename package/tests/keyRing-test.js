@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-/* global getUserIdList: false, createAndSortKeyList: false */
+/* global getUserIdList: false, createAndSortKeyList: false, Number: false */
 
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
@@ -540,7 +540,7 @@ test(function shouldGetKeyValidityErrors() {
     "pub:r:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::sca:",
     "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
     "uid:r::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::User ID 1 <user1@enigmail-test.net>:",
-    "sub:r:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:",
+    "sub:r:4096:1:E2DEDFFB80C14584:1388513885:1546188603:::::e:",
 
     // Key 2: valid public key, usable for signing, with expired subkeys for encryption
     "pub:u:1024:17:F05B29A5CEFE4B70:1136219252:::u:::scaSCA:::::::",
@@ -600,5 +600,16 @@ test(function shouldGetKeyValidityErrors() {
 
   result = key.getEncryptionValidity();
   Assert.equal(result.keyValid, true);
-
 });
+
+test(function shouldGetKeyExpiry() {
+  // uses the key listing from shouldGetKeyValidityErrors
+  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+  Assert.equal(key.getKeyExpiry(), 1546188603);
+
+  key = EnigmailKeyRing.getKeyById("F05B29A5CEFE4B70");
+  Assert.equal(key.getKeyExpiry(), 1325437132);
+
+  key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
+  Assert.equal(key.getKeyExpiry(), Number.MAX_VALUE);
+})

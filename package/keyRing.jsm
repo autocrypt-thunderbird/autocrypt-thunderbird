@@ -1731,6 +1731,51 @@ KeyObject.prototype = {
     }
 
     return retVal;
+  },
+
+  /**
+   * Determine the next expiry date of both the key. This is either the public key expiry date,
+   * or the maximum expiry date of a signing or encryption subkey
+   *
+   * @return Number - The expiry date as seconds after 01/01/1970
+   */
+  getKeyExpiry: function() {
+    let expiryDate = Number.MAX_VALUE;
+    let encryption = -1;
+    let signing = -1;
+
+
+    // check public key expiry date
+    if (this.expiryTime > 0) {
+      expiryDate = this.expiryTime;
+    }
+
+    for (let sk in this.subKeys) {
+      if (this.subKeys[sk].keyUseFor.search(/[eE]/) >= 0) {
+        let expiry = this.subKeys[sk].expiryTime;
+        if (expiry === 0) expiry = Number.MAX_VALUE;
+        encryption = Math.max(encryption, expiry);
+      }
+      else if (this.subKeys[sk].keyUseFor.search(/[sS]/) >= 0) {
+        let expiry = this.subKeys[sk].expiryTime;
+        if (expiry === 0) expiry = Number.MAX_VALUE;
+        signing = Math.max(signing, expiry);
+      }
+    }
+
+    if (expiryDate > encryption) {
+      if (this.keyUseFor.search(/[eE]/) < 0) {
+        expiryDate = encryption;
+      }
+    }
+
+    if (expiryDate > signing) {
+      if (this.keyUseFor.search(/[Ss]/) < 0) {
+        expiryDate = signing;
+      }
+    }
+
+    return expiryDate;
   }
 };
 
