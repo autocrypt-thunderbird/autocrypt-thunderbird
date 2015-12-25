@@ -21,6 +21,7 @@ Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailE
 Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -125,6 +126,13 @@ GpgEditorInterface.prototype = {
     return this._txt;
   },
 
+  handleGpgError: function(lineTxt) {
+    let retStatusObj = {};
+
+    EnigmailErrorHandling.parseErrorOutput(lineTxt, retStatusObj);
+    return retStatusObj;
+  },
+
   processLine: function(txt) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: '" + txt + "'\n");
     var r = {
@@ -140,32 +148,41 @@ GpgEditorInterface.prototype = {
         r.quitNow = true;
         this.errorMsg = EnigmailLocale.getString("badPhrase");
       }
-      if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE") >= 0) {
+      else if (txt.indexOf("[GNUPG:] ERROR ") >= 0 || txt.indexOf("[GNUPG:] FAILURE ") >= 0) {
+        EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected GnuPG ERROR message\n");
+        let statusObj = this.handleGpgError(txt);
+        if (statusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) {
+          this.errorMsg = statusObj.statusMsg;
+          r.exitCode = -3;
+          r.quitNow = true;
+        }
+      }
+      else if (txt.indexOf("[GNUPG:] NO_CARD_AVAILABLE") >= 0) {
         EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected missing card\n");
         this.errorMsg = EnigmailLocale.getString("sc.noCardAvailable");
         r.exitCode = -3;
         r.quitNow = true;
       }
-      if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE") === 0) {
+      else if (txt.indexOf("[GNUPG:] ENIGMAIL_FAILURE") === 0) {
         EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected general failure\n");
         r.exitCode = -3;
         r.quitNow = true;
         this.errorMsg = txt.substr(26);
       }
-      if (txt.indexOf("[GNUPG:] ALREADY_SIGNED") >= 0) {
+      else if (txt.indexOf("[GNUPG:] ALREADY_SIGNED") >= 0) {
         EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected key already signed\n");
         this.errorMsg = EnigmailLocale.getString("keyAlreadySigned");
         r.exitCode = -1;
         r.quitNow = true;
       }
-      if (txt.indexOf("[GNUPG:] MISSING_PASSPHRASE") >= 0) {
+      else if (txt.indexOf("[GNUPG:] MISSING_PASSPHRASE") >= 0) {
         EnigmailLog.DEBUG("keyManagmenent.jsm: GpgEditorInterface.processLine: detected missing passphrase\n");
         this.errorMsg = EnigmailLocale.getString("noPassphrase");
         r.exitCode = -2;
         this._exitCode = -2;
         r.quitNow = true;
       }
-      if (txt.indexOf("[GNUPG:] GET_") < 0) {
+      else if (txt.indexOf("[GNUPG:] GET_") < 0) {
         // return if no "GET" statement
         return;
       }

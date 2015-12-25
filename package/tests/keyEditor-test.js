@@ -67,7 +67,7 @@ test(withTestGpgHome(withEnigmail(function shouldSignKey() {
     false,
     5,
     function(exitCode, errorMsg) {
-      Assert.equal(exitCode, 0);
+      Assert.equal(exitCode, -1);
       Assert.equal("The key is already signed, you cannot sign it twice.", errorMsg);
       do_test_finished();
     }
@@ -112,6 +112,23 @@ test(withTestGpgHome(withEnigmail(function shouldGetSecretKeys() {
     }
   );
 })));
+
+test(function shouldDoErrorHandling() {
+  let nextCmd = "";
+
+  /* global GpgEditorInterface: false */
+  let editor = new GpgEditorInterface(null, null, "");
+  editor._stdin = {
+    write: function processStdin(data) {
+      nextCmd = data;
+    }
+  };
+
+  editor.gotData("[GNUPG:] FAILURE sign 85\n");
+  Assert.ok(editor.errorMsg.length > 0);
+  Assert.equal("save\n", nextCmd);
+
+});
 
 function importKeys() {
   var publicKey = do_get_file("resources/dev-strike.asc", false);
