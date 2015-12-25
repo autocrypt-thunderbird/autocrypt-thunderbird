@@ -1,4 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, EnigmailApp: false */
+/*global component: false, withTestGpgHome: false, withEnigmail: false */
 /*global EnigmailRules: false, rulesListHolder: false, EC: false */
 /*jshint -W097 */
 /*
@@ -12,6 +13,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("rules.jsm");
+component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
 
 // getRulesFile
 test(function getRulesFileReturnsTheFile() {
@@ -149,7 +151,8 @@ var EnigmailRulesTests = {
   }
 };
 
-test(function mapAddrsToKeys_simpleFlags() {
+test(withTestGpgHome(withEnigmail(function mapAddrsToKeys_simpleFlags() {
+  importKeys();
   EnigmailRules.clearRules();
   resetting(EnigmailRules, 'getRulesFile', function() {
     return do_get_file("resources/rules2.xml", false);
@@ -194,7 +197,7 @@ test(function mapAddrsToKeys_simpleFlags() {
     };
     Assert.deepEqual(expectedFlags, flagsRet);
   });
-});
+})));
 
 test(function mapAddrsToKeys_signAndEncrypt() {
   EnigmailRules.clearRules();
@@ -505,3 +508,14 @@ test(function mapAddrsToKeys_infix() {
       "0xAAAAAAAA, 0xBBBBBBBB");
   });
 });
+
+
+function importKeys() {
+  var publicKey = do_get_file("resources/dev-strike.asc", false);
+  //var secretKey = do_get_file("resources/dev-strike.sec", false);
+  var errorMsgObj = {};
+  var importedKeysObj = {};
+  var publicImportResult = EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  //  var secretImportResult = EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
+  return [publicImportResult /*, secretImportResult */ ];
+}
