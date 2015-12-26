@@ -21,7 +21,9 @@
 <window id="EnigmailHelp"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         title="Enigmail Help"
-        minwidth="600" minheight="400"
+        minwidth="600"
+        minheight="400"
+        onload="enigHelpLoad()"
         persist="width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>

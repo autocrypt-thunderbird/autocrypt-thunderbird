@@ -129,7 +129,7 @@ function onLoad() {
     EnigAlert(EnigmailLocale.getString("sendKeysFailed") + "\n" + EnigConvertGpgToUnicode(errorMsgObj.value));
   }
 
-  window.title = subject;
+  document.getElementById("progressWindow").setAttribute("title", subject);
 }
 
 function onUnload() {

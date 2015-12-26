@@ -2796,7 +2796,6 @@ Enigmail.msg = {
     }
 
     var sendFlags = 0;
-    window.enigmailSendFlags = 0;
 
     switch (msgSendType) {
       case CiMsgCompDeliverMode.Later:
@@ -3233,7 +3232,6 @@ Enigmail.msg = {
       var ioService = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
       // EnigSend: Handle both plain and encrypted messages below
       var isOffline = (ioService && ioService.offline);
-      window.enigmailSendFlags = sendFlags;
 
       // update the list of attachments
       Attachments2CompFields(msgCompFields);

@@ -42,6 +42,7 @@ var gAlwaysTrust = false;
 var gSendEncrypted = true;
 var gSendSigned = true;
 var gAllowExpired = false;
+var gIpcRequest;
 
 var gEnigRemoveListener = false;
 var gKeysNotFound = [];
@@ -51,7 +52,7 @@ const EMPTY_UID = " -";
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailKeySelection.js: onLoad\n");
-  window.enigIpcRequest = null;
+  gIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private") >= 0) {
     document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
   }

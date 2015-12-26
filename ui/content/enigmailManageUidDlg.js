@@ -14,6 +14,7 @@ Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKey
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
 var gUserId;
+var gEnigmailUid;
 
 function onLoad() {
   window.arguments[1].refresh = false;
@@ -39,8 +40,8 @@ function appendUid(uidList, uidObj, uidNum) {
   }
   else {
     uidTxt = uidObj.userId;
-    if (!window.enigmailUid) {
-      window.enigmailUid = uidTxt;
+    if (!gEnigmailUid) {
+      gEnigmailUid = uidTxt;
     }
   }
 
@@ -82,7 +83,7 @@ function handleDblClick() {
     var selValue = uidList.selectedItem.value;
     var uidType = selValue.substr(0, 3);
     if (uidType == "uat" || uidType == "rat") {
-      EnigmailWindows.showPhoto(window, window.arguments[0].keyId, window.enigmailUid);
+      EnigmailWindows.showPhoto(window, window.arguments[0].keyId, gEnigmailUid);
     }
   }
 }
@@ -132,7 +133,7 @@ function uidSelectCb() {
 function addUid() {
   var inputObj = {
     keyId: "0x" + window.arguments[0].keyId,
-    userId: window.enigmailUid
+    userId: gEnigmailUid
   };
   var resultObj = {
     refresh: false

@@ -24,6 +24,8 @@
         windowtype="enigmail:console"
         width="600" height="400"
         screenX="10" screenY="10"
+        onload="consoleLoad()"
+        onunload="consoleUnload()"
         persist="screenX screenY width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>

@@ -33,6 +33,3 @@ function contentAreaClick(event) {
 
   return true;
 }
-
-
-window.onload = enigHelpLoad;

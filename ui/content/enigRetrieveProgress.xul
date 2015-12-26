@@ -16,6 +16,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         class="dialog"
         title=""
+        id="progressWindow"
         style="width: 36em;"
         onload="onLoad()"
         onunload="onUnload()"

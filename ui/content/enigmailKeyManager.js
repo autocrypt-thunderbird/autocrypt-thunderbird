@@ -55,7 +55,7 @@ function enigmailKeyManagerLoad() {
   gUserList.addEventListener('click', enigmailOnClick, true);
   document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"));
 
-  window.enigIpcRequest = null;
+  gEnigIpcRequest = null;
 
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");

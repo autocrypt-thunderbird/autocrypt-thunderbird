@@ -11,6 +11,8 @@ Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/windows.jsm");
 
+var gConsoleIntervalId;
+
 function consoleLoad() {
   EnigmailLog.DEBUG("enigmailConsole.js: consoleLoad\n");
 
@@ -19,7 +21,7 @@ function consoleLoad() {
   EnigmailCore.getService(window);
 
   // Refresh console every 2 seconds
-  window.consoleIntervalId = window.setInterval(refreshConsole, 2000);
+  gConsoleIntervalId = window.setInterval(refreshConsole, 2000);
   updateData();
 }
 
@@ -28,13 +30,10 @@ function consoleUnload() {
 
   // Cancel console refresh
   if (window.consoleIntervalId) {
-    window.clearInterval(window.consoleIntervalId);
-    window.consoleIntervalId = null;
+    window.clearInterval(gConsoleIntervalId);
+    gConsoleIntervalId = null;
   }
 }
-
-window.onload = consoleLoad;
-window.onunload = consoleUnload;
 
 function refreshConsole() {
   //EnigmailLog.DEBUG("enigmailConsole.js: refreshConsole():\n");
