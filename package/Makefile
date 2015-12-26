@@ -39,6 +39,7 @@ MODFILES = \
            protocolHandler.jsm \
            events.jsm \
            execution.jsm \
+           expiry.jsm \
            files.jsm \
            filters.jsm \
            fixExchangeMsg.jsm \
