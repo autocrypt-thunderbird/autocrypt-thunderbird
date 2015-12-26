@@ -114,6 +114,7 @@ let gSubkeyIndex = [];
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
     - key ID
+    - fpr
   * trustModel: [String]. One of:
             - p: pgp/classical
             - t: always trust
@@ -223,7 +224,7 @@ var EnigmailKeyRing = {
    *                               The search is always performed case-insensitively
    * @param onlyValidUid - Boolean: if true (default), invalid (e.g. revoked) UIDs are not matched
    *
-   * @return Array of KeyObjects with the found keys
+   * @return Array of KeyObjects with the found keys (array length is 0 if no key found)
    */
   getKeysByUserId: function(searchTerm, onlyValidUid = true) {
     let s = new RegExp(searchTerm, "i");
@@ -1002,8 +1003,27 @@ var EnigmailKeyRing = {
       }
     }
     return keyMissing;
-  }
+  },
 
+  /**
+   * Rebuild the quick access search indexes after the key list was loaded
+   */
+  rebuildKeyIndex: function() {
+    gKeyIndex = [];
+    gSubkeyIndex = [];
+
+    for (let i in gKeyListObj.keyList) {
+      let k = gKeyListObj.keyList[i];
+      gKeyIndex[k.keyId] = k;
+      gKeyIndex[k.fpr] = k;
+      gKeyIndex[k.keyId.substr(-8, 8)] = k;
+
+      // add subkeys
+      for (let j in k.subKeys) {
+        gSubkeyIndex[k.subKeys[j].keyId] = k;
+      }
+    }
+  }
 }; //  EnigmailKeyRing
 
 
@@ -1463,20 +1483,7 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
   // create a hash-index on key ID (8 and 16 characters and fingerprint)
   // in a single array
 
-  gKeyIndex = [];
-  gSubkeyIndex = [];
-
-  for (let i in gKeyListObj.keyList) {
-    let k = gKeyListObj.keyList[i];
-    gKeyIndex[k.keyId] = k;
-    gKeyIndex[k.fpr] = k;
-    gKeyIndex[k.keyId.substr(-8, 8)] = k;
-
-    // add subkeys
-    for (let j in k.subKeys) {
-      gSubkeyIndex[k.subKeys[j].keyId] = k;
-    }
-  }
+  EnigmailKeyRing.rebuildKeyIndex();
 
   // search and mark keys that have secret keys
   for (let i = 0; i < aGpgSecretsList.length; i++) {

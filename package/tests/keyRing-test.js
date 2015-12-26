@@ -612,4 +612,4 @@ test(function shouldGetKeyExpiry() {
 
   key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
   Assert.equal(key.getKeyExpiry(), Number.MAX_VALUE);
-})
+});
