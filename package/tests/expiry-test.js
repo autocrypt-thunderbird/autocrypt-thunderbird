@@ -53,15 +53,10 @@ test(function shouldCheckKeyExpiry() {
   EnigmailKeyRing.rebuildKeyIndex();
 
   let k = EnigmailExpiry.checkKeyExpiry(["0xABCDEF0123456789", "BBCDEF0123456789", "CBCDEF0123456789"], 10);
-  Assert.equal(k.length, 2);
-  Assert.equal(k[0].keyId, "ABCDEF0123456789");
-  Assert.equal(k[1].keyId, "BBCDEF0123456789");
+  Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 BBCDEF0123456789");
 
   k = EnigmailExpiry.checkKeyExpiry(["user1@enigmail-test.net", "user2@enigmail-test.net", "user5@enigmail-test.net"], 10);
-  Assert.equal(k.length, 2);
-
-  Assert.equal(k[0].keyId, "ABCDEF0123456789");
-  Assert.equal(k[1].keyId, "ACCDEF0123456789");
+  Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 ACCDEF0123456789");
 });
 
 test(function shouldCheckKeySpecs() {
@@ -73,7 +68,7 @@ test(function shouldDoKeyExpiryCheck() {
   EnigmailPrefs.setPref("keyCheckResult", "");
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
   let a = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(a.join(" "), "ABCDEF0123456789 BBCDEF0123456789");
+  Assert.equal(a.map(getKeyId).join(" "), "ABCDEF0123456789 BBCDEF0123456789");
 
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 110);
   a = EnigmailExpiry.keyExpiryCheck();
@@ -84,7 +79,7 @@ test(function shouldDoKeyExpiryCheck() {
   EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(keyCheckResult));
 
   a = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(a.join(" "), "EBCDEF0123456789");
+  Assert.equal(a.map(getKeyId).join(" "), "EBCDEF0123456789");
 
   keyCheckResult = JSON.parse(EnigmailPrefs.getPref("keyCheckResult", ""));
   keyCheckResult.lastCheck = Date.now() - 86401000;
@@ -94,7 +89,9 @@ test(function shouldDoKeyExpiryCheck() {
   Assert.equal(a.length, 0);
 });
 
-
+function getKeyId(key) {
+  return key.keyId;
+}
 
 function createKeyObj(keyId, userId, expiryDate, hasSecretKey) {
   return {

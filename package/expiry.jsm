@@ -139,7 +139,7 @@ var EnigmailExpiry = {
 
     let warnList = expired.reduce(function _f(p, key) {
       if (lastResult.expiredList.indexOf(key.keyId) < 0) {
-        p.push(key.keyId);
+        p.push(key);
       }
       return p;
     }, []);
