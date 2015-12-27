@@ -13,6 +13,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 
 testing("expiry.jsm"); /*global EnigmailExpiry: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+
 
 /*global Math: false, Date: false, uniqueKeyList: false, DAY: false */
 
@@ -42,7 +44,7 @@ test(function shouldCheckKeyExpiry() {
   keyListObj.keySortList.push(1); // ensure that key list is not reloaded
   keyListObj.keyList.push(createKeyObj("ABCDEF0123456789", "user1@enigmail-test.net", now + DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("DBCDEF0123456789", "user2@enigmail-test.net", now - DAY * 5, true));
-  keyListObj.keyList.push(createKeyObj("EBCDEF0123456789", "user2@enigmail-test.net", now + DAY * 1000, true));
+  keyListObj.keyList.push(createKeyObj("EBCDEF0123456789", "user2@enigmail-test.net", now + DAY * 100, true));
   keyListObj.keyList.push(createKeyObj("CBCDEF0123456789", "user3@enigmail-test.net", 0, true));
   keyListObj.keyList.push(createKeyObj("BBCDEF0123456789", "user4@enigmail-test.net", now - DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("FBCDEF0123456789", "user5@enigmail-test.net", now - DAY * 5, true));
@@ -64,8 +66,35 @@ test(function shouldCheckKeyExpiry() {
 
 test(function shouldCheckKeySpecs() {
   let a = EnigmailExpiry.getKeysSpecForIdentities();
-  Assert.equal(a.join(" "), "ABCDEF0123456789 user2@enigmail-test.net");
+  Assert.equal(a.join(" "), "ABCDEF0123456789 user2@enigmail-test.net user4@enigmail-test.net");
 });
+
+test(function shouldDoKeyExpiryCheck() {
+  EnigmailPrefs.setPref("keyCheckResult", "");
+  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
+  let a = EnigmailExpiry.keyExpiryCheck();
+  Assert.equal(a.join(" "), "ABCDEF0123456789 BBCDEF0123456789");
+
+  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 110);
+  a = EnigmailExpiry.keyExpiryCheck();
+  Assert.equal(a, null);
+
+  let keyCheckResult = JSON.parse(EnigmailPrefs.getPref("keyCheckResult", ""));
+  keyCheckResult.lastCheck = Date.now() - 86401000;
+  EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(keyCheckResult));
+
+  a = EnigmailExpiry.keyExpiryCheck();
+  Assert.equal(a.join(" "), "EBCDEF0123456789");
+
+  keyCheckResult = JSON.parse(EnigmailPrefs.getPref("keyCheckResult", ""));
+  keyCheckResult.lastCheck = Date.now() - 86401000;
+  EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(keyCheckResult));
+
+  a = EnigmailExpiry.keyExpiryCheck();
+  Assert.equal(a.length, 0);
+});
+
+
 
 function createKeyObj(keyId, userId, expiryDate, hasSecretKey) {
   return {

@@ -1,4 +1,4 @@
-/*global Components: false, Number: false, Math: false, Date: false */
+/*global Components: false, Number: false, Math: false, Date: false, JSON: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -16,6 +16,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 const DAY = 86400; // number of seconds of 1 day
@@ -67,7 +68,7 @@ var EnigmailExpiry = {
   },
 
   /**
-   * Determine configured key specifications for all identities
+   * Determine the configured key specifications for all identities
    * where Enigmail is enabled
    *
    * @return  Array of Strings - list of keyId and email addresses
@@ -94,6 +95,56 @@ var EnigmailExpiry = {
     }
 
     return keySpecList;
+  },
+
+  /**
+   * Check if all keys of all configured identities are still valid in N days.
+   * (N is configured via warnKeyExpiryNumDays; 0 = disable the check)
+   *
+   * @return  Array of keys - the keys that have expired since the last check
+   *          null in case no check was performed
+   */
+  keyExpiryCheck: function() {
+    let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
+    if (numDays < 1) return null;
+
+    let now = Date.now();
+
+    let lastResult = {
+      expiredList: [],
+      lastCheck: 0
+    };
+
+    let lastRes = EnigmailPrefs.getPref("keyCheckResult");
+    if (lastRes.length > 0) {
+      lastResult = JSON.parse(lastRes);
+    }
+
+    if (now - lastResult.lastCheck < DAY * 1000) return null;
+
+    let keys = this.getKeysSpecForIdentities();
+    let expired = this.checkKeyExpiry(keys, numDays);
+
+    let expiredList = expired.reduce(function _f(p, key) {
+      p.push(key.keyId);
+      return p;
+    }, []);
+
+    let newResult = {
+      expiredList: expiredList,
+      lastCheck: now
+    };
+
+    EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(newResult));
+
+    let warnList = expired.reduce(function _f(p, key) {
+      if (lastResult.expiredList.indexOf(key.keyId) < 0) {
+        p.push(key.keyId);
+      }
+      return p;
+    }, []);
+
+    return warnList;
   }
 };
 

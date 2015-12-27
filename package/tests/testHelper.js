@@ -140,6 +140,7 @@ function withTestGpgHome(f) {
  * - user1@enigmail-test.net - uses a specific key ID
  * - user2@enigmail-test.net - determine key be Email addresses
  * - user3@enigmail-test.net - Enigmail disabled
+ * - user4@enigmail-test.net - determine key be Email addresses
  */
 
 function setupTestAccounts() {
@@ -180,7 +181,7 @@ function setupTestAccounts() {
 
     if (keyId) {
       id.setIntAttribute("pgpKeyMode", 1);
-      id.setCharAttribute("pgpkeyId", keyId)
+      id.setCharAttribute("pgpkeyId", keyId);
     }
   }
 
@@ -194,6 +195,7 @@ function setupTestAccounts() {
     setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", "user1@enigmail-test.net", true, "ABCDEF0123456789");
     setIdentityData(ac, 2, "Enigmail Unit Test 2", "John Doe II.", "user2@enigmail-test.net", true);
     setIdentityData(ac, 3, "Enigmail Unit Test 3", "John Doe III.", "user3@enigmail-test.net", false);
+    setIdentityData(ac, 4, "Enigmail Unit Test 4", "John Doe IV.", "user4@enigmail-test.net", true);
   }
 
   for (let acct = 0; acct < accountManager.accounts.length; acct++) {

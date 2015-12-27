@@ -125,6 +125,14 @@ pref("extensions.enigmail.encryptionModel", 0);
 // enable encryption for replies to encrypted mails
 pref("extensions.enigmail.keepSettingsForReply", true);
 
+// Warn if a key expires in less than N days.
+// 0 will disable the check
+pref("extensions.enigmail.warnKeyExpiryNumDays", 30);
+
+// holds the last result of the dayily key expiry check
+pref("extensions.enigmail.keyCheckResult", "");
+
+
 // selection for which keys to accept
 // 0: accept valid/authenticated keys
 // 1: accept all keys (except disabled, ...) DEFAULT
