@@ -1,4 +1,5 @@
-/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, component: false, Cc: false, Ci: false */
+/*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false */
+/*global do_test_finished: false, component: false, Cc: false, Ci: false, setupTestAccounts: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,7 +16,9 @@ component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 /*global Math: false, Date: false, uniqueKeyList: false, DAY: false */
 
-test(function shouldExecCmd() {
+setupTestAccounts();
+
+test(function shouldCheckKeyExpiry() {
 
   EnigmailKeyRing.clearCache();
   let keyListObj = EnigmailKeyRing.getAllKeys();
@@ -38,10 +41,10 @@ test(function shouldExecCmd() {
 
   keyListObj.keySortList.push(1); // ensure that key list is not reloaded
   keyListObj.keyList.push(createKeyObj("ABCDEF0123456789", "user1@enigmail-test.net", now + DAY * 5, true));
-  keyListObj.keyList.push(createKeyObj("BBCDEF0123456789", "user2@enigmail-test.net", now - DAY * 5, true));
+  keyListObj.keyList.push(createKeyObj("DBCDEF0123456789", "user2@enigmail-test.net", now - DAY * 5, true));
+  keyListObj.keyList.push(createKeyObj("EBCDEF0123456789", "user2@enigmail-test.net", now + DAY * 1000, true));
   keyListObj.keyList.push(createKeyObj("CBCDEF0123456789", "user3@enigmail-test.net", 0, true));
-  keyListObj.keyList.push(createKeyObj("DBCDEF0123456789", "user4@enigmail-test.net", now - DAY * 5, true));
-  keyListObj.keyList.push(createKeyObj("EBCDEF0123456789", "user4@enigmail-test.net", now + DAY * 1000, true));
+  keyListObj.keyList.push(createKeyObj("BBCDEF0123456789", "user4@enigmail-test.net", now - DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("FBCDEF0123456789", "user5@enigmail-test.net", now - DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("ACCDEF0123456789", "user5@enigmail-test.net", now + DAY * 5, true));
 
@@ -52,11 +55,16 @@ test(function shouldExecCmd() {
   Assert.equal(k[0].keyId, "ABCDEF0123456789");
   Assert.equal(k[1].keyId, "BBCDEF0123456789");
 
-  k = EnigmailExpiry.checkKeyExpiry(["user1@enigmail-test.net", "user4@enigmail-test.net", "user5@enigmail-test.net"], 10);
+  k = EnigmailExpiry.checkKeyExpiry(["user1@enigmail-test.net", "user2@enigmail-test.net", "user5@enigmail-test.net"], 10);
   Assert.equal(k.length, 2);
 
   Assert.equal(k[0].keyId, "ABCDEF0123456789");
   Assert.equal(k[1].keyId, "ACCDEF0123456789");
+});
+
+test(function shouldCheckKeySpecs() {
+  let a = EnigmailExpiry.getKeysSpecForIdentities();
+  Assert.equal(a.join(" "), "ABCDEF0123456789 user2@enigmail-test.net");
 });
 
 function createKeyObj(keyId, userId, expiryDate, hasSecretKey) {
