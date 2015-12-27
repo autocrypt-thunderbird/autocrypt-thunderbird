@@ -135,6 +135,97 @@ function withTestGpgHome(f) {
   };
 }
 
+/**
+ * Create a test account called Enigmail Unit Test with 3 identities:
+ * - user1@enigmail-test.net - uses a specific key ID
+ * - user2@enigmail-test.net - determine key be Email addresses
+ * - user3@enigmail-test.net - Enigmail disabled
+ */
+
+function setupTestAccounts() {
+
+  const UNITTEST_ACCT_NAME = "Enigmail Unit Test";
+  const Cc = Components.classes;
+  const Ci = Components.interfaces;
+
+  // sanity check
+  let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+
+  function reportError() {
+    return "Your profile is not set up correctly for Enigmail Unit Tests\n" +
+      "Please ensure that your profile contains exactly one Account of type POP3.\n" +
+      "The account name must be set to '" + UNITTEST_ACCT_NAME + "'.\n" +
+      "Alternatively, you can simply delete all accounts except for the Local Folders\n";
+  }
+
+  function setIdentityData(ac, idNumber, idName, fullName, email, useEnigmail, keyId) {
+
+    let id;
+
+    if (ac.identities.length < idNumber - 1) throw "error - cannot add Identity with gaps";
+    else if (ac.identities.length === idNumber - 1) {
+      id = accountManager.createIdentity();
+      ac.addIdentity(id);
+    }
+    else {
+      id = ac.identities.queryElementAt(idNumber - 1, Ci.nsIMsgIdentity);
+    }
+
+    id.identityName = idName;
+    id.fullName = fullName;
+    id.email = email;
+    id.composeHtml = true;
+    id.setBoolAttribute("enablePgp", useEnigmail);
+
+    if (keyId) {
+      id.setIntAttribute("pgpKeyMode", 1);
+      id.setCharAttribute("pgpkeyId", keyId)
+    }
+  }
+
+  function setupAccount(ac) {
+    let is = ac.incomingServer;
+    is.downloadOnBiff = false;
+    is.doBiff = false;
+    is.performingBiff = false;
+    is.loginAtStartUp = false;
+
+    setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", "user1@enigmail-test.net", true, "ABCDEF0123456789");
+    setIdentityData(ac, 2, "Enigmail Unit Test 2", "John Doe II.", "user2@enigmail-test.net", true);
+    setIdentityData(ac, 3, "Enigmail Unit Test 3", "John Doe III.", "user3@enigmail-test.net", false);
+  }
+
+  for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+    let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+    if (ac.incomingServer.type !== "none") {
+      if (ac.incomingServer.type !== "pop3" || ac.incomingServer.prettyName !== UNITTEST_ACCT_NAME) {
+        throw reportError();
+      }
+    }
+  }
+
+  let configured = 0;
+
+  // try to configure existing account
+  for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+    let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+    if (ac.incomingServer.type !== "none") {
+      setupAccount(ac);
+      ++configured;
+    }
+  }
+
+  // if no account existed, create new account
+  if (configured === 0) {
+    let ac = accountManager.createAccount();
+    let is = accountManager.createIncomingServer("dummy", "localhost", "pop3");
+    is.prettyName = UNITTEST_ACCT_NAME;
+    ac.incomingServer = is;
+    setupAccount(ac);
+  }
+}
+
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 function withEnigmail(f) {
   return function() {
