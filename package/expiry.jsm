@@ -15,8 +15,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 const DAY = 86400; // number of seconds of 1 day
@@ -31,8 +34,11 @@ var EnigmailExpiry = {
    * @return Array      - list of keys that expire(d)
    */
 
-  checkKeyExpiry: function(keySpecArr, numDays) {
+  getExpiryForKeySpec: function(keySpecArr, numDays) {
+    EnigmailLog.DEBUG("expiry.jsm: getExpiryForKeySpec()\n");
     let now = Math.floor(Date.now() / 1000);
+    let enigmailSvc = EnigmailCore.getService();
+    if (!enigmailSvc) return [];
 
     let result = keySpecArr.reduce(function(p, keySpec) {
       let keys;
@@ -74,6 +80,7 @@ var EnigmailExpiry = {
    * @return  Array of Strings - list of keyId and email addresses
    */
   getKeysSpecForIdentities: function() {
+    EnigmailLog.DEBUG("expiry.jsm: getKeysSpecForIdentities()\n");
     let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
 
     let keySpecList = [];
@@ -104,7 +111,9 @@ var EnigmailExpiry = {
    * @return  Array of keys - the keys that have expired since the last check
    *          null in case no check was performed
    */
-  keyExpiryCheck: function() {
+  getNewlyExpiredKeys: function() {
+    EnigmailLog.DEBUG("expiry.jsm: getNewlyExpiredKeys()\n");
+
     let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
     if (numDays < 1) return null;
 
@@ -123,7 +132,10 @@ var EnigmailExpiry = {
     if (now - lastResult.lastCheck < DAY * 1000) return null;
 
     let keys = this.getKeysSpecForIdentities();
-    let expired = this.checkKeyExpiry(keys, numDays);
+
+    if (keys.length === 0) return lastResult;
+
+    let expired = this.getExpiryForKeySpec(keys, numDays);
 
     let expiredList = expired.reduce(function _f(p, key) {
       p.push(key.keyId);
@@ -145,6 +157,26 @@ var EnigmailExpiry = {
     }, []);
 
     return warnList;
+  },
+
+  keyExpiryCheck: function() {
+    EnigmailLog.DEBUG("expiry.jsm: keyExpiryCheck()\n");
+
+    let expiredKeys = this.getNewlyExpiredKeys();
+    if (!expiredKeys || expiredKeys.length === 0) return "";
+
+    let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
+
+    if (expiredKeys.length === 1) {
+      return EnigmailLocale.getString("expiry.keyExpiresSoon", [getKeyDesc(expiredKeys[0]), numDays]);
+    }
+    else {
+      let keyDesc = "";
+      for (let i = 0; i < expiredKeys.length; i++) {
+        keyDesc += "- " + getKeyDesc(expiredKeys[i]) + "\n";
+      }
+      return EnigmailLocale.getString("expiry.keysExpireSoon", [numDays, keyDesc]);
+    }
   }
 };
 
@@ -166,4 +198,9 @@ function uniqueKeyList(arr) {
     if (r === undefined) p.push(c);
     return p;
   }, []);
+}
+
+
+function getKeyDesc(key) {
+  return '"' + key.userId + '"' + ' (key ID ' + key.fpr + ')';
 }

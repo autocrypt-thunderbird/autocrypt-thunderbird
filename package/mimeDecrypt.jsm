@@ -414,7 +414,7 @@ EnigmailMimeDecrypt.prototype = {
       this.mimeSvc.onStopRequest(null, null, 0);
     }
     catch (ex) {
-      EnigmailLog.ERROR("mimeDecrypt.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      // EnigmailLog.ERROR("mimeDecrypt.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
   },
 

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailData: false, EnigmailApp: false, Dialog: false, EnigmailTimer: false, EnigmailWindows: false, EnigmailTime: false */
+/*global Components: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,8 @@ catch (ex) {
   // "old style" TB
   Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 }
+
+/* global EnigmailData: false, EnigmailApp: false, EnigmailDialog: false, EnigmailTimer: false, EnigmailWindows: false, EnigmailTime: false */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/funcs.jsm");
@@ -39,6 +41,7 @@ Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKey
 Components.utils.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Components.utils.import("resource://enigmail/expiry.jsm"); /*global EnigmailExpiry: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -114,6 +117,17 @@ Enigmail.msg = {
     Enigmail.msg.savedHeaders = null;
 
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
+
+    Enigmail.msg.expiryTimer = EnigmailTimer.setTimeout(function _f() {
+        let msg = EnigmailExpiry.keyExpiryCheck();
+
+        if (msg && msg.length > 0) {
+          EnigmailDialog.alert(window, msg);
+        }
+
+        this.expiryTimer = undefined;
+      }.bind(Enigmail.msg), //300000); // 5 minutes
+      5000);
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
