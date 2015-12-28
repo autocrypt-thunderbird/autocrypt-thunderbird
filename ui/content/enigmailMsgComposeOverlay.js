@@ -101,6 +101,8 @@ Enigmail.msg = {
 
   compFieldsEnig_CID: "@mozdev.org/enigmail/composefields;1",
 
+  saveDraftError: 0,
+
 
   composeStartup: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
@@ -402,6 +404,7 @@ Enigmail.msg = {
 
     this.determineSendFlagId = null;
     this.disableSmime = false;
+    this.saveDraftError = 0;
     this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
     this.enableUndoEncryption(false);
 
@@ -1905,7 +1908,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySecuritySettings\n");
 
     if (this.statusEncrypted == EnigmailConstants.ENIG_FINAL_SMIME_DISABLED) {
-      EnigmailDialog.alert(window, "Enigmail is not used because S/MIME is currently enabled. Please turn off S/MIME signing and/or encryption and then enable Enigmail encryption");
+      EnigmailDialog.alert(window, EnigmailLocale.getString("msgCompose.toolbarTxt.smimeConflict"));
       return;
     }
 
@@ -2732,9 +2735,11 @@ Enigmail.msg = {
       // check if own key is invalid
       let s = new RegExp("^INV_RECP [0-9]+ \\<?" + fromAddr + "\\>?", "m");
       if (testStatusFlagsObj.statusMsg.search(s) >= 0) {
-        EnigmailDialog.alert(window,
-          EnigmailLocale.getString("saveDraftError") + "\n\n" +
-          testErrorMsgObj.value);
+        ++this.saveDraftError;
+        if (this.saveDraftError === 1) {
+          this.notifyUser(3, EnigmailLocale.getString("msgCompose.cannotSaveDraft"), "saveDraftFailed",
+            testErrorMsgObj.value);
+        }
         return false;
       }
     }
@@ -2931,7 +2936,6 @@ Enigmail.msg = {
       var recList;
       splitRecipients = msgCompFields.splitRecipients;
 
-      //EnigmailDialog.alert(window, typeof(msgCompFields.cc));
       if (msgCompFields.to.length > 0) {
         recList = splitRecipients(msgCompFields.to, true, arrLen);
         this.addRecipients(toAddrList, recList);
@@ -3574,7 +3578,8 @@ Enigmail.msg = {
       EnigmailDialog.alert(window, EnigmailLocale.getString("sendAborted") + txt);
     }
     else {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("sendAborted") + "an internal error has occurred");
+      EnigmailDialog.alert(window, EnigmailLocale.getString("sendAborted") + "\n" +
+        EnigmailLocale.getString("msgCompose.internalError"));
     }
   },
 
@@ -4253,6 +4258,43 @@ Enigmail.msg = {
     return 0;
   },
 
+  /**
+   * Display a notification to the user at the bottom of the window
+   *
+   * @param priority: Number    - Priority of the message [1 = high (error) ... 3 = low (info)]
+   * @param msgText: String     - Text to be displayed in notification bar
+   * @param messageId: String   - Unique message type identification
+   * @param detailsText: String - optional text to be displayed by clicking on "Details" button.
+   *                              if null or "", then the Detail button will no be displayed.
+   */
+  notifyUser: function(priority, msgText, messageId, detailsText) {
+    let notif = document.getElementById("attachmentNotificationBox");
+    let prio;
+
+    switch (priority) {
+      case 1:
+        prio = notif.PRIORITY_CRITICAL_MEDIUM;
+        break;
+      case 3:
+        prio = notif.PRIORITY_INFO_MEDIUM;
+        break;
+      default:
+        prio = notif.PRIORITY_WARNING_MEDIUM;
+    }
+
+    let buttonArr = [];
+
+    if (detailsText && detailsText.length > 0) {
+      buttonArr.push({
+        accessKey: EnigmailLocale.getString("msgCompose.detailsButton.accessKey"),
+        label: EnigmailLocale.getString("msgCompose.detailsButton.label"),
+        callback: function(aNotificationBar, aButton) {
+          EnigmailDialog.alert(window, detailsText);
+        }
+      });
+    }
+    notif.appendNotification(msgText, messageId, null, prio, buttonArr);
+  },
 
   editorSelectAll: function() {
     if (this.editor) {
