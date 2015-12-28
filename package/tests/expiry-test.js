@@ -14,7 +14,6 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 testing("expiry.jsm"); /*global EnigmailExpiry: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 /*global Math: false, Date: false, uniqueKeyList: false, DAY: false */
@@ -96,8 +95,8 @@ test(function shouldDoKeyExpiryCheck() {
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
 
   let str = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(str, EnigmailLocale.getString("expiry.keysExpireSoon", [10, "- user1@enigmail-test.net (key ID 123456781234567812345678ABCDEF0123456789)\n" +
-    "- user4@enigmail-test.net (key ID 123456781234567812345678BBCDEF0123456789)\n"
+  Assert.equal(str, EnigmailLocale.getString("expiry.keysExpireSoon", [10, '- "user1@enigmail-test.net" (key ID 123456781234567812345678ABCDEF0123456789)\n' +
+    '- "user4@enigmail-test.net" (key ID 123456781234567812345678BBCDEF0123456789)\n'
   ]));
 
 
@@ -107,7 +106,7 @@ test(function shouldDoKeyExpiryCheck() {
 
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 101);
   str = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(str, EnigmailLocale.getString("expiry.keyExpiresSoon", ["user2@enigmail-test.net (key ID 123456781234567812345678EBCDEF0123456789)", 101]));
+  Assert.equal(str, EnigmailLocale.getString("expiry.keyExpiresSoon", ['"user2@enigmail-test.net" (key ID 123456781234567812345678EBCDEF0123456789)', 101]));
 
 });
 
