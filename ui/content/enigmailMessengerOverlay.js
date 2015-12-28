@@ -119,15 +119,14 @@ Enigmail.msg = {
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
 
     Enigmail.msg.expiryTimer = EnigmailTimer.setTimeout(function _f() {
-        let msg = EnigmailExpiry.keyExpiryCheck();
+      let msg = EnigmailExpiry.keyExpiryCheck();
 
-        if (msg && msg.length > 0) {
-          EnigmailDialog.alert(window, msg);
-        }
+      if (msg && msg.length > 0) {
+        EnigmailDialog.alert(window, msg);
+      }
 
-        this.expiryTimer = undefined;
-      }.bind(Enigmail.msg), //300000); // 5 minutes
-      5000);
+      this.expiryTimer = undefined;
+    }.bind(Enigmail.msg), 60000); // 1 minutes
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
