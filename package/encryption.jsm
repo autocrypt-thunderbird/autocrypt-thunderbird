@@ -25,6 +25,7 @@ Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailE
 Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -160,10 +161,88 @@ const EnigmailEncryption = {
     return encryptArgs;
   },
 
+  /**
+   * Determine if the sender key ID or user ID can be used for signing and/or encryption
+   *
+   * @param sendFlags:    Number  - the send Flags; need to contain SEND_SIGNED and/or SEND_ENCRYPTED
+   * @param fromMailAddr: String  - the sender email address or key ID
+   *
+   * @return Object:
+   *         - keyId:    String - the found key ID, or null if fromMailAddr is not valid
+   *         - errorMsg: String - the erorr message if key not valid, or null if key is valid
+   */
+  determineOwnKeyUsability: function(sendFlags, fromMailAddr) {
+    EnigmailLog.DEBUG("encryption.jsm: determineOwnKeyUsability: sendFlags=" + sendFlags + ", sender=" + fromMailAddr + "\n");
+
+    let keyList = [];
+    let ret = {
+      keyId: null,
+      errorMsg: null
+    };
+
+    let sign = (sendFlags & nsIEnigmail.SEND_SIGNED ? true : false);
+    let encrypt = (sendFlags & nsIEnigmail.SEND_ENCRYPTED ? true : false);
+
+    if (fromMailAddr.search(/^(0x)?[A-Z0-9]+$/) === 0) {
+      // key ID specified
+      let key = EnigmailKeyRing.getKeyById(fromMailAddr);
+      keyList.push(key);
+    }
+    else {
+      // email address specified
+      keyList = EnigmailKeyRing.getKeysByUserId(fromMailAddr);
+    }
+
+    if (keyList.length === 0) {
+      ret.errorMsg = EnigmailLocale.getString("errorOwnKeyUnusable", fromMailAddr);
+      return ret;
+    }
+
+    if (sign) {
+      keyList = keyList.reduce(function _f(p, keyObj) {
+        if (keyObj.getSigningValidity().keyValid) p.push(keyObj);
+        return p;
+      }, []);
+    }
+
+    if (encrypt) {
+      keyList = keyList.reduce(function _f(p, keyObj) {
+        if (keyObj.getEncryptionValidity().keyValid) p.push(keyObj);
+        return p;
+      }, []);
+    }
+
+    if (keyList.length === 0) {
+      if (sign) {
+        ret.errorMsg = EnigmailErrorHandling.determineInvSignReason(fromMailAddr);
+      }
+      else {
+        ret.errorMsg = EnigmailErrorHandling.determineInvRcptReason(fromMailAddr);
+      }
+    }
+    else {
+      // TODO: use better algorithm
+      ret.keyId = keyList[0].fpr;
+    }
+
+    return ret;
+  },
+
   encryptMessageStart: function(win, uiFlags, fromMailAddr, toMailAddr, bccMailAddr,
     hashAlgorithm, sendFlags, listener, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + EnigmailData.bytesToHex(
+    EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: uiFlags=" + uiFlags + ", from " + fromMailAddr + " to " + toMailAddr + ", hashAlgorithm=" + hashAlgorithm + " (" + EnigmailData.bytesToHex(
       EnigmailData.pack(sendFlags, 4)) + ")\n");
+
+    let keyUseability = this.determineOwnKeyUsability(sendFlags, fromMailAddr);
+
+    if (!keyUseability.keyId) {
+      EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: own key invalid\n");
+      errorMsgObj.value = keyUseability.errorMsg;
+      statusFlagsObj.value = nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.NO_SECKEY | nsIEnigmail.DISPLAY_MESSAGE;
+
+      return null;
+    }
+    // TODO: else - use the found key ID
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 
@@ -176,13 +255,13 @@ const EnigmailEncryption = {
     errorMsgObj.value = "";
 
     if (!sendFlags) {
-      EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageStart: NO ENCRYPTION!\n");
+      EnigmailLog.DEBUG("encryption.jsm: encryptMessageStart: NO ENCRYPTION!\n");
       errorMsgObj.value = EnigmailLocale.getString("notRequired");
       return null;
     }
 
     if (!EnigmailCore.getService(win)) {
-      EnigmailLog.ERROR("enigmailCommon.jsm: encryptMessageStart: not yet initialized\n");
+      EnigmailLog.ERROR("encryption.jsm: encryptMessageStart: not yet initialized\n");
       errorMsgObj.value = EnigmailLocale.getString("notInit");
       return null;
     }
@@ -196,7 +275,7 @@ const EnigmailEncryption = {
     var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, encryptArgs, signMsg, win, listener, statusFlagsObj);
 
     if (statusFlagsObj.value & nsIEnigmail.MISSING_PASSPHRASE) {
-      EnigmailLog.ERROR("enigmailCommon.jsm: encryptMessageStart: Error - no passphrase supplied\n");
+      EnigmailLog.ERROR("encryption.jsm: encryptMessageStart: Error - no passphrase supplied\n");
 
       errorMsgObj.value = "";
     }
@@ -209,7 +288,7 @@ const EnigmailEncryption = {
   },
 
   encryptMessageEnd: function(fromMailAddr, stderrStr, exitCode, uiFlags, sendFlags, outputLen, retStatusObj) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageEnd: uiFlags=" + uiFlags + ", sendFlags=" + EnigmailData.bytesToHex(EnigmailData.pack(sendFlags, 4)) + ", outputLen=" + outputLen + "\n");
+    EnigmailLog.DEBUG("encryption.jsm: encryptMessageEnd: uiFlags=" + uiFlags + ", sendFlags=" + EnigmailData.bytesToHex(EnigmailData.pack(sendFlags, 4)) + ", outputLen=" + outputLen + "\n");
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
     var defaultSend = sendFlags & nsIEnigmail.SEND_DEFAULT;
@@ -221,7 +300,7 @@ const EnigmailEncryption = {
     retStatusObj.blockSeparation = "";
 
     if (!EnigmailCore.getService().initialized) {
-      EnigmailLog.ERROR("enigmailCommon.jsm: encryptMessageEnd: not yet initialized\n");
+      EnigmailLog.ERROR("encryption.jsm: encryptMessageEnd: not yet initialized\n");
       retStatusObj.errorMsg = EnigmailLocale.getString("notInit");
       return -1;
     }
@@ -247,14 +326,21 @@ const EnigmailEncryption = {
       exitCode = correctedExitCode;
     }
 
-    EnigmailLog.DEBUG("enigmailCommon.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
+    EnigmailLog.DEBUG("encryption.jsm: encryptMessageEnd: command execution exit code: " + exitCode + "\n");
 
     if (retStatusObj.statusFlags & nsIEnigmail.DISPLAY_MESSAGE) {
       if (retStatusObj.extendedStatus.search(/\bdisp:/) >= 0) {
         retStatusObj.errorMsg = retStatusObj.statusMsg;
       }
       else {
-        let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ \\<?" + fromMailAddr + "\\>?", "m");
+        if (fromMailAddr.search(/^0x/) === 0) {
+          fromMailAddr = fromMailAddr.substr(2);
+        }
+        if (fromMailAddr.search(/^[A-F0-9]{8,40}$/i) === 0) {
+          fromMailAddr = "[A-F0-9]+" + fromMailAddr;
+        }
+
+        let s = new RegExp("^(\\[GNUPG:\\] )?INV_(RECP|SGNR) [0-9]+ (\\<|0x)?" + fromMailAddr + "\\>?", "m");
         if (retStatusObj.statusMsg.search(s) >= 0) {
           retStatusObj.errorMsg += "\n\n" + EnigmailLocale.getString("keyError.resolutionAction");
         }

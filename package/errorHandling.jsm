@@ -253,30 +253,8 @@ function invalidSignature(c) {
   let keySpec = lineSplit[2];
 
   if (keySpec) {
-    EnigmailLog.DEBUG("errorHandling.jsm: invalidSignature: detected invalid sender: " + keySpec + " / code: " + lineSplit[1] + "\n");
-
-    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
-      let key = getEnigmailKeyRing().getKeyById(keySpec);
-      if (!key) {
-        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
-      }
-      else {
-        let r = key.getSigningValidity();
-        if (!r.keyValid) c.retStatusObj.errorMsg += r.reason;
-      }
-    }
-    else {
-      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
-      if (!keys || keys.length === 0) {
-        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
-      }
-      else {
-        for (let i in keys) {
-          let r = keys[i].getSigningValidity();
-          if (!r.keyValid) c.retStatusObj.errorMsg += r.reason + "\n";
-        }
-      }
-    }
+    EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid sender " + keySpec + " / code: " + lineSplit[1] + "\n");
+    c.retStatusObj.errorMsg += EnigmailErrorHandling.determineInvSignReason(keySpec);
   }
 }
 
@@ -287,31 +265,10 @@ function invalidRecipient(c) {
   c.flag = 0;
 
   let keySpec = lineSplit[2];
-  EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid recipient " + keySpec + " / code: " + lineSplit[1] + "\n");
 
   if (keySpec) {
-    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
-      let key = getEnigmailKeyRing().getKeyById(keySpec);
-      if (!key) {
-        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
-      }
-      else {
-        let r = key.getEncryptionValidity();
-        if (!r.keyValid) c.retStatusObj.errorMsg += r.reason;
-      }
-    }
-    else {
-      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
-      if (!keys || keys.length === 0) {
-        c.retStatusObj.errorMsg += EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
-      }
-      else {
-        for (let i in keys) {
-          let r = keys[i].getEncryptionValidity();
-          if (!r.keyValid) c.retStatusObj.errorMsg += r.reason + "\n";
-        }
-      }
-    }
+    EnigmailLog.DEBUG("errorHandling.jsm: invalidRecipient: detected invalid recipient " + keySpec + " / code: " + lineSplit[1] + "\n");
+    c.retStatusObj.errorMsg += EnigmailErrorHandling.determineInvRcptReason(keySpec);
   }
 }
 
@@ -541,5 +498,83 @@ var EnigmailErrorHandling = {
   parseErrorOutput: function(errOutput, retStatusObj) {
     var context = newContext(errOutput, retStatusObj);
     return parseErrorOutputWith(context);
+  },
+
+  /**
+   * Determin why a given key or userID cannot be used for signing
+   *
+   * @param keySpec String - key ID or user ID
+   *
+   * @return String - the reason(s) as message to display to the user
+   *                  "" in case the key is valid
+   */
+  determineInvSignReason: function(keySpec) {
+    EnigmailLog.DEBUG("errorHandling.jsm: determineInvSignReason: keySpec: " + keySpec + "\n");
+
+    let reasonMsg = "";
+
+    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
+      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      if (!key) {
+        reasonMsg = EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+      }
+      else {
+        let r = key.getSigningValidity();
+        if (!r.keyValid) reasonMsg = r.reason;
+      }
+    }
+    else {
+      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      if (!keys || keys.length === 0) {
+        reasonMsg = EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+      }
+      else {
+        for (let i in keys) {
+          let r = keys[i].getSigningValidity();
+          if (!r.keyValid) reasonMsg += r.reason + "\n";
+        }
+      }
+    }
+
+    return reasonMsg;
+  },
+
+  /**
+   * Determin why a given key or userID cannot be used for encryption
+   *
+   * @param keySpec String - key ID or user ID
+   *
+   * @return String - the reason(s) as message to display to the user
+   *                  "" in case the key is valid
+   */
+  determineInvRcptReason: function(keySpec) {
+    EnigmailLog.DEBUG("errorHandling.jsm: determineInvRcptReason: keySpec: " + keySpec + "\n");
+
+    let reasonMsg = "";
+
+    if (keySpec.search(/^(0x)?[0-9A-F]+$/) === 0) {
+      let key = getEnigmailKeyRing().getKeyById(keySpec);
+      if (!key) {
+        reasonMsg = EnigmailLocale.getString("keyError.keyIdNotFound", keySpec);
+      }
+      else {
+        let r = key.getEncryptionValidity();
+        if (!r.keyValid) reasonMsg = r.reason;
+      }
+    }
+    else {
+      let keys = getEnigmailKeyRing().getKeysByUserId(keySpec);
+      if (!keys || keys.length === 0) {
+        reasonMsg = EnigmailLocale.getString("keyError.keySpecNotFound", keySpec);
+      }
+      else {
+        for (let i in keys) {
+          let r = keys[i].getEncryptionValidity();
+          if (!r.keyValid) reasonMsg += r.reason + "\n";
+        }
+      }
+    }
+
+    return reasonMsg;
   }
 };

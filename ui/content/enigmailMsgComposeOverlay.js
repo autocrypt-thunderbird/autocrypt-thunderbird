@@ -2431,13 +2431,10 @@ Enigmail.msg = {
       testStatusFlagsObj,
       testErrorMsgObj);
 
-    if (testStatusFlagsObj.value) {
+    if (testStatusFlagsObj.value & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.NO_SECKEY)) {
       // check if own key is invalid
-      let s = new RegExp("^INV_(RECP|SGNR) [0-9]+ \\<?" + fromAddr + "\\>?", "m");
-      if (testErrorMsgObj.value.search(s) >= 0) {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("errorKeyUnusable", [fromAddr]));
-        return null;
-      }
+      EnigmailDialog.alert(window, testErrorMsgObj.value);
+      return null;
     }
 
     // if
@@ -2731,10 +2728,9 @@ Enigmail.msg = {
       testStatusFlagsObj,
       testErrorMsgObj);
 
-    if (testStatusFlagsObj.statusMsg) {
+    if (testStatusFlagsObj.value & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.NO_SECKEY)) {
       // check if own key is invalid
-      let s = new RegExp("^INV_RECP [0-9]+ \\<?" + fromAddr + "\\>?", "m");
-      if (testStatusFlagsObj.statusMsg.search(s) >= 0) {
+      if (testErrorMsgObj.value && testErrorMsgObj.value.length > 0) {
         ++this.saveDraftError;
         if (this.saveDraftError === 1) {
           this.notifyUser(3, EnigmailLocale.getString("msgCompose.cannotSaveDraft"), "saveDraftFailed",
