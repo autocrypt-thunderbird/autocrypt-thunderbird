@@ -82,6 +82,7 @@ const EnigmailDecryption = {
 
     var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
     if (keyserver && keyserver !== "") {
+      keyserver = keyserver.trim();
       args.push("--keyserver-options");
       var keySrvArgs = "auto-key-retrieve";
       var srvProxy = EnigmailHttpProxy.getHttpProxy(keyserver);

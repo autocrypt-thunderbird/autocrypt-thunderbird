@@ -62,7 +62,7 @@ const EnigmailKeyServer = {
     if (proxyHost) {
       args = args.concat(["--keyserver-options", "http-proxy=" + proxyHost]);
     }
-    args = args.concat(["--keyserver", keyserver]);
+    args = args.concat(["--keyserver", keyserver.trim()]);
 
     //     if (actionFlags & nsIEnigmail.SEARCH_KEY | nsIEnigmail.DOWNLOAD_KEY | nsIEnigmail.REFRESH_KEY) {
     //       args = args.concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
