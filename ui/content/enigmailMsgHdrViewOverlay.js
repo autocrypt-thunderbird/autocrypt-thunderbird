@@ -107,7 +107,7 @@ Enigmail.hdrView = {
     s.firstChild.data = txt;
   },
 
-  updateHdrIcons: function(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus) {
+  updateHdrIcons: function(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus, encMimePartNumber) {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode=" + exitCode + ", statusFlags=" + statusFlags + ", keyId=" + keyId + ", userId=" + userId + ", " + errorMsg +
       "\n");
 
@@ -177,6 +177,10 @@ Enigmail.hdrView = {
 
       if (statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED)
         statusFlags |= nsIEnigmail.DECRYPTION_INCOMPLETE;
+    }
+
+    if (!(statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED)) {
+      encMimePartNumber = "";
     }
 
     if (!EnigmailPrefs.getPref("displayPartiallySigned")) {
@@ -381,7 +385,8 @@ Enigmail.hdrView = {
       statusInfo: statusInfo,
       fullStatusInfo: fullStatusInfo,
       blockSeparation: blockSeparation,
-      xtraStatus: xtraStatus
+      xtraStatus: xtraStatus,
+      encryptedMimePart: encMimePartNumber
     };
 
     this.displayStatusBar();
@@ -734,7 +739,8 @@ Enigmail.hdrView = {
       userId: "",
       statusLine: "",
       statusInfo: "",
-      fullStatusInfo: ""
+      fullStatusInfo: "",
+      encryptedMimePart: ""
     };
 
   },
@@ -989,15 +995,45 @@ if (messageHeaderSink) {
         return false;
       },
 
+      /**
+       * Determine if a given mime part number should be displayed.
+       * Returns true if one of these conditions is true:
+       *  - this is the 1st crypto-mime part
+       *  - the mime part is earlier in the mime tree
+       *  - the mime part is the 1st child of an already displayed mime part
+       */
+      displaySubPart: function(mimePartNumber) {
+        if (!mimePartNumber) return true;
+
+        let securityInfo = Enigmail.msg.securityInfo;
+        if (mimePartNumber.length > 0 && securityInfo && securityInfo.encryptedMimePart && securityInfo.encryptedMimePart.length > 0) {
+          let c = EnigmailFuncs.compareMimePartLevel(securityInfo.encryptedMimePart, mimePartNumber);
+
+          if (c === -1) {
+            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displaySubPart: MIME part after already processed part\n");
+            return false;
+          }
+          if (c === -2 && mimePartNumber !== securityInfo.encryptedMimePart + ".1") {
+            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displaySubPart: MIME part not 1st child of parent\n");
+            return false;
+          }
+        }
+
+        return true;
+      },
+
       updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails, mimePartNumber) {
         // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
 
         let uriSpec = (uri ? uri.spec : null);
 
         if (this.isCurrentMessage()) {
+
+          if (!this.displaySubPart(mimePartNumber)) return;
+
           Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
             errorMsg, blockSeparation, encToDetails,
-            null); // xtraStatus
+            null, mimePartNumber);
         }
 
         if (uriSpec && uriSpec.search(/^enigmail:message\//) === 0) {
@@ -1011,7 +1047,7 @@ if (messageHeaderSink) {
 
       modifyMessageHeaders: function(uri, headerData, mimePartNumber) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= " + headerData + "\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= " + headerData + ", mimePart=" + mimePartNumber + "\n");
 
         function updateHdrBox(header, value) {
           let e = document.getElementById("expanded" + header + "Box");
@@ -1035,6 +1071,8 @@ if (messageHeaderSink) {
 
         if (typeof(hdr) !== "object") return;
         if (!this.isCurrentMessage() || gFolderDisplay.selectedMessages.length !== 1) return;
+
+        if (!this.displaySubPart(mimePartNumber)) return;
 
         if ("subject" in hdr) {
           msg.subject = EnigmailData.convertFromUnicode(hdr.subject, "utf-8");

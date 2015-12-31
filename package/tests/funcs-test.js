@@ -80,6 +80,9 @@ test(function compareMimePartLevel() {
   e = EnigmailFuncs.compareMimePartLevel("1.1", "1.2.2");
   Assert.equal(e, -1);
 
+  e = EnigmailFuncs.compareMimePartLevel("1", "2");
+  Assert.equal(e, -1);
+
   e = EnigmailFuncs.compareMimePartLevel("1.2", "1.1.2");
   Assert.equal(e, 1);
 
