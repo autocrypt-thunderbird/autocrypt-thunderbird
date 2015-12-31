@@ -69,6 +69,7 @@ function EnigmailMimeDecrypt() {
   this.uri = null;
   this.backgroundJob = false;
   this.decryptedHeaders = {};
+  this.mimePartNumber = "";
 }
 
 EnigmailMimeDecrypt.prototype = {
@@ -87,6 +88,12 @@ EnigmailMimeDecrypt.prototype = {
 
     this.initOk = true;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
+    if ("mimePart" in this.mimeSvc) {
+      this.mimePartNumber = this.mimeSvc;
+    }
+    else {
+      this.mimePartNumber = "";
+    }
     this.pipe = null;
     this.closePipe = false;
     this.exitCode = null;
@@ -317,7 +324,7 @@ EnigmailMimeDecrypt.prototype = {
 
       if (headerSink && this.uri && !this.backgroundJob) {
 
-        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders));
+        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
 
         headerSink.updateSecurityStatus(
           this.msgUriSpec,
@@ -329,7 +336,8 @@ EnigmailMimeDecrypt.prototype = {
           this.returnStatus.errorMsg,
           this.returnStatus.blockSeparation,
           this.uri,
-          this.returnStatus.encToDetails);
+          this.returnStatus.encToDetails,
+          this.mimePartNumber);
       }
       this.statusDisplayed = true;
     }
@@ -434,7 +442,8 @@ EnigmailMimeDecrypt.prototype = {
           EnigmailLocale.getString("possiblyPgpMime"),
           "",
           this.uri,
-          null);
+          null,
+          "");
       }
     }
     catch (ex) {}

@@ -113,6 +113,7 @@ MimeVerify.prototype = {
   inStream: null,
   sigFile: null,
   sigData: "",
+  mimePartNumber: "",
 
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
 
@@ -172,6 +173,13 @@ MimeVerify.prototype = {
     this.uri = uri ? uri.QueryInterface(Ci.nsIURI).clone() : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
+
+    if ("mimePart" in this.mimeSvc) {
+      this.mimePartNumber = this.mimeSvc;
+    }
+    else {
+      this.mimePartNumber = "";
+    }
 
     this.dataCount = 0;
     this.foundMsg = false;
@@ -554,7 +562,8 @@ MimeVerify.prototype = {
           this.returnStatus.errorMsg,
           this.returnStatus.blockSeparation,
           this.uri,
-          this.returnStatus.encToDetails);
+          this.returnStatus.encToDetails,
+          this.mimePartNumber);
       }
       this.statusDisplayed = true;
     }

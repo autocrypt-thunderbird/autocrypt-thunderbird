@@ -25,10 +25,12 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in wstring errorMsg,
                             in wstring blockSeparation,
                             in nsIURI uri,
-                            in wstring encToDetails);
+                            in wstring encToDetails,
+                            in wstring mimePartNumber);
 
   void modifyMessageHeaders(in nsIURI uri,
-                            in wstring headerData);
+                            in wstring headerData,
+                            in wstring mimePartNumber);
 
   void handleSMimeMessage(in nsIURI uri);
 };

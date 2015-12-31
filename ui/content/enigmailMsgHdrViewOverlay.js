@@ -989,7 +989,7 @@ if (messageHeaderSink) {
         return false;
       },
 
-      updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails) {
+      updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails, mimePartNumber) {
         // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
 
         let uriSpec = (uri ? uri.spec : null);
@@ -1009,7 +1009,7 @@ if (messageHeaderSink) {
         return;
       },
 
-      modifyMessageHeaders: function(uri, headerData) {
+      modifyMessageHeaders: function(uri, headerData, mimePartNumber) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= " + headerData + "\n");
 
