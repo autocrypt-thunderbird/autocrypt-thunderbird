@@ -66,3 +66,27 @@ test(function stripEmail() {
   );
 
 });
+
+test(function compareMimePartLevel() {
+  Assert.throws(
+    function() {
+      EnigmailFuncs.compareMimePartLevel("1.2.e", "1.2");
+    }
+  );
+
+  let e = EnigmailFuncs.compareMimePartLevel("1.1", "1.1.2");
+  Assert.equal(e, -2);
+
+  e = EnigmailFuncs.compareMimePartLevel("1.1", "1.2.2");
+  Assert.equal(e, -1);
+
+  e = EnigmailFuncs.compareMimePartLevel("1.2", "1.1.2");
+  Assert.equal(e, 1);
+
+  e = EnigmailFuncs.compareMimePartLevel("1.2.2", "1.2");
+  Assert.equal(e, 2);
+
+  e = EnigmailFuncs.compareMimePartLevel("1.2.2", "1.2.2");
+  Assert.equal(e, 0);
+
+});

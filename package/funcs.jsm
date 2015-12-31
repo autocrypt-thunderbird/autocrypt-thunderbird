@@ -320,6 +320,38 @@ const EnigmailFuncs = {
     }
 
     return newObj;
+  },
+
+  /**
+   * Compare two MIME part numbers to determine which of the two is earlier in the tree
+   * MIME part numbers have the structure "x.y.z...", e.g 1, 1.2, 2.3.1.4.5.1.2
+   *
+   * @param  mime1, mime2 - String the two mime part numbers to compare.
+   *
+   * @return Number (one of -2, -1, 0, 1 , 2)
+   *        - Negative number if mime1 is before mime2
+   *        - Positive number if mime1 is after mime2
+   *        - 0 if mime1 and mime2 are equal
+   *        - if mime1 is a parent of mime2 the return value is -2
+   *        - if mime2 is a parent of mime1 the return value is 2
+   *
+   *      Throws an error if mime1 or mime2 do not comply to the required format
+   */
+  compareMimePartLevel: function(mime1, mime2) {
+    let s = new RegExp("^[0-9]+(\.[0-9]+)*$");
+    if (mime1.search(s) < 0) throw "Invalid mime1";
+    if (mime2.search(s) < 0) throw "Invalid mime2";
+
+    let a1 = mime1.split(/./);
+    let a2 = mime2.split(/./);
+
+    for (let i = 0; i < Math.min(a1.length, a2.length); i++) {
+      if (Number(mime1[i]) < Number(mime2[i])) return -1;
+      if (Number(mime1[i]) > Number(mime2[i])) return 1;
+    }
+    if (a2.length > a1.length) return -2;
+    if (a2.length < a1.length) return 2;
+    return 0;
   }
 
 };
