@@ -89,7 +89,7 @@ EnigmailMimeDecrypt.prototype = {
     this.initOk = true;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     if ("mimePart" in this.mimeSvc) {
-      this.mimePartNumber = this.mimeSvc;
+      this.mimePartNumber = this.mimeSvc.mimePart;
     }
     else {
       this.mimePartNumber = "";

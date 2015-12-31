@@ -175,7 +175,7 @@ MimeVerify.prototype = {
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     if ("mimePart" in this.mimeSvc) {
-      this.mimePartNumber = this.mimeSvc;
+      this.mimePartNumber = this.mimeSvc.mimePart;
     }
     else {
       this.mimePartNumber = "";
