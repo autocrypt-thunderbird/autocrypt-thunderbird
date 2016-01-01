@@ -1997,7 +1997,14 @@ Enigmail.msg = {
     // add list of keys
     if (sendFlags & ENCRYPT) {
       gpgKeys = gpgKeys.replace(/^, /, "").replace(/, $/, "");
-      msgConfirm += "\n\n" + EnigmailLocale.getString("encryptKeysNote", [gpgKeys]);
+
+      // make gpg keys unique
+      let keyList = gpgKeys.split(/[, ]+/).reduce(function _f(p, key) {
+        if (p.indexOf(key) < 0) p.push(key);
+        return p;
+      }, []);
+
+      msgConfirm += "\n\n" + EnigmailLocale.getString("encryptKeysNote", [keyList.join(", ")]);
     }
 
     return EnigmailDialog.confirmDlg(window, msgConfirm,
