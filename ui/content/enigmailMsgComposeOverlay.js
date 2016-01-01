@@ -1747,8 +1747,9 @@ Enigmail.msg = {
     }
 
     if (this.getAccDefault("enabled")) {
-      var compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+      var compFields = gMsgCompose.compFields;
       Recipients2CompFields(compFields);
+      gMsgCompose.expandMailingLists();
 
       // process list of to/cc email addresses
       // - bcc email addresses are ignored, when processing whether to sign/encrypt
