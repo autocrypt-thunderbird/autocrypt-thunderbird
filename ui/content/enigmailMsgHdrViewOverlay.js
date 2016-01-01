@@ -1025,6 +1025,8 @@ if (messageHeaderSink) {
       updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails, mimePartNumber) {
         // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
 
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
+
         let uriSpec = (uri ? uri.spec : null);
 
         if (this.isCurrentMessage()) {
