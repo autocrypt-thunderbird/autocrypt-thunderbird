@@ -40,6 +40,10 @@
           <label value="&enigmail.sKeyDlg.fingerprint.label;"/>
           <label id="fingerprint" value="?"/>
         </row>
+        <row id="secondaryUidRow" collapsed="true">
+          <label value="&enigmail.keyDetails.alsoKnown.label;:"/>
+          <vbox id="secondaryUids" />
+        </row>
         <separator/>
         <row>
           <hbox align="center">

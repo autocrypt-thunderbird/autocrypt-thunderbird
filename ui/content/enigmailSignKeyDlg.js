@@ -11,6 +11,7 @@ Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/locale.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 
 var gExportableSignatureList = null;
 var gLocalSignatureList = null;
@@ -43,7 +44,6 @@ function onLoad() {
     menulist.selectedIndex = 0;
   }
 
-  var fingerprint;
   // determine keys that have already signed the key
   try {
     var exitCodeObj = {};
@@ -53,7 +53,6 @@ function onLoad() {
     var sigType = null;
     gUidCount = [];
     var keyId = null;
-    fingerprint = "";
 
     var keyObj = EnigmailKeyRing.getKeyById(window.arguments[0].keyId);
 
@@ -97,6 +96,25 @@ function onLoad() {
     if (keyObj.fpr && keyObj.fpr.length > 0) {
       document.getElementById("fingerprint").value = keyObj.fprFormatted;
     }
+
+    if (keyObj.hasSubUserIds()) {
+      let sUid = document.getElementById("secondaryUids");
+      let nUid = 0;
+
+      for (let j = 1; j < keyObj.userIds.length; j++) {
+        if (keyObj.userIds[j].type === "uid" && (!EnigmailTrust.isInvalid(keyObj.userIds[j].keyTrust))) {
+          ++nUid;
+          let uidLbl = document.createElement("label");
+          uidLbl.setAttribute("value", keyObj.userIds[j].userId);
+          sUid.appendChild(uidLbl);
+        }
+      }
+
+      if (nUid > 0) {
+        document.getElementById("secondaryUidRow").removeAttribute("collapsed");
+      }
+    }
+
   }
   catch (ex) {}
 }
