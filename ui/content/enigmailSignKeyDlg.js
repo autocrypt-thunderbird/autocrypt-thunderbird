@@ -95,11 +95,7 @@ function onLoad() {
     var keyDesc = keyObj.userId + " - 0x" + keyObj.keyId.substr(-8, 8);
     document.getElementById("keyId").value = keyDesc;
     if (keyObj.fpr && keyObj.fpr.length > 0) {
-      var fpr = keyObj.fpr.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
-      if (fpr && fpr.length > 2) {
-        fpr.shift();
-        document.getElementById("fingerprint").value = fpr.join(" ");
-      }
+      document.getElementById("fingerprint").value = keyObj.fprFormatted;
     }
   }
   catch (ex) {}

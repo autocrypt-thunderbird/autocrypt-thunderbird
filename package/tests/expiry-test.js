@@ -52,7 +52,10 @@ test(function shouldCheckKeyExpiry() {
 
   EnigmailKeyRing.rebuildKeyIndex();
 
-  let k = EnigmailExpiry.getExpiryForKeySpec(["0xABCDEF0123456789", "BBCDEF0123456789", "CBCDEF0123456789"], 10);
+  let k = EnigmailExpiry.getExpiryForKeySpec([], 10);
+  Assert.equal(k.length, 0);
+
+  k = EnigmailExpiry.getExpiryForKeySpec(["0xABCDEF0123456789", "BBCDEF0123456789", "CBCDEF0123456789"], 10);
   Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 BBCDEF0123456789");
 
   k = EnigmailExpiry.getExpiryForKeySpec(["user1@enigmail-test.net", "user2@enigmail-test.net", "user5@enigmail-test.net"], 10);
@@ -134,6 +137,9 @@ function createKeyObj(keyId, userId, expiryDate, hasSecretKey) {
     getKeyExpiry: function() {
       if (this.expiryTime === 0) return Number.MAX_VALUE;
       return this.expiryTime;
+    },
+    get fprFormatted() {
+      return this.fpr;
     }
   };
 }

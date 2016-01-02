@@ -29,6 +29,7 @@ Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 
@@ -75,6 +76,7 @@ let gSubkeyIndex = [];
     - keyId           - 16 digits (8-byte) public key ID (/not/ preceeded with 0x)
     - userId          - main user ID
     - fpr             - fingerprint
+    - fprFormatted    - a formatted version of the fingerprint followin the scheme .... .... ....
     - expiry          - Expiry date as printable string
     - expiryTime      - Expiry time as seconds after 01/01/1970
     - created         - Key creation date as printable string
@@ -119,6 +121,10 @@ let gSubkeyIndex = [];
             - p: pgp/classical
             - t: always trust
             - a: auto (:0) (default, currently pgp/classical)
+            - T: TOFU
+            - TP: TOFU+PGP
+
+  * various methds are avaibable too.
 */
 
 const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
@@ -1455,11 +1461,19 @@ function createKeyObjects(keyListString, keyListObj) {
         case "tru":
           keyListObj.trustModel = "?";
           if (listRow[KEY_TRUST_ID].indexOf("t") >= 0) {
-            if (listRow[KEY_SIZE_ID] === "0") {
-              keyListObj.trustModel = "p";
-            }
-            else if (listRow[KEY_SIZE_ID] === "1") {
-              keyListObj.trustModel = "t";
+            switch (listRow[KEY_SIZE_ID]) {
+              case "0":
+                keyListObj.trustModel = "p";
+                break;
+              case "1":
+                keyListObj.trustModel = "t";
+                break;
+              case "6":
+                keyListObj.trustModel = "TP";
+                break;
+              case "7":
+                keyListObj.trustModel = "T";
+                break;
             }
           }
           else {
@@ -1684,6 +1698,17 @@ KeyObject.prototype = {
     return retVal;
   },
 
+  /**
+   * Get a formatted version of the fingerprint:
+   * 1234 5678 90AB CDEF .... ....
+   *
+   * @return String - the formatted fingerprint
+   */
+  get fprFormatted() {
+    let f = EnigmailKey.formatFpr(this.fpr);
+    if (f.length === 0) f = this.fpr;
+    return f;
+  },
 
   /**
    * Check whether a key can be used for encryption and return a description of why not

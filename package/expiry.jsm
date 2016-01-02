@@ -202,5 +202,5 @@ function uniqueKeyList(arr) {
 
 
 function getKeyDesc(key) {
-  return '"' + key.userId + '"' + ' (key ID ' + key.fpr + ')';
+  return '"' + key.userId + '"' + ' (key ID ' + key.fprFormatted + ')';
 }
