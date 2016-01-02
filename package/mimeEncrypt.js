@@ -364,8 +364,8 @@ PgpMimeEncrypt.prototype = {
       if (this.encapsulate) this.writeToPipe("--" + this.encapsulate + "--\r\n");
 
       if (this.encHeader) {
-        this.writeToPipe("\r\n--" + this.encHeader + "\r\n");
-        if (this.cryptoMode == MIME_SIGNED) this.writeOut("\r\n--" + this.encHeader + "\r\n");
+        this.writeToPipe("\r\n--" + this.encHeader + "--\r\n");
+        if (this.cryptoMode == MIME_SIGNED) this.writeOut("\r\n--" + this.encHeader + "--\r\n");
       }
 
 
