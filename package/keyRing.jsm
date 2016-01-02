@@ -88,7 +88,6 @@ let gSubkeyIndex = [];
     - algorithm       - public key algorithm type
     - keySize         - size of public key
     - type            - "pub" or "grp"
-    - hasSubUserIds()
     - userIds  - [Array]: - Contains ALL UIDs (including the primary UID)
                       * userId     - User ID
                       * keyTrust   - trust level of user ID
@@ -112,6 +111,13 @@ let gSubkeyIndex = [];
                       * created
                       * fpr
                       * sigList: Array of object: { userId, created, signerKeyId, sigType, sigKnown }
+    - methods:
+       * hasSubUserIds
+       * getKeyExpiry
+       * getEncryptionValidity
+       * getSigningValidity
+       * getPubKeyValidity
+       * clone
 
   * keySortList [Array]:  used for quickly sorting the keys
     - user ID (in lower case)
@@ -124,7 +130,6 @@ let gSubkeyIndex = [];
             - T: TOFU
             - TP: TOFU+PGP
 
-  * various methds are avaibable too.
 */
 
 const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
@@ -1606,6 +1611,18 @@ KeyObject.prototype = {
   },
 
   /**
+   * Get a formatted version of the fingerprint:
+   * 1234 5678 90AB CDEF .... ....
+   *
+   * @return String - the formatted fingerprint
+   */
+  get fprFormatted() {
+    let f = EnigmailKey.formatFpr(this.fpr);
+    if (f.length === 0) f = this.fpr;
+    return f;
+  },
+
+  /**
    * Determine if the public key is valid. If not, return a description why it's not
    *
    * @return Object:
@@ -1699,18 +1716,6 @@ KeyObject.prototype = {
   },
 
   /**
-   * Get a formatted version of the fingerprint:
-   * 1234 5678 90AB CDEF .... ....
-   *
-   * @return String - the formatted fingerprint
-   */
-  get fprFormatted() {
-    let f = EnigmailKey.formatFpr(this.fpr);
-    if (f.length === 0) f = this.fpr;
-    return f;
-  },
-
-  /**
    * Check whether a key can be used for encryption and return a description of why not
    *
    * @return Object:
@@ -1766,8 +1771,9 @@ KeyObject.prototype = {
   },
 
   /**
-   * Determine the next expiry date of both the key. This is either the public key expiry date,
-   * or the maximum expiry date of a signing or encryption subkey
+   * Determine the next expiry date of the key. This is either the public key expiry date,
+   * or the maximum expiry date of a signing or encryption subkey. I.e. this returns the next
+   * date at which the key cannot be used for signing and/or encryption anymore
    *
    * @return Number - The expiry date as seconds after 01/01/1970
    */
