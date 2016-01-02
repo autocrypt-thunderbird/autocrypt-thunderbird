@@ -745,6 +745,8 @@ Enigmail.msg = {
     var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: bodyElement=" + bodyElement + "\n");
 
+    if (!bodyElement) return;
+
     var findStr = /* interactive ? null : */ "-----BEGIN PGP";
     var msgText = null;
     var foundIndex = -1;
