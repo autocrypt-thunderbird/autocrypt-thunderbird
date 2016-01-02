@@ -111,7 +111,7 @@ function getKeyList(secretOnly, refresh) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("ERROR in enigmailUserSelection: getKeyList\n");
+    EnigmailLog.writeException("enigmailKeySelection.js: getKeyList", ex);
   }
 
   return keyList;
