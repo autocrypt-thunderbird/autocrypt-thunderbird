@@ -52,7 +52,7 @@
 <!ENTITY enigmail.backupPrefsButton.label "Export Settings and Keys">
 <!ENTITY enigmail.backupPrefs.tooltip     "Save all Enigmail preferences including your OpenPGP keys to a file.">
 
-<!ENTITY enigmail.restorePrefsButton.label "Reestore Settings and Keys">
+<!ENTITY enigmail.restorePrefsButton.label "Restore Settings and Keys">
 <!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 
 
