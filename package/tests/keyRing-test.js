@@ -613,3 +613,13 @@ test(function shouldGetKeyExpiry() {
   key = EnigmailKeyRing.getKeyById("86345DFA372ADB32");
   Assert.equal(key.getKeyExpiry(), Number.MAX_VALUE);
 });
+
+test(function shouldClone() {
+  // uses the key listing from shouldGetKeyValidityErrors
+  let key = EnigmailKeyRing.getKeyById("DEF9FC808A3FF001");
+
+  let cp = key.clone();
+
+  Assert.equal(cp.fprFormatted, "EA25 EF48 BF20 01E4 1FAB 0C1C DEF9 FC80 8A3F F001");
+  Assert.equal(cp.getEncryptionValidity().keyValid, false);
+});
