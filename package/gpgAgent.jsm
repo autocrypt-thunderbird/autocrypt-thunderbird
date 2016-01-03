@@ -1,4 +1,4 @@
-/*global Components: false */
+/*global Components: false, unescape: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -28,6 +28,7 @@ Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -386,7 +387,7 @@ var EnigmailGpgAgent = {
 
     let m = outStr.match(/^(homedir:)(.*)$/mi);
     if (m && m.length > 2) {
-      return m[2];
+      return EnigmailData.convertGpgToUnicode(unescape(m[2]));
     }
 
     return null;
