@@ -734,7 +734,7 @@
                                                       </html:ol>">
 <!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
 <!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importing keys and applying settings">
-<!ENTITY enigmail.setupWiz.pgImportSettings.error    "An error ocurred during importing. Your settings could not be applied.">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error    "An error occurred during importing. Your settings could not be applied.">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
