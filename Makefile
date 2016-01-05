@@ -20,7 +20,7 @@ endif
 
 XPIFILE = $(XPI_MODULE)-$(XPI_MODULE_VERS).xpi
 
-.PHONY: dirs $(DIRS)
+.PHONY: dirs $(DIRS) test
 
 all: $(ALL)
 
