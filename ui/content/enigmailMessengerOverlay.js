@@ -126,7 +126,7 @@ Enigmail.msg = {
       }
 
       this.expiryTimer = undefined;
-    }.bind(Enigmail.msg), 60000); // 1 minutes
+    }.bind(Enigmail.msg), 60000); // 1 minute
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
