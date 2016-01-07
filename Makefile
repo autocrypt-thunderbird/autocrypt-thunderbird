@@ -35,16 +35,16 @@ xpi:
 check:
 	util/checkFiles.py
 
-jshint:
-	static_analysis/jshint ipc
-	static_analysis/jshint package
-	static_analysis/jshint ui
+eslint:
+	static_analysis/eslint ipc
+	static_analysis/eslint package
+	static_analysis/eslint ui
 
 unit:
 	make -C package/tests
 	make -C ui/tests
 
-test: jshint check unit
+test: eslint check unit
 
 clean:
 	rm -f build/$(XPIFILE)

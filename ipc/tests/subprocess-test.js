@@ -1,3 +1,4 @@
+/* global Components: false, Assert: false, do_get_file: false, do_print: false, do_get_cwd: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,7 +10,7 @@
  * This file tests the implementation of subprocess.jsm
  */
 
-Components.utils.import("resource://enigmail/subprocess.jsm");
+Components.utils.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

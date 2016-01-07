@@ -34,7 +34,7 @@ function onLoad() {
   gKeyId = key.keyId;
 
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-  for each(let su in key.userIds) {
+  for (let su of key.userIds) {
     if (su.type === "uid") {
       appendUid(su.userId);
     }

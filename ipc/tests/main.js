@@ -4,5 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* global do_subtest:false */
 // the subprocess tests
 do_subtest("subprocess-test.js");

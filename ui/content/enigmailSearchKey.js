@@ -98,7 +98,7 @@ function onLoad() {
         newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
+        newGpgKeysRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
         break;
     }
   }
@@ -166,7 +166,7 @@ function startDownload() {
         newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
+        newGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
         newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
@@ -229,19 +229,6 @@ function closeDialog() {
 function statusLoadedKeybase(event) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
 
-  if (this.status === 200) {
-    this.requestCallbackFunc(ENIG_CONN_TYPE_KEYBASE, this.responseText, "");
-  }
-  else {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", this.statusText));
-    closeDialog();
-    return;
-  }
-}
-
-function statusLoadedKeybase(event) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
-
   if (this.status == 200) {
     // de-HTMLize the result
     var htmlTxt = this.responseText.replace(/<([^<>]+)>/g, "");
@@ -291,7 +278,7 @@ function importKeys(connType, txt, errorTxt) {
         newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
+        newGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
         newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
@@ -486,7 +473,7 @@ function scanKeys(connType, htmlTxt) {
         newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
+        newGpgKeysRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
         newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
@@ -679,8 +666,8 @@ function scanGpgKeys(txt) {
 
 // interaction with gpgkeys_xxx
 
-function newHttpRequest(requestType, callbackFunction) {
-  EnigmailLog.DEBUG("enigmailSearchkey.js: newHttpRequest\n");
+function newGpgKeysRequest(requestType, callbackFunction) {
+  EnigmailLog.DEBUG("enigmailSearchkey.js: newGpgKeysRequest\n");
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {

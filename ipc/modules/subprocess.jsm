@@ -140,7 +140,9 @@
  *    subprocess.registerLogHandler( function(s) { dump(s); } );
  */
 
-Components.utils.import("resource://gre/modules/ctypes.jsm");
+/* global Components: false, dump: false, ChromeWorker: false */
+
+Components.utils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
 
 let EXPORTED_SYMBOLS = ["subprocess"];
 
@@ -150,12 +152,14 @@ const Ci = Components.interfaces;
 const NS_LOCAL_FILE = "@mozilla.org/file/local;1";
 
 
+var WinABI;
+
 //Windows API definitions
 if (ctypes.size_t.size == 8) {
-  var WinABI = ctypes.default_abi;
+  WinABI = ctypes.default_abi;
 }
 else {
-  var WinABI = ctypes.winapi_abi;
+  WinABI = ctypes.winapi_abi;
 }
 const WORD = ctypes.uint16_t;
 const DWORD = ctypes.uint32_t;

@@ -30,7 +30,7 @@ var EXPORTED_SYMBOLS = ["InstallGnuPG"];
 
 var Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
@@ -344,8 +344,11 @@ Installer.prototype = {
     var gotHash = ch.finish(false);
 
     // convert the binary hash data to a hex string.
-    var i;
-    var hashStr = [toHexString(gotHash.charCodeAt(i)) for (i in gotHash)].join("");
+    var hashStr = "";
+
+    for (let i in gotHash) {
+      hashStr += toHexString(gotHash.charCodeAt(i));
+    }
 
     if (this.hash != hashStr) {
       EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum - hash sums don't match: " + hashStr + "\n");

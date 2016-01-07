@@ -11,7 +11,7 @@
  *  implemented as an XPCOM object
  */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Components.utils.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */

@@ -175,12 +175,12 @@ var EnigmailKeyRing = {
     this.getAllKeys(); // ensure keylist is loaded;
 
     if (!onlyValidKeys) {
-      for each(let key in gKeyListObj.keyList) {
+      for (let key of gKeyListObj.keyList) {
         if (key.secretAvailable) res.push(key);
       }
     }
     else {
-      for each(let key in gKeyListObj.keyList) {
+      for (let key of gKeyListObj.keyList) {
         if (key.secretAvailable && key.keyUseFor.search(/D/) < 0) {
           // key is not disabled and _usable_ for encryption signing and certification
           if (key.keyUseFor.search(/E/) >= 0 &&

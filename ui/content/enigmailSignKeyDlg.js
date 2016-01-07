@@ -37,7 +37,7 @@ function onLoad() {
   }
   var menulist = document.getElementById("signWithKey");
 
-  for each(key in keys) {
+  for (key of keys) {
     menulist.appendItem(key.userId + " - 0x" + key.keyId.substr(-8, 8), key.keyId);
   }
   if (menulist.selectedIndex == -1) {
