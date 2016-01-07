@@ -130,7 +130,7 @@ function startKeyGen() {
     if (passphrase.search(/[^\x20-\x7E]/) >= 0) {
       if (!EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("keygen.passCharProblem"),
           EnigmailLocale.getString("dlg.button.ignore"), EnigmailLocale.getString("dlg.button.cancel"))) {
-        return null;
+        return;
       }
     }
 

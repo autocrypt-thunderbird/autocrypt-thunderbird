@@ -54,7 +54,7 @@ PgpMimeHandler.prototype = {
 
   onStartRequest: function(request, uri) {
     if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
-      return;
+      return null;
     EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
 
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);

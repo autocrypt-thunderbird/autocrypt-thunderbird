@@ -233,7 +233,8 @@ EnigmailMimeDecrypt.prototype = {
 
 
           if ((!this.backgroundJob) && currUrlSpec.indexOf(manUrlSpec) !== 0) {
-            return this.handleManualDecrypt();
+            this.handleManualDecrypt();
+            return;
           }
         }
 

@@ -520,7 +520,7 @@ Installer.prototype = {
 
           if (!cont) {
             deferred.reject("Aborted due to hash sum error");
-            return;
+            return null;
           }
 
         }

@@ -725,7 +725,7 @@ function loadKeys() {
   }
 
   onKeySelected();
-  return true;
+  return;
 }
 
 function enigGetSvc(resetCheck) {

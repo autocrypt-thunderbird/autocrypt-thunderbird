@@ -104,7 +104,7 @@ function dlgDisable(item) {
 function setDlgContent(sel) {
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc)
-    return false;
+    return;
 
   gAction = sel;
 

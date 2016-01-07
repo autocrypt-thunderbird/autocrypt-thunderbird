@@ -358,7 +358,10 @@ PgpMimeEncrypt.prototype = {
     if (this.checkSMime && (!this.smimeCompose))
       throw Cr.NS_ERROR_NOT_INITIALIZED;
 
-    if (this.useSmime) return this.smimeCompose.finishCryptoEncapsulation(abort, sendReport);
+    if (this.useSmime) {
+      this.smimeCompose.finishCryptoEncapsulation(abort, sendReport);
+      return;
+    }
 
     try {
       if (this.encapsulate) this.writeToPipe("--" + this.encapsulate + "--\r\n");

@@ -4,5 +4,6 @@ module.exports = {
   "rules": {
     "no-undef": 0,
     "no-octal": 0,
+    "block-scoped-var": 0
   }
 };

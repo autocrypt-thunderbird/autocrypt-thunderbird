@@ -314,7 +314,7 @@ var EnigmailKeyRing = {
 
       // Discard last null string, if any
 
-      for (var j = 0; j < statusLines.length; j++) {
+      for (let j = 0; j < statusLines.length; j++) {
         var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
         if (matches && (matches.length > 2)) {
           if (typeof(keyList[matches[2]]) != "undefined") {
@@ -327,7 +327,7 @@ var EnigmailKeyRing = {
         }
       }
 
-      for (j in keyList) {
+      for (let j in keyList) {
         importedKeysObj.value += j + ":" + keyList[j] + ";";
       }
     }

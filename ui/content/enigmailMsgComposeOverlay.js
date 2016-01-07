@@ -3163,7 +3163,7 @@ Enigmail.msg = {
           usingPGPMime = nsIEnigmail.SEND_PGP_MIME;
         }
         if (wrapresultObj.cancelled) {
-          return;
+          return false;
         }
       }
 

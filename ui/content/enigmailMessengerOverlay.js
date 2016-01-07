@@ -1648,7 +1648,7 @@ Enigmail.msg = {
       printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
       window);
 
-    return true;
+    return;
   },
 
   messageSave: function() {
