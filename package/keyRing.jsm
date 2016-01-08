@@ -1585,12 +1585,15 @@ KeyObject.prototype = {
   clone: function() {
     let cp = new KeyObject(["copy"]);
     for (let i in this) {
-      if (typeof this[i] !== "function") {
-        if (typeof i === "object") {
-          cp[i] = EnigmailFuncs.cloneObj(this[i]);
-        }
-        else if (i !== "signatures" && i !== "fprFormatted") {
-          cp[i] = this[i];
+      if (i !== "signatures" && i !== "fprFormatted") {
+        // caution: don't try to evaluate this[i] if i==="signatures";
+        // it would immediately get all signatures for the key (slow!)
+        if (typeof this[i] !== "function") {
+          if (typeof this[i] === "object") {
+            cp[i] = EnigmailFuncs.cloneObj(this[i]);
+          }
+          else
+            cp[i] = this[i];
         }
       }
     }

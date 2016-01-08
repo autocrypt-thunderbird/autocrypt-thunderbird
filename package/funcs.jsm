@@ -289,7 +289,7 @@ const EnigmailFuncs = {
   cloneObj: function(orig) {
     let newObj;
 
-    if (typeof orig !== "object") {
+    if (typeof orig !== "object" || orig === null || orig === undefined) {
       return orig;
     }
 

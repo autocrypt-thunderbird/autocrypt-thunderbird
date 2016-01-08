@@ -383,12 +383,9 @@ function buildList(refresh) {
       aUserList[i].activeState = (gAllowExpired ? 0 : 2); // default: not activated/activateable
       if (aUserList[i].keyTrust != KEY_IS_GROUP) {
         // handling of "normal" keys
-        try {
-          mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
-        }
-        catch (ex) {
-          mailAddr = EnigStripEmail(aUserList[i].userId.replace(/\"/g, "")).toLowerCase();
-        }
+
+        mailAddr = stripEmailFromKey(aUserList[i].userId);
+
         if (mailAddr != EMPTY_UID && invalidAddr.indexOf(" " + mailAddr + " ") >= 0) {
           aUserList[i].uidMatchInvalid = true; // found matching but invalid email
         }
@@ -425,7 +422,7 @@ function buildList(refresh) {
       }
       else {
         // special handling for gpg groups
-        mailAddr = EnigStripEmail(aUserList[i].userId).toLowerCase();
+        mailAddr = stripEmailFromKey(aUserList[i].userId);
         aValidUsers.push(mailAddr);
         aUserList[i].valid = true;
         aUserList[i].uidValid = true;
@@ -442,12 +439,7 @@ function buildList(refresh) {
             if (KEY_NOT_VALID.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
               if (aUserList[i].activeState < 2 || gAllowExpired) {
                 // add uid's for valid keys
-                try {
-                  mailAddr = EnigStripEmail(aUserList[i].userIds[user].userId);
-                }
-                catch (ex) {
-                  mailAddr = EnigStripEmail(aUserList[i].userIds[user].userId.replace(/\"/g, ""));
-                }
+                mailAddr = stripEmailFromKey(aUserList[i].userIds[user].userId);
                 if (uidNotValid.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
                   aValidUsers.push(mailAddr);
                   aUserList[i].valid = true;
@@ -475,7 +467,7 @@ function buildList(refresh) {
   // sort items according to sorting criterion
   aUserList.sort(sortKeys);
   buildTreeView(aUserList, hideExpired, secretOnly);
-  buildNotFoundKeys(aValidUsers, toAddrList, toKeys);
+  buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys);
 
   EnigmailLog.DEBUG("  <=== buildList()\n");
 }
@@ -523,7 +515,7 @@ function buildTreeView(aUserList, hideExpired, secretOnly) {
  * Build up list of not found recipients
  */
 
-function buildNotFoundKeys(aValidUsers, toAddrList, toKeys) {
+function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
   EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys\n");
 
   gKeysNotFound = [];
@@ -711,7 +703,7 @@ function onAccept() {
 function getToAddrList() {
   var toAddrList;
   try {
-    toAddrList = EnigStripEmail(window.arguments[INPUT].toAddr).split(/[ ,]+/);
+    toAddrList = EnigmailFuncs.stripEmail(window.arguments[INPUT].toAddr).split(/[ ,]+/);
   }
   catch (ex) {
     toAddrList = [];
@@ -918,5 +910,20 @@ function onSearchInput() {
       }
       item.setAttribute("hidden", !showItem);
     }
+  }
+}
+
+
+function stripEmailFromKey(uid) {
+  try {
+    return EnigmailFuncs.stripEmail(uid).toLowerCase();
+  }
+  catch (ex) {
+    // remove quotes
+    return EnigmailFuncs.stripEmail(uid.replace(/\"/g, "")).toLowerCase();
+  }
+  finally {
+    // search for last ocurrence of < >
+    return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase();
   }
 }
