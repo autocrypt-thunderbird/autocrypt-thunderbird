@@ -5,12 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 try {
   // TB with omnijar
-  Components.utils.import("resource:///modules/gloda/mimemsg.js");
+  Components.utils.import("resource:///modules/gloda/mimemsg.js"); /* global MsgHdrToMimeMessage: false */
 }
 catch (ex) {
   // "old style" TB
@@ -18,23 +21,31 @@ catch (ex) {
 }
 
 /* global EnigmailData: false, EnigmailApp: false, EnigmailDialog: false, EnigmailTimer: false, EnigmailWindows: false, EnigmailTime: false */
+/* global EnigmailLocale: false, EnigmailLog: false, XPCOMUtils: false, EnigmailPrefs: false */
+
+/* globals from Thunderbird: */
+/* global ReloadMessage: false, gDBView: false, gSignatureStatus: false, gEncryptionStatus: false, showMessageReadSecurityInfo: false */
+/* global gFolderDisplay: false, messenger: false, currentAttachments: false, msgWindow: false, ChangeMailLayout: false, MsgToggleMessagePane: false */
+/* global currentHeaderData: false, gViewAllHeaders: false, gExpandedHeaderList: false, goDoCommand: false, HandleSelectedAttachments: false */
+/* global statusFeedback: false */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/mimeVerify.jsm");
-Components.utils.import("resource://enigmail/fixExchangeMsg.jsm");
+Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/mimeVerify.jsm"); /* global EnigmailVerify: false */
+Components.utils.import("resource://enigmail/fixExchangeMsg.jsm"); /* global EnigmailFixExchangeMsg: false */
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/prefs.jsm");
-Components.utils.import("resource://enigmail/os.jsm");
+Components.utils.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
 Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/files.jsm");
+Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
+Components.utils.import("resource://enigmail/key.jsm"); /* global EnigmailKey: false */
 Components.utils.import("resource://enigmail/data.jsm");
 Components.utils.import("resource://enigmail/app.jsm");
 Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/timer.jsm");
 Components.utils.import("resource://enigmail/windows.jsm");
 Components.utils.import("resource://enigmail/time.jsm");
-Components.utils.import("resource://enigmail/decryptPermanently.jsm");
+Components.utils.import("resource://enigmail/decryptPermanently.jsm"); /* global EnigmailDecryptPermanently: false */
 Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
@@ -385,7 +396,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: updateOptionsDisplay: \n");
     var optList = ["autoDecrypt"];
 
-    for (var j = 0; j < optList.length; j++) {
+    for (let j = 0; j < optList.length; j++) {
       let menuElement = document.getElementById("enigmail_" + optList[j]);
       menuElement.setAttribute("checked", EnigmailPrefs.getPref(optList[j]) ? "true" : "false");
 
@@ -395,7 +406,7 @@ Enigmail.msg = {
     }
 
     optList = ["decryptverify"];
-    for (j = 0; j < optList.length; j++) {
+    for (let j = 0; j < optList.length; j++) {
       let menuElement = document.getElementById("enigmail_" + optList[j]);
       if (Enigmail.msg.decryptButton && Enigmail.msg.decryptButton.disabled) {
         menuElement.setAttribute("disabled", "true");
@@ -783,7 +794,7 @@ Enigmail.msg = {
         return;
       }
 
-      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParse: got buggyExchangeEmailContent = " + buggyExchangeEmailContent.substr(0, 50) + "\n");
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParse: got buggyExchangeEmailContent = " + this.buggyExchangeEmailContent.substr(0, 50) + "\n");
 
       // fix the whole invalid email by replacing the contents by the decoded text
       // as plain inline format
@@ -1484,7 +1495,7 @@ Enigmail.msg = {
 
           var msg = gFolderDisplay.selectedMessage;
           if (msg) {
-            msgHdr = {
+            let msgHdr = {
               "From": msg.author,
               "Subject": msg.subject,
               "To": msg.recipients,
@@ -1499,7 +1510,7 @@ Enigmail.msg = {
               }
             }
 
-            for (headerName in msgHdr) {
+            for (let headerName in msgHdr) {
               if (msgHdr[headerName] && msgHdr[headerName].length > 0)
                 contentData += headerName + ": " + msgHdr[headerName] + "\r\n";
             }
@@ -1509,8 +1520,8 @@ Enigmail.msg = {
         catch (ex) {
           // the above seems to fail every now and then
           // so, here is the fallback
-          for (headerName in headerList) {
-            headerValue = headerList[headerName];
+          for (let headerName in headerList) {
+            let headerValue = headerList[headerName];
             contentData += headerName + ": " + headerValue + "\r\n";
           }
         }
@@ -1554,7 +1565,7 @@ Enigmail.msg = {
 
       if (includeHeaders) {
         for (headerName in headerList) {
-          headerValue = headerList[headerName];
+          let headerValue = headerList[headerName];
 
           if (headerValue) {
             if (contentType == "text/html") {
@@ -1955,14 +1966,14 @@ Enigmail.msg = {
       return;
     }
     outFile1.append(this.getAttachmentName(origAtt));
-    outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+    outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     this.writeUrlToFile(origAtt.url, outFile1);
 
     outFile2 = Components.classes[LOCAL_FILE_CONTRACTID].
     createInstance(Components.interfaces.nsIFile);
     outFile2.initWithPath(tmpDir);
     outFile2.append(this.getAttachmentName(signatureAtt));
-    outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+    outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     this.writeUrlToFile(signatureAtt.url, outFile2);
 
     var statusFlagsObj = {};
@@ -1991,7 +2002,7 @@ Enigmail.msg = {
       .createInstance(Components.interfaces.nsIFileOutputStream);
     var buffer = Components.classes["@mozilla.org/network/buffered-output-stream;1"]
       .createInstance(Components.interfaces.nsIBufferedOutputStream);
-    fstream.init(outFile, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
+    fstream.init(outFile, 0x04 | 0x08 | 0x20, 0x180, 0); // write, create, truncate
     buffer.init(fstream, 8192);
 
     while (istream.available() > 0) {
@@ -2109,7 +2120,7 @@ Enigmail.msg = {
           return;
         }
         outFile.append(rawFileName);
-        outFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+        outFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
       }
       catch (ex) {
         errorMsgObj.value = EnigmailLocale.getString("noTempDir");

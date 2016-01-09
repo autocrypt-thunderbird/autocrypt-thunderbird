@@ -7,6 +7,14 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+"use strict";
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+/* global EnigInitCommon: false, EnigmailTrust: false, EnigGetString: false, EnigmailCore: false, EnigmailLog: false */
+/* global EnigmailKeyRing: false, EnigGetPref: false, EnigGetTrustLabel: false, EnigSetActive: false, EnigAlert: false */
+/* global EnigSetPref: false, EnigConfirm: false, EnigmailPrefs: false, EnigDownloadKeys: false */
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
@@ -351,6 +359,8 @@ function buildList(refresh) {
     }
   }
 
+  let user;
+
   // find and activate keys
   try {
     for (i = 0; i < aUserList.length; i++) {
@@ -435,7 +445,7 @@ function buildList(refresh) {
 
       if (!hideExpired || aUserList[i].activeState < 2) {
         if ((aUserList[i].keyTrust != KEY_IS_GROUP) && aUserList[i].hasSubUserIds()) {
-          for (let user = 1; user < aUserList[i].userIds.length; user++) {
+          for (user = 1; user < aUserList[i].userIds.length; user++) {
             if (KEY_NOT_VALID.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
               if (aUserList[i].activeState < 2 || gAllowExpired) {
                 // add uid's for valid keys
@@ -519,7 +529,7 @@ function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
   EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys\n");
 
   gKeysNotFound = [];
-  var j;
+  let i, j;
   for (i = 0; i < toAddrList.length; i++) {
     if (toAddrList[i].length > 0) {
       let found = false;
@@ -861,10 +871,10 @@ function searchMissingKeys() {
 
 
 function onSearchInput() {
-  gSearchInput = document.getElementById("filterKey");
-  var searchValue = gSearchInput.value.toLowerCase();
-  var userTreeList = document.getElementById("enigmailUserIdSelection");
-  var treeChildren = userTreeList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
+  let searchInput = document.getElementById("filterKey");
+  let searchValue = searchInput.value.toLowerCase();
+  let userTreeList = document.getElementById("enigmailUserIdSelection");
+  let treeChildren = userTreeList.getElementsByAttribute("id", "enigmailUserIdSelectionChildren")[0];
 
   if (searchValue === "") {
     // unhide all items

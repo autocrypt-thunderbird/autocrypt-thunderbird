@@ -5,20 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
+/* globals from Thunderbird: */
+/* global gFolderDisplay: false, currentAttachments: false, gSMIMEContainer: false, gSignedUINode: false, gEncryptedUINode: false */
+/* global gDBView: false, msgWindow: false, messageHeaderSink: false: gMessageListeners: false, findEmailNodeFromPopupNode: true */
+/* global gExpandedHeaderView: false, gMessageListeners: false, onShowAttachmentItemContextMenu: false, onShowAttachmentContextMenu: false */
+/* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
+
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/mimeVerify.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/prefs.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/windows.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/time.jsm");
-Components.utils.import("resource://enigmail/gpg.jsm");
+Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
+Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -87,7 +98,8 @@ Enigmail.hdrView = {
 
     var userIdList = userId.split(/\n/);
     try {
-      for (var i = 0; i < userIdList.length; i++) {
+      let i;
+      for (i = 0; i < userIdList.length; i++) {
         if (fromAddr.toLowerCase() == EnigmailFuncs.stripEmail(userIdList[i]).toLowerCase()) {
           userId = userIdList[i];
           break;
@@ -853,8 +865,8 @@ Enigmail.hdrView = {
       }
     }
     else {
-      openMenu.setAttribute('disabled', true);
-      saveMenu.setAttribute('disabled', true);
+      openMenu.setAttribute('disabled', true); /* global openMenu: false */
+      saveMenu.setAttribute('disabled', true); /* global saveMenu: false */
       decryptOpenMenu.setAttribute('disabled', true);
       decryptSaveMenu.setAttribute('disabled', true);
       importMenu.setAttribute('disabled', true);
@@ -888,7 +900,7 @@ Enigmail.hdrView = {
 
   fillAttachmentListPopup: function(item) {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: Enigmail.hdrView.fillAttachmentListPopup\n");
-    FillAttachmentListPopup(item);
+    FillAttachmentListPopup(item); /* global FillAttachmentListPopup: false */
 
     if (!this.enigCanDetachAttachments()) {
       for (var i = 0; i < item.childNodes.length; i++) {
