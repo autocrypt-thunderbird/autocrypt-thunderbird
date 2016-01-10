@@ -5,39 +5,42 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/**
+ * PLEASE NOTE: this module is legacy and must not be used for newe code - it will be removed!
+ */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
 // enigmailCommon.js: shared JS functions for Enigmail
 
-// WARNING: This module functions must not be loaded in overlays to standard
-// functionality!
+// WARNING: This module functions must not be loaded in overlays to standard functionality!
 
 // Many of these components are not used in this file, but are instead used in other files that are loaded together with EnigmailCommon
-Components.utils.import("resource://enigmail/core.jsm");
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/keyEditor.jsm");
+Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
 Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/prefs.jsm");
-Components.utils.import("resource://enigmail/os.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
+Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/files.jsm");
-Components.utils.import("resource://enigmail/app.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/windows.jsm");
-Components.utils.import("resource://enigmail/time.jsm");
-Components.utils.import("resource://enigmail/timer.jsm");
-Components.utils.import("resource://enigmail/gpgAgent.jsm");
+Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Components.utils.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
+Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/locale.jsm");
 Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
 Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/promise.jsm"); /*global Promise: false */
-Components.utils.import("resource://enigmail/installGnuPG.jsm");
-Components.utils.import("resource://enigmail/passwordCheck.jsm");
 
 
 // The compatible Enigmime version
