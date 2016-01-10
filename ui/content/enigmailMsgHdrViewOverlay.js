@@ -1041,7 +1041,7 @@ if (messageHeaderSink) {
 
         let uriSpec = (uri ? uri.spec : null);
 
-        if (this.isCurrentMessage()) {
+        if (this.isCurrentMessage(uri)) {
 
           if (!this.displaySubPart(mimePartNumber)) return;
 
@@ -1084,7 +1084,7 @@ if (messageHeaderSink) {
         if (!msg) return;
 
         if (typeof(hdr) !== "object") return;
-        if (!this.isCurrentMessage() || gFolderDisplay.selectedMessages.length !== 1) return;
+        if (!this.isCurrentMessage(uri) || gFolderDisplay.selectedMessages.length !== 1) return;
 
         if (!this.displaySubPart(mimePartNumber)) return;
 
@@ -1128,7 +1128,7 @@ if (messageHeaderSink) {
       },
 
       handleSMimeMessage: function(uri) {
-        if (this.isCurrentMessage()) {
+        if (this.isCurrentMessage(uri)) {
           EnigmailVerify.unregisterContentTypeHandler();
           Enigmail.msg.messageReload(false);
         }
