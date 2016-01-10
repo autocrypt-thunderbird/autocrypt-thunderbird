@@ -85,7 +85,7 @@ Enigmail.msg = {
 
   sendProcess: false,
   nextCommandId: null,
-  docaStateListener: null,
+  composeBodyReady: false,
   identity: null,
   enableRules: null,
   modifiedAttach: null,
@@ -1748,6 +1748,10 @@ Enigmail.msg = {
 
     if (this.getAccDefault("enabled")) {
       var compFields = gMsgCompose.compFields;
+
+      if (!Enigmail.msg.composeBodyReady) {
+        compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+      }
       Recipients2CompFields(compFields);
       gMsgCompose.expandMailingLists();
 
@@ -4426,6 +4430,7 @@ Enigmail.composeStateListener = {
 
     isEmpty = Enigmail.msg.editor.documentIsEmpty;
     isEditable = Enigmail.msg.editor.isDocumentEditable;
+    Enigmail.msg.composeBodyReady = true;
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
 
