@@ -4,6 +4,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* global EnigInitCommon: false, EnigmailEvents: false, EnigGetString: false, EnigGetOS: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
 EnigInitCommon("enigmailAlertDlg");
 
 function onLoad() {

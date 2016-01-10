@@ -4,8 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
 // Uses: chrome://enigmail/content/enigmailCommon.js
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global EnigmailLog: false */
+
+/* global EnigInitCommon: false, EnigGetWindowOptions: false, EnigGetFrame: false, EnigGetHttpUri: false, EnigOpenUrlExternally: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailHelp");

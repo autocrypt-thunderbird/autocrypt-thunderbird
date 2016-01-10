@@ -4,6 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* global Components: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global EnigmailLog: false, EnigmailCore: false, EnigmailConstants: false */
+
 function enigmailEncryptionDlgLoad() {
   EnigmailLog.DEBUG("enigmailEncryptionDlgLoad.js: Load\n");
 

@@ -4,6 +4,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
 if (!Enigmail) var Enigmail = {};
 
 var gPref = null;

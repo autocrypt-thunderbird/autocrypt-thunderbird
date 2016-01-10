@@ -4,7 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+/* global Components: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global gActionListOrdered: false */
+
+Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 var enigmail_origCheckActionsReorder = function() {
   enigmail_origCheckActionsReorder();

@@ -4,11 +4,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-Components.utils.import("resource://enigmail/core.jsm");
-Components.utils.import("resource://enigmail/keyEditor.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/data.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
+/* global Components: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+Components.utils.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
+Components.utils.import("resource://enigmail/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
+Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
 
 function onAccept() {
   var name = document.getElementById("addUid_name");

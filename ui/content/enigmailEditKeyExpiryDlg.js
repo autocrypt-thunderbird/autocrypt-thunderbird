@@ -1,13 +1,21 @@
-/*jshint -W097 */
-
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-var gAlertPopUpIsOpen = false;
+/* eslint no-undef: 2, block-scoped-var: 2 */
 
+"use strict";
+
+// modules:
+/* global EnigmailLog: false, EnigmailCore: false, EnigmailDialog: false, EnigmailLocale: false, EnigmailKeyRing: false*/
+/* global EnigmailKeyEditor: false, EnigmailTimer: false */
+
+// enigmailCommon.js:
+/* global EnigSetActive: false, createCell */
+
+var gAlertPopUpIsOpen = false;
 
 /**
  * The function for when the popup window for changing the key expiry is loaded.
@@ -270,7 +278,7 @@ function getSelectedSubkeys() {
 function onAccept() {
   EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: onAccept()\n");
   if (checkExpirationDate()) {
-    subkeys = getSelectedSubkeys();
+    let subkeys = getSelectedSubkeys();
     if (subkeys.length > 0) {
       processKey(subkeys);
     }

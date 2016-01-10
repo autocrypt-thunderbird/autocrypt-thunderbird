@@ -4,6 +4,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
+/* global Components: false, DirPaneHasFocus: false, GetSelectedAddressesFromDirTree: false, GetSelectedAddresses: false */
 
 Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */

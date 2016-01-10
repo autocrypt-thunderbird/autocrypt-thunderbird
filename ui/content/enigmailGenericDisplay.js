@@ -4,6 +4,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global EnigInitCommon: false, EnigmailLog: false, EnigGetFrame: false */
+
 // Initialize enigmailCommon
 EnigInitCommon("enigmailGenericDisplay");
 

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLocale: false, EnigmailData: false, EnigmailDialog: false */
+/*global Components: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,6 +6,20 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+// modules
+/* global EnigmailData: false, EnigmailLog: false, EnigmailLocale: false, EnigmailGpg: false, EnigmailKeyEditor: false */
+/* global EnigmailOS: false, EnigmailPrefs: false, EnigmailGpgAgent: false, EnigmailApp: false, EnigmailKeyRing: false */
+/* global EnigmailDialog: false */
+
+// from enigmailCommon.js:
+/* global EnigGetWindowOptions: false, EnigConfirm: false, EnigGetString: false, GetEnigmailSvc: false */
+/* global EnigLongAlert: false, EnigAlert: false, EnigInitCommon: false, ENIG_ACCOUNT_MANAGER_CONTRACTID: false */
+/* global EnigGetPref: false, EnigSetPref: false, EnigSavePrefs: false, EnigFilePicker: false, EnigGetFilePath: false */
+/* global EnigCreateRevokeCert: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeygen");

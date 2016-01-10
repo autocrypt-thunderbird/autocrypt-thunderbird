@@ -4,6 +4,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global Components: false */
+
+// modules:
+/* global EnigmailLocale: false, EnigmailWindows: false, EnigmailLog: false, EnigmailCore: false, EnigmailDialog: false */
+/* global EnigmailKeyEditor: false, fillIdentityListPopup: false, getCurrentIdentity: false */
+
+// enigmailCommon.js:
+/* global EnigConfirm: false, EnigCreateRevokeCert: false */
+
 var gUserIdentityList;
 var gUserIdentityListPopup;
 var gUseForSigning;
@@ -171,9 +183,6 @@ function startKeyGen() {
   }
 
   var idString = userName;
-
-  if (comment)
-    idString += " (" + comment + ")";
 
   idString += " <" + userEmail + ">";
 
