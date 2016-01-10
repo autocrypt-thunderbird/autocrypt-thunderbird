@@ -41,6 +41,7 @@ Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailK
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 
 
 // The compatible Enigmime version

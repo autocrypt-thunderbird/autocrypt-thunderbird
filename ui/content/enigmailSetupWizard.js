@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailData: false */
+/*global Components: false*/
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,9 +7,26 @@
 
 // const Ec is already defined in enigmailKeygen.js
 
-Components.utils.import("resource://enigmail/files.jsm");
+// modules
+/* global EnigmailData: false, EnigmailLog: false, EnigmailLocale: false, EnigmailGpg: false, EnigmailKeyEditor: false */
+/* global EnigmailOS: false, EnigmailPrefs: false, EnigmailGpgAgent: false */
+
+// variables from enigmailKeygen.js and enigmailCommon.js */
+/* global EnigGetWindowOptions: false, gKeygenRequest: true, gGeneratedKey: true, EnigConfirm: false, EnigGetString: false*/
+/* global enigmailKeygenCloseRequest: true, EnigLongAlert: false, EnigAlert: false, gEnigmailSvc: true, gAllData: true */
+/* global EnigGetPref: false, EnigSetPref: false, EnigFilePicker: false, EnigGetFilePath: false, KEYGEN_CANCELLED: false */
+/* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false, EnigGetVersion: false, ENIG_KEYTYPE_RSA: false */
+/* global genAndSaveRevCert: false, ENIG_ACCOUNT_MANAGER_CONTRACTID: false, enigmailCheckPassphrase: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
+Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
 Components.utils.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/installGnuPG.jsm"); /*global InstallGnuPG: false */
+Components.utils.import("resource://enigmail/passwordCheck.jsm"); /*global EnigmailPasswordCheck: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -703,7 +720,7 @@ function loadKeys() {
   }
 
   var uidChildren = document.getElementById("uidSelectionChildren");
-  for (i = 0; i < keyList.length; i++) {
+  for (let i = 0; i < keyList.length; i++) {
     var item = uidChildren.appendChild(document.createElement('treeitem'));
     item.setAttribute("keyId", keyList[i].keyId);
     var row = item.appendChild(document.createElement('treerow'));
@@ -1100,7 +1117,7 @@ function applyWizardSettings() {
   applyMozSetting("mail.strictly_mime", false);
 
   EnigSetPref("configuredVersion", EnigGetVersion());
-  EnigSavePrefs();
+  EnigmailPrefs.savePrefs();
 }
 
 function applyMozSetting(preference, newVal) {
