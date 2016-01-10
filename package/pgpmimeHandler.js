@@ -66,11 +66,12 @@ PgpMimeHandler.prototype = {
       cth = new EnigmailMimeDecrypt();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
-      // PGP/MIME signed message
       if (ct.search(/application\/pgp-signature/i) > 0) {
+        // PGP/MIME signed message
         cth = EnigmailVerify.newVerifier();
       }
       else {
+        // S/MIME signed message
         return this.handleSmime(uri);
       }
     }

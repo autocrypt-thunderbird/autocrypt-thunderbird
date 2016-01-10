@@ -217,7 +217,7 @@ Enigmail.msg = {
 
 
   messageReload: function(noShowReload) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: this.messageReload: " + noShowReload + "\n");
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageReload: " + noShowReload + "\n");
 
     Enigmail.msg.noShowReload = noShowReload;
 

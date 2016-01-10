@@ -69,6 +69,7 @@ const EnigmailVerify = {
   },
 
   getManualUri: function() {
+    EnigmailLog.DEBUG("mimeVerify.jsm: getManualUri\n");
     return this.manualMsgUri;
   },
 
@@ -76,6 +77,7 @@ const EnigmailVerify = {
    * register a PGP/MIME verify object the same way PGP/MIME encrypted mail is handled
    */
   registerContentTypeHandler: function() {
+    EnigmailLog.DEBUG("mimeVerify.jsm: registerContentTypeHandler\n");
     let reg = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 
     let pgpMimeClass = Components.classes["@mozilla.org/mimecth;1?type=multipart/encrypted"];
@@ -89,6 +91,7 @@ const EnigmailVerify = {
   },
 
   unregisterContentTypeHandler: function() {
+    EnigmailLog.DEBUG("mimeVerify.jsm: unregisterContentTypeHandler\n");
     let reg = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
 
     let sMimeClass = Components.classes["@mozilla.org/nsCMSDecoder;1"];
