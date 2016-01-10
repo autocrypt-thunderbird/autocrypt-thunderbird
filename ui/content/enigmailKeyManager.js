@@ -5,7 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+"use strict";
+
+// Uses: chrome://enigmail/content/enigmailCommon.js:
+/* global EnigGetPref: false, EnigGetString: false, EnigFormatFpr: false, EnigGetTrustLabel: false, nsIEnigmail: false */
+/* global GetEnigmailSvc: false, EnigConfirm: false, EnigAlert: false, EnigShowPhoto: false, EnigFilePicker: false */
+/* global enigGetService: false, EnigGetTempDir: false, EnigReadFileContents: false, EnigGetLocalFileApi: false, EnigAlertPref: false */
+/* global EnigEditKeyTrust: false, EnigEditKeyExpiry: false, EnigSignKey: false, EnigRevokeKey: false, EnigCreateRevokeCert: false */
+/* global EnigLongAlert: false, EnigChangeKeyPwd: false, EnigDownloadKeys: false, EnigSetPref: false, EnigGetTrustCode: false */
+/* global ENIG_KEY_DISABLED: false, ENIG_KEY_NOT_VALID: false, ENIG_IOSERVICE_CONTRACTID: false, ENIG_LOCAL_FILE_CONTRACTID: false */
+/* global ENIG_CLIPBOARD_CONTRACTID: false, ENIG_TRANSFERABLE_CONTRACTID: false, ENIG_CLIPBOARD_HELPER_CONTRACTID: false */
+
+// imported packages
+/* global EnigmailLog: false, EnigmailEvents: false, EnigmailKeyRing: false, EnigmailWindows: false, EnigmailKeyEditor: false */
+/* global EnigmailKey: false, EnigmailLocale: false, EnigmailPrefs: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeyManager");
@@ -180,7 +195,7 @@ function enigmailBuildList(refresh) {
   // select last selected key
   if (selectedItems.length > 0) {
     gUserList.view.selection.select(selectedItems[0]);
-    for (i = 1; i < selectedItems.length; i++) {
+    for (let i = 1; i < selectedItems.length; i++) {
       gUserList.view.selection.rangedSelect(selectedItems[i], selectedItems[i], true);
     }
   }
@@ -652,7 +667,7 @@ function enigCreateKeyMsg() {
   }
   catch (ex) {}
   tmpFile.append("key.asc");
-  tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0600);
+  tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0600
 
 
 
@@ -720,7 +735,7 @@ function createNewMail() {
 
         if (keyType == "uid") {
           var uidNum = Number(gUserList.view.getItemAtIndex(r).getAttribute("uidNum"));
-          addresses.push(keyObj.userIds[uidNum].userId);
+          addresses.push(gKeyList[keyNum].userIds[uidNum].userId);
         }
         else
           addresses.push(gKeyList[keyNum].userId);
@@ -904,6 +919,7 @@ function enigmailImportKeysFromFile() {
   var errorMsgObj = {};
   // preview
   var preview = EnigmailKey.getKeyListFromKeyFile(inFile, errorMsgObj);
+  var exitStatus = -1;
 
   if (preview.length > 0) {
     if (preview.length == 1) {
@@ -991,6 +1007,7 @@ function enigmailImportFromClipbrd() {
   var cBoardContent = enigGetClipboard();
   var errorMsgObj = {};
   var preview = EnigmailKey.getKeyListFromKeyBlock(cBoardContent, errorMsgObj);
+  var exitStatus = -1;
 
   if (preview.length > 0) {
     if (preview.length == 1) {
@@ -1038,7 +1055,7 @@ function enigmailCopyToClipbrd() {
   }
   var clipBoard = Cc[ENIG_CLIPBOARD_CONTRACTID].getService(Ci.nsIClipboard);
   try {
-    clipBoardHlp = Cc[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Ci.nsIClipboardHelper);
+    let clipBoardHlp = Cc[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Ci.nsIClipboardHelper);
     clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kGlobalClipboard);
     if (clipBoard.supportsSelectionClipboard()) {
       clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kSelectionClipboard);
@@ -1247,6 +1264,7 @@ function enigmailImportKeysFromUrl() {
 
           // preview
           var preview = EnigmailKey.getKeyListFromKeyBlock(data, errorMsgObj);
+          var exitStatus = -1;
 
           if (preview.length > 0) {
             if (preview.length == 1) {
@@ -1434,7 +1452,7 @@ function enigApplyFilter() {
     // does a sub key of (partially) match?
     if (showNode === false) {
       for (let subKeyIdx = 0; subKeyIdx < keyObj.subKeys.length; subKeyIdx++) {
-        subkey = keyObj.subKeys[subKeyIdx].keyId;
+        let subkey = keyObj.subKeys[subKeyIdx].keyId;
         if (subkey.toLowerCase().indexOf(searchTxt) >= 0) {
           showNode = true;
         }
