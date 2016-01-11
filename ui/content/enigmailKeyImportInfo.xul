@@ -2,7 +2,7 @@
 <!--
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
 <?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
@@ -27,7 +27,6 @@
         ondialogaccept="dlgClose(0)">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyImportInfo.js"/>
 
   <vbox align="center" flex="1" style="overflow:auto" id="outerbox">

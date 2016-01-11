@@ -2,10 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* global Components: false */
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
+Components.utils.import("resource://enigmail/events.jsm"); /* global EnigmailEvents: false */
+Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
+Components.utils.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
+
 function onLoad() {
   var dlg = document.getElementById("enigmailKeyImportInfo");
 
-  let i;
+  let i, keys;
 
   dlg.getButton("help").setAttribute("hidden", "true");
   dlg.getButton("cancel").setAttribute("hidden", "true");

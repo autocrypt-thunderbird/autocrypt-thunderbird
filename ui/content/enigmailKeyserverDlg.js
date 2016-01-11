@@ -4,6 +4,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+// Uses: chrome://enigmail/content/enigmailCommon.js
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/* global EnigGetString: false, EnigGetPref: false, EnigSetPref: false, EnigAlert: false*/
+
 function onLoad() {
   window.arguments[1].value = "";
   var keyIdText = document.getElementById("keyIdText");

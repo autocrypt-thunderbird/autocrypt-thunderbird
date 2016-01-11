@@ -1,4 +1,3 @@
-/*global Components: false, EnigmailLocale: false, EnigmailData: false, EnigmailDialog: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,6 +5,16 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/*global Components: false */
+/*global EnigmailLocale: false, EnigmailData: false, EnigmailDialog: false, EnigmailLog: false, EnigmailPrefs: false */
+/*global EnigmailKeyRing: false, EnigmailErrorHandling: false, EnigmailEvents: false, EnigmailKeyServer: false */
+
+// from enigmailCommon.js:
+/*global nsIEnigmail: false, EnigSetActive: false, GetEnigmailSvc: false */
 
 const INPUT = 0;
 const RESULT = 1;
@@ -522,7 +531,7 @@ function enigScanHtmlKeys(txt) {
 
   var lines = txt.split(/(\n\r|\n|\r)/);
   var key;
-  for (i = 0; i < lines.length; i++) {
+  for (let i = 0; i < lines.length; i++) {
     if (lines[i].search(/^\s*pub /) === 0) {
       // new key
       if (key) {
@@ -799,12 +808,12 @@ function populateList(keyList) {
   var treeChildren = treeList.getElementsByAttribute("id", "enigmailKeySelChildren")[0];
   var treeItem;
 
-  for (var i = 0; i < keyList.length; i++) {
+  for (let i = 0; i < keyList.length; i++) {
     treeItem = createListRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, keyList[i].status);
     if (keyList[i].uid.length > 1) {
       treeItem.setAttribute("container", "true");
       var subChildren = document.createElement("treechildren");
-      for (j = 1; j < keyList[i].uid.length; j++) {
+      for (let j = 1; j < keyList[i].uid.length; j++) {
         var subItem = createListRow(keyList[i].keyId, true, keyList[i].uid[j], "", keyList[i].status);
         subChildren.appendChild(subItem);
       }

@@ -4,7 +4,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-Components.utils.import("resource://enigmail/log.jsm");
+/* eslint no-undef: 2, block-scoped-var: 2 */
+"use strict";
+
+/*global Components: false */
+
+Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
 
 
 window.addEventListener("load", function _enigmail_msgPrintLoad() {
