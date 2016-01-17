@@ -4,7 +4,6 @@
 
 /* global Components: false */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 "use strict";
 
 Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */

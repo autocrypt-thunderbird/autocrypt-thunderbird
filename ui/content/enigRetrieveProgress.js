@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+/* eslint no-invalid-this: 0 */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
+// Uses: chrome://enigmail/content/enigmailCommon.js
 
 /* global EnigmailLog: false, doSetOKCancel: false, EnigmailLocale: false, EnigmailKeyServer: false */
 /* global EnigmailErrorHandling: false */
@@ -97,7 +97,6 @@ function onLoad() {
     return;
 
   // Set up dialog button callbacks.
-  /* eslint no-invalid-this: 0 */
   var object = this;
   doSetOKCancel("", function() {
     return object.onCancel();

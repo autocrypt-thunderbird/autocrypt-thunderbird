@@ -9,7 +9,6 @@
 
 "use strict";
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 /* global EnigInitCommon: false, EnigmailTrust: false, EnigGetString: false, EnigmailCore: false, EnigmailLog: false */
 /* global EnigmailKeyRing: false, EnigGetPref: false, EnigGetTrustLabel: false, EnigSetActive: false, EnigAlert: false */

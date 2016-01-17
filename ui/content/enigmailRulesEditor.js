@@ -9,7 +9,6 @@
 /* global Components */
 /* global EnigInitCommon, EnigGetString, GetEnigmailSvc, EnigAlert, EnigConfirm */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 "use strict";
 
 // Initialize enigmailCommon

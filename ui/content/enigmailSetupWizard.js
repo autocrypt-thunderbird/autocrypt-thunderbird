@@ -18,7 +18,6 @@
 /* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false, EnigGetVersion: false, ENIG_KEYTYPE_RSA: false */
 /* global genAndSaveRevCert: false, ENIG_ACCOUNT_MANAGER_CONTRACTID: false, enigmailCheckPassphrase: false */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 "use strict";
 

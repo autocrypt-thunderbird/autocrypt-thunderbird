@@ -6,7 +6,6 @@
  */
 
 /* global gAccount: false, gIdentity: false, onOk: false, smimeOnAcceptEditor: false */
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 "use strict";
 

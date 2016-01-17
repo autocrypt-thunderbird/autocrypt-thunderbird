@@ -7,7 +7,6 @@
 /* global EnigInitCommon: false */
 /* global ENIG_HEADERMODE_KEYID: false, ENIG_HEADERMODE_URL: false */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 "use strict";
 

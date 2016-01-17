@@ -8,7 +8,6 @@
 // Uses: chrome://enigmail/content/enigmailCommon.js
 //       chrome://enigmail/content/enigmailBuildDate.js
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 "use strict";
 

@@ -9,7 +9,6 @@
  * PLEASE NOTE: this module is legacy and must not be used for newe code - it will be removed!
  */
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
 
 "use strict";
 

@@ -4,9 +4,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-invalid-this: 0 */
+
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
-/* eslint no-undef: 2, block-scoped-var: 2, no-invalid-this: 0 */
 "use strict";
 
 /*global Components: false */
