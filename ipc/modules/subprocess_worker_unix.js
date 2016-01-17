@@ -16,6 +16,8 @@
 
 /* global ctypes: false, onmessage: true */
 
+"use strict";
+
 const BufferSize = 1024;
 const MaxBufferLen = 102400;
 

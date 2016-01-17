@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* eslint no-useless-concat: 0*/
 "use strict";
 
 /* global EnigmailFiles: false */

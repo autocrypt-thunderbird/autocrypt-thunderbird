@@ -142,6 +142,8 @@
 
 /* global Components: false, dump: false, ChromeWorker: false */
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
 
 let EXPORTED_SYMBOLS = ["subprocess"];

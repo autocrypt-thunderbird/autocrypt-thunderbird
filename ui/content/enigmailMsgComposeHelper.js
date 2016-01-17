@@ -117,8 +117,8 @@ Enigmail.hlp = {
   processConflicts: function(encrypt, sign) {
     // process message about whether we still sign/encrypt
     let msg = "";
-    msg += "\n" + "- " + EnigmailLocale.getString(encrypt ? "encryptYes" : "encryptNo");
-    msg += "\n" + "- " + EnigmailLocale.getString(sign ? "signYes" : "signNo");
+    msg += "\n- " + EnigmailLocale.getString(encrypt ? "encryptYes" : "encryptNo");
+    msg += "\n- " + EnigmailLocale.getString(sign ? "signYes" : "signNo");
     if (EnigmailPrefs.getPref("warnOnRulesConflict") == 2) {
       EnigmailPrefs.setPref("warnOnRulesConflict", 0);
     }
