@@ -16,17 +16,18 @@ var EXPORTED_SYMBOLS = ["Promise"];
 
 const Cu = Components.utils;
 
-var Promise;
 var scope = {};
 
 try {
   Cu.import("resource://gre/modules/Promise.jsm", scope); // Gecko >= 25
 }
 catch (ex) {
-  Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js", scope); // Gecko 21 to 24
-}
-finally {
-  Cu.import("resource://gre/modules/commonjs/promise/core.js", scope); // Gecko 17 to 20
+  try {
+    Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js", scope); // Gecko 21 to 24}
+  }
+  catch (ex2) {
+    Cu.import("resource://gre/modules/commonjs/promise/core.js", scope); // Gecko 17 to 20
+  }
 }
 
-Promise = scope.Promise;
+var Promise = scope.Promise;

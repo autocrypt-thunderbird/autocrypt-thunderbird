@@ -5,6 +5,21 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+/*global Components */
+
+/* global EnigmailLog: false, EnigmailLocale: false, EnigmailGpgAgent: false, EnigmailPrefs: false */
+
+// from enigmailCommon.js:
+/* global EnigInitCommon: false, EnigGetPref: false, EnigSetPref: false, GetEnigmailSvc: false */
+/* global gEnigmailSvc: true, EnigGetString: false, EnigError: false, EnigGetVersion: false */
+/* global EnigGetDefaultPref: false, EnigConvertToUnicode: false, EnigCollapseAdvanced: false, EnigGetOS: false */
+/* global EnigGetFilePath: false, EnigAlert: false, EnigAlertPref: false, EnigFilePicker: false */
+/* global EnigDisplayRadioPref: false, EnigSavePrefs: false, EnigConvertFromUnicode: false */
+/* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false */
+/* global gEnigEncryptionModel: true, gEnigAcceptedKeys: true, gEnigAutoSendEncrypted: true, gEnigConfirmBeforeSending: true */
+
+
+"use strict";
 
 Components.utils.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBackup: false */
 

@@ -6,6 +6,10 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigAlert: false, EnigGetString: false */
+/* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false */
+
+"use strict";
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailSingleRcptSettings");
@@ -143,7 +147,7 @@ function enigmailDlgOnAccept() {
   }
   var email = "";
   var mailAddrs = ruleEmail.value.split(/[ ,]+/);
-  for (i = 0; i < mailAddrs.length; i++) {
+  for (let i = 0; i < mailAddrs.length; i++) {
     email += (matchBegin ? " {" : " ") + mailAddrs[i] + (matchEnd ? "}" : "");
   }
   window.arguments[RESULT].email = email.substr(1);

@@ -7,6 +7,16 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
+/* eslint no-undef: 2, block-scoped-var: 2 */
+
+/* global EnigmailLog: false, doSetOKCancel: false, EnigmailLocale: false, EnigmailKeyServer: false */
+/* global EnigmailErrorHandling: false */
+
+// from enigmailCommon.js:
+/* global GetEnigmailSvc: false, nsIEnigmail: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
+
+"use strict";
+
 var msgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
 
 // dialog is just an array we'll use to store various properties from the dialog document...
@@ -87,6 +97,7 @@ function onLoad() {
     return;
 
   // Set up dialog button callbacks.
+  /* eslint no-invalid-this: 0 */
   var object = this;
   doSetOKCancel("", function() {
     return object.onCancel();

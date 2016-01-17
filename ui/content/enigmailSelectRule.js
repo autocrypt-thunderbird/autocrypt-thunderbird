@@ -4,6 +4,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* global Components: false */
+
+// uses enigmailCommon.js:
+/* global EnigInitCommon: false, EnigGetString: false */
+
+// uses enigmailRulesEditor.js:
+/* global enigmailDlgOnAccept: false, createRow: false, getCurrentNode: false, enigmailDlgOnLoad: false */
+
+"use strict";
+
 EnigInitCommon("enigmailSelectRule");
 
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */

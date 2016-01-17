@@ -15,4 +15,5 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
                         TZ=UTC date $(DATE_FMT) )
 
 libs:
-	echo 'var EnigBuildDate="$(ENIG_BUILD_DATE)";' > enigmailBuildDate.js
+	echo '"use strict";' > enigmailBuildDate.js
+	echo 'var EnigBuildDate="$(ENIG_BUILD_DATE)";' >> enigmailBuildDate.js
