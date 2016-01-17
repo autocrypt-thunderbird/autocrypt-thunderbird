@@ -1089,7 +1089,7 @@ function getRfc822Headers(headerArr, contentType, ignoreHeadersArr) {
 
 function getContentType(shdr) {
   try {
-    shdr += "";
+    shdr = String(shdr);
     return shdr.match(/([A-z-]+\/[A-z-]+)/)[1].toLowerCase();
   }
   catch (e) {
@@ -1101,7 +1101,7 @@ function getContentType(shdr) {
 // return the content of the boundary parameter
 function getBoundary(shdr) {
   try {
-    shdr += "";
+    shdr = String(shdr);
     return shdr.match(/boundary="?([A-z0-9'()+_,-.\/:=?]+)"?/i)[1];
   }
   catch (e) {
@@ -1112,7 +1112,7 @@ function getBoundary(shdr) {
 
 function getCharset(shdr) {
   try {
-    shdr += "";
+    shdr = String(shdr);
     return shdr.match(/charset="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {
@@ -1123,7 +1123,7 @@ function getCharset(shdr) {
 
 function getProtocol(shdr) {
   try {
-    shdr += "";
+    shdr = String(shdr);
     return shdr.match(/protocol="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {
@@ -1134,7 +1134,7 @@ function getProtocol(shdr) {
 
 function getSMimeProtocol(shdr) {
   try {
-    shdr += "";
+    shdr = String(shdr);
     return shdr.match(/smime-type="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {

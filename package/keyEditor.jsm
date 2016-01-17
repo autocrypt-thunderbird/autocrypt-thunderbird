@@ -333,7 +333,7 @@ const EnigmailKeyEditor = {
   setKeyExpiration: function(parent, keyId, subKeys, expiryLength, timeScale, noExpiry, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.setKeyExpiry: keyId=" + keyId + "\n");
 
-    expiryLength = "" + expiryLength;
+    expiryLength = String(expiryLength);
     if (noExpiry === true) {
       expiryLength = "0";
     }

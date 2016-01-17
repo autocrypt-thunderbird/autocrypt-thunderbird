@@ -13,8 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("armor.jsm"); /*global EnigmailArmor: false */
 
 test(function shouldLocateEnigmailArmoredBlock() {
-  const text = "" +
-    "    -----BEGIN PGP SIGNATURE-----\n" +
+  const text = "    -----BEGIN PGP SIGNATURE-----\n" +
     "    Version: GnuPG/MacGPG2 v2.0.22 (Darwin)\n" +
     "    Comment: GPGTools - https://gpgtools.org\n" +
     "\n" +

@@ -122,7 +122,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     false,
     "-----BEGIN PGP PUBLIC KEY BLOCK-----" +
     "\n" + "Comment: GPGTools - https://gpgtools.org" +
-    "\n" + "" +
+    "\n" +
     "\n" + "mQINBFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrWe" +
     "\n" + "tJfAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya8K" +
     "\n" + "TzjXR3qBQ1P7f5x71yeuo7Zrj7B0G44Xjfy+1L0eka9paBqmm3U5cUew5wSr772L" +
@@ -174,7 +174,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     "\n" + "-----END PGP PUBLIC KEY BLOCK-----" +
     "\n" + "-----BEGIN PGP PRIVATE KEY BLOCK-----" +
     "\n" + "Comment: GPGTools - https://gpgtools.org" +
-    "\n" + "" +
+    "\n" +
     "\n" + "lQc+BFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrWe" +
     "\n" + "tJfAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya8K" +
     "\n" + "TzjXR3qBQ1P7f5x71yeuo7Zrj7B0G44Xjfy+1L0eka9paBqmm3U5cUew5wSr772L" +

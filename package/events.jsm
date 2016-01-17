@@ -31,10 +31,7 @@ const EnigmailEvents = {
     EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent f=" + callbackFunction.name + "\n");
 
     // object for dispatching callback back to main thread
-    const MainEvent = function(cbFunc, arrayOfArgs) {
-      this.cbFunc = cbFunc;
-      this.args = arrayOfArgs;
-    };
+    var MainEvent = function() {};
 
     MainEvent.prototype = {
       QueryInterface: function(iid) {
@@ -43,6 +40,11 @@ const EnigmailEvents = {
           return this;
         }
         throw Components.results.NS_ERROR_NO_INTERFACE;
+      },
+
+      init: function(cbFunc, arrayOfArgs) {
+        this.cbFunc = cbFunc;
+        this.args = arrayOfArgs;
       },
 
       run: function() {
@@ -57,7 +59,8 @@ const EnigmailEvents = {
 
     };
 
-    const event = new MainEvent(callbackFunction, arrayOfArgs);
+    const event = new MainEvent();
+    event.init(callbackFunction, arrayOfArgs);
     if (sleepTimeMs > 0) {
       return EnigmailTimer.setTimeout(event, sleepTimeMs);
     }

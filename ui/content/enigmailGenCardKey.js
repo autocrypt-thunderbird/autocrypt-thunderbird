@@ -56,14 +56,12 @@ function enableDisable(watchElement, bcElement, inverted) {
   }
 }
 
-function enigGenKeyObserver() {
-  this._state = 0;
-}
+function enigGenKeyObserver() {}
 
 enigGenKeyObserver.prototype = {
   keyId: null,
   backupLocation: null,
-  _state: null,
+  _state: 0,
 
   QueryInterface: function(iid) {
     //EnigmailLog.DEBUG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");

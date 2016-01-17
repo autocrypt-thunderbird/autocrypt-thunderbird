@@ -263,19 +263,21 @@ const EnigmailDialog = {
       // number: remember user's choice
       switch (prefValue) {
         case notSet:
-          let checkBoxObj = {
-            value: false
-          };
-          let buttonPressed = gPromptSvc.confirmEx(win,
-            EnigmailLocale.getString("enigConfirm"),
-            mesg,
-            buttonTitles,
-            okLabel, cancelLabel, null,
-            EnigmailLocale.getString("dlgKeepSetting"), checkBoxObj);
-          if (checkBoxObj.value) {
-            EnigmailPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
+          {
+            let checkBoxObj = {
+              value: false
+            };
+            let buttonPressed = gPromptSvc.confirmEx(win,
+              EnigmailLocale.getString("enigConfirm"),
+              mesg,
+              buttonTitles,
+              okLabel, cancelLabel, null,
+              EnigmailLocale.getString("dlgKeepSetting"), checkBoxObj);
+            if (checkBoxObj.value) {
+              EnigmailPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
+            }
+            return (buttonPressed === 0 ? 1 : 0);
           }
-          return (buttonPressed === 0 ? 1 : 0);
         case yes:
           return 1;
         case no:
@@ -288,19 +290,21 @@ const EnigmailDialog = {
       // boolean: "do not show this dialog anymore" (and return default)
       switch (prefValue) {
         case display:
-          let checkBoxObj = {
-            value: false
-          };
-          let buttonPressed = gPromptSvc.confirmEx(win,
-            EnigmailLocale.getString("enigConfirm"),
-            mesg,
-            buttonTitles,
-            okLabel, cancelLabel, null,
-            EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
-          if (checkBoxObj.value) {
-            EnigmailPrefs.setPref(prefText, false);
+          {
+            let checkBoxObj = {
+              value: false
+            };
+            let buttonPressed = gPromptSvc.confirmEx(win,
+              EnigmailLocale.getString("enigConfirm"),
+              mesg,
+              buttonTitles,
+              okLabel, cancelLabel, null,
+              EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
+            if (checkBoxObj.value) {
+              EnigmailPrefs.setPref(prefText, false);
+            }
+            return (buttonPressed === 0 ? 1 : 0);
           }
-          return (buttonPressed === 0 ? 1 : 0);
         case dontDisplay:
           return 1;
         default:

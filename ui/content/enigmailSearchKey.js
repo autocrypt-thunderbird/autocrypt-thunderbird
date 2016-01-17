@@ -6,7 +6,7 @@
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
 
-/* eslint no-undef: 2, block-scoped-var: 2 */
+/* eslint no-undef: 2, block-scoped-var: 2, no-invalid-this: 0 */
 "use strict";
 
 /*global Components: false */
