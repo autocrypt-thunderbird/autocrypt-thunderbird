@@ -99,7 +99,7 @@ function onLoad() {
     gEnigRequest.dlKeyList = window.arguments[INPUT].searchList;
     document.getElementById("keySelGroup").setAttribute("collapsed", "true");
     window.sizeToContent();
-    window.resizeBy(0, -320);
+
     EnigmailEvents.dispatchEvent(startDownload, 10);
   }
   else {
