@@ -244,7 +244,7 @@ const EnigmailGpg = {
 
   signingAlgIdToString: function(id) {
     // RFC 4880 Sec. 9.1, RFC 6637 Sec. 5 and draft-koch-eddsa-for-openpgp-03 Sec. 8
-    switch (parseInt(id)) {
+    switch (parseInt(id, 10)) {
       case 1:
       case 2:
       case 3:
@@ -262,13 +262,13 @@ const EnigmailGpg = {
       case 22:
         return "EDDSA";
       default:
-        return EnigmailLocale.getString("unknownSigningAlg", [parseInt(id)]);
+        return EnigmailLocale.getString("unknownSigningAlg", [parseInt(id, 10)]);
     }
   },
 
   hashAlgIdToString: function(id) {
     // RFC 4880 Sec. 9.4
-    switch (parseInt(id)) {
+    switch (parseInt(id, 10)) {
       case 1:
         return "MD5";
       case 2:
@@ -284,7 +284,7 @@ const EnigmailGpg = {
       case 11:
         return "SHA224";
       default:
-        return EnigmailLocale.getString("unknownHashAlg", [parseInt(id)]);
+        return EnigmailLocale.getString("unknownHashAlg", [parseInt(id, 10)]);
     }
   }
 };

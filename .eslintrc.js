@@ -54,6 +54,7 @@ module.exports = {
     "no-useless-concat": 2,
     "no-void": 2,
     "no-with": 2,
+    "radix": 2,
     "wrap-iife": [2, "inside"],
     "yoda": 2,
     // TODO:

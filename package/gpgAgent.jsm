@@ -793,7 +793,7 @@ var EnigmailGpgAgent = {
           ctypes.int32_t,
           ctypes.int);
 
-        kill(parseInt(EnigmailGpgAgent.gpgAgentProcess), 15);
+        kill(parseInt(EnigmailGpgAgent.gpgAgentProcess, 10), 15);
       }
       catch (ex) {
         EnigmailLog.ERROR("gpgAgent.jsm: EnigmailGpgAgent.finalize ERROR: " + ex + "\n");

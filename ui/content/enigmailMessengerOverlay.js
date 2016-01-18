@@ -2070,7 +2070,7 @@ Enigmail.msg = {
       attachment.displayName = newLabel;
 
     if (index && index.length > 0) {
-      this.revealAttachments(parseInt(index) + 1);
+      this.revealAttachments(parseInt(index, 10) + 1);
     }
   },
 

@@ -877,7 +877,7 @@ function subprocess_win32(options) {
     ++pendingWriteCount;
     debugLog("sending " + data.length + " bytes to stdinWorker\n");
 
-    var pipePtr = parseInt(ctypes.cast(child.stdin.address(), ctypes.uintptr_t).value);
+    var pipePtr = parseInt(ctypes.cast(child.stdin.address(), ctypes.uintptr_t).value, 10);
 
     stdinWorker.postMessage({
       msg: 'write',
@@ -901,7 +901,7 @@ function subprocess_win32(options) {
 
     if (stdinWorker) {
       debugLog("sending close stdin to worker\n");
-      var pipePtr = parseInt(ctypes.cast(child.stdin.address(), ctypes.uintptr_t).value);
+      var pipePtr = parseInt(ctypes.cast(child.stdin.address(), ctypes.uintptr_t).value, 10);
       stdinWorker.postMessage({
         msg: 'close',
         pipe: pipePtr
@@ -953,7 +953,7 @@ function subprocess_win32(options) {
       exitCode = -2;
     };
 
-    var pipePtr = parseInt(ctypes.cast(pipe.address(), ctypes.uintptr_t).value);
+    var pipePtr = parseInt(ctypes.cast(pipe.address(), ctypes.uintptr_t).value, 10);
 
     worker.postMessage({
       msg: 'read',
@@ -1560,7 +1560,7 @@ function subprocess_unix(options) {
       LogError("got error from write Worker " + workerNum + ": " + error.message + "\n");
     };
 
-    var pipePtr = parseInt(fileDesc);
+    var pipePtr = parseInt(fileDesc, 10);
 
     wrk.postMessage({
       msg: "init",

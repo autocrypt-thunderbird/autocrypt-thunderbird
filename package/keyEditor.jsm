@@ -338,7 +338,7 @@ const EnigmailKeyEditor = {
       expiryLength = "0";
     }
     else {
-      switch (parseInt(timeScale)) {
+      switch (parseInt(timeScale, 10)) {
         case 365:
           expiryLength += "y";
           break;
