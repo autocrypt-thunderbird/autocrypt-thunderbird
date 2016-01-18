@@ -307,7 +307,8 @@ function checkGnupgInstallation() {
  * Check if secret keys are available
  */
 function checkSecretKeys() {
-  EnigmailKeyRing.clearCache();
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: checkSecretKeys\n");
+
   var keyList = EnigmailKeyRing.getAllSecretKeys(true);
   if (keyList && keyList.length > 0) {
     return true;
