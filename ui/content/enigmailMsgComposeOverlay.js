@@ -588,6 +588,7 @@ Enigmail.msg = {
     this.timeoutId = null;
 
     this.modifiedAttach = null;
+    this.composeBodyReady = false;
     this.sendMode = 0;
     this.sendModeDirty = false;
     this.reasonEncrypted = "";
