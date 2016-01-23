@@ -1437,12 +1437,9 @@ Enigmail.msg = {
           signFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
           signReason = EnigmailLocale.getString("reasonSmimeConflict");
 
-          // ensure that securityInfo is set back to S/MIME flags
-          gMsgCompose.compFields.securityInfo = gSMFields;
         }
       }
     }
-
 
 
     // process resulting PGP/MIME mode
@@ -4437,6 +4434,8 @@ Enigmail.composeStateListener = {
       Enigmail.msg.removeAttachedKey();
     }
 
+    // ensure that securityInfo is set back to S/MIME flags (especially required if draft was saved)
+    gMsgCompose.compFields.securityInfo = gSMFields;
   },
 
   NotifyComposeBodyReady: function() {
