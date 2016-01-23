@@ -13,7 +13,7 @@
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false, UpdateAttachmentBucket: false, gContentChanged: true */
 /*global AddAttachments: false, AddAttachment: false, ChangeAttachmentBucketVisibility: false, GetResourceFromUri: false */
 /*global Recipients2CompFields: false, Attachments2CompFields: false, DetermineConvertibility: false, gWindowLocked: false */
-/*global CommandUpdate_MsgCompose: false */
+/*global CommandUpdate_MsgCompose: false, gSMFields: false */
 
 Components.utils.import("resource://enigmail/glodaMime.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -122,6 +122,16 @@ Enigmail.msg = {
         50);
     }
 
+    function addSecurityListener(itemId, func) {
+      let s = document.getElementById(itemId);
+      if (s) {
+        s.addEventListener("command", func);
+      }
+      else {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: addSecurityListener - cannot find element " + itemId + "\n");
+      }
+    }
+
     // Relabel/hide SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
 
@@ -141,14 +151,10 @@ Enigmail.msg = {
     //subj.setAttribute('onfocus', "Enigmail.msg.fireSendFlags()");
 
     // listen to S/MIME changes to potentially display "conflict" message
-    let s = document.getElementById("menu_securitySign1");
-    if (s) s.addEventListener("command", delayedProcessFinalState);
-    s = document.getElementById("menu_securitySign2");
-    if (s) s.addEventListener("command", delayedProcessFinalState);
-    s = document.getElementById("menu_securityEncryptRequire1");
-    if (s) s.addEventListener("command", delayedProcessFinalState);
-    s = document.getElementById("menu_securityEncryptRequire2");
-    if (s) s.addEventListener("command", delayedProcessFinalState);
+    addSecurityListener("menu_securitySign1", delayedProcessFinalState);
+    addSecurityListener("menu_securitySign2", delayedProcessFinalState);
+    addSecurityListener("menu_securityEncryptRequire1", delayedProcessFinalState);
+    addSecurityListener("menu_securityEncryptRequire2", delayedProcessFinalState);
 
     this.msgComposeReset(false); // false => not closing => call setIdentityDefaults()
     this.composeOpen();
@@ -1423,15 +1429,16 @@ Enigmail.msg = {
       }
     }
 
-    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
-      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
-
-      if (si.signMessage || si.requireEncryptMessage) {
+    if (gSMFields) {
+      if (gSMFields.signMessage || gSMFields.requireEncryptMessage) {
         if (EnigmailPrefs.getPref("mimePreferPgp") == 2) {
           encFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
           encReason = EnigmailLocale.getString("reasonSmimeConflict");
           signFinally = EnigmailConstants.ENIG_FINAL_SMIME_DISABLED;
           signReason = EnigmailLocale.getString("reasonSmimeConflict");
+
+          // ensure that securityInfo is set back to S/MIME flags
+          gMsgCompose.compFields.securityInfo = gSMFields;
         }
       }
     }
@@ -1638,9 +1645,8 @@ Enigmail.msg = {
       toolbarMsg = EnigmailLocale.getString("msgCompose.toolbarTxt.noEncryption");
     }
 
-    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields) {
-      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
-      if (si.signMessage || si.requireEncryptMessage) {
+    if (gSMFields) {
+      if (gSMFields.signMessage || gSMFields.requireEncryptMessage) {
 
         // Determine if user wants to encrypt drafts
         let doEncryptDrafts = this.identity.getBoolAttribute("autoEncryptDrafts");
