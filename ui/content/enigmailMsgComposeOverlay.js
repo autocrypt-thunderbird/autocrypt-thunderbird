@@ -414,6 +414,7 @@ Enigmail.msg = {
     this.saveDraftError = 0;
     this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
     this.enableUndoEncryption(false);
+    this.composeBodyReady = false;
 
     this.displayProtectHeadersStatus();
 
@@ -588,7 +589,6 @@ Enigmail.msg = {
     this.timeoutId = null;
 
     this.modifiedAttach = null;
-    this.composeBodyReady = false;
     this.sendMode = 0;
     this.sendModeDirty = false;
     this.reasonEncrypted = "";
@@ -4515,5 +4515,6 @@ window.addEventListener('compose-window-init',
   function _enigmail_composeWindowInit(event) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: _enigmail_composeWindowInit\n");
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
+    Enigmail.msg.composeBodyReady = false;
   },
   true);
