@@ -4435,7 +4435,7 @@ Enigmail.composeStateListener = {
     }
 
     // ensure that securityInfo is set back to S/MIME flags (especially required if draft was saved)
-    gMsgCompose.compFields.securityInfo = gSMFields;
+    if (gSMFields) gMsgCompose.compFields.securityInfo = gSMFields;
   },
 
   NotifyComposeBodyReady: function() {
