@@ -1,5 +1,4 @@
 /*global Components: false, dump: false */
-/*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -192,9 +191,9 @@ MimeVerify.prototype = {
     this.proc = null;
     this.closePipe = false;
     this.pipe = null;
-    this.writeMode = 0;
+    this.readMode = 0;
     this.keepData = "";
-    this.outQueue = "";
+    this.signedData = "";
     this.statusStr = "";
     this.returnStatus = null;
     this.statusDisplayed = false;
@@ -217,7 +216,7 @@ MimeVerify.prototype = {
     this.dataCount += data.length;
 
     this.keepData += data;
-    if (this.writeMode === 0) {
+    if (this.readMode === 0) {
       // header data
       let i = this.findNextMimePart();
       if (i >= 0) {
@@ -232,33 +231,30 @@ MimeVerify.prototype = {
 
         this.keepData = this.keepData.substr(i);
         data = this.keepData;
-        this.writeMode = 1;
+        this.readMode = 1;
       }
       else {
         this.keepData = data.substr(-this.boundary.length - 3);
       }
     }
 
-    if (this.writeMode == 1) {
+    if (this.readMode == 1) {
       // "real data"
       let i = this.findNextMimePart();
+      let write = "";
       if (i >= 0) {
         if (this.keepData[i - 2] == '\r' && this.keepData[i - 1] == '\n') {
           --i;
         }
-        data = this.keepData.substr(0, i - 1);
 
+        this.signedData = this.keepData.substr(0, i - 1);
         this.keepData = this.keepData.substr(i);
-        this.writeMode = 2;
+        this.readMode = 2;
       }
-      else {
-        data = this.keepData.substr(0, this.keepData.length - this.boundary.length - 3);
-        this.keepData = this.keepData.substr(-this.boundary.length - 3);
-      }
-      this.appendQueue(data);
+
     }
 
-    if (this.writeMode == 2) {
+    if (this.readMode == 2) {
       let i = this.keepData.indexOf("--" + this.boundary + "--");
       if (i >= 0) {
         // ensure that we keep everything until we got the "end" boundary
@@ -266,11 +262,11 @@ MimeVerify.prototype = {
           --i;
         }
         this.keepData = this.keepData.substr(0, i - 1);
-        this.writeMode = 3;
+        this.readMode = 3;
       }
     }
 
-    if (this.writeMode == 3) {
+    if (this.readMode == 3) {
       // signature data
       let xferEnc = this.getContentTransferEncoding();
       if (xferEnc.search(/base64/i) >= 0) {
@@ -289,7 +285,7 @@ MimeVerify.prototype = {
       let e = Math.max(this.keepData.search(/^-----END PGP /m), this.keepData.length - 30);
       this.sigData = this.keepData.substring(s, e + 30);
       this.keepData = "";
-      this.writeMode = 4; // ignore any further data
+      this.readMode = 4; // ignore any further data
     }
 
   },
@@ -359,14 +355,14 @@ MimeVerify.prototype = {
     // don't try to verify if no message found
     // if (this.verifyEmbedded && (!this.foundMsg)) return; // TODO - check
 
-    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.outQueue);
+    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.signedData);
 
     if (this.protectedHeaders && this.protectedHeaders.startPos >= 0 && this.protectedHeaders > this.protectedHeaders.startPos) {
-      let r = this.outQueue.substr(0, this.protectedHeaders.startPos) + this.outQueue.substr(this.protectedHeaders.endPos);
+      let r = this.signedData.substr(0, this.protectedHeaders.startPos) + this.signedData.substr(this.protectedHeaders.endPos);
       this.returnData(r);
     }
     else {
-      this.returnData(this.outQueue);
+      this.returnData(this.signedData);
     }
 
     if (this.uri) {
@@ -424,8 +420,8 @@ MimeVerify.prototype = {
         }
       }
       catch (ex) {
-        EnigmailLog.writeException("mimeDecrypt.js", ex);
-        EnigmailLog.DEBUG("mimeDecrypt.js: error while processing " + this.msgUriSpec + "\n");
+        EnigmailLog.writeException("mimeVerify.jsm", ex);
+        EnigmailLog.DEBUG("mimeVerify.jsm: error while processing " + this.msgUriSpec + "\n");
       }
     }
 
@@ -476,26 +472,20 @@ MimeVerify.prototype = {
       this.mimeSvc.onStopRequest(null, null, 0);
     }
     catch (ex) {
-      EnigmailLog.ERROR("mimeDecrypt.js: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
-  },
-
-  appendQueue: function(str) {
-    //LOCAL_DEBUG("mimeVerify.jsm: appendQueue: "+str+"\n");
-
-    this.outQueue += str;
   },
 
   // API for decryptMessage Listener
   stdin: function(pipe) {
     LOCAL_DEBUG("mimeVerify.jsm: stdin\n");
-    if (this.outQueue.length > 0) {
-      LOCAL_DEBUG("mimeVerify.jsm:  writing " + this.outQueue.length + " bytes\n");
+    if (this.signedData.length > 0) {
+      LOCAL_DEBUG("mimeVerify.jsm:  writing " + this.signedData.length + " bytes\n");
 
       // ensure all lines end with CRLF as specified in RFC 3156, section 5
-      this.outQueue = this.outQueue.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
+      this.signedData = this.signedData.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
 
-      pipe.write(this.outQueue);
+      pipe.write(this.signedData);
       if (this.closePipe) pipe.close();
     }
     this.pipe = pipe;
