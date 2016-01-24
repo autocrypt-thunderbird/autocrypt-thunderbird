@@ -9,6 +9,7 @@ fi
 fr
 gd
 gl
+hr
 hu
 it
 ja
@@ -22,6 +23,7 @@ pt-PT
 ru
 sk
 sl
+sq
 sv-SE
 tr
 vi

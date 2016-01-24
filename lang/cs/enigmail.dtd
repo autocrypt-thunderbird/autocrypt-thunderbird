@@ -1,9 +1,7 @@
 <!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.openpgp.label "OpenPGP">
 <!ENTITY enigmail.keyUserId.label "Účet / ID uživatele">
 <!ENTITY enigmail.keygenTitle.label "Vytvořit klíč OpenPGP">
 <!ENTITY enigmail.useForSigning.label "Použít vytvořený klíč pro zvolenou identitu">
-<!ENTITY enigmail.keyComment.label "Poznámka">
 <!ENTITY enigmail.keyNoPassphrase.label "Žádné heslo">
 <!ENTITY enigmail.keyPassphrase.label "Heslo">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Heslo (opakovat)">
@@ -43,11 +41,8 @@
 <!ENTITY enigmail.keySel.label "Výběr klíče">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
 <!ENTITY enigmail.advanced.label "Rozšířené">
-<!ENTITY enigmail.debug.label "Ladění">
 <!ENTITY enigmail.basicPrefs.label "Základní nastavení">
 <!ENTITY enigmail.moreOptions.label "Další nastavení">
-<!ENTITY enigmail.alwaysTrustSend.label "Vždy věřit důvěryhodnosti klíčů.">
-<!ENTITY enigmail.alwaysTrustSend.tooltip "Nepoužívat Web of Trust k určení platnosti klíčů">
 <!ENTITY enigmail.useNonDefaultComment.label "Přidat poznámku Enigmailu do podpisu OpenPGP">
 <!ENTITY enigmail.keyserver.label "Určete Váš/Vaše keyserver(y)">
 <!ENTITY enigmail.keyserverDlg.label "Vybrat keyserver">
@@ -67,7 +62,6 @@
 <!ENTITY enigmail.messengermenu.accesskey "e">
 <!ENTITY enigmail.decryptverify.label "Dešifrovat/Ověřit">
 <!ENTITY enigmail.importpublickey.label "Importovat veřejný klíč">
-<!ENTITY enigmail.savedecrypted.label "Uložit dešifrovanou zprávu">
 <!ENTITY enigmail.autoDecrypt.label "Automaticky dešifrovat/ověřovat zprávy">
 <!ENTITY enigmail.clearPassphrase.label "Smazat uložené heslo">
 <!ENTITY enigmail.editRules.label "Upravit pravidla pro adresáty">
@@ -85,7 +79,6 @@
 <!ENTITY enigmail.setupWiz.label "Průvodce nastavením">
 <!ENTITY enigmail.decryptverify.accesskey "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.savedecrypted.accesskey "U">
 <!ENTITY enigmail.reload.accesskey "R">
 <!ENTITY enigmail.adminSmartCard.accesskey "M">
 <!ENTITY enigmail.autoDecrypt.accesskey "A">
@@ -98,16 +91,11 @@
 <!ENTITY enigmail.help.accesskey "N">
 <!ENTITY enigmail.about.accesskey "O">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "K">
-<!ENTITY enigmail.securitybutton.label "Enigmail">
-<!ENTITY enigmail.securitybutton.tip "Nastavení zabezpečení Enigmail">
 <!ENTITY enigmail.signedsend.label "Podepsat zprávu">
 <!ENTITY enigmail.encryptedsend.label "Šifrovat zprávu">
-<!ENTITY enigmail.disableRules.label "Ignorovat pravidlo pro adresáta">
-<!ENTITY enigmail.composeOptionsMenu.label "Výchozí nastavení pro vytváření zpráv">
 <!ENTITY enigmail.pgpAccountSettings.label "Nastavení podepisování/šifrování...">
 <!ENTITY enigmail.sendOptionsMenu.label "Nastavení odesílání...">
 <!ENTITY enigmail.defaultKeySelOpts.label "Nastavení výběru klíče...">
-<!ENTITY enigmail.sendPGPMime.label "Použít PGP/MIME pro tuto zprávu">
 <!ENTITY enigmail.undoencryption.label "Zpět šifrování">
 <!ENTITY enigmail.attachkey.label "Připojit veřejný klíč ...">
 <!ENTITY enigmail.attachmykey.label "Připojit můj vlastní veřejný klíč">
@@ -116,12 +104,9 @@
 <!ENTITY enigmail.signedsend.key "S">
 <!ENTITY enigmail.encryptedsend.accesskey "Z">
 <!ENTITY enigmail.encryptedsend.key "E">
-<!ENTITY enigmail.disableRules.accesskey "I">
-<!ENTITY enigmail.composeOptionsMenu.accesskey "N">
 <!ENTITY enigmail.sendOptionsMenu.accesskey "S">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey "K">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
-<!ENTITY enigmail.sendPGPMime.accesskey "P">
 <!ENTITY enigmail.undoencryption.accesskey "T">
 <!ENTITY enigmail.attachkey.accesskey "E">
 <!ENTITY enigmail.attachmykey.accesskey "J">
@@ -244,7 +229,6 @@
 <!ENTITY enigmail.searchKeyDlg.label "Stáhnout klíče OpenPGP">
 <!ENTITY enigmail.searchKeyDlgCapt.label "Nalezené klíče - vyberte k importu">
 <!ENTITY enigmail.created.label "Vytvořen">
-<!ENTITY enigmail.valid.label "Platný">
 <!ENTITY enigmail.progress.label "Průběh">
 <!ENTITY enigmail.sKeyDlg.title "Enigmail - podepsat klíč">
 <!ENTITY enigmail.sKeyDlg.signKey.label "Klíč k podpisu:">
@@ -259,7 +243,6 @@
 <!ENTITY enigmail.addUidDlg.title "Enigmail - Přidat ID uživatele">
 <!ENTITY enigmail.addUidDlg.name.label "Jméno">
 <!ENTITY enigmail.addUidDlg.email.label "E-mail">
-<!ENTITY enigmail.addUidDlg.comment.label "Poznámka (nepovinná)">
 <!ENTITY enigmail.keyTrust.title "Enigmail - Nastavit důvěryhodnost vlastníka">
 <!ENTITY enigmail.keyTrust.trustKey.label "Důvěryhodnost klíče:">
 <!ENTITY enigmail.keyTrust.trustLevel.label "Jak je klíč důvěryhodný?">
@@ -313,11 +296,9 @@
 <!ENTITY enigmail.keyMan.showAllKeys.label "Při spuštění zobrazit všechny klíče">
 <!ENTITY enigmail.keyMan.viewPhoto.label "Foto ID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "Zobrazit foto ID">
-<!ENTITY enigmail.keyMan.viewSig.label "Podpisy">
 <!ENTITY enigmail.keyMan.showInvalidKeys.label "Zobrazit neplatné klíče">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.label "Zobrazit nedůvěryhodné klíče">
 <!ENTITY enigmail.keyMan.showOthersKeys.label "Zobrazit klíče ostatních lidí">
-<!ENTITY enigmail.keyMan.ctxViewSig.label "Zobrazit podpisy">
 <!ENTITY enigmail.keyMan.userId.label "Jméno">
 <!ENTITY enigmail.keyMan.keyType.label "Typ">
 <!ENTITY enigmail.keyMan.calcTrust.label "Platnost klíče">
@@ -346,7 +327,6 @@
 <!ENTITY enigmail.keyMan.manageUid.accesskey "U">
 <!ENTITY enigmail.keyMan.changeExpiry.accesskey "E">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "H">
-<!ENTITY enigmail.keyMan.viewSig.accesskey "S">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey "O">
@@ -363,9 +343,6 @@
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
-<!ENTITY enigmail.viewKeySigDlg.title "Seznam podpisů">
-<!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Podpisy pro klíč:">
-<!ENTITY enigmail.viewKeySigDlg.sigType.label "Typ podpisu">
 <!ENTITY enigmail.manageUidDlg.title "Změnit primární ID uživatele">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label "Změnit klíč:">
 <!ENTITY enigmail.manageUidDlg.availableUid.label "Dostupná ID uživatele:">
@@ -375,8 +352,6 @@
 <!ENTITY enigmail.manageUidDlg.setPrimary.label "Nastavit hlavní">
 <!ENTITY enigmail.keyDetails.title "Vlastnosti klíče">
 <!ENTITY enigmail.keyDetails.userId.label "Hlavní ID uživatele">
-<!ENTITY enigmail.keyDetails.keyId.label "ID klíče">
-<!ENTITY enigmail.keyDetails.additionalUid.label "Doplňková ID uživatele">
 <!ENTITY enigmail.keyDetails.ID.label "ID">
 <!ENTITY enigmail.keyDetails.keyType.label "Typ">
 <!ENTITY enigmail.keyDetails.keyPart.label "Podklíč">
@@ -385,8 +360,6 @@
 <!ENTITY enigmail.keyDetails.created.label "Vytvořen">
 <!ENTITY enigmail.keyDetails.expiry.label "Konec platnosti">
 <!ENTITY enigmail.keyDetails.usage.label "Užívání">
-<!ENTITY enigmail.keyDetails.calcTrust.label "Platnost">
-<!ENTITY enigmail.keyDetails.ownerTrust.label "Důvěryhodnost vlastníka">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Otisk prstu">
 <!ENTITY enigmail.keyDetails.selAction.label "Vyberte akci ...">
 <!ENTITY enigmail.keyDetails.selAction.accesskey "y">
@@ -435,14 +408,8 @@
 <!ENTITY enigmail.cardPin.currPin.label "Současný PIN">
 <!ENTITY enigmail.cardPin.newPin.label "Nový PIN">
 <!ENTITY enigmail.cardPin.pinRepeat.label "Zopakovat nový PIN">
-<!ENTITY enigmail.changePasswd.title "Změnit heslo pro OpenPGP">
-<!ENTITY enigmail.changePasswd.currPasswd.label "Současné heslo">
-<!ENTITY enigmail.changePasswd.newPasswd.label "Nové heslo">
-<!ENTITY enigmail.changePasswd.repeatPasswd.label "Zopakovat heslo">
 <!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Průvodce nastavením Enigmail">
-<!ENTITY enigmail.setupWiz.yes "Ano">
-<!ENTITY enigmail.setupWiz.no "Ne, děkuji">
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Vybrat identity">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Vybrat účty nebo identity, se kterými bude Enigmail pracovat">

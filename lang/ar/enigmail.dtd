@@ -1,9 +1,7 @@
 <!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.openpgp.label "OpenPGP">
 <!ENTITY enigmail.keyUserId.label "الحساب/هوية المستخدم">
 <!ENTITY enigmail.keygenTitle.label "ولِّد مفتاح OpenPGP">
 <!ENTITY enigmail.useForSigning.label "استخدم المفتاح المُولّد للهوية المختارة">
-<!ENTITY enigmail.keyComment.label "التعليق">
 <!ENTITY enigmail.keyNoPassphrase.label "بلا كلمة سر">
 <!ENTITY enigmail.keyPassphrase.label "كلمة السر">
 <!ENTITY enigmail.keyPassphraseRepeat.label "كلمة السر (أكّدها)">
@@ -43,11 +41,8 @@
 <!ENTITY enigmail.keySel.label "اختيار المفاتيح">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
 <!ENTITY enigmail.advanced.label "متقدمة">
-<!ENTITY enigmail.debug.label "التنقيح">
 <!ENTITY enigmail.basicPrefs.label "التضبيطات الأساسية">
 <!ENTITY enigmail.moreOptions.label "خيارات أخرى">
-<!ENTITY enigmail.alwaysTrustSend.label "ثِق دائما في مفاتيح الآخرين">
-<!ENTITY enigmail.alwaysTrustSend.tooltip "لا تستخدم شبكة الثقة لتحديد صلاحية المفاتيح">
 <!ENTITY enigmail.useNonDefaultComment.label "أضف تعليق Enigmail في توقيع OpenPGP">
 <!ENTITY enigmail.keyserver.label "خادوم المفاتيح">
 <!ENTITY enigmail.keyserverDlg.label "اختر خادوم مفاتيح">
@@ -67,7 +62,6 @@
 <!ENTITY enigmail.messengermenu.accesskey "n">
 <!ENTITY enigmail.decryptverify.label "ظهِّر/تحقق">
 <!ENTITY enigmail.importpublickey.label "استورد مفتاحا علنيا">
-<!ENTITY enigmail.savedecrypted.label "احفظ الرسالة المُظهَّرة">
 <!ENTITY enigmail.autoDecrypt.label "ظهِّر/تحقق من الرسائل تلقائيا">
 <!ENTITY enigmail.clearPassphrase.label "احذف كلمة السر المحفوظة">
 <!ENTITY enigmail.editRules.label "حرر قواعد المتلقين">
@@ -85,7 +79,6 @@
 <!ENTITY enigmail.setupWiz.label "مُرشِد الضبط">
 <!ENTITY enigmail.decryptverify.accesskey "س">
 <!ENTITY enigmail.importpublickey.accesskey "و">
-<!ENTITY enigmail.savedecrypted.accesskey "ح">
 <!ENTITY enigmail.reload.accesskey "ح">
 <!ENTITY enigmail.adminSmartCard.accesskey "د">
 <!ENTITY enigmail.autoDecrypt.accesskey "ق">
@@ -98,16 +91,11 @@
 <!ENTITY enigmail.help.accesskey "م">
 <!ENTITY enigmail.about.accesskey "ع">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "م">
-<!ENTITY enigmail.securitybutton.label "Enigmail">
-<!ENTITY enigmail.securitybutton.tip "إعدادات خصوصية Enigmail">
 <!ENTITY enigmail.signedsend.label "وقّع الرسالة">
 <!ENTITY enigmail.encryptedsend.label "عمِّ الرسالة">
-<!ENTITY enigmail.disableRules.label "تجاهل قواعد المتلقين">
-<!ENTITY enigmail.composeOptionsMenu.label "خيارات التحرير البدئية">
 <!ENTITY enigmail.pgpAccountSettings.label "خيارات التوقيع/التعمية...">
 <!ENTITY enigmail.sendOptionsMenu.label "خيارات الإرسال...">
 <!ENTITY enigmail.defaultKeySelOpts.label "خيارات اختيار المفتاح...">
-<!ENTITY enigmail.sendPGPMime.label "استخدم PGP/MIME لهذه الرسالة">
 <!ENTITY enigmail.undoencryption.label "تراجع عن التعمية">
 <!ENTITY enigmail.attachkey.label "أرفِق مفتاحا علنيا...">
 <!ENTITY enigmail.attachmykey.label "أرفِق مفتاحي العلني">
@@ -116,12 +104,9 @@
 <!ENTITY enigmail.signedsend.key "S">
 <!ENTITY enigmail.encryptedsend.accesskey "ع">
 <!ENTITY enigmail.encryptedsend.key "س">
-<!ENTITY enigmail.disableRules.accesskey "ت">
-<!ENTITY enigmail.composeOptionsMenu.accesskey "ت">
 <!ENTITY enigmail.sendOptionsMenu.accesskey "س">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey "ف">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "ق">
-<!ENTITY enigmail.sendPGPMime.accesskey "P">
 <!ENTITY enigmail.undoencryption.accesskey "ع">
 <!ENTITY enigmail.attachkey.accesskey "ر">
 <!ENTITY enigmail.attachmykey.accesskey "ي">
@@ -243,7 +228,6 @@
 <!ENTITY enigmail.searchKeyDlg.label "نزِّل مفاتيح OpenPGP">
 <!ENTITY enigmail.searchKeyDlgCapt.label "وجدت مفاتيح - اختر لتستورِد">
 <!ENTITY enigmail.created.label "تاريخ الإنشاء">
-<!ENTITY enigmail.valid.label "صالح">
 <!ENTITY enigmail.progress.label "التقدُّم">
 <!ENTITY enigmail.sKeyDlg.title "Enigmail - وقَّع المفتاح">
 <!ENTITY enigmail.sKeyDlg.signKey.label "المفتاح الذي سيُوقّع:">
@@ -258,7 +242,6 @@
 <!ENTITY enigmail.addUidDlg.title "Enigmail - أضِف هوية المستخدم">
 <!ENTITY enigmail.addUidDlg.name.label "الاسم">
 <!ENTITY enigmail.addUidDlg.email.label "البريد">
-<!ENTITY enigmail.addUidDlg.comment.label "التعليق (اختياري)">
 <!ENTITY enigmail.keyTrust.title "Enigmail - حدد الثِّقة في المالك">
 <!ENTITY enigmail.keyTrust.trustKey.label "المفتاح الذي ستثِق به:">
 <!ENTITY enigmail.keyTrust.trustLevel.label "كم تثِق بهذا المفتاح؟">
@@ -308,11 +291,9 @@
 <!ENTITY enigmail.keyMan.showAllKeys.label "أظهر بدئيا كل المفاتيح">
 <!ENTITY enigmail.keyMan.viewPhoto.label "صُّورة">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "استعرض الصُّورة">
-<!ENTITY enigmail.keyMan.viewSig.label "التوقيعات">
 <!ENTITY enigmail.keyMan.showInvalidKeys.label "Display invalid keys">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.label "Display untrusted keys">
 <!ENTITY enigmail.keyMan.showOthersKeys.label "Display keys from other people">
-<!ENTITY enigmail.keyMan.ctxViewSig.label "استعرض التوقيعات">
 <!ENTITY enigmail.keyMan.userId.label "الاسم">
 <!ENTITY enigmail.keyMan.keyType.label "النوع">
 <!ENTITY enigmail.keyMan.calcTrust.label "صلاحية المفتاح">
@@ -340,7 +321,6 @@
 <!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "د">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "ة">
-<!ENTITY enigmail.keyMan.viewSig.accesskey "ت">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey "O">
@@ -356,9 +336,6 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey "ل">
 <!ENTITY enigmail.keyMan.createMail.accesskey "C">
 <!ENTITY enigmail.keyMan.selectAll.key "A">
-<!ENTITY enigmail.viewKeySigDlg.title "التوقيعات">
-<!ENTITY enigmail.viewKeySigDlg.sigForKey.label "التوقيعات على المفتاح:">
-<!ENTITY enigmail.viewKeySigDlg.sigType.label "نوع التوقيع">
 <!ENTITY enigmail.manageUidDlg.title "غير هوية المستخدم الأساسية">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label "المفتاح الذي سيتغير:">
 <!ENTITY enigmail.manageUidDlg.availableUid.label "هويات المستخدم المعروفة:">
@@ -368,8 +345,6 @@
 <!ENTITY enigmail.manageUidDlg.setPrimary.label "اجعلها الأساسية">
 <!ENTITY enigmail.keyDetails.title "خصائص المفتاح">
 <!ENTITY enigmail.keyDetails.userId.label "هوية المستخدم الأساسية">
-<!ENTITY enigmail.keyDetails.keyId.label "هويّة (ID) المفتاح">
-<!ENTITY enigmail.keyDetails.additionalUid.label "هوية أخرى">
 <!ENTITY enigmail.keyDetails.ID.label "الهوية">
 <!ENTITY enigmail.keyDetails.keyType.label "النوع">
 <!ENTITY enigmail.keyDetails.keyPart.label "Key Part">
@@ -377,8 +352,6 @@
 <!ENTITY enigmail.keyDetails.size.label "الطول">
 <!ENTITY enigmail.keyDetails.created.label "تاريخ الإنشاء">
 <!ENTITY enigmail.keyDetails.expiry.label "الانتهاء">
-<!ENTITY enigmail.keyDetails.calcTrust.label "صلاحية المفتاح">
-<!ENTITY enigmail.keyDetails.ownerTrust.label "الثقة في المالك">
 <!ENTITY enigmail.keyDetails.fingerprint.label "البصمة">
 <!ENTITY enigmail.keyDetails.selAction.label "Select action ...">
 <!ENTITY enigmail.keyDetails.selAction.accesskey "S">
@@ -427,14 +400,8 @@
 <!ENTITY enigmail.cardPin.currPin.label "PIN الحالي">
 <!ENTITY enigmail.cardPin.newPin.label "PIN الجديد">
 <!ENTITY enigmail.cardPin.pinRepeat.label "كرر PIN الجديد">
-<!ENTITY enigmail.changePasswd.title "غيّر عبارة سر OpenPGP">
-<!ENTITY enigmail.changePasswd.currPasswd.label "كلمة السر الحالية">
-<!ENTITY enigmail.changePasswd.newPasswd.label "كلمة السر الجدية">
-<!ENTITY enigmail.changePasswd.repeatPasswd.label "كرر كلمة السر">
 <!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "مُرشِد إعداد Enigmail">
-<!ENTITY enigmail.setupWiz.yes "نعم">
-<!ENTITY enigmail.setupWiz.no "لا، شكرا">
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "اختر هويات">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "اختر الحسابات أو الهويات التي ترغب أن يعمل Enigmail معها">

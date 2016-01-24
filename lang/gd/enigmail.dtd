@@ -1,9 +1,7 @@
-<!ENTITY enigmail.label "Roghainnean na h-iuchrach">
-<!ENTITY enigmail.openpgp.label "OpenPGP">
+<!ENTITY enigmail.label "Enigmail">
 <!ENTITY enigmail.keyUserId.label "Cunntas / ID a’ chleachdaiche">
 <!ENTITY enigmail.keygenTitle.label "Gin iuchair OpenPGP">
 <!ENTITY enigmail.useForSigning.label "Cleachd an iuchair air a gintinn airson na dearbh-aithne a thagh thu">
-<!ENTITY enigmail.keyComment.label "Beachd">
 <!ENTITY enigmail.keyNoPassphrase.label "Gun abairt-fhaire">
 <!ENTITY enigmail.keyPassphrase.label "Abairt-fhaire">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Abairt-fhaire (a-rithist)">
@@ -40,22 +38,25 @@
 <!ENTITY enigmail.maxIdleMinutes.tooltip "Cuir an abairt-fhaire ann an cuimhne rè ùine cuingichte.">
 <!ENTITY enigmail.resetPrefsButton.label "Ath-shuidhich">
 <!ENTITY enigmail.resetPrefs.tooltip "Ath-shuidhich gach roghainn Enigmail air a luach tùsail.">
+<!ENTITY enigmail.backupPrefsButton.label "Às-phortaich na roghainnean is iuchraichean">
+<!ENTITY enigmail.backupPrefs.tooltip "Sàbhail a h-uile roghainn Enigmail agad ann am faidhle, a’ gabhail a-steach nan iuchraichean OpenPGP agad.">
+<!ENTITY enigmail.restorePrefsButton.label "Aisig na roghainnean is iuchraichean">
+<!ENTITY enigmail.restorePrefs.tooltip "Aisig a h-uile roghainn Enigmail agad o fhaidhle, a’ gabhail a-steach nan iuchraichean OpenPGP agad.">
+<!ENTITY enigmail.backupRestore.desc "Às-phortaich (gus lethbhreac-glèidhidh fhaighinn) is aisig na roghainnean Enigmail agad, a’ gabhail a-steach nan iuchraichean OpenPGP agad.">
 <!ENTITY enigmail.basic.label "Bunasach">
 <!ENTITY enigmail.sending.label "Cur">
 <!ENTITY enigmail.keySel.label "Taghadh na h-iuchrach">
 <!ENTITY enigmail.pgpMime.label "PGP/MIME">
 <!ENTITY enigmail.advanced.label "Adhartach">
-<!ENTITY enigmail.debug.label "Dì-bhugachadh">
+<!ENTITY enigmail.backupRestore.label "Lethbhreac-glèidhidh/Aiseag">
 <!ENTITY enigmail.basicPrefs.label "Roghainnean bunasach">
 <!ENTITY enigmail.moreOptions.label "Barrachd roghainnean">
-<!ENTITY enigmail.alwaysTrustSend.label "Cuir earbsa ann an iuchraichean dhaoine an-còmhnaidh">
-<!ENTITY enigmail.alwaysTrustSend.tooltip "Na cleachd lìon na h-earbsa gus faighinn a-mach a bheil iuchair dligheach gus nach eil">
 <!ENTITY enigmail.useNonDefaultComment.label "Cuir beachd Enigmail ris an t-soidhneadh OpenPGP">
 <!ENTITY enigmail.keyserver.label "Frithealaiche iuchraichean">
 <!ENTITY enigmail.keyserverDlg.label "Tagh frithealaiche iuchraichean">
 <!ENTITY enigmail.keyservers.label "Sònraich frithealaiche iuchraichean no dhà agad">
 <!ENTITY enigmail.keyservers.sample "Ball-eisimpleir: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
-<!ENTITY enigmail.searchForKey.label "Lorg airson iuchair">
+<!ENTITY enigmail.searchForKey.label "Lorg iuchair">
 <!ENTITY enigmail.doubleDashSeparator.label "’S e sgaradair an t-soidhnidh a tha san “--”">
 <!ENTITY enigmail.useGpgAgent.label "Cleachd gpg-agent airson abairtean-faire">
 <!ENTITY enigmail.noHushMailSupport.label "Cleachd “&lt;” agus “&gt;” gus seòlaidhean puist-d a shònrachadh">
@@ -64,16 +65,22 @@
 <!ENTITY enigmail.noHushMailSupport.tooltip "Cleachd na caractaran “&lt;” agus “&gt;” gus seòlaidhean puist-d a shònrachadh airson GnuPG. Cuir à comas ma tha seann-iuchraichean Hushmail aig faightearan.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Bu chòir dhut seo a chur DHETH ma gheibh thu teachdaireachdan PGP/MIME ann am pasgain IMAP.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Thoir air falbh am putan S/MIME on bhàr-inneal aig an uinneag sgrìobhaidh">
+<!ENTITY enigmail.autoKeyServerSelection.label "Cleachd a’ chiad fhrithealaiche iuchraichean an-còmhnaidh">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip "Cleachd a’ chiad fhrithealaiche iuchraichean air an liosta a ghnàth.">
 <!ENTITY enigmail.decryptbutton.label "Dì-chrioptaich">
 <!ENTITY enigmail.decryptbutton.tip "Dì-chrioptaich no dearbhaich an teachdaireachd le Enigmail">
 <!ENTITY enigmail.messengermenu.accesskey "a">
 <!ENTITY enigmail.decryptverify.label "Dì-chrioptaich/Dearbhaich">
 <!ENTITY enigmail.importpublickey.label "Ion-phortaich iuchair phoblach">
 <!ENTITY enigmail.importKey.label "Ion-phortaich iuchair">
-<!ENTITY enigmail.savedecrypted.label "Sàbhail an teachdaireachd air a dì-chrioptachadh">
 <!ENTITY enigmail.autoDecrypt.label "Dì-chrioptaich/Dearbhaich teachdaireachdan gu fèin-obrachail">
 <!ENTITY enigmail.clearPassphrase.label "Falamhaich an abairt-fhaire a chaidh a shàbhaladh">
 <!ENTITY enigmail.editRules.label "Deasaich na riaghailtean a-rèir nam faightearan">
+<!ENTITY enigmail.decryptToFolder.label "Dì-chrioptaich gu pasgan">
+<!ENTITY enigmail.decryptToFolder.accesskey "p">
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY enigmail.recent.label "O chionn goirid">
+<!ENTITY enigmail.recent.accesskey "R">
 <!ENTITY enigmail.prefs.label "Roghainnean">
 <!ENTITY enigmail.debugMenu.label "Roghainnean dì-bhugachaidh">
 <!ENTITY enigmail.viewconsole.label "Seall a’ chonsoil">
@@ -89,57 +96,43 @@
 <!ENTITY enigmail.setupWiz.label "Draoidh an rèiteachaidh">
 <!ENTITY enigmail.decryptverify.accesskey "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.savedecrypted.accesskey "S">
 <!ENTITY enigmail.reload.accesskey "l">
 <!ENTITY enigmail.adminSmartCard.accesskey "S">
 <!ENTITY enigmail.autoDecrypt.accesskey "o">
 <!ENTITY enigmail.debugMenu.accesskey "g">
 <!ENTITY enigmail.clearPassphrase.accesskey "b">
 <!ENTITY enigmail.editRules.accesskey "f">
-<!ENTITY enigmail.setupWiz.accesskey "D">
+<!ENTITY enigmail.setupWiz.accesskey "r">
 <!ENTITY enigmail.prefs.accesskey "R">
 <!ENTITY enigmail.viewconsole.accesskey "c">
 <!ENTITY enigmail.viewlog.accesskey "g">
 <!ENTITY enigmail.help.accesskey "h">
 <!ENTITY enigmail.about.accesskey "M">
 <!ENTITY enigmail.sendersKeyMenu.accesskey "u">
-<!ENTITY enigmail.securitybutton.label "Enigmail">
-<!ENTITY enigmail.securitybutton.tip "Roghainnean tèarainteachd Enigmail">
-<!ENTITY enigmail.composetoolbar.header "Bann-cinn Enigmail">
 <!ENTITY enigmail.composetoolbar.label "Bàr-inneal Enigmail">
 <!ENTITY enigmail.composetoolbar.desc "Fiosrachadh crioptachaidh Enigmail">
 <!ENTITY enigmail.signedsend.label "Soidhnich an teachdaireachd">
 <!ENTITY enigmail.encryptedsend.label "Crioptaich an teachdaireachd">
-<!ENTITY enigmail.disableRules.label "Leig seachad na riaghailtean a-rèir nam faightearan">
-<!ENTITY enigmail.composeOptionsMenu.label "Bun-roghainnean an sgrìobhaidh">
 <!ENTITY enigmail.pgpAccountSettings.label "Roghainnean soidhnidh/crioptachaidh...">
 <!ENTITY enigmail.sendOptionsMenu.label "Roghainnean cuir...">
 <!ENTITY enigmail.defaultKeySelOpts.label "Roghainnean taghadh nan iuchair...">
-<!ENTITY enigmail.sendPGPMime.label "Cleachd PGP/MIME airson na teachdaireachd seo">
+<!ENTITY enigmail.usePgpMime.label "Pròtacal: PGP/MIME">
+<!ENTITY enigmail.useInline.label "Pròtacal: Inline PGP">
 <!ENTITY enigmail.tempTrustAllKeys.label "Cuir earbsa ann an iuchraichean gach faighteir">
 <!ENTITY enigmail.undoencryption.label "Neo-dhèan an crioptachadh">
 <!ENTITY enigmail.attachkey.label "Cuir iuchair phoblach ris...">
 <!ENTITY enigmail.attachmykey.label "Cuir an iuchair phoblach agam ris">
-<!ENTITY enigmail.finalEncryptDefault.label "Cleachd na bun-roghainnean is riaghailtean airson a’ chrioptachaidh">
-<!ENTITY enigmail.finalEncryptYes.label "Sparr crioptachadh air">
-<!ENTITY enigmail.finalEncryptNo.label "Sparr nach dèid a chrioptachadh air">
-<!ENTITY enigmail.finalSignDefault.label "Cleachd na bun-roghainnean is riaghailtean airson an t-soidhnidh">
-<!ENTITY enigmail.finalSignYes.label "Sparr soidhneadh air">
-<!ENTITY enigmail.finalSignNo.label "Sparr nach dèid a shoidhneadh air">
-<!ENTITY enigmail.finalPGPMimeDefault.label "Cleachd na bun-roghainnean is riaghailtean airson fòrmat PGP">
-<!ENTITY enigmail.finalPGPMimeYes.label "Sparr PGP/MIME air">
-<!ENTITY enigmail.finalPGPMimeNo.label "Sparr PGP ion-loidhne air">
-<!ENTITY enigmail.composemenu.accesskey "n">
+<!ENTITY enigmail.protectHeaders.label "Dìon an cuspair">
+<!ENTITY enigmail.composemenu.accesskey "c">
 <!ENTITY enigmail.signedsend.accesskey "S">
 <!ENTITY enigmail.signedsend.key "S">
 <!ENTITY enigmail.encryptedsend.accesskey "p">
 <!ENTITY enigmail.encryptedsend.key "p">
-<!ENTITY enigmail.disableRules.accesskey "i">
-<!ENTITY enigmail.composeOptionsMenu.accesskey "B">
 <!ENTITY enigmail.sendOptionsMenu.accesskey "C">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey "u">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "R">
-<!ENTITY enigmail.sendPGPMime.accesskey "P">
+<!ENTITY enigmail.usePgpMime.accesskey "G">
+<!ENTITY enigmail.useInline.accesskey "I">
 <!ENTITY enigmail.tempTrustAllKeys.accesskey "t">
 <!ENTITY enigmail.undoencryption.accesskey "N">
 <!ENTITY enigmail.attachkey.accesskey "a">
@@ -338,12 +331,12 @@
 <!ENTITY enigmail.searchKeyDlgCapt.label "Chaidh iuchraichean a lorg - Tagh airson ion-phortadh">
 <!ENTITY enigmail.searchKeyDlgSelAll.label "Tagh/Dì-thagh na h-uile">
 <!ENTITY enigmail.created.label "Air a chruthachadh">
-<!ENTITY enigmail.valid.label "Dligheach">
 <!ENTITY enigmail.progress.label "Adhartas">
 <!ENTITY enigmail.sKeyDlg.title "Enigmail - Soidhnich iuchair">
 <!ENTITY enigmail.sKeyDlg.signKey.label "An iuchair ri soidhneadh:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "Lorg-mheòir:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label "An iuchair airson an t-soidhnidh:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label "An aire: Feumaidh tu earbsa an t-seilbheadair a shuidheachadh air &quot;cho earbsach ’s a ghabhas&quot; airson nan iuchraichean agad fhèin ach an nochd iad an-seo.">
 <!ENTITY enigmail.sKeyDlg.checked.label "Dè cho cùramach ’s a dhearbhaich thu gum buin an iuchair a tha thu airson soidhneadh ris an neach/na daoine ’gan ainmeachadh gu h-àrd?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label "Cha fhreagair mi seo">
 <!ENTITY enigmail.sKeyDlg.notChecked.label "Cha do dhearbhaich mi idir i">
@@ -353,7 +346,6 @@
 <!ENTITY enigmail.addUidDlg.title "Enigmail - Cuir ID a’ chleachdaiche ris">
 <!ENTITY enigmail.addUidDlg.name.label "Ainm">
 <!ENTITY enigmail.addUidDlg.email.label "Post-d">
-<!ENTITY enigmail.addUidDlg.comment.label "Beachd (roghainneil)">
 <!ENTITY enigmail.keyTrust.title "Enigmail - Suidhich earbsa an t-seilbheadair">
 <!ENTITY enigmail.keyTrust.trustKey.label "An iuchair ri earbsa a chur innte:">
 <!ENTITY enigmail.keyTrust.trustLevel.label "A bheil earbsa agad ann an seilbheadair na h-iuchrach gun soidhnich e iuchraichean eile mar bu chòir?">
@@ -369,21 +361,22 @@
 <!ENTITY enigmail.keyMan.generate.label "Càraid iuchrach ùr">
 <!ENTITY enigmail.keyMan.sign.label "Soidhnich an iuchair">
 <!ENTITY enigmail.keyMan.setTrust.label "Suidhich earbsa an t-seilbheadair">
-<!ENTITY enigmail.keyMan.genRevoke.label "Teisteanas ais-ghairm">
-<!ENTITY enigmail.keyMan.ctxGenRevoke.label "Gin ⁊ sàbhail teisteanas ais-ghairm">
+<!ENTITY enigmail.keyMan.genRevoke.label "Teisteanas cùl-ghairm">
+<!ENTITY enigmail.keyMan.ctxGenRevoke.label "Gin ⁊ sàbhail teisteanas cùl-ghairm">
 <!ENTITY enigmail.keyMan.fileMenu.label "Faidhle">
 <!ENTITY enigmail.keyMan.editMenu.label "Deasaich">
 <!ENTITY enigmail.keyMan.viewMenu.label "Sealladh">
 <!ENTITY enigmail.keyMan.keyserverMenu.label "Frithealaiche iuchraichean">
-<!ENTITY enigmail.keyMan.generateMenu.label "Gin">
+<!ENTITY enigmail.keyMan.generateMenu.label "Gintinn">
 <!ENTITY enigmail.keyMan.fileMenu.accesskey "F">
 <!ENTITY enigmail.keyMan.editMenu.accesskey "e">
 <!ENTITY enigmail.keyMan.viewMenu.accesskey "S">
 <!ENTITY enigmail.keyMan.keyserverMenu.accesskey "u">
 <!ENTITY enigmail.keyMan.generateMenu.accesskey "G">
 <!ENTITY enigmail.keyMan.importFromFile.label "Ion-phortaich iuchraichean o fhaidhle">
-<!ENTITY enigmail.keyMan.importFromServer.label "Lorg airson iuchraichean">
+<!ENTITY enigmail.keyMan.importFromServer.label "Lorg iuchraichean">
 <!ENTITY enigmail.keyMan.importFromClipbrd.label "Ion-phortaich iuchraichean on stòr-bhòrd">
+<!ENTITY enigmail.keyMan.importFromUrl.label "Ion-phortaich iuchraichean o URL">
 <!ENTITY enigmail.keyMan.exportToFile.label "Às-phortaich iuchraichean gu faidhle">
 <!ENTITY enigmail.keyMan.sendKeys.label "Cuir iuchraichean poblach air a’ phost-d">
 <!ENTITY enigmail.keyMan.createMail.label "Sgrìobh post-d dha na h-iuchraichean a thagh thu">
@@ -403,15 +396,13 @@
 <!ENTITY enigmail.keyMan.changePwd.label "Atharraich an abairt-fhaire">
 <!ENTITY enigmail.keyMan.delKey.label "Sguab às an iuchair">
 <!ENTITY enigmail.keyMan.revokeKey.label "Cùl-ghairm an iuchair">
-<!ENTITY enigmail.keyMan.keyProps.label "Roghainnean na h-iuchrach">
+<!ENTITY enigmail.keyMan.keyProps.label "Crioptachadh">
 <!ENTITY enigmail.keyMan.showAllKeys.label "Seall a h-uile iuchair a ghnàth">
 <!ENTITY enigmail.keyMan.viewPhoto.label "ID deilbh">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label "Seall ID deilbh">
-<!ENTITY enigmail.keyMan.viewSig.label "Soidhnidhean">
 <!ENTITY enigmail.keyMan.showInvalidKeys.label "Seall iuchraichean mì-dhligheach">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.label "Seall iuchraichean nach eil earbsach">
 <!ENTITY enigmail.keyMan.showOthersKeys.label "Seall iuchraichean aig càch">
-<!ENTITY enigmail.keyMan.ctxViewSig.label "Seall soidhnidhean">
 <!ENTITY enigmail.keyMan.userId.label "Ainm">
 <!ENTITY enigmail.keyMan.keyType.label "Seòrsa">
 <!ENTITY enigmail.keyMan.calcTrust.label "Dligheachas">
@@ -423,7 +414,7 @@
 <!ENTITY enigmail.keyMan.emptyTree.tooltip "Cuir a-steach faclan-luirg sa bhogsa gu h-àrd">
 <!ENTITY enigmail.keyMan.nothingFound.tooltip "Cha fhreagair iuchair sam bith ris na lorg thu">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip "Fuirich ort fhad ’s a tha na h-iuchraichean ’gan luchdadh...">
-<!ENTITY enigmail.keyMan.filter.label "Lorg airson:">
+<!ENTITY enigmail.keyMan.filter.label "Lorg:">
 <!ENTITY enigmail.keyMan.close.accesskey "D">
 <!ENTITY enigmail.keyMan.generate.accesskey "u">
 <!ENTITY enigmail.keyMan.sign.accesskey "S">
@@ -440,12 +431,12 @@
 <!ENTITY enigmail.keyMan.manageUid.accesskey "S">
 <!ENTITY enigmail.keyMan.changeExpiry.accesskey "e">
 <!ENTITY enigmail.keyMan.changePwd.accesskey "f">
-<!ENTITY enigmail.keyMan.viewSig.accesskey "S">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "d">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "u">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey "c">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey "b">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey "U">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey "c">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey "u">
 <!ENTITY enigmail.keyMan.showAllKeys.accesskey "g">
@@ -459,11 +450,7 @@
 <!ENTITY enigmail.keyMan.selectAll.key "a">
 <!ENTITY enigmail.keyMan.keyDetails.key "u">
 <!ENTITY enigmail.keyMan.refreshKey.key "r">
-<!ENTITY enigmail.keyMan.viewSig.key "S">
 <!ENTITY enigmail.keySearch.selectAll.key "a">
-<!ENTITY enigmail.viewKeySigDlg.title "Liosta nan soidhnidhean">
-<!ENTITY enigmail.viewKeySigDlg.sigForKey.label "Soidhnidhean airson na h-iuchrach:">
-<!ENTITY enigmail.viewKeySigDlg.sigType.label "Seòrsa an t-soidhnidh">
 <!ENTITY enigmail.manageUidDlg.title "Atharraich prìomh ID a’ chleachdaiche">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label "An iuchair ri atharrachadh:">
 <!ENTITY enigmail.manageUidDlg.availableUid.label "IDan a’ chleachdaiche ri làimh:">
@@ -472,9 +459,10 @@
 <!ENTITY enigmail.manageUidDlg.revokeUid.label "Cùl-ghairm">
 <!ENTITY enigmail.manageUidDlg.setPrimary.label "Suidhich am prìomh ID">
 <!ENTITY enigmail.keyDetails.title "Iuchraichean">
+<!ENTITY enigmail.keyDetails.signaturesTab "Teisteanasan">
+<!ENTITY enigmail.keyDetails.structureTab "Structar">
+<!ENTITY enigmail.keyDetails.uidCertifiedCol "ID a’ chleachdaiche / Teisteachadh le">
 <!ENTITY enigmail.keyDetails.userId.label "Prìomh ID a’ chleachdaiche">
-<!ENTITY enigmail.keyDetails.keyId.label "ID na h-iuchrach">
-<!ENTITY enigmail.keyDetails.additionalUid.label "Barrachd IDan a’ chleachdaiche">
 <!ENTITY enigmail.keyDetails.ID.label "ID">
 <!ENTITY enigmail.keyDetails.keyType.label "Seòrsa">
 <!ENTITY enigmail.keyDetails.keyPart.label "Pàirt iuchrach">
@@ -483,11 +471,14 @@
 <!ENTITY enigmail.keyDetails.created.label "Air a chruthachadh">
 <!ENTITY enigmail.keyDetails.expiry.label "Crìoch ùine">
 <!ENTITY enigmail.keyDetails.usage.label "Cleachdadh">
-<!ENTITY enigmail.keyDetails.calcTrust.label "Dligheachas na h-iuchrach">
-<!ENTITY enigmail.keyDetails.ownerTrust.label "Earbsa an t-seilbheadair">
 <!ENTITY enigmail.keyDetails.fingerprint.label "Lorg-mheòir">
 <!ENTITY enigmail.keyDetails.selAction.label "Tagh gnìomh...">
 <!ENTITY enigmail.keyDetails.selAction.accesskey "T">
+<!ENTITY enigmail.keyDetails.change.label "Atharraich">
+<!ENTITY enigmail.keyDetails.signKey.label "Teistich">
+<!ENTITY enigmail.keyDetails.trustStatus.label "Tha thu ag earbsadh nan teisteanasan">
+<!ENTITY enigmail.keyDetails.keyValidity.label "Dligheachas">
+<!ENTITY enigmail.keyDetails.alsoKnown.label "Ainm eile a th’ air">
 <!ENTITY enigmail.cardDetails.title "Fiosrachadh a’ SmartCard OpenPGP">
 <!ENTITY enigmail.cardDetails.cardMenu.label "SmartCard">
 <!ENTITY enigmail.cardDetails.adminPin.label "Atharraich am PIN">
@@ -533,14 +524,8 @@
 <!ENTITY enigmail.cardPin.currPin.label "Am PIN làithreach">
 <!ENTITY enigmail.cardPin.newPin.label "Am PIN ùr">
 <!ENTITY enigmail.cardPin.pinRepeat.label "Am PIN ùr a-rithist">
-<!ENTITY enigmail.changePasswd.title "Atharraich an abairt-fhaire OpenPGP">
-<!ENTITY enigmail.changePasswd.currPasswd.label "An abairt-fhaire làithreach">
-<!ENTITY enigmail.changePasswd.newPasswd.label "An abairt-fhaire ùr">
-<!ENTITY enigmail.changePasswd.repeatPasswd.label "An abairt-fhaire a-rithist">
 <!-- wizard: welcome step -->
 <!ENTITY enigmail.setupWiz.title "Draoidh an rèiteachaidh Enigmail">
-<!ENTITY enigmail.setupWiz.yes "Tha">
-<!ENTITY enigmail.setupWiz.no "Chan eil, mòran taing">
 <!ENTITY enigmail.setupWiz.pgIntro.title "Fàilte gu draoidh an rèiteachaidh Enigmail">
 <!ENTITY enigmail.setupWiz.pgIntro.desc "Tha coltas gur e seo a’ chiad turas a thòisich thu Enigmail air a’ choimpiutair seo.
 Mus cleachd thu Enigmail, feumaidh tu a rèiteachadh mar bu chòir an toiseach.
@@ -553,6 +538,7 @@ Stiùirichidh an draoidh seo tron rèiteachadh thu.">
 <!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode "B’ fhearr leam rèiteachadh àbhaisteach (mholamaid seo mura cleachd thu seo roimhe)">
 <!ENTITY enigmail.setupWiz.pgWelcome.advancedMode "B’ fhearr leam rèiteachadh farsaing (mholamaid seo airson cleachdaichean adhartach)">
 <!ENTITY enigmail.setupWiz.pgWelcome.manualMode "B’ fhearr leam rèiteachadh a làimh (mholamaid seo airson eòlaichean)">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings "Tha mi airson nan roghainnean agam ion-phortadh o stàladh roimhe">
 <!-- wizard: select account IDs step -->
 <!ENTITY enigmail.setupWiz.pgSelectId.title "Tagh dearbh-aithnean">
 <!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Tagh an cunntasan no dearbh-aithnean a tha thu airson cleachdadh le Enigmail">
@@ -610,7 +596,18 @@ Gus an iuchair phrìobhaideach agad a chumail tèarainte, thèid abairt-fhaire i
 <!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc "Ma thèid an iuchair phrìobhaideach air a call no briseadh a-steach oirre, dh’fhaoidte gum bi agad ris an iuchair phoblach agad a chùl-ghairm ach nach cleachd càch an t-seann-iuchair agad tuilleadh.
 Seo as adhbhar gum bheil feum agad air teisteanas cùl-ghairm.
 &lt;html:br/&gt;thèid iarraidh ort gun cuir thu a-steach am facal-faire agad air a shon.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Cruthaich teisteanas ais-ghairm">
+<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "Cruthaich teisteanas cùl-ghairm">
+<!-- wizard: import settings from previous installation -->
+<!ENTITY enigmail.setupWiz.pgImportSettings.title "Ion-phortaich na roghainnean o stàladh roimhe">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc "’S urrainn dhut na roghainnean Enigmail agad uile a thar-chur gu coimpiutair ùr,
+a’ gabhail a-steach nan roghainnean OpenPGP agad. Nì thu seo le dà cheum:
+                                                       <html:ol>
+                                                         <html:li>às-phortaich an dàta agad on t-seann choimpiutair agad le draoidh às-phortadh nan roghainnean Enigmail</html:li>
+                                                         <html:li>ion-phortaich an dàta dhan choimpiutair ùr agad leis an draoidh seo.</html:li>
+                                                       </html:ol>">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Sònraich am faidhle sa bheil an lethbhreac-glèidhidh dhen dàta agad:">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "Ag ion-phortachadh nan iuchraichean ’s a’ cur nan roghainnean an sàs">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error "Thachair mearachd rè an ion-phortachaidh. Cha b’ urrainn dhuinn na roghainnean agad a chur an sàs.">
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Mòran taing">
 <!ENTITY enigmail.setupWiz.pgComplete.desc "Tha Enigmail deiseil ri cleachdadh a-nis.&lt;html:br/&gt;&lt;html:br/&gt;Mòran taing airson Enigmail a chleachdadh.">
@@ -632,3 +629,19 @@ Seo as adhbhar gum bheil feum agad air teisteanas cùl-ghairm.
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey "r">
 <!ENTITY enigmail.savelogfile.label "Sàbhail an loga gu faidhle...">
 <!ENTITY enigmail.filterEditor.moveError.label "Cha chur sinn taic ri gnìomhan a leanas air a’ gnìomh “Dì-chrioptaich gu buan”.">
+<!-- Export wizard -->
+<!ENTITY enigmail.exportWiz.title "Às-phortaich na roghainnean Enigmail agad">
+<!ENTITY enigmail.exportWiz.pgIntro.title "Fàilte gu draoidh às-phortadh nan roghainnean">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1 "’S urrainn dhut na roghainnean Enigmail agad uile a thar-chur gu coimpiutair ùr,
+a’ gabhail a-steach nan roghainnean OpenPGP agad. Nì thu seo le dà cheum:
+                                                       <html:ol>
+                                                         <html:li>às-phortaich an dàta agad on t-seann choimpiutair agad leis an draoidh seo</html:li>
+                                                         <html:li>ion-phortaich an dàta dhan choimpiutair ùr agad le draoidh an rèiteachaidh.</html:li>
+                                                       </html:ol>">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile "Sònraich faidhle gus às-phortadh dha:">
+<!ENTITY enigmail.exportWiz.pgExport.title "Ag às-phortadh roghainnean Enigmail">
+<!ENTITY enigmail.exportWiz.pgExport.exporting "Tha sàbhaladh a’ dol. Dh’fhaoidte gun dèid an abairt-fhaire airson iuchair no dhà iarraidh ort.">
+<!ENTITY enigmail.exportWiz.pgExport.done "Tha na h-iuchraichean OpenPGP is na roghainnean Enigmail agad air an sàbhaladh.
+Cuir am faidhle a chaidh a ghintinn dhan choimpiutair ùr agad, tòisich
+Thunderbird is tòisich draoidh an rèiteachaidh on chlàr-taice Enigmail.">
+<!ENTITY enigmail.exportWiz.pgExport.failed "Thachair mearachd rè an às-phortaidh. Cha deach leinn na roghainnean às-phortadh.">
