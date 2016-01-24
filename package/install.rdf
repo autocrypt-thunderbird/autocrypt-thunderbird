@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{847b3a00-7ab1-11d4-8f02-006008948af5}</em:id>
-    <em:version>1.9b1</em:version>
+    <em:version>1.9b2</em:version>
     <em:type>2</em:type> <!-- type = extension -->
     <em:unpack>true</em:unpack>
 
@@ -24,7 +24,7 @@
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
         <em:minVersion>2.35</em:minVersion>
-        <em:maxVersion>2.42</em:maxVersion>
+        <em:maxVersion>2.43</em:maxVersion>
       </Description>
     </em:targetApplication>
     <!-- em:targetApplication>
