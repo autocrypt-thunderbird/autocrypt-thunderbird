@@ -31,7 +31,7 @@
     <description>&enigmail.compose.excesslength_action.label;</description>
     <vbox>
       <groupbox>
-        <radiogroup id="WrapSelectGroup" aria-labelledby="enigmailWrapDesc">
+        <radiogroup id="wrapSelectGroup" aria-labelledby="enigmailWrapDesc">
           <radio value="0" id="wrap"
               label="&enigmail.compose.wrap_radio.label;"/>
           <radio value="1" id="sendasis"
