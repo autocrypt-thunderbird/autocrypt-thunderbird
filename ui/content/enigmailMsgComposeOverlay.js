@@ -2730,7 +2730,7 @@ Enigmail.msg = {
 
     let useEnigmail = this.preferPgpOverSmime(sendFlags);
 
-    if (!useEnigmail) return false; // dialog aborted
+    if (useEnigmail === null) return false; // dialog aborted
     if (useEnigmail === false) return true; // use S/MIME
 
     // Try to save draft
@@ -3067,7 +3067,7 @@ Enigmail.msg = {
 
       var useEnigmail = this.preferPgpOverSmime(sendFlags);
 
-      if (!useEnigmail) return false; // dialog aborted
+      if (useEnigmail === null) return false; // dialog aborted
       if (useEnigmail === false) {
         // use S/MIME
         sendFlags = 0;
