@@ -13,6 +13,7 @@ Components.utils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: 
 Components.utils.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
 Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
 Components.utils.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
+Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -70,6 +71,7 @@ const CODEPAGE_MAPPING = {
  * Get the default codepage that is set on Windows (which equals to the chatset of the console output of gpg)
  */
 function getWindowsCopdepage() {
+  EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
   let output = "";
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
   let sysRoot = env.get("SystemRoot");
@@ -99,6 +101,7 @@ function getWindowsCopdepage() {
  * Get the charset defined with LC_ALL or locale. That's the charset used by gpg console output
  */
 function getUnixCharset() {
+  EnigmailLog.DEBUG("system.jsm: getUnixCharset\n");
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
   let lc = env.get("LC_ALL");
 
@@ -153,6 +156,8 @@ var EnigmailSystem = {
 
 
   determineSystemCharset: function() {
+    EnigmailLog.DEBUG("system.jsm: determineSystemCharset\n");
+
     if (!gSystemCharset) {
       if (EnigmailOS.isWin32) {
         gSystemCharset = getWindowsCopdepage();
@@ -162,6 +167,7 @@ var EnigmailSystem = {
       }
     }
 
+    EnigmailLog.DEBUG("system.jsm: determineSystemCharset: charset='" + gSystemCharset + "'\n");
     return gSystemCharset;
   },
 
@@ -199,6 +205,8 @@ var EnigmailSystem = {
       }
     }
     catch (ex) {
+      EnigmailLog.DEBUG("system.jsm: convertNativeToUnicode: exception +" + ex.toString() + "\n");
+
       return str;
     }
   },
