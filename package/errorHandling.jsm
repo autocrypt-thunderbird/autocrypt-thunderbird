@@ -227,18 +227,20 @@ function failureMessage(c) {
 
 function missingPassphrase(c) {
   c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
-  c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
-  c.flag = 0;
-  EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase\n");
-  c.retStatusObj.statusMsg += EnigmailLocale.getString("missingPassphrase") + "\n";
+  if (c.retStatusObj.statusMsg.indexOf(EnigmailLocale.getString("missingPassphrase")) < 0) {
+    c.statusFlags |= Ci.nsIEnigmail.DISPLAY_MESSAGE;
+    c.flag = 0;
+    EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: missing passphrase\n");
+    c.retStatusObj.statusMsg += EnigmailLocale.getString("missingPassphrase") + "\n";
+  }
 }
 
 function badPassphrase(c) {
   c.statusFlags |= Ci.nsIEnigmail.MISSING_PASSPHRASE;
-  if (!c.statusFlags & Ci.nsIEnigmail.BAD_MESSAGE) {
-    c.statusFlags |= Ci.nsIEnigmail.BAD_MESSAGE;
+  if (!(c.statusFlags & Ci.nsIEnigmail.BAD_PASSPHRASE)) {
+    c.statusFlags |= Ci.nsIEnigmail.BAD_PASSPHRASE;
     c.flag = 0;
-    EnigmailLog.DEBUG("errorHandling.jsm: missingPassphrase: bad passphrase\n");
+    EnigmailLog.DEBUG("errorHandling.jsm: badPassphrase: bad passphrase\n");
     c.retStatusObj.statusMsg += EnigmailLocale.getString("badPhrase") + "\n";
   }
 }

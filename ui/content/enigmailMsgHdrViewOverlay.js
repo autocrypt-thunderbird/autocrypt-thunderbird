@@ -221,8 +221,8 @@ Enigmail.hdrView = {
       statusFlags &= (~nsIEnigmail.IMPORTED_KEY);
     }
 
-    if (((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
-          nsIEnigmail.DECRYPTION_FAILED |
+    if (!statusFlags & (nsIEnigmail.DECRYPTION_FAILED) &&
+      ((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
           nsIEnigmail.UNVERIFIED_SIGNATURE |
           nsIEnigmail.BAD_SIGNATURE))) ||
         (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) &&
@@ -262,18 +262,22 @@ Enigmail.hdrView = {
     else {
       // no normal exit / don't display message
       // - process failed decryptions first because they imply bad signature handling
-      if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
-        if (statusFlags & nsIEnigmail.NO_SECKEY) {
+      if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+        statusInfo = EnigmailLocale.getString("badPhrase");
+        statusLine = statusInfo + EnigmailLocale.getString("clickDecryptRetry");
+      }
+      else if (statusFlags & nsIEnigmail.DECRYPTION_FAILED) {
+        if (statusFlags & nsIEnigmail.MISSING_PASSPHRASE) {
+          statusInfo = EnigmailLocale.getString("missingPassphrase");
+          statusLine = statusInfo + EnigmailLocale.getString("clickDecryptRetry");
+        }
+        else if (statusFlags & nsIEnigmail.NO_SECKEY) {
           statusInfo = EnigmailLocale.getString("needKey");
         }
         else {
           statusInfo = EnigmailLocale.getString("failedDecrypt");
         }
         statusLine = statusInfo + EnigmailLocale.getString("clickDetailsButton");
-      }
-      else if (statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
-        statusInfo = EnigmailLocale.getString("badPhrase");
-        statusLine = statusInfo + EnigmailLocale.getString("clickDecryptRetry");
       }
       else if (statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE) {
         statusInfo = EnigmailLocale.getString("unverifiedSig");
