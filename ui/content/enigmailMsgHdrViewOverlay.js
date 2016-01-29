@@ -227,8 +227,7 @@ Enigmail.hdrView = {
           nsIEnigmail.BAD_SIGNATURE))) ||
         (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) &&
         !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
-      !(statusFlags & nsIEnigmail.IMPORTED_KEY)
-    ) {
+      !(statusFlags & nsIEnigmail.IMPORTED_KEY)) {
       // normal exit / display message
       statusLine = errorMsg;
       statusInfo = statusLine;
