@@ -757,6 +757,7 @@ Enigmail.msg = {
 
     if (!bodyElement) return;
 
+    let topElement = bodyElement;
     var findStr = /* interactive ? null : */ "-----BEGIN PGP";
     var msgText = null;
     var foundIndex = -1;
@@ -781,7 +782,14 @@ Enigmail.msg = {
     }
 
     if (foundIndex >= 0) {
-      msgText = bodyElement.textContent;
+      if (Enigmail.msg.savedHeaders["content-type"].search(/^text\/html/i) === 0) {
+        let p = Components.classes["@mozilla.org/parserutils;1"].createInstance(Components.interfaces.nsIParserUtils);
+        const de = Components.interfaces.nsIDocumentEncoder;
+        msgText = p.convertToPlainText(topElement.innerHTML, de.OutputRaw | de.OutputBodyOnly, 0);
+      }
+      else {
+        msgText = bodyElement.textContent;
+      }
     }
 
     if (!msgText) {
