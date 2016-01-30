@@ -420,7 +420,6 @@ Enigmail.msg = {
     this.saveDraftError = 0;
     this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
     this.enableUndoEncryption(false);
-    this.composeBodyReady = false;
 
     this.displayProtectHeadersStatus();
 
