@@ -221,9 +221,10 @@ Enigmail.hdrView = {
       statusFlags &= (~nsIEnigmail.IMPORTED_KEY);
     }
 
-    if (!statusFlags & (nsIEnigmail.DECRYPTION_FAILED) &&
+    if (!(statusFlags & nsIEnigmail.DECRYPTION_FAILED) &&
       ((!(statusFlags & (nsIEnigmail.DECRYPTION_INCOMPLETE |
           nsIEnigmail.UNVERIFIED_SIGNATURE |
+          nsIEnigmail.DECRYPTION_FAILED |
           nsIEnigmail.BAD_SIGNATURE))) ||
         (statusFlags & nsIEnigmail.DISPLAY_MESSAGE) &&
         !(statusFlags & nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
