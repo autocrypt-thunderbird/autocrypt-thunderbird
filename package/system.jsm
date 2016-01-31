@@ -92,7 +92,7 @@ function getWindowsCopdepage() {
   });
   p.wait();
 
-  output = output.replace(/[\r\n]/, "");
+  output = output.replace(/[\r\n]/g, "");
   output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)$/, "$2");
 
   return output;
