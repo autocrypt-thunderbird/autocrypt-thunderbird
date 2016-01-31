@@ -30,9 +30,16 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAlertDlg.js"/>
 
+  <popupset>
+    <menupopup id="ctxmenu">
+      <menuitem label="&copyCmd.label;" oncommand="copyToClipbrd()"/>
+    </menupopup>
+  </popupset>
+
   <vbox align="center" flex="1" style="overflow:auto" id="outerbox">
     <hbox align="center" flex="1">
-      <textbox flex="1" id="msgtext" class="plain" style="white-space: pre;" readonly="true"/>
+      <textbox flex="1" id="msgtext" class="plain" style="white-space: pre;" readonly="true"
+          context="ctxmenu"/>
     </hbox>
   </vbox>
 

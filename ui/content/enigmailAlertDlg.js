@@ -5,9 +5,12 @@
  */
 
 /* global EnigInitCommon: false, EnigmailEvents: false, EnigGetString: false, EnigGetOS: false */
-
+/* global Components: false */
 
 "use strict";
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 
 EnigInitCommon("enigmailAlertDlg");
 
@@ -63,6 +66,7 @@ function onLoad() {
   dlg.getButton("accept").focus();
   var textbox = document.getElementById("msgtext");
   textbox.textContent = msgtext;
+  window.addEventListener("keypress", onKeyPress);
   EnigmailEvents.dispatchEvent(resizeDlg, 0);
 }
 
@@ -141,4 +145,19 @@ function dlgClose(buttonNumber) {
 
 function checkboxCb() {
   // do nothing
+}
+
+
+function copyToClipbrd() {
+  let s = window.getSelection().toString();
+
+  let clip = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
+  clip.copyString(s);
+}
+
+function onKeyPress(event) {
+  if (event.key == "c" && event.getModifierState("Accel")) {
+    copyToClipbrd();
+    event.stopPropagation();
+  }
 }
