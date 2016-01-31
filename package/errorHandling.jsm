@@ -485,6 +485,9 @@ function parseErrorOutputWith(c) {
       return EnigmailSystem.convertNativeToUnicode(str);
     }, EnigmailSystem).join("\n");
   }
+  else {
+    c.errorMsg = EnigmailSystem.convertNativeToUnicode(c.errorMsg);
+  }
 
   if ((c.statusFlags & Ci.nsIEnigmail.CARDCTRL) && c.errCode > 0) {
     c.errorMsg = buildErrorMessageForCardCtrl(c, c.errCode, c.detectedCard);
