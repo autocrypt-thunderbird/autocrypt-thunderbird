@@ -2814,9 +2814,16 @@ Enigmail.msg = {
       this.statusEncrypted == EnigmailConstants.ENIG_FINAL_FORCEYES) {
       gotSendFlags |= ENCRYPT;
     }
+    else if (this.statusEncrypted == EnigmailConstants.ENIG_FINAL_FORCENO) {
+      gotSendFlags &= ~ENCRYPT;
+    }
+
     if (this.statusSigned == EnigmailConstants.ENIG_FINAL_YES ||
       this.statusSigned == EnigmailConstants.ENIG_FINAL_FORCEYES) {
       gotSendFlags |= SIGN;
+    }
+    else if (this.statusSigned == EnigmailConstants.ENIG_FINAL_FORCENO) {
+      gotSendFlags &= ~SIGN;
     }
 
     var sendFlags = 0;
