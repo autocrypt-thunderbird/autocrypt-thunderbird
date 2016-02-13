@@ -56,7 +56,7 @@ test(function shouldCheckKeyExpiry() {
   Assert.equal(k.length, 0);
 
   k = EnigmailExpiry.getExpiryForKeySpec(["0xABCDEF0123456789", "BBCDEF0123456789", "CBCDEF0123456789"], 10);
-  Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 BBCDEF0123456789");
+  Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789");
 
   k = EnigmailExpiry.getExpiryForKeySpec(["user1@enigmail-test.net", "user2@enigmail-test.net", "user5@enigmail-test.net"], 10);
   Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 ACCDEF0123456789");
@@ -71,7 +71,7 @@ test(function shouldGetNewlyExpiredKeys() {
   EnigmailPrefs.setPref("keyCheckResult", "");
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
   let a = EnigmailExpiry.getNewlyExpiredKeys();
-  Assert.equal(a.map(getKeyId).join(" "), "ABCDEF0123456789 BBCDEF0123456789");
+  Assert.equal(a.map(getKeyId).join(" "), "ABCDEF0123456789");
 
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 101);
   a = EnigmailExpiry.getNewlyExpiredKeys();
@@ -95,11 +95,11 @@ test(function shouldGetNewlyExpiredKeys() {
 test(function shouldDoKeyExpiryCheck() {
 
   EnigmailPrefs.setPref("keyCheckResult", "");
-  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
+  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 101);
 
   let str = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(str, EnigmailLocale.getString("expiry.keysExpireSoon", [10, '- "user1@enigmail-test.net" (key ID 123456781234567812345678ABCDEF0123456789)\n' +
-    '- "user4@enigmail-test.net" (key ID 123456781234567812345678BBCDEF0123456789)\n'
+  Assert.equal(str, EnigmailLocale.getString("expiry.keysExpireSoon", [101, '- "user1@enigmail-test.net" (key ID 123456781234567812345678ABCDEF0123456789)\n' +
+    '- "user2@enigmail-test.net" (key ID 123456781234567812345678EBCDEF0123456789)\n'
   ]));
 
 
@@ -107,10 +107,9 @@ test(function shouldDoKeyExpiryCheck() {
   keyCheckResult.lastCheck = Date.now() - 86401000;
   EnigmailPrefs.setPref("keyCheckResult", JSON.stringify(keyCheckResult));
 
-  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 101);
+  EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
   str = EnigmailExpiry.keyExpiryCheck();
-  Assert.equal(str, EnigmailLocale.getString("expiry.keyExpiresSoon", ['"user2@enigmail-test.net" (key ID 123456781234567812345678EBCDEF0123456789)', 101]));
-
+  Assert.equal(str, "");
 });
 
 function getKeyId(key) {

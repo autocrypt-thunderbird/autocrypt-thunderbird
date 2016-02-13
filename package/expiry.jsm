@@ -31,7 +31,7 @@ var EnigmailExpiry = {
    * @param keySpecArr  - Array: list of key IDs or User IDs
    * @param numDay      - Number: number of days from now
    *
-   * @return Array      - list of keys that expire(d)
+   * @return Array      - list of keys that will expire
    */
 
   getExpiryForKeySpec: function(keySpecArr, numDays) {
@@ -64,7 +64,7 @@ var EnigmailExpiry = {
         }
       }
 
-      if (maxExpiry < now + (DAY * numDays)) p.push(maxKey);
+      if (maxExpiry < now + (DAY * numDays) && maxExpiry >= now) p.push(maxKey);
 
       return p;
     }, []);
