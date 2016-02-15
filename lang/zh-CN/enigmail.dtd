@@ -336,6 +336,7 @@
 <!ENTITY enigmail.sKeyDlg.signKey.label "要签署的密钥:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "密钥指纹:">
 <!ENTITY enigmail.sKeyDlg.signWithKey.label "使用此密钥签署:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label "请注意：您必须设置所有者信任，以最终在这里显示您自己的密钥。">
 <!ENTITY enigmail.sKeyDlg.checked.label "您对“您将要签署的密钥确实属于声称拥有它的人”做过何种程度的考察?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label "我不想回答">
 <!ENTITY enigmail.sKeyDlg.notChecked.label "我还没检查过">
@@ -600,6 +601,12 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton "创建证书废除">
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title "从以前的安装导入设置">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc "Enigmail 允许转移其所有设置到一台新电脑，包括 OpenPGP 密钥。完成此操作需要两个步骤：
+<html:ol>
+<html:li>使用 Enigmail 首选项中的备份向导，从您的旧电脑导出您的数据：</html:li>
+<html:li>使用本向导将您的数据导入您的新电脑：</html:li>
+</html:ol>">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "请指定包含您的备份数据的文件：">
 <!ENTITY enigmail.setupWiz.pgImportSettings.importing "导入密钥并应用设置">
 <!ENTITY enigmail.setupWiz.pgImportSettings.error "导入时发生错误。您的设置未能应用。">
 <!-- wizard: final page -->
@@ -626,7 +633,15 @@
 <!-- Export wizard -->
 <!ENTITY enigmail.exportWiz.title "导出您的 Enigmail 设置">
 <!ENTITY enigmail.exportWiz.pgIntro.title "欢迎使用导出设置的向导">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1 "Enigmail 允许转移其所有设置到一台新电脑，包括 OpenPGP 密钥。完成此操作需要两个步骤：
+<html:ol>
+<html:li>使用本向导从您的旧电脑导出您的数据：</html:li>
+<html:li>使用本向导将您的数据导入您的新电脑：</html:li>
+</html:ol>">
 <!ENTITY enigmail.exportWiz.pgIntro.specifyFile "请指定导出文件：">
 <!ENTITY enigmail.exportWiz.pgExport.title "正在导出 Enigmail 设置">
 <!ENTITY enigmail.exportWiz.pgExport.exporting "正在保存。您可能被询问您的密钥的密码。">
+<!ENTITY enigmail.exportWiz.pgExport.done "您的 OpenPGP 密钥和您的 Enigmail 设置现在已保存。
+
+请将生成的文件传输到新的电脑，启动 Thunderbird 并从 Enigmail 启动设置向导。">
 <!ENTITY enigmail.exportWiz.pgExport.failed "导出时发生错误。设置未能导出。">

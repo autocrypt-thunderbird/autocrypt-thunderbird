@@ -1,4 +1,4 @@
-<!ENTITY enigmail.label "Enigmail">
+<!ENTITY enigmail.label "Beállítások és kulcsok visszaállítása">
 <!ENTITY enigmail.keyUserId.label "Postafiók / Felhasználói azonosító">
 <!ENTITY enigmail.keygenTitle.label "Enigmail – PGP-kulcs készítése">
 <!ENTITY enigmail.useForSigning.label "Előállított kulcs használata a kijelölt személyazonossághoz">
@@ -40,7 +40,7 @@
 <!ENTITY enigmail.resetPrefs.tooltip "Az összes Enigmail beállítás visszaállítása az alapértelmezettre.">
 <!ENTITY enigmail.backupPrefsButton.label "Beállítások és kulcsok elmentése">
 <!ENTITY enigmail.backupPrefs.tooltip "Az összes Enigmail beállítás fájlba mentése, az OpenPGP kulcsokkal együtt.">
-<!ENTITY enigmail.restorePrefsButton.label "Reestore Settings and Keys">
+<!ENTITY enigmail.restorePrefsButton.label "Beállítások és kulcsok visszaállítása">
 <!ENTITY enigmail.restorePrefs.tooltip "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 <!ENTITY enigmail.backupRestore.desc "Az összes Enigmail beállítás mentése és visszaállítása, az OpenPGP kulcsokkal együtt.">
 <!ENTITY enigmail.basic.label "Alap">
