@@ -1,6 +1,6 @@
 <!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.keyUserId.label "Choisir le type de formatage">
-<!ENTITY enigmail.keygenTitle.label "Reformater le texte automatiquement (bonne signature, mais peut paraître bizarre)">
+<!ENTITY enigmail.keyUserId.label "Compte / Identifiant utilisateur">
+<!ENTITY enigmail.keygenTitle.label "Générer une clé OpenPGP">
 <!ENTITY enigmail.useForSigning.label "Utiliser la clef générée pour l'identité sélectionnée">
 <!ENTITY enigmail.keyNoPassphrase.label "Pas de phrase secrète">
 <!ENTITY enigmail.keyPassphrase.label "Phrase secrète">

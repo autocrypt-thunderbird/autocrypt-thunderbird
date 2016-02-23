@@ -1,7 +1,7 @@
 <!ENTITY enigmail.label "Enigmail">
 <!ENTITY enigmail.keyUserId.label "Tài khoản / ID người dùng">
 <!ENTITY enigmail.keygenTitle.label "Tạo khoá OpenPGP">
-<!ENTITY enigmail.useForSigning.label "Xử dụng khoá đã tạo cho danh tính được chọn">
+<!ENTITY enigmail.useForSigning.label "Dùng khoá đã tạo cho danh tính được chọn">
 <!ENTITY enigmail.keyNoPassphrase.label "Không có mật khẩu">
 <!ENTITY enigmail.keyPassphrase.label "Mật khẩu">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Mật khẩu (lặp lại)">
@@ -52,11 +52,11 @@
 <!ENTITY enigmail.keyservers.sample "VD: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
 <!ENTITY enigmail.searchForKey.label "Tìm kiếm khóa">
 <!ENTITY enigmail.doubleDashSeparator.label "'--' là dấu tách chữ ký">
-<!ENTITY enigmail.useGpgAgent.label "Sử dụng gpg-agent cho mật khẩu">
-<!ENTITY enigmail.noHushMailSupport.label "Sử dụng '&lt;' và '&gt;' để chỉ định các địa chỉ email">
+<!ENTITY enigmail.useGpgAgent.label "Dùng gpg-agent cho mật khẩu">
+<!ENTITY enigmail.noHushMailSupport.label "Dùng '&lt;' và '&gt;' để chỉ định các địa chỉ email">
 <!ENTITY enigmail.doubleDashSeparator.tooltip "Hai dấu gạch nối nằm riêng trên một dòng tượng trưng cho một khối chữ ký">
-<!ENTITY enigmail.useGpgAgent.tooltip "Sử dụng gpg-agent (một phần của GnuPG 2) cho tất cả các mục nhập mật khẩu">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Sử dụng ký tự '&lt;' và '&gt;' để chỉ định các địa chỉ email cho GnuPG. Tắt nếu người nhận có khoá Hushmail cũ.">
+<!ENTITY enigmail.useGpgAgent.tooltip "Dùng gpg-agent (một phần của GnuPG 2) cho tất cả các mục nhập mật khẩu">
+<!ENTITY enigmail.noHushMailSupport.tooltip "Dùng ký tự '&lt;' và '&gt;' để chỉ định các địa chỉ email cho GnuPG. Tắt nếu người nhận có khoá Hushmail cũ.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Nên TẮT nó đi nếu bạn đang nhận tin nhắn PGP/MIME trong thư mục IMAP.">
 <!ENTITY enigmail.disableSMIMEui.tooltip "Xoá nút S/MIME khỏi thanh công cụ cửa sổ soạn tin nhắn">
 <!ENTITY enigmail.decryptbutton.label "Giải mã">
@@ -102,6 +102,7 @@
 <!ENTITY enigmail.undoencryption.label "Hoàn tác mã hoá">
 <!ENTITY enigmail.attachkey.label "Đính kèm khoá công khai ...">
 <!ENTITY enigmail.attachmykey.label "Đính kèm khoá công của tôi">
+<!ENTITY enigmail.protectHeaders.label "Bảo vệ tiêu đề">
 <!ENTITY enigmail.composemenu.accesskey "n">
 <!ENTITY enigmail.signedsend.accesskey "S">
 <!ENTITY enigmail.signedsend.key "S">
@@ -117,7 +118,7 @@
 <!-- account specific options -->
 <!ENTITY enigmail.defaultSigning.label "Ký tên tin nhắn theo mặc định">
 <!ENTITY enigmail.defaultEncryption.label "Mã hoá tin nhắn theo mặc định">
-<!ENTITY enigmail.usePGPMimeAlways.label "Sử dụng PGP/MIME theo mặc định">
+<!ENTITY enigmail.usePGPMimeAlways.label "Dùng PGP/MIME theo mặc định">
 <!ENTITY enigmail.afterDefaultsAndRules.label "Sau khi áp dụng mặc định và các quy tắc:">
 <!ENTITY enigmail.finallySignEncrypted.label "ký tên các tin nhắn đã mã hoá">
 <!ENTITY enigmail.finallySignNotEncrypted.label "ký tên các tin nhắn chưa mã hoá">
@@ -201,7 +202,7 @@
 <!ENTITY enigmail.enigAttachDontEncryptMsgSign.label "Đừng ký tên tin nhắn">
 <!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label "Đừng mã hoá tin nhắn">
 <!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "Đừng mã hoá và ký tên tin nhắn">
-<!ENTITY enigmail.encryptAttachSkipDlg.label "Sử dụng phương pháp được chọn cho toàn bộ tập tin đính kèm trong tương lai">
+<!ENTITY enigmail.encryptAttachSkipDlg.label "Dùng phương pháp được chọn cho toàn bộ tập tin đính kèm trong tương lai">
 <!ENTITY enigmail.ctxDecryptOpen.label "Giải mã và Mở">
 <!ENTITY enigmail.ctxDecryptSave.label "Giải mã và Lưu dưới dạng...">
 <!ENTITY enigmail.ctxImportKey.label "Nhập khoá OpenPGP">
@@ -216,16 +217,16 @@
 <!ENTITY enigmail.amPrefTitle.label "Các tuỳ chọn OpenPGP">
 <!ENTITY enigmail.amPrefDesc.label "Hỗ trợ cho việc mã hoá và ký tên tin nhắn OpenPGP được cung cấp bởi Enigmail. Bạn cần cài đặt GnuPG (gpg) để dùng tính năng này.">
 <!ENTITY enigmail.amPrefEnablePgp.label "Bật hỗ trợ OpenPGP (Enigmail) cho danh tính này">
-<!ENTITY enigmail.amPrefUseFromAddr.label "Sử dụng địa chỉ email của danh tính này để nhận diện khoá OpenPGP">
-<!ENTITY enigmail.amPrefUseKeyId.label "Sử dụng ID khoá OpenPGP cụ thể (0x1234ABCD):">
+<!ENTITY enigmail.amPrefUseFromAddr.label "Dùng địa chỉ email của danh tính này để nhận diện khoá OpenPGP">
+<!ENTITY enigmail.amPrefUseKeyId.label "Dùng ID khoá OpenPGP cụ thể (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label "Chọn khoá ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label "Tuỳ chọn mặc định của Soạn tin nhắn">
-<!ENTITY enigmail.encryptionDlg.label "Mã hoá Enigmail &amp; Tinh chỉnh ký tên">
+<!ENTITY enigmail.encryptionDlg.label "Mã hoá Enigmail &amp; Tuỳ chỉnh ký tên">
 <!ENTITY enigmail.encDlgEncrypt.label "Mã hoá tin nhắn">
 <!ENTITY enigmail.encDlgEncrypt.accesskey "E">
 <!ENTITY enigmail.encDlgSign.label "Ký tên tin nhắn">
 <!ENTITY enigmail.encDlgSign.accesskey "S">
-<!ENTITY enigmail.encDlgPgpMime.label "Sử dụng PGP/MIME">
+<!ENTITY enigmail.encDlgPgpMime.label "Dùng PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey "P">
 <!ENTITY enigmail.amPrefPgpHeader.label "Gửi đầu đề 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "Gửi ID khoá OpenPGP">
@@ -241,7 +242,7 @@
 <!ENTITY enigmail.trustSenderKey.label "Đặt mức tín nhiệm cho chủ nhân ...">
 <!ENTITY enigmail.signSenderKeyPopup.label "Ký tên khoá của người gửi ...">
 <!ENTITY enigmail.trustSenderKeyPopup.label "Đặt mức tín nhiệm cho chủ nhân của khoá người gửi ...">
-<!ENTITY enigmail.createRuleFromAddr.label "Tạo quy tắc Enigmail từ Địa chỉ...">
+<!ENTITY enigmail.createRuleFromAddr.label "Tạo quy tắc Enigmail từ địa chỉ...">
 <!ENTITY enigmail.keyManWindow.label "Quản lý khoá">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
 <!ENTITY enigmail.singleRcptSettings.label "Enigmail - Tuỳ chỉnh người nhận">
@@ -249,58 +250,59 @@
 <!ENTITY enigmail.action.label "Thao tác">
 <!ENTITY enigmail.nextRule.label "Tiếp tục với quy tắc kế tiếp cho địa chỉ trùng khớp">
 <!ENTITY enigmail.nextAddress.label "Đừng kiểm tra thêm quy tắc nào nữa cho địa chỉ trùng khớp">
-<!ENTITY enigmail.useKeys.label "Sử dụng các khoá OpenPGP sau đây:">
+<!ENTITY enigmail.useKeys.label "Dùng các khoá OpenPGP sau đây:">
 <!ENTITY enigmail.selKeysButton.accesskey "S">
-<!ENTITY enigmail.setDefaultsFor.label "Những mặc định cho ...">
-<!ENTITY enigmail.encryption.label "Mã hóa">
+<!ENTITY enigmail.setDefaultsFor.label "Các mặc định cho ...">
+<!ENTITY enigmail.encryption.label "Mã hoá">
 <!ENTITY enigmail.signing.label "Ký tên">
 <!ENTITY enigmail.never.label "Không bao giờ">
 <!ENTITY enigmail.always.label "Luôn luôn">
-<!ENTITY enigmail.maybe.label "Vâng, nếu được chọn trong Soạn Tin nhắn">
-<!ENTITY enigmail.singleRcptSettings.desc "(Lưu ý: trong trường hợp có xung đột, 'Không bao giờ' gạt bỏ 'Luôn luôn')">
-<!ENTITY enigmail.ruleEmail.label "Đặt Quy tắc của Enigmail cho">
-<!ENTITY enigmail.ruleEmail.tooltip "Chỉ điền địa chỉ thư điện tử, ĐỪNG đặt tên của người nhận Thí dụ 'Tên Họ <tên.họ@address.net>' là không hợp lệ">
-<!ENTITY enigmail.sepratationDesc.label "(Phân biệt nhiều địa chỉ thư điện tử với dấu cách)">
+<!ENTITY enigmail.maybe.label "Có, nếu đã chọn trong Soạn tin nhắn">
+<!ENTITY enigmail.singleRcptSettings.desc "(Lưu ý: trong trường hợp có mâu thuẫn, 'Không bao giờ' sẽ thay thế 'Luôn luôn')">
+<!ENTITY enigmail.ruleEmail.label "Đặt quy tắc Enigmail cho">
+<!ENTITY enigmail.ruleEmail.tooltip "Chỉ điền địa chỉ email, ĐỪNG đặt tên người nhận\nVD: 'Tên ai &lt;some.name@address.net&gt;' không hợp lệ">
+<!ENTITY enigmail.sepratationDesc.label "(Ngăn cách các địa chỉ email bằng khoảng trắng)">
 <!ENTITY enigmail.matchDescStart.label "Áp dụng quy tắc nếu người nhận">
 <!ENTITY enigmail.matchDescEnd.label "một trong những địa chỉ bên trên">
 <!ENTITY enigmail.matchExact.label "Chính xác là">
-<!ENTITY enigmail.matchContains.label "Chứa">
+<!ENTITY enigmail.matchContains.label "Có chứa">
 <!ENTITY enigmail.matchBegin.label "Bắt đầu với">
 <!ENTITY enigmail.matchEnd.label "Chấm dứt với">
 <!ENTITY enigmail.not.label "Không">
-<!ENTITY enigmail.rulesEditor.label "Enigmail - Chỉnh sửa Quy tắc Từng-Người nhận">
-<!ENTITY enigmail.email.label "Thư điện tử">
-<!ENTITY enigmail.pgpKeys.label "(Các) Khóa của OpenPGP">
+<!ENTITY enigmail.rulesEditor.label "Enigmail - Trình chỉnh sửa quy tắc cho từng người nhận">
+<!ENTITY enigmail.email.label "Email">
+<!ENTITY enigmail.pgpKeys.label "(Các) khoá OpenPGP">
 <!ENTITY enigmail.sign.label "Ký tên">
 <!ENTITY enigmail.encrypt.label "Mã hóa">
-<!ENTITY enigmail.edit.label "Sửa đổi">
-<!ENTITY enigmail.edit.accesskey "S">
+<!ENTITY enigmail.edit.label "Hiệu chỉnh">
+<!ENTITY enigmail.edit.accesskey "M">
 <!ENTITY enigmail.add.label "Thêm">
-<!ENTITY enigmail.add.accesskey "T">
-<!ENTITY enigmail.delete.label "Xóa">
-<!ENTITY enigmail.delete.accesskey "ó">
-<!ENTITY enigmail.moveUp.label "Chuyển Lên">
-<!ENTITY enigmail.moveUp.accesskey "L">
-<!ENTITY enigmail.moveDown.label "Chuyển Xuống">
-<!ENTITY enigmail.moveDown.accesskey "X">
-<!ENTITY enigmail.searchRule.label "Xem quy tắc với địa chỉ thư điện tử có chứa:">
-<!ENTITY enigmail.clearSearch.label "Xóa">
-<!ENTITY enigmail.clearSearch.accesskey "X">
-<!ENTITY enigmail.searchKeyDlg.label "Tải Khóa của OpenPGP xuống">
-<!ENTITY enigmail.searchKeyDlgCapt.label "Tìm được Khóa - Chọn để Nhập vào">
-<!ENTITY enigmail.created.label "Tạo ra">
+<!ENTITY enigmail.add.accesskey "A">
+<!ENTITY enigmail.delete.label "Xoá">
+<!ENTITY enigmail.delete.accesskey "E">
+<!ENTITY enigmail.moveUp.label "Chuyển lên">
+<!ENTITY enigmail.moveUp.accesskey "U">
+<!ENTITY enigmail.moveDown.label "Chuyển xuống">
+<!ENTITY enigmail.moveDown.accesskey "D">
+<!ENTITY enigmail.searchRule.label "Xem quy tắc với các địa chỉ email có chứa:">
+<!ENTITY enigmail.clearSearch.label "Xoá">
+<!ENTITY enigmail.clearSearch.accesskey "C">
+<!ENTITY enigmail.searchKeyDlg.label "Tải xuống các khoá OpenPGP">
+<!ENTITY enigmail.searchKeyDlgCapt.label "Đã thấy các khoá - Chọn để nhập">
+<!ENTITY enigmail.searchKeyDlgSelAll.label "Chọn/Bỏ chọn tất cả">
+<!ENTITY enigmail.created.label "Đã tạo">
 <!ENTITY enigmail.progress.label "Tiến triển">
-<!ENTITY enigmail.sKeyDlg.title "Enigmail - Ký tên Khóa">
-<!ENTITY enigmail.sKeyDlg.signKey.label "Khóa để ký tên:">
+<!ENTITY enigmail.sKeyDlg.title "Enigmail - Ký tên khoá">
+<!ENTITY enigmail.sKeyDlg.signKey.label "Khoá để ký tên:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "Dấu tay:">
-<!ENTITY enigmail.sKeyDlg.signWithKey.label "Khóa cho việc ký tên:">
-<!ENTITY enigmail.sKeyDlg.checked.label "Bạn đã nhận diện cẩn thận cỡ nào về khóa mà bạn sắp ký là thuộc về (những) người có tên bên trên?">
+<!ENTITY enigmail.sKeyDlg.signWithKey.label "Khoá cho việc ký tên:">
+<!ENTITY enigmail.sKeyDlg.checked.label "Bạn đã xác minh cẩn thận rằng khoá mà bạn sắp ký thuộc về (những) người có tên bên trên?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label "Tôi sẽ không trả lời">
-<!ENTITY enigmail.sKeyDlg.notChecked.label "Tôi không có kiểm soát gì cả">
-<!ENTITY enigmail.sKeyDlg.casualCheck.label "Tôi có kiểm soát sơ sơ">
-<!ENTITY enigmail.sKeyDlg.carefulCheck.label "Tôi có kiểm soát rất cẩn thận">
+<!ENTITY enigmail.sKeyDlg.notChecked.label "Tôi chưa kiểm tra gì cả">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label "Tôi đã kiểm tra sơ bộ">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label "Tôi đã kiểm tra rất cẩn thận">
 <!ENTITY enigmail.sKeyDlg.createLocal.label "Chữ ký cục bộ (không thể xuất ra được)">
-<!ENTITY enigmail.addUidDlg.title "Enigmail - Thêm ID Nguời dùng">
+<!ENTITY enigmail.addUidDlg.title "Enigmail - Thêm ID Nguời dùng ">
 <!ENTITY enigmail.addUidDlg.name.label "Tên">
 <!ENTITY enigmail.addUidDlg.email.label "Thư điện tử">
 <!ENTITY enigmail.keyTrust.title "Enigmail - Đặt Sự tin tưởng cho Người chủ">
@@ -475,7 +477,7 @@ trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bấ
 <!ENTITY enigmail.setupWiz.pgImportSettings.error "Đã xuất hiện lỗi khi nhập. Không thể áp dụng cài đặt của bạn.">
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title "Cám ơn bạn">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail bây giờ sẵn sàng để dùng.<html:br></html:br><html:br></html:br>Cám ơn bạn đã xử dụng Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail bây giờ sẵn sàng để sử dụng.<html:br></html:br><html:br></html:br>Cám ơn bạn đã sử dụng Enigmail.">
 <!ENTITY enigmail.advancedIdentityDlg.title "Thiết lập cho Danh tính Cấp cao của Enigmail">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Đính kèm khóa công của tôi vào các tin nhắn">
 <!ENTITY enigmail.msgViewColumn.label "OpenPGP">
