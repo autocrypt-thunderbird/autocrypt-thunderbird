@@ -613,4 +613,3 @@ function initModule() {
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeEncrypt]);
 
 initModule();
-dump("mimeEncrypt.js: module initialized\n");

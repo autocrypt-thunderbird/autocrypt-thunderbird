@@ -353,5 +353,3 @@ EnigmailVerify.registerContentTypeHandler();
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigmailCommandLine.Handler]);
 
 EnigmailFilters.registerAll();
-
-dump("enigmail.js: Registered components\n");

@@ -37,5 +37,3 @@ EnigmailPrefService.prototype = {
 
 var components = [EnigmailPrefService];
 const NSGetFactory = XPCOMUtils.generateNSGetFactory(components);
-
-dump("Enigmail account manager extension registered\n");

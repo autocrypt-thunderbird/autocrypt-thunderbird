@@ -591,4 +591,3 @@ function initModule() {
 }
 
 initModule();
-dump("mimeVerify.jsm: module initialized\n");

@@ -100,4 +100,3 @@ PgpMimeHandler.prototype = {
 
 
 var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeHandler]);
-dump("pgpmimeHandler.js: registration done\n");
