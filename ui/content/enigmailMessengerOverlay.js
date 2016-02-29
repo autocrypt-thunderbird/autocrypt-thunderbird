@@ -52,6 +52,8 @@ Components.utils.import("resource://enigmail/attachment.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Components.utils.import("resource://enigmail/expiry.jsm"); /*global EnigmailExpiry: false */
+Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
+Components.utils.import("resource://enigmail/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -695,6 +697,9 @@ Enigmail.msg = {
           // signal that the structure matches to save the content later on
           EnigmailLog.DEBUG("enigmailMessengerOverlay: messageDecryptCb: enabling MS-Exchange hack\n");
           this.buggyExchangeEmailContent = "???";
+
+          this.buggyMailHeader();
+          return;
         }
       }
 
@@ -746,6 +751,21 @@ Enigmail.msg = {
     }
   },
 
+  // display header about reparing buggy MS-Exchange messages
+  buggyMailHeader: function() {
+    let headerSink = msgWindow.msgHeaderSink.securityInfo.QueryInterface(Components.interfaces.nsIEnigMimeHeaderSink);
+
+
+    let uriStr = EnigmailURIs.createMessageURI(this.getCurrentMsgUrl(),
+      "message/rfc822",
+      "",
+      "??",
+      false);
+
+    let ph = new EnigmailProtocolHandler();
+    let uri = ph.newURI(uriStr, "", "")
+    headerSink.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1")
+  },
 
   messageParse: function(interactive, importOnly, contentEncoding, msgUriSpec) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParse: " + interactive + "\n");
