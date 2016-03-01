@@ -151,7 +151,7 @@ function prefOnLoad() {
     }
     else {
       EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
-      EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+      //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
       enigShowUserModeButtons(gAdvancedMode);
     }
 
@@ -171,7 +171,7 @@ function prefOnLoad() {
 
   if ((!window.arguments) || (window.arguments[0].clientType != "seamonkey")) {
     EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
-    EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+    //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
   }
 
   // init "saved manual preferences" with current settings:
@@ -529,7 +529,7 @@ function enigSwitchAdvancedMode(expertUser) {
   var prefTabBox = document.getElementById("prefTabBox");
   if (prefTabBox) {
     // Thunderbird
-    EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
+    //    EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
     EnigCollapseAdvanced(prefTabBox, "collapsed", null);
   }
   else {

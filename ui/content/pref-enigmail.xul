@@ -447,7 +447,7 @@
       </vbox>
 
       <!-- Backup/Restore Panel -->
-      <vbox id="backupRestoreTab">
+      <vbox id="backupRestoreTab" flex="1">
 
         <vbox flex="1">
           <description>
