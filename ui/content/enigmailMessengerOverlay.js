@@ -763,8 +763,8 @@ Enigmail.msg = {
       false);
 
     let ph = new EnigmailProtocolHandler();
-    let uri = ph.newURI(uriStr, "", "")
-    headerSink.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1")
+    let uri = ph.newURI(uriStr, "", "");
+    headerSink.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1");
   },
 
   messageParse: function(interactive, importOnly, contentEncoding, msgUriSpec) {
