@@ -1,4 +1,4 @@
-/*global Components: false, dump: false */
+/*global Components: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -67,12 +67,7 @@ const EnigmailApp = {
   },
 
   initAddon: function() {
-    try {
-      AddonManager.getAddonByID(ENIG_EXTENSION_GUID, EnigmailApp.registerAddon);
-    }
-    catch (ex) {
-      dump("enigmailCommon.jsm: init error: " + ex + "\n");
-    }
+    AddonManager.getAddonByID(ENIG_EXTENSION_GUID, EnigmailApp.registerAddon);
   }
 };
 

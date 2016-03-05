@@ -1,4 +1,4 @@
-/*global Components: false, dump: false */
+/*global Components: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public

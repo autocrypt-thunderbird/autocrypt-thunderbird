@@ -17,7 +17,6 @@ const Cu = Components.utils;
 
 
 /*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
-/*global dump: false */
 
 Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/prefs.jsm");
@@ -220,69 +219,64 @@ const EnigmailConfigure = {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail\n");
     let oldVer = EnigmailPrefs.getPref("configuredVersion");
 
-    try {
-      let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
-      if (oldVer === "") {
-        EnigmailWindows.openSetupWizard(win, false);
-      }
-      else {
-        if (oldVer < "0.95") {
-          try {
-            upgradeHeadersView();
-            upgradeOldPgpMime();
-            upgradeRecipientsSelection();
-          }
-          catch (ex) {}
-        }
-        if (vc.compare(oldVer, "1.0") < 0) {
-          upgradeCustomHeaders();
-        }
-        if (vc.compare(oldVer, "1.7a1pre") < 0) {
-          // 1: rules only
-          //     => assignKeysByRules true; rest false
-          // 2: rules & email addresses (normal)
-          //     => assignKeysByRules/assignKeysByEmailAddr/assignKeysManuallyIfMissing true
-          // 3: email address only (no rules)
-          //     => assignKeysByEmailAddr/assignKeysManuallyIfMissing true
-          // 4: manually (always prompt, no rules)
-          //     => assignKeysManuallyAlways true
-          // 5: no rules, no key selection
-          //     => assignKeysByRules/assignKeysByEmailAddr true
-
-          upgradePrefsSending();
-        }
-        if (vc.compare(oldVer, "1.7") < 0) {
-          // open a modal dialog. Since this might happen during the opening of another
-          // window, we have to do this asynchronously
-          EnigmailTimer.setTimeout(
-            function _cb() {
-              var doIt = EnigmailDialog.confirmDlg(win,
-                EnigmailLocale.getString("enigmailCommon.versionSignificantlyChanged"),
-                EnigmailLocale.getString("enigmailCommon.checkPreferences"),
-                EnigmailLocale.getString("dlg.button.close"));
-              if (!startingPreferences && doIt) {
-                // same as:
-                // - EnigmailWindows.openPrefWindow(window, true, 'sendingTab');
-                // but
-                // - without starting the service again because we do that right now
-                // - and modal (waiting for its end)
-                win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
-                  "_blank", "chrome,resizable=yes,modal", {
-                    'showBasic': true,
-                    'clientType': 'thunderbird',
-                    'selectTab': 'sendingTab'
-                  });
-              }
-            }, 100);
-        }
-
-        if (vc.compare(oldVer, "1.9a2pre") < 0) {
-          defaultPgpMime();
-        }
-      }
+    let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+    if (oldVer === "") {
+      EnigmailWindows.openSetupWizard(win, false);
     }
-    catch (ex) {
-      dump("Error: " + ex.toString());
+    else {
+      if (oldVer < "0.95") {
+        try {
+          upgradeHeadersView();
+          upgradeOldPgpMime();
+          upgradeRecipientsSelection();
+        }
+        catch (ex) {}
+      }
+      if (vc.compare(oldVer, "1.0") < 0) {
+        upgradeCustomHeaders();
+      }
+      if (vc.compare(oldVer, "1.7a1pre") < 0) {
+        // 1: rules only
+        //     => assignKeysByRules true; rest false
+        // 2: rules & email addresses (normal)
+        //     => assignKeysByRules/assignKeysByEmailAddr/assignKeysManuallyIfMissing true
+        // 3: email address only (no rules)
+        //     => assignKeysByEmailAddr/assignKeysManuallyIfMissing true
+        // 4: manually (always prompt, no rules)
+        //     => assignKeysManuallyAlways true
+        // 5: no rules, no key selection
+        //     => assignKeysByRules/assignKeysByEmailAddr true
+
+        upgradePrefsSending();
+      }
+      if (vc.compare(oldVer, "1.7") < 0) {
+        // open a modal dialog. Since this might happen during the opening of another
+        // window, we have to do this asynchronously
+        EnigmailTimer.setTimeout(
+          function _cb() {
+            var doIt = EnigmailDialog.confirmDlg(win,
+              EnigmailLocale.getString("enigmailCommon.versionSignificantlyChanged"),
+              EnigmailLocale.getString("enigmailCommon.checkPreferences"),
+              EnigmailLocale.getString("dlg.button.close"));
+            if (!startingPreferences && doIt) {
+              // same as:
+              // - EnigmailWindows.openPrefWindow(window, true, 'sendingTab');
+              // but
+              // - without starting the service again because we do that right now
+              // - and modal (waiting for its end)
+              win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+                "_blank", "chrome,resizable=yes,modal", {
+                  'showBasic': true,
+                  'clientType': 'thunderbird',
+                  'selectTab': 'sendingTab'
+                });
+            }
+          }, 100);
+      }
+
+      if (vc.compare(oldVer, "1.9a2pre") < 0) {
+        defaultPgpMime();
+      }
     }
 
     EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());

@@ -1,4 +1,4 @@
-/*global Components: false, dump: false */
+/*global Components: false */
 /*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -475,17 +475,11 @@ function LOCAL_DEBUG(str) {
 }
 
 function initModule() {
-  try {
-    var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-    var nspr_log_modules = env.get("NSPR_LOG_MODULES");
-    var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
+  var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+  var nspr_log_modules = env.get("NSPR_LOG_MODULES");
+  var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
 
-    if (matches && (matches.length > 1)) {
-      gDebugLogLevel = matches[1];
-      dump("mimeDecrypt.jsm: enabled debug logging\n");
-    }
-  }
-  catch (ex) {
-    dump("caught error " + ex);
+  if (matches && (matches.length > 1)) {
+    gDebugLogLevel = matches[1];
   }
 }
