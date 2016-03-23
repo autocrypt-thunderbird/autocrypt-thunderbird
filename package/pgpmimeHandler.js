@@ -59,6 +59,8 @@ PgpMimeHandler.prototype = {
 
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
+    EnigmailLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
+
     let cth = null;
 
     if (ct.search(/^multipart\/encrypted/i) === 0) {

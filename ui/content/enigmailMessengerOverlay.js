@@ -714,7 +714,8 @@ Enigmail.msg = {
         xEnigmailVersion = Enigmail.msg.savedHeaders["x-enigmail-version"];
       }
 
-      if (msgSigned || msgEncrypted) {
+      let smime = (contentType.search(/multipart\/signed; protocol="application\/pkcs7-signature/i) >= 0);
+      if (!smime && (msgSigned || msgEncrypted)) {
         // PGP/MIME messages
         enigmailSvc = Enigmail.getEnigmailSvc();
         if (!enigmailSvc)
