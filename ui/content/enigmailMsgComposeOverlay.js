@@ -139,8 +139,6 @@ Enigmail.msg = {
       smimeButton.setAttribute("label", "S/MIME");
     }
 
-    var enigButton = document.getElementById("button-enigmail-send");
-
     var msgId = document.getElementById("msgIdentityPopup");
     if (msgId) {
       msgId.addEventListener("command", Enigmail.msg.setIdentityCallback);
