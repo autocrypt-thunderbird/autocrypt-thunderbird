@@ -710,7 +710,9 @@ Enigmail.msg = {
         this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyNo");
       }
     }
-    attachIcon.setAttribute("tooltiptext", this.statusAttachOwnKey);
+
+    if (attachIcon)
+      attachIcon.setAttribute("tooltiptext", this.statusAttachOwnKey);
 
   },
 
