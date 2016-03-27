@@ -90,14 +90,38 @@ PgpMimeHandler.prototype = {
   onStopRequest: function(request, win, status) {},
 
   handleSmime: function(uri) {
+    let headerSink;
     this.contentHandler = throwErrors;
 
     if (uri) {
       uri = uri.QueryInterface(Ci.nsIURI).clone();
     }
-    let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+
+    if (EnigmailVerify.lastMsgWindow) {
+      headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+    }
+    else {
+      let domWin = this.getMessengerWindow();
+      headerSink = domWin.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+    }
+
     headerSink.handleSMimeMessage(uri);
-  }
+  },
+
+  getMessengerWindow: function() {
+    let windowManager = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
+
+    let winEnum = windowManager.getEnumerator(null);
+
+    while (winEnum.hasMoreElements()) {
+      let thisWin = winEnum.getNext();
+      if (thisWin.location.href.search(/\/messenger.xul$/) > 0) {
+        return thisWin;
+      }
+    }
+
+    return null;
+  },
 };
 
 
