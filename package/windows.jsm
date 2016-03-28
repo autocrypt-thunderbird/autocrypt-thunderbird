@@ -296,7 +296,8 @@ const EnigmailWindows = {
    * @win        - |object| holding the parent window for the dialog
    * @userIdArr  - |array| of |strings| containing the User IDs
    * @keyIdArr   - |array| of |strings| containing the key IDs (eg. "0x12345678") to change
-   * no return value
+   *
+   * @return  Boolean - true if expiry date was changed; false otherwise
    */
   editKeyExpiry: function(win, userIdArr, keyIdArr) {
     const inputObj = {
@@ -317,7 +318,8 @@ const EnigmailWindows = {
    * @win        - |object| holding the parent window for the dialog
    * @userIdArr  - |array| of |strings| containing the User IDs
    * @keyIdArr   - |array| of |strings| containing the key IDs (eg. "0x12345678") to change
-   * no return value
+   *
+   * @return  Boolean - true if key trust was changed; false otherwise
    */
   editKeyTrust: function(win, userIdArr, keyIdArr) {
     const inputObj = {
@@ -339,7 +341,8 @@ const EnigmailWindows = {
    * @win        - |object| holding the parent window for the dialog
    * @userId     - |string| containing the User ID (for displaing in the dialog only)
    * @keyId      - |string| containing the key ID (eg. "0x12345678")
-   * no return value
+   *
+   * @return  Boolean - true if key was signed; false otherwise
    */
   signKey: function(win, userId, keyId) {
     const inputObj = {
@@ -412,7 +415,8 @@ const EnigmailWindows = {
    * @keyId      - |string| containing the key ID (eg. "0x12345678")
    * @refresh    - |boolean| if true, cache is cleared and the key data is loaded from GnuPG
    *
-   * no return value
+   * @return  Boolean - true:  keylist needs to be refreshed
+   *                  - false: no need to refresh keylist
    */
   openKeyDetails: function(win, keyId, refresh) {
     const keyListObj = {};
@@ -434,6 +438,8 @@ const EnigmailWindows = {
     if (resultObj.refresh) {
       EnigmailKeyRing.clearCache();
     }
+
+    return resultObj.refresh;
   },
 
   /**

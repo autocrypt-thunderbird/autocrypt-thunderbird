@@ -465,7 +465,9 @@ function enigmailSelectAllKeys() {
 function enigmailKeyDetails() {
   var keyList = enigmailGetSelectedKeys();
   if (keyList.length > 0) {
-    EnigmailWindows.openKeyDetails(window, gKeyList[keyList[0]].keyId, false);
+    if (EnigmailWindows.openKeyDetails(window, gKeyList[keyList[0]].keyId, false)) {
+      enigmailRefreshKeys();
+    }
   }
 }
 
