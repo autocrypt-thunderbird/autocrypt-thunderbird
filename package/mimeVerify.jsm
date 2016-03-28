@@ -153,13 +153,12 @@ MimeVerify.prototype = {
 
     // Eat up CRLF's.
     contentTypeLine = contentTypeLine.replace(/[\r\n]/g, "");
-    LOCAL_DEBUG("mimeVerify.jsm: parseContentType: " + contentTypeLine + "\n");
+    EnigmailLog.DEBUG("mimeVerify.jsm: parseContentType: " + contentTypeLine + "\n");
 
     if (contentTypeLine.search(/multipart\/signed/i) >= 0 &&
-      contentTypeLine.search(/micalg\s*=\s*[\"\']?pgp-[\"\']?/i) > 0 &&
       contentTypeLine.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
 
-      LOCAL_DEBUG("mimeVerify.jsm: parseContentType: found PGP/MIME signed message\n");
+      EnigmailLog.DEBUG("mimeVerify.jsm: parseContentType: found PGP/MIME signed message\n");
       this.foundMsg = true;
       let hdr = EnigmailFuncs.getHeaderData(contentTypeLine);
       hdr.boundary = hdr.boundary || "";
