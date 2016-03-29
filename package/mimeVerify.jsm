@@ -36,7 +36,12 @@ var gDebugLog = false;
 var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
 // MimeVerify Constructor
-function MimeVerify() {
+function MimeVerify(protocol) {
+  if (!protocol) {
+    protocol = "application/pgp-signature";
+  }
+
+  this.protocol = protocol;
   this.verifyEmbedded = false;
   this.partiallySigned = false;
   this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
@@ -57,8 +62,8 @@ const EnigmailVerify = {
     this.lastMsgUri = msgUriSpec;
   },
 
-  newVerifier: function() {
-    let v = new MimeVerify();
+  newVerifier: function(protocol) {
+    let v = new MimeVerify(protocol);
     return v;
   },
 
@@ -155,10 +160,12 @@ MimeVerify.prototype = {
     contentTypeLine = contentTypeLine.replace(/[\r\n]/g, "");
     EnigmailLog.DEBUG("mimeVerify.jsm: parseContentType: " + contentTypeLine + "\n");
 
-    if (contentTypeLine.search(/multipart\/signed/i) >= 0 &&
-      contentTypeLine.search(/protocol\s*=\s*[\'\"]application\/pgp-signature[\"\']/i) > 0) {
+    let protoRx = RegExp("protocol\\s*=\\s*[\\'\\\"]" + this.protocol + "[\\\"\\']", "i");
 
-      EnigmailLog.DEBUG("mimeVerify.jsm: parseContentType: found PGP/MIME signed message\n");
+    if (contentTypeLine.search(/multipart\/signed/i) >= 0 &&
+      contentTypeLine.search(protoRx) > 0) {
+
+      EnigmailLog.DEBUG("mimeVerify.jsm: parseContentType: found MIME signed message\n");
       this.foundMsg = true;
       let hdr = EnigmailFuncs.getHeaderData(contentTypeLine);
       hdr.boundary = hdr.boundary || "";
@@ -271,22 +278,27 @@ MimeVerify.prototype = {
 
     if (this.readMode === 3) {
       // signature data
-      let xferEnc = this.getContentTransferEncoding();
-      if (xferEnc.search(/base64/i) >= 0) {
-        let bound = this.getBodyPart();
-        this.keepData = EnigmailData.decodeBase64(this.keepData.substring(bound.start, bound.end)) + "\n";
+      if (this.protocol === "application/pgp-signature") {
+        let xferEnc = this.getContentTransferEncoding();
+        if (xferEnc.search(/base64/i) >= 0) {
+          let bound = this.getBodyPart();
+          this.keepData = EnigmailData.decodeBase64(this.keepData.substring(bound.start, bound.end)) + "\n";
+        }
+        else if (xferEnc.search(/quoted-printable/i) >= 0) {
+          let bound = this.getBodyPart();
+          let qp = this.keepData.substring(bound.start, bound.end);
+          this.keepData = EnigmailData.decodeQuotedPrintable(qp) + "\n";
+        }
+
+        // extract signature data
+        let s = Math.max(this.keepData.search(/^-----BEGIN PGP /m), 0);
+        let e = Math.max(this.keepData.search(/^-----END PGP /m), this.keepData.length - 30);
+        this.sigData = this.keepData.substring(s, e + 30);
       }
-      else if (xferEnc.search(/quoted-printable/i) >= 0) {
-        let bound = this.getBodyPart();
-        let qp = this.keepData.substring(bound.start, bound.end);
-        this.keepData = EnigmailData.decodeQuotedPrintable(qp) + "\n";
+      else {
+        this.sigData = "";
       }
 
-
-      // extract signature data
-      let s = Math.max(this.keepData.search(/^-----BEGIN PGP /m), 0);
-      let e = Math.max(this.keepData.search(/^-----END PGP /m), this.keepData.length - 30);
-      this.sigData = this.keepData.substring(s, e + 30);
       this.keepData = "";
       this.readMode = 4; // ignore any further data
     }
@@ -346,7 +358,7 @@ MimeVerify.prototype = {
   },
 
   onStopRequest: function() {
-    LOCAL_DEBUG("mimeVerify.jsm: onStopRequest\n");
+    EnigmailLog.DEBUG("mimeVerify.jsm: onStopRequest\n");
 
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;

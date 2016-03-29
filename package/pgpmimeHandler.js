@@ -74,7 +74,14 @@ PgpMimeHandler.prototype = {
       }
       else {
         // S/MIME signed message
-        return this.handleSmime(uri);
+        if (EnigmailVerify.lastMsgWindow) {
+          // if message is displayed then handle like S/MIME message
+          return this.handleSmime(uri);
+        }
+        else {
+          // otherwise just make sure message body is returned
+          cth = EnigmailVerify.newVerifier("application/pkcs7-signature");
+        }
       }
     }
 
@@ -90,21 +97,13 @@ PgpMimeHandler.prototype = {
   onStopRequest: function(request, win, status) {},
 
   handleSmime: function(uri) {
-    let headerSink;
     this.contentHandler = throwErrors;
 
     if (uri) {
       uri = uri.QueryInterface(Ci.nsIURI).clone();
     }
 
-    if (EnigmailVerify.lastMsgWindow) {
-      headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
-    }
-    else {
-      let domWin = this.getMessengerWindow();
-      headerSink = domWin.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
-    }
-
+    let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
     headerSink.handleSMimeMessage(uri);
   },
 
