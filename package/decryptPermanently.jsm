@@ -161,6 +161,10 @@ DecryptMessageIntoFolder.prototype = {
         return;
       }
 
+      if (!("content-type" in mime.headers)) {
+        mime.headers["content-type"] = ["text/plain"];
+      }
+
       var ct = getContentType(getHeaderValue(mime, 'content-type'));
       var pt = getProtocol(getHeaderValue(mime, 'content-type'));
 
