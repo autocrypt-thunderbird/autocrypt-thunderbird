@@ -63,6 +63,8 @@ const EnigmailVerify = {
   },
 
   newVerifier: function(protocol) {
+    EnigmailLog.DEBUG("mimeVerify.jsm: newVerifier: " + (protocol || "null") + "\n");
+
     let v = new MimeVerify(protocol);
     return v;
   },

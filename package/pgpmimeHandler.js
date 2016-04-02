@@ -72,7 +72,7 @@ PgpMimeHandler.prototype = {
         // PGP/MIME signed message
         cth = EnigmailVerify.newVerifier();
       }
-      else {
+      else if (ct.search(/application\/pkcs7-signature/i) > 0) {
         // S/MIME signed message
         if (EnigmailVerify.lastMsgWindow) {
           // if message is displayed then handle like S/MIME message
@@ -90,6 +90,10 @@ PgpMimeHandler.prototype = {
       this.onStopRequest = cth.onStopRequest.bind(cth);
       return cth.onStartRequest(request, uri);
     }
+
+    EnigmailLog.ERROR("pgpmimeHandler.js: no suitable handler for content-type: " + ct + "\n");
+
+    return null;
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {},
