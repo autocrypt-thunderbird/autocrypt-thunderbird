@@ -144,6 +144,10 @@ const EnigmailExecution = {
     return exitCode;
   },
 
+  /**
+   * Execute a command and return the output from stdout
+   * No input and no statusFlags are returned.
+   */
   simpleExecCmd: function(command, args, exitCodeObj, errorMsgObj) {
     EnigmailLog.WRITE("execution.jsm: EnigmailExecution.simpleExecCmd: command = " + command + " " + args.join(" ") + "\n");
 
@@ -183,6 +187,10 @@ const EnigmailExecution = {
     return outputData;
   },
 
+  /**
+   * Execute a command and return the output from stdout.
+   * Accepts input and returns error message and statusFlags.
+   */
   execCmd: function(command, args, input, exitCodeObj, statusFlagsObj, statusMsgObj,
     errorMsgObj, retStatusObj) {
     EnigmailLog.WRITE("execution.jsm: EnigmailExecution.execCmd: subprocess = '" + command.path + "'\n");

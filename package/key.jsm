@@ -12,12 +12,20 @@ var EXPORTED_SYMBOLS = ["EnigmailKey"];
 
 const Cu = Components.utils;
 
+const KEY_BLOCK_UNKNOWN = 0;
+const KEY_BLOCK_KEY = 1;
+const KEY_BLOCK_REVOCATION = 2;
+
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+
 
 function KeyEntry(key) {
   if (!(this instanceof KeyEntry)) {
@@ -135,6 +143,79 @@ var EnigmailKey = {
   },
 
   /**
+   * import a revocation certificate form a given keyblock string.
+   * Ask the user before importing the cert, and display an error
+   * message in case of failures.
+   */
+  importRevocationCert: function(keyBlockStr, packetStr) {
+    let keyId;
+    let m = packetStr.match(/(:signature packet: algo [0-9]+, keyid )([0-9A-Z]+)/i);
+    if (m && m.length > 2) {
+      keyId = m[2];
+
+      let key = getKeyRing().getKeyById(keyId);
+
+      if (key) {
+        let userId = key.userId + " - 0x" + key.keyId.substr(-8, 8);
+        if (!getDialog().confirmDlg(null,
+            EnigmailLocale.getString("revokeKeyQuestion", userId),
+            EnigmailLocale.getString("keyMan.button.revokeKey"))) {
+          return;
+        }
+
+        let errorMsgObj = {};
+        if (getKeyRing().importKey(null, false, keyBlockStr, keyId, errorMsgObj) > 0) {
+          getDialog().alert(errorMsgObj.value);
+        }
+      }
+    }
+  },
+
+
+  /**
+   * determine the type of the contents in a given string
+   * @param keyBlockStr: String - input string
+   *
+   * @return: Object:
+   *    - keyType - Number:
+   *       0 - no key data
+   *       1 - public and/or secret key(s)
+   *       2 - revocation certificate
+   *    - packetStr - String: the packet list as received from GnuPG
+   */
+  getKeyFileType: function(keyBlockStr) {
+    let args = EnigmailGpg.getStandardArgs(true).concat("--list-packets");
+    const exitCodeObj = {};
+    const statusMsgObj = {};
+    const errorMsgObj = {};
+
+    let packetStr = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
+
+    if (packetStr.search(/^:(public|secret) key packet:/m) >= 0) {
+      return {
+        keyType: KEY_BLOCK_KEY,
+        packetStr: packetStr
+      };
+    }
+
+    // simple detection of revocation certificate
+    // TODO: improve algorithm
+    let i = packetStr.search(/^:signature packet:/m);
+    if (i >= 0) {
+      if (packetStr.search(/sigclass 0x20/) > i)
+        return {
+          keyType: KEY_BLOCK_REVOCATION,
+          packetStr: packetStr
+        };
+    }
+
+    return {
+      keyType: KEY_BLOCK_UNKNOWN,
+      packetStr: packetStr
+    };
+  },
+
+  /**
    * Get details (key ID, UID) of the data contained in a OpenPGP key block
    *
    * @param keyBlockStr  String: the contents of one or more public keys
@@ -147,21 +228,20 @@ var EnigmailKey = {
    */
   getKeyListFromKeyBlock: function(keyBlockStr, errorMsgObj) {
     var ret = [];
-    const beginIndexObj = {};
-    const endIndexObj = {};
-    const blockType = EnigmailArmor.locateArmoredBlock(keyBlockStr, 0, "", beginIndexObj, endIndexObj, {});
-    if (!blockType) {
-      errorMsgObj.value = EnigmailLocale.getString("noPGPblock");
-      return ret;
-    }
 
-    if (blockType != "PUBLIC KEY BLOCK") {
+    let keyTypeObj = this.getKeyFileType(keyBlockStr);
+
+    if (keyTypeObj.keyType === KEY_BLOCK_UNKNOWN) {
       errorMsgObj.value = EnigmailLocale.getString("notFirstBlock");
       return ret;
     }
 
-    const pgpBlock = keyBlockStr.substr(beginIndexObj.value,
-      endIndexObj.value - beginIndexObj.value + 1);
+    if (keyTypeObj.keyType === KEY_BLOCK_REVOCATION) {
+      this.importRevocationCert(keyBlockStr, keyTypeObj.packetStr);
+      errorMsgObj.value = "";
+      return ret;
+    }
+
     const tempDir = EnigmailFiles.createTempSubDir("enigmail_import");
     const tempPath = EnigmailFiles.getFilePath(tempDir);
     const args = EnigmailGpg.getStandardArgs(true).concat([
@@ -173,7 +253,7 @@ var EnigmailKey = {
     const exitCodeObj = {};
     const statusMsgObj = {};
 
-    EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, pgpBlock, exitCodeObj, {}, statusMsgObj, errorMsgObj);
+    EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, keyBlockStr, exitCodeObj, {}, statusMsgObj, errorMsgObj);
 
     const statusMsg = statusMsgObj.value;
 
@@ -225,14 +305,16 @@ var EnigmailKey = {
               EnigmailLog.DEBUG("import ok: " + import_ok[1] + " (" + import_ok[2] + ")\n");
 
               state = "newOrResult";
-              cur.fingerprint = import_ok[2];
+              if (!(import_ok[1] === "16" || import_ok[1] === "0")) { // skip unchanged and private keys
+                cur.fingerprint = import_ok[2];
 
-              if (cur.state === undefined) {
-                cur.state = "old";
+                if (cur.state === undefined) {
+                  cur.state = "old";
+                }
+
+                ret.push(cur);
+                cur = {};
               }
-
-              ret.push(cur);
-              cur = {};
               idx += 1;
               break;
             }

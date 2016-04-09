@@ -379,6 +379,14 @@ var EnigmailKeyRing = {
     gSubkeyIndex = [];
   },
 
+  /**
+   * Check if the cache is empty
+   *
+   * @return  Boolean: true: cache cleared
+   */
+  getCacheEmpty: function() {
+    return (gKeyIndex.length === 0);
+  },
 
   /**
    * Get a list of UserIds for a give key.

@@ -573,6 +573,7 @@ const EnigmailKeyEditor = {
 
 }; // EnigmailKeyEditor
 
+// TODO: function probably not used ?!
 function keyReadCallback(outputData, ret) {
 
   outputData.keyObj = new EnigmailKey.Entry(outputData.key);

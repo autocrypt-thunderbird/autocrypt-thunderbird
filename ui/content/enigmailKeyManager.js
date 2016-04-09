@@ -920,6 +920,11 @@ function enigmailImportKeysFromFile() {
   var errorMsgObj = {};
   // preview
   var preview = EnigmailKey.getKeyListFromKeyFile(inFile, errorMsgObj);
+
+  if (errorMsgObj.value && errorMsgObj.value.length > 0) {
+    EnigmailDialog.alert(window, errorMsgObj.value);
+    return;
+  }
   var exitStatus = -1;
 
   if (preview.length > 0) {
@@ -949,6 +954,11 @@ function enigmailImportKeysFromFile() {
         });
         EnigmailDialog.keyImportDlg(window, keyList);
       }
+      enigmailRefreshKeys();
+    }
+  }
+  else {
+    if (EnigmailKeyRing.getCacheEmpty()) {
       enigmailRefreshKeys();
     }
   }
