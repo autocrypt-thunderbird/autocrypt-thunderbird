@@ -4479,12 +4479,21 @@ window.addEventListener("unload",
   false);
 
 // Handle recycled windows
+// TB < 47
 window.addEventListener('compose-window-close',
   function _enigmail_msgComposeClose(event) {
     Enigmail.msg.msgComposeClose(event);
   },
   true);
 
+// TB >= 48
+window.addEventListener('compose-window-destroy',
+  function _enigmail_msgComposeDestory(event) {
+    Enigmail.msg.msgComposeClose(event);
+  },
+  true);
+
+// TB < 47 only
 window.addEventListener('compose-window-reopen',
   function _enigmail_msgComposeReopen(event) {
     Enigmail.msg.msgComposeReopen(event);
