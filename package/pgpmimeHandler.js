@@ -74,10 +74,14 @@ UnknownProtoHandler.prototype = {
     if (count > 0) {
       inStream.init(stream);
       let data = inStream.read(count);
-
       let l = data.replace(/\r\n/g, "\n").split(/\n/);
+
+      if (data.search(/\n$/) >= 0) {
+        l.pop();
+      }
+
       let startIndex = 0;
-      let endIndex = l.length - 1;
+      let endIndex = l.length;
 
       if (this.readMode < 2) {
         for (let i = 0; i < l.length; i++) {
@@ -92,9 +96,11 @@ UnknownProtoHandler.prototype = {
           }
         }
 
-        let out = l.slice(startIndex, endIndex).join("\n") + "\n";
-        gConv.setData(out, out.length);
-        this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+        if (this.readMode >= 1 && startIndex < l.length) {
+          let out = l.slice(startIndex, endIndex).join("\n") + "\n";
+          gConv.setData(out, out.length);
+          this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+        }
       }
     }
   },
