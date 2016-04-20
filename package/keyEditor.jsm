@@ -294,6 +294,8 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
     EnigmailLog.ERROR("keyEditor.jsm: editKey: " + command.path + " failed\n");
     parentCallback(-1, "");
   }
+
+  return null;
 }
 
 /*

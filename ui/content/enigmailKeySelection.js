@@ -69,6 +69,8 @@ function onLoad() {
     return false;
   }
   buildList(false);
+
+  return true;
 }
 
 
@@ -866,6 +868,8 @@ function searchMissingKeys() {
     window.close();
     return true;
   }
+
+  return null;
 }
 
 

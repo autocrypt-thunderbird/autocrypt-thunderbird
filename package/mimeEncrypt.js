@@ -201,6 +201,8 @@ PgpMimeEncrypt.prototype = {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
+
+    return null;
   },
 
   startCryptoHeaders: function() {
@@ -456,6 +458,8 @@ PgpMimeEncrypt.prototype = {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
+
+    return null;
   },
 
   writeOut: function(str) {

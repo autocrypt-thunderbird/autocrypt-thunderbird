@@ -41,7 +41,10 @@ Enigmail.columnHandler = {
       var atom = atomService.getAtom(newProp);
       return newProp;
     }
+
+    return null;
   },
+
   getRowProperties: function(row, props) {},
   getImageSrc: function(row, col) {},
   getSortLongForRow: function(hdr) {
@@ -53,8 +56,6 @@ Enigmail.columnHandler = {
       return 2;
     else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
       return 1;
-    else
-      return 0;
 
     return 0;
   },

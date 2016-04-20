@@ -617,8 +617,6 @@ function enigGetService(aURL, aInterface) {
     default:
       return ENIG_C[aURL].getService();
   }
-
-  return null;
 }
 
 function EnigCollapseAdvanced(obj, attribute, dummy) {

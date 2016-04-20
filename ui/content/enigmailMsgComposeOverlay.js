@@ -1075,7 +1075,6 @@ Enigmail.msg = {
       case 'final-pgpmimeDefault':
       case 'final-pgpmimeYes':
       case 'final-pgpmimeNo':
-        // status bar buttons:
       case 'toggle-final-sign':
       case 'toggle-final-encrypt':
       case 'toggle-final-mime':
@@ -4315,6 +4314,8 @@ Enigmail.msg = {
     if (this.editor) {
       return this.editor.outputToString(mimeType, flags);
     }
+
+    return null;
   },
 
   addrOnChangeTimer: null,

@@ -364,6 +364,8 @@ function importKeybaseKeys(txt) {
       }
     }
   }
+
+  return true;
 }
 
 

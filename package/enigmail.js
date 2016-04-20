@@ -124,6 +124,7 @@ function getEnvironment(status) {
   catch (ex) {
     failureOn(ex, status);
   }
+  return null;
 }
 
 function initializeEnvironment(env) {

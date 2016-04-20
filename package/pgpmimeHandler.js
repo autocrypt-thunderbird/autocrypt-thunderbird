@@ -166,6 +166,8 @@ PgpMimeHandler.prototype = {
       this.onStopRequest = cth.onStopRequest.bind(cth);
       return cth.onStartRequest(request, uri);
     }
+
+    return null;
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {},

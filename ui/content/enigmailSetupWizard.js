@@ -190,10 +190,7 @@ function onAfterPgWelcome() {
           loadKeys();
           return "pgKeySel";
         }
-        else {
-          return "pgKeyCreate";
-        }
-        break;
+        return "pgKeyCreate";
       case "advanced":
         if (countIdentities() > 1) {
           return "pgSelectId";
@@ -207,16 +204,14 @@ function onAfterPgWelcome() {
             return "pgNoKeyFound";
           }
         }
-        break;
       case "expert":
         return "pgExpert";
       case "import":
         return "pgImportSettings";
     }
   }
-  else {
-    return "pgInstallGnuPG";
-  }
+
+  return "pgInstallGnuPG";
 }
 
 function onAfterPgInstallGnuPG() {
@@ -230,7 +225,6 @@ function onAfterPgInstallGnuPG() {
       else {
         return "pgKeyCreate";
       }
-      break;
     case "advanced":
       if (countIdentities() > 1) {
         return "pgSelectId";
@@ -244,10 +238,11 @@ function onAfterPgInstallGnuPG() {
           return "pgNoKeyFound";
         }
       }
-      break;
     case "expert":
       return "pgExpert";
   }
+
+  return null;
 }
 
 function onAfterPgSelectId() {

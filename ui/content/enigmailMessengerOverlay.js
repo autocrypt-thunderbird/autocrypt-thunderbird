@@ -1533,7 +1533,7 @@ Enigmail.msg = {
 
 
             if (gFolderDisplay.selectedMessageIsNews) {
-              if (typeof(currentHeaderData.newsgroups)) {
+              if (currentHeaderData.newsgroups) {
                 msgHdr.Newsgroups = currentHeaderData.newsgroups.headerValue;
               }
             }
@@ -2371,6 +2371,8 @@ Enigmail.msg = {
     if (resultObj.importedKeys > 0) {
       return true;
     }
+
+    return false;
   },
 
   // download or import keys
@@ -2388,6 +2390,8 @@ Enigmail.msg = {
     if (!imported) imported = this.importKeyFromKeyserver();
 
     if (imported) this.messageReload(false);
+
+    return null;
   }
 };
 
