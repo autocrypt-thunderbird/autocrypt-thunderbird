@@ -666,6 +666,25 @@ Enigmail.msg = {
         msgSigned = resultObj.signed.length > 0;
         msgEncrypted = resultObj.encrypted.length > 0;
 
+        // HACK for Zimbra OpenPGP Zimlet
+        // Zimbra illegally changes attachment content-type to application/pgp-encrypted which interfers with below
+        // see https://sourceforge.net/p/enigmail/bugs/600/
+
+        try {
+
+          if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
+            mimeMsg.headers["x-mailer"][0].indexOf("ZimbraWebClient") >= 0 &&
+            mimeMsg.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
+            mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
+            mimeMsg.parts[0].parts[0].body.indexOf("Version: OpenPGP.js") >= 0 &&
+            mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0) {
+            this.messageParse(!event, false, Enigmail.msg.savedHeaders["content-transfer-encoding"], this.getCurrentMsgUriSpec());
+            return;
+          }
+        }
+        catch (ex) {}
+
+
         // HACK for MS-EXCHANGE-Server Problem:
         // check for possible bad mime structure due to buggy exchange server:
         // - multipart/mixed Container with
