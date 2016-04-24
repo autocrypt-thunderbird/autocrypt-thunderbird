@@ -62,12 +62,13 @@ MODFILES = \
            os.jsm \
            passwordCheck.jsm \
            passwords.jsm \
+           pEp.jsm \
            pipeConsole.jsm \
            prefs.jsm \
            promise.jsm \
            rules.jsm \
            streams.jsm \
-					 system.jsm \
+           system.jsm \
            time.jsm \
            timer.jsm \
            trust.jsm \
