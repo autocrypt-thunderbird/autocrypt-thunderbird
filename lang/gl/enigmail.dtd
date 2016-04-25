@@ -279,7 +279,7 @@
 <!ENTITY enigmail.keyManWindow.label "Xestión de chaves">
 <!ENTITY enigmail.keyManWindow.accesskey "y">
 <!ENTITY enigmail.singleRcptSettings.label "Enigmail - Configuración de destinatario/a">
-<!ENTITY enigmail.compose.excesslength.label "Ten liñas demasiado longas no correo. Debería procesalas doutro xeito para evitar sinaturas incorrectas.">
+<!ENTITY enigmail.compose.excesslength.label "Ten liñas demasiado longas no correo. Debería modificalas para evitar sinaturas incorrectas.">
 <!ENTITY enigmail.compose.excesslength_action.label "Como desexa continuar?">
 <!ENTITY enigmail.wrapSelectionList.label "Seleccionar axuste de texto">
 <!ENTITY enigmail.compose.wrap_radio.label "Axustar o texto automaticamente (sinatura válida pero quizais non pareza boa)">

@@ -76,7 +76,7 @@
 <!ENTITY enigmail.autoDecrypt.label "Berichten automatisch ontcijferen/verifiëren">
 <!ENTITY enigmail.clearPassphrase.label "Opgeslagen wachtwoord vergeten">
 <!ENTITY enigmail.editRules.label "Regels per ontvanger bewerken">
-<!ENTITY enigmail.decryptToFolder.label "Ontcijfer naar map">
+<!ENTITY enigmail.decryptToFolder.label "Naar map ontcijferen">
 <!ENTITY enigmail.decryptToFolder.accesskey "p">
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label "Recent">
@@ -89,7 +89,7 @@
 <!ENTITY enigmail.help.label "Help">
 <!ENTITY enigmail.about.title "Over Enigmail">
 <!ENTITY enigmail.about.label "Over Enigmail">
-<!ENTITY enigmail.reload.label "Bericht herladen">
+<!ENTITY enigmail.reload.label "Bericht opnieuw laden">
 <!ENTITY enigmail.browse.label "Verkennen…">
 <!ENTITY enigmail.sendersKeyMenu.label "Sleutel van verzender">
 <!ENTITY enigmail.adminSmartCard.label "SmartCard beheren…">
@@ -233,10 +233,10 @@
 <!ENTITY enigmail.ctxDecryptSave.label "Ontcijferen en opslaan als…">
 <!ENTITY enigmail.ctxImportKey.label "OpenPGP-Sleutel Importeren">
 <!ENTITY enigmail.ctxVerifyAtt.label "Handtekening verifiëren">
-<!ENTITY enigmail.ctxDecryptOpen.accesskey "O">
-<!ENTITY enigmail.ctxDecryptSave.accesskey "S">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey "c">
+<!ENTITY enigmail.ctxDecryptSave.accesskey "s">
 <!ENTITY enigmail.ctxImportKey.accesskey "i">
-<!ENTITY enigmail.ctxVerifyAtt.accesskey "C">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey "H">
 <!ENTITY enigmail.detailsHdrButton.label "Details">
 <!ENTITY enigmail.revealAttachmentsButton.label "De bestandsnamen van bijlages zijn verborgen. Klik op ‘Toon’ om de originele bestandsnamen te laten zien.">
 <!ENTITY enigmail.revealAttachments.button "Toon">
@@ -264,7 +264,7 @@
 <!ENTITY enigmail.amPrefPgpHeader.label "Verstuur ‘OpenPGP’ berichtkop">
 <!ENTITY enigmail.amPrefPgpHeader.id.label "OpenPGP sleutel ID versturen">
 <!ENTITY enigmail.amPrefPgpHeader.url.label "URL voor het ophalen van de sleutel versturen:">
-<!ENTITY enigmail.progressText.label "Vooruitgang:">
+<!ENTITY enigmail.progressText.label "Voortgang:">
 <!ENTITY enigmail.openPgpSecurity.label "OpenPGP beveiliging">
 <!ENTITY enigmail.pgpSecurityInfo.label "Enigmail beveiligingsinfo…">
 <!ENTITY enigmail.copySecurityInfo.label "Enigmail beveiligingsinfo kopiëren">
@@ -331,7 +331,7 @@
 <!ENTITY enigmail.searchKeyDlgCapt.label "Sleutels gevonden - Selecteer om te importeren">
 <!ENTITY enigmail.searchKeyDlgSelAll.label "Alle selecteren/deselecteren">
 <!ENTITY enigmail.created.label "Aangemaakt">
-<!ENTITY enigmail.progress.label "Vooruitgang">
+<!ENTITY enigmail.progress.label "Voortgang">
 <!ENTITY enigmail.sKeyDlg.title "Enigmail - Sleutel ondertekenen">
 <!ENTITY enigmail.sKeyDlg.signKey.label "Sleutel om te ondertekenen:">
 <!ENTITY enigmail.sKeyDlg.fingerprint.label "Vingerafdruk:">
@@ -389,7 +389,7 @@
 <!ENTITY enigmail.keyMan.refreshAllKeys.label "Alle publieke sleutels verversen">
 <!ENTITY enigmail.keyMan.downloadContactKeys.label "Zoek sleutels bij alle contacten">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label "Publieke sleutels vanaf sleutelserver verversen">
-<!ENTITY enigmail.keyMan.reload.label "Sleutelcache herladen">
+<!ENTITY enigmail.keyMan.reload.label "Sleutelcache opnieuw laden">
 <!ENTITY enigmail.keyMan.addPhoto.label "Voeg foto toe">
 <!ENTITY enigmail.keyMan.manageUid.label "Gebruiker-ID’s beheren">
 <!ENTITY enigmail.keyMan.changeExpiry.label "Wijzig vervaldag">
@@ -426,7 +426,7 @@
 <!ENTITY enigmail.keyMan.exportToFile.accesskey "n">
 <!ENTITY enigmail.keyMan.importFromServer.accesskey "s">
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey "P">
-<!ENTITY enigmail.keyMan.reload.accesskey "H">
+<!ENTITY enigmail.keyMan.reload.accesskey "h">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey "f">
 <!ENTITY enigmail.keyMan.manageUid.accesskey "e">
 <!ENTITY enigmail.keyMan.changeExpiry.accesskey "g">
