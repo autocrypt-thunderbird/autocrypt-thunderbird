@@ -4488,7 +4488,7 @@ window.addEventListener('compose-window-close',
   true);
 
 // TB >= 48
-window.addEventListener('compose-window-destroy',
+window.addEventListener('compose-window-unload',
   function _enigmail_msgComposeDestory(event) {
     Enigmail.msg.msgComposeClose(event);
   },
