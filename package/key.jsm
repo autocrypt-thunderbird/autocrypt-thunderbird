@@ -156,17 +156,28 @@ var EnigmailKey = {
       let key = getKeyRing().getKeyById(keyId);
 
       if (key) {
-        let userId = key.userId + " - 0x" + key.keyId.substr(-8, 8);
-        if (!getDialog().confirmDlg(null,
-            EnigmailLocale.getString("revokeKeyQuestion", userId),
-            EnigmailLocale.getString("keyMan.button.revokeKey"))) {
-          return;
+        if (key.keyTrust==="r") {
+          // Key has already been revoked
+          getDialog().alert(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId.substr(-8, 8)));
         }
+        else {
 
-        let errorMsgObj = {};
-        if (getKeyRing().importKey(null, false, keyBlockStr, keyId, errorMsgObj) > 0) {
-          getDialog().alert(errorMsgObj.value);
+          let userId = key.userId + " - 0x" + key.keyId.substr(-8, 8);
+          if (!getDialog().confirmDlg(null,
+              EnigmailLocale.getString("revokeKeyQuestion", userId),
+              EnigmailLocale.getString("keyMan.button.revokeKey"))) {
+            return;
+          }
+
+          let errorMsgObj = {};
+          if (getKeyRing().importKey(null, false, keyBlockStr, keyId, errorMsgObj) > 0) {
+            getDialog().alert(null, errorMsgObj.value);
+          }
         }
+      }
+      else {
+        // Suitable key for revocation certificate is not present in keyring
+        getDialog().alert(null, EnigmailLocale.getString("revokeKeyNotPresent", keyId.substr(-8, 8)));
       }
     }
   },
