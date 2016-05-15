@@ -207,7 +207,7 @@ const EnigmailEncryption = {
 
     if (encrypt) {
       keyList = keyList.reduce(function _f(p, keyObj) {
-        if (keyObj.getEncryptionValidity().keyValid) p.push(keyObj);
+        if (keyObj && keyObj.getEncryptionValidity().keyValid) p.push(keyObj);
         return p;
       }, []);
     }
