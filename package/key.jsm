@@ -274,11 +274,21 @@ var EnigmailKey = {
     var lines = statusMsg.split("\n");
     var idx = 0;
     var cur = {};
+    var keyexpired;
 
     while (state != "end") {
       if (idx >= lines.length) {
         errorMsgObj.value = EnigmailLocale.getString("cantImport");
         return [];
+      }
+
+      // Ignore all lines starting with "KEYEXPIRED"
+      keyexpired = lines[idx].match(/^KEYEXPIRED/);
+
+      while (keyexpired && (keyexpired.length > 0) && (idx < (lines.length - 1))) {
+        EnigmailLog.DEBUG("Ignoring KEYEXPIRED line: '" + lines[idx] + "'\n");
+        idx += 1;
+        keyexpired = lines[idx].match(/^KEYEXPIRED/);
       }
 
       EnigmailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
