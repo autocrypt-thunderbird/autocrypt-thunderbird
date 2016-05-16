@@ -129,14 +129,12 @@ function getEnvironment(status) {
 
 function initializeEnvironment(env) {
   // Initialize global environment variables list
-  const passEnv = ["GNUPGHOME", "GPGDIR", "ETC",
+  let passEnv = ["GNUPGHOME", "GPGDIR", "ETC",
     "ALLUSERSPROFILE", "APPDATA", "BEGINLIBPATH",
     "COMMONPROGRAMFILES", "COMSPEC", "DBUS_SESSION_BUS_ADDRESS", "DISPLAY",
     "ENIGMAIL_PASS_ENV", "ENDLIBPATH",
     "GTK_IM_MODULE",
     "HOME", "HOMEDRIVE", "HOMEPATH",
-    "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
-    "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME",
     "LOCPATH", "LOGNAME", "LD_LIBRARY_PATH", "MOZILLA_FIVE_HOME",
     "NLSPATH", "PATH", "PATHEXT", "PROGRAMFILES", "PWD",
     "QT_IM_MODULE",
@@ -145,6 +143,13 @@ function initializeEnvironment(env) {
     "USER", "USERPROFILE", "WINDIR", "XAUTHORITY",
     "XMODIFIERS"
   ];
+
+  if (EnigmailOS.getOS() !== "WINNT") {
+    passEnv = passEnv.concat([
+      "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
+      "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME"
+    ]);
+  }
 
   const passList = env.get("ENIGMAIL_PASS_ENV");
   if (passList) {
@@ -155,6 +160,13 @@ function initializeEnvironment(env) {
   }
 
   EnigmailCore.initEnvList();
+
+  // force output on Windows to EN-US
+  if (EnigmailOS.getOS() === "WINNT") {
+    EnigmailCore.addToEnvList("LC_ALL=en_US");
+    EnigmailCore.addToEnvList("LANG=en_US");
+  }
+
   for (var j = 0; j < passEnv.length; j++) {
     const envName = passEnv[j];
     const envValue = env.get(envName);

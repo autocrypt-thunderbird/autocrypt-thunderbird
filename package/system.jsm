@@ -71,7 +71,7 @@ const CODEPAGE_MAPPING = {
  * Get the default codepage that is set on Windows (which equals to the chatset of the console output of gpg)
  */
 function getWindowsCopdepage() {
-  EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
+  // EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
   // let output = "";
   // let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
   // let sysRoot = env.get("SystemRoot");
@@ -97,18 +97,7 @@ function getWindowsCopdepage() {
   //
   // return output;
 
-  if (!getKernel32Dll()) {
-    return "utf-8";
-  }
-
-  let getConsoleOutputCP = gKernel32Dll.declare("GetConsoleOutputCP",
-    ctypes.winapi_abi,
-    ctypes.uint32_t); // return value
-
-  let cp = getConsoleOutputCP();
-
-  return cp.toString();
-
+  return "850";
 }
 
 /**
