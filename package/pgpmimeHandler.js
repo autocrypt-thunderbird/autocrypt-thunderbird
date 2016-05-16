@@ -143,7 +143,7 @@ PgpMimeHandler.prototype = {
         // PGP/MIME signed message
         cth = EnigmailVerify.newVerifier();
       }
-      else if (ct.search(/application\/pkcs7-signature/i) > 0) {
+      else if (ct.search(/application\/(x-)?pkcs7-signature/i) > 0) {
         // S/MIME signed message
         if (EnigmailVerify.lastMsgWindow) {
           // if message is displayed then handle like S/MIME message
