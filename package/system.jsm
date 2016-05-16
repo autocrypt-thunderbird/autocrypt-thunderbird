@@ -72,30 +72,43 @@ const CODEPAGE_MAPPING = {
  */
 function getWindowsCopdepage() {
   EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
-  let output = "";
-  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  let sysRoot = env.get("SystemRoot");
+  // let output = "";
+  // let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+  // let sysRoot = env.get("SystemRoot");
+  //
+  // if (!sysRoot || sysRoot.length === 0) {
+  //   sysRoot = "C:\\windows";
+  // }
+  //
+  // let p = subprocess.call({
+  //   command: sysRoot + "\\system32\\chcp.com",
+  //   arguments: [],
+  //   environment: [],
+  //   charset: null,
+  //   mergeStderr: false,
+  //   done: function(result) {
+  //     output = result.stdout;
+  //   }
+  // });
+  // p.wait();
+  //
+  // output = output.replace(/[\r\n]/g, "");
+  // output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)?$/, "$2");
+  //
+  // return output;
 
-  if (!sysRoot || sysRoot.length === 0) {
-    sysRoot = "C:\\windows";
+  if (!getKernel32Dll()) {
+    return "utf-8";
   }
 
-  let p = subprocess.call({
-    command: sysRoot + "\\system32\\chcp.com",
-    arguments: [],
-    environment: [],
-    charset: null,
-    mergeStderr: false,
-    done: function(result) {
-      output = result.stdout;
-    }
-  });
-  p.wait();
+  let getConsoleOutputCP = gKernel32Dll.declare("GetConsoleOutputCP",
+    ctypes.winapi_abi,
+    ctypes.uint32_t); // return value
 
-  output = output.replace(/[\r\n]/g, "");
-  output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)?$/, "$2");
+  let cp = getConsoleOutputCP();
 
-  return output;
+  return cp.toString();
+
 }
 
 /**
@@ -153,8 +166,21 @@ function getUnixCharset() {
 
 }
 
-var EnigmailSystem = {
+function getKernel32Dll() {
+  if (!gKernel32Dll) {
+    if (EnigmailOS.isWin32) {
+      gKernel32Dll = ctypes.open("kernel32.dll");
+    }
+    else {
+      return null;
+    }
+  }
 
+  return gKernel32Dll;
+}
+
+
+var EnigmailSystem = {
 
   determineSystemCharset: function() {
     EnigmailLog.DEBUG("system.jsm: determineSystemCharset\n");
@@ -231,13 +257,8 @@ var EnigmailSystem = {
     );
     */
 
-    if (!gKernel32Dll) {
-      if (EnigmailOS.isWin32) {
-        gKernel32Dll = ctypes.open("kernel32.dll");
-      }
-      else {
-        return byteStr;
-      }
+    if (!getKernel32Dll()) {
+      return byteStr;
     }
 
     var multiByteToWideChar = gKernel32Dll.declare("MultiByteToWideChar",
