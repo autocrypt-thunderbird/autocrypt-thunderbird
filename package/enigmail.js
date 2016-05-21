@@ -144,7 +144,7 @@ function initializeEnvironment(env) {
     "XMODIFIERS"
   ];
 
-  if (EnigmailOS.getOS() !== "WINNT") {
+  if (!(EnigmailOS.getOS() === "WINNT" && EnigmailPrefs.getPref("gpgLocaleEn"))) {
     passEnv = passEnv.concat([
       "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
       "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME"
@@ -161,8 +161,8 @@ function initializeEnvironment(env) {
 
   EnigmailCore.initEnvList();
 
-  // force output on Windows to EN-US
-  if (EnigmailOS.getOS() === "WINNT") {
+  if (EnigmailOS.getOS() === "WINNT" && EnigmailPrefs.getPref("gpgLocaleEn")) {
+    // force output on Windows to EN-US
     EnigmailCore.addToEnvList("LC_ALL=en_US");
     EnigmailCore.addToEnvList("LANG=en_US");
   }

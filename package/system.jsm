@@ -14,6 +14,7 @@ Components.utils.import("resource://enigmail/os.jsm"); /* global EnigmailOS: fal
 Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
 Components.utils.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
 Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
+Components.utils.import("resource://enigmail/prefs.jsm"); /* global EnigmailPrefs: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -22,6 +23,7 @@ var gKernel32Dll = null;
 var gSystemCharset = null;
 
 const CODEPAGE_MAPPING = {
+  "437": "ISO-8859-1",
   "855": "IBM855",
   "866": "IBM866",
   "874": "ISO-8859-11",
@@ -71,33 +73,41 @@ const CODEPAGE_MAPPING = {
  * Get the default codepage that is set on Windows (which equals to the chatset of the console output of gpg)
  */
 function getWindowsCopdepage() {
-  // EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
-  // let output = "";
-  // let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  // let sysRoot = env.get("SystemRoot");
-  //
-  // if (!sysRoot || sysRoot.length === 0) {
-  //   sysRoot = "C:\\windows";
-  // }
-  //
-  // let p = subprocess.call({
-  //   command: sysRoot + "\\system32\\chcp.com",
-  //   arguments: [],
-  //   environment: [],
-  //   charset: null,
-  //   mergeStderr: false,
-  //   done: function(result) {
-  //     output = result.stdout;
-  //   }
-  // });
-  // p.wait();
-  //
-  // output = output.replace(/[\r\n]/g, "");
-  // output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)?$/, "$2");
-  //
-  // return output;
+  EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
 
-  return "850";
+  if (EnigmailPrefs.getPref("gpgLocaleEn")) {
+    return "437";
+  }
+
+  let output = "";
+  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+  let sysRoot = env.get("SystemRoot");
+
+  if (!sysRoot || sysRoot.length === 0) {
+    sysRoot = "C:\\windows";
+  }
+
+  try {
+    let p = subprocess.call({
+      command: sysRoot + "\\system32\\chcp.com",
+      arguments: [],
+      environment: [],
+      charset: null,
+      mergeStderr: false,
+      done: function(result) {
+        output = result.stdout;
+      }
+    });
+    p.wait();
+
+    output = output.replace(/[\r\n]/g, "");
+    output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)?$/, "$2");
+  }
+  catch (ex) {
+    output = "437";
+  }
+
+  return output;
 }
 
 /**
