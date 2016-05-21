@@ -114,25 +114,29 @@ var EnigmailGpgAgent = {
   },
 
   useGpgAgent: function() {
-    let useAgent = false;
+    return true;
+    /*
+      TODO: Remove the following. We support GnuPG 2.x, which always requires gpg-agent
+        let useAgent = false;
 
-    try {
-      if (EnigmailOS.isDosLike() && !EnigmailGpg.getGpgFeature("supports-gpg-agent")) {
-        useAgent = false;
-      }
-      else {
-        // gpg version >= 2.0.16 launches gpg-agent automatically
-        if (EnigmailGpg.getGpgFeature("autostart-gpg-agent")) {
-          useAgent = true;
-          EnigmailLog.DEBUG("enigmail.js: Setting useAgent to " + useAgent + " for gpg2 >= 2.0.16\n");
+        try {
+          if (EnigmailOS.isDosLike() && !EnigmailGpg.getGpgFeature("supports-gpg-agent")) {
+            useAgent = false;
+          }
+          else {
+            // gpg version >= 2.0.16 launches gpg-agent automatically
+            if (EnigmailGpg.getGpgFeature("autostart-gpg-agent")) {
+              useAgent = true;
+              EnigmailLog.DEBUG("enigmail.js: Setting useAgent to " + useAgent + " for gpg2 >= 2.0.16\n");
+            }
+            else {
+              useAgent = (EnigmailGpgAgent.gpgAgentInfo.envStr.length > 0 || EnigmailPrefs.getPrefBranch().getBoolPref("useGpgAgent"));
+            }
+          }
         }
-        else {
-          useAgent = (EnigmailGpgAgent.gpgAgentInfo.envStr.length > 0 || EnigmailPrefs.getPrefBranch().getBoolPref("useGpgAgent"));
-        }
-      }
-    }
-    catch (ex) {}
-    return useAgent;
+        catch (ex) {}
+        return useAgent;
+    */
   },
 
   resetGpgAgent: function() {
