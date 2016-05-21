@@ -194,9 +194,11 @@ function setOwnerTrust() {
 }
 
 function manageUids() {
+  let keyObj = EnigmailKeyRing.getKeyById(gKeyId);
+
   var inputObj = {
-    keyId: gKeyId,
-    ownKey: window.arguments[0].secKey
+    keyId: keyObj.keyId,
+    ownKey: keyObj.secretAvailable
   };
 
   var resultObj = {
