@@ -159,8 +159,8 @@ pref("extensions.enigmail.useDefaultComment", true);
 pref("extensions.enigmail.encryptToNews", false);
 pref("extensions.enigmail.warnOnSendingNewsgroups", true);
 
-// use gpg passphrase agent for passphrase handling
-pref("extensions.enigmail.useGpgAgent", false);
+// set locale for GnuPG calls to en-US (Windows only)
+pref("extensions.enigmail.gpgLocaleEn", true);
 
 // use PGP/MIME (0=never, 1=allow, 2=always)
 // pref("extensions.enigmail.usePGPMimeOption",1); -- OBSOLETE, see mail.identity.default.pgpMimeMode
