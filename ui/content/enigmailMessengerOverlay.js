@@ -144,16 +144,6 @@ Enigmail.msg = {
     // Adding to msgFrame doesn't seem to work
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
 
-    // override double clicking attachments, but fall back to existing handler if present
-    var attListElem = document.getElementById("attachmentList");
-    if (attListElem) {
-      var newHandler = "Enigmail.msg.enigAttachmentListClick('attachmentList', event)";
-      var oldHandler = attListElem.getAttribute("onclick");
-      if (oldHandler)
-        newHandler = "if (!" + newHandler + ") {" + oldHandler + "}";
-      attListElem.setAttribute("onclick", newHandler);
-    }
-
     var treeController = {
       supportsCommand: function(command) {
         // EnigmailLog.DEBUG("enigmailMessengerOverlay.js: treeCtrl: supportsCommand: "+command+"\n");
@@ -1919,6 +1909,19 @@ Enigmail.msg = {
     }
   },
 
+  // handle the attachment view toggle
+  handleAttchmentEvent: function() {
+    let attList = document.getElementById("attachmentList");
+
+    if (attList && attList.itemCount > 0) {
+      for (let i = 0; i < attList.itemCount; i++) {
+        let att = attList.getItemAtIndex(i);
+        att.addEventListener("click", function _f(event) {
+          Enigmail.msg.attachmentListClick('attachmentList', event);
+        }, true);
+      }
+    }
+  },
 
   // handle a selected attachment (decrypt & open or save)
   handleAttachmentSel: function(actionType) {
@@ -2337,18 +2340,16 @@ Enigmail.msg = {
   },
 
   // handle double click events on Attachments
-  enigAttachmentListClick: function(elementId, event) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: enigAttachmentListClick: event=" + event + "\n");
+  attachmentListClick: function(elementId, event) {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: attachmentListClick: event=" + event + "\n");
 
     var attachment = event.target.attachment;
     if (this.checkEncryptedAttach(attachment)) {
       if (event.button === 0 && event.detail == 2) { // double click
         this.handleAttachment("openAttachment", attachment);
         event.stopPropagation();
-        return true;
       }
     }
-    return false;
   },
 
   // create a decrypted copy of all selected messages in a target folder

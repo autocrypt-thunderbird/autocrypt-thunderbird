@@ -661,6 +661,7 @@ Enigmail.hdrView = {
 
             msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView), true);
             msgFrame.addEventListener("load", Enigmail.msg.messageAutoDecrypt.bind(Enigmail.msg), false);
+            msgFrame.addEventListener("load", Enigmail.msg.handleAttchmentEvent.bind(Enigmail.msg), true);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -677,6 +678,7 @@ Enigmail.hdrView = {
 
       onEndHeaders: function _listener_onEndHeaders() {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onEndHeaders\n");
+
         try {
           Enigmail.hdrView.statusBarHide();
 
