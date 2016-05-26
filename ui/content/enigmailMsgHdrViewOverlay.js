@@ -883,7 +883,7 @@ Enigmail.hdrView = {
   updateMsgDb: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateMsgDb\n");
     var msg = gFolderDisplay.selectedMessage;
-    if (!msg) return;
+    if (!msg || !msg.folder) return;
 
     var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
     if (this.statusBar.getAttribute("encrypted") == "ok")
