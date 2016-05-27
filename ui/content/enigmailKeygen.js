@@ -258,6 +258,11 @@ function enigmailCheckPassphrase() {
     EnigAlert(EnigGetString("passSpaceProblem"));
     return null;
   }
+
+  if (passphrase.length < 8) {
+    EnigAlert(EnigGetString("passphrase.min8keys"));
+    return null;
+  }
   return passphrase;
 }
 
@@ -287,15 +292,19 @@ function enigmailKeygenStart() {
   var passphrase;
   // gpg >= 2.1 queries passphrase using gpg-agent only
   if (EnigmailGpg.getGpgFeature("keygen-passphrase")) {
-    passphrase = enigmailCheckPassphrase();
-    if (!passphrase) return;
-
     var noPassphraseElement = document.getElementById("noPassphrase");
+    var passphraseElement = document.getElementById("passphrase");
 
-    if (!passphrase && !noPassphraseElement.checked) {
-      EnigAlert(EnigGetString("passCheckBox"));
-      return;
+    if (!noPassphraseElement.checked) {
+      if (passphraseElement.value.trim() === "") {
+        EnigAlert(EnigGetString("passCheckBox"));
+        return;
+      }
+
+      passphrase = enigmailCheckPassphrase();
+      if (!passphrase) return;
     }
+
   }
   else {
     passphrase = "";

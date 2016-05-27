@@ -198,7 +198,7 @@ const EnigmailWindows = {
   openKeyGen: function() {
     EnigmailWindows.openWin("enigmail:generateKey",
       "chrome://enigmail/content/enigmailKeygen.xul",
-      "chrome,modal,resizable=yes");
+      "chrome,resizable=yes");
   },
 
   /**
