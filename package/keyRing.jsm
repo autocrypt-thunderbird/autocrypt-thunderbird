@@ -769,6 +769,11 @@ var EnigmailKeyRing = {
     if (passphrase.length) {
       inputData += "Passphrase: " + passphrase + "\n";
     }
+    else {
+      if (EnigmailGpg.getGpgFeature("genkey-no-protection")) {
+        inputData += "%no-protection\n";
+      }
+    }
 
     inputData += "%commit\n%echo done\n";
 

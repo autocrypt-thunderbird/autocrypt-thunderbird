@@ -64,6 +64,7 @@ const EnigmailGpg = {
    autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
    keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
    windows-photoid-bug  - is there a bug in gpg with the output of photoid on Windows (true for gpg < 2.0.16)
+   genkey-no-protection - is "%no-protection" supported for generting keys (true for gpg >= 2.1)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -93,6 +94,8 @@ const EnigmailGpg = {
         return vc.compare(gpgVersion, "2.0.16") >= 0;
       case 'keygen-passphrase':
         return vc.compare(gpgVersion, "2.1") < 0 || vc.compare(gpgVersion, "2.1.2") >= 0;
+      case 'genkey-no-protection':
+        return vc.compare(gpgVersion, "2.1") > 0;
       case 'windows-photoid-bug':
         return vc.compare(gpgVersion, "2.0.16") < 0;
     }
