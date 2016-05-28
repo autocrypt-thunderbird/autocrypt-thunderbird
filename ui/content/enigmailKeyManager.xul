@@ -295,7 +295,7 @@
         <menuitem label="&enigmail.keyMan.generate.label;"
                   id="genKey"
                   accesskey="&enigmail.keyMan.generate.accesskey;"
-                  oncommand="EnigKeygen(); enigmailRefreshKeys();"/>
+                  oncommand="EnigKeygen();"/>
         <menuitem label="&enigmail.keyMan.genRevoke.label;"
                   id="revokationCertificate"
                   observes="bcRevoke"

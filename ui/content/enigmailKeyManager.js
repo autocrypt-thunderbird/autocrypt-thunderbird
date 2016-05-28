@@ -62,6 +62,8 @@ function enigmailKeyManagerLoad() {
   gShowUntrustedKeys = document.getElementById("showUntrustedKeys");
   gShowOthersKeys = document.getElementById("showOthersKeys");
 
+  window.addEventListener("reload-keycache", enigmailRefreshKeys);
+
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
   }

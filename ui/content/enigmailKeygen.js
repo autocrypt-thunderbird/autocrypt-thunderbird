@@ -18,7 +18,7 @@
 /* global EnigGetWindowOptions: false, EnigConfirm: false, EnigGetString: false, GetEnigmailSvc: false */
 /* global EnigLongAlert: false, EnigAlert: false, EnigInitCommon: false, ENIG_ACCOUNT_MANAGER_CONTRACTID: false */
 /* global EnigGetPref: false, EnigSetPref: false, EnigSavePrefs: false, EnigFilePicker: false, EnigGetFilePath: false */
-/* global EnigCreateRevokeCert: false */
+/* global EnigmailWindows: false, EnigCreateRevokeCert: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeygen");
@@ -138,6 +138,8 @@ function enigmailKeygenTerminate(exitCode) {
       enigmailKeygenUpdate(false, true);
 
       EnigSavePrefs();
+
+      EnigmailWindows.keyManReloadKeys();
 
       if (EnigConfirm(EnigGetString("keygenComplete", curId.email) + "\n\n" + EnigGetString("revokeCertRecommended"), EnigGetString("keyMan.button.generateCert"))) {
         EnigCreateRevokeCert(gGeneratedKey, curId.email, closeAndReset);

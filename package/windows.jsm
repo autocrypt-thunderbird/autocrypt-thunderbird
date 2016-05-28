@@ -191,6 +191,35 @@ const EnigmailWindows = {
   },
 
   /**
+   * If the Key Manager is open, dispatch an event to tell the key
+   * manager to refresh the displayed keys
+   */
+
+  keyManReloadKeys: function() {
+    let windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+    let winName = "enigmail:KeyManager";
+    let spec = "chrome://enigmail/content/enigmailKeygen.xul";
+
+    let winEnum = windowManager.getEnumerator(null);
+    let recentWin = null;
+    while (winEnum.hasMoreElements() && !recentWin) {
+      let thisWin = winEnum.getNext();
+      if (thisWin.location.href == spec) {
+        recentWin = thisWin;
+        break;
+      }
+      if (winName && thisWin.name && thisWin.name == winName) {
+        let evt = new thisWin.Event("reload-keycache", {
+          "bubbles": true,
+          "cancelable": false
+        });
+        thisWin.dispatchEvent(evt);
+        break;
+      }
+    }
+  },
+
+  /**
    * Display the key creation window
    *
    * no return value
