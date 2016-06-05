@@ -120,9 +120,9 @@ let gSubkeyIndex = [];
        * clone
 
   * keySortList [Array]:  used for quickly sorting the keys
-    - user ID (in lower case)
-    - key ID
-    - fpr
+    - userId (in lower case)
+    - keyId
+    - keyNum
   * trustModel: [String]. One of:
             - p: pgp/classical
             - t: always trust
@@ -1435,6 +1435,7 @@ function createKeyObjects(keyListString, keyListObj) {
             keyListObj.keySortList.push({
               userId: keyObj.userId.toLowerCase(),
               keyId: keyObj.keyId,
+              fpr: keyObj.fpr,
               keyNum: numKeys - 1
             });
             if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST_ID]) < TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust)) {
