@@ -113,7 +113,7 @@
         <menuitem label="&enigmail.keyMan.reload.label;"
                 id="refreshKeys"
                 accesskey="&enigmail.keyMan.reload.accesskey;"
-                oncommand="enigmailRefreshKeys();"/>
+                oncommand="refreshKeys();"/>
 
         <menuseparator/>
 
@@ -237,21 +237,21 @@
                   checked="true"
                   persist="checked"
                   accesskey="&enigmail.keyMan.showInvalidKeys.accesskey;"
-                  oncommand="enigApplyFilter()"/>
+                  oncommand="onSearchInput()"/>
         <menuitem label="&enigmail.keyMan.showUntrustedKeys.label;"
                   id="showUntrustedKeys"
                   type="checkbox"
                   checked="true"
                   persist="checked"
                   accesskey="&enigmail.keyMan.showUntrustedKeys.accesskey;"
-                  oncommand="enigApplyFilter()"/>
+                  oncommand="onSearchInput()"/>
         <menuitem label="&enigmail.keyMan.showOthersKeys.label;"
                   id="showOthersKeys"
                   type="checkbox"
                   checked="true"
                   persist="checked"
                   accesskey="&enigmail.keyMan.showOthersKeys.accesskey;"
-                  oncommand="enigApplyFilter()"/>
+                  oncommand="onSearchInput()"/>
 
       </menupopup>
     </menu>
