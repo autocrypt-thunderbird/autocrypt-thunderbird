@@ -51,7 +51,7 @@ Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKey
 Components.utils.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
-Components.utils.import("resource://enigmail/expiry.jsm"); /*global EnigmailExpiry: false */
+Components.utils.import("resource://enigmail/keyUsability.jsm"); /*global EnigmailKeyUsability: false */
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Components.utils.import("resource://enigmail/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 
@@ -131,7 +131,7 @@ Enigmail.msg = {
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
 
     Enigmail.msg.expiryTimer = EnigmailTimer.setTimeout(function _f() {
-      let msg = EnigmailExpiry.keyExpiryCheck();
+      let msg = EnigmailKeyUsability.keyExpiryCheck();
 
       if (msg && msg.length > 0) {
         EnigmailDialog.alert(window, msg);
@@ -139,6 +139,9 @@ Enigmail.msg = {
 
       this.expiryTimer = undefined;
     }.bind(Enigmail.msg), 60000); // 1 minute
+
+    // Enable automatic check for suitable Ownertrust ("You rely on certifications")
+    Enigmail.msg.OTcheckTimer = EnigmailTimer.setTimeout(Enigmail.msg.checkOwnertrust.bind(Enigmail.msg), 10000); // 10 seconds
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
@@ -2412,6 +2415,51 @@ Enigmail.msg = {
     if (imported) this.messageReload(false);
 
     return null;
+  },
+
+  // check if all used keys have suitable Ownertrust ("You rely on certifications")
+  checkOwnertrust: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: checkOwnertrust\n");
+
+    var resultObj = {};
+    let msg = EnigmailKeyUsability.keyOwnerTrustCheck(resultObj);
+
+    if (msg && (msg.length > 0) && EnigmailPrefs.getPref("warnOnMissingOwnerTrust")) {
+      let actionButtonText = "";
+
+      if (resultObj && resultObj.Count === 1) {
+        // single key is concerned
+        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyProperties");
+      }
+      else {
+        // Multiple keys concerned
+        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyManager");
+      }
+
+      let checkedObj = {};
+      const r = EnigmailDialog.longAlert(window, msg,
+        EnigmailLocale.getString("dlgNoPrompt"), // checkBoxLabel
+        EnigmailLocale.getString("dlg.button.close"), // okLabel
+        actionButtonText, // labelButton2
+        null, // labelButton3
+        checkedObj); // checkedObj
+      if (r >= 0 && checkedObj.value) {
+        // Do not show me this dialog again
+        EnigmailPrefs.setPref("warnOnMissingOwnerTrust", false);
+      }
+      if (r == 1) {
+        if (resultObj && resultObj.Count === 1) {
+          // single key is concerned, open key details dialog
+          EnigmailWindows.openKeyDetails(window, resultObj.keyId, false);
+        }
+        else {
+          // Multiple keys concerned, open Key Manager
+          EnigmailWindows.openKeyManager(window);
+        }
+      }
+    }
+
+    this.expiryTimer = undefined;
   }
 };
 

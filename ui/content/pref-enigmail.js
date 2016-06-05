@@ -398,7 +398,8 @@ function resetRememberedValues() {
     "warnOnSendingNewsgroups",
     "warnDownloadContactKeys",
     "warnRefreshAll",
-    "warnDeprecatedGnuPG"
+    "warnDeprecatedGnuPG",
+    "warnOnMissingOwnerTrust"
   ];
 
   for (var j = 0; j < prefs.length; j++) {

@@ -152,6 +152,9 @@ pref("extensions.enigmail.autoSendEncrypted", 1);
 // 4: if send (un)encrypted due to rules
 pref("extensions.enigmail.confirmBeforeSending", 0);
 
+// show "Missing Trust in own keys" message (and remember selected state)
+pref("extensions.enigmail.warnOnMissingOwnerTrust", true);
+
 // use GnuPG's default instead of Enigmail/Mozilla comment of for signed messages
 pref("extensions.enigmail.useDefaultComment", true);
 

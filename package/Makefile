@@ -39,7 +39,6 @@ MODFILES = \
            protocolHandler.jsm \
            events.jsm \
            execution.jsm \
-           expiry.jsm \
            files.jsm \
            filters.jsm \
            fixExchangeMsg.jsm \
@@ -52,6 +51,7 @@ MODFILES = \
            key.jsm \
            keyEditor.jsm \
            keyRing.jsm \
+					 keyUsability.jsm \
            keyserver.jsm \
            lazy.jsm \
            locale.jsm \

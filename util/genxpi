@@ -87,7 +87,6 @@ zip --must-match\
     modules/protocolHandler.jsm \
     modules/events.jsm \
     modules/execution.jsm \
-    modules/expiry.jsm \
     modules/files.jsm \
     modules/filters.jsm \
     modules/fixExchangeMsg.jsm \
@@ -100,6 +99,7 @@ zip --must-match\
     modules/key.jsm \
     modules/keyEditor.jsm \
     modules/keyRing.jsm \
+    modules/keyUsability.jsm \
     modules/keyserver.jsm \
     modules/lazy.jsm \
     modules/locale.jsm \

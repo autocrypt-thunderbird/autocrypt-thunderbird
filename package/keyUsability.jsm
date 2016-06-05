@@ -9,7 +9,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailExpiry"];
+var EXPORTED_SYMBOLS = ["EnigmailKeyUsability"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -24,7 +24,7 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 const nsIEnigmail = Ci.nsIEnigmail;
 const DAY = 86400; // number of seconds of 1 day
 
-var EnigmailExpiry = {
+var EnigmailKeyUsability = {
   /**
    * Check whether some key pairs expire in less than N days from now.
    *
@@ -35,7 +35,7 @@ var EnigmailExpiry = {
    */
 
   getExpiryForKeySpec: function(keySpecArr, numDays) {
-    EnigmailLog.DEBUG("expiry.jsm: getExpiryForKeySpec()\n");
+    EnigmailLog.DEBUG("keyUsability.jsm: getExpiryForKeySpec()\n");
     let now = Math.floor(Date.now() / 1000);
     let enigmailSvc = EnigmailCore.getService();
     if (!enigmailSvc) return [];
@@ -80,7 +80,7 @@ var EnigmailExpiry = {
    * @return  Array of Strings - list of keyId and email addresses
    */
   getKeysSpecForIdentities: function() {
-    EnigmailLog.DEBUG("expiry.jsm: getKeysSpecForIdentities()\n");
+    EnigmailLog.DEBUG("keyUsability.jsm: getKeysSpecForIdentities()\n");
     let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
 
     let keySpecList = [];
@@ -112,7 +112,7 @@ var EnigmailExpiry = {
    *          null in case no check was performed
    */
   getNewlyExpiredKeys: function() {
-    EnigmailLog.DEBUG("expiry.jsm: getNewlyExpiredKeys()\n");
+    EnigmailLog.DEBUG("keyUsability.jsm: getNewlyExpiredKeys()\n");
 
     let numDays = EnigmailPrefs.getPref("warnKeyExpiryNumDays");
     if (numDays < 1) return null;
@@ -164,7 +164,7 @@ var EnigmailExpiry = {
   },
 
   keyExpiryCheck: function() {
-    EnigmailLog.DEBUG("expiry.jsm: keyExpiryCheck()\n");
+    EnigmailLog.DEBUG("keyUsability.jsm: keyExpiryCheck()\n");
 
     let expiredKeys = this.getNewlyExpiredKeys();
     if (!expiredKeys || expiredKeys.length === 0) return "";
@@ -180,6 +180,85 @@ var EnigmailExpiry = {
         keyDesc += "- " + getKeyDesc(expiredKeys[i]) + "\n";
       }
       return EnigmailLocale.getString("expiry.keysExpireSoon", [numDays, keyDesc]);
+    }
+  },
+
+
+  /**
+   * Check whether some key pairs (i.e. key with a secret key) have an
+   * ownertrust of less than "ultimate".
+   *
+   * @param keySpecArr  - Array: list of key IDs or User IDs
+   *
+   * @return Array      - list of keys that have ownertrust below "ultimate"
+   */
+
+  getOwnerTrustForKeySpec: function(keySpecArr) {
+    EnigmailLog.DEBUG("keyUsability.jsm: getOwnerTrustForKeySpec()\n");
+    let enigmailSvc = EnigmailCore.getService();
+    if (!enigmailSvc) return [];
+
+    let result = keySpecArr.reduce(function(p, keySpec) {
+      let keys;
+
+      if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
+        let key = EnigmailKeyRing.getKeyById(keySpec);
+        if (!key) return p;
+        keys = [key];
+      }
+      else {
+        keys = EnigmailKeyRing.getKeysByUserId(keySpec);
+        if (keys.length === 0) return p;
+      }
+
+      for (let i in keys) {
+        let ot = keys[i].ownerTrust;
+        if (ot !== "u") p.push(keys[i]);
+      }
+
+      return p;
+    }, []);
+
+    result = uniqueKeyList(result);
+    return result;
+  },
+
+
+  /**
+   * Check if all keys of all configured identities have "ultimate" ownertrust
+   *
+   * @return  String Message listing the keys that have less ownertrust
+   *          resultObj.Count: Number of those keys
+   *          resultObj.KeyId: KeyId (only if a single key is concerned)
+   */
+
+  keyOwnerTrustCheck: function(resultObj) {
+    EnigmailLog.DEBUG("keyUsability.jsm: keyOwnerTrustCheck()\n");
+    resultObj.Count = 0;
+
+    let keys = this.getKeysSpecForIdentities();
+
+    if (keys.length === 0) {
+      return "";
+    }
+
+    let keysMissingOwnertrust = this.getOwnerTrustForKeySpec(keys);
+
+    if (!keysMissingOwnertrust || keysMissingOwnertrust.length === 0) return "";
+
+    resultObj.Count = keysMissingOwnertrust.length;
+
+    if (keysMissingOwnertrust.length === 1) {
+      let keyDesc = getKeyDesc(keysMissingOwnertrust[0]);
+      resultObj.keyId = keysMissingOwnertrust[0].keyId;
+      return EnigmailLocale.getString("expiry.keyMissingOwnerTrust", keyDesc);
+    }
+    else {
+      let keyDesc = "";
+      for (let i = 0; i < keysMissingOwnertrust.length; i++) {
+        keyDesc += "- " + getKeyDesc(keysMissingOwnertrust[i]) + "\n";
+      }
+      return EnigmailLocale.getString("expiry.keysMissingOwnerTrust", keyDesc);
     }
   }
 };
