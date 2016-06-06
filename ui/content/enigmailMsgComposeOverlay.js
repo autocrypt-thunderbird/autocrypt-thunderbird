@@ -14,6 +14,7 @@
 /*global AddAttachments: false, AddAttachment: false, ChangeAttachmentBucketVisibility: false, GetResourceFromUri: false */
 /*global Recipients2CompFields: false, Attachments2CompFields: false, DetermineConvertibility: false, gWindowLocked: false */
 /*global CommandUpdate_MsgCompose: false, gSMFields: false */
+/*global Sendlater3Composing: false */
 
 Components.utils.import("resource://enigmail/glodaMime.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -3745,8 +3746,28 @@ Enigmail.msg = {
     }
   },
 
+  /**
+   * Handle the 'compose-send-message' event from TB
+   */
   sendMessageListener: function(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleSendMessageEvent\n");
+
+    // Do nothing if a compatible version of the "SendLater" addon is installed.
+    // SendLater will call handleSendMessageEvent when needed.
+
+    if (Sendlater3Composing && typeof(Sendlater3Composing.callEnigmail) === "function") {
+      return;
+    }
+    else {
+      Enigmail.msg.handleSendMessageEvent(event);
+    }
+  },
+
+  /**
+   * Perform handling of the compose-send-message' event from TB (or SendLater)
+   */
+  handleSendMessageEvent: function(event) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleSendMessageEvent\n");
     let msgcomposeWindow = document.getElementById("msgcomposeWindow");
     let sendMsgType = Number(msgcomposeWindow.getAttribute("msgtype"));
 
