@@ -4381,14 +4381,7 @@ Enigmail.msg = {
       }
     }
     catch (ex) {}
-  },
-
-  // /**
-  //  * Check for the status flags of the "Send Later" Add-on
-  // */
-  // checkSendLaterStatus: function() {
-  //
-  // }
+  }
 };
 
 
