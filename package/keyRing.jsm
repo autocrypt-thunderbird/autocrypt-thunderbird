@@ -286,13 +286,12 @@ var EnigmailKeyRing = {
 
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
     var command = EnigmailGpg.agentPath;
-    var args = EnigmailGpg.getStandardArgs(true);
+    var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     importedKeysObj.value = "";
 
     var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
 
-    args.push("--import");
     args.push(fileName);
 
     var statusFlagsObj = {};
@@ -448,8 +447,7 @@ var EnigmailKeyRing = {
    */
   extractKey: function(includeSecretKey, userId, outputFile, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.extractKey: " + userId + "\n");
-    let args = EnigmailGpg.getStandardArgs(true).
-    concat(["-a", "--export"]);
+    let args = EnigmailGpg.getStandardArgs(true).concat(["-a", "--export"]);
 
     if (userId) {
       args = args.concat(userId.split(/[ ,\t]+/));
@@ -474,8 +472,7 @@ var EnigmailKeyRing = {
     }
 
     if (includeSecretKey) {
-      let secretArgs = EnigmailGpg.getStandardArgs(true).
-      concat(["-a", "--export-secret-keys"]);
+      let secretArgs = EnigmailGpg.getStandardArgs(true).concat(["-a", "--export-secret-keys"]);
 
       if (userId) {
         secretArgs = secretArgs.concat(userId.split(/[ ,\t]+/));
@@ -597,8 +594,7 @@ var EnigmailKeyRing = {
       }
     }
 
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["--import"]);
+    const args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
 
     const exitCodeObj = {};
     const statusMsgObj = {};
@@ -633,7 +629,7 @@ var EnigmailKeyRing = {
   getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
 
-    const args = EnigmailGpg.getStandardArgs().
+    const args = EnigmailGpg.getStandardArgs(false).
     concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
       "--batch", "--no-tty", "--status-fd", "1", "--attribute-fd", "2",
       "--fixed-list-mode", "--list-keys", keyId
@@ -735,8 +731,7 @@ var EnigmailKeyRing = {
       throw Components.results.NS_ERROR_FAILURE;
     }
 
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["--gen-key"]);
+    const args = EnigmailGpg.getStandardArgs(true).concat(["--gen-key"]);
 
     EnigmailLog.CONSOLE(EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args));
 
