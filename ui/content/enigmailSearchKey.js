@@ -48,7 +48,7 @@ function onLoad() {
 
   window.arguments[RESULT].importedKeys = 0;
 
-  var keyserver = window.arguments[INPUT].keyserver;
+  var keyserver = window.arguments[INPUT].keyserver.toLowerCase();
   var protocol = "";
   if (keyserver.search(/^[a-zA-Z0-9\-\_\.]+:\/\//) === 0) {
     protocol = keyserver.replace(/^([a-zA-Z0-9\-\_\.]+)(:\/\/.*)/, "$1");
@@ -77,6 +77,18 @@ function onLoad() {
     port = m[3];
   }
 
+  let reqType;
+  if (protocol === "keybase" || keyserver === "keybase.io") {
+    reqType = ENIG_CONN_TYPE_KEYBASE;
+    protocol = "keybase";
+  }
+  else if (EnigmailPrefs.getPref("useGpgKeysTool")) {
+    reqType = ENIG_CONN_TYPE_GPGKEYS;
+  }
+  else {
+    reqType = ENIG_CONN_TYPE_HTTP;
+  }
+
   gEnigRequest = {
     searchList: window.arguments[INPUT].searchList,
     keyNum: 0,
@@ -84,7 +96,7 @@ function onLoad() {
     port: port,
     protocol: protocol,
     keyList: [],
-    requestType: (EnigmailPrefs.getPref("useGpgKeysTool") ? ENIG_CONN_TYPE_GPGKEYS : ENIG_CONN_TYPE_HTTP),
+    requestType: reqType,
     gpgkeysRequest: null,
     progressMeter: document.getElementById("dialog.progress"),
     httpInProgress: false
@@ -105,6 +117,7 @@ function onLoad() {
   else {
     switch (gEnigRequest.requestType) {
       case ENIG_CONN_TYPE_HTTP:
+      case ENIG_CONN_TYPE_KEYBASE:
         newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
@@ -236,26 +249,36 @@ function closeDialog() {
   window.close();
 }
 
-function statusLoadedKeybase(event) {
-  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
+function onStatusLoaded(request, connectionType) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: onStatusLoaded\n");
 
-  if (this.status == 200) {
+  if (request.status == 200) {
     // de-HTMLize the result
-    var htmlTxt = this.responseText.replace(/<([^<>]+)>/g, "");
+    var htmlTxt = request.responseText.replace(/<([^<>]+)>/g, "");
 
-    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, htmlTxt, "");
+    request.requestCallbackFunc(connectionType, htmlTxt, "");
   }
-  else if (this.status == 500 && this.statusText == "OK") {
-    this.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found", "[GNUPG:] NODATA 1\n");
+  else if (request.status == 500 && request.statusText == "OK") {
+    request.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found", "[GNUPG:] NODATA 1\n");
   }
-  else if (this.statusText != "OK") {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", this.statusText));
+  else if (request.statusText != "OK") {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", request.statusText));
     closeDialog();
     return;
   }
-
 }
 
+function statusLoadedKeybase(event) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedKeybase\n");
+
+  onStatusLoaded(this, ENIG_CONN_TYPE_KEYBASE);
+}
+
+function statusLoadedHttp(event) {
+  EnigmailLog.DEBUG("enigmailSearchKey.js: statusLoadedHttp\n");
+
+  onStatusLoaded(this, ENIG_CONN_TYPE_HTTP);
+}
 
 function importKeys(connType, txt, errorTxt) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: importKeys\n");
@@ -349,7 +372,7 @@ function importKeybaseKeys(txt) {
 
       if (resp.them[hit] !== null) {
         var uiFlags = nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-        var r = EnigmailKeyRing.importKey(window, uiFlags,
+        var r = EnigmailKeyRing.importKey(window, false,
           resp.them[hit].public_keys.primary.bundle,
           gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
           errorMsgObj);
@@ -423,6 +446,8 @@ function newHttpRequest(requestType, requestCallbackFunc) {
       return;
   }
 
+  EnigmailLog.DEBUG("enigmailSearchKey.js: newHttpRequest: requesting " + reqCommand + "\n");
+
   gEnigRequest.httpInProgress = true;
   httpReq.open("GET", reqCommand);
   httpReq.onerror = statusError;
@@ -431,7 +456,7 @@ function newHttpRequest(requestType, requestCallbackFunc) {
     httpReq.onload = statusLoadedKeybase;
   }
   else {
-    httpReq.onload = statusLoadedKeybase;
+    httpReq.onload = statusLoadedHttp;
   }
 
   httpReq.requestCallbackFunc = requestCallbackFunc;
