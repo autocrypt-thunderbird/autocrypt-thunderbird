@@ -377,12 +377,11 @@ function importKeybaseKeys(txt) {
           gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
           errorMsgObj);
 
-        if (errorMsgObj.value) {
-          EnigmailDialog.alert(window, errorMsgObj.value);
-        }
-
         if (r === 0) {
           window.arguments[RESULT].importedKeys++;
+        }
+        else if (errorMsgObj.value) {
+          EnigmailDialog.alert(window, errorMsgObj.value);
         }
       }
     }
