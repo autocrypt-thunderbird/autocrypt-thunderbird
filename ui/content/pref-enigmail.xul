@@ -128,6 +128,14 @@
       <description>&enigmail.agentAdditionalParam.tooltip;</description>
     </tooltip>
 
+    <tooltip id="protectHeaders.tooltip">
+      <description>&enigmail.protectHeadersPrefs.tooltip;</description>
+    </tooltip>
+
+    <tooltip id="protectedSubjectText.tooltip">
+      <description>&enigmail.protectedSubjectText.tooltip;</description>
+    </tooltip>
+
     <tooltip id="resetRememberedValues.tooltip">
       <description>&enigmail.resetRememberedValues.tooltip;</description>
     </tooltip>
@@ -371,6 +379,26 @@
             advanced="true">
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
+          
+          <groupbox>
+            <checkbox id="enigmail_protectHeaders"
+                      label="&enigmail.protectHeadersPrefs.label;"
+                      tooltip="protectHeaders.tooltip"/>
+
+            <hbox>
+              <hbox align="center">
+                <label control="enigmail_protectedSubjectText"
+                       tooltip="protectedSubjectText.tooltip"
+                       value="&enigmail.protectedSubjectText.label;"/>
+              </hbox>
+              <hbox>
+                <textbox id="enigmail_protectedSubjectText"
+                         tooltip="protectedSubjectText.tooltip"
+                         placeholder=""
+                         size="40"/>
+              </hbox>
+            </hbox>
+          </groupbox>
 
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;"

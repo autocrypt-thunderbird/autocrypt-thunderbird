@@ -3227,7 +3227,10 @@ Enigmail.msg = {
 
           if (sendFlags & ENCRYPT) {
             gMsgCompose.compFields.subject = EnigmailFuncs.getProtectedSubjectText();
-            gMsgCompose.compFields.references = "";
+
+            if (EnigmailPrefs.getPref("protectReferencesHdr")) {
+              gMsgCompose.compFields.references = "";
+            }
           }
 
         }

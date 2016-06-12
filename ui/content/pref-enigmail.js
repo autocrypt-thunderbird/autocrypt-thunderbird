@@ -174,6 +174,8 @@ function prefOnLoad() {
     //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
   }
 
+  document.getElementById("enigmail_protectedSubjectText").setAttribute("placeholder", EnigGetString("msgCompose.encryptedSubjectStub"));
+
   // init "saved manual preferences" with current settings:
   gSavedManualPrefKeepSettingsForReply = EnigGetPref("keepSettingsForReply");
   gSavedManualPrefAcceptedKeys = EnigGetPref("acceptedKeys");
