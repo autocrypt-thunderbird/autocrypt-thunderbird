@@ -342,8 +342,8 @@ const EnigmailFuncs = {
     if (mime1.search(s) < 0) throw "Invalid mime1";
     if (mime2.search(s) < 0) throw "Invalid mime2";
 
-    let a1 = mime1.split(/./);
-    let a2 = mime2.split(/./);
+    let a1 = mime1.split(/\./);
+    let a2 = mime2.split(/\./);
 
     for (let i = 0; i < Math.min(a1.length, a2.length); i++) {
       if (Number(mime1[i]) < Number(mime2[i])) return -1;
