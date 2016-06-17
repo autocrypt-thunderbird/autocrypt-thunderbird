@@ -423,7 +423,7 @@ const EnigmailKeyEditor = {
   deleteKey: function(parent, keyId, deleteSecretKey, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.addUid: keyId=" + keyId + ", deleteSecretKey=" + deleteSecretKey + "\n");
 
-    var cmd = (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key");
+    var cmd = ["--yes", (deleteSecretKey ? "--delete-secret-and-public-key" : "--delete-key")];
     return editKey(parent, false, null, keyId, cmd, {
         usePassphrase: true
       },
