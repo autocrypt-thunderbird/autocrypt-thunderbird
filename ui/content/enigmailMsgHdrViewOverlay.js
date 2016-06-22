@@ -766,7 +766,7 @@ Enigmail.hdrView = {
   msgHdrViewUnhide: function(event) {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewUnhide:\n");
 
-    if (Enigmail.msg.securityInfo.statusFlags !== 0) {
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags !== 0) {
       this.enigmailBox.removeAttribute("collapsed");
     }
   },
@@ -999,14 +999,18 @@ if (messageHeaderSink) {
         catch (ex) {
           EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
           url.value = {
+            host: "invalid",
+            path: "/message",
+            scheme: "enigmail",
             spec: "enigmail://invalid/message"
           };
         }
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url=" + url.value.spec + "\n");
 
-        if (!uriSpec || uriSpec.search(/^enigmail:/) === 0 || (uriSpec.indexOf(url.value.spec) === 0 &&
-            uriSpec.substr(url.value.spec.length).search(/([\?&].*)?$/) === 0)) {
+        if (!uriSpec || uriSpec.search(/^enigmail:/) === 0 ||
+          (uri.host == url.value.host &&
+            uri.path.substr(url.value.path.length).search(/([\?&].*)?$/) === 0)) {
           return true;
         }
 
