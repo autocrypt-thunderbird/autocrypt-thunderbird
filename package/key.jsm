@@ -156,7 +156,7 @@ var EnigmailKey = {
       let key = getKeyRing().getKeyById(keyId);
 
       if (key) {
-        if (key.keyTrust==="r") {
+        if (key.keyTrust === "r") {
           // Key has already been revoked
           getDialog().alert(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId.substr(-8, 8)));
         }
@@ -282,13 +282,10 @@ var EnigmailKey = {
         return [];
       }
 
-      // Ignore all lines starting with "KEYEXPIRED"
-      keyexpired = lines[idx].match(/^KEYEXPIRED/);
-
-      while (keyexpired && (keyexpired.length > 0) && (idx < (lines.length - 1))) {
-        EnigmailLog.DEBUG("Ignoring KEYEXPIRED line: '" + lines[idx] + "'\n");
-        idx += 1;
-        keyexpired = lines[idx].match(/^KEYEXPIRED/);
+      // Ignore all irrelevant lines
+      while (lines[idx].search(/^(IMPORTED|IMPORT_OK|IMPORT_RES|IMPORT_PROBLEM) /) < 0) {
+        EnigmailLog.DEBUG("Ignoring line: '" + lines[idx] + "'\n");
+        ++idx;
       }
 
       EnigmailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
