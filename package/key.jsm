@@ -238,6 +238,7 @@ var EnigmailKey = {
    *          - state (one of "old" [existing key], "new" [new key], "invalid" [key could not be imported])
    */
   getKeyListFromKeyBlock: function(keyBlockStr, errorMsgObj) {
+    EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock\n");
     var ret = [];
 
     let keyTypeObj = this.getKeyFileType(keyBlockStr);
@@ -281,7 +282,7 @@ var EnigmailKey = {
       // Ignore all irrelevant lines
       while (lines[idx].search(/^(IMPORTED|IMPORT_OK|IMPORT_RES|IMPORT_PROBLEM) /) < 0 &&
         idx < lines.length) {
-        EnigmailLog.DEBUG("Ignoring line: '" + lines[idx] + "'\n");
+        EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock: Ignoring line: '" + lines[idx] + "'\n");
         ++idx;
       }
 
@@ -290,7 +291,7 @@ var EnigmailKey = {
         return [];
       }
 
-      EnigmailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
+      EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock: state: '" + state + "', line: '" + lines[idx] + "'\n");
 
       switch (state) {
         case "newOrResult":
@@ -308,7 +309,7 @@ var EnigmailKey = {
 
             const import_res = lines[idx].match(/^IMPORT_RES ([0-9 ]+)/);
             if (import_res && (import_res.length > 1)) {
-              EnigmailLog.DEBUG("import result: " + import_res[1] + "\n");
+              EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock: import result: " + import_res[1] + "\n");
               state = "end";
             }
             else {
@@ -341,7 +342,7 @@ var EnigmailKey = {
 
             const import_err = lines[idx].match(/^IMPORT_PROBLEM (\d+) (\w+)/);
             if (import_err && (import_err.length > 2)) {
-              EnigmailLog.DEBUG("import err: " + import_err[1] + " (" + import_err[2] + ")\n");
+              EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock: import err: " + import_err[1] + " (" + import_err[2] + ")\n");
               state = "newOrResult";
               cur.fingerprint = import_err[2];
 
@@ -361,7 +362,7 @@ var EnigmailKey = {
 
         default:
           {
-            EnigmailLog.DEBUG("skip line '" + lines[idx] + "'\n");
+            EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock: skip line '" + lines[idx] + "'\n");
             idx += 1;
             break;
           }
