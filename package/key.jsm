@@ -277,15 +277,17 @@ var EnigmailKey = {
     var keyexpired;
 
     while (state != "end") {
+
+      // Ignore all irrelevant lines
+      while (lines[idx].search(/^(IMPORTED|IMPORT_OK|IMPORT_RES|IMPORT_PROBLEM) /) < 0 &&
+        idx < lines.length) {
+        EnigmailLog.DEBUG("Ignoring line: '" + lines[idx] + "'\n");
+        ++idx;
+      }
+
       if (idx >= lines.length) {
         errorMsgObj.value = EnigmailLocale.getString("cantImport");
         return [];
-      }
-
-      // Ignore all irrelevant lines
-      while (lines[idx].search(/^(IMPORTED|IMPORT_OK|IMPORT_RES|IMPORT_PROBLEM) /) < 0) {
-        EnigmailLog.DEBUG("Ignoring line: '" + lines[idx] + "'\n");
-        ++idx;
       }
 
       EnigmailLog.DEBUG("state: '" + state + "', line: '" + lines[idx] + "'\n");
