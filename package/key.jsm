@@ -275,7 +275,6 @@ var EnigmailKey = {
     var lines = statusMsg.split("\n");
     var idx = 0;
     var cur = {};
-    var keyexpired;
 
     while (state != "end") {
 
