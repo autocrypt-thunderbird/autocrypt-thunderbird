@@ -4386,6 +4386,20 @@ Enigmail.msg = {
       }
     }
     catch (ex) {}
+  },
+
+  /**
+   * Merge multiple  Re: Re: into one Re: in message subject
+   */
+  fixMessageSubject: function() {
+    let subjElem = document.getElementById("msgSubject");
+    if (subjElem) {
+      let r = subjElem.value.replace(/^(Re: )+(.*)/, "Re: $2");
+      if (r !== subjElem.value) {
+        subjElem.value = r;
+        if (typeof subjElem.oninput === "function") subjElem.oninput();
+      }
+    }
   }
 };
 
@@ -4402,6 +4416,8 @@ Enigmail.composeStateListener = {
 
     if (!Enigmail.msg.editor)
       return;
+
+    Enigmail.msg.fixMessageSubject();
 
     function enigDocStateListener() {}
 
@@ -4474,6 +4490,9 @@ Enigmail.composeStateListener = {
 
     if (!isEditable || isEmpty)
       return;
+
+    // Required for TB < 48 (with window recycling)
+    Enigmail.msg.fixMessageSubject();
 
     if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {
       Enigmail.msg.timeoutId = EnigmailTimer.setTimeout(function() {
