@@ -8,11 +8,15 @@
 
 "use strict";
 
-/* global gActionListOrdered: false */
+/* global gActionListOrdered: false, checkActionsReorder: true */
 
 Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
-var enigmail_origCheckActionsReorder = function() {
+// Overwrite the original checkActionsReorder function
+
+var enigmail_origCheckActionsReorder = checkActionsReorder;
+
+checkActionsReorder = function() {
   enigmail_origCheckActionsReorder();
   EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
 };

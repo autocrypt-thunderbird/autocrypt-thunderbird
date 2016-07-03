@@ -18,7 +18,7 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailFilterEditorOverlay.js"/>
 
   <vbox insertafter="statusbar">
-    <hbox id="enigmailInfobar" style="visibility: visible">
+    <hbox id="enigmailInfobar" style="visibility: hidden">
       <image class="enigmailWarningIcon"/>
       <label value="&enigmail.filterEditor.moveError.label;"/>
     </hbox>
