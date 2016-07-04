@@ -42,7 +42,7 @@
     <em:name>Enigmail</em:name>
     <em:description>OpenPGP message encryption and authentication</em:description>
     <em:creator>Enigmail Team</em:creator>
-    <em:homepageURL>http://www.enigmail.net/</em:homepageURL>
+    <em:homepageURL>https://www.enigmail.net/</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
