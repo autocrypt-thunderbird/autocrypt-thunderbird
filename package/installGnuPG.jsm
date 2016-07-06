@@ -1,5 +1,5 @@
 /*global Components: false, escape: false, unescape: false, Uint8Array: false */
-/*jshint -W097 */
+/* eslint no-invalid-this: 0 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,6 +36,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -51,13 +52,6 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const queryUrl = "https://www.enigmail.net/service/getGnupdDownload.svc";
 
-function getTempDir() {
-  let ds = Cc[DIR_SERV_CONTRACTID].getService();
-  let dsprops = ds.QueryInterface(Ci.nsIProperties);
-  let tmpFile = dsprops.get("TmpD", Ci.nsIFile);
-
-  return tmpFile;
-}
 
 function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
@@ -290,6 +284,44 @@ Installer.prototype = {
     this.installerFile.remove(false);
   },
 
+  /**
+   * Create the gpg4win installer config file
+   * @return nsIFile - config object file
+   */
+  createGpg4WinCfgFile: function() {
+    EnigmailLog.DEBUG("installGnuPG.jsm: createGpg4WinCfgFile\n");
+
+    let tmpFile = EnigmailFiles.getTempDirObj().clone();
+    tmpFile.append("gpg4win.ini");
+    tmpFile.createUnique(tmpFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
+
+    let dataStr = "[gpg4win]\r\n";
+
+    let cfgKeys = [
+      "inst_gpgol",
+      "inst_gpgex",
+      "inst_kleopatra",
+      "inst_gpa",
+      "inst_claws_mail",
+      "inst_compendium",
+      "inst_desktop",
+      "inst_quick_launch_bar"
+    ];
+
+    // disable optional components by default
+    for (let i of cfgKeys) {
+      dataStr += "  " + i + " = false\r\n";
+    }
+
+    dataStr += "  inst_start_menu = true\r\n";
+
+    if (EnigmailFiles.writeFileContents(tmpFile, dataStr)) {
+      return tmpFile;
+    }
+
+    return null;
+  },
+
   installWindows: function(deferred) {
     EnigmailLog.DEBUG("installGnuPG.jsm: installWindows\n");
 
@@ -312,9 +344,20 @@ Installer.prototype = {
         }
       };
 
+      this.gpg4WinCfgFile = this.createGpg4WinCfgFile();
+
+      let cfgFile = EnigmailFiles.getFilePath(this.gpg4WinCfgFile);
+      let params = [];
+
+      if (cfgFile) {
+        if (cfgFile.indexOf('"') >= 0) cfgFile = '"' + cfgFile + '"';
+        params.push('/C=' + cfgFile);
+      }
+
+      EnigmailLog.DEBUG("installGnuPG.jsm: installWindows: executing " + this.installerFile.path + " " + params.join(" ") + "\n");
       var proc = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
       proc.init(this.installerFile);
-      proc.runwAsync([], 0, obs, false);
+      proc.runwAsync(params, params.length, obs, false);
     }
     catch (ex) {
       deferred.reject("Installer could not be started");
@@ -325,6 +368,7 @@ Installer.prototype = {
   cleanupWindows: function() {
     EnigmailLog.DEBUG("installGnuPG.jsm: cleanupWindows - remove package\n");
     this.installerFile.remove(false);
+    if (this.gpg4WinCfgFile) this.gpg4WinCfgFile.remove(false);
   },
 
   installUnix: function() {},
@@ -364,15 +408,16 @@ Installer.prototype = {
     let deferred = Promise.defer();
 
     function reqListener() {
-      if (typeof(on.responseXML) == "object") {
-        EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + on.responseText + "\n");
-        if (!on.responseXML) {
+      // "this" is set by the calling XMLHttpRequest
+      if (typeof(this.responseXML) == "object") {
+        EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + this.responseText + "\n");
+        if (!this.responseXML) {
           onError({
             type: "Network"
           });
           return;
         }
-        let doc = on.responseXML.firstChild;
+        let doc = this.responseXML.firstChild;
         self.url = unescape(doc.getAttribute("url"));
         self.hash = sanitizeHash(doc.getAttribute("hash"));
         self.command = sanitizeFileName(doc.getAttribute("command"));
@@ -458,10 +503,8 @@ Installer.prototype = {
         self.progressListener.onDownloaded();
 
       try {
-        // this line used to read:
-        //    performInstall(this.response).then(function _f() { performCleanup(); });
-        // but since this.response is never actually set anywhere, it should always be null
-        performInstall(null).then(function _f() {
+        // "this" is set by the calling XMLHttpRequest
+        performInstall(this.response).then(function _f() {
           performCleanup();
         });
       }
@@ -480,7 +523,7 @@ Installer.prototype = {
       try {
         var flags = 0x02 | 0x08 | 0x20;
         var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
-        self.installerFile = getTempDir();
+        self.installerFile = EnigmailFiles.getTempDirObj().clone();
 
         switch (EnigmailOS.getOS()) {
           case "Darwin":
