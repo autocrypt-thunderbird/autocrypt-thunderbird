@@ -346,9 +346,10 @@ const EnigmailFuncs = {
     let a2 = mime2.split(/\./);
 
     for (let i = 0; i < Math.min(a1.length, a2.length); i++) {
-      if (Number(mime1[i]) < Number(mime2[i])) return -1;
-      if (Number(mime1[i]) > Number(mime2[i])) return 1;
+      if (Number(a1[i]) < Number(a2[i])) return -1;
+      if (Number(a1[i]) > Number(a2[i])) return 1;
     }
+
     if (a2.length > a1.length) return -2;
     if (a2.length < a1.length) return 2;
     return 0;
