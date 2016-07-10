@@ -283,6 +283,7 @@ function statusLoadedHttp(event) {
 function importKeys(connType, txt, errorTxt) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: importKeys\n");
 
+  // TODO: display correct "key imported dialog"
   gEnigRequest.keyNum++;
   gEnigRequest.progressMeter.mode = "determined";
   gEnigRequest.progressMeter.value = (100 * gEnigRequest.keyNum / gEnigRequest.dlKeyList.length).toFixed(0);
@@ -424,7 +425,7 @@ function newHttpRequest(requestType, requestCallbackFunc) {
         reqCommand = "https://keybase.io/_/api/1.0/user/autocomplete.json?q=" + escape(pubKey);
       }
       else {
-        pubKey = escape("<" + pubKey + ">");
+        pubKey = escape(pubKey);
         reqCommand = gEnigRequest.protocol + "://" + gEnigRequest.keyserver + ":" + gEnigRequest.port + "/pks/lookup?search=" + pubKey + "&op=index";
       }
       break;
@@ -473,16 +474,24 @@ function scanKeys(connType, htmlTxt) {
 
   switch (connType) {
     case ENIG_CONN_TYPE_HTTP:
-      // interpret HTML codes (e.g. &lt;)
-      var domParser = new DOMParser();
-      // needs improvement: result is max. 4096 bytes long!
-      var htmlNode = domParser.parseFromString("<p>" + htmlTxt + "</p>", "text/xml");
 
-      if (htmlNode.firstChild.nodeName == "parsererror") {
-        EnigmailDialog.alert(window, "internalError");
-        return false;
+      if (htmlTxt.search(/^info:[0-9]+:[0-9]+/) === 0) {
+        // Dectect output format. If first line is /info:[0-9]+:[0-9]+/
+        // treat it as gpgkeys outut (e.g. keys.mailvelope.com)
+        scanGpgKeys(EnigmailData.convertGpgToUnicode(htmlTxt));
       }
-      enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
+      else {
+        // interpret HTML codes (e.g. &lt;)
+        var domParser = new DOMParser();
+        // needs improvement: result is max. 4096 bytes long!
+        var htmlNode = domParser.parseFromString("<p>" + htmlTxt + "</p>", "text/xml");
+
+        if (htmlNode.firstChild.nodeName == "parsererror") {
+          EnigmailDialog.alert(window, "internalError");
+          return false;
+        }
+        enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
+      }
       break;
     case ENIG_CONN_TYPE_GPGKEYS:
       scanGpgKeys(EnigmailData.convertGpgToUnicode(htmlTxt));
@@ -556,10 +565,10 @@ function scanKeybaseKeys(completions) {
 function enigScanHtmlKeys(txt) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: enigScanHtmlKeys\n");
 
-  var lines = txt.split(/(\n\r|\n|\r)/);
+  var lines = txt.replace(/\r\n/, "\n").split(/(\r|\n)/);
   var key;
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].search(/^\s*pub /) === 0) {
+    if (lines[i].search(/^\s*pub[: ]/) === 0) {
       // new key
       if (key) {
         // first, append prev. key to keylist
@@ -616,17 +625,14 @@ function scanGpgKeys(txt) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: scanGpgKeys\n");
   EnigmailLog.DEBUG("got text: " + txt + "\n");
 
-  // protocol version 0: GnuPG 1.2 and older versions of GnuPG 1.4.x
-  // protocol version 1: GnuPG 2.x and newer versions of GnuPG 1.4.x
+  // outputType:
+  // - protocol version 0: GnuPG 1.2 and older versions of GnuPG 1.4.x (not supported anymore)
+  // - protocol version 1: GnuPG 2.x and newer versions of GnuPG 1.4.x
 
   var lines = txt.split(/(\r\n|\n|\r)/);
   var outputType = 0;
   var key;
   for (var i = 0; i < lines.length; i++) {
-    if (outputType === 0 && lines[i].search(/^COUNT \d+\s*$/) === 0) {
-      outputType = 1;
-      continue;
-    }
     if (outputType === 0 && lines[i].search(/^info:\d+:\d+/) === 0) {
       outputType = 2;
       continue;
@@ -635,35 +641,7 @@ function scanGpgKeys(txt) {
       outputType = 2;
     }
     var m, dat, month, day;
-    if (outputType == 1 && (lines[i].search(/^([a-fA-F0-9]{8}){1,2}:/)) === 0) {
-      // output from gpgkeys_* protocol version 0
-      // new key
-      m = lines[i].split(/:/).map(unescape);
-      if (m && m.length > 0) {
-        if (key) {
-          if (key.keyId == m[0]) {
-            if (!ignoreUid(m[i])) key.uid.push(trim(m[1]));
-          }
-          else {
-            gEnigRequest.keyList.push(key);
-            key = null;
-          }
-        }
-        if (!key) {
-          dat = new Date(m[3] * 1000);
-          month = String(dat.getMonth() + 101).substr(1);
-          day = String(dat.getDate() + 100).substr(1);
-          key = {
-            keyId: m[0],
-            created: dat.getFullYear() + "-" + month + "-" + day,
-            uid: [],
-            status: ""
 
-          };
-          if (!ignoreUid(m[1])) key.uid.push(m[1]);
-        }
-      }
-    }
     if (outputType == 2 && (lines[i].search(/^pub:/)) === 0) {
       // output from gpgkeys_* protocol version 1
       // new key
