@@ -103,6 +103,7 @@ function onLoad() {
   };
 
   gEnigRequest.progressMeter.mode = "undetermined";
+  gEnigRequest.importedKeyList = [];
 
   if (window.arguments[INPUT].searchList.length == 1 &&
     window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) === 0) {
@@ -320,7 +321,7 @@ function importKeys(connType, txt, errorTxt) {
     return;
   }
   else if (window.arguments[RESULT].importedKeys > 0) {
-    EnigmailDialog.keyImportDlg(window, gEnigRequest.dlKeyList);
+    EnigmailDialog.keyImportDlg(window, gEnigRequest.importedKeyList.length > 0 ? gEnigRequest.importedKeyList : gEnigRequest.dlKeyList);
   }
   else if (gEnigRequest.errorTxt) {
     EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
@@ -342,9 +343,16 @@ function importHtmlKeys(txt) {
     if (!enigmailSvc)
       return false;
 
-    let r = EnigmailKeyRing.importKey(window, true, txt, gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1], errorMsgObj);
+    let importedKeysObj = {};
+    let r = EnigmailKeyRing.importKey(window,
+      false,
+      txt,
+      gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
+      errorMsgObj,
+      importedKeysObj);
 
     if (r === 0) {
+      gEnigRequest.importedKeyList = gEnigRequest.importedKeyList.concat(importedKeysObj.value);
       window.arguments[RESULT].importedKeys++;
       return true;
     }
@@ -372,14 +380,16 @@ function importKeybaseKeys(txt) {
       EnigmailLog.DEBUG(JSON.stringify(resp.them[hit].public_keys.primary) + "\n");
 
       if (resp.them[hit] !== null) {
-        var uiFlags = nsIEnigmail.UI_ALLOW_KEY_IMPORT;
-        var r = EnigmailKeyRing.importKey(window, false,
+        let importedKeysObj = {};
+        let r = EnigmailKeyRing.importKey(window, false,
           resp.them[hit].public_keys.primary.bundle,
           gEnigRequest.dlKeyList[gEnigRequest.keyNum - 1],
-          errorMsgObj);
+          errorMsgObj,
+          importedKeysObj);
 
         if (r === 0) {
           window.arguments[RESULT].importedKeys++;
+          gEnigRequest.importedKeyList = gEnigRequest.importedKeyList.concat(importedKeysObj.value);
         }
         else if (errorMsgObj.value) {
           EnigmailDialog.alert(window, errorMsgObj.value);

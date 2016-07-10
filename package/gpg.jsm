@@ -65,6 +65,7 @@ const EnigmailGpg = {
    keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
    windows-photoid-bug  - is there a bug in gpg with the output of photoid on Windows (true for gpg < 2.0.16)
    genkey-no-protection - is "%no-protection" supported for generting keys (true for gpg >= 2.1)
+   search-keys-cmd      - what command to use to termine the --search-key operation. ("save" for gpg > 2.1; "quit" otherwise)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -98,6 +99,13 @@ const EnigmailGpg = {
         return vc.compare(gpgVersion, "2.1") > 0;
       case 'windows-photoid-bug':
         return vc.compare(gpgVersion, "2.0.16") < 0;
+      case 'search-keys-cmd':
+        // returns a string
+        if (vc.compare(gpgVersion, "2.1") > 0) {
+          return "save";
+        }
+        else
+          return "quit";
     }
 
     return undefined;

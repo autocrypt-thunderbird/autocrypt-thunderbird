@@ -557,18 +557,19 @@ var EnigmailKeyRing = {
   /**
    * import key from provided key data
    *
-   * @param parent        nsIWindow
-   * @param isInteractive Boolean  - if true, display confirmation dialog
-   * @param keyBLock      String   - data containing key
-   * @param keyId         String   - key ID expected to import (no meaning)
-   * @param errorMsgObj   Object   - o.value will contain error message from GnuPG
+   * @param parent          nsIWindow
+   * @param isInteractive   Boolean  - if true, display confirmation dialog
+   * @param keyBLock        String   - data containing key
+   * @param keyId           String   - key ID expected to import (no meaning)
+   * @param errorMsgObj     Object   - o.value will contain error message from GnuPG
+   * @param importedKeysObj Object   - [OPTIONAL] o.value will contain an array of the key IDs imported
    *
    * @return Integer -  exit code:
    *      ExitCode == 0  => success
    *      ExitCode > 0   => error
    *      ExitCode == -1 => Cancelled by user
    */
-  importKey: function(parent, isInteractive, keyBlock, keyId, errorMsgObj) {
+  importKey: function(parent, isInteractive, keyBlock, keyId, errorMsgObj, importedKeysObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + isInteractive + "\n");
 
     const beginIndexObj = {};
@@ -603,18 +604,29 @@ var EnigmailKeyRing = {
 
     const statusMsg = statusMsgObj.value;
 
-    if (exitCodeObj.value === 0) {
+    if (!importedKeysObj) {
+      importedKeysObj = {};
+    }
+    importedKeysObj.value = [];
+
+    let exitCode = 1;
+    if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
+      exitCode = 0;
       // Normal return
       EnigmailKeyRing.clearCache();
-      if (statusMsg && (statusMsg.search("IMPORTED ") > -1)) {
-        const matches = statusMsg.match(/(^|\n)IMPORTED (\w{8})(\w{8})/);
-        if (matches && (matches.length > 3)) {
-          EnigmailLog.DEBUG("enigmail.js: Enigmail.importKey: IMPORTED 0x" + matches[3] + "\n");
+      if (statusMsg.search(/^IMPORT_OK /m) > -1) {
+        let l = statusMsg.split(/\r|\n/);
+        for (let i = 0; i < l.length; i++) {
+          const matches = l[i].match(/^(IMPORT_OK [0-9]+ )(([0-9a-fA-F]{8}){2,5})/);
+          if (matches && (matches.length > 2)) {
+            EnigmailLog.DEBUG("enigmail.js: Enigmail.importKey: IMPORTED 0x" + matches[2] + "\n");
+            importedKeysObj.value.push(matches[2]);
+          }
         }
       }
     }
 
-    return exitCodeObj.value;
+    return exitCode;
   },
 
   /**

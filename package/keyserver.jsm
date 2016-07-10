@@ -64,10 +64,6 @@ const EnigmailKeyServer = {
     }
     args = args.concat(["--keyserver", keyserver.trim()]);
 
-    //     if (actionFlags & nsIEnigmail.SEARCH_KEY | nsIEnigmail.DOWNLOAD_KEY | nsIEnigmail.REFRESH_KEY) {
-    //       args = args.concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
-    //     }
-
     let inputData = null;
     const searchTermsList = searchTerms.split(" ");
 
@@ -81,7 +77,7 @@ const EnigmailKeyServer = {
     else if (actionFlags & nsIEnigmail.SEARCH_KEY) {
       args.push("--search-keys");
       args = args.concat(searchTermsList);
-      inputData = "quit\n";
+      inputData = EnigmailGpg.getGpgFeature("search-keys-cmd") + "\n";
     }
     else if (actionFlags & nsIEnigmail.UPLOAD_KEY) {
       args.push("--send-keys");
