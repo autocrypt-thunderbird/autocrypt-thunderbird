@@ -291,7 +291,7 @@ PgpMimeEncrypt.prototype = {
     }
 
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader + '";\r\n' +
-      ' protected-headers="v1"\r\n\r\n' +
+      ' protected-headers="v1"\r\n' +
       allHdr + '\r\n' +
       "--" + this.encHeader + "\r\n";
 
