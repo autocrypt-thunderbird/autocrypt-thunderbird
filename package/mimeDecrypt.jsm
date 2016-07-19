@@ -400,7 +400,7 @@ EnigmailMimeDecrypt.prototype = {
           let wrapper = EnigmailMime.createBoundary();
           this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n' +
             '--' + wrapper + '\r\n' +
-            this.decryptedData + //'\r\n' +
+            this.decryptedData + '\r\n' +
             '--' + wrapper + '--\r\n';
           break;
         }
