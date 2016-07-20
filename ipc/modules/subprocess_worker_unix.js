@@ -113,12 +113,6 @@ function initLibc(libName) {
     ctypes.int,
     ctypes.int);
 
-  //int fflush(FILE* stream);
-  libcFunc.fflush = libc.declare("fflush",
-    ctypes.default_abi,
-    ctypes.int,
-    ctypes.void_t.ptr);
-
   //pid_t waitpid(pid_t pid, int *status, int options);
   libcFunc.waitpid = libc.declare("waitpid",
     ctypes.default_abi,
@@ -150,7 +144,6 @@ function closePipe(pipe) {
     return;
   }
 
-  libcFunc.fflush(null);
   libcFunc.close(pipe);
 }
 
