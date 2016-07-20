@@ -1,5 +1,4 @@
 /*global Components: false */
-/*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -12,6 +11,8 @@ var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
  *  Module for handling PGP/MIME encrypted messages
  *  implemented as an XPCOM object
  */
+
+/*global atob: false */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
@@ -70,6 +71,8 @@ function EnigmailMimeDecrypt() {
   this.backgroundJob = false;
   this.decryptedHeaders = {};
   this.mimePartNumber = "";
+  this.dataIsBase64 = null;
+  this.base64Cache = "";
 }
 
 EnigmailMimeDecrypt.prototype = {
@@ -106,6 +109,8 @@ EnigmailMimeDecrypt.prototype = {
     this.decryptedData = "";
     this.mimePartCount = 0;
     this.matchedPgpDelimiter = 0;
+    this.dataIsBase64 = null;
+    this.base64Cache = "";
     this.outQueue = "";
     this.statusStr = "";
     this.headerMode = 0;
@@ -118,6 +123,52 @@ EnigmailMimeDecrypt.prototype = {
     }
   },
 
+  processData: function(data) {
+    // detect MIME part boundary
+    if (data.indexOf(this.boundary) >= 0) {
+      LOCAL_DEBUG("mimeDecrypt.jsm: onDataAvailable: found boundary\n");
+      ++this.mimePartCount;
+      this.headerMode = 1;
+      return;
+    }
+
+    // found PGP/MIME "body"
+    if (this.mimePartCount == 2) {
+
+      if (this.headerMode == 1) {
+        // we are in PGP/MIME main part headers
+        if (data.search(/\r|\n/) === 0) {
+          // end of Mime-part headers reached
+          this.headerMode = 2;
+          return;
+        }
+        else {
+          if (data.search(/^content-transfer-encoding:\s*/i) >= 0) {
+            // extract content-transfer-encoding
+            data = data.replace(/^content-transfer-encoding:\s*/i, "");
+            data = data.replace(/;.*/, "").toLowerCase().trim();
+            if (data.search(/base64/i) >= 0) {
+              this.xferEncoding = ENCODING_BASE64;
+            }
+            else if (data.search(/quoted-printable/i) >= 0) {
+              this.xferEncoding = ENCODING_QP;
+            }
+
+          }
+        }
+      }
+      else {
+        // PGP/MIME main part body
+        if (this.xferEncoding == ENCODING_QP) {
+          this.cacheData(EnigmailData.decodeQuotedPrintable(data));
+        }
+        else {
+          this.cacheData(data);
+        }
+      }
+    }
+  },
+
   onDataAvailable: function(req, sup, stream, offset, count) {
     // get data from libmime
     if (!this.initOk) return;
@@ -125,51 +176,43 @@ EnigmailMimeDecrypt.prototype = {
 
     if (count > 0) {
       var data = this.inStream.read(count);
-      // detect MIME part boundary
-      if (data.indexOf(this.boundary) >= 0) {
-        LOCAL_DEBUG("mimeDecrypt.jsm: onDataAvailable: found boundary\n");
-        ++this.mimePartCount;
-        this.headerMode = 1;
-        return;
+
+      if (this.mimePartCount == 0 && this.dataIsBase64 === null) {
+        // try to determine if this could be a base64 encoded message part
+        this.dataIsBase64 = this.isBase64Encoding(data);
       }
 
-      // found PGP/MIME "body"
-      if (this.mimePartCount == 2) {
-
-        if (this.headerMode == 1) {
-          // we are in PGP/MIME main part headers
-          if (data.search(/\r|\n/) === 0) {
-            // end of Mime-part headers reached
-            this.headerMode = 2;
-            return;
-          }
-          else {
-            if (data.search(/^content-transfer-encoding:\s*/i) >= 0) {
-              // extract content-transfer-encoding
-              data = data.replace(/^content-transfer-encoding:\s*/i, "");
-              data = data.replace(/;.*/, "").toLowerCase().trim();
-              if (data.search(/base64/i) >= 0) {
-                this.xferEncoding = ENCODING_BASE64;
-              }
-              else if (data.search(/quoted-printable/i) >= 0) {
-                this.xferEncoding = ENCODING_QP;
-              }
-
-            }
-          }
-        }
-        else {
-          // PGP/MIME main part body
-          if (this.xferEncoding == ENCODING_QP) {
-            this.cacheData(EnigmailData.decodeQuotedPrintable(data));
-          }
-          else {
-            this.cacheData(data);
-          }
-        }
-
+      if (!this.dataIsBase64) {
+        this.processData(data);
+      }
+      else {
+        this.base64Cache += data;
       }
     }
+  },
+
+  /**
+   * Try to determine if data is base64 endoded
+   */
+  isBase64Encoding: function(str) {
+    let ret = false;
+
+    str = str.replace(/[\r\n]/, "");
+    if (str.search(/^[A-Za-z0-9+\/=]+$/) === 0) {
+      let excess = str.length % 4;
+      str = str.substring(0, str.length - excess);
+
+      try {
+        let s = atob(str);
+        // if the conversion succeds, we have a base64 encoded message
+        ret = true;
+      }
+      catch (ex) {
+        // not a base64 encoded
+      }
+    }
+
+    return ret;
   },
 
   // cache encrypted data for writing to subprocess
@@ -191,10 +234,31 @@ EnigmailMimeDecrypt.prototype = {
     this.outQueue = "";
   },
 
+  processBase64Message: function() {
+    LOCAL_DEBUG("mimeDecrypt.jsm: processBase64Message\n");
+
+    try {
+      this.base64Cache = EnigmailData.decodeBase64(this.base64Cache);
+    }
+    catch (ex) {
+      // if decoding failed, try non-encoded version
+    }
+
+    let lines = this.base64Cache.replace(/\r\n/g, "\n").split(/\n/);
+
+    for (let i = 0; i < lines.length; i++) {
+      this.processData(lines[i] + "\r\n");
+    }
+  },
+
   onStopRequest: function(request, win, status) {
     LOCAL_DEBUG("mimeDecrypt.jsm: onStopRequest\n");
     --gNumProc;
     if (!this.initOk) return;
+
+    if (this.dataIsBase64) {
+      this.processBase64Message();
+    }
 
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
