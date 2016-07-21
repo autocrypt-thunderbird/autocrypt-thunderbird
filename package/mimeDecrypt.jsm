@@ -57,6 +57,7 @@ function EnigmailMimeDecrypt() {
   this.statusStr = "";
   this.outQueue = "";
   this.dataLength = 0;
+  this.bytesWritten = 0;
   this.mimePartCount = 0;
   this.headerMode = 0;
   this.xferEncoding = ENCODING_DEFAULT;
@@ -108,6 +109,7 @@ EnigmailMimeDecrypt.prototype = {
     this.dataLength = 0;
     this.decryptedData = "";
     this.mimePartCount = 0;
+    this.bytesWritten = 0;
     this.matchedPgpDelimiter = 0;
     this.dataIsBase64 = null;
     this.base64Cache = "";
@@ -221,17 +223,6 @@ EnigmailMimeDecrypt.prototype = {
       LOCAL_DEBUG("mimeDecrypt.jsm: cacheData: " + str.length + "\n");
 
     this.outQueue += str;
-  },
-
-  flushInput: function() {
-    LOCAL_DEBUG("mimeDecrypt.jsm: flushInput: " + this.outQueue.length + " bytes\n");
-    if (!this.pipe) {
-      LOCAL_DEBUG("mimeDecrypt.jsm: flushInput: no pipe\n");
-      return;
-    }
-
-    this.pipe.write(this.outQueue);
-    this.outQueue = "";
   },
 
   processBase64Message: function() {
@@ -350,13 +341,21 @@ EnigmailMimeDecrypt.prototype = {
       statusFlagsObj, errorMsgObj, null, maxOutput);
 
     if (!this.proc) return;
-    this.flushInput();
 
-    if (!this.pipe) {
+    if (this.bytesWritten === 0 && this.outQueue.length === 0) {
+      // write something to gpg such that the process doesn't get stuck
+      this.outQueue = "NO DATA\n";
+    }
+
+    if (this.pipe) {
+      this.pipe.write(this.outQueue);
+      this.bytesWritten += this.outQueue.length;
+      this.outQueue = "";
+      this.pipe.close();
+    }
+    else {
       this.closePipe = true;
     }
-    else
-      this.pipe.close();
 
     this.proc.wait();
 
@@ -417,6 +416,7 @@ EnigmailMimeDecrypt.prototype = {
     LOCAL_DEBUG("mimeDecrypt.jsm: stdin\n");
     if (this.outQueue.length > 0) {
       pipe.write(this.outQueue);
+      this.bytesWritten += this.outQueue.length;
       this.outQueue = "";
       if (this.closePipe) pipe.close();
     }
