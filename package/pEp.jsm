@@ -1,4 +1,4 @@
-/*global Components: false, dump: xfalse */
+/*global Components: false */
 
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -197,7 +197,7 @@ var EnigmailpEp = {
 
         }
         catch (ex) {
-          deferred.reject("PEP-ERROR", ex.toString());
+          deferred.reject(makeError("PEP-ERROR", ex));
         }
 
         return null;
@@ -251,7 +251,7 @@ var EnigmailpEp = {
 
         }
         catch (ex) {
-          deferred.reject("PEP-ERROR", ex.toString());
+          deferred.reject(makeError("PEP-ERROR", ex));
         }
 
         return null;
@@ -294,7 +294,7 @@ var EnigmailpEp = {
 
         }
         catch (ex) {
-          deferred.reject("PEP-ERROR", ex.toString());
+          deferred.reject(makeError("PEP-ERROR", ex));
         }
 
         return null;
@@ -355,7 +355,7 @@ var EnigmailpEp = {
 
         }
         catch (ex) {
-          deferred.reject("PEP-ERROR", ex.toString());
+          deferred.reject(makeError("PEP-ERROR", ex));
         }
 
         return null;
@@ -386,7 +386,7 @@ var EnigmailpEp = {
       try {
 
         if (!("session" in responseObj)) {
-          deferred.reject("PEP-ERROR", "invalid response: " + JSON.stringify(responseObj));
+          deferred.reject("PEP-ERROR", null, "Invalid response: " + JSON.stringify(responseObj));
           return null;
         }
         sessionId = responseObj.session;
@@ -394,7 +394,7 @@ var EnigmailpEp = {
         return sessionFunc(sessionId);
       }
       catch (ex) {
-        deferred.reject("PEP-ERROR", ex.toString());
+        deferred.reject(makeError("PEP-ERROR", ex, JSON.stringify(responseObj)));
       }
       return null;
     }).
@@ -407,8 +407,8 @@ var EnigmailpEp = {
       }
     ).
     catch(
-      function(response, desc) {
-        deferred.reject(response, desc);
+      function(reason) {
+        deferred.reject(reason);
       }
     );
 
@@ -477,7 +477,7 @@ var EnigmailpEp = {
         deferred.resolve(r);
       }
       catch (ex) {
-        deferred.reject("Exception: " + ex.toString() + "\n" + this.responseText);
+        deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
       }
     });
 
@@ -488,7 +488,7 @@ var EnigmailpEp = {
     }
 
     oReq.addEventListener("error", function(e) {
-        self._startPepServer(funcType, deferred, functionCall, function _f() {
+        self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
           let r = onErrorListener(this.responseText);
           deferred.resolve(r);
         });
@@ -514,7 +514,7 @@ var EnigmailpEp = {
 
     try {
       if (!exec.isExecutable()) {
-        deferred.reject("PEP-unavailable", "Cannot find JSON-PEP executable");
+        deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
       }
 
@@ -540,10 +540,20 @@ var EnigmailpEp = {
       EnigmailTimer.setTimeout(function _f() {
           let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
-          oReq.addEventListener("load", onLoadListener);
+          oReq.addEventListener("load", function _onload() {
+            try {
+              let parsedObj = JSON.parse(this.responseText);
+              let r = onLoadListener(parsedObj);
+
+              deferred.resolve(r);
+            }
+            catch (ex) {
+              deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
+            }
+          });
 
           oReq.addEventListener("error", function(e) {
-              deferred.reject("PEP-unavailable", "Cannot establish connection to PEP service");
+              deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
             },
             false);
 
@@ -571,7 +581,6 @@ function observeShutdown() {
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
           // XPCOM shutdown
-          dump("**Will shutdown now ***\n");
           if (gPepServerStdin) {
             gPepServerStdin.write("q\n");
             gPepServerStdin.close();
@@ -581,4 +590,14 @@ function observeShutdown() {
     },
     NS_XPCOM_SHUTDOWN_OBSERVER_ID,
     false);
+}
+
+function makeError(str, ex, msg) {
+  let o = {
+    code: str,
+    exception: ex,
+    message: (msg ? msg : (ex ? ex.toString() : ""))
+  };
+
+  return o;
 }
