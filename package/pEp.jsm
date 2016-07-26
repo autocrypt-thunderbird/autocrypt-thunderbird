@@ -1,4 +1,4 @@
-/*global Components: false */
+/*global Components: false, dump: xfalse */
 
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,23 +18,28 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailpEp"];
 
-const connectAddress = "http://127.0.0.1:2369";
-const baseUrl = "/ja/0.1/";
-
 const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
-const pepServerPath = "/Users/pbr/enigmail/pEp/pEpJSONServerAdapter/server/mt-server";
+const pepServerPath = "/usr/local/bin/pep-mt-server";
+const pepSecurityInfo = "/pEp-json-token-";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
 var gRequestId = 1;
+var gConnectionInfo = null;
+var gRetryCount = 0;
+var gPepServerStdin = null;
+var gPepServerStdout = "";
 
 var EnigmailpEp = {
 
@@ -43,7 +48,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  String - version identifier
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
   getPepVersion: function() {
 
@@ -60,13 +65,58 @@ var EnigmailpEp = {
 
   },
 
+  /**
+   * Provide the pEp Connection info. If necessary, load the data from file
+   *
+   * @return String - URL to connecto to pEp JSON Server
+   */
+  getConnectionInfo: function() {
+    if (!gConnectionInfo) {
+      let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+
+      let tmpDir = env.get("TEMP");
+      let userName = env.get("USER");
+
+      let fileName = (tmpDir !== "" ? tmpDir : "/tmp") +
+        pepSecurityInfo + (userName !== "" ? userName : "XXX");
+
+      let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+      EnigmailFiles.initPath(fileHandle, fileName);
+      let jsonData = EnigmailFiles.readFile(fileHandle);
+
+      if (jsonData.length > 0) {
+        try {
+          gConnectionInfo = JSON.parse(jsonData);
+          if (gConnectionInfo.address === "0.0.0.0") {
+            gConnectionInfo.address = "127.0.0.1";
+          }
+        }
+        catch (ex) {}
+      }
+    }
+
+    let o = gConnectionInfo;
+
+    if (!gConnectionInfo) {
+      o = {
+        // provide a default (that should fail)
+        address: "127.0.0.1",
+        port: 1234,
+        path: "/none/",
+        security_token: ""
+      };
+    }
+
+    return "http://" + o.address + ":" + o.port + o.path;
+  },
+
 
   /**
    * get the path to the GnuPG executable
    *
    * @return: Promise.
    *  then:  String - Full path to gpg executable
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
   getGpgPath: function() {
 
@@ -74,7 +124,7 @@ var EnigmailpEp = {
       let path = null;
 
       if ("result" in responseObj) {
-        path = responseObj; //.result[0];
+        path = responseObj.result[0];
       }
       return path;
     };
@@ -91,19 +141,27 @@ var EnigmailpEp = {
    *
    * @param fromAddr  : String          - sender Email address
    * @param toAddrList: Array of String - array with all recipients
+   * @param subject   : String          - the message subject
    * @param message   : String          - the message to encrypt
-   * @param pEpMode   : Number          - the PEP encryption mode (0-5)
+   * @param pEpMode   : optional Number - the PEP encryption mode:
+   *                        0: none - message is not encrypted
+   *                        1: inline PGP + PGP extensions
+   *                        2: S/MIME (RFC5751)
+   *                        3: PGP/MIME (RFC3156)
+   *                        4: pEp encryption format
    *
    * @return: Promise.
    *  then:  returned result (message Object)
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
-  encryptMessage: function(fromAddr, toAddrList, message, pEpMode) {
+  encryptMessage: function(fromAddr, toAddrList, subject, message, pEpMode) {
 
     let deferred = Promise.defer();
     let self = this;
 
+    if (pEpMode === null) pEpMode = 5;
     if (!toAddrList) toAddrList = [];
+    if (typeof(toAddrList) === "string") toAddrList = [toAddrList];
 
     this._withSession(deferred,
       function(sessionId) {
@@ -114,25 +172,24 @@ var EnigmailpEp = {
             { // src message
               "id": msgId,
               "dir": 1,
-              "shortmsg": message,
+              "shortmsg": subject,
+              "longmsg": message,
               "from": {
                 "user_id": "",
-                "username": "",
+                "username": "name",
                 "address": fromAddr,
-                "fpr": ""
               },
               to: toAddrList.reduce(function _f(p, addr) {
                 p.push({
                   "user_id": "",
-                  "username": "",
+                  "username": "name",
                   "address": addr,
-                  "fpr": ""
                 });
                 return p;
               }, [])
             },
-            [""], // extra
-            [""], // dest
+            [], // extra
+            ["OP"], // dest
             pEpMode // encryption_format
           ];
 
@@ -154,15 +211,18 @@ var EnigmailpEp = {
    * decrypt a message using the pEp server
    *
    * @param message   : String          - the message to decrypt
+   * @param sender    : String          - sender email address
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
-  decryptMessage: function(message) {
+  decryptMessage: function(message, sender) {
 
     let deferred = Promise.defer();
     let self = this;
+
+    if (!sender) sender = "unknown@localhost";
 
     this._withSession(deferred,
       function(sessionId) {
@@ -173,14 +233,21 @@ var EnigmailpEp = {
             { // src message
               "id": msgId,
               "dir": 0,
-              "longmsg": message
+              "shortmsg": "",
+              "longmsg": message,
+              "from": {
+                "address": sender
+              },
+              "to": []
             },
-            ["xyz"], // extra
-            ["OP"], // dest
-            ["c"] // color
+            ["OP"], // msg Output
+            ["OP"], // StringList Output
+            ["OP"], // pep color Output
+            ["OP"] // undefined
           ];
 
           return self._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
+
 
         }
         catch (ex) {
@@ -201,7 +268,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
 
   identityColor: function(mailAddr) {
@@ -246,7 +313,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, errer description
+   *  catch: String, String - failure code, error description
    */
   outgoingMessageColor: function(fromAddr, toAddrList, message) {
 
@@ -356,16 +423,20 @@ var EnigmailpEp = {
    * @param paramsArr         - Array : parameter array for pEp function
    * @param onLoadListener  - function: if the call is successful, callback function of the form:
    *            funcName(responseObj)
-   * @param onErrorListener - function: if the call fails, callback function of the form:
+   * @param onErrorListene  - function: if the call fails, callback function of the form:
    *            funcName(responseText)
+   * @param deferred         - object: optional Promise.defer() object
    *
    * @return Object - a Promise
    */
-  _callPepFunction: function(funcType, functionName, paramsArr, onLoadListener, onErrorListener) {
-    let deferred = Promise.defer();
+  _callPepFunction: function(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred) {
+    if (!deferred) deferred = Promise.defer();
     let self = this;
 
+    // TODO: check if security_token is valid
+
     let functionCall = {
+      "security_token": (gConnectionInfo ? gConnectionInfo.security_token : ""),
       "method": functionName,
       "params": paramsArr,
       "id": gRequestId++,
@@ -376,8 +447,8 @@ var EnigmailpEp = {
     let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
     if (!onLoadListener) {
-      onLoadListener = function(txt) {
-        return txt;
+      onLoadListener = function(obj) {
+        return obj;
       };
     }
 
@@ -385,10 +456,28 @@ var EnigmailpEp = {
       try {
         let parsedObj = JSON.parse(this.responseText);
         let r = onLoadListener(parsedObj);
+
+        if ("error" in r) {
+          if (r.error.code === -32600) {
+            // wrong security token
+            gConnectionInfo = null;
+
+            self.getConnectionInfo();
+            ++gRetryCount;
+
+            if (gRetryCount < 2) {
+              self._callPepFunction(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred);
+              return;
+            }
+          }
+        }
+        else {
+          gRetryCount = 0;
+        }
         deferred.resolve(r);
       }
       catch (ex) {
-
+        deferred.reject("Exception: " + ex.toString() + "\n" + this.responseText);
       }
     });
 
@@ -406,8 +495,8 @@ var EnigmailpEp = {
       },
       false);
 
-
-    oReq.open("POST", connectAddress + baseUrl + funcType);
+    let conn = self.getConnectionInfo();
+    oReq.open("POST", conn + funcType);
     oReq.send(JSON.stringify(functionCall));
 
     return deferred.promise;
@@ -418,7 +507,7 @@ var EnigmailpEp = {
    */
 
   _startPepServer: function(funcType, deferred, functionCall, onLoadListener) {
-    let process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
+    let self = this;
 
     let exec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
     exec.initWithPath(pepServerPath);
@@ -429,8 +518,24 @@ var EnigmailpEp = {
         return;
       }
 
-      process.init(exec);
-      process.run(false, [], 0);
+      EnigmailCore.getService(null, true);
+      observeShutdown();
+
+      let process = subprocess.call({
+        command: exec,
+        charset: null,
+        environment: EnigmailCore.getEnvList(),
+        mergeStderr: false,
+        stdin: function(stdin) {
+          gPepServerStdin = stdin;
+        },
+        stdout: function(data) {
+          // do nothing
+        },
+        stderr: function(data) {
+          // do nothing
+        }
+      });
 
       EnigmailTimer.setTimeout(function _f() {
           let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
@@ -442,7 +547,7 @@ var EnigmailpEp = {
             },
             false);
 
-          oReq.open("POST", connectAddress + baseUrl + funcType);
+          oReq.open("POST", self.getConnectionInfo() + funcType);
           oReq.send(JSON.stringify(functionCall));
         },
         1500);
@@ -452,3 +557,28 @@ var EnigmailpEp = {
     }
   }
 };
+
+
+// Mozilla-specific shutdown observer to stop pep mt-server
+function observeShutdown() {
+  // Register to observe XPCOM shutdown
+  const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
+  const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
+
+  const obsServ = Cc[NS_OBSERVERSERVICE_CONTRACTID].getService().
+  QueryInterface(Ci.nsIObserverService);
+  obsServ.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+        if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
+          // XPCOM shutdown
+          dump("**Will shutdown now ***\n");
+          if (gPepServerStdin) {
+            gPepServerStdin.write("q\n");
+            gPepServerStdin.close();
+          }
+        }
+      }
+    },
+    NS_XPCOM_SHUTDOWN_OBSERVER_ID,
+    false);
+}
