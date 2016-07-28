@@ -1875,10 +1875,7 @@ Enigmail.msg = {
     };
 
     var bufferListener = EnigmailStreams.newStringStreamListener(requestCallback);
-
-    var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-
-    var channel = ioServ.newChannelFromURI(msgUrl);
+    var channel = EnigmailStreams.createChannelFromURI(msgUrl);
 
     channel.asyncOpen(bufferListener, msgUrl);
   },
@@ -2048,7 +2045,7 @@ Enigmail.msg = {
     var ioServ = Components.classes[IOSERVICE_CONTRACTID].
     getService(Components.interfaces.nsIIOService);
     var msgUri = ioServ.newURI(srcUrl, null, null);
-    var channel = ioServ.newChannelFromURI(msgUri);
+    var channel = EnigmailStreams.createChannelFromURI(msgUri);
     var istream = channel.open();
 
     var fstream = Components.classes["@mozilla.org/network/safe-file-output-stream;1"]
@@ -2096,7 +2093,7 @@ Enigmail.msg = {
     var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
     var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
-    var channel = ioServ.newChannelFromURI(msgUri);
+    var channel = EnigmailStreams.createChannelFromURI(msgUri);
     channel.asyncOpen(bufferListener, msgUri);
   },
 

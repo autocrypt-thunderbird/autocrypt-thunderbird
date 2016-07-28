@@ -145,7 +145,7 @@ const EnigmailFixExchangeMsg = {
 
         var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
         try {
-          var channel = ioServ.newChannel(url, null, null);
+          let channel = EnigmailStreams.createChannel(url);
           channel.asyncOpen(s, null);
         }
         catch (e) {

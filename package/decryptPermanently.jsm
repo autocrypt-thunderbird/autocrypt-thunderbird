@@ -361,7 +361,7 @@ DecryptMessageIntoFolder.prototype = {
           var ioServ = Cc[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
           var msgUri = ioServ.newURI(attachment.url, null, null);
 
-          var channel = ioServ.newChannelFromURI(msgUri);
+          var channel = EnigmailStreams.createChannelFromURI(msgUri);
           channel.asyncOpen(bufferListener, msgUri);
         }
         catch (ex) {
@@ -678,9 +678,8 @@ DecryptMessageIntoFolder.prototype = {
           }
         );
 
-        var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
         try {
-          var channel = ioServ.newChannel(url, null, null);
+          var channel = EnigmailStreams.createChannel(url);
           channel.asyncOpen(s, null);
         }
         catch (e) {

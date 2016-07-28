@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailOS: false, EnigmailData: false */
+/*global Components: false, EnigmailLog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,13 +15,16 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/os.jsm");
-Cu.import("resource://enigmail/data.jsm");
+Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
+Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
+Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+
+const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams");
+const lazyLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const NS_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-  "@mozilla.org/network/file-output-stream;1";
+const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1";
 const DIRSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1";
@@ -31,17 +34,6 @@ const NS_WRONLY = 0x02;
 const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE = 0x20;
 const DEFAULT_FILE_PERMS = 0x180; // equals 0600
-
-const lazyLog = (function() {
-  let log = null;
-  return function() {
-    if (!log) {
-      Components.utils.import("resource://enigmail/log.jsm");
-      log = EnigmailLog;
-    }
-    return log;
-  };
-})();
 
 const EnigmailFiles = {
 
@@ -153,8 +145,7 @@ const EnigmailFiles = {
         throw Components.results.NS_ERROR_FAILURE;
 
       var fileURI = ioServ.newFileURI(filePath);
-      var fileChannel = ioServ.newChannel(fileURI.asciiSpec, null, null);
-
+      var fileChannel = lazyStream().createChannel(fileURI.asciiSpec);
       var rawInStream = fileChannel.open();
 
       var scriptableInStream = Cc[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Ci.nsIScriptableInputStream);

@@ -41,6 +41,7 @@ Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEven
 Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Components.utils.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
 
 // The compatible Enigmime version
@@ -190,7 +191,7 @@ function EnigReadURLContents(url, maxBytes) {
   if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
 
-  var fileChannel = ioServ.newChannel(url, null, null);
+  var fileChannel = EnigmailStreams.createChannel(url);
 
   var rawInStream = fileChannel.open();
 
