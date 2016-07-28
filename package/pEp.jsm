@@ -44,11 +44,19 @@ var gPepServerStdout = "";
 var EnigmailpEp = {
 
   /**
+   * In case of failures, an error object with the following structure is returned to the
+   * catch() method of the promise:
+   *   code     : String, one of: PEP-ERROR, PEP-unavailable
+   *   exception: JavaScript exception object (may be null)
+   *   message  : an error message describing the failure
+   */
+
+  /**
    * get the pEp version number
    *
    * @return: Promise.
    *  then:  String - version identifier
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
   getPepVersion: function() {
 
@@ -116,7 +124,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  String - Full path to gpg executable
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
   getGpgPath: function() {
 
@@ -152,7 +160,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  returned result (message Object)
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
   encryptMessage: function(fromAddr, toAddrList, subject, message, pEpMode) {
 
@@ -215,7 +223,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
   decryptMessage: function(message, sender) {
 
@@ -265,21 +273,24 @@ var EnigmailpEp = {
    * determine the trust color of a pEp Identity
    *
    * @param mailAddr  : String          - Email address to check
+   * @param userId    : String          - pEp Identity to check
+   *
+   * one of mailAddr/userId may be null
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
 
-  identityColor: function(mailAddr) {
+  getIdentityColor: function(mailAddr, userId) {
     let deferred = Promise.defer();
     let self = this;
 
     let pepId = {
-      "user_id": "",
-      "username": "",
+      "user_id": userId,
+      "username": null,
       "address": mailAddr,
-      "fpr": ""
+      "fpr": null
     };
 
     this._withSession(deferred,
@@ -305,6 +316,132 @@ var EnigmailpEp = {
   },
 
   /**
+   * set a user identity in pEp
+   *
+   * @param emailAddress: String          - the email address
+   * @param userId      : String          - unique C string to identify person that identity is refering to
+   * @param name        : String          - the user's name
+   * @param fpr         : String          - the fingerprint
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  setIdentity: function(emailAddress, userId, name, fpr) {
+    let deferred = Promise.defer();
+    let self = this;
+
+    this._withSession(deferred,
+      function(sessionId) {
+        try {
+          let msgId = "enigmail-" + String(gRequestId++);
+          let params = [
+            sessionId, // session
+            {
+              "user_id": userId,
+              "username": name,
+              "address": emailAddress,
+              "fpr": fpr
+            },
+          ];
+
+          return self._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
+
+        }
+        catch (ex) {
+          deferred.reject(makeError("PEP-ERROR", ex));
+        }
+
+        return null;
+      }
+    );
+
+    return deferred.promise;
+  },
+
+  /**
+   * get a user identity from pEp
+   *
+   * @param emailAddress: String          - the email address
+   * @param userId      : String          - unique C string to identify person that identity is refering to
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  getIdentity: function(emailAddress, userId) {
+    let deferred = Promise.defer();
+    let self = this;
+
+    if (!userId) userId = "";
+    if (!emailAddress) emailAddress = "";
+
+    this._withSession(deferred,
+      function(sessionId) {
+        try {
+          let msgId = "enigmail-" + String(gRequestId++);
+          let params = [
+            sessionId, // session
+            emailAddress,
+            userId, ["OP"]
+          ];
+
+          return self._callPepFunction(FT_CALL_FUNCTION, "get_identity", params);
+
+        }
+        catch (ex) {
+          deferred.reject(makeError("PEP-ERROR", ex));
+        }
+
+        return null;
+      }
+    );
+
+    return deferred.promise;
+  },
+
+  /**
+   * get a user identity from pEp
+   *
+   * @param emailAddress: String          - the email address
+   * @param userId      : String          - unique C string to identify person that identity is refering to
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  getTrustWords: function(fpr, language, maxWords) {
+    let deferred = Promise.defer();
+    let self = this;
+
+    if (!maxWords) maxWords = 0;
+    this._withSession(deferred,
+      function(sessionId) {
+        try {
+          let msgId = "enigmail-" + String(gRequestId++);
+          let params = [
+            sessionId, // session
+            fpr,
+            language.toUpperCase(), ["OP"], // words
+            ["OP"], // words_size
+            maxWords // max. number of words
+          ];
+
+          return self._callPepFunction(FT_CALL_FUNCTION, "trustwords", params);
+
+        }
+        catch (ex) {
+          deferred.reject(makeError("PEP-ERROR", ex));
+        }
+
+        return null;
+      }
+    );
+
+    return deferred.promise;
+  },
+
+  /**
    * determine the trust color that an outgoing message would receive
    *
    * @param fromAddr  : String          - sender Email address
@@ -313,7 +450,7 @@ var EnigmailpEp = {
    *
    * @return: Promise.
    *  then:  returned result
-   *  catch: String, String - failure code, error description
+   *  catch: Error object (see above)
    */
   outgoingMessageColor: function(fromAddr, toAddrList, message) {
 
@@ -457,7 +594,7 @@ var EnigmailpEp = {
         let parsedObj = JSON.parse(this.responseText);
         let r = onLoadListener(parsedObj);
 
-        if ("error" in r) {
+        if (r && ("error" in r)) {
           if (r.error.code === -32600) {
             // wrong security token
             gConnectionInfo = null;

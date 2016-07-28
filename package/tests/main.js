@@ -29,3 +29,5 @@ do_subtest("funcs-test.js");
 do_subtest("mimeDecrypt-test.js");
 do_subtest("expiry-test.js");
 do_subtest("installGnuPG-test.js");
+
+// do_subtest("pep-test.js"); // not yet enabled
