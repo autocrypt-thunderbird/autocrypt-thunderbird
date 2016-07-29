@@ -57,6 +57,29 @@ const EnigmailMime = {
   },
 
   /***
+   * determine the "protocol" part of a mail content type.
+   *
+   * @contentTypeStr: the string containing all parts of a content-type.
+   *               (e.g. multipart/signed; protocol="xyz") --> returns "xyz"
+   *
+   * @return: String containing the protocol parameter; or null
+   */
+
+  getProtocol: function(contentTypeStr) {
+    contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
+    let proto = "";
+    let ct = contentTypeStr.split(/;/);
+    for (let i = 0; i < ct.length; i++) {
+      if (ct[i].search(/[ \t]*protocol[ \t]*=/i) >= 0) {
+        proto = ct[i];
+        break;
+      }
+    }
+    proto = proto.replace(/\s*protocol\s*=/i, "").replace(/[\'\"]/g, "");
+    return proto;
+  },
+
+  /***
    * determine the "charset" part of a mail content type.
    *
    * @contentTypeStr: the string containing all parts of a content-type.

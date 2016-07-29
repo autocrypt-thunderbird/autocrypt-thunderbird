@@ -29,6 +29,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
+const PGPMIME_PROTO = "application/pgp-signature";
 
 const maxBufferLen = 102400;
 
@@ -38,7 +39,7 @@ var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStr
 // MimeVerify Constructor
 function MimeVerify(protocol) {
   if (!protocol) {
-    protocol = "application/pgp-signature";
+    protocol = PGPMIME_PROTO;
   }
 
   this.protocol = protocol;
@@ -280,7 +281,7 @@ MimeVerify.prototype = {
 
     if (this.readMode === 3) {
       // signature data
-      if (this.protocol === "application/pgp-signature") {
+      if (this.protocol === PGPMIME_PROTO) {
         let xferEnc = this.getContentTransferEncoding();
         if (xferEnc.search(/base64/i) >= 0) {
           let bound = this.getBodyPart();
@@ -442,32 +443,35 @@ MimeVerify.prototype = {
       }
     }
 
-    var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-    var win = windowManager.getMostRecentWindow(null);
+    if (this.protocol === PGPMIME_PROTO) {
+      var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+      var win = windowManager.getMostRecentWindow(null);
 
-    // create temp file holding signature data
-    this.sigFile = EnigmailFiles.getTempDirObj();
-    this.sigFile.append("data.sig");
-    this.sigFile.createUnique(this.sigFile.NORMAL_FILE_TYPE, 0x180);
-    EnigmailFiles.writeFileContents(this.sigFile, this.sigData, 0x180);
+      // create temp file holding signature data
+      this.sigFile = EnigmailFiles.getTempDirObj();
+      this.sigFile.append("data.sig");
+      this.sigFile.createUnique(this.sigFile.NORMAL_FILE_TYPE, 0x180);
+      EnigmailFiles.writeFileContents(this.sigFile, this.sigData, 0x180);
 
-    var statusFlagsObj = {};
-    var errorMsgObj = {};
+      var statusFlagsObj = {};
+      var errorMsgObj = {};
 
-    this.proc = EnigmailDecryption.decryptMessageStart(win, true, true, this,
-      statusFlagsObj, errorMsgObj,
-      EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile)));
+      this.proc = EnigmailDecryption.decryptMessageStart(win, true, true, this,
+        statusFlagsObj, errorMsgObj,
+        EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile)));
 
-    if (this.pipe) {
-      EnigmailLog.DEBUG("Closing pipe\n"); // always log this one
-      this.pipe.close();
+      if (this.pipe) {
+        EnigmailLog.DEBUG("mimeVerify.jsm: onStopRequest: closing pipe\n"); // always log this one
+        this.pipe.close();
+      }
+      else
+        this.closePipe = true;
     }
-    else
-      this.closePipe = true;
   },
 
   // return data to libMime
   returnData: function(data) {
+    EnigmailLog.DEBUG("mimeVerify.jsm: returnData: " + data.length + " bytes\n");
 
     let m = data.match(/^(content-type: +)([\w\/]+)/im);
     if (m && m.length >= 3) {
@@ -475,12 +479,15 @@ MimeVerify.prototype = {
       if (contentType.search(/^text/i) === 0) {
         // add multipart/mixed boundary to work around TB bug (empty forwarded message)
         let bound = EnigmailMime.createBoundary();
-        data = 'Content-Type: multipart/mixed; boundary="' + bound + '"\n\n--' +
+        data = 'Content-Type: multipart/mixed; boundary="' + bound + '"\n' +
+          'Content-Disposition: inline\n\n--' +
           bound + '\n' +
           data +
           '\n--' + bound + '--\n';
       }
     }
+
+    EnigmailLog.DEBUG("mimeVerify.jsm: data:---\n" + data + "---\n");
 
     gConv.setData(data, data.length);
     try {

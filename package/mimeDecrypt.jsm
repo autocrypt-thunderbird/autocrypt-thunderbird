@@ -370,6 +370,9 @@ EnigmailMimeDecrypt.prototype = {
 
     this.displayStatus();
 
+    this.returnData(this.decryptedData);
+    this.decryptedData = "";
+
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
     this.proc = null;
   },
@@ -462,7 +465,8 @@ EnigmailMimeDecrypt.prototype = {
           LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
 
           let wrapper = EnigmailMime.createBoundary();
-          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n\r\n' +
+          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+            'Content-Disposition: inline\r\n\r\n' +
             '--' + wrapper + '\r\n' +
             this.decryptedData + '\r\n' +
             '--' + wrapper + '--\r\n';
@@ -471,23 +475,47 @@ EnigmailMimeDecrypt.prototype = {
       }
     }
 
-    this.returnData(this.decryptedData);
-
-    this.decryptedData = "";
     this.exitCode = exitCode;
+  },
+
+  extractContentType: function(data) {
+    let i = data.search(/\n\r?\n/);
+    if (i <= 0) return null;
+
+    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    headers.initialize(data.substr(0, i));
+    return headers.extractHeader("content-type", false);
   },
 
   // return data to libMime
   returnData: function(data) {
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: " + data.length + " bytes\n");
 
     gConv.setData(data, data.length);
+
+    let ct = this.extractContentType(data);
+
     try {
-      this.mimeSvc.onStartRequest(null, null);
-      this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
-      this.mimeSvc.onStopRequest(null, null, 0);
+      if (ct && ct.search(/multipart\/signed/i) >= 0) {
+        EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: using direct verification\n");
+
+        this.mimeSvc.contentType = ct;
+        this.mimeSvc.mimePart = this.mimeSvc.mimePart + ".1";
+        let proto = EnigmailMime.getProtocol(ct);
+        let veri = EnigmailVerify.newVerifier(proto);
+        veri.onStartRequest(this.mimeSvc, this.uri);
+        veri.onDataAvailable(null, null, gConv, 0, data.length + 1);
+        veri.onStopRequest(null, null, 0);
+      }
+      else {
+        gConv.setData(data, data.length);
+        this.mimeSvc.onStartRequest(null, null);
+        this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+        this.mimeSvc.onStopRequest(null, null, 0);
+      }
     }
     catch (ex) {
-      // EnigmailLog.ERROR("mimeDecrypt.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      EnigmailLog.ERROR("mimeDecrypt.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
   },
 
