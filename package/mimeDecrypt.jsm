@@ -493,12 +493,15 @@ EnigmailMimeDecrypt.prototype = {
 
     gConv.setData(data, data.length);
 
+    let proto = null;
     let ct = this.extractContentType(data);
+    if (ct && ct.search(/multipart\/signed/i) >= 0) {
+      proto = EnigmailMime.getProtocol(ct);
+    }
 
     try {
-      if (ct && ct.search(/multipart\/signed/i) >= 0) {
+      if (proto && proto.search(/application\/(pgp|pkcs7|x-pkcs7)-signature/i) >= 0) {
         EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: using direct verification\n");
-
         this.mimeSvc.contentType = ct;
         this.mimeSvc.mimePart = this.mimeSvc.mimePart + ".1";
         let proto = EnigmailMime.getProtocol(ct);
