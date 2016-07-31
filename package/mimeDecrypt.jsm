@@ -35,8 +35,6 @@ const ENCODING_DEFAULT = 0;
 const ENCODING_BASE64 = 1;
 const ENCODING_QP = 2;
 
-const maxBufferLen = 102400;
-
 var gDebugLogLevel = 0;
 
 var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
@@ -504,7 +502,6 @@ EnigmailMimeDecrypt.prototype = {
         EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: using direct verification\n");
         this.mimeSvc.contentType = ct;
         this.mimeSvc.mimePart = this.mimeSvc.mimePart + ".1";
-        let proto = EnigmailMime.getProtocol(ct);
         let veri = EnigmailVerify.newVerifier(proto);
         veri.onStartRequest(this.mimeSvc, this.uri);
         veri.onDataAvailable(null, null, gConv, 0, data.length + 1);
