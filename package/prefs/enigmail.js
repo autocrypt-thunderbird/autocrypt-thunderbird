@@ -46,9 +46,6 @@ pref("extensions.enigmail.addHeaders", false);
 // countdown for alerts when composing inline PGP HTML msgs
 pref("extensions.enigmail.composeHtmlAlertCount", 3);
 
-// prefer S/MIME or PGP/MIME (0: PGP/MIME, 1: ask, 2: S/MIME)
-pref("extensions.enigmail.mimePreferPgp", 1);
-
 // show warning message when clicking on sign icon
 pref("extensions.enigmail.displaySignWarn", true);
 
@@ -168,7 +165,7 @@ pref("extensions.enigmail.gpgLocaleEn", true);
 // use PGP/MIME (0=never, 1=allow, 2=always)
 // pref("extensions.enigmail.usePGPMimeOption",1); -- OBSOLETE, see mail.identity.default.pgpMimeMode
 
-// enable using gpgkeys_*
+// Use gpg for keyserver operations (vs. Thunderbird)
 pref("extensions.enigmail.useGpgKeysTool", true);
 
 // show "conflicting rules" message (and remember selected state)
@@ -222,6 +219,9 @@ pref("mail.identity.default.openPgpUrlName", "");
 pref("mail.identity.default.pgpMimeMode", true);
 pref("mail.identity.default.attachPgpKey", false);
 pref("mail.identity.default.autoEncryptDrafts", true);
+
+// prefer S/MIME or PGP/MIME (0: S/MIME, 1: PGP/MIME)
+pref("mail.identity.default.mimePreferOpenPGP", 1);
 
 /*
    Other settings (change Mozilla behaviour)

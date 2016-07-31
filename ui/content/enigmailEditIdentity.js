@@ -43,6 +43,7 @@ Enigmail.edit = {
     this.pgpSignEncPolicy = document.getElementById("enigmail_sign_encrypted");
     this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
     this.autoEncryptDrafts = document.getElementById("enigmail_autoEncryptDrafts");
+    this.mimePreferOpenPGP = document.getElementById("enigmail_mimePreferOpenPGP");
 
     if (this.identity) {
       this.enablePgp.checked = this.identity.getBoolAttribute("enablePgp");
@@ -59,6 +60,17 @@ Enigmail.edit = {
           break;
       }
       this.pgpKeyMode.selectedItem = document.getElementById(selectedItemId);
+
+      var mimePolicy = this.identity.getIntAttribute("mimePreferOpenPGP");
+      switch (mimePolicy) {
+        case 1:
+          selectedItemId = "enigmail_mime_preferEnigmail";
+          break;
+        default:
+          selectedItemId = "enigmail_mime_preferSMime";
+          break;
+      }
+      this.mimePreferOpenPGP.selectedItem = document.getElementById(selectedItemId);
 
       this.pgpKeyId.value = this.identity.getCharAttribute("pgpkeyId");
       EnigmailFuncs.getSignMsg(this.identity);
@@ -136,6 +148,7 @@ Enigmail.edit = {
     if (this.enablePgp.checked) {
       // PGP is enabled
       this.identity.setIntAttribute("pgpKeyMode", this.pgpKeyMode.selectedItem.value);
+      this.identity.setIntAttribute("mimePreferOpenPGP", this.mimePreferOpenPGP.selectedItem.value);
       this.identity.setCharAttribute("pgpkeyId", this.pgpKeyId.value);
       this.identity.setIntAttribute("defaultSigningPolicy", (this.signingPolicy.checked ? 1 : 0));
       this.identity.setIntAttribute("defaultEncryptionPolicy", (this.encryptionPolicy.checked ? 1 : 0));
