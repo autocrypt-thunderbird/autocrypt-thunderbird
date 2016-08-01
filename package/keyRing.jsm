@@ -203,13 +203,14 @@ var EnigmailKeyRing = {
   /**
    * get 1st key object that matches a given key ID or subkey ID
    *
-   * @param keyId - String: key Id with 16 characters (preferred) or 8 characters),
-   *                        or fingerprint (40 or 32 characters).
-   *                        Optionally preceeded with "0x"
+   * @param keyId      - String: key Id with 16 characters (preferred) or 8 characters),
+   *                             or fingerprint (40 or 32 characters).
+   *                             Optionally preceeded with "0x"
+   * @param noLoadKeys - Boolean [optional]: do not try to load the key list first
    *
    * @return Object - found KeyObject or null if key not found
    */
-  getKeyById: function(keyId) {
+  getKeyById: function(keyId, noLoadKeys) {
     EnigmailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
     let s;
 
@@ -217,7 +218,9 @@ var EnigmailKeyRing = {
       keyId = keyId.substr(2);
     }
 
-    this.getAllKeys(); // ensure keylist is loaded;
+    if (!noLoadKeys) {
+      this.getAllKeys(); // ensure keylist is loaded;
+    }
 
     let keyObj = gKeyIndex[keyId];
 
@@ -1397,12 +1400,13 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
 }
 
 /**
- * Create a list of objects representing the keys in a key list
+ * Create a list of objects representing the keys in a key list.
+ * The internal cache is first deleted.
  *
- * @keyListString: array of |string| formatted output from GnuPG for key listing
- * @keyListObj:    |object| holding the resulting key list:
- *                     obj.keyList:     Array holding key objects
- *                     obj.keySortList: Array holding values to make sorting easier
+ * @param keyListString: array of |string| formatted output from GnuPG for key listing
+ * @param keyListObj:    |object| holding the resulting key list:
+ *                         obj.keyList:     Array holding key objects
+ *                         obj.keySortList: Array holding values to make sorting easier
  *
  * no return value
  */
@@ -1411,6 +1415,20 @@ function createKeyObjects(keyListString, keyListObj) {
   keyListObj.keySortList = [];
   keyListObj.trustModel = "?";
 
+  appendKeyItems(keyListString, keyListObj);
+}
+
+/**
+ * Append key objects to a given key cache
+ *
+ * @param keyListString: array of |string| formatted output from GnuPG for key listing
+ * @param keyListObj:    |object| holding the resulting key list
+ *                         obj.keyList:     Array holding key objects
+ *                         obj.keySortList: Array holding values to make sorting easier
+ *
+ * no return value
+ */
+function appendKeyItems(keyListString, keyListObj) {
   let keyObj = {};
   let uatNum = 0; // counter for photos (counts per key)
   let numKeys = 0;
@@ -1512,6 +1530,35 @@ function createKeyObjects(keyListString, keyListObj) {
   }
 }
 
+/**
+ * Handle secret keys for which gpg 2.0 does not create a public key record
+ */
+function appendUnkownSecretKey(keyId, aKeyList, startIndex, endIndex) {
+  EnigmailLog.DEBUG("keyRing.jsm: appendUnkownSecretKey: keyId: " + keyId + "\n");
+
+  let keyListStr = [];
+  for (let j = startIndex; j < endIndex; j++) {
+    keyListStr.push(aKeyList[j]);
+  }
+
+  // make the listing a "public" key
+  keyListStr[0] = keyListStr[0].replace(/^sec/, "pub");
+
+  appendKeyItems(keyListStr, gKeyListObj);
+  EnigmailKeyRing.rebuildKeyIndex();
+
+  let k = EnigmailKeyRing.getKeyById(keyId, true);
+
+  if (k) {
+    k.secretAvailable = true;
+    k.keyUseFor = "";
+    k.keyTrust = "i";
+    k.ownerTrust = "i";
+  }
+
+}
+
+
 function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection) {
   EnigmailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
 
@@ -1525,17 +1572,35 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
 
   EnigmailKeyRing.rebuildKeyIndex();
 
+  let startRow = -1;
+  let lastKeyId = "";
   // search and mark keys that have secret keys
   for (let i = 0; i < aGpgSecretsList.length; i++) {
     let listRow = aGpgSecretsList[i].split(/:/);
     if (listRow.length >= 0) {
       if (listRow[ENTRY_ID] == "sec") {
-        let k = EnigmailKeyRing.getKeyById(listRow[KEY_ID]);
+
+        if (startRow >= 0) {
+          // handle secret key not found on public key ring
+          appendUnkownSecretKey(lastKeyId, aGpgSecretsList, startRow, i);
+        }
+        startRow = -1;
+
+        let k = EnigmailKeyRing.getKeyById(listRow[KEY_ID], true);
         if (k && typeof(k) === "object") {
           k.secretAvailable = true;
         }
+        else {
+          startRow = i;
+          lastKeyId = listRow[KEY_ID];
+        }
       }
     }
+  }
+
+  if (startRow >= 0) {
+    // handle secret key not found on public key ring
+    appendUnkownSecretKey(lastKeyId, aGpgSecretsList, startRow, aGpgSecretsList.length);
   }
 
   gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
