@@ -36,6 +36,7 @@ Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: 
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -4141,17 +4142,7 @@ Enigmail.msg = {
     var data;
     if (clipBoard.supportsSelectionClipboard()) {
       // get the clipboard contents for selected text (X11)
-      try {
-        var transferable = Components.classes["@mozilla.org/widget/transferable;1"].
-        createInstance(Components.interfaces.nsITransferable);
-        transferable.addDataFlavor("text/unicode");
-        clipBoard.getData(transferable, clipBoard.kSelectionClipboard);
-        var flavour = {};
-        data = {};
-        var length = {};
-        transferable.getAnyTransferData(flavour, data, length);
-      }
-      catch (ex) {}
+      data = EnigmailClipboard.getClipboardContent(window, Components.interfaces.nsIClipboard.kSelectionClipboard);
     }
 
     // Replace encrypted quote with decrypted quote (destroys selection clipboard on X11)
@@ -4176,14 +4167,8 @@ Enigmail.msg = {
       this.editorInsertText(tail);
 
     if (clipBoard.supportsSelectionClipboard()) {
-      try {
-        // restore the clipboard contents for selected text (X11)
-        var pasteClipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].
-        getService(Components.interfaces.nsIClipboardHelper);
-        data = data.value.QueryInterface(Components.interfaces.nsISupportsString).data;
-        pasteClipboard.copyStringToClipboard(data, clipBoard.kSelectionClipboard);
-      }
-      catch (ex) {}
+      // restore the clipboard contents for selected text (X11)
+      EnigmailClipboard.setClipboardContent(data, clipBoard.kSelectionClipboard);
     }
 
     if (interactive)

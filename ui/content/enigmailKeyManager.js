@@ -15,7 +15,6 @@
 /* global EnigEditKeyTrust: false, EnigEditKeyExpiry: false, EnigSignKey: false, EnigRevokeKey: false, EnigCreateRevokeCert: false */
 /* global EnigLongAlert: false, EnigChangeKeyPwd: false, EnigDownloadKeys: false, EnigSetPref: false, EnigGetTrustCode: false */
 /* global ENIG_KEY_DISABLED: false, ENIG_KEY_NOT_VALID: false, IOSERVICE_CONTRACTID: false, ENIG_LOCAL_FILE_CONTRACTID: false */
-/* global ENIG_CLIPBOARD_CONTRACTID: false, ENIG_TRANSFERABLE_CONTRACTID: false, ENIG_CLIPBOARD_HELPER_CONTRACTID: false */
 
 // imported packages
 /* global EnigmailLog: false, EnigmailEvents: false, EnigmailKeyRing: false, EnigmailWindows: false, EnigmailKeyEditor: false */
@@ -28,7 +27,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 
 
 const INPUT = 0;
@@ -769,22 +769,7 @@ function enigmailChangePwd() {
 
 
 function enigGetClipboard() {
-  EnigmailLog.DEBUG("enigmailKeyManager.js: enigGetClipboard:\n");
-  var cBoardContent = "";
-  var clipBoard = Cc[ENIG_CLIPBOARD_CONTRACTID].getService(Ci.nsIClipboard);
-  try {
-    var transferable = Cc[ENIG_TRANSFERABLE_CONTRACTID].createInstance(Ci.nsITransferable);
-    transferable.addDataFlavor("text/unicode");
-    clipBoard.getData(transferable, clipBoard.kGlobalClipboard);
-    var flavour = {};
-    var data = {};
-    var length = {};
-    transferable.getAnyTransferData(flavour, data, length);
-    cBoardContent = data.value.QueryInterface(Ci.nsISupportsString).data;
-    EnigmailLog.DEBUG("enigmailKeyManager.js: enigGetClipboard: got data\n");
-  }
-  catch (ex) {}
-  return cBoardContent;
+  return EnigmailClipboard.getClipboardContent(window, Ci.nsIClipboard.kGlobalClipboard);
 }
 
 function enigmailImportFromClipbrd() {
@@ -845,20 +830,13 @@ function enigmailCopyToClipbrd() {
     EnigAlert(EnigGetString("copyToClipbrdFailed") + "\n\n" + errorMsgObj.value);
     return;
   }
-  var clipBoard = Cc[ENIG_CLIPBOARD_CONTRACTID].getService(Ci.nsIClipboard);
-  try {
-    let clipBoardHlp = Cc[ENIG_CLIPBOARD_HELPER_CONTRACTID].getService(Ci.nsIClipboardHelper);
-    clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kGlobalClipboard);
-    if (clipBoard.supportsSelectionClipboard()) {
-      clipBoardHlp.copyStringToClipboard(keyData, clipBoard.kSelectionClipboard);
-    }
-    EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailImportFromClipbrd: got data from clipboard");
+  if (EnigmailClipboard.setClipboardContent(keyData)) {
+    EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailImportFromClipbrd: set clipboard data");
     EnigAlert(EnigGetString("copyToClipbrdOK"));
   }
-  catch (ex) {
+  else {
     EnigAlert(EnigGetString("copyToClipbrdFailed"));
   }
-
 }
 
 function enigmailSearchKey() {

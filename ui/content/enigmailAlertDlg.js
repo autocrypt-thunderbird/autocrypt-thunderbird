@@ -12,6 +12,9 @@
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+
+
 EnigInitCommon("enigmailAlertDlg");
 
 function onLoad() {
@@ -151,8 +154,7 @@ function checkboxCb() {
 function copyToClipbrd() {
   let s = window.getSelection().toString();
 
-  let clip = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
-  clip.copyString(s);
+  EnigmailClipboard.setClipboardContent(s);
 }
 
 function onKeyPress(event) {

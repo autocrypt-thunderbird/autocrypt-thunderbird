@@ -23,6 +23,7 @@ MODFILES = \
            armor.jsm \
            attachment.jsm \
            card.jsm \
+           clipboard.jsm \
            commandLine.jsm \
            configBackup.jsm \
            configure.jsm \

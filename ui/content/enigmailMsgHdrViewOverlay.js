@@ -29,6 +29,7 @@ Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKey
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -706,8 +707,7 @@ Enigmail.hdrView = {
 
   copyStatusInfo: function() {
     if (Enigmail.msg.securityInfo) {
-      var clipHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].createInstance(Components.interfaces.nsIClipboardHelper);
-      clipHelper.copyString(Enigmail.msg.securityInfo.statusInfo);
+      EnigmailClipboard.setClipboardContent(Enigmail.msg.securityInfo.statusInfo);
     }
 
   },

@@ -71,6 +71,7 @@ zip --must-match\
     modules/armor.jsm \
     modules/attachment.jsm \
     modules/card.jsm \
+    modules/clipboard.jsm \
     modules/commandLine.jsm \
     modules/configure.jsm \
     modules/constants.jsm \
