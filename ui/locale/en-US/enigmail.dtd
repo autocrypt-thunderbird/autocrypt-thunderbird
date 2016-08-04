@@ -341,6 +341,9 @@
 <!ENTITY enigmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Send OpenPGP Key ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "Send URL for key retrieval:">
+<!ENTITY enigmail.amPrefMimePreferProto.label       "If both, Enigmail and S/MIME encryption are possible, then:">
+<!ENTITY enigmail.amPrefMimePreferEnigmail.label    "Prefer Enigmail (OpenPGP)">
+<!ENTITY enigmail.amPrefMimePreferSMime.label       "Prefer S/MIME">
 
 <!ENTITY enigmail.progressText.label               "Progress:">
 

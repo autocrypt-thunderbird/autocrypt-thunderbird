@@ -82,15 +82,15 @@
                     label="&enigmail.autoEncryptDrafts.label;"/>
 
           <separator/>
-          
-          <label id="mimePreferOpenPGP" value="If both, Enigmail and S/MIME encryption are possible, then:"/>
+
+          <label id="mimePreferOpenPGP" value="&enigmail.amPrefMimePreferProto.label;"/>
           <radiogroup id="enigmail_mimePreferOpenPGP" aria-labelledby="mimePreferOpenPGP">
             <radio id="enigmail_mime_preferSMime"
-                   label="Prefer S/MIME"
+                   label="&enigmail.amPrefMimePreferSMime.label;"
                    value="0"
                    observes="enigmail_bcEnablePgp"/>
             <radio id="enigmail_mime_preferEnigmail"
-                   label="Prefer Enigmail (OpenPGP)"
+                   label="&enigmail.amPrefMimePreferEnigmail.label;"
                    value="1"
                    observes="enigmail_bcEnablePgp"/>
           </radiogroup>
