@@ -26,7 +26,7 @@ const EnigmailAttachment = {
 
     const args = EnigmailGpg.getStandardArgs(true).
     concat(EnigmailPassword.command()).
-    concat(["--list-packets"]);
+    concat(["--decrypt"]);
 
     const listener = EnigmailExecution.newSimpleListener(
       function _stdin(pipe) {
@@ -36,6 +36,8 @@ const EnigmailAttachment = {
         pipe.close();
       });
 
+    listener.stdout = function(data) {};
+
     const proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, {});
 
     if (!proc) {
@@ -44,9 +46,12 @@ const EnigmailAttachment = {
 
     proc.wait();
 
-    const matches = listener.stdoutData.match(/:literal data packet:\r?\n.*name="(.*)",/m);
-    if (matches && (matches.length > 1)) {
-      var filename = escape(matches[1]).replace(/%5Cx/g, "%");
+    const matches = listener.stderrData.match(/^(\[GNUPG:\] PLAINTEXT [0-9]+ [0-9]+ )(.*)$/m);
+    if (matches && (matches.length > 2)) {
+      var filename = matches[2];
+      if (filename.indexOf(" ") > 0) {
+        filename = filename.replace(/ .*$/, "");
+      }
       return EnigmailData.convertToUnicode(unescape(filename), "utf-8");
     }
     else {
