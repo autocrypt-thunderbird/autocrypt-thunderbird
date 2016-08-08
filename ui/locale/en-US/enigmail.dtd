@@ -163,9 +163,8 @@
 <!ENTITY enigmail.pgpAccountSettings.label     "Signing/Encryption Options...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Send Options...">
 <!ENTITY enigmail.defaultKeySelOpts.label      "Key Selection Options...">
-<!ENTITY enigmail.usePgpMime.label             "Protocol: PGP/MIME">
-<!ENTITY enigmail.useInline.label              "Protocol: Inline PGP">
-<!ENTITY enigmail.useSmime.label               "Protocol: S/MIME">
+<!ENTITY enigmail.usePgpMime.label            "Protocol: PGP/MIME">
+<!ENTITY enigmail.useInline.label            "Protocol: Inline PGP">
 
 <!ENTITY enigmail.tempTrustAllKeys.label       "Trust the keys of all recipients">
 <!ENTITY enigmail.undoencryption.label         "Undo Encryption">
@@ -185,7 +184,6 @@
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
 <!ENTITY enigmail.usePgpMime.accesskey         "G">
 <!ENTITY enigmail.useInline.accesskey          "I">
-<!ENTITY enigmail.useSmime.accesskey           "S">
 
 <!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">

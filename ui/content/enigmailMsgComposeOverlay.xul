@@ -99,14 +99,6 @@
                 type="radio"
                 oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeNo');"/>
 
-          <menuitem id="enigmail_compose_smime_item"
-                accesskey="&enigmail.useSmime.accesskey;"
-                label="&enigmail.useSmime.label;"
-                name="enigmailPgpProtocol"
-                checked="false"
-                type="radio"
-                oncommand="Enigmail.msg.setFinalSendMode('final-useSmime');"/>
-
           <menuseparator/>
 
           <menuitem id="enigmail_trust_all_keys"
