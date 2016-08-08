@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, withTestGpgHome:false */
-/*global EnigmailCore: false, Enigmail: false, component: false, Cc: false, Ci: false, withEnvironment: false, nsIEnigmail: false, nsIEnvironment: false, Ec: false, EnigmailPrefs: false, EnigmailOS: false, EnigmailArmor: false */
+/*global withEnigmail: false, EnigmailCore: false, Enigmail: false, component: false, Cc: false, Ci: false, withEnvironment: false, nsIEnigmail: false, nsIEnvironment: false, Ec: false, EnigmailPrefs: false, EnigmailOS: false, EnigmailArmor: false, withLogFiles: false, assertLogContains: false, assertLogDoesNotContain: false */
 /*jshint -W120 */
 /*jshint -W097 */
 /*
@@ -13,6 +13,10 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("enigmail.js");
+component("enigmail/prefs.jsm");
+component("enigmail/core.jsm");
+component("enigmail/log.jsm"); /*global EnigmailLog: false */
+component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 
 function newEnigmail(f) {
   var oldEnigmail = EnigmailCore.getEnigmailService();
@@ -28,6 +32,7 @@ function newEnigmail(f) {
 
 // testing: initialize
 test(function initializeWillPassEnvironmentIfAskedTo() {
+  EnigmailPrefs.setPref('keyRefreshOn', false);
   var window = JSUnit.createStubWindow();
   withEnvironment({
     "ENIGMAIL_PASS_ENV": "STUFF:BLARG",
@@ -41,6 +46,7 @@ test(function initializeWillPassEnvironmentIfAskedTo() {
 });
 
 test(function initializeWillNotPassEnvironmentsNotAskedTo() {
+  EnigmailPrefs.setPref('keyRefreshOn', false);
   var window = JSUnit.createStubWindow();
   var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
   environment.set("ENIGMAIL_PASS_ENV", "HOME");
@@ -52,6 +58,7 @@ test(function initializeWillNotPassEnvironmentsNotAskedTo() {
 });
 
 test(function initializeWillNotSetEmptyEnvironmentValue() {
+  EnigmailPrefs.setPref('keyRefreshOn', false);
   var window = JSUnit.createStubWindow();
   var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
   environment.set("APPDATA", "");

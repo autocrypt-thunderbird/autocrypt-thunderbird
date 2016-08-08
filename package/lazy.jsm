@@ -8,15 +8,17 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLazy"];
+const EXPORTED_SYMBOLS = ["EnigmailLazy"];
+
+const Cu = Components.utils;
 
 const EnigmailLazy = {
   loader: function(component, name) {
     let holder = null;
     return function() {
-      if (!holder) {
+      if (holder === null) {
         const into = {};
-        Components.utils.import("resource://" + component, into);
+        Cu.import("resource://" + component, into);
         holder = into[name];
       }
       return holder;

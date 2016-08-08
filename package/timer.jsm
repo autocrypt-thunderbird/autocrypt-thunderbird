@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailTimer"];
+const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -23,7 +23,7 @@ const EnigmailTimer = {
    *                             (0 if not specified)
    */
   setTimeout: function(callbackFunction, sleepTimeMs) {
-    var timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+    const timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     timer.initWithCallback(callbackFunction,
       sleepTimeMs || 0,
       Ci.nsITimer.TYPE_ONE_SHOT);

@@ -431,19 +431,16 @@ DecryptMessageIntoFolder.prototype = {
               }
               else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
                 EnigmailLog.DEBUG("decryptPermanently.jsm: decryptAttachment: decryption failed\n");
-                if (EnigmailGpgAgent.useGpgAgent()) {
-                  // since we cannot find out if the user wants to cancel
-                  // we should ask
-                  let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachment.name, self.subject]);
+                // since we cannot find out if the user wants to cancel
+                // we should ask
+                let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachment.name, self.subject]);
 
-                  if (!EnigmailDialog.confirmDlg(null, msg,
-                      EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
-                    o.status = STATUS_FAILURE;
-                    resolve(o);
-                    return;
-                  }
+                if (!EnigmailDialog.confirmDlg(null, msg,
+                  EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
+                  o.status = STATUS_FAILURE;
+                  resolve(o);
+                  return;
                 }
-
               }
               else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
                 // failure; message not complete
@@ -761,17 +758,14 @@ DecryptMessageIntoFolder.prototype = {
             }
 
             if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
+              // since we cannot find out if the user wants to cancel
+              // we should ask
+              let msg = EnigmailLocale.getString("converter.decryptBody.failed", this.subject);
 
-              if (EnigmailGpgAgent.useGpgAgent()) {
-                // since we cannot find out if the user wants to cancel
-                // we should ask
-                let msg = EnigmailLocale.getString("converter.decryptBody.failed", this.subject);
-
-                if (!EnigmailDialog.confirmDlg(null, msg,
-                    EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
-                  this.foundPGP = -1;
-                  return -1;
-                }
+              if (!EnigmailDialog.confirmDlg(null, msg,
+                EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
+                this.foundPGP = -1;
+                return -1;
               }
             }
             else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
@@ -800,7 +794,7 @@ DecryptMessageIntoFolder.prototype = {
       decryptedMessage += mime.body.substring(blocks[(blocks.length - 1)].end + 1);
 
       // enable base64 encoding if non-ASCII character(s) found
-      let j = decryptedMessage.search(/[^\x01-\x7F]/);
+      let j = decryptedMessage.search(/[^\x01-\x7F]/); // eslint-disable-line no-control-regex
       if (j >= 0) {
         mime.headers['content-transfer-encoding'] = ['base64'];
         mime.body = EnigmailData.encodeBase64(decryptedMessage);

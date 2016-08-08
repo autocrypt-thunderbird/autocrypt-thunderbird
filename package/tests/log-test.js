@@ -24,9 +24,10 @@ test(function shouldCreateLogFile() {
     Assert.equal(localFile.exists(), true);
   }
   finally {
+    EnigmailLog.onShutdown();
     if (localFile.exists()) {
-      EnigmailLog.fileStream.close();
       localFile.remove(false);
     }
+    EnigmailLog.createLogFiles();
   }
 });

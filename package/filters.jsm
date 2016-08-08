@@ -11,14 +11,15 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailFilters"];
 
-Components.utils.import("resource://enigmail/core.jsm");
-Components.utils.import("resource://enigmail/decryptPermanently.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/core.jsm");
+Cu.import("resource://enigmail/decryptPermanently.jsm");
+Cu.import("resource://enigmail/log.jsm");
+Cu.import("resource://enigmail/locale.jsm");
+Cu.import("resource://enigmail/dialog.jsm");
 
 /********************************************************************************
  Filter actions for decrypting messages permanently

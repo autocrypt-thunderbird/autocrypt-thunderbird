@@ -34,6 +34,8 @@ Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/configure.jsm"); /*global EnigmailConfigure: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Cu.import("resource://enigmail/keyRefreshService.jsm"); /*global EnigmailKeyRefreshService: false */
+Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 
 /* Implementations supplied by this module */
 const NS_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
@@ -103,10 +105,8 @@ function initializeSubprocessLogging(env) {
 }
 
 function initializeAgentInfo() {
-  if (EnigmailGpgAgent.useGpgAgent() && (!EnigmailOS.isDosLike())) {
-    if (!EnigmailGpgAgent.isDummy()) {
-      EnigmailCore.addToEnvList("GPG_AGENT_INFO=" + EnigmailGpgAgent.gpgAgentInfo.envStr);
-    }
+  if (!EnigmailOS.isDosLike && !EnigmailGpgAgent.isDummy()) {
+    EnigmailCore.addToEnvList("GPG_AGENT_INFO=" + EnigmailGpgAgent.gpgAgentInfo.envStr);
   }
 }
 
@@ -144,11 +144,18 @@ function initializeEnvironment(env) {
     "XMODIFIERS"
   ];
 
-  if (!(EnigmailOS.getOS() === "WINNT" && EnigmailPrefs.getPref("gpgLocaleEn"))) {
+  EnigmailCore.initEnvList();
+
+  if (!EnigmailPrefs.getPref("gpgLocaleEn")) {
     passEnv = passEnv.concat([
       "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
       "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME"
     ]);
+  }
+  else if (EnigmailOS.getOS() === "WINNT") {
+    // force output on Windows to EN-US
+    EnigmailCore.addToEnvList("LC_ALL=en_US");
+    EnigmailCore.addToEnvList("LANG=en_US");
   }
 
   const passList = env.get("ENIGMAIL_PASS_ENV");
@@ -157,14 +164,6 @@ function initializeEnvironment(env) {
     for (var k = 0; k < passNames.length; k++) {
       passEnv.push(passNames[k]);
     }
-  }
-
-  EnigmailCore.initEnvList();
-
-  if (EnigmailOS.getOS() === "WINNT" && EnigmailPrefs.getPref("gpgLocaleEn")) {
-    // force output on Windows to EN-US
-    EnigmailCore.addToEnvList("LC_ALL=en_US");
-    EnigmailCore.addToEnvList("LANG=en_US");
   }
 
   for (var j = 0; j < passEnv.length; j++) {
@@ -267,6 +266,8 @@ Enigmail.prototype = {
     initializeAgentInfo();
 
     initializeObserver(this);
+
+    EnigmailKeyRefreshService.start(EnigmailKeyServer);
 
     this.initialized = true;
 

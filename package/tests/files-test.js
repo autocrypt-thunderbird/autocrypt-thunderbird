@@ -9,9 +9,10 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false */
 
 testing("files.jsm");
+component("enigmail/os.jsm"); /*global EnigmailOS: false */
 
 // testing: readFile
 test(function readFileReturnsContentOfExistingFile() {
@@ -34,4 +35,14 @@ test(function shouldFormatCmdLine() {
   var md = do_get_cwd();
 
   Assert.equal(EnigmailFiles.formatCmdLine(md, ["1", "2", "3"]), do_get_cwd().path + " 1 2 3");
+});
+
+test(function shouldNotAppendExeInDosLikeEnvironment() {
+  TestHelper.resetting(EnigmailOS, "isDosLike", true, function() {
+    const expectedPath = "C:\\Program Files\\GnuPG\\bin\\gpg.exe";
+
+    const actualPath = EnigmailFiles.resolvePath(expectedPath, "C:\\Program Files\\GnuPG\\bin", true);
+
+    Assert.equal(actualPath, expectedPath);
+  });
 });

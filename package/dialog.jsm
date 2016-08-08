@@ -404,7 +404,7 @@ const EnigmailDialog = {
       "chrome,dialog,modal,centerscreen,resizable", {
         keyList: keyList,
         checkboxLabel: checkBoxLabel,
-        button1: okLabel,
+        button1: okLabel
       },
       result);
 

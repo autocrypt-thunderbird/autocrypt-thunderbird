@@ -794,7 +794,7 @@ function enigGetSvc(resetCheck) {
 function wizardLocateGpg() {
   var fileName = "gpg";
   var ext = "";
-  if (EnigmailOS.isDosLike()) {
+  if (EnigmailOS.isDosLike) {
     ext = ".exe";
   }
   var filePath = EnigFilePicker(EnigGetString("locateGpg"),

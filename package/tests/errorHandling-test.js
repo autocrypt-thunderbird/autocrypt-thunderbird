@@ -12,17 +12,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withTestGpgHome: false */
 
-testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Cc: false, Ci: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
-component("enigmail/system.jsm"); /*global EnigmailSystem: false */
+testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Ci: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
-
-// simulate Unix, and UTF-8 (works on all systems)
-EnigmailOS.isWin32 = false;
-let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-let lc = env.set("LC_ALL", "en_US.UTF-8");
-EnigmailSystem.determineSystemCharset();
-
 
 test(function decryptionFailedWillSetDecryptionFailedFlag() {
   var context = {};

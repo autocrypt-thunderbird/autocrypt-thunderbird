@@ -873,21 +873,29 @@ function enigmailReceiveKey() {
   enigmailKeyServerAccess(nsIEnigmail.DOWNLOAD_KEY, enigmailReceiveKeyCb);
 }
 
-function enigmailRefreshAllKeys() {
-  var checkedObj = {};
-  var doIt = false;
+function userAcceptsWarning(warningMessage) {
   if (!EnigGetPref("warnRefreshAll")) {
-    doIt = true;
-  }
-  else if (EnigLongAlert(EnigGetString("refreshKey.warn"), EnigGetString("dlgNoPrompt"),
-      EnigGetString("dlg.button.continue"), ":cancel", null, checkedObj) === 0) {
-    if (checkedObj.value) {
-      EnigSetPref("warnRefreshAll", false);
-    }
-    doIt = true;
+    return true;
   }
 
-  if (doIt) enigmailKeyServerAccess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+  let checkedObj = {};
+  const confirm = EnigLongAlert(warningMessage, EnigGetString("dlgNoPrompt"), EnigGetString("dlg.button.continue"), ":cancel", null, checkedObj) === 0;
+  if (checkedObj.value)
+    EnigSetPref("warnRefreshAll", false);
+  return confirm;
+}
+
+function userAcceptsRefreshWarning() {
+  if (EnigmailPrefs.getPref("keyRefreshOn") === true) {
+    return userAcceptsWarning(EnigGetString("refreshKeyServiceOn.warn"));
+  }
+  return userAcceptsWarning(EnigGetString("refreshKey.warn"));
+}
+
+function enigmailRefreshAllKeys() {
+  if (userAcceptsRefreshWarning() === true) {
+    enigmailKeyServerAccess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+  }
 }
 
 // Iterate through contact emails and download them

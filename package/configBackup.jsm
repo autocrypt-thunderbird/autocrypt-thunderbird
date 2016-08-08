@@ -9,13 +9,14 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailConfigBackup"];
 
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Components.utils.import("resource://enigmail/rules.jsm"); /* global EnigmailRules: false */
-Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /* global EnigmailPrefs: false */
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
+Cu.import("resource://enigmail/rules.jsm"); /* global EnigmailRules: false */
+Cu.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
+Cu.import("resource://enigmail/prefs.jsm"); /* global EnigmailPrefs: false */
 
 const TYPE_BOOL = 1;
 const TYPE_CHAR = 2;

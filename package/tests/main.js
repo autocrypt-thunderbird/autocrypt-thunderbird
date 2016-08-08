@@ -20,9 +20,12 @@ do_subtest("files-test.js");
 do_subtest("streams-test.js");
 do_subtest("keyRing-test.js");
 do_subtest("keyEditor-test.js");
+do_subtest("keyserver-test.js");
+do_subtest("keyserverUris-test.js");
 do_subtest("locale-test.js");
 do_subtest("log-test.js");
 do_subtest("mime-test.js");
+do_subtest("os-test.js");
 do_subtest("prefs-test.js");
 do_subtest("rules-test.js");
 do_subtest("funcs-test.js");
@@ -31,3 +34,7 @@ do_subtest("expiry-test.js");
 do_subtest("installGnuPG-test.js");
 
 // do_subtest("pep-test.js"); // not yet enabled
+do_subtest("keyRefreshService-test.js");
+do_subtest("tor-test.js");
+do_subtest("versioning-test.js");
+do_subtest("rng-test.js");

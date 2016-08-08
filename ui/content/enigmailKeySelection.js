@@ -937,6 +937,6 @@ function stripEmailFromKey(uid) {
   }
   finally {
     // search for last ocurrence of < >
-    return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase();
+    return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase();  // eslint-disable-line no-unsafe-finally
   }
 }

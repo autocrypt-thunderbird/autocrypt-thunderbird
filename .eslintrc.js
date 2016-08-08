@@ -11,7 +11,7 @@ module.exports = {
     "strict": [2, "global"],
     "no-unused-vars": 0,
     "no-empty": 0,
-    "comma-dangle": 0,
+    "comma-dangle": 2,
     "consistent-return": 2,
     "block-scoped-var": 2,
     "dot-notation": 2,

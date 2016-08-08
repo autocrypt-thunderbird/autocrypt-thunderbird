@@ -313,7 +313,7 @@ function disableManually(disable) {
     "confirmBeforeSendingAlways",
     "confirmBeforeSendingIfEncrypted",
     "confirmBeforeSendingIfNotEncrypted",
-    "confirmBeforeSendingIfRules",
+    "confirmBeforeSendingIfRules"
   ];
   var elem;
   for (var i = 0; i < elems.length; ++i) {

@@ -10,21 +10,22 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailKeyEditor"];
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
 
 const GET_BOOL = "GET_BOOL";
 const GET_LINE = "GET_LINE";
@@ -439,7 +440,6 @@ const EnigmailKeyEditor = {
     return editKey(parent, false, null, keyId, "passwd", {
         oldPw: oldPw,
         newPw: newPw,
-        useAgent: EnigmailGpgAgent.useGpgAgent(),
         step: 0,
         observer: pwdObserver,
         usePassphrase: true
@@ -518,7 +518,7 @@ const EnigmailKeyEditor = {
 
   genCardKey: function(parent, name, email, comment, expiry, backupPasswd, requestObserver, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.genCardKey: \n");
-    var generateObserver = new EnigCardAdminObserver(requestObserver, EnigmailOS.isDosLike());
+    var generateObserver = new EnigCardAdminObserver(requestObserver, EnigmailOS.isDosLike);
     return editKey(parent, false, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
         name: EnigmailData.convertFromUnicode(name),
@@ -538,7 +538,7 @@ const EnigmailKeyEditor = {
   cardAdminData: function(parent, name, firstname, lang, sex, url, login, forcepin, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardAdminData: parent=" + parent + ", name=" + name + ", firstname=" + firstname + ", lang=" + lang + ", sex=" + sex + ", url=" + url +
       ", login=" + login + ", forcepin=" + forcepin + "\n");
-    var adminObserver = new EnigCardAdminObserver(null, EnigmailOS.isDosLike());
+    var adminObserver = new EnigCardAdminObserver(null, EnigmailOS.isDosLike);
     return editKey(parent, false, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
         name: name,
@@ -557,9 +557,9 @@ const EnigmailKeyEditor = {
 
   cardChangePin: function(parent, action, oldPin, newPin, adminPin, pinObserver, callbackFunc) {
     EnigmailLog.DEBUG("keyManagmenent.jsm: Enigmail.cardChangePin: parent=" + parent + ", action=" + action + "\n");
-    var adminObserver = new EnigCardAdminObserver(pinObserver, EnigmailOS.isDosLike());
+    var adminObserver = new EnigCardAdminObserver(pinObserver, EnigmailOS.isDosLike);
 
-    return editKey(parent, EnigmailGpgAgent.useGpgAgent(), null, "", ["--with-colons", "--card-edit"], {
+    return editKey(parent, true, null, "", ["--with-colons", "--card-edit"], {
         step: 0,
         pinStep: 0,
         cardAdmin: true,
@@ -892,11 +892,7 @@ function changePassphraseCallback(inputData, keyEdit, ret) {
     ret.exitCode = 0;
   }
   else if (keyEdit.doCheck(GET_LINE, "keyedit.prompt")) {
-    if (inputData.useAgent) {
-      ret.exitCode = 0;
-    }
-    else
-      ret.exitCode = null;
+    ret.exitCode = 0;
     ret.quitNow = true;
   }
   else {

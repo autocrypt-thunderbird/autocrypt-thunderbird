@@ -185,13 +185,13 @@ var EnigmailpEp = {
               "from": {
                 "user_id": "",
                 "username": "name",
-                "address": fromAddr,
+                "address": fromAddr
               },
               to: toAddrList.reduce(function _f(p, addr) {
                 p.push({
                   "user_id": "",
                   "username": "name",
-                  "address": addr,
+                  "address": addr
                 });
                 return p;
               }, [])
@@ -342,7 +342,7 @@ var EnigmailpEp = {
               "username": name,
               "address": emailAddress,
               "fpr": fpr
-            },
+            }
           ];
 
           return self._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);

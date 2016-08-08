@@ -10,17 +10,18 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailRules"];
 
-Components.utils.import("resource://enigmail/funcs.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/os.jsm");
-Components.utils.import("resource://enigmail/files.jsm");
-Components.utils.import("resource://enigmail/app.jsm");
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/funcs.jsm");
+Cu.import("resource://enigmail/log.jsm");
+Cu.import("resource://enigmail/os.jsm");
+Cu.import("resource://enigmail/files.jsm");
+Cu.import("resource://enigmail/app.jsm");
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
@@ -131,11 +132,11 @@ var EnigmailRules = {
 
     if (origFirstChild && (!appendToEnd)) {
       rulesListHolder.rulesList.firstChild.insertBefore(rule, origFirstChild);
-      rulesListHolder.rulesList.firstChild.insertBefore(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike() ? "\r\n" : "\n"), origFirstChild);
+      rulesListHolder.rulesList.firstChild.insertBefore(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike ? "\r\n" : "\n"), origFirstChild);
     }
     else {
       rulesListHolder.rulesList.firstChild.appendChild(rule);
-      rulesListHolder.rulesList.firstChild.appendChild(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike() ? "\r\n" : "\n"));
+      rulesListHolder.rulesList.firstChild.appendChild(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike ? "\r\n" : "\n"));
     }
   },
 
@@ -195,6 +196,7 @@ var EnigmailRules = {
 
     let enigmailSvc = EnigmailCore.getService();
     if (!enigmailSvc) {
+      EnigmailLog.DEBUG("EnigmailCore Service is down\n");
       return false;
     }
 
@@ -454,7 +456,7 @@ var EnigmailRules = {
 
     // here, both values are 'maybe', which we return then
     return EnigmailConstants.ENIG_UNDEF; // maybe
-  },
+  }
 
 
 };

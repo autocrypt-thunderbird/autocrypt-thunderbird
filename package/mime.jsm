@@ -108,7 +108,7 @@ const EnigmailMime = {
   encodeHeaderValue: function(aStr) {
     let ret = "";
 
-    if (aStr.search(/[^\x01-\x7F]/) >= 0) {
+    if (aStr.search(/[^\x01-\x7F]/) >= 0) { // eslint-disable-line no-control-regex
       let s = EnigmailData.convertFromUnicode(aStr, "utf-8");
       ret = "=?UTF-8?B?" + btoa(s) + "?=";
     }

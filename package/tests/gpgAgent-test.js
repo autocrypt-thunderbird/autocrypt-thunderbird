@@ -135,23 +135,6 @@ test(function determineGpgHomeDirReturnsDefaultForWin32() {
   });
 });
 
-
-// // testing: useGpgAgent
-// // useGpgAgent depends on several values:
-// //   EnigmailOS.isDosLike()
-// //   Gpg.getGpgFeature("supports-gpg-agent")
-// //   Gpg.getGpgFeature("autostart-gpg-agent")
-// //   EnigmailGpgAgent.gpgAgentInfo.envStr.length>0
-// //   EnigmailPrefs.getPrefBranch().getBoolPref("useGpgAgent")
-
-function asDosLike(f) {
-  resetting(EnigmailOS, 'isDosLikeVal', true, f);
-}
-
-function notDosLike(f) {
-  resetting(EnigmailOS, 'isDosLikeVal', false, f);
-}
-
 function withGpgFeatures(features, f) {
   resetting(EnigmailGpg, 'getGpgFeature', function(feature) {
     return features.indexOf(feature) != -1;

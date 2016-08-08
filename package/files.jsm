@@ -9,14 +9,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFiles"];
+const EXPORTED_SYMBOLS = ["EnigmailFiles"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
 Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
+Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
+Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 
 const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams");
@@ -35,7 +36,15 @@ const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE = 0x20;
 const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 
+function potentialWindowsExecutable(execName) {
+  if (EnigmailOS.isDosLike) {
+    return execName + ".exe";
+  }
+  return execName;
+}
+
 const EnigmailFiles = {
+  potentialWindowsExecutable: potentialWindowsExecutable,
 
   isAbsolutePath: function(filePath, isDosLike) {
     // Check if absolute path
@@ -48,6 +57,14 @@ const EnigmailFiles = {
     }
   },
 
+  resolvePathWithEnv: function(executable) {
+    const foundPath = EnigmailFiles.resolvePath(potentialWindowsExecutable(executable), EnigmailCore.getEnigmailService().environment.get("PATH"), EnigmailOS.isDosLike);
+    if (foundPath !== null) {
+      foundPath.normalize();
+    }
+    return foundPath;
+  },
+
   resolvePath: function(filePath, envPath, isDosLike) {
     lazyLog().DEBUG("files.jsm: resolvePath: filePath=" + filePath + "\n");
 
@@ -57,14 +74,14 @@ const EnigmailFiles = {
     if (!envPath)
       return null;
 
-    var fileNames = filePath.split(";");
+    const fileNames = filePath.split(";");
 
-    var pathDirs = envPath.split(isDosLike ? ";" : ":");
+    const pathDirs = envPath.split(isDosLike ? ";" : ":");
 
-    for (var i = 0; i < fileNames.length; i++) {
-      for (var j = 0; j < pathDirs.length; j++) {
+    for (let i = 0; i < fileNames.length; i++) {
+      for (let j = 0; j < pathDirs.length; j++) {
         try {
-          var pathDir = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+          const pathDir = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
           lazyLog().DEBUG("files.jsm: resolvePath: checking for " + pathDirs[j] + "/" + fileNames[i] + "\n");
 
@@ -89,7 +106,7 @@ const EnigmailFiles = {
 
   createFileStream: function(filePath, permissions) {
     try {
-      var localFile;
+      let localFile;
       if (typeof filePath == "string") {
         localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
         EnigmailFiles.initPath(localFile, filePath);
@@ -110,9 +127,9 @@ const EnigmailFiles = {
       if (!permissions)
         permissions = DEFAULT_FILE_PERMS;
 
-      var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+      const flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
 
-      var fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
+      const fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
 
       fileStream.init(localFile, flags, permissions, 0);
 
@@ -140,18 +157,18 @@ const EnigmailFiles = {
   readFile: function(filePath) {
     // @filePath: nsIFile
     if (filePath.exists()) {
-      var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+      const ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
       if (!ioServ)
         throw Components.results.NS_ERROR_FAILURE;
 
-      var fileURI = ioServ.newFileURI(filePath);
-      var fileChannel = lazyStream().createChannel(fileURI.asciiSpec);
-      var rawInStream = fileChannel.open();
+      const fileURI = ioServ.newFileURI(filePath);
+      const fileChannel = lazyStream().createChannel(fileURI.asciiSpec);
+      const rawInStream = fileChannel.open();
 
-      var scriptableInStream = Cc[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Ci.nsIScriptableInputStream);
+      const scriptableInStream = Cc[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Ci.nsIScriptableInputStream);
       scriptableInStream.init(rawInStream);
-      var available = scriptableInStream.available();
-      var fileContents = scriptableInStream.read(available);
+      const available = scriptableInStream.available();
+      const fileContents = scriptableInStream.read(available);
       scriptableInStream.close();
       return fileContents;
     }
@@ -160,6 +177,8 @@ const EnigmailFiles = {
 
   formatCmdLine: function(command, args) {
     function getQuoted(str) {
+      str = str.toString();
+
       let i = str.indexOf(" ");
       if (i >= 0) {
         return '"' + str + '"';
@@ -169,8 +188,8 @@ const EnigmailFiles = {
       }
     }
 
-    var cmdStr = getQuoted(EnigmailFiles.getFilePathDesc(command)) + " ";
-    var argStr = args.map(getQuoted).join(" ").replace(/\\\\/g, '\\');
+    const cmdStr = getQuoted(EnigmailFiles.getFilePathDesc(command)) + " ";
+    const argStr = args.map(getQuoted).join(" ").replace(/\\\\/g, '\\');
     return cmdStr + argStr;
   },
 
@@ -188,7 +207,7 @@ const EnigmailFiles = {
   },
 
   getEscapedFilename: function(fileNameStr) {
-    if (EnigmailOS.isDosLike()) {
+    if (EnigmailOS.isDosLike) {
       // escape the backslashes and the " character (for Windows and OS/2)
       fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
     }
@@ -209,13 +228,13 @@ const EnigmailFiles = {
     const TEMPDIR_PROP = "TmpD";
 
     try {
-      let dsprops = Cc[DIRSERVICE_CONTRACTID].getService().
+      const dsprops = Cc[DIRSERVICE_CONTRACTID].getService().
       QueryInterface(Ci.nsIProperties);
       return dsprops.get(TEMPDIR_PROP, Ci.nsIFile);
     }
     catch (ex) {
       // let's guess ...
-      let tmpDirObj = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+      const tmpDirObj = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
       if (EnigmailOS.getOS() == "WINNT") {
         tmpDirObj.initWithPath("C:/TEMP");
       }
@@ -244,7 +263,7 @@ const EnigmailFiles = {
    * @return nsIFile object holding a reference to the created directory
    */
   createTempSubDir: function(dirName, unique = false) {
-    let localFile = EnigmailFiles.getTempDirObj().clone();
+    const localFile = EnigmailFiles.getTempDirObj().clone();
 
     localFile.append(dirName);
     if (unique) {
@@ -267,7 +286,7 @@ const EnigmailFiles = {
    */
   writeFileContents: function(filePath, data, permissions) {
     try {
-      var fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
+      const fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
 
       if (data.length) {
         if (fileOutStream.write(data, data.length) != data.length) {
@@ -300,7 +319,7 @@ const EnigmailFiles = {
    * @return nsIZipWriter object allow to perform write operations on the ZIP file
    */
   createZipFile: function(nsFileObj) {
-    let zipW = Cc['@mozilla.org/zipwriter;1'].createInstance(Ci.nsIZipWriter);
+    const zipW = Cc['@mozilla.org/zipwriter;1'].createInstance(Ci.nsIZipWriter);
     zipW.open(nsFileObj, NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE);
 
     return zipW;
@@ -314,7 +333,7 @@ const EnigmailFiles = {
    * @return nsIZipReader object allow to perform read operations on the ZIP file
    */
   openZipFile: function(nsFileObj) {
-    let zipR = Cc['@mozilla.org/libjar/zip-reader;1'].createInstance(Ci.nsIZipReader);
+    const zipR = Cc['@mozilla.org/libjar/zip-reader;1'].createInstance(Ci.nsIZipReader);
     zipR.open(nsFileObj);
 
     return zipR;

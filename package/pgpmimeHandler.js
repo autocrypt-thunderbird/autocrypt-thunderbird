@@ -10,15 +10,16 @@
  *  implemented as an XPCOM object
  */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
-Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
+Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
@@ -209,7 +210,7 @@ PgpMimeHandler.prototype = {
     }
 
     return null;
-  },
+  }
 };
 
 

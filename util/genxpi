@@ -101,7 +101,9 @@ zip --must-match\
     modules/keyEditor.jsm \
     modules/keyRing.jsm \
     modules/keyUsability.jsm \
+    modules/keyRefreshService.jsm \
     modules/keyserver.jsm \
+    modules/keyserverUris.jsm \
     modules/lazy.jsm \
     modules/locale.jsm \
     modules/log.jsm \
@@ -114,7 +116,9 @@ zip --must-match\
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
     modules/promise.jsm \
+    modules/rng.jsm \
     modules/rules.jsm \
+    modules/socks5Proxy.jsm \
     modules/streams.jsm \
     modules/subprocess.jsm \
     modules/subprocess_worker_unix.js \
@@ -122,9 +126,11 @@ zip --must-match\
     modules/system.jsm \
     modules/time.jsm \
     modules/timer.jsm \
+    modules/tor.jsm \
     modules/trust.jsm \
     modules/uris.jsm \
     modules/verify.jsm \
+    modules/versioning.jsm \
     modules/windows.jsm \
     wrappers/gpg-agent-wrapper.sh \
     chrome/${xpiModule}.jar \

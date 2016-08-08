@@ -113,32 +113,6 @@ var EnigmailGpgAgent = {
     return EnigmailGpgAgent.gpgAgentInfo.envStr === DUMMY_AGENT_INFO;
   },
 
-  useGpgAgent: function() {
-    return true;
-    /*
-      TODO: Remove the following. We support GnuPG 2.x, which always requires gpg-agent
-        let useAgent = false;
-
-        try {
-          if (EnigmailOS.isDosLike() && !EnigmailGpg.getGpgFeature("supports-gpg-agent")) {
-            useAgent = false;
-          }
-          else {
-            // gpg version >= 2.0.16 launches gpg-agent automatically
-            if (EnigmailGpg.getGpgFeature("autostart-gpg-agent")) {
-              useAgent = true;
-              EnigmailLog.DEBUG("enigmail.js: Setting useAgent to " + useAgent + " for gpg2 >= 2.0.16\n");
-            }
-            else {
-              useAgent = (EnigmailGpgAgent.gpgAgentInfo.envStr.length > 0 || EnigmailPrefs.getPrefBranch().getBoolPref("useGpgAgent"));
-            }
-          }
-        }
-        catch (ex) {}
-        return useAgent;
-    */
-  },
-
   resetGpgAgent: function() {
     EnigmailLog.DEBUG("gpgAgent.jsm: resetGpgAgent\n");
     gIsGpgAgent = -1;
@@ -409,7 +383,7 @@ var EnigmailGpgAgent = {
 
     EnigmailGpgAgent.resetGpgAgent();
 
-    if (EnigmailOS.isDosLike()) {
+    if (EnigmailOS.isDosLike) {
       agentName = "gpg2.exe;gpg.exe;gpg1.exe";
     }
     else {
@@ -421,20 +395,20 @@ var EnigmailGpgAgent = {
       // Locate GnuPG executable
 
       // Append default .exe extension for DOS-Like systems, if needed
-      if (EnigmailOS.isDosLike() && (agentPath.search(/\.\w+$/) < 0)) {
+      if (EnigmailOS.isDosLike && (agentPath.search(/\.\w+$/) < 0)) {
         agentPath += ".exe";
       }
 
       try {
         let pathDir = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
 
-        if (!EnigmailFiles.isAbsolutePath(agentPath, EnigmailOS.isDosLike())) {
+        if (!EnigmailFiles.isAbsolutePath(agentPath, EnigmailOS.isDosLike)) {
           // path relative to Mozilla installation dir
           const ds = Cc[DIR_SERV_CONTRACTID].getService();
           const dsprops = ds.QueryInterface(Ci.nsIProperties);
           pathDir = dsprops.get("CurProcD", Ci.nsIFile);
 
-          const dirs = agentPath.split(new RegExp(EnigmailOS.isDosLike() ? "\\\\" : "/"));
+          const dirs = agentPath.split(new RegExp(EnigmailOS.isDosLike ? "\\\\" : "/"));
           for (let i = 0; i < dirs.length; i++) {
             if (dirs[i] != ".") {
               pathDir.append(dirs[i]);
@@ -461,32 +435,32 @@ var EnigmailGpgAgent = {
     else {
       // Resolve relative path using PATH environment variable
       const envPath = esvc.environment.get("PATH");
-      agentPath = EnigmailFiles.resolvePath(agentName, envPath, EnigmailOS.isDosLike());
+      agentPath = EnigmailFiles.resolvePath(agentName, envPath, EnigmailOS.isDosLike);
 
-      if (!agentPath && EnigmailOS.isDosLike()) {
+      if (!agentPath && EnigmailOS.isDosLike) {
         // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
         let gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
       }
 
       if ((!agentPath) && EnigmailOS.isWin32) {
         // Look up in Windows Registry
         try {
           let gpgPath = EnigmailOS.getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
         }
         catch (ex) {}
 
         if (!agentPath) {
           let gpgPath = "C:\\Program Files\\GnuPG\\pub";
-          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
         }
       }
 
-      if (!agentPath && !EnigmailOS.isDosLike()) {
+      if (!agentPath && !EnigmailOS.isDosLike) {
         // Unix-like systems: check /usr/bin and /usr/local/bin
         let gpgPath = "/usr/bin:/usr/local/bin";
-        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
       }
 
       if (!agentPath) {
@@ -507,7 +481,7 @@ var EnigmailGpgAgent = {
     const command = agentPath;
     let args = [];
     if (agentType == "gpg") {
-      args = ["--version", "--version", "--batch", "--no-tty", "--charset", "utf-8", "--display-charset", "utf-8"];
+      args = ["--batch", "--no-tty", "--charset", "utf-8", "--display-charset", "utf-8", "--version", "--version"];
     }
 
     let exitCode = -1;
@@ -582,26 +556,18 @@ var EnigmailGpgAgent = {
 
   // resolve the path for GnuPG helper tools
   resolveToolPath: function(fileName) {
-    if (EnigmailOS.isDosLike()) {
-      fileName += ".exe";
-    }
-
     let filePath = cloneOrNull(EnigmailGpgAgent.agentPath);
 
     if (filePath) filePath = filePath.parent;
     if (filePath) {
-      filePath.append(fileName);
+      filePath.append(EnigmailFiles.potentialWindowsExecutable(fileName));
       if (filePath.exists()) {
         filePath.normalize();
         return filePath;
       }
     }
 
-    const foundPath = EnigmailFiles.resolvePath(fileName, EnigmailCore.getEnigmailService().environment.get("PATH"), EnigmailOS.isDosLike());
-    if (foundPath) {
-      foundPath.normalize();
-    }
-    return foundPath;
+    return EnigmailFiles.resolvePathWithEnv(fileName);
   },
 
   detectGpgAgent: function(domWindow, esvc) {
@@ -691,7 +657,7 @@ var EnigmailGpgAgent = {
         }
       }
 
-      if ((!EnigmailOS.isDosLike()) && (!EnigmailGpg.getGpgFeature("autostart-gpg-agent"))) {
+      if ((!EnigmailOS.isDosLike) && (!EnigmailGpg.getGpgFeature("autostart-gpg-agent"))) {
 
         // create unique tmp file
         var ds = Cc[DIR_SERV_CONTRACTID].getService();

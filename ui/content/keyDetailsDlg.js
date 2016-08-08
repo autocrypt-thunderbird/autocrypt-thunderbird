@@ -251,7 +251,7 @@ function SigListView(keyObj) {
           uid: s.userId,
           created: s.created,
           fpr: sig ? sig.fpr : "",
-          sigType: s.sigType,
+          sigType: s.sigType
         });
       }
     }

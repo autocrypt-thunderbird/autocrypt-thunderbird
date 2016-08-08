@@ -275,7 +275,7 @@ function uniqueKeyList(arr) {
   return arr.reduce(function(p, c) {
 
     let r = p.find(function _f(e, i, a) {
-      if (e.keyId === c.keyId) return true;
+      return e.keyId === c.keyId;
     });
 
     if (r === undefined) p.push(c);

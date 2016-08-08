@@ -196,6 +196,29 @@ pref("extensions.enigmail.protectedSubjectText", "");
 // do reset the "references" and "in-reply-to" headers?
 pref("extensions.enigmail.protectReferencesHdr", false);
 
+// tor configuration
+pref("extensions.enigmail.torIpAddr", "127.0.0.1");
+pref("extensions.enigmail.torServicePort", "9050");
+pref("extensions.enigmail.torBrowserBundlePort", "9150");
+
+// gpg tor actions
+pref("extensions.enigmail.downloadKeyWithTor", true);
+pref("extensions.enigmail.downloadKeyRequireTor", false);
+pref("extensions.enigmail.searchKeyWithTor", true);
+pref("extensions.enigmail.searchKeyRequireTor", false);
+pref("extensions.enigmail.uploadKeyWithTor", true);
+pref("extensions.enigmail.uploadKeyRequireTor", false);
+pref("extensions.enigmail.refreshAllKeysWithTor", true);
+pref("extensions.enigmail.refreshAllKeysRequireTor", false);
+
+// Hours per week that Enigmail is available for refreshing keys
+// The smaller the hours available, the more often the refresh
+// will happen to accommodate.
+pref("extensions.enigmail.hoursPerWeekEnigmailIsOn", 40);
+
+// Toggle to have user keys continuously refreshed
+pref("extensions.enigmail.keyRefreshOn", false);
+
 // enable experimental features.
 // WARNING: such features may unfinished functions or tests that can break
 // existing functionality in Enigmail and Thunderbird!

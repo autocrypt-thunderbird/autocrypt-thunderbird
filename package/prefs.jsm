@@ -10,11 +10,12 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailPrefs"];
 
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 
 const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 

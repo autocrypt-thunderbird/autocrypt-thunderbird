@@ -7,5 +7,6 @@
 
 export TB_PATH=${TB_PATH:-`which thunderbird`}
 make clean
+make distclean
 ./configure --with-tb-path=$TB_PATH
 make

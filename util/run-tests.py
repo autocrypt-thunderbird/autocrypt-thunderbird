@@ -7,10 +7,10 @@
 
 import sys
 import os
-import glob
 import subprocess
 import select
 import re
+import random
 
 class TestRunner:
     IGNORED_TESTS = ['./ipc/tests']
@@ -126,12 +126,10 @@ class TestRunner:
                 self.analyze_output(str)
         return ret
 
-
     def add_stats(self):
         self.total_executed = self.total_executed + self.executed
         self.total_succeeded = self.total_succeeded + self.succeeded
         self.total_failed = self.total_failed + self.failed
-
     def spin_test(self, dir_name, tmp_file):
         tsk = subprocess.Popen([self.tbpath, '-jsunit', os.path.basename(tmp_file)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=dir_name)
         ret = self.polling(tsk, self.combine(self.write_to_log(), self.reporting()), self.write_to_log())
@@ -153,12 +151,59 @@ class TestRunner:
         finally:
             os.remove(tmp_file)
 
+
+class OptionsEvaluator:
+    SEED_OPTION = ['--seed=', '-s=']
+    HELP_OPTION = ['-h', '--help']
+
+    @staticmethod
+    def print_help():
+        print('Usage: run-tests.py [OPTION] [PATH TO TEST FILES]')
+        print('')
+        print('By default, this will run all the tests in random order based on a seed, which will be printed before the tests. You can rerun an order by using the -seed option below.')
+        print('  [OPTIONS]')
+        print('  --seed=\t Specify a seed to get the same shuffle order more than once')
+        print('  -h, --help\t Print usage')
+
+    @staticmethod
+    def random_shuffle(seed, tests):
+        if seed:
+            random.seed(seed)
+        else:
+            seed = random.randint(0, sys.maxint)
+            random.seed(seed)
+            print("Seed used for random shuffle: %d" % seed)
+        random.shuffle(tests)
+        return tests
+
+    def evaluate(self):
+        for op in OptionsEvaluator.HELP_OPTION:
+            if op in sys.argv:
+                self.print_help()
+                sys.exit(1)
+
+        if len(sys.argv) == 1:
+            return OptionsEvaluator.random_shuffle(False, [f for f in TestRunner.all_tests()])
+        elif len(sys.argv) == 2:
+            tests = [f for f in TestRunner.all_tests()]
+        elif len(sys.argv) > 2:
+            tests = [f for f in sys.argv[2:]]
+
+        if self.grab_seed():
+            return OptionsEvaluator.random_shuffle(self.grab_seed(), tests)
+        else:
+            return OptionsEvaluator.random_shuffle(False, [f for f in sys.argv[1:]])
+
+    def grab_seed(self):
+        for op in OptionsEvaluator.SEED_OPTION:
+            for arg in sys.argv:
+                if op in arg:
+                    return arg.split(op)[1]
+        return False
+
 if __name__ == '__main__':
     tbpath = os.environ.get('TB_PATH', '/usr/bin/thunderbird')
-    if len(sys.argv) < 2:
-        tests = sorted([f for f in TestRunner.all_tests()])
-    else:
-        tests = sys.argv[1:]
+    tests = OptionsEvaluator().evaluate()
     (ran, suc, fail) = TestRunner(tbpath, tests).run()
     print "Ran " + str(ran) + " tests"
     if fail > 0:

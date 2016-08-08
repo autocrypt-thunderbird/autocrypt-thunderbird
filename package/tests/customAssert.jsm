@@ -18,7 +18,7 @@ const CustomAssert = {
     var msg = message || "Searching for <".concat(expected)
       .concat("> to be contained within ")
       .concat("<").concat(actual).concat(">");
-    this.report(actual.search(expected) == -1, actual, expected, message, "contains");
+    this.report(actual.search(expected) == -1, actual, expected, msg);
   },
 
   assertArrayContains: function(array, value, message) {

@@ -30,15 +30,7 @@ const EnigmailPassword = {
    * @return: Array the GnuPG command line options
    */
   command: function() {
-    if (gpgAgent().useGpgAgent()) {
-      return ["--use-agent"];
-    }
-    else {
-      if (!EnigmailPrefs.getPref("noPassphrase")) {
-        return ["--passphrase-fd", "0", "--no-use-agent"];
-      }
-    }
-    return [];
+    return ["--use-agent"];
   },
 
   getMaxIdleMinutes: function() {
@@ -53,10 +45,6 @@ const EnigmailPassword = {
   clearPassphrase: function(win) {
     // clear all passphrases from gpg-agent by reloading the config
     if (!EnigmailCore.getService()) return;
-
-    if (!gpgAgent().useGpgAgent()) {
-      return;
-    }
 
     let exitCode = -1;
     let isError = 0;
