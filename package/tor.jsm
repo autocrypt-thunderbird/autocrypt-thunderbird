@@ -142,6 +142,10 @@ function useAuthOverArgs(helper, versioning) {
   return versioning.versionFoundMeetsMinimumVersionRequired("torsocks", TORSOCKS_VERSION_2);
 }
 
+function usesDirmngr() {
+  return EnigmailGpg.getGpgFeature("supports-dirmngr");
+}
+
 function findTorExecutableHelper(versioning) {
   const helper = EnigmailFiles.resolvePathWithEnv("torsocks2") || EnigmailFiles.resolvePathWithEnv("torsocks");
   if (helper !== null) {
@@ -203,7 +207,7 @@ function torProperties(system) {
   let socks = null;
   let useTorMode = false;
 
-  if (EnigmailGpg.getGpgFeature("supports-dirmngr")) {
+  if (usesDirmngr()) {
     useTorMode = EnigmailGpg.dirmngrConfiguredWithTor();
   }
   else {
