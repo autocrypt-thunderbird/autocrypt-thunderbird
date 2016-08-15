@@ -85,11 +85,9 @@
 
 
 <!ENTITY enigmail.doubleDashSeparator.label "'--' is a signature separator">
-<!ENTITY enigmail.useGpgAgent.label         "Use gpg-agent for passphrases">
 <!ENTITY enigmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">
 
 <!ENTITY enigmail.doubleDashSeparator.tooltip  "Two dashes by themselves on a line will denote a signature block">
-<!ENTITY enigmail.useGpgAgent.tooltip          "Use gpg-agent (part of GnuPG 2) for all passphrase input">
 <!ENTITY enigmail.noHushMailSupport.tooltip    "Use the '&lt;' and '&gt;' characters to specify email addresses for GnuPG. Disable if recipients have old Hushmail keys.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "You should turn this OFF if you are receiving PGP/MIME messages on IMAP folders.">
 <!ENTITY enigmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
@@ -163,8 +161,9 @@
 <!ENTITY enigmail.pgpAccountSettings.label     "Signing/Encryption Options...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Send Options...">
 <!ENTITY enigmail.defaultKeySelOpts.label      "Key Selection Options...">
-<!ENTITY enigmail.usePgpMime.label            "Protocol: PGP/MIME">
-<!ENTITY enigmail.useInline.label            "Protocol: Inline PGP">
+<!ENTITY enigmail.usePgpMime.label             "Protocol: PGP/MIME">
+<!ENTITY enigmail.useInline.label              "Protocol: Inline PGP">
+<!ENTITY enigmail.useSmime.label               "Protocol: S/MIME">
 
 <!ENTITY enigmail.tempTrustAllKeys.label       "Trust the keys of all recipients">
 <!ENTITY enigmail.undoencryption.label         "Undo Encryption">
@@ -184,6 +183,7 @@
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
 <!ENTITY enigmail.usePgpMime.accesskey         "G">
 <!ENTITY enigmail.useInline.accesskey          "I">
+<!ENTITY enigmail.useSmime.accesskey           "S">
 
 <!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">

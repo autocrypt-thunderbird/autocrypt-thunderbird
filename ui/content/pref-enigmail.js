@@ -164,11 +164,6 @@ function prefOnLoad() {
     enigShowUserModeButtons(gAdvancedMode);
   }
 
-  if (!EnigmailGpgAgent.gpgAgentIsOptional) {
-    document.getElementById("enigmail_noPassphrase").setAttribute("collapsed", true);
-    document.getElementById("enigmail_useGpgAgent").setAttribute("collapsed", true);
-  }
-
   if ((!window.arguments) || (window.arguments[0].clientType != "seamonkey")) {
     EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
     //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
@@ -472,12 +467,10 @@ function prefOnAccept() {
   }
 
   // detect use of gpg-agent and warn if needed
-  if (EnigmailGpgAgent.useGpgAgent()) {
-    if (!EnigmailGpgAgent.isAgentTypeGpgAgent()) {
-      if ((document.getElementById("maxIdleMinutes").value > 0) &&
-        (!document.getElementById("enigmail_noPassphrase").checked)) {
-        EnigAlertPref(EnigGetString("prefs.warnIdleTimeForUnknownAgent"), "warnGpgAgentAndIdleTime");
-      }
+  if (!EnigmailGpgAgent.isAgentTypeGpgAgent()) {
+    if ((document.getElementById("maxIdleMinutes").value > 0) &&
+      (!document.getElementById("enigmail_noPassphrase").checked)) {
+      EnigAlertPref(EnigGetString("prefs.warnIdleTimeForUnknownAgent"), "warnGpgAgentAndIdleTime");
     }
   }
 

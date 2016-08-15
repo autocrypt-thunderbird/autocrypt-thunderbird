@@ -62,21 +62,6 @@ function onAccept() {
   var oldPin = "";
   var newPin = "";
 
-  if (!EnigmailGpgAgent.useGpgAgent()) {
-    adminPin = document.getElementById("currAdmPinTxt").value;
-    oldPin = document.getElementById("currPinTxt").value;
-    newPin = document.getElementById(pinItem1).value;
-
-    if (newPin.length < minLen) {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.minLength", minLen));
-      return false;
-    }
-    if (newPin != document.getElementById(pinItem2).value) {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.dontMatch"));
-      return false;
-    }
-  }
-
   var pinObserver = new changePinObserver();
 
   EnigmailKeyEditor.cardChangePin(window,
@@ -111,42 +96,13 @@ function setDlgContent(sel) {
 
   gAction = sel;
 
-  if (EnigmailGpgAgent.useGpgAgent()) {
-    dlgDisable("currAdminPinRow");
-    dlgDisable("adminPinRow");
-    dlgDisable("adminPinRepeatRow");
-    dlgDisable("currPinRow");
-    dlgDisable("pinRow");
-    dlgDisable("pinRepeatRow");
-    return;
-  }
-
-  switch (sel) {
-    case 'P':
-      dlgDisable("currAdminPinRow");
-      dlgDisable("adminPinRow");
-      dlgDisable("adminPinRepeatRow");
-      dlgEnable("currPinRow");
-      dlgEnable("pinRow");
-      dlgEnable("pinRepeatRow");
-      break;
-    case 'A':
-      dlgEnable("currAdminPinRow");
-      dlgEnable("adminPinRow");
-      dlgEnable("adminPinRepeatRow");
-      dlgDisable("currPinRow");
-      dlgDisable("pinRow");
-      dlgDisable("pinRepeatRow");
-      break;
-    case 'U':
-      dlgEnable("currAdminPinRow");
-      dlgDisable("adminPinRow");
-      dlgDisable("adminPinRepeatRow");
-      dlgDisable("currPinRow");
-      dlgEnable("pinRow");
-      dlgEnable("pinRepeatRow");
-      break;
-  }
+  dlgDisable("currAdminPinRow");
+  dlgDisable("adminPinRow");
+  dlgDisable("adminPinRepeatRow");
+  dlgDisable("currPinRow");
+  dlgDisable("pinRow");
+  dlgDisable("pinRepeatRow");
+  return;
 }
 
 function changePinObserver() {}
