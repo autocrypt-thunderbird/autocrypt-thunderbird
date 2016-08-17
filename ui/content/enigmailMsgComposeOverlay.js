@@ -1486,9 +1486,14 @@ Enigmail.msg = {
   },
 
   /**
-   * Try to enable S/MIME
+   * Try to enable S/MIME, repsecting the various Enigmail rules
    *
-   * TODO: Document me!
+   * @param encFinally:  Number - "final" encryption status before applying S/MIME
+   * @param signFinally: Number - "final" signing status before applying S/MIME
+   *
+   * @return Object:
+   *   - encFinally:  Number - new encryption status after trying S/MIME
+   *   - signFinally: Number - new signing status after trying S/MIME
    */
 
   tryEnablingSMime: function(encFinally, signFinally) {
@@ -1498,9 +1503,9 @@ Enigmail.msg = {
     gSMFields.signMessage = false;
 
     // do not try S/MIME encryption if one of the following applies:
-    // - OpenPGP is preferred over S/MiME, and OpenPGP is possible
-    // - OpenPGP is preferred over S/MiME, and OpenPGP is enabled by rules
-    // - encryption is disabled by rules and encrypion is not manually enabled
+    // - OpenPGP is preferred over S/MIME, and OpenPGP is possible
+    // - OpenPGP is preferred over S/MIME, and OpenPGP is enabled by rules
+    // - encryption is disabled by rules and encryption is not manually enabled
     // - encryption is manually disabled
     if (this.pgpmimeForced === EnigmailConstants.ENIG_FORCE_SMIME) {
       encryptSmime = true;
@@ -1517,18 +1522,29 @@ Enigmail.msg = {
     }
 
     if (!encryptSmime) {
-      if (this.isSmimeEncryptionPossible()) {
-        if (this.mimePreferOpenPGP === 0) {
-          // S/MIME is preferred and encryption is possible
-          encryptSmime = true;
-          encFinally = EnigmailConstants.ENIG_FINAL_YES;
+      if (EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
+        if (this.isSmimeEncryptionPossible()) {
+          if (this.mimePreferOpenPGP === 0) {
+            // S/MIME is preferred and encryption is possible
+            encryptSmime = true;
+            encFinally = EnigmailConstants.ENIG_FINAL_YES;
+          }
+          else if (encFinally === EnigmailConstants.ENIG_FINAL_NO ||
+            encFinally === EnigmailConstants.ENIG_FINAL_CONFLICT ||
+            !this.autoPgpEncryption) {
+            // Enigmail is preferred but not possible; S/MIME enc. is possible
+            encryptSmime = true;
+            encFinally = EnigmailConstants.ENIG_FINAL_YES;
+          }
         }
-        else if (encFinally === EnigmailConstants.ENIG_FINAL_NO ||
-          encFinally === EnigmailConstants.ENIG_FINAL_CONFLICT ||
-          !this.autoPgpEncryption) {
-          // Enigmail is preferred but not possible; S/MIME enc. is possible
-          encryptSmime = true;
-          encFinally = EnigmailConstants.ENIG_FINAL_YES;
+      }
+      else if (encFinally === EnigmailConstants.ENIG_FINAL_FORCEYES) {
+        if (this.isSmimeEncryptionPossible()) {
+          if (this.mimePreferOpenPGP === 0 || (!this.autoPgpEncryption)) {
+            // S/MIME is preferred and encryption is possible
+            // or PGP/MIME is preferred but impossible
+            encryptSmime = true;
+          }
         }
       }
     }
