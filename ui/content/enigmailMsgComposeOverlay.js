@@ -1554,6 +1554,7 @@ Enigmail.msg = {
 
       if ((encFinally === EnigmailConstants.ENIG_FINAL_NO || encFinally === EnigmailConstants.ENIG_FINAL_FORCENO) &&
         this.mimePreferOpenPGP === 0 &&
+        !this.autoPgpEncryption &&
         (signFinally === EnigmailConstants.ENIG_FINAL_YES || signFinally === EnigmailConstants.ENIG_FINAL_FORCEYES)) {
         // S/MIME is preferred
         this.statusPGPMime = EnigmailConstants.ENIG_FINAL_SMIME;
