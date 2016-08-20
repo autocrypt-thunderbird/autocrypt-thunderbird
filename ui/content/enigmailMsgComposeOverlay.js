@@ -1445,8 +1445,15 @@ Enigmail.msg = {
       signFinally = r.signFinally;
 
       // update the S/MIME GUI elements
-      setSecuritySettings("1");
-      setSecuritySettings("2");
+      try {
+        setSecuritySettings("1");
+      }
+      catch (ex) {}
+
+      try {
+        setSecuritySettings("2");
+      }
+      catch (ex) {}
     }
 
     // ------ 3. process final resulting protocol mode (inline-PGP / PGP/MIME / S/MIME) ------
