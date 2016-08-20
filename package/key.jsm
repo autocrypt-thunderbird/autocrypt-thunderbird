@@ -1,4 +1,4 @@
-/*global Components: false */
+/*global Components: false, Math: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -384,6 +384,35 @@ var EnigmailKey = {
   getKeyListFromKeyFile: function(path, errorMsgObj) {
     var contents = EnigmailFiles.readFile(path);
     return this.getKeyListFromKeyBlock(contents, errorMsgObj);
+  },
+
+
+  /**
+   * Compare 2 KeyIds of possible different length (short, long, FPR-length, with or without prefixed
+   * 0x are accepted)
+   *
+   * @param keyId1       string
+   * @param keyId2       string
+   *
+   * @return true or false, given the comparison of the last minimum-length characters.
+   */
+  compareKeyIds: function(keyId1, keyId2) {
+    var keyId1Raw = keyId1.replace(/^0x/, "").toUpperCase();
+    var keyId2Raw = keyId2.replace(/^0x/, "").toUpperCase();
+
+    var minlength = Math.min(keyId1Raw.length, keyId2Raw.length);
+
+    if (minlength < keyId1Raw.length) {
+      // Limit keyId1 to minlength
+      keyId1Raw = keyId1Raw.substr(-minlength, minlength);
+    }
+
+    if (minlength < keyId2Raw.length) {
+      // Limit keyId2 to minlength
+      keyId2Raw = keyId2Raw.substr(-minlength, minlength);
+    }
+
+    return (keyId1Raw === keyId2Raw);
   }
 
 };

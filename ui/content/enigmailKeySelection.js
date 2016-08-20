@@ -17,6 +17,7 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 
 const INPUT = 0;
 const RESULT = 1;
@@ -312,6 +313,7 @@ function buildList(refresh) {
 
 
   var i;
+  var j;
   var toKeys = "";
   try {
     if (typeof(window.arguments[INPUT].toKeys) == "string") {
@@ -391,6 +393,8 @@ function buildList(refresh) {
 
       // work on key obj
 
+      var toKeyList = toKeys.split(/[, ]+/);
+
       aUserList[i].activeState = (gAllowExpired ? 0 : 2); // default: not activated/activateable
       if (aUserList[i].keyTrust != KEY_IS_GROUP) {
         // handling of "normal" keys
@@ -427,7 +431,14 @@ function buildList(refresh) {
             aUserList[i].activeState = 0;
           }
           if (aUserList[i].activeState === 0 && toKeys.length > 0) {
-            aUserList[i].activeState = (toKeys.indexOf("0x" + aUserList[i].keyId) >= 0 ? 1 : 0);
+            // Now loop through toKeyList and search for matching keyIds
+            for (j = 0; j < toKeyList.length; j++) {
+              if (toKeyList[j].length > 0) {
+                if (EnigmailKey.compareKeyIds(aUserList[i].keyId, toKeyList[j])) {
+                  aUserList[i].activeState = 1;
+                }
+              }
+            }
           }
         }
       }
@@ -468,11 +479,7 @@ function buildList(refresh) {
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in buildList:\n");
-    EnigmailLog.ERROR("  userId=" + aUserList[i].userId + " expiry=" + aUserList[i].expiryTime + "\n");
-    if ((typeof user) == "number" && (typeof aUserList[i].userIds[user].userId) == "string") {
-      EnigmailLog.ERROR("  subUserId=" + aUserList[i].userIds[user].userId + "\n");
-    }
+    EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in buildList: " + ex.toString() + "\n" + ex.stack + "\n");
   }
 
   // sort items according to sorting criterion
@@ -535,7 +542,9 @@ function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
     if (toAddrList[i].length > 0) {
       let found = false;
       for (j = 0; j < aValidUsers.length; j++) {
+        EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: comparing aValidUsers member " + aValidUsers[j].toLowerCase() + " and toAddrList member " + toAddrList[i].toLowerCase() + "\n");
         if (aValidUsers[j].toLowerCase() == toAddrList[i].toLowerCase()) {
+          EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: aValidUsers member matches toAddrList member...\n");
           found = true;
           break; // the inner loop
         }
@@ -551,7 +560,9 @@ function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
     if (toKeyList[i].length > 0) {
       let found = false;
       for (j = 0; j < aUserList.length; j++) {
-        if (aUserList[j].valid && "0x" + aUserList[j].keyId == toKeyList[i]) {
+        EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: comparing toKeyList member " + toKeyList[i] + " and aUserList member 0x" + aUserList[j].keyId + "\n");
+        if (aUserList[j].valid && EnigmailKey.compareKeyIds(aUserList[j].keyId, toKeyList[i])) {
+          EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys: aUserList member is valid and key Id matches...\n");
           found = true;
           break; // the inner loop
         }
@@ -937,6 +948,6 @@ function stripEmailFromKey(uid) {
   }
   finally {
     // search for last ocurrence of < >
-    return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase();  // eslint-disable-line no-unsafe-finally
+    return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase(); // eslint-disable-line no-unsafe-finally
   }
 }
