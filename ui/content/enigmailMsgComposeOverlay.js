@@ -2361,6 +2361,9 @@ Enigmail.msg = {
    */
   isSmimeEncryptionPossible: function() {
     let ret = false;
+    let id = getCurrentIdentity();
+
+    if (id.getUnicharAttribute("encryption_cert_name") === "") return false;
 
     // enable encryption if keys for all recipients are available
 
