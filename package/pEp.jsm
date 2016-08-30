@@ -129,12 +129,11 @@ var EnigmailpEp = {
   getGpgPath: function() {
 
     let onLoad = function(responseObj) {
-      let path = null;
-
       if ("result" in responseObj) {
-        path = responseObj.result[0];
+        return responseObj.result[0];
       }
-      return path;
+
+      return responseObj;
     };
 
     return this._callPepFunction(FT_CALL_FUNCTION, "get_gpg_path", [
@@ -164,55 +163,47 @@ var EnigmailpEp = {
    */
   encryptMessage: function(fromAddr, toAddrList, subject, message, pEpMode) {
 
-    let deferred = Promise.defer();
-    let self = this;
-
-    if (pEpMode === null) pEpMode = 5;
+    if (pEpMode === null) pEpMode = 4;
     if (!toAddrList) toAddrList = [];
     if (typeof(toAddrList) === "string") toAddrList = [toAddrList];
 
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            { // src message
-              "id": msgId,
-              "dir": 1,
-              "shortmsg": subject,
-              "longmsg": message,
-              "from": {
-                "user_id": "",
-                "username": "name",
-                "address": fromAddr
-              },
-              to: toAddrList.reduce(function _f(p, addr) {
-                p.push({
-                  "user_id": "",
-                  "username": "name",
-                  "address": addr
-                });
-                return p;
-              }, [])
-            },
-            [], // extra
-            ["OP"], // dest
-            pEpMode // encryption_format
-          ];
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        { // src message
+          "id": msgId,
+          "dir": 1,
+          "shortmsg": subject,
+          "longmsg": message,
+          "from": {
+            "user_id": "",
+            "username": "name",
+            "address": fromAddr
+          },
+          to: toAddrList.reduce(function _f(p, addr) {
+            p.push({
+              "user_id": "",
+              "username": "name",
+              "address": addr
+            });
+            return p;
+          }, [])
+        },
+        [], // extra
+        ["OP"], // dest
+        pEpMode // encryption_format
+      ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "encrypt_message", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "encrypt_message", params);
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
 
-        return null;
-      }
-    );
-
-    return deferred.promise;
   },
 
   /**
@@ -227,46 +218,37 @@ var EnigmailpEp = {
    */
   decryptMessage: function(message, sender) {
 
-    let deferred = Promise.defer();
-    let self = this;
-
     if (!sender) sender = "unknown@localhost";
 
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            { // src message
-              "id": msgId,
-              "dir": 0,
-              "shortmsg": "",
-              "longmsg": message,
-              "from": {
-                "address": sender
-              },
-              "to": []
-            },
-            ["OP"], // msg Output
-            ["OP"], // StringList Output
-            ["OP"], // pep color Output
-            ["OP"] // undefined
-          ];
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        { // src message
+          "id": msgId,
+          "dir": 0,
+          "shortmsg": "",
+          "longmsg": message,
+          "from": {
+            "address": sender
+          },
+          "to": []
+        },
+        ["OP"], // msg Output
+        ["OP"], // StringList Output
+        ["OP"], // pep color Output
+        ["OP"] // undefined
+      ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
 
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
-
-        return null;
-      }
-    );
-
-    return deferred.promise;
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
   },
 
   /**
@@ -284,7 +266,6 @@ var EnigmailpEp = {
 
   getIdentityColor: function(mailAddr, userId) {
     let deferred = Promise.defer();
-    let self = this;
 
     let pepId = {
       "user_id": userId,
@@ -293,26 +274,21 @@ var EnigmailpEp = {
       "fpr": null
     };
 
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let params = [
-            sessionId, // session
-            pepId, [""] // color
-          ];
+    try {
+      let params = [
+        null, // session
+        pepId, [""] // color
+      ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "identity_color", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "identity_color", params);
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
 
-        return null;
-      }
-    );
-
-    return deferred.promise;
   },
 
   /**
@@ -328,35 +304,27 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   setIdentity: function(emailAddress, userId, name, fpr) {
-    let deferred = Promise.defer();
-    let self = this;
-
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            {
-              "user_id": userId,
-              "username": name,
-              "address": emailAddress,
-              "fpr": fpr
-            }
-          ];
-
-          return self._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
-
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        {
+          "user_id": userId,
+          "username": name,
+          "address": emailAddress,
+          "fpr": fpr
         }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
+      ];
 
-        return null;
-      }
-    );
+      return this._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
 
-    return deferred.promise;
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+
   },
 
   /**
@@ -370,34 +338,25 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getIdentity: function(emailAddress, userId) {
-    let deferred = Promise.defer();
-    let self = this;
-
     if (!userId) userId = "";
     if (!emailAddress) emailAddress = "";
 
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            emailAddress,
-            userId, ["OP"]
-          ];
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        emailAddress,
+        userId, ["OP"]
+      ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "get_identity", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "get_identity", params);
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
-
-        return null;
-      }
-    );
-
-    return deferred.promise;
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
   },
 
   /**
@@ -411,34 +370,27 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getTrustWords: function(fpr, language, maxWords) {
-    let deferred = Promise.defer();
-    let self = this;
-
     if (!maxWords) maxWords = 0;
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            fpr,
-            language.toUpperCase(), ["OP"], // words
-            ["OP"], // words_size
-            maxWords // max. number of words
-          ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "trustwords", params);
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        fpr,
+        language.toUpperCase(), ["OP"], // words
+        ["OP"], // words_size
+        maxWords // max. number of words
+      ];
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
+      return this._callPepFunction(FT_CALL_FUNCTION, "trustwords", params);
 
-        return null;
-      }
-    );
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
 
-    return deferred.promise;
   },
 
   /**
@@ -454,104 +406,47 @@ var EnigmailpEp = {
    */
   outgoingMessageColor: function(fromAddr, toAddrList, message) {
 
-    let deferred = Promise.defer();
-    let self = this;
-
     if (!toAddrList) toAddrList = [];
 
-    this._withSession(deferred,
-      function(sessionId) {
-        try {
-          let msgId = "enigmail-" + String(gRequestId++);
-          let params = [
-            sessionId, // session
-            { // src message
-              "id": msgId,
-              "dir": 1,
-              "longmsg": message,
-              "from": {
-                "user_id": "",
-                "username": "",
-                "address": fromAddr,
-                "fpr": ""
-              },
-              to: toAddrList.reduce(function _f(p, addr) {
-                p.push({
-                  "user_id": "",
-                  "username": "",
-                  "address": addr,
-                  "fpr": ""
-                });
-                return p;
-              }, [])
-            },
-            "O"
-          ];
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        null, // session
+        { // src message
+          "id": msgId,
+          "dir": 1,
+          "longmsg": message,
+          "from": {
+            "user_id": "",
+            "username": "",
+            "address": fromAddr,
+            "fpr": ""
+          },
+          to: toAddrList.reduce(function _f(p, addr) {
+            p.push({
+              "user_id": "",
+              "username": "",
+              "address": addr,
+              "fpr": ""
+            });
+            return p;
+          }, [])
+        },
+        "O"
+      ];
 
-          return self._callPepFunction(FT_CALL_FUNCTION, "outgoing_message_color", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "outgoing_message_color", params);
 
-        }
-        catch (ex) {
-          deferred.reject(makeError("PEP-ERROR", ex));
-        }
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
 
-        return null;
-      }
-    );
-
-    return deferred.promise;
   },
 
   /******************* internal (private) methods *********************/
-  /**
-   * Create a session , execute a function within the session and release
-   * the session at the end.
-   *
-   * @param deferred    - Object  : a Promise.defer()-ed Object
-   * @param sessionFunc - function: a function definition of the form:
-   *            funcName(sessionId)   - sessionId will contain the initialied session
-   *
-   * @return a Promise object
-   */
-
-  _withSession: function(deferred, sessionFunc) {
-    let self = this;
-    let sessionId = "";
-
-    this._callPepFunction(FT_CREATE_SESSION, "createSession", ['.']).
-    then(function(responseObj) {
-      try {
-
-        if (!("session" in responseObj)) {
-          deferred.reject("PEP-ERROR", null, "Invalid response: " + JSON.stringify(responseObj));
-          return null;
-        }
-        sessionId = responseObj.session;
-
-        return sessionFunc(sessionId);
-      }
-      catch (ex) {
-        deferred.reject(makeError("PEP-ERROR", ex, JSON.stringify(responseObj)));
-      }
-      return null;
-    }).
-    then(
-      function(responseObj) {
-        let params = [sessionId];
-        deferred.resolve(responseObj);
-
-        return self._callPepFunction(FT_CALL_FUNCTION, "releaseSession", params);
-      }
-    ).
-    catch(
-      function(reason) {
-        deferred.reject(reason);
-      }
-    );
-
-    return deferred.promise;
-  },
-
   /**
    * Asynchronously call a pEp function
    *
@@ -570,7 +465,7 @@ var EnigmailpEp = {
     if (!deferred) deferred = Promise.defer();
     let self = this;
 
-    // TODO: check if security_token is valid
+    let conn = this.getConnectionInfo();
 
     let functionCall = {
       "security_token": (gConnectionInfo ? gConnectionInfo.security_token : ""),
@@ -594,7 +489,7 @@ var EnigmailpEp = {
         let parsedObj = JSON.parse(this.responseText);
         let r = onLoadListener(parsedObj);
 
-        if (r && ("error" in r)) {
+        if ((typeof(r) === "object") && ("error" in r)) {
           if (r.error.code === -32600) {
             // wrong security token
             gConnectionInfo = null;
@@ -632,7 +527,6 @@ var EnigmailpEp = {
       },
       false);
 
-    let conn = self.getConnectionInfo();
     oReq.open("POST", conn + funcType);
     oReq.send(JSON.stringify(functionCall));
 
