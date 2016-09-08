@@ -25,5 +25,5 @@ test(function testConversionFromByteObjectToUnsignedInteger(){
 });
 
 test(function getDifferentUint32(){
-  Assert.notEqual(EnigmailRNG.getUint32(), EnigmailRNG.getUint32());
+  Assert.notEqual(EnigmailRNG.generateRandomUint32(), EnigmailRNG.generateRandomUint32());
 });

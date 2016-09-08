@@ -31,10 +31,15 @@ function bytesToUInt(byteObject) {
   return randomNumber[0];
 }
 
-function getUint32() {
+/**
+ * Generates a random UInt32 for use in randomising key selection and wait times between refreshing keys.
+ *
+ * @return random UInt32
+ */
+function generateRandomUint32() {
   return bytesToUInt(randomNumberGenerator().generateRandomBytes(4));
 }
 
 const EnigmailRNG = {
-  getUint32: getUint32
+  generateRandomUint32: generateRandomUint32
 };

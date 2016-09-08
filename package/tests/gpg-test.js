@@ -45,44 +45,60 @@ test(withStubFormatCmdLine(function shouldUseResolveToolPathWhenCheckingDirmngrC
   });
 }));
 
-test(withStubFormatCmdLine(function returnsTrueWhenConfiguredToUseTor() {
-  TestHelper.resetting(EnigmailGpgAgent, "resolveToolPath", function(executable) {
-    return {
-      path: "/usr/bin/gpg-connect-agent"
-    };
+test(withStubFormatCmdLine(function returnsFalseWhenNotConfiguredToUseTor() {
+  TestHelper.resetting(EnigmailGpg, "getGpgFeature", function(feature) {
+    return false;
   }, function() {
-    TestHelper.resetting(subprocess, "call", function(subprocObj) {
-      subprocObj.stdout("OK - Tor mode is enabled\n OK closing connection\n");
-      subprocObj.done({
-        exitCode: 0
-      });
+    Assert.equal(dirmngrConfiguredWithTor(), false);
+  });
+}));
+
+test(withStubFormatCmdLine(function returnsTrueWhenConfiguredToUseTor() {
+  TestHelper.resetting(EnigmailGpg, "getGpgFeature", function(feature) {
+    return true;
+  }, function() {
+    TestHelper.resetting(EnigmailGpgAgent, "resolveToolPath", function(executable) {
       return {
-        wait: function() {}
+        path: "/usr/bin/gpg-connect-agent"
       };
     }, function() {
+      TestHelper.resetting(subprocess, "call", function(subprocObj) {
+        subprocObj.stdout("OK - Tor mode is enabled\n OK closing connection\n");
+        subprocObj.done({
+          exitCode: 0
+        });
+        return {
+          wait: function() {}
+        };
+      }, function() {
 
-      Assert.equal(dirmngrConfiguredWithTor(), true);
+        Assert.equal(dirmngrConfiguredWithTor(), true);
+      });
     });
   });
 }));
 
 test(withStubFormatCmdLine(function returnsFalseWhenNotConfiguredToUseTor() {
-  TestHelper.resetting(EnigmailGpgAgent, "resolveToolPath", function(executable) {
-    return {
-      path: "/usr/bin/gpg-connect-agent"
-    };
+  TestHelper.resetting(EnigmailGpg, "getGpgFeature", function(feature) {
+    return true;
   }, function() {
-    TestHelper.resetting(subprocess, "call", function(subprocObj) {
-      subprocObj.stdout("OK - Tor mode is NOT enabled\n OK closing connection\n");
-      subprocObj.done({
-        exitCode: 0
-      });
+    TestHelper.resetting(EnigmailGpgAgent, "resolveToolPath", function(executable) {
       return {
-        wait: function() {}
+        path: "/usr/bin/gpg-connect-agent"
       };
     }, function() {
+      TestHelper.resetting(subprocess, "call", function(subprocObj) {
+        subprocObj.stdout("OK - Tor mode is NOT enabled\n OK closing connection\n");
+        subprocObj.done({
+          exitCode: 0
+        });
+        return {
+          wait: function() {}
+        };
+      }, function() {
 
-      Assert.equal(dirmngrConfiguredWithTor(), false);
+        Assert.equal(dirmngrConfiguredWithTor(), false);
+      });
     });
   });
 }));

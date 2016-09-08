@@ -153,7 +153,7 @@ test(withTestGpgHome(withEnigmail(withKeys(function refreshesKeyOnlyIfWaitTimeHa
 }))));
 
 test(withTestGpgHome(withEnigmail(withKeys(function setUpRefreshTimer_withWaitTime(){
-  const expectedRandomTime = EnigmailRNG.getUint32();
+  const expectedRandomTime = EnigmailRNG.generateRandomUint32();
   const timer = {
     initWithCallbackWasCalled: false,
     initWithCallback: function(f, time, timerType) {

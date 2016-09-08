@@ -69,6 +69,13 @@ function filterWith(portPref) {
   };
 }
 
+/**
+ * Checks if Tor is running
+ *
+ * @param portPref - string: the preferences key of either torServicePort or torBrowserBundlePort
+ *
+ * @return true if a running Tor service has been found, false otherwise
+ */
 function checkTorExists(portPref) {
   const pps = protocolProxyService().registerFilter(filterWith(portPref), 1);
 

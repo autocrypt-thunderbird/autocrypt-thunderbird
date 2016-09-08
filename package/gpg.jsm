@@ -359,8 +359,7 @@ const EnigmailGpg = {
   /**
    * For versions of GPG 2.1 and higher, checks to see if the dirmngr is configured to use Tor
    *
-   * return value is true/false depending on whether Tor is used or not
+   * @return    Boolean     - True if dirmngr is configured with Tor. False otherwise
    */
   dirmngrConfiguredWithTor: dirmngrConfiguredWithTor
-
 };

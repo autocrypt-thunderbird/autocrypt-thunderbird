@@ -40,12 +40,32 @@ function isWin32() {
 }
 
 const EnigmailOS = {
+  /*
+   * getOS uses the Mozilla nsIXULRuntime Component to retrieve the OS Target
+   *
+   * @return   String    - OS Identifier
+   */
   getOS: getOS,
 
+  /**
+   * isDosLike identifies whether the host computer is MS-DOS based
+   *
+   * @return    Boolean   - True if local host is MS-DOS based. False otherwise.
+   */
   isDosLike: isDosLike(),
 
+  /**
+   * isWin32 identifies whether the running system is 32 bit Windows machine
+   *
+   * @return    Boolean   - True if local host is a 32 bit Windows machine. False otherwise.
+   */
   isWin32: isWin32(),
 
+  /**
+   * isMac identifies whether the running system is a Mac
+   *
+   * @return    Boolean   - True if local host is a derivative of Darwin. False otherwise.
+   */
   isMac: isMac(),
 
   // get a Windows registry value (string)

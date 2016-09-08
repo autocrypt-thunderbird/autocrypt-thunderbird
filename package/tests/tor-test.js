@@ -8,7 +8,7 @@
 "use strict";
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, assertContains: false, withEnigmail: false, withTestGpgHome: false, withEnvironment: false, resetting: false */
 
-testing("tor.jsm"); /*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_WINDOWS_GPG_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false*/
+testing("tor.jsm"); /*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_WINDOWS_SOCKS_GPG_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false*/
 
 component("enigmail/rng.jsm"); /*global EnigmailRNG*/
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
@@ -35,7 +35,7 @@ test(function evaluateGpgVersionWhenOsIsWindows() {
     TestHelper.resetting(EnigmailGpg, "agentVersion", "1.4.0", function() {
       TestHelper.resetting(EnigmailVersioning, "greaterThanOrEqual", function(version, minimumVersion) {
         Assert.equal(version, "1.4.0");
-        Assert.deepEqual(minimumVersion, MINIMUM_WINDOWS_GPG_VERSION);
+        Assert.deepEqual(minimumVersion, MINIMUM_WINDOWS_SOCKS_GPG_VERSION);
         return false;
       }, function() {
         Assert.equal(meetsOSConstraints(), false);
@@ -85,7 +85,7 @@ test(function createHelperArgsAlwaysReturnsRandomUserAndPass() {
 
 test(function createGpgProxyArgs_forWindows() {
   TestHelper.resetting(EnigmailOS, "isDosLike", true, function() {
-    TestHelper.resetting(EnigmailRNG, "getUint32", function() {
+    TestHelper.resetting(EnigmailRNG, "generateRandomUint32", function() {
       return "dummyData";
     }, function() {
       const tor = {
@@ -108,7 +108,7 @@ test(function createGpgProxyArgs_forWindows() {
 
 test(function createGpgProxyArgs_forLinux() {
   TestHelper.resetting(EnigmailOS, "isDosLike", false, function() {
-    TestHelper.resetting(EnigmailRNG, "getUint32", function() {
+    TestHelper.resetting(EnigmailRNG, "generateRandomUint32", function() {
       return "dummyData";
     }, function() {
       const tor = {
@@ -161,7 +161,7 @@ test(withStandardGpg(function testTorPropertiesSearchesForTor() {
 
 test(function createGpgProxyArgs_forLinux_whenSystemDOESNTMeetSocks5hVersion() {
   TestHelper.resetting(EnigmailOS, "isDosLike", false, function() {
-    TestHelper.resetting(EnigmailRNG, "getUint32", function() {
+    TestHelper.resetting(EnigmailRNG, "generateRandomUint32", function() {
       return "dummyData";
     }, function() {
       const tor = {
@@ -212,7 +212,7 @@ test(withStandardGpg(function returnsSuccessWithArgs_whenAbleToFindTorAndTorsock
     TestHelper.resetting(self, "usesDirmngr", function() {
       return false;
     }, function() {
-      TestHelper.resetting(EnigmailRNG, "getUint32", function() {
+      TestHelper.resetting(EnigmailRNG, "generateRandomUint32", function() {
         return "dummyData";
       }, function() {
         const torArgs = ["--user", "dummyUsername", "--pass", "dummyPassword", "/usr/bin/gpg2"];

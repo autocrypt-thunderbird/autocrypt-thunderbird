@@ -27,8 +27,16 @@ function getVersionComparator() {
   return vc;
 }
 
-function getVersion(stdout, executable) {
-  const m = stdout.match(/\b(\d+\.\d+\.\d+)\b/);
+/*
+ * getVersion retrieves a version from a string
+ *
+ * @param   String  output           - string to retrieve the version from
+ * @param   String  executable       - string to print when a version is not parseable
+ *
+ * @return  String  versionResponse  - The first value that matches a version format
+ */
+function getVersion(output, executable) {
+  const m = output.match(/\b(\d+\.\d+\.\d+)\b/);
   if (m) {
     const versionResponse = m[1];
 
@@ -49,36 +57,74 @@ function versionFoundMeetsMinimumVersionRequired(executable, minimumVersion) {
   const exitCodeObj = {
     value: null
   };
-  const stdout = EnigmailExecution.resolveAndSimpleExec(executable, args, exitCodeObj, {});
-  if (!stdout || exitCodeObj.value < 0) {
+  const output = EnigmailExecution.resolveAndSimpleExec(executable, args, exitCodeObj, {});
+  if (!output || exitCodeObj.value < 0) {
     EnigmailLog.DEBUG("executable not found: " + executable + "\n");
     return false;
   }
 
-  const version = getVersion(stdout, executable);
+  const version = getVersion(output, executable);
   if (!version) {
-    EnigmailLog.DEBUG("couldn't find a version in the output from " + executable + " - total output: " + stdout + "\n");
+    EnigmailLog.DEBUG("couldn't find a version in the output from " + executable + " - total output: " + output + "\n");
     return false;
   }
 
   return greaterThanOrEqual(version, minimumVersion);
 }
 
-function greaterThanOrEqual(left, right) {
-  return getVersionComparator().compare(left, right) >= 0;
+function greaterThanOrEqual(versionWeHave, versionWeAreComparingWith) {
+  return getVersionComparator().compare(versionWeHave, versionWeAreComparingWith) >= 0;
 }
 
-function greaterThan(left, right) {
-  return getVersionComparator().compare(left, right) > 0;
+function greaterThan(versionWeHave, versionWeAreComparingWith) {
+  return getVersionComparator().compare(versionWeHave, versionWeAreComparingWith) > 0;
 }
 
-function lessThan(left, right) {
-  return getVersionComparator().compare(left, right) < 0;
+function lessThan(versionWeHave, versionWeAreComparingWith) {
+  return getVersionComparator().compare(versionWeHave, versionWeAreComparingWith) < 0;
 }
 
 const EnigmailVersioning = {
+  /**
+   * Uses Mozilla's Version Comparator Component to identify whether the version
+   * we have is greater than or equal to the version we are comparing with
+   *
+   * @param     String  versionWeHave               - version we have
+   * @param     String  versionWeAreComparingWith   - version we want to compare with
+   *
+   * @return    Boolean     - The result of versionWeHave >= versionWeAreComparingWith
+   */
   greaterThanOrEqual: greaterThanOrEqual,
+  /**
+   * Uses Mozilla's Version Comparator Component to identify whether the version
+   * we have is greater than the version we are comparing with
+   *
+   * @param     String  versionWeHave               - version we have
+   * @param     String  versionWeAreComparingWith   - version we want to compare with
+   *
+   * @return    Boolean     - The result of versionWeHave > versionWeAreComparingWith
+   */
   greaterThan: greaterThan,
+  /**
+   * Uses Mozilla's Version Comparator Component to identify whether the version
+   * we have is less than the version we are comparing with
+   *
+   * @param     String  versionWeHave               - version we have
+   * @param     String  versionWeAreComparingWith   - version we want to compare with
+   *
+   * @return    Boolean     - The result of versionWeHave < versionWeAreComparingWith
+   */
   lessThan: lessThan,
+  /**
+   * Uses Mozilla's Version Comparator Component to identify whether an executable version
+   * meets the required version specified
+   *
+   * @param     String  executable               - version of the executable
+   * @param     String  minimumVersion           - version we want to compare with
+   *
+   * @return    Boolean     - True if the executable version meets the minimum version required,
+   *                          false if it does not or it does not exist, or if a version was not
+   *                          parseable from its output
+   */
   versionFoundMeetsMinimumVersionRequired: versionFoundMeetsMinimumVersionRequired
 };

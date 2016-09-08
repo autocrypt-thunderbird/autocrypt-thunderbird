@@ -28,8 +28,8 @@ const MINIMUM_CURL_SOCKS5H_VERSION = "7.21.7";
 // Minimum for using socks5 proxies with curl
 const MINIMUM_CURL_SOCKS5_PROXY_VERSION = "7.18.0";
 
-// Stable and most used version according to gnupg.org
-const MINIMUM_WINDOWS_GPG_VERSION = "2.0.30";
+// Minimum for using socks5 proxies on Windows
+const MINIMUM_WINDOWS_SOCKS_GPG_VERSION = "2.0.20";
 
 const TORSOCKS_VERSION_2 = "2.0.0";
 
@@ -70,11 +70,25 @@ function getAction(actionFlags) {
   return null;
 }
 
+/**
+ * Sets user preference about requiring requests only to be made over Tor
+ *
+ * @param actionFlags - long: A Keyserver action flag
+ *
+ * @return true if user has requested gpg requests to be attempted over Tor, false otherwise
+ */
 function isPreferred(actionFlags) {
   const action = getAction(actionFlags);
   return EnigmailPrefs.getPref(action.requires) || EnigmailPrefs.getPref(action.uses);
 }
 
+/**
+ * Sets user preference about requiring requests only to be made over Tor
+ *
+ * @param actionFlags - long: A Keyserver action flag
+ *
+ * @return true if user has requested gpg requests ONLY to be attempted over Tor, false otherwise
+ */
 function isRequired(actionFlags) {
   return EnigmailPrefs.getPref(getAction(actionFlags).requires);
 }
@@ -109,7 +123,7 @@ function buildEnvVars() {
 }
 
 function createRandomCredential() {
-  return EnigmailRNG.getUint32().toString();
+  return EnigmailRNG.generateRandomUint32().toString();
 }
 
 function torOn(portPref) {
@@ -128,7 +142,7 @@ function torOn(portPref) {
 
 function meetsOSConstraints() {
   if (EnigmailOS.isDosLike) {
-    return EnigmailVersioning.greaterThanOrEqual(EnigmailGpg.agentVersion, MINIMUM_WINDOWS_GPG_VERSION);
+    return EnigmailVersioning.greaterThanOrEqual(EnigmailGpg.agentVersion, MINIMUM_WINDOWS_SOCKS_GPG_VERSION);
   }
   else {
     return EnigmailVersioning.versionFoundMeetsMinimumVersionRequired("curl", MINIMUM_CURL_SOCKS5_PROXY_VERSION);
@@ -161,6 +175,11 @@ function findTorExecutableHelper(versioning) {
   }
 }
 
+/**
+ * Checks if Tor is running on specified ports in preferences for Tor browser bundle and Tor service
+ *
+ * @return true if Tor is running on either port, false if Tor is not running on either
+ */
 function findTor() {
   const torOnBrowser = torOn(TOR_BROWSER_BUNDLE_PORT_PREF);
   if (torOnBrowser !== null) {
@@ -174,7 +193,7 @@ const systemCaller = {
   findTorExecutableHelper: findTorExecutableHelper
 };
 
-function buildSocksProperties(tor, system) {
+function buildSocksProperties(tor) {
   return {
     command: "gpg",
     args: gpgProxyArgs(tor, EnigmailVersioning),
@@ -190,6 +209,29 @@ function torNotAvailableProperties() {
     helper: null
   };
 }
+
+/**
+ * Constructs object with properites about how we will use tor for key refreshes
+ *
+ * @param system - object with functions to locate Tor and Tor helpers
+ *
+ * @return object with
+      * isAvailable   - boolean, true if Tor is available, false otherwise
+      * useTorMode    - boolean, true if dirManager is available and configured to use Tor, false otherwise
+      * socks         - object with
+                          * command -  the name of the gpg executable
+                          * args    -  proxy host URI
+                          * envVars -  an empty array
+
+                        null if Tor is not available
+
+      * helper        - object with
+                          * envVars    - environment variables, if we need them for the helper
+                          * command    - the path to the helper executable
+                          * args       - flags used with the helper, if we do not use environment variables
+
+                          If no helper is found, return null
+ */
 
 function torProperties(system) {
   const tor = system.findTor();
@@ -209,9 +251,8 @@ function torProperties(system) {
 
   if (usesDirmngr()) {
     useTorMode = EnigmailGpg.dirmngrConfiguredWithTor();
-  }
-  else {
-    socks = buildSocksProperties(tor, system);
+  } else {
+    socks = buildSocksProperties(tor);
   }
 
   return {

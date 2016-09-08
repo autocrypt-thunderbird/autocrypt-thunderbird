@@ -272,7 +272,6 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  *
  * @return:      Subprocess object, or null in case process could not be started
  */
-
 function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
   const request = build(actionFlags, keyserver, searchTerms, errorMsgObj, EnigmailHttpProxy);
   if (request === null) return null;
@@ -280,13 +279,11 @@ function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 }
 
 /**
- * builds a list of gpg requests to try to refresh a key
+ * Refresh will refresh a key over Tor if Tor is available and over hkps if hkps is configured
+ * and available.
  *
- * @keyId:      Integer - id of the user key to be refreshed
- *
- * @return:     No return value; exits when either a key has been successfully refreshed, or if all possible attempts have failed
+ * @param    String  keyId   - ID of the key to be refreshed
  */
-
 function refresh(keyId) {
   EnigmailLog.WRITE("[KEYSERVER]: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString()+ "\n");
   const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
@@ -303,7 +300,7 @@ function refresh(keyId) {
 
 function logRefreshAction(successStatus, usingTor, keyId) {
   if (successStatus) {
-    EnigmailLog.CONSOLE("Refreshed key " + keyId + " over Tor: " + usingTor + ", successfully: " + successStatus + "\n\n");
+    EnigmailLog.CONSOLE("Refreshed key " + keyId + " over Tor: " + usingTor + ". Refreshed successfully: " + successStatus + "\n\n");
   } else {
     EnigmailLog.CONSOLE("Failed to refresh key " + keyId + "\n\n");
   }

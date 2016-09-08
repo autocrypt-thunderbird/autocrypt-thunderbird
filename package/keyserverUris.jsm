@@ -80,18 +80,6 @@ function combineIntoURI(protocol, domain, port) {
   }
 }
 
-function buildKeyserverUris() {
-  const uris = getUserDefinedKeyserverURIs().filter(isValidProtocol).map(function(keyserver) {
-    return buildUriOptionsFor(keyserver);
-  }).reduce(function(a, b) {
-    return a.concat(b);
-  });
-
-  return uris.map(function(uri) {
-    return combineIntoURI(uri.protocol, uri.domain, uri.port);
-  });
-}
-
 function isValidProtocol(uri) {
   return uri.match(/:\/\//) === null || /^(hkps|hkp|ldap):\/\//i.test(uri);
 }
@@ -101,6 +89,33 @@ function validProtocolsExist() {
   return validKeyserverUris.length > 0;
 }
 
+/**
+ * Construct the full URIs for making gpg requests.
+ * This takes the specified keyservers and adds the relevant protocol and port.
+ * When no specific protocol is defined by the user, 2 URIs will be built, for hkps and hkp.
+ *
+ * @return array of all URIs to try refreshing keys over
+ */
+function buildKeyserverUris() {
+  const uris = getUserDefinedKeyserverURIs().filter(isValidProtocol).map(function(keyserver) {
+    return buildUriOptionsFor(keyserver);
+  }).reduce(function(a, b) {
+    return a.concat(b);
+  });
+
+  return uris.map(function(uri) {return combineIntoURI(uri.protocol, uri.domain, uri.port);});
+}
+
+/**
+ * Checks if the keyservers specified are valid. 
+ * Key refreshes will not be attempted without valid keyservers.
+ * A valid keyserver is one that is non-empty and consists of 
+ * - the keyserverDomain  
+ * - may include a protocol from hkps, hkp or ldap
+ * - may include the port
+ *
+ * @return true if keyservers exist and are valid, false otherwise.
+ */
 function validKeyserversExist() {
   return EnigmailPrefs.getPref(KEYSERVER_PREF).trim() !== "" && validProtocolsExist();
 }
