@@ -79,7 +79,7 @@
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
 <!ENTITY enigmail.keyservers.label        "Specify your keyserver(s)">
-<!ENTITY enigmail.keyservers.sample       "Example: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
+<!ENTITY enigmail.keyservers.sample2      "Example: pool.sks-keyservers.net, pgp.mit.edu">
 
 <!ENTITY enigmail.searchForKey.label      "Search for key">
 
