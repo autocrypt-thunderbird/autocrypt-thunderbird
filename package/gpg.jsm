@@ -122,6 +122,7 @@ const EnigmailGpg = {
    windows-photoid-bug  - is there a bug in gpg with the output of photoid on Windows (true for gpg < 2.0.16)
    genkey-no-protection - is "%no-protection" supported for generting keys (true for gpg >= 2.1)
    search-keys-cmd      - what command to use to termine the --search-key operation. ("save" for gpg > 2.1; "quit" otherwise)
+   socks-on-windows     - is SOCKS proxy supported on Windows (true for gpg >= 2.0.20)
    supports-dirmngr     - is dirmngr supported
 
    @return: depending on featureName - Boolean unless specified differently:
@@ -156,6 +157,8 @@ const EnigmailGpg = {
         return EnigmailVersioning.lessThan(gpgVersion, "2.0.16");
       case "supports-dirmngr":
         return EnigmailVersioning.greaterThan(gpgVersion, "2.1");
+      case "socks-on-windows":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.20");
       case "search-keys-cmd":
         // returns a string
         if (EnigmailVersioning.greaterThan(gpgVersion, "2.1")) {

@@ -28,9 +28,6 @@ const MINIMUM_CURL_SOCKS5H_VERSION = "7.21.7";
 // Minimum for using socks5 proxies with curl
 const MINIMUM_CURL_SOCKS5_PROXY_VERSION = "7.18.0";
 
-// Minimum for using socks5 proxies on Windows
-const MINIMUM_WINDOWS_SOCKS_GPG_VERSION = "2.0.20";
-
 const TORSOCKS_VERSION_2 = "2.0.0";
 
 const TOR_SERVICE_PORT_PREF = "torServicePort";
@@ -142,7 +139,7 @@ function torOn(portPref) {
 
 function meetsOSConstraints() {
   if (EnigmailOS.isDosLike) {
-    return EnigmailVersioning.greaterThanOrEqual(EnigmailGpg.agentVersion, MINIMUM_WINDOWS_SOCKS_GPG_VERSION);
+    return EnigmailGpg.getGpgFeature("socks-on-windows");
   }
   else {
     return EnigmailVersioning.versionFoundMeetsMinimumVersionRequired("curl", MINIMUM_CURL_SOCKS5_PROXY_VERSION);
@@ -251,7 +248,8 @@ function torProperties(system) {
 
   if (usesDirmngr()) {
     useTorMode = EnigmailGpg.dirmngrConfiguredWithTor();
-  } else {
+  }
+  else {
     socks = buildSocksProperties(tor);
   }
 
