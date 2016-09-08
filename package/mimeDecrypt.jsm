@@ -511,7 +511,6 @@ EnigmailMimeDecrypt.prototype = {
         veri.onStopRequest(null, null, 0);
       }
       else {
-        gConv.setData(data, data.length);
         this.mimeSvc.onStartRequest(null, null);
         this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
         this.mimeSvc.onStopRequest(null, null, 0);
