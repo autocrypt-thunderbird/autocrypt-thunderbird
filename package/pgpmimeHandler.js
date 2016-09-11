@@ -127,12 +127,18 @@ PgpMimeHandler.prototype = {
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {
-    if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
-      return null;
-    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
-
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
+
+    if (!EnigmailCore.getService()) {
+      // Ensure Enigmail is initialized
+      if (ct.search(/application\/(x-)?pkcs7-signature/i) > 0) {
+        return this.handleSmime(uri);
+      }
+      return null;
+    }
+
+    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
     EnigmailLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
 
     let cth = null;
