@@ -81,7 +81,8 @@ MODFILES = \
            uris.jsm \
            verify.jsm \
            versioning.jsm \
-           windows.jsm
+           windows.jsm \
+           zbase32.jsm
 
 all: deploy
 
