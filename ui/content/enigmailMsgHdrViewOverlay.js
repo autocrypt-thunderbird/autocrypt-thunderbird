@@ -983,37 +983,98 @@ if (messageHeaderSink) {
         throw Components.results.NS_NOINTERFACE;
       },
 
+      /**
+       * Determine message number and folder from mailnews URI
+       *
+       * @param url - nsIURI object
+       *
+       * @return Object:
+       *    - msgNum: String - the message number, or "" if no URI Scheme fits
+       *    - folder: String - the folder (or newsgroup) name
+       */
+      msgIdentificationFromUrl: function(url) {
+
+        // sample URLs in Thunderbird
+        // Local folder: mailbox:///some/path/to/folder?number=359360
+        // IMAP: imap://user@host:port/fetch>some>path>111
+        // NNTP: news://some.host/some.service.com?group=some.group.name&key=3510
+        // also seen: e.g. mailbox:///som/path/to/folder?number=4455522&part=1.1.2&filename=test.eml
+        // mailbox:///...?number=4455522&part=1.1.2&filename=test.eml&type=application/x-message-display&filename=test.eml
+        // imap://user@host:port>UID>some>path>10?header=filter&emitter=js&examineEncryptedParts=true
+
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: url.path=" + url.path + "\n");
+
+        let msgNum = "";
+        let msgFolder = "";
+
+        if (url.schemeIs("mailbox")) {
+          msgNum = url.path.replace(/(.*[?&]number=)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = url.path.replace(/\?.*/, "");
+        }
+        else if (url.schemeIs("imap")) {
+          let p = unescape(url.path);
+          msgNum = p.replace(/(.*>)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = p.replace(/\?.*$/, "").replace(/>[^>]+$/, "");
+        }
+        else if (url.schemeIs("news")) {
+          msgNum = url.path.replace(/(.*[\?&]key=)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = url.path.replace(/(.*[\?&]group=)([^&]+)(&.*)?/, "$2");
+        }
+
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: msgNum=" + msgNum + " / folder=" + msgFolder + "\n");
+
+        return {
+          msgNum: msgNum,
+          folder: msgFolder.toLowerCase()
+        };
+      },
+
+
       isCurrentMessage: function(uri) {
         let uriSpec = (uri ? uri.spec : null);
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: uri.spec=" + uriSpec + "\n");
 
-        let msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
-
-        let url = {};
-        try {
-          let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
-          let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
-          msgSvc.GetUrlForUri(msgUriSpec, url, null);
-        }
-        catch (ex) {
-          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
-          url.value = {
-            host: "invalid",
-            path: "/message",
-            scheme: "enigmail",
-            spec: "enigmail://invalid/message"
-          };
-        }
-
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url=" + url.value.spec + "\n");
-
-        if (!uriSpec || uriSpec.search(/^enigmail:/) === 0 ||
-          (uri.host == url.value.host &&
-            uri.path.substr(url.value.path.length).search(/([\?&].*)?$/) === 0)) {
+        if (!uriSpec || uriSpec.search(/^enigmail:/) === 0) {
+          // we cannot compare if no URI given or if URI is Enigmail-internal;
+          // therefore assuming it's the current message
           return true;
         }
 
+        let msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
+
+        let currUrl = {};
+        try {
+          let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
+          let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
+          msgSvc.GetUrlForUri(msgUriSpec, currUrl, null);
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
+          currUrl.value = {
+            host: "invalid",
+            path: "/message",
+            scheme: "enigmail",
+            spec: "enigmail://invalid/message",
+            schemeIs: function(s) {
+              return s === this.scheme;
+            }
+          };
+        }
+
+        let currMsgId = this.msgIdentificationFromUrl(currUrl.value);
+        let gotMsgId = this.msgIdentificationFromUrl(uri);
+
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url=" + currUrl.value.spec + "\n");
+
+        if (uri.host == currUrl.value.host &&
+          currMsgId.folder === gotMsgId.folder &&
+          currMsgId.msgNum === gotMsgId.msgNum) {
+          EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: true\n");
+          return true;
+        }
+
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: false\n");
         return false;
       },
 
