@@ -338,7 +338,7 @@ Enigmail.prototype = {
 
       const configuredVersion = EnigmailPrefs.getPref("configuredVersion");
 
-      EnigmailLog.DEBUG("enigmailCommon.jsm: getService: " + configuredVersion + "\n");
+      EnigmailLog.DEBUG("enigmail.js: getService: last used version: " + configuredVersion + "\n");
 
       if (firstInitialization && holder.svc.initialized &&
         EnigmailGpgAgent.agentType === "pgp") {
