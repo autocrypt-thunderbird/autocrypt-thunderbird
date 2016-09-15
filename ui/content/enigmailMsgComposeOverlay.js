@@ -492,8 +492,6 @@ Enigmail.msg = {
             EnigmailLog.DEBUG("originalMsgURI=" + gMsgCompose.originalMsgURI + "\n");
             this.setSendMode('encrypt');
 
-            // TODO: disable S/MIME in case it is enabled
-
             this.disableSmime = true;
           }
           else if (msgFlags & (nsIEnigmail.GOOD_SIGNATURE |
@@ -2134,7 +2132,10 @@ Enigmail.msg = {
         return p;
       }, []);
 
-      msgConfirm += "\n\n" + EnigmailLocale.getString("encryptKeysNote", [keyList.join(", ")]);
+      if (this.statusPGPMime !== EnigmailConstants.ENIG_FINAL_SMIME &&
+        this.statusPGPMime !== EnigmailConstants.ENIG_FINAL_FORCESMIME) {
+        msgConfirm += "\n\n" + EnigmailLocale.getString("encryptKeysNote", [keyList.join(", ")]);
+      }
     }
 
     return EnigmailDialog.confirmDlg(window, msgConfirm,
@@ -2975,6 +2976,12 @@ Enigmail.msg = {
     const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
     var promptSvc = EnigmailDialog.getPromptSvc();
     var newSecurityInfo;
+    let arrLen = {};
+    let toAddrList = [];
+    let recList;
+    let bccAddrList = [];
+    let splitRecipients;
+
 
     var gotSendFlags = this.sendMode;
     // here we process the final state:
@@ -3010,6 +3017,9 @@ Enigmail.msg = {
 
     if (this.statusPGPMime == EnigmailConstants.ENIG_FINAL_SMIME ||
       this.statusPGPMime == EnigmailConstants.ENIG_FINAL_FORCESMIME) {
+
+      // use S/MIME and return
+
       let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
 
       if (sendFlags & SIGN) si.signMessage = true;
@@ -3019,7 +3029,21 @@ Enigmail.msg = {
 
       if (conf === null) return false;
       if (conf) {
-        if (!this.confirmBeforeSend("test@gaga.com", "test@gaga.com", sendFlags, isOffline)) {
+
+        msgCompFields = gMsgCompose.compFields;
+        splitRecipients = msgCompFields.splitRecipients;
+
+        if (msgCompFields.to.length > 0) {
+          recList = splitRecipients(msgCompFields.to, true, arrLen);
+          this.addRecipients(toAddrList, recList);
+        }
+
+        if (msgCompFields.cc.length > 0) {
+          recList = splitRecipients(msgCompFields.cc, true, arrLen);
+          this.addRecipients(toAddrList, recList);
+        }
+
+        if (!this.confirmBeforeSend(toAddrList.join(", "), "", sendFlags, isOffline)) {
           return false;
         }
       }
@@ -3143,12 +3167,6 @@ Enigmail.msg = {
 
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg:gMsgCompose=" + gMsgCompose + "\n");
 
-      var toAddrList = [];
-      var bccAddrList = [];
-
-      var splitRecipients;
-      var arrLen = {};
-      var recList;
       splitRecipients = msgCompFields.splitRecipients;
 
       if (msgCompFields.to.length > 0) {
