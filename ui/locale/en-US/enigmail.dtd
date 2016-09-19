@@ -328,6 +328,7 @@
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
+<!ENTITY enigmail.encDlgProtocol.label              "Encryption/Signing Standard">
 <!ENTITY enigmail.encDlgEncrypt.label               "Encrypt Message">
 <!ENTITY enigmail.encDlgEncrypt.accesskey           "E">
 <!ENTITY enigmail.encDlgSign.label                  "Sign Message">
@@ -336,6 +337,8 @@
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
 <!ENTITY enigmail.encDlgInlinePgp.label             "Use Inline PGP">
 <!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
+<!ENTITY enigmail.encDlgSMime.label                 "Use S/MIME">
+<!ENTITY enigmail.encDlgSMime.accesskey             "M">
 <!ENTITY enigmail.encDlgReset.label                 "Reset to Defaults">
 <!ENTITY enigmail.encDlgReset.accesskey             "R">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Send 'OpenPGP' Header">

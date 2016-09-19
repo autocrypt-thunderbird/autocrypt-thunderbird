@@ -39,16 +39,25 @@
 
    <separator/>
 
-   <radiogroup id="pgpmimeGroup">
-     <radio id="useInlinePgp"
-               accesskey="&enigmail.encDlgInlinePgp.accesskey;"
-               label="&enigmail.encDlgInlinePgp.label;"
-               value="0"/>
+   <groupbox>
+     <caption label="&enigmail.encDlgProtocol.label;"/>
+     <radiogroup id="pgpmimeGroup">
+       <radio id="useInlinePgp"
+                 accesskey="&enigmail.encDlgInlinePgp.accesskey;"
+                 label="&enigmail.encDlgInlinePgp.label;"
+                 value="0"/>
 
-     <radio id="usePgpMime"
-               accesskey="&enigmail.encDlgPgpMime.accesskey;"
-               label="&enigmail.encDlgPgpMime.label;"
-               value="1"/>
-   </radiogroup>
+       <radio id="usePgpMime"
+                 accesskey="&enigmail.encDlgPgpMime.accesskey;"
+                 label="&enigmail.encDlgPgpMime.label;"
+                 value="1"/>
+
+       <radio id="useSMime"
+                 accesskey="&enigmail.encDlgSMime.accesskey;"
+                 label="&enigmail.encDlgSMime.label;"
+                 value="3"/>
+
+     </radiogroup>
+   </groupbox>
   </vbox>
 </dialog>
