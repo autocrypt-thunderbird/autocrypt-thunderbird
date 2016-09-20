@@ -251,13 +251,17 @@
   <!-- Enigmail bar above text editor field -->
 
   <toolbox id="compose-toolbox">
+    <toolbar id="composeToolbar2"
+            defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-save,spring">
+    </toolbar>
     <toolbar id="enigmail-toolbar"
             insertafter="composeToolbar2"
-            defaultset="enigmail-toolbar-header-button,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-attach,enigmail-toolbar-text-button"
+            defaultset="enigmail-toolbar-header-button,button-enigmail-attach,enigmail-toolbar-text-button"
             toolbarname="&enigmail.composetoolbar.label;"
             customizable="true"
             class="enigmailToolbar"
             fullscreentoolbar="true"
+            collapsed="true"
             mode="full"
             context="toolbar-context-menu">
     </toolbar>
