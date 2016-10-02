@@ -1255,10 +1255,16 @@ function importSettings() {
 function doImportSettings() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings\n");
   let importFile = gImportSettingsFile.value;
-  if (!importFile.exists()) return false;
+  if (!importFile.exists()) {
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: Importfile doesn't exist!\n");
+    return false;
+  }
 
   importFile.normalize();
-  if (!importFile.isFile()) return false;
+  if (!importFile.isFile()) {
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: Importfile is not a normal file!\n");
+    return false;
+  }
 
   document.getElementById("errorMessage").setAttribute("hidden", "true");
   document.getElementById("importInProgress").removeAttribute("hidden");
@@ -1268,6 +1274,7 @@ function doImportSettings() {
     zipR = EnigmailFiles.openZipFile(importFile);
   }
   catch (ex) {
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings - openZipFile() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
     return false;
   }
@@ -1277,6 +1284,7 @@ function doImportSettings() {
     cfg = ensureGpgHomeDir();
   }
   catch (ex) {
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings - ensureGpgHomeDir() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     return false;
   }
 
@@ -1286,12 +1294,19 @@ function doImportSettings() {
 
   let files = ["keyring.asc", "ownertrust.txt", "prefs.json"];
 
+  let filesAreMissing = false;
+
   // check if mandatory files are included
   for (let i in files) {
     if (!zipR.hasEntry(files[i])) {
-      EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
-      return false;
+      filesAreMissing = true;
+      EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: InvalidSettingsFile, missing: " + files[i] + "\n");
     }
+  }
+
+  if (filesAreMissing) {
+    EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
+    return false;
   }
 
   // append optional files
@@ -1326,6 +1341,7 @@ function doImportSettings() {
       cfgFile.append("gpg.conf");
       if (cfgFile.exists()) {
         if (!EnigConfirm(EnigGetString("setupWizard.gpgConfExists"), EnigGetString("dlg.button.overwrite"), EnigGetString("dlg.button.skip"))) {
+          EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings:  User has chosen to keep the already existing local gpg.conf.\n");
           doCfgFile = false;
         }
       }
@@ -1335,11 +1351,11 @@ function doImportSettings() {
       if (doCfgFile) tmpFile.moveTo(cfg.homeDir, "gpg.conf");
     }
     catch (ex) {
-      EnigmailLog.DEBUG("error with gpg.conf " + ex.toString() + "\n");
+      EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: Error with gpg.conf " + ex.toString() + "\n");
     }
   }
   else {
-    EnigmailLog.DEBUG("no gpg.conf file\n");
+    EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: Remark: no gpg.conf file in archive.\n");
   }
 
   tmpFile = tmpDir.clone();
