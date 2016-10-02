@@ -195,7 +195,9 @@ var EnigmailKey = {
    *    - packetStr - String: the packet list as received from GnuPG
    */
   getKeyFileType: function(keyBlockStr) {
-    let args = EnigmailGpg.getStandardArgs(true).concat("--list-packets");
+    let args = EnigmailGpg.getStandardArgs(true).concat(["--no-verbose, "
+      "--list-packets"
+    ]);
     const exitCodeObj = {};
     const statusMsgObj = {};
     const errorMsgObj = {};
