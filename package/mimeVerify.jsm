@@ -315,6 +315,9 @@ MimeVerify.prototype = {
       start = 0;
     }
     let end = this.keepData.indexOf("--" + this.boundary + "--") - 1;
+    if (end < 0) {
+      end = this.keepData.length;
+    }
 
     return {
       start: start,
