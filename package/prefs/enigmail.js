@@ -9,6 +9,10 @@
  * Default pref values for Enigmail
  */
 
+
+// use pEp or Enigmail engine for encryption/decryption
+pref("extensions.enigmail.usePEP", true);
+
 // the last configured Enigmail version
 pref("extensions.enigmail.configuredVersion", "");
 

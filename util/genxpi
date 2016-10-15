@@ -113,6 +113,8 @@ zip --must-match\
     modules/os.jsm \
     modules/passwordCheck.jsm \
     modules/passwords.jsm \
+    modules/pEp.jsm \
+    modules/pEpAdapter.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
     modules/promise.jsm \

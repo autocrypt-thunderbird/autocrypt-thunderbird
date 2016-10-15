@@ -487,10 +487,9 @@ var EnigmailpEp = {
     oReq.addEventListener("load", function _f() {
       try {
         let parsedObj = JSON.parse(this.responseText);
-        let r = onLoadListener(parsedObj);
 
-        if ((typeof(r) === "object") && ("error" in r)) {
-          if (r.error.code === -32600) {
+        if ((typeof(parsedObj) === "object") && ("error" in parsedObj)) {
+          if (parsedObj.error.code === -32600) {
             // wrong security token
             gConnectionInfo = null;
 
@@ -506,6 +505,8 @@ var EnigmailpEp = {
         else {
           gRetryCount = 0;
         }
+
+        let r = onLoadListener(parsedObj);
         deferred.resolve(r);
       }
       catch (ex) {
@@ -541,9 +542,9 @@ var EnigmailpEp = {
     let self = this;
 
     let exec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-    exec.initWithPath(pepServerPath);
 
     try {
+      exec.initWithPath(pepServerPath);
       if (!exec.isExecutable()) {
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
@@ -594,7 +595,7 @@ var EnigmailpEp = {
         1500);
     }
     catch (ex) {
-      deferred.reject("PEP-unavailable", ex.toString());
+      deferred.reject(makeError("PEP-unavailable", ex, "Cannot start PEP service"));
     }
   }
 };

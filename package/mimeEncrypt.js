@@ -25,6 +25,7 @@ Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: fa
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 
 const PGPMIME_JS_ENCRYPT_CONTRACTID = "@enigmail.net/enigmail/composesecure;1";
 const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
