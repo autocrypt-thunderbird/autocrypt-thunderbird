@@ -16,7 +16,8 @@ const Ci = Components.interfaces;
 
 Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/log.jsm");  /*global EnigmailLog: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 
 
 var gPepVersion = null;
@@ -24,6 +25,9 @@ var gPepVersion = null;
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
 var EnigmailPEPAdapter = {
+
+  pep: EnigmailpEp,
+
   /**
    * Get the pEp JSON server version number.
    *
@@ -43,7 +47,7 @@ var EnigmailPEPAdapter = {
    */
   usingPep: function() {
     if ((typeof(gPepVersion) === "string") && gPepVersion.length > 0) {
-      return EnigmailPrefs.getPref("usePEP");
+      return EnigmailPrefs.getPref("juniorMode");
     }
 
     return false;
@@ -58,6 +62,63 @@ var EnigmailPEPAdapter = {
     catch(function failed(data) {
       gPepVersion = "";
     });
+  },
+
+  getMsgStringFromResult: function(resultObj) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: getMsgStringFromResult: " + typeof(resultObj[0]) + "\n");
+    if ((typeof(resultObj[0]) === "object") && ("dir" in resultObj[0])) {
+      if (resultObj[0].enc_format === 3) {
+        // PGP/MIME
+        let i;
+        let boundary = EnigmailMime.createBoundary();
+        let att = resultObj[0].attachments;
+        let r = 'Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";\r\n  boundary="' + boundary + '"\r\n\r\n';
+
+        r += 'This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n';
+        for (i = 0; i < att.length; i++) {
+          r += "--" + boundary + "\r\n";
+          r += "Content-Type: " + att[i].mime_type + "\r\n";
+          if ("filename" in att[i]) {
+            r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
+          }
+          r += "\r\n";
+          r += att[i].value + "\r\n\r\n";
+        }
+
+        r += "--" + boundary + "--\r\n";
+
+        return r;
+      }
+      else if (resultObj[0].enc_format === 1) {
+        // inline PGP
+        let i;
+        let boundary = EnigmailMime.createBoundary();
+        let att = resultObj[0].attachments;
+        let r = 'Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n';
+
+        r += "--" + boundary + "\r\n";
+        r += 'Content-Type: text/plain; charset="utf-8"\r\n';
+        r += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
+        r += resultObj[0].longmsg + '\r\n\r\n';
+
+        for (i = 0; i < att.length; i++) {
+          r += "--" + boundary + "\r\n";
+          r += "Content-Type: " + att[i].mime_type + "\r\n";
+          if ("filename" in att[i]) {
+            r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
+          }
+          r += "\r\n";
+          r += att[i].value + "\r\n\r\n";
+        }
+
+        r += "--" + boundary + "--\r\n";
+
+        return r;
+
+      }
+    }
+
+    return "";
   }
 
 };

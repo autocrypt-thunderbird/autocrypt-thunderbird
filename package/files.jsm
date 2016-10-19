@@ -181,8 +181,13 @@ const EnigmailFiles = {
 
       const scriptableInStream = Cc[NS_SCRIPTABLEINPUTSTREAM_CONTRACTID].createInstance(Ci.nsIScriptableInputStream);
       scriptableInStream.init(rawInStream);
-      const available = scriptableInStream.available();
-      const fileContents = scriptableInStream.read(available);
+      let available = scriptableInStream.available();
+      let fileContents = "";
+      while (available) {
+        fileContents += scriptableInStream.read(available);
+        available = scriptableInStream.available();
+      }
+
       scriptableInStream.close();
       return fileContents;
     }

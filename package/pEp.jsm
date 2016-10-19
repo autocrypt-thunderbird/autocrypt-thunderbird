@@ -169,9 +169,7 @@ var EnigmailpEp = {
 
     try {
       let msgId = "enigmail-" + String(gRequestId++);
-      let params = [
-        null, // session
-        { // src message
+      let params = [{ // src message
           "id": msgId,
           "dir": 1,
           "shortmsg": subject,
@@ -222,9 +220,7 @@ var EnigmailpEp = {
 
     try {
       let msgId = "enigmail-" + String(gRequestId++);
-      let params = [
-        null, // session
-        { // src message
+      let params = [{ // src message
           "id": msgId,
           "dir": 0,
           "shortmsg": "",

@@ -10,8 +10,8 @@
  */
 
 
-// use pEp or Enigmail engine for encryption/decryption
-pref("extensions.enigmail.usePEP", true);
+// use pEp or Enigmail engine for encryption/decryption (true: use pEp)
+pref("extensions.enigmail.juniorMode", true);
 
 // the last configured Enigmail version
 pref("extensions.enigmail.configuredVersion", "");
