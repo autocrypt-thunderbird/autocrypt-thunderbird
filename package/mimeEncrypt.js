@@ -654,13 +654,9 @@ PgpMimeEncrypt.prototype = {
         self.inspector.exitNestedEventLoop();
       }
 
-      EnigmailLog.DEBUG("DATA: done\n");
-
-
     }).catch(function _error(err) {
       EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: ERROR\n");
-
-      EnigmailLog.DEBUG(err.code + ": " + err.exception.toString() + "\n");
+      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
 
       if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
         // unblock the waiting lock in finishCryptoEncapsulation
