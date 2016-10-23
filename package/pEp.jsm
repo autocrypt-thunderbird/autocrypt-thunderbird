@@ -161,36 +161,40 @@ var EnigmailpEp = {
    *  then:  returned result (message Object)
    *  catch: Error object (see above)
    */
-  encryptMessage: function(fromAddr, toAddrList, subject, message, pEpMode) {
+  encryptMessage: function(fromAddr, toAddrList, subject, messageObj, pEpMode) {
 
     if (pEpMode === null) pEpMode = 4;
     if (!toAddrList) toAddrList = [];
     if (typeof(toAddrList) === "string") toAddrList = [toAddrList];
 
+    messageObj.from = {
+      "user_id": "",
+      "username": "name",
+      "address": fromAddr
+    };
+
+    messageObj.to = toAddrList.reduce(function _f(p, addr) {
+      p.push({
+        "user_id": "",
+        "username": "name",
+        "address": addr
+      });
+      return p;
+    }, []);
+
+    let msgId = "enigmail-" + String(gRequestId++);
+
+    messageObj.shortmsg = subject;
+    messageObj.id = msgId;
+    messageObj.dir = 1;
+
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
-      let params = [{ // src message
-          "id": msgId,
-          "dir": 1,
-          "shortmsg": subject,
-          "longmsg": message,
-          "from": {
-            "user_id": "",
-            "username": "name",
-            "address": fromAddr
-          },
-          to: toAddrList.reduce(function _f(p, addr) {
-            p.push({
-              "user_id": "",
-              "username": "name",
-              "address": addr
-            });
-            return p;
-          }, [])
-        },
+      let params = [
+        messageObj, // pep messge object
         [], // extra
         ["OP"], // dest
-        pEpMode // encryption_format
+        pEpMode, // encryption_format
+        0 // encryption flags
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "encrypt_message", params);
@@ -233,12 +237,27 @@ var EnigmailpEp = {
         ["OP"], // msg Output
         ["OP"], // StringList Output
         ["OP"], // pep color Output
-        ["OP"] // undefined
+        ["OP"] // flags
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
 
+  parseMimeString: function(mimeStr) {
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [mimeStr,
+        mimeStr.length, // msg Output
+        ["OP"] // pep message
+      ];
 
+      return this._callPepFunction(FT_CALL_FUNCTION, "mime_decode_message", params);
     }
     catch (ex) {
       let deferred = Promise.defer();

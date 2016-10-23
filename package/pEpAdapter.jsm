@@ -18,6 +18,7 @@ Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 
 var gPepVersion = null;
@@ -72,17 +73,34 @@ var EnigmailPEPAdapter = {
         let i;
         let boundary = EnigmailMime.createBoundary();
         let att = resultObj[0].attachments;
-        let r = 'Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";\r\n  boundary="' + boundary + '"\r\n\r\n';
+        let r = 'Content-Type: multipart/encrypted;\r\n  protocol="application/pgp-encrypted";\r\n  boundary="' + boundary + '";\r\n\r\n';
 
         r += 'This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n';
+        r += 'This message was encrypted with pEp https://pEp-project.org\r\n\r\n';
         for (i = 0; i < att.length; i++) {
+
           r += "--" + boundary + "\r\n";
           r += "Content-Type: " + att[i].mime_type + "\r\n";
+          let decodedValue = "";
+
+          try {
+            // try to decode the value from base 64.
+            decodedValue = atob(att[i].value);
+          }
+          catch (ex) {
+            r += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
+          }
           if ("filename" in att[i]) {
             r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
           }
           r += "\r\n";
-          r += att[i].value + "\r\n\r\n";
+          if (decodedValue !== "") {
+            r += decodedValue;
+          }
+          else {
+            r += att[i].value;
+          }
+          r += "\r\n\r\n";
         }
 
         r += "--" + boundary + "--\r\n";
@@ -104,6 +122,7 @@ var EnigmailPEPAdapter = {
         for (i = 0; i < att.length; i++) {
           r += "--" + boundary + "\r\n";
           r += "Content-Type: " + att[i].mime_type + "\r\n";
+          r += "Content-Transfer-Encoding: base64\r\n";
           if ("filename" in att[i]) {
             r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
           }

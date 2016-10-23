@@ -623,18 +623,31 @@ PgpMimeEncrypt.prototype = {
     this.outQueue = "";
 
     let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
-    EnigmailPEPAdapter.pep.encryptMessage(
-      this.msgIdentity.email,
-      toAddrList,
-      this.msgCompFields.subject,
-      this.pipeQueue,
-      null
-    ).then(function _success(data) {
-      EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
+    EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue).then(function _step1(data) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: parseMimeString: SUCCESS\n");
 
       if ("result" in data) {
-        resultObj = data.result;
+        let msg = data.result[0];
+
+        return EnigmailPEPAdapter.pep.encryptMessage(
+          self.msgIdentity.email,
+          toAddrList,
+          self.msgCompFields.subject,
+          msg,
+          null);
       }
+      else {
+        throw "PEP-ERROR";
+      }
+
+    }).then(function _step2(res) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
+      if ((typeof(res) === "object") && ("result" in res)) {
+        resultObj = res.result;
+      }
+      else
+        EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: typeof res=" + typeof(res) + "\n");
+
 
       if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
         // unblock the waiting lock in finishCryptoEncapsulation
@@ -643,8 +656,12 @@ PgpMimeEncrypt.prototype = {
 
       EnigmailLog.DEBUG("DATA: done\n");
 
+
     }).catch(function _error(err) {
       EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: ERROR\n");
+
+      EnigmailLog.DEBUG(err.code + ": " + err.exception.toString() + "\n");
+
       if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
         // unblock the waiting lock in finishCryptoEncapsulation
         self.inspector.exitNestedEventLoop();
