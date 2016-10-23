@@ -91,6 +91,8 @@ enigmail.jar:
 	content/enigmail/enigmailFilterEditorOverlay.js  (content/enigmailFilterEditorOverlay.js)
 	content/enigmail/enigmailMsgPrintOverlay.xul   (content/enigmailMsgPrintOverlay.xul)
 	content/enigmail/enigmailMsgPrintOverlay.js    (content/enigmailMsgPrintOverlay.js)
+	content/enigmail/enigmailPrivacyOverlay.js     (content/enigmailPrivacyOverlay.js)
+	content/enigmail/enigmailPrivacyOverlay.xul    (content/enigmailPrivacyOverlay.xul)
 	content/enigmail/enigmailSetupWizard.js        (content/enigmailSetupWizard.js)
 	content/enigmail/enigmailSetupWizard.xul       (content/enigmailSetupWizard.xul)
 	content/enigmail/enigmailWrapSelection.xul     (content/enigmailWrapSelection.xul)

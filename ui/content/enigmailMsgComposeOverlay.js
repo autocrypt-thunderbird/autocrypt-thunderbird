@@ -37,6 +37,7 @@ Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailC
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -449,7 +450,7 @@ Enigmail.msg = {
     var msgUri = null;
     var msgIsDraft = false;
 
-    this.juniorMode = EnigmailPrefs.getPref("juniorMode");
+    this.juniorMode = EnigmailPEPAdapter.getPepJuniorMode();
 
     if (this.juniorMode) {
 

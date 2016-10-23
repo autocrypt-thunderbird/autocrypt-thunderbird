@@ -49,6 +49,9 @@ overlay chrome://global/content/customizeToolbar.xul chrome://enigmail/content/e
 overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
 overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
 
+# Overlay for privacy preferences in Thunderbird
+overlay chrome://messenger/content/preferences/privacy.xul chrome://enigmail/content/enigmailPrivacyOverlay.xul
+
 # Resource module registration
 resource enigmail modules/
 

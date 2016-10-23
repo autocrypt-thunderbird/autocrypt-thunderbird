@@ -42,16 +42,47 @@ var EnigmailPEPAdapter = {
   },
 
   /**
-   * Determine if pEp should be used or "regular" Enigmail functionality
+   * Determine if pEp is available
    *
-   * @return: Boolean: true - use pEp  / false - use Enigmail
+   * @return: Boolean: true - pEp is available / false - pEp is not usable
    */
   usingPep: function() {
+    if (!this.getPepJuniorMode()) return false;
+
     if ((typeof(gPepVersion) === "string") && gPepVersion.length > 0) {
-      return EnigmailPrefs.getPref("juniorMode");
+      return true;
     }
 
     return false;
+  },
+
+  /**
+   * Determine if pEp should be used or Enigmail
+   *
+   * @return: Boolean: true - use pEp  / false - use Enigmail
+   */
+  getPepJuniorMode: function() {
+
+    let mode = EnigmailPrefs.getPref("juniorMode");
+    if (mode === 2) return true;
+    if (mode === 0) return false;
+
+    // automatic mode: go through all identities
+    let amService = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+    amService.LoadAccounts();
+    let ids = amService.allIdentities;
+
+    for (let i = 0; i < ids.length; i++) {
+      let msgId = ids.queryElementAt(i, Ci.nsIMsgIdentity);
+
+      if ((msgId.getUnicharAttribute("signing_cert_name") !== "") ||
+        (msgId.getUnicharAttribute("encryption_cert_name") !== "") ||
+        msgId.getBoolAttribute("enablePgp")) {
+        return false;
+      }
+    }
+
+    return true;
   },
 
   initialize: function() {
@@ -127,7 +158,7 @@ var EnigmailPEPAdapter = {
             r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
           }
           r += "\r\n";
-          r += att[i].value + "\r\n\r\n";
+          r += att[i].value.replace(/(.{68})/g, "$1\r\n") + "\r\n\r\n";
         }
 
         r += "--" + boundary + "--\r\n";
