@@ -623,7 +623,7 @@ PgpMimeEncrypt.prototype = {
     this.outQueue = "";
 
     let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
-    EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue).then(function _step1(data) {
+    EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue.replace(/\r\n/g, "\n")).then(function _step1(data) {
       EnigmailLog.DEBUG("mimeEncrypt.js: parseMimeString: SUCCESS\n");
 
       if ("result" in data) {
