@@ -25,6 +25,7 @@ Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: fa
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 const PGPMIME_JS_ENCRYPT_CONTRACTID = "@enigmail.net/enigmail/composesecure;1";
 const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
@@ -101,23 +102,28 @@ PgpMimeEncrypt.prototype = {
     LOCAL_DEBUG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
     try {
 
-      if (this.checkSMime) {
-        // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
-        this.smimeCompose = Components.classesByID[kMsgComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
-        this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
+      if (EnigmailPEPAdapter.usingPep()) {
+        return true;
       }
+      else {
+        if (this.checkSMime) {
+          // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
+          this.smimeCompose = Components.classesByID[kMsgComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
+          this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
+        }
 
-      if (this.useSmime) return true;
+        if (this.useSmime) return true;
 
-      var securityInfo = msgCompFields.securityInfo;
-      if (!securityInfo) return false;
+        var securityInfo = msgCompFields.securityInfo;
+        if (!securityInfo) return false;
 
-      try {
-        var enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
-        return (enigSecurityInfo.sendFlags & (Ci.nsIEnigmail.SEND_SIGNED | Ci.nsIEnigmail.SEND_ENCRYPTED)) !== 0;
-      }
-      catch (ex) {
-        return false;
+        try {
+          var enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
+          return (enigSecurityInfo.sendFlags & (Ci.nsIEnigmail.SEND_SIGNED | Ci.nsIEnigmail.SEND_ENCRYPTED)) !== 0;
+        }
+        catch (ex) {
+          return false;
+        }
       }
     }
     catch (ex) {
@@ -128,6 +134,17 @@ PgpMimeEncrypt.prototype = {
 
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
     LOCAL_DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      this.recipientList = recipientList;
+      this.msgIdentity = msgIdentity;
+      this.outStream = outStream;
+      this.msgCompFields = msgCompFields;
+      this.isDraft = isDraft;
+      this.inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+      this.outStringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+      return null;
+    }
 
     if (this.checkSMime && (!this.smimeCompose)) {
       LOCAL_DEBUG("mimeEncrypt.js: beginCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n");
@@ -358,6 +375,11 @@ PgpMimeEncrypt.prototype = {
   finishCryptoEncapsulation: function(abort, sendReport) {
     LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
+    if (EnigmailPEPAdapter.usingPep()) {
+      this.processPepEncryption();
+      return;
+    }
+
     if (this.checkSMime && (!this.smimeCompose))
       throw Cr.NS_ERROR_NOT_INITIALIZED;
 
@@ -407,6 +429,11 @@ PgpMimeEncrypt.prototype = {
   mimeCryptoWriteBlock: function(buffer, length) {
     if (gDebugLogLevel > 4)
       LOCAL_DEBUG("mimeEncrypt.js: mimeCryptoWriteBlock: " + length + "\n");
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      this.pipeQueue += buffer.substr(0, length);
+      return null;
+    }
 
     if (this.checkSMime && (!this.smimeCompose))
       throw Cr.NS_ERROR_NOT_INITIALIZED;
@@ -586,6 +613,76 @@ PgpMimeEncrypt.prototype = {
       // unblock the waiting lock in finishCryptoEncapsulation
       this.inspector.exitNestedEventLoop();
     }
+  },
+
+  processPepEncryption: function() {
+    EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption:\n");
+
+    let self = this;
+    let resultObj = null;
+    this.outQueue = "";
+
+    let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
+    EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue.replace(/\r\n/g, "\n")).then(function _step1(data) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: parseMimeString: SUCCESS\n");
+
+      if ("result" in data) {
+        let msg = data.result[0];
+
+        return EnigmailPEPAdapter.pep.encryptMessage(
+          self.msgIdentity.email,
+          toAddrList,
+          self.msgCompFields.subject,
+          msg,
+          null);
+      }
+      else {
+        throw "PEP-ERROR";
+      }
+
+    }).then(function _step2(res) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
+      if ((typeof(res) === "object") && ("result" in res)) {
+        resultObj = res.result;
+      }
+      else
+        EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: typeof res=" + typeof(res) + "\n");
+
+
+      if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
+        // unblock the waiting lock in finishCryptoEncapsulation
+        self.inspector.exitNestedEventLoop();
+      }
+
+    }).catch(function _error(err) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: ERROR\n");
+      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
+
+      if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
+        // unblock the waiting lock in finishCryptoEncapsulation
+        self.inspector.exitNestedEventLoop();
+      }
+    });
+
+    // wait here for PEP to terminate
+    this.inspector.enterNestedEventLoop(0);
+
+    if (resultObj !== null) {
+      this.outQueue = EnigmailPEPAdapter.getMsgStringFromResult(resultObj);
+    }
+
+    if (this.outQueue === "") {
+      this.outQueue = this.pipeQueue;
+    }
+
+    this.outStringStream.setData(this.outQueue, this.outQueue.length);
+    let writeCount = this.outStream.writeFrom(this.outStringStream, this.outQueue.length);
+
+    if (writeCount < this.outQueue.length) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: flushOutput: wrote " + writeCount + " instead of " + this.outQueue.length + " bytes\n");
+    }
+    this.outQueue = "";
+
   }
 };
 

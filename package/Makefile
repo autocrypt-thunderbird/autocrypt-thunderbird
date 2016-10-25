@@ -65,6 +65,9 @@ MODFILES = \
            passwordCheck.jsm \
            passwords.jsm \
            pEp.jsm \
+           pEpAdapter.jsm \
+           pEpDecrypt.jsm \
+           pEpListener.jsm \
            pipeConsole.jsm \
            prefs.jsm \
            promise.jsm \

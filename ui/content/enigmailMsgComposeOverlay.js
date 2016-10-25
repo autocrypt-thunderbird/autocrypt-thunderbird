@@ -37,6 +37,7 @@ Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailC
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -95,6 +96,7 @@ Enigmail.msg = {
   statusSMimeStr: "???",
   statusInlinePGPStr: "???",
   statusAttachOwnKey: "???",
+  juniorMode: false,
 
   sendProcess: false,
   composeBodyReady: false,
@@ -250,6 +252,8 @@ Enigmail.msg = {
    * Determine if any of Enigmail (OpenPGP) or S/MIME encryption is enabled for the account
    */
   getEncryptionEnabled: function() {
+    if (this.juniorMode) return false;
+
     let id = getCurrentIdentity();
 
     return ((id.getUnicharAttribute("encryption_cert_name") !== "") ||
@@ -260,6 +264,8 @@ Enigmail.msg = {
    * Determine if any of Enigmail (OpenPGP) or S/MIME signing is enabled for the account
    */
   getSigningEnabled: function() {
+    if (this.juniorMode) return false;
+
     let id = getCurrentIdentity();
 
     return ((id.getUnicharAttribute("signing_cert_name") !== "") ||
@@ -267,6 +273,8 @@ Enigmail.msg = {
   },
 
   getSmimeSigningEnabled: function() {
+    if (this.juniorMode) return false;
+
     let id = getCurrentIdentity();
 
     if (!id.getUnicharAttribute("signing_cert_name")) return false;
@@ -441,6 +449,16 @@ Enigmail.msg = {
     var msgFlags;
     var msgUri = null;
     var msgIsDraft = false;
+
+    this.juniorMode = EnigmailPEPAdapter.getPepJuniorMode();
+
+    if (this.juniorMode) {
+
+      this.setFinalSendMode("final-encryptNo");
+      this.setFinalSendMode("final-signNo");
+      this.setFinalSendMode("final-pgpmimeNo");
+      this.updateStatusBar();
+    }
 
     this.determineSendFlagId = null;
     this.disableSmime = false;
@@ -1054,6 +1072,7 @@ Enigmail.msg = {
    */
 
   isEnigmailEnabled: function() {
+    if (this.juniorMode) return false;
     return this.identity.getBoolAttribute("enablePgp");
   },
 
@@ -1305,6 +1324,9 @@ Enigmail.msg = {
   */
   processFinalState: function(sendFlags) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processFinalState()\n");
+
+    if (this.juniorMode) return;
+
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
@@ -1855,6 +1877,9 @@ Enigmail.msg = {
    */
   determineSendFlags: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
+
+    if (this.juniorMode) return;
+
     this.statusEncryptedInStatusBar = null; // to double check broken promise for encryption
 
     if (!this.identity) {
@@ -2969,6 +2994,8 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.sendMode=" + this.sendMode + ", Enigmail.msg.statusEncrypted=" +
       this.statusEncrypted +
       "\n");
+
+    if (this.juniorMode) return true;
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;

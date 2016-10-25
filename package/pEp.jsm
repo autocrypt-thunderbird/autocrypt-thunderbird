@@ -161,38 +161,40 @@ var EnigmailpEp = {
    *  then:  returned result (message Object)
    *  catch: Error object (see above)
    */
-  encryptMessage: function(fromAddr, toAddrList, subject, message, pEpMode) {
+  encryptMessage: function(fromAddr, toAddrList, subject, messageObj, pEpMode) {
 
     if (pEpMode === null) pEpMode = 4;
     if (!toAddrList) toAddrList = [];
     if (typeof(toAddrList) === "string") toAddrList = [toAddrList];
 
+    messageObj.from = {
+      "user_id": "",
+      "username": "name",
+      "address": fromAddr
+    };
+
+    messageObj.to = toAddrList.reduce(function _f(p, addr) {
+      p.push({
+        "user_id": "",
+        "username": "name",
+        "address": addr
+      });
+      return p;
+    }, []);
+
+    let msgId = "enigmail-" + String(gRequestId++);
+
+    messageObj.shortmsg = subject;
+    messageObj.id = msgId;
+    messageObj.dir = 1;
+
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [
-        null, // session
-        { // src message
-          "id": msgId,
-          "dir": 1,
-          "shortmsg": subject,
-          "longmsg": message,
-          "from": {
-            "user_id": "",
-            "username": "name",
-            "address": fromAddr
-          },
-          to: toAddrList.reduce(function _f(p, addr) {
-            p.push({
-              "user_id": "",
-              "username": "name",
-              "address": addr
-            });
-            return p;
-          }, [])
-        },
+        messageObj, // pep messge object
         [], // extra
         ["OP"], // dest
-        pEpMode // encryption_format
+        pEpMode, // encryption_format
+        0 // encryption flags
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "encrypt_message", params);
@@ -218,31 +220,68 @@ var EnigmailpEp = {
    */
   decryptMessage: function(message, sender) {
 
-    if (!sender) sender = "unknown@localhost";
+    if (!sender) sender = "*";
+
+    let msgId = "enigmail-" + String(gRequestId++);
+    if (typeof(message) === "object") {
+      message.to = [];
+      message.from = {
+        "user_id": "",
+        "username": "name",
+        "address": sender
+      };
+      message.shortmsg = "pEp";
+      message.longmsg = "RFC 3156 message";
+      message.msgId = msgId;
+      message.dir = 0;
+    }
+    else {
+      message = {
+        // src message
+        "shortmsg": "pEp",
+        "longmsg": message,
+        "from": {
+          "user_id": "",
+          "username": "name",
+          "address": sender
+        },
+        "to": [{
+          "user_id": "",
+          "username": "name",
+          address: sender
+        }],
+        msgId: msgId,
+        dir: 0
+      };
+    }
 
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [
-        null, // session
-        { // src message
-          "id": msgId,
-          "dir": 0,
-          "shortmsg": "",
-          "longmsg": message,
-          "from": {
-            "address": sender
-          },
-          "to": []
-        },
+        message, // pEp Message Obj
         ["OP"], // msg Output
         ["OP"], // StringList Output
         ["OP"], // pep color Output
-        ["OP"] // undefined
+        ["OP"] // flags
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
 
+  parseMimeString: function(mimeStr) {
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [mimeStr,
+        mimeStr.length, // msg Output
+        ["OP"] // pep message
+      ];
 
+      return this._callPepFunction(FT_CALL_FUNCTION, "mime_decode_message", params);
     }
     catch (ex) {
       let deferred = Promise.defer();
@@ -487,10 +526,9 @@ var EnigmailpEp = {
     oReq.addEventListener("load", function _f() {
       try {
         let parsedObj = JSON.parse(this.responseText);
-        let r = onLoadListener(parsedObj);
 
-        if ((typeof(r) === "object") && ("error" in r)) {
-          if (r.error.code === -32600) {
+        if ((typeof(parsedObj) === "object") && ("error" in parsedObj)) {
+          if (parsedObj.error.code === -32600) {
             // wrong security token
             gConnectionInfo = null;
 
@@ -506,6 +544,8 @@ var EnigmailpEp = {
         else {
           gRetryCount = 0;
         }
+
+        let r = onLoadListener(parsedObj);
         deferred.resolve(r);
       }
       catch (ex) {
@@ -541,9 +581,9 @@ var EnigmailpEp = {
     let self = this;
 
     let exec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-    exec.initWithPath(pepServerPath);
 
     try {
+      exec.initWithPath(pepServerPath);
       if (!exec.isExecutable()) {
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
@@ -594,7 +634,7 @@ var EnigmailpEp = {
         1500);
     }
     catch (ex) {
-      deferred.reject("PEP-unavailable", ex.toString());
+      deferred.reject(makeError("PEP-unavailable", ex, "Cannot start PEP service"));
     }
   }
 };

@@ -36,6 +36,7 @@ Cu.import("resource://enigmail/configure.jsm"); /*global EnigmailConfigure: fals
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 Cu.import("resource://enigmail/keyRefreshService.jsm"); /*global EnigmailKeyRefreshService: false */
 Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 /* Implementations supplied by this module */
 const NS_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
@@ -362,6 +363,7 @@ EnigmailRules.registerOn(Enigmail.prototype);
 EnigmailURIs.registerOn(Enigmail.prototype);
 EnigmailVerifyAttachment.registerOn(Enigmail.prototype);
 EnigmailVerify.registerContentTypeHandler();
+EnigmailPEPAdapter.initialize();
 
 // This variable is exported implicitly and should not be refactored or removed
 const NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigmailCommandLine.Handler]);

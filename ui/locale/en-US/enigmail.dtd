@@ -790,3 +790,8 @@
                                                       Please transfer the generated file to your new computer, launch
                                                       Thunderbird and start the Setup Wizard from the Enigmail menu.">
 <!ENTITY enigmail.exportWiz.pgExport.failed          "An error occurred during the export. The settings could not be exported.">
+
+<!ENTITY enigmail.privacyPprefPane.juniorMode         "Enigmail Junior Mode">
+<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "Automatically decide if Junior Mode should be used">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "Force using S/MIME and Enigmail">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Force using p≡p (Pretty Easy Privacy)">
