@@ -20,6 +20,8 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
@@ -115,7 +117,7 @@ UnknownProtoHandler.prototype = {
 
 function PgpMimeHandler() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.js: PgpMimeHandler()\n"); // always log this one
+  EnigmailLog.DEBUG("pgpmimeHandler.js: PgpMimeHandler()\n"); // always log this one
 
 }
 
@@ -143,7 +145,10 @@ PgpMimeHandler.prototype = {
 
     let cth = null;
 
-    if (ct.search(/^multipart\/encrypted/i) === 0) {
+    if (EnigmailPEPAdapter.usingPep()) {
+      cth = EnigmailPEPDecrypt.getDecryptionService(ct);
+    }
+    else if (ct.search(/^multipart\/encrypted/i) === 0) {
       if (uri) {
         let u = uri.QueryInterface(Ci.nsIURI);
         gLastEncryptedUri = u.spec;

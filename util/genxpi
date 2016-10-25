@@ -115,6 +115,7 @@ zip --must-match\
     modules/passwords.jsm \
     modules/pEp.jsm \
     modules/pEpAdapter.jsm \
+    modules/pEpDecrypt.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
     modules/promise.jsm \

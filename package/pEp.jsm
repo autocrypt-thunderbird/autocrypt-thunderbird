@@ -220,20 +220,44 @@ var EnigmailpEp = {
    */
   decryptMessage: function(message, sender) {
 
-    if (!sender) sender = "unknown@localhost";
+    if (!sender) sender = "*";
+
+    let msgId = "enigmail-" + String(gRequestId++);
+    if (typeof(message) === "object") {
+      message.to = [];
+      message.from = {
+        "user_id": "",
+        "username": "name",
+        "address": sender
+      };
+      message.shortmsg = "pEp";
+      message.longmsg = "RFC 3156 message";
+      message.msgId = msgId;
+      message.dir = 0;
+    }
+    else {
+      message = {
+        // src message
+        "shortmsg": "pEp",
+        "longmsg": message,
+        "from": {
+          "user_id": "",
+          "username": "name",
+          "address": sender
+        },
+        "to": [{
+          "user_id": "",
+          "username": "name",
+          address: sender
+        }],
+        msgId: msgId,
+        dir: 0
+      };
+    }
 
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
-      let params = [{ // src message
-          "id": msgId,
-          "dir": 0,
-          "shortmsg": "",
-          "longmsg": message,
-          "from": {
-            "address": sender
-          },
-          "to": []
-        },
+      let params = [
+        message, // pEp Message Obj
         ["OP"], // msg Output
         ["OP"], // StringList Output
         ["OP"], // pep color Output
