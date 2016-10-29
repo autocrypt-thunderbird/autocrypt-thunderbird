@@ -622,6 +622,11 @@ PgpMimeEncrypt.prototype = {
     let resultObj = null;
     this.outQueue = "";
 
+    let securityInfo = this.msgCompFields.securityInfo;
+    if (!securityInfo) throw Cr.NS_ERROR_FAILURE;
+
+    let enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
+
     let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
     EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue.replace(/\r\n/g, "\n")).then(function _step1(data) {
       EnigmailLog.DEBUG("mimeEncrypt.js: parseMimeString: SUCCESS\n");
@@ -632,7 +637,7 @@ PgpMimeEncrypt.prototype = {
         return EnigmailPEPAdapter.pep.encryptMessage(
           self.msgIdentity.email,
           toAddrList,
-          self.msgCompFields.subject,
+          enigSecurityInfo.originalSubject,
           msg,
           null);
       }
@@ -673,6 +678,9 @@ PgpMimeEncrypt.prototype = {
 
     if (this.outQueue === "") {
       this.outQueue = this.pipeQueue;
+    }
+    else {
+      self.msgCompFields.subject = "pEp";
     }
 
     this.outStringStream.setData(this.outQueue, this.outQueue.length);

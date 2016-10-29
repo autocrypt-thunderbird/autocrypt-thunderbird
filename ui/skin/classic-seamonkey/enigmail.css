@@ -602,3 +602,17 @@ treechildren::-moz-tree-cell-text(STYLE) {}
     transform: rotate(360deg);
   }
 }
+
+/* pEp Message quality Rating */
+
+.enigmailPepRatingUnreliable {
+  list-style-image: url("chrome://enigmail/skin/pEpRed.png");
+}
+
+.enigmailPepRatingReliable {
+  list-style-image: url("chrome://enigmail/skin/pEpYellow.png");
+}
+
+.enigmailPepRatingTrusted {
+  list-style-image: url("chrome://enigmail/skin/pEpGreen.png");
+}

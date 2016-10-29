@@ -169,6 +169,43 @@ var EnigmailPEPAdapter = {
     }
 
     return "";
+  },
+
+  getOutgoingMessageRating: function(sender, recipients) {
+    let resultObj = null;
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+    EnigmailPEPAdapter.pep.outgoingMessageColor(sender, recipients, "test").then(function _step2(res) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: SUCCESS\n");
+      if ((typeof(res) === "object") && ("result" in res)) {
+        resultObj = res.result;
+      }
+      else
+        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: typeof res=" + typeof(res) + "\n");
+
+
+      if (inspector && inspector.eventLoopNestLevel > 0) {
+        // unblock the waiting lock in finishCryptoEncapsulation
+        inspector.exitNestedEventLoop();
+      }
+
+    }).catch(function _error(err) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: ERROR\n");
+      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
+
+      if (inspector && inspector.eventLoopNestLevel > 0) {
+        // unblock the waiting lock in finishCryptoEncapsulation
+        inspector.exitNestedEventLoop();
+      }
+    });
+
+    // wait here for PEP to terminate
+    inspector.enterNestedEventLoop(0);
+
+    if (resultObj && Array.isArray(resultObj) && "color" in resultObj[0]) {
+      return resultObj[0].color;
+    }
+    return 3; // unencrypted
   }
 
 };

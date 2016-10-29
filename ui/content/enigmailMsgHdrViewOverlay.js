@@ -40,6 +40,7 @@ Enigmail.hdrView = {
   statusBar: null,
   enigmailBox: null,
   lastEncryptedMsgKey: null,
+  pEpStatus: null,
 
 
   hdrViewLoad: function() {
@@ -58,6 +59,7 @@ Enigmail.hdrView = {
 
     this.statusBar = document.getElementById("enigmail-status-bar");
     this.enigmailBox = document.getElementById("enigmailBox");
+    this.pEpBox = document.getElementById("enigmail-pEp-bc");
 
     var addrPopup = document.getElementById("emailAddressPopup");
     if (addrPopup) {
@@ -73,6 +75,7 @@ Enigmail.hdrView = {
       this.statusBar.removeAttribute("signed");
       this.statusBar.removeAttribute("encrypted");
       this.enigmailBox.setAttribute("collapsed", "true");
+      this.pEpBox.setAttribute("collapsed", "true");
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo.statusFlags = 0;
@@ -921,6 +924,46 @@ Enigmail.hdrView = {
         }
       }
     }
+  },
+
+  displayPepStatus: function(color, keyIDs, uri) {
+
+    /*
+    color:
+    undefined = 0,
+    cannot_decrypt = 1,
+    have_no_key = 2,
+    unencrypted = 3,
+    unencrypted_for_some = 4,
+    unreliable = 5,
+    reliable = 6,
+    trusted = 7,
+    trusted_and_anonymized = 8,
+    fully_anonymous = 9,
+    mistrust = -1,
+    b0rken = -2,
+    under_attack = -3
+    */
+    this.pEpStatus = {
+      color: color,
+      keyId: keyIDs.split(/,/)
+    };
+
+    this.pEpBox.removeAttribute("collapsed");
+
+    if (color < 3) {
+      this.pEpBox.setAttribute("class", "enigmailPepRatingUnreliable");
+    }
+    else if (color > 6) {
+      this.pEpBox.setAttribute("class", "enigmailPepRatingTrusted");
+    }
+    else {
+      this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
+    }
+  },
+
+  pEpIconPopup: function() {
+    EnigmailDialog.alert(window, "pEp Status: " + this.pEpStatus.color);
   }
 
 };
@@ -1106,19 +1149,26 @@ if (messageHeaderSink) {
       },
 
       updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails, mimePartNumber) {
-        // unusedUriSpec is not used anymore. It is here becaue other addons rely on the same API
+        // uriSpec is not used for Enigmail anymore. It is here becaue other addons and pEp rely on it
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
+
 
         let uriSpec = (uri ? uri.spec : null);
 
         if (this.isCurrentMessage(uri)) {
 
-          if (!this.displaySubPart(mimePartNumber)) return;
+          if (keyId === "enigmail:pEp") {
+            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri);
+          }
+          else {
 
-          Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
-            errorMsg, blockSeparation, encToDetails,
-            null, mimePartNumber);
+            if (!this.displaySubPart(mimePartNumber)) return;
+
+            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+              errorMsg, blockSeparation, encToDetails,
+              null, mimePartNumber);
+          }
         }
 
         if (uriSpec && uriSpec.search(/^enigmail:message\//) === 0) {

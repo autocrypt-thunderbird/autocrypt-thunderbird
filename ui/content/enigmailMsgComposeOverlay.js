@@ -2939,6 +2939,16 @@ Enigmail.msg = {
     return true;
   },
 
+  createEnigmailSecurityFields: function(oldSecurityInfo) {
+    let newSecurityInfo = Components.classes[this.compFieldsEnig_CID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+
+    if (!newSecurityInfo)
+      throw Components.results.NS_ERROR_FAILURE;
+
+    newSecurityInfo.init(oldSecurityInfo);
+    gMsgCompose.compFields.securityInfo = newSecurityInfo;
+  },
+
   isSendConfirmationRequired: function(sendFlags) {
     // process whether final confirmation is necessary
 
@@ -2977,7 +2987,7 @@ Enigmail.msg = {
         this.statusEncrypted == EnigmailConstants.ENIG_FINAL_FORCEYES ||
         this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_YES ||
         this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_FORCEYES)) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: promised encryption did not succeed\n");
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.isSendConfirmationRequired: promised encryption did not succeed\n");
       if (!EnigmailDialog.confirmDlg(window,
           EnigmailLocale.getString("msgCompose.internalEncryptionError"),
           EnigmailLocale.getString("msgCompose.button.sendAnyway"))) {
@@ -2990,12 +3000,54 @@ Enigmail.msg = {
     return confirm;
   },
 
+  encryptPepMessage: function(msgSendType) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage:\n");
+
+    let compFields = gMsgCompose.compFields;
+    let toAddrList = [];
+    let recList;
+    let arrLen = {};
+
+    if (compFields.to.length > 0) {
+      recList = compFields.splitRecipients(compFields.to, true, arrLen);
+      this.addRecipients(toAddrList, recList);
+    }
+
+    if (compFields.cc.length > 0) {
+      recList = compFields.splitRecipients(compFields.cc, true, arrLen);
+      this.addRecipients(toAddrList, recList);
+    }
+
+    if (compFields.bcc.length > 0) {
+      recList = compFields.splitRecipients(compFields.bcc, true, arrLen);
+      this.addRecipients(toAddrList, recList);
+    }
+
+    this.identity = getCurrentIdentity();
+
+    let rating = EnigmailPEPAdapter.getOutgoingMessageRating(this.identity.email, toAddrList);
+
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
+
+    if (rating >= 6) {
+      if (!(compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields)) {
+        this.createEnigmailSecurityFields(compFields.securityInfo);
+      }
+
+      let si = compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
+      si.originalSubject = compFields.subject;
+      compFields.subject = "pEp";
+    }
+
+    return true;
+  },
+
   encryptMsg: function(msgSendType) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.sendMode=" + this.sendMode + ", Enigmail.msg.statusEncrypted=" +
       this.statusEncrypted +
       "\n");
 
-    if (this.juniorMode) return true;
+    if (this.juniorMode) return this.encryptPepMessage();
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;
@@ -3114,6 +3166,7 @@ Enigmail.msg = {
     if (this.dirty) {
       // make sure the sendFlags are reset before the message is processed
       // (it may have been set by a previously cancelled send operation!)
+
       try {
         if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIEnigMsgCompFields) {
           gMsgCompose.compFields.securityInfo.sendFlags = 0;
@@ -3134,7 +3187,7 @@ Enigmail.msg = {
           }
         }
         catch (ex2) {
-          EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.attachKey", ex);
+          EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg", ex2);
         }
       }
     }
@@ -3428,13 +3481,7 @@ Enigmail.msg = {
         }
 
         if (!newSecurityInfo) {
-          newSecurityInfo = Components.classes[this.compFieldsEnig_CID].createInstance(Components.interfaces.nsIEnigMsgCompFields);
-
-          if (!newSecurityInfo)
-            throw Components.results.NS_ERROR_FAILURE;
-
-          newSecurityInfo.init(oldSecurityInfo);
-          gMsgCompose.compFields.securityInfo = newSecurityInfo;
+          this.createEnigmailSecurityFields(oldSecurityInfo);
         }
 
         newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;

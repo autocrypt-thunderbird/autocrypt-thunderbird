@@ -303,19 +303,18 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
 
-  getIdentityColor: function(mailAddr, userId) {
+  getIdentityColor: function(mailAddr, userId, fpr) {
     let deferred = Promise.defer();
 
     let pepId = {
       "user_id": userId,
       "username": null,
       "address": mailAddr,
-      "fpr": null
+      "fpr": fpr
     };
 
     try {
       let params = [
-        null, // session
         pepId, [""] // color
       ];
 
@@ -345,15 +344,12 @@ var EnigmailpEp = {
   setIdentity: function(emailAddress, userId, name, fpr) {
     try {
       let msgId = "enigmail-" + String(gRequestId++);
-      let params = [
-        null, // session
-        {
-          "user_id": userId,
-          "username": name,
-          "address": emailAddress,
-          "fpr": fpr
-        }
-      ];
+      let params = [{
+        "user_id": userId,
+        "username": name,
+        "address": emailAddress,
+        "fpr": fpr
+      }];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
 
@@ -383,7 +379,6 @@ var EnigmailpEp = {
     try {
       let msgId = "enigmail-" + String(gRequestId++);
       let params = [
-        null, // session
         emailAddress,
         userId, ["OP"]
       ];
@@ -414,7 +409,6 @@ var EnigmailpEp = {
     try {
       let msgId = "enigmail-" + String(gRequestId++);
       let params = [
-        null, // session
         fpr,
         language.toUpperCase(), ["OP"], // words
         ["OP"], // words_size
@@ -449,9 +443,7 @@ var EnigmailpEp = {
 
     try {
       let msgId = "enigmail-" + String(gRequestId++);
-      let params = [
-        null, // session
-        { // src message
+      let params = [{ // src message
           "id": msgId,
           "dir": 1,
           "longmsg": message,
