@@ -52,7 +52,7 @@ var EnigmailPEPDecrypt = {
    *          - color:  - Number: the pEp rating of how securely the message was tansmitted
    *          - fpr:    - Array of String: the list of fingerprints used for the message
    */
-  decryptMessageData: function(msgData) {
+  decryptMessageData: function(msgData, fromAddr) {
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
     let resultObj = null;
 
@@ -60,7 +60,9 @@ var EnigmailPEPDecrypt = {
     let e = msgData.search(/^-----END PGP MESSAGE-----/m);
     let pgpData = s >= 0 && e > s ? msgData.substring(s, e + 27) : msgData;
 
-    EnigmailpEp.decryptMessage(pgpData, "*").then(function _step2(res) {
+    if (!fromAddr) fromAddr = "*";
+
+    EnigmailpEp.decryptMessage(pgpData, fromAddr).then(function _step2(res) {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result;

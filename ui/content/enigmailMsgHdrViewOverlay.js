@@ -947,9 +947,14 @@ Enigmail.hdrView = {
     b0rken = -2,
     under_attack = -3
     */
+
+    if (typeof(keyIDs) === "string") {
+      keyIDs = keyIDs.split(/,/);
+    }
+
     this.pEpStatus = {
       color: color,
-      keyId: keyIDs.split(/,/)
+      keyIDs: keyIDs
     };
 
     this.pEpBox.removeAttribute("collapsed");
@@ -966,7 +971,7 @@ Enigmail.hdrView = {
   },
 
   pEpIconPopup: function() {
-    EnigmailDialog.alert(window, "pEp Status: " + this.pEpStatus.color);
+    EnigmailDialog.alert(window, "pEp Status: " + this.pEpStatus.color + "\nKey IDs: " + this.pEpStatus.keyIDs.join(", "));
   }
 
 };
