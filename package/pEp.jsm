@@ -94,6 +94,7 @@ var EnigmailpEp = {
 
       if (jsonData.length > 0) {
         try {
+          // we cannot use parseJSON here, it won't work before TB has finished initialization
           gConnectionInfo = JSON.parse(jsonData);
           if (gConnectionInfo.address === "0.0.0.0") {
             gConnectionInfo.address = "127.0.0.1";
@@ -474,7 +475,26 @@ var EnigmailpEp = {
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
+  },
 
+  /**
+   * parse a JSON string. Ensure that character codes < 32 are correctly escaped first
+   *
+   * @param str - String: string in JSON notation
+   *
+   * @return whatever JSON.parse returns
+   */
+  parseJSON: function(str) {
+    for (let i = 0; i < str.length; i++) {
+      if (str.charCodeAt(i) < 32) {
+        str = str.substr(0, i) + "\\u" + str.charCodeAt(i).toLocaleString("en-US", {
+          useGrouping: false,
+          minimumIntegerDigits: 4
+        }) + str.substr(i + 1);
+      }
+    }
+
+    return JSON.parse(str);
   },
 
   /******************* internal (private) methods *********************/
@@ -517,7 +537,7 @@ var EnigmailpEp = {
 
     oReq.addEventListener("load", function _f() {
       try {
-        let parsedObj = JSON.parse(this.responseText);
+        let parsedObj = self.parseJSON(this.responseText);
 
         if ((typeof(parsedObj) === "object") && ("error" in parsedObj)) {
           if (parsedObj.error.code === -32600) {
@@ -605,7 +625,7 @@ var EnigmailpEp = {
 
           oReq.addEventListener("load", function _onload() {
             try {
-              let parsedObj = JSON.parse(this.responseText);
+              let parsedObj = self.parseJSON(this.responseText);
               let r = onLoadListener(parsedObj);
 
               deferred.resolve(r);
