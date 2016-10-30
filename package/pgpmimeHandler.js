@@ -145,16 +145,18 @@ PgpMimeHandler.prototype = {
 
     let cth = null;
 
-    if (EnigmailPEPAdapter.usingPep()) {
-      cth = EnigmailPEPDecrypt.getDecryptionService(ct);
-    }
-    else if (ct.search(/^multipart\/encrypted/i) === 0) {
+    if (ct.search(/^multipart\/encrypted/i) === 0) {
       if (uri) {
         let u = uri.QueryInterface(Ci.nsIURI);
         gLastEncryptedUri = u.spec;
       }
       // PGP/MIME encrypted message
-      cth = new EnigmailMimeDecrypt();
+
+      if (EnigmailPEPAdapter.usingPep()) {
+        cth = EnigmailPEPDecrypt.getDecryptionService(ct);
+      }
+      else
+        cth = new EnigmailMimeDecrypt();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       if (ct.search(/application\/pgp-signature/i) > 0) {

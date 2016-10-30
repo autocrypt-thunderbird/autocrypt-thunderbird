@@ -169,14 +169,14 @@ var EnigmailpEp = {
 
     messageObj.from = {
       "user_id": "",
-      "username": "name",
+      "username": "anonymous",
       "address": fromAddr
     };
 
     messageObj.to = toAddrList.reduce(function _f(p, addr) {
       p.push({
         "user_id": "",
-        "username": "name",
+        "username": "anonymous",
         "address": addr
       });
       return p;

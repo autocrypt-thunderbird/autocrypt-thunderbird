@@ -119,7 +119,7 @@ PEPDecryptor.prototype = {
     let fpr = [];
     let out = "Content-Typ: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
 
-    if (resultObj && resultObj[4].status === 0) {
+    if (resultObj && (typeof(resultObj[3]) === "object")) {
       out = resultObj[3].longmsg;
       color = resultObj[1].color;
       fpr = resultObj[2];
@@ -140,7 +140,9 @@ PEPDecryptor.prototype = {
       }
     }
 
-    this.displayStatus(color, fpr);
+    if (color !== COLOR_UNDEF) {
+      this.displayStatus(color, fpr);
+    }
 
     gConv.setData(out, out.length);
     this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
