@@ -31,7 +31,7 @@
 
   <vbox align="center" flex="1" style="overflow:auto" id="outerbox">
     <hbox align="center" flex="1">
-      <description flex="1" id="keyInfo" style="plain;white-space: pre"/>
+      <description flex="1" id="keyInfo" class="plain" style="white-space: pre"/>
     </hbox>
   </vbox>
 
