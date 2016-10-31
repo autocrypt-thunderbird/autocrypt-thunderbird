@@ -167,7 +167,7 @@ const EnigmailFiles = {
     }
   },
 
-  // Read the contents of a file into a string
+  // Read the contents of a text file into a string
   readFile: function(filePath) {
     // @filePath: nsIFile
     if (filePath.exists()) {
@@ -189,6 +189,33 @@ const EnigmailFiles = {
       }
 
       scriptableInStream.close();
+      return fileContents;
+    }
+    return "";
+  },
+
+  // Read the contents of a file with binary data into a string
+  readBinaryFile: function(filePath) {
+    // @filePath: nsIFile
+    if (filePath.exists()) {
+      const ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+      if (!ioServ)
+        throw Components.results.NS_ERROR_FAILURE;
+
+      const fileURI = ioServ.newFileURI(filePath);
+      const fileChannel = lazyStream().createChannel(fileURI.asciiSpec);
+      const rawInStream = fileChannel.open();
+
+      const binaryInStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
+      binaryInStream.setInputStream(rawInStream);
+      let available = binaryInStream.available();
+      let fileContents = "";
+      while (available) {
+        fileContents += binaryInStream.readBytes(available);
+        available = binaryInStream.available();
+      }
+
+      binaryInStream.close();
       return fileContents;
     }
     return "";

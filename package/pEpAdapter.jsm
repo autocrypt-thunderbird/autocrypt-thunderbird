@@ -86,14 +86,22 @@ var EnigmailPEPAdapter = {
   },
 
   initialize: function() {
-    EnigmailpEp.getPepVersion().then(function success(data) {
-      if (Array.isArray(data)) {
-        gPepVersion = data[0];
-      }
-    }).
-    catch(function failed(data) {
-      gPepVersion = "";
-    });
+    EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
+
+    try {
+      EnigmailpEp.getPepVersion().then(function success(data) {
+        if (Array.isArray(data)) {
+          gPepVersion = data[0];
+        }
+      }).
+      catch(function failed(err) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: error during pEp init:\n");
+        EnigmailLog.DEBUG("   " + err.code + ": " + ("exception" in err && err.exception ? err.exception.toString() : err.message) + "\n");
+
+        gPepVersion = "";
+      });
+    }
+    catch (ex) {}
   },
 
   getMsgStringFromResult: function(resultObj) {

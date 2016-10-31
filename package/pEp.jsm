@@ -90,12 +90,12 @@ var EnigmailpEp = {
 
       let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
       EnigmailFiles.initPath(fileHandle, fileName);
-      let jsonData = EnigmailFiles.readFile(fileHandle);
+      let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
 
       if (jsonData.length > 0) {
         try {
           // we cannot use parseJSON here, it won't work before TB has finished initialization
-          gConnectionInfo = JSON.parse(jsonData);
+          gConnectionInfo = this.parseJSON(jsonData);
           if (gConnectionInfo.address === "0.0.0.0") {
             gConnectionInfo.address = "127.0.0.1";
           }
@@ -487,10 +487,13 @@ var EnigmailpEp = {
   parseJSON: function(str) {
     for (let i = 0; i < str.length; i++) {
       if (str.charCodeAt(i) < 32) {
-        str = str.substr(0, i) + "\\u" + str.charCodeAt(i).toLocaleString("en-US", {
-          useGrouping: false,
-          minimumIntegerDigits: 4
-        }) + str.substr(i + 1);
+        let c = str.charCodeAt(i);
+        if (!(c == 13 || c == 10)) {
+          str = str.substr(0, i) + "\\u" + c.toLocaleString("en-US", {
+            useGrouping: false,
+            minimumIntegerDigits: 4
+          }) + str.substr(i + 1);
+        }
       }
     }
 
@@ -596,7 +599,7 @@ var EnigmailpEp = {
 
     try {
       exec.initWithPath(pepServerPath);
-      if (!exec.isExecutable()) {
+      if ((!exec.exists()) || (!exec.isExecutable())) {
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
       }
