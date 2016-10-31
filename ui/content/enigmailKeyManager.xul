@@ -453,9 +453,5 @@
   <hbox id="statusLine">
     <label id="statusText" value=" "/>
     <progressmeter id="progressBar" mode="undetermined" value="0" collapsed="true"/>
-    <description id="cancelBox" collapsed="true">
-      <a class="enigmailLink" href=""
-         id="cancelButton" onclick="enigSendKeyCancel()">&enigmail.keyMan.stopTransfer.label;</a>
-    </description>
   </hbox>
 </window>
