@@ -252,7 +252,7 @@ const EnigmailFixExchangeMsg = {
       return null;
     }
 
-    mimeHdr.initialize(bodyData.substr(encData, 500));
+    mimeHdr.initialize(bodyData.substr(encData, 5000));
     ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/octet-stream/i) < 0) {
       EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: wrong content-type of PGP/MIME data\n");
@@ -295,7 +295,7 @@ const EnigmailFixExchangeMsg = {
 
     let mimeHdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
 
-    mimeHdr.initialize(bodyData.substr(encData, 500));
+    mimeHdr.initialize(bodyData.substr(encData, 5000));
     let ct = mimeHdr.extractHeader("content-type", false);
     if (!ct || ct.search(/application\/pgp-encrypted/i) < 0) {
       EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectediPGMailBodyData: wrong content-type of PGP/MIME data\n");
