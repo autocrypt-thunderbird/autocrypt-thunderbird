@@ -1125,7 +1125,6 @@ function subprocess_unix(options) {
     active = true,
     done = false,
     exitCode = -1,
-    workerExitCode = 0,
     child = {},
     pid = -1,
     writeWorker = [],
@@ -1659,7 +1658,7 @@ function subprocess_unix(options) {
           break;
         case "done":
           debugLog("Pipe " + name + " closed\n");
-          if (event.data.data !== 0) workerExitCode = event.data.data;
+          updateExitCode(event.data.data);
           --readers;
           if (readers === 0) cleanup();
           break;
@@ -1739,6 +1738,13 @@ function subprocess_unix(options) {
     }
   }
 
+  function updateExitCode(code) {
+    if (exitCode > -2 && code >= 0) {
+      exitCode = code;
+    }
+    exitCode = exitCode % 0xFF;
+  }
+
   function cleanup() {
     debugLog("Cleanup called\n");
 
@@ -1755,17 +1761,9 @@ function subprocess_unix(options) {
       var result, status = ctypes.int();
       result = waitpid(child.pid, status.address(), 0);
 
-      if (exitCode > -2) {
-        if (result > 0)
-          exitCode = status.value;
-        else
-        if (workerExitCode >= 0)
-          exitCode = workerExitCode;
-        else
-          exitCode = status.value;
+      if (exitCode > -2 && result > 0) {
+        updateExitCode((status.value & 0xff00) >> 8);
       }
-
-      exitCode = exitCode % 0xFF;
 
       for (i = 0; i < writeWorker.length; i++) {
         if (writeWorker[i])

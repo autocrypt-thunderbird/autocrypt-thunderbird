@@ -252,10 +252,10 @@ function readPipe(pipe, charset, pid, bufferedOutput) {
       result = libcFunc.waitpid(pid, status.address(), WNOHANG);
       if (result > 0) {
         pollTimeout = NOWAIT;
-        exitCode = parseInt(status.value, 10);
+        exitCode = (parseInt(status.value, 10) & 0xff00) >> 8;
         postMessage({
           msg: "debug",
-          data: "waitpid signaled subprocess stop, exitcode=" + status.value
+          data: "waitpid signaled subprocess stop, exitcode=" + exitCode
         });
       }
       else if (result < 0) {
