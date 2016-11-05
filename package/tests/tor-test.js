@@ -8,7 +8,7 @@
 "use strict";
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, assertContains: false, withEnigmail: false, withTestGpgHome: false, withEnvironment: false, resetting: false */
 
-testing("tor.jsm"); /*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_WINDOWS_SOCKS_GPG_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false*/
+testing("tor.jsm"); /*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false*/
 
 component("enigmail/rng.jsm"); /*global EnigmailRNG*/
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
@@ -35,7 +35,6 @@ test(function evaluateGpgVersionWhenOsIsWindows() {
     TestHelper.resetting(EnigmailGpg, "agentVersion", "1.4.0", function() {
       TestHelper.resetting(EnigmailVersioning, "greaterThanOrEqual", function(version, minimumVersion) {
         Assert.equal(version, "1.4.0");
-        Assert.deepEqual(minimumVersion, MINIMUM_WINDOWS_SOCKS_GPG_VERSION);
         return false;
       }, function() {
         Assert.equal(meetsOSConstraints(), false);
