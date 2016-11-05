@@ -677,7 +677,7 @@ var EnigmailGpgAgent = {
           var process = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
           var exec = EnigmailApp.getInstallLocation().clone();
           exec.append("wrappers");
-          exec.append("gpg-agent-wrapper.sh");
+          exec.append("gpg-agent-wrapper");
           process.init(exec);
           process.run(true, args, args.length);
 

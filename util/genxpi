@@ -54,7 +54,7 @@ cd "$targetDir"
 
 mkdir -p "${targetDir}/wrappers"
 
-cp ${cwd}/util/gpg-agent-wrapper.sh wrappers
+cp ${cwd}/util/gpg-agent-wrapper wrappers
 
 echo "Creating ${xpiFile} file"
 
