@@ -8,10 +8,6 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS            = modules
 
-ifeq ($(TESTS),yes)
-  DIRS += tests
-endif
-
 .PHONY: dirs $(DIRS)
 
 all: dirs

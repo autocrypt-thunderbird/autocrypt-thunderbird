@@ -136,7 +136,7 @@ zip --must-match\
     modules/versioning.jsm \
     modules/windows.jsm \
     modules/zbase32.jsm \
-    wrappers/gpg-agent-wrapper.sh \
+    wrappers/gpg-agent-wrapper \
     chrome/${xpiModule}.jar \
     chrome.manifest \
     install.rdf
