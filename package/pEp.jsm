@@ -210,6 +210,49 @@ var EnigmailpEp = {
   },
 
   /**
+   * encrypt a message using the pEp server
+   *
+   * @param fromAddr  : String          - sender Email address
+   * @param toAddrList: Array of String - array with all recipients
+   * @param subject   : String          - the message subject
+   * @param message   : String          - the message to encrypt
+   * @param pEpMode   : optional Number - the PEP encryption mode:
+   *                        0: none - message is not encrypted
+   *                        1: inline PGP + PGP extensions
+   *                        2: S/MIME (RFC5751)
+   *                        3: PGP/MIME (RFC3156)
+   *                        4: pEp encryption format
+   *
+   * @return: Promise.
+   *  then:  returned result (message Object)
+   *  catch: Error object (see above)
+   */
+  encryptMimeString: function(mimeStr, pEpMode) {
+
+    if (pEpMode === null) pEpMode = 4;
+
+    try {
+      let params = [
+        mimeStr, // mimetext
+        mimeStr.length, // size
+        [], // extra
+        ["OP"], // resulting data
+        pEpMode, // encryption_format
+        0 // encryption flags
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "MIME_encrypt_message", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+
+  },
+
+  /**
    * decrypt a message using the pEp server
    *
    * @param message   : String          - the message to decrypt
@@ -305,8 +348,6 @@ var EnigmailpEp = {
    */
 
   getIdentityColor: function(mailAddr, userId, fpr) {
-    let deferred = Promise.defer();
-
     let pepId = {
       "user_id": userId,
       "username": null,
@@ -397,8 +438,9 @@ var EnigmailpEp = {
   /**
    * get a user identity from pEp
    *
-   * @param emailAddress: String          - the email address
-   * @param userId      : String          - unique C string to identify person that identity is refering to
+   * @param fpr:      String          - the fingerprint of the key to check
+   * @param language: String          - language (2-letter ISOCODE)
+   * @param maxWords: String          - maximum number of words (optional)
    *
    * @return: Promise.
    *  then:  returned result
@@ -426,6 +468,32 @@ var EnigmailpEp = {
     }
 
   },
+
+  /**
+   * get list of languaes for which pEp trustwords are available
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  getLanguageList: function() {
+
+    try {
+      let msgId = "enigmail-" + String(gRequestId++);
+      let params = [
+        ["OP"] // list of languages
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "get_languagelist", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
 
   /**
    * determine the trust color that an outgoing message would receive
@@ -497,7 +565,13 @@ var EnigmailpEp = {
       }
     }
 
-    return JSON.parse(str);
+    try {
+      return JSON.parse(str);
+    }
+    catch (x) {
+      return null;
+    }
+
   },
 
   /******************* internal (private) methods *********************/

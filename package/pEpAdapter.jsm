@@ -18,7 +18,7 @@ Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 
 
 var gPepVersion = null;
@@ -85,6 +85,11 @@ var EnigmailPEPAdapter = {
     return true;
   },
 
+  /**
+   * Initialize the pEpAdapter (should be called during startup of application)
+   *
+   * no input and no retrun values
+   */
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
 
@@ -104,14 +109,54 @@ var EnigmailPEPAdapter = {
     catch (ex) {}
   },
 
-  getMsgStringFromResult: function(resultObj) {
-    EnigmailLog.DEBUG("pEpAdapter.jsm: getMsgStringFromResult: " + typeof(resultObj[0]) + "\n");
-    if ((typeof(resultObj[0]) === "object") && ("dir" in resultObj[0])) {
-      if (resultObj[0].enc_format === 3) {
+  /**
+   * Get a MIME tree as String from the pEp-internal message object
+   *
+   * @param resObj: Object  - result object from encryption
+   *
+   * @return String - a MIME string, or "" if no message extracted
+   */
+  stripMsgHeadersFromEncryption: function(resObj) {
+    let mimeStr = "";
+    if (Array.isArray(resObj) && typeof(resObj[0]) === "string") {
+      mimeStr = resObj[0];
+    }
+
+    let startPos = mimeStr.search(/\r?\n\r?\n/);
+
+    if (startPos < 0) return "";
+
+    let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    headers.initialize(mimeStr.substring(0, startPos));
+
+    let n = headers.headerNames;
+    let printHdr = "";
+
+    while (n.hasMore()) {
+      let hdr = n.getNext();
+      if (hdr.search(/^(from|to|subject)$/i) < 0) {
+        printHdr += hdr + ": " + EnigmailMime.formatHeaderData(headers.extractHeader(hdr, true)) + "\r\n";
+      }
+    }
+
+    return printHdr + "\r\n" + mimeStr.substr(startPos);
+  },
+
+  /**
+   * Get a MIME tree as String from the pEp-internal message object
+   *
+   * @param msgObj: Object  - pEp Message object
+   *
+   * @return String - a MIME string, or "" if no message could be created
+   */
+  getMimeStringFromMsgObj: function(msgObj) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: getMsgStringFromResult: " + typeof(msgObj[0]) + "\n");
+    if (msgObj[0] !== null && (typeof(msgObj[0]) === "object") && ("dir" in msgObj[0])) {
+      if (msgObj[0].enc_format === 3) {
         // PGP/MIME
         let i;
         let boundary = EnigmailMime.createBoundary();
-        let att = resultObj[0].attachments;
+        let att = msgObj[0].attachments;
         let r = 'Content-Type: multipart/encrypted;\r\n  protocol="application/pgp-encrypted";\r\n  boundary="' + boundary + '";\r\n\r\n';
 
         r += 'This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n';
@@ -146,17 +191,17 @@ var EnigmailPEPAdapter = {
 
         return r;
       }
-      else if (resultObj[0].enc_format === 1) {
+      else if (msgObj[0].enc_format === 1) {
         // inline PGP
         let i;
         let boundary = EnigmailMime.createBoundary();
-        let att = resultObj[0].attachments;
+        let att = msgObj[0].attachments;
         let r = 'Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n';
 
         r += "--" + boundary + "\r\n";
         r += 'Content-Type: text/plain; charset="utf-8"\r\n';
         r += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
-        r += resultObj[0].longmsg + '\r\n\r\n';
+        r += msgObj[0].longmsg + '\r\n\r\n';
 
         for (i = 0; i < att.length; i++) {
           r += "--" + boundary + "\r\n";
@@ -179,6 +224,14 @@ var EnigmailPEPAdapter = {
     return "";
   },
 
+  /**
+   * Get the encryption quality rating for a list of recipients
+   *
+   * @param sender:     - String           email adress of message sender
+   * @param recipients: - Array of String  email adresses of message recipients
+   *
+   * @return Number: quality of encryption (-3 ... 9)
+   */
   getOutgoingMessageRating: function(sender, recipients) {
     let resultObj = null;
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
@@ -214,6 +267,33 @@ var EnigmailPEPAdapter = {
       return resultObj[0].color;
     }
     return 3; // unencrypted
+  },
+
+  /**
+   * Obtain a list of supported languages for trustwords
+   *
+   * @return Promise, delivering Array of 2-Letter ISO-Codes.
+   */
+  getSupportedLanguages: function() {
+    let deferred = Promise.defer();
+    EnigmailpEp.getLanguageList().then(function _success(res) {
+      if ((typeof(res) === "object") && ("result" in res)) {
+        let inArr = res.result[0].split(/\n/);
+        let outArr = inArr.reduce(function _f(p, langLine) {
+          let y = langLine.split(/","/);
+          if (langLine.length > 0) p.push(y[0].replace(/"/g, ""));
+          return p;
+        }, []);
+        deferred.resolve(outArr);
+      }
+      else {
+        deferred.resolve([]);
+      }
+    }).catch(function _err(err) {
+      deferred.resolve([]);
+    });
+
+    return deferred.promise;
   }
 
 };
