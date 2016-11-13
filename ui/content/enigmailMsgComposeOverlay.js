@@ -3482,6 +3482,7 @@ Enigmail.msg = {
 
         if (!newSecurityInfo) {
           this.createEnigmailSecurityFields(oldSecurityInfo);
+          newSecurityInfo = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
         }
 
         newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
