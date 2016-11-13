@@ -1656,9 +1656,12 @@ function subprocess_unix(options) {
           var data = convertBytes(event.data.data, options.charset);
           callbackFunc(data);
           break;
+        case "exitCode":
+          dump("got raw exit code " + event.data.data + " from " + name + "\n");
+          updateExitCode(event.data.data);
+          break;
         case "done":
           debugLog("Pipe " + name + " closed\n");
-          updateExitCode(event.data.data);
           --readers;
           if (readers === 0) cleanup();
           break;
@@ -1739,10 +1742,12 @@ function subprocess_unix(options) {
   }
 
   function updateExitCode(code) {
-    if (exitCode > -2 && code >= 0) {
-      exitCode = code;
+    if (gXulRuntime.OS == "Darwin") {
+      exitCode = (code % 0xFF);
     }
-    exitCode = exitCode % 0xFF;
+    else {
+      exitCode = ((code & 0xff00) >> 8) % 0xFF;
+    }
   }
 
   function cleanup() {
@@ -1758,11 +1763,15 @@ function subprocess_unix(options) {
           closeWriteHandle(i); // should only be required in case of errors
       }
 
-      var result, status = ctypes.int();
+      // check the exit Code for short-lived processes
+      let result, status = ctypes.int();
       result = waitpid(child.pid, status.address(), 0);
 
-      if (exitCode > -2 && result > 0) {
-        updateExitCode((status.value & 0xff00) >> 8);
+      if (result > 0) {
+        // regular exit
+        let r = parseInt(status.value, 10);
+        dump("got early exit code " + r + "\n");
+        updateExitCode(r);
       }
 
       for (i = 0; i < writeWorker.length; i++) {
