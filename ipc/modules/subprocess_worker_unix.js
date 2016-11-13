@@ -124,16 +124,10 @@ function initLibc(libName) {
 
 function createNpeError() {
   let e = new Error("NULL Poiner", "npeError", 1);
-  try {
-    // throw an error and catch it to get a stack trace
-    throw e;
-  }
-  catch (ex) {
-    postMessage({
-      msg: "error",
-      data: "Got NULL pointer error\n" + ex.stack
-    });
-  }
+  postMessage({
+    msg: "error",
+    data: "Got NULL pointer error\n" + e.stack
+  });
 
   return;
 }

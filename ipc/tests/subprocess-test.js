@@ -271,4 +271,20 @@ function run_test() {
   p.wait();
   Assert.equal(gTestLines.join(""), gResultData, "variable comparison");
 
+  do_print("mass test");
+
+  for (let i = 0; i < 1000; i++) {
+    p = subprocess.call({
+      command: pl.path,
+      arguments: [cmd.path, 'quick'],
+      environment: envList,
+      done: function(result) {
+        Assert.equal("Hello\n", result.stdout, "stdout text");
+        Assert.equal(0, result.exitCode, "exit code");
+      },
+      mergeStderr: false
+    });
+
+    p.wait();
+  }
 }

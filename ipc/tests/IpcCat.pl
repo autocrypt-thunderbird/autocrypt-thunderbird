@@ -43,9 +43,13 @@ if ($#ARGV < 0) {
 #$| = 1; # disable buffering of output
 
 # wait a little before doing anything
-select(undef, undef, undef, 0.1);
+#select(undef, undef, undef, 0.1);
 
-if ($ARGV[0] =~ /^dump$/i) {
+if ($ARGV[0] =~ /^quick/i) {
+  print "Hello\n";
+  exit(0);
+}
+elsif ($ARGV[0] =~ /^dump$/i) {
   print STDERR "Starting dump\n";
 
   my $buf = readFile("-");
@@ -82,4 +86,3 @@ else {
 }
 
 exit(0);
-

@@ -332,7 +332,7 @@ function getPlatformValue(valueType) {
     'winnt': ['kernel32.dll'],
 
     // Unix API:
-    //            library name   O_NONBLOCK RLIM_T                RLIMIT_NOFILE
+    //          library name, O_NONBLOCK. RLIM_T, RLIMIT_NOFILE
     'darwin': ['libc.dylib', 0x04, ctypes.uint64_t, 8],
     'linux': ['libc.so.6', 2024, ctypes.unsigned_long, 7],
     'freebsd': ['libc.so.7', 0x04, ctypes.int64_t, 8],
@@ -1348,7 +1348,7 @@ function subprocess_unix(options) {
     if (rc < 0) {
       close(_in[0]);
       close(_in[1]);
-      return -1;
+      return -2;
     }
     if (!options.mergeStderr) {
       rc = pipe(_err);
@@ -1358,7 +1358,7 @@ function subprocess_unix(options) {
         close(_in[1]);
         close(_out[0]);
         close(_out[1]);
-        return -1;
+        return -3;
       }
     }
 
@@ -1376,7 +1376,7 @@ function subprocess_unix(options) {
           close(_in[1]);
           close(_out[0]);
           close(_out[1]);
-          return -1;
+          return -4;
         }
 
         if (options.pipes[i].readFd) {
@@ -1657,17 +1657,19 @@ function subprocess_unix(options) {
           callbackFunc(data);
           break;
         case "exitCode":
-          dump("got raw exit code " + event.data.data + " from " + name + "\n");
+          debugLog("got raw exit code " + event.data.data + " from " + name + "\n");
           updateExitCode(event.data.data);
+          if (readers === 0) cleanup(1);
           break;
         case "done":
           debugLog("Pipe " + name + " closed\n");
           --readers;
-          if (readers === 0) cleanup();
+          if (readers === 0) cleanup(0);
           break;
         case "error":
-          LogError("Got error from " + name + ": " + event.data.data);
+          LogError("Got error message from " + name + ": " + event.data.data);
           exitCode = -2;
+          cleanup(0);
           break;
         default:
           debugLog("Got msg from " + name + ": " + event.data.data + "\n");
@@ -1676,6 +1678,7 @@ function subprocess_unix(options) {
     worker.onerror = function(error) {
       LogError("Got error from " + name + ": " + error.message);
       exitCode = -2;
+      cleanup(0);
     };
 
     worker.postMessage({
@@ -1750,7 +1753,7 @@ function subprocess_unix(options) {
     }
   }
 
-  function cleanup() {
+  function cleanup(cleanupType) {
     debugLog("Cleanup called\n");
 
     var i;
@@ -1764,14 +1767,16 @@ function subprocess_unix(options) {
       }
 
       // check the exit Code for short-lived processes
-      let result, status = ctypes.int();
-      result = waitpid(child.pid, status.address(), 0);
+      if (exitCode !== -2) {
+        let result, status = ctypes.int();
+        result = waitpid(child.pid, status.address(), 0);
 
-      if (result > 0) {
-        // regular exit
-        let r = parseInt(status.value, 10);
-        dump("got early exit code " + r + "\n");
-        updateExitCode(r);
+        if (result > 0) {
+          // regular exit
+          let r = parseInt(status.value, 10);
+          debugLog("got early exit code " + r + "\n");
+          updateExitCode(r);
+        }
       }
 
       for (i = 0; i < writeWorker.length; i++) {
@@ -1780,6 +1785,8 @@ function subprocess_unix(options) {
             msg: 'stop'
           });
       }
+
+      if (exitCode === -1 && cleanupType === 0) return;
 
       setTimeout(function _done() {
         if (options.done) {
@@ -1800,6 +1807,9 @@ function subprocess_unix(options) {
         done = true;
       }, 0);
 
+      close(child.stdin);
+      close(child.stdout);
+      if (!options.mergeStderr) close(child.stderr);
       libc.close();
     }
   }
@@ -1853,6 +1863,11 @@ function subprocess_unix(options) {
 
   child = {};
   pid = popen(cmdStr, workDir, options.arguments, options.environment, child);
+
+  if (pid < 0) {
+    LogError("Could not create subprocess, exitCode " + pid + "\n");
+    throw "ERROR: Process init error, exitCode=" + pid;
+  }
 
   debugLog("subprocess started; got PID " + pid + "\n");
 
