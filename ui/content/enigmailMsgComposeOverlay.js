@@ -3036,7 +3036,7 @@ Enigmail.msg = {
 
       let si = compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
       si.originalSubject = compFields.subject;
-      compFields.subject = "pEp";
+      compFields.subject = "";
     }
 
     return true;
@@ -3492,7 +3492,7 @@ Enigmail.msg = {
           sendFlags |= nsIEnigmail.ENCRYPT_HEADERS;
 
           if (sendFlags & ENCRYPT) {
-            gMsgCompose.compFields.subject = EnigmailFuncs.getProtectedSubjectText();
+            gMsgCompose.compFields.subject = "";
 
             if (EnigmailPrefs.getPref("protectReferencesHdr")) {
               gMsgCompose.compFields.references = "";
@@ -4699,7 +4699,6 @@ Enigmail.composeStateListener = {
     if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {
       Enigmail.msg.timeoutId = EnigmailTimer.setTimeout(function() {
           Enigmail.msg.decryptQuote(false);
-
         },
         0);
     }

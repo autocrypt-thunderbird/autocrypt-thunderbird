@@ -134,94 +134,12 @@ var EnigmailPEPAdapter = {
 
     while (n.hasMore()) {
       let hdr = n.getNext();
-      if (hdr.search(/^(from|to|subject)$/i) < 0) {
+      if (hdr.search(/^(from|to)$/i) < 0) {
         printHdr += hdr + ": " + EnigmailMime.formatHeaderData(headers.extractHeader(hdr, true)) + "\r\n";
       }
     }
 
     return printHdr + "\r\n" + mimeStr.substr(startPos);
-  },
-
-  /**
-   * Get a MIME tree as String from the pEp-internal message object
-   *
-   * @param msgObj: Object  - pEp Message object
-   *
-   * @return String - a MIME string, or "" if no message could be created
-   */
-  getMimeStringFromMsgObj: function(msgObj) {
-    EnigmailLog.DEBUG("pEpAdapter.jsm: getMsgStringFromResult: " + typeof(msgObj[0]) + "\n");
-    if (msgObj[0] !== null && (typeof(msgObj[0]) === "object") && ("dir" in msgObj[0])) {
-      if (msgObj[0].enc_format === 3) {
-        // PGP/MIME
-        let i;
-        let boundary = EnigmailMime.createBoundary();
-        let att = msgObj[0].attachments;
-        let r = 'Content-Type: multipart/encrypted;\r\n  protocol="application/pgp-encrypted";\r\n  boundary="' + boundary + '";\r\n\r\n';
-
-        r += 'This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\r\n';
-        r += 'This message was encrypted with pEp https://pEp-project.org\r\n\r\n';
-        for (i = 0; i < att.length; i++) {
-
-          r += "--" + boundary + "\r\n";
-          r += "Content-Type: " + att[i].mime_type + "\r\n";
-          let decodedValue = "";
-
-          try {
-            // try to decode the value from base 64.
-            decodedValue = atob(att[i].value);
-          }
-          catch (ex) {
-            r += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
-          }
-          if ("filename" in att[i]) {
-            r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
-          }
-          r += "\r\n";
-          if (decodedValue !== "") {
-            r += decodedValue;
-          }
-          else {
-            r += att[i].value;
-          }
-          r += "\r\n\r\n";
-        }
-
-        r += "--" + boundary + "--\r\n";
-
-        return r;
-      }
-      else if (msgObj[0].enc_format === 1) {
-        // inline PGP
-        let i;
-        let boundary = EnigmailMime.createBoundary();
-        let att = msgObj[0].attachments;
-        let r = 'Content-Type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n';
-
-        r += "--" + boundary + "\r\n";
-        r += 'Content-Type: text/plain; charset="utf-8"\r\n';
-        r += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
-        r += msgObj[0].longmsg + '\r\n\r\n';
-
-        for (i = 0; i < att.length; i++) {
-          r += "--" + boundary + "\r\n";
-          r += "Content-Type: " + att[i].mime_type + "\r\n";
-          r += "Content-Transfer-Encoding: base64\r\n";
-          if ("filename" in att[i]) {
-            r += 'Content-Disposition: attachment; filename="' + att[i].filename + '"\r\n';
-          }
-          r += "\r\n";
-          r += att[i].value.replace(/(.{68})/g, "$1\r\n") + "\r\n\r\n";
-        }
-
-        r += "--" + boundary + "--\r\n";
-
-        return r;
-
-      }
-    }
-
-    return "";
   },
 
   /**

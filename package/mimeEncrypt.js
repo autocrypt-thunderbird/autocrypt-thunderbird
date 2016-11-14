@@ -326,7 +326,14 @@ PgpMimeEncrypt.prototype = {
 
   encryptedHeaders: function(isEightBit) {
     LOCAL_DEBUG("mimeEncrypt.js: encryptedHeaders\n");
-    this.writeOut("Content-Type: multipart/encrypted;\r\n" +
+    let subj = "";
+
+    if (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
+      subj = jsmime.headeremitter.emitStructuredHeader("subject", EnigmailFuncs.getProtectedSubjectText(), {});
+    }
+
+    this.writeOut(subj +
+      "Content-Type: multipart/encrypted;\r\n" +
       " protocol=\"application/pgp-encrypted\";\r\n" +
       " boundary=\"" + this.cryptoBoundary + "\"\r\n" +
       "\r\n" +
@@ -628,30 +635,11 @@ PgpMimeEncrypt.prototype = {
     let enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
 
     let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
-    // EnigmailPEPAdapter.pep.parseMimeString(this.pipeQueue.replace(/\r\n/g, "\n")).then(function _step1(data) {
-    //   EnigmailLog.DEBUG("mimeEncrypt.js: parseMimeString: SUCCESS\n");
-    //
-    //   if ("result" in data) {
-    //     let msg = data.result[0];
-    //
-    //     return EnigmailPEPAdapter.pep.encryptMessage(
-    //       self.msgIdentity.email,
-    //       toAddrList,
-    //       enigSecurityInfo.originalSubject,
-    //       msg,
-    //       null);
-    //   }
-    //   else {
-    //     throw "PEP-ERROR";
-    //   }
-    //
-    // }).then(function _step2(res) {
 
     let toAddr = jsmime.headerparser.parseAddressingHeader(this.recipientList);
     let fromAddr = jsmime.headerparser.parseAddressingHeader(self.msgIdentity.email);
 
-    let s = "Message-ID: <1@enigmail.net>\n";
-    s += jsmime.headeremitter.emitStructuredHeader("from", fromAddr, {});
+    let s = jsmime.headeremitter.emitStructuredHeader("from", fromAddr, {});
     s += jsmime.headeremitter.emitStructuredHeader("to", toAddr, {});
     s += jsmime.headeremitter.emitStructuredHeader("subject", enigSecurityInfo.originalSubject, {});
 
@@ -692,10 +680,8 @@ PgpMimeEncrypt.prototype = {
     }
 
     if (this.outQueue === "") {
-      this.outQueue = this.pipeQueue;
-    }
-    else {
-      self.msgCompFields.subject = "pEp";
+      this.outQueue = jsmime.headeremitter.emitStructuredHeader("subject", enigSecurityInfo.originalSubject, {}) +
+        this.pipeQueue;
     }
 
     this.outStringStream.setData(this.outQueue, this.outQueue.length);
