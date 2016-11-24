@@ -795,3 +795,12 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "Automatically decide if Junior Mode should be used">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "Force using S/MIME and Enigmail">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Force using p≡p (Pretty Easy Privacy)">
+
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "Verify Trustwords">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please verify the following list of words with your correspondent">
+<!ENTITY enigmail.pEp.trustWordsDlg.emailAddr         "Email Address:">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of words">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Verifed">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnCancel         "Not Confirmed">

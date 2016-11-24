@@ -667,8 +667,11 @@ Enigmail.hdrView = {
             EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgFrame=" + msgFrame + "\n");
 
             msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView), true);
-            msgFrame.addEventListener("load", Enigmail.msg.messageAutoDecrypt.bind(Enigmail.msg), false);
-            msgFrame.addEventListener("load", Enigmail.msg.handleAttchmentEvent.bind(Enigmail.msg), true);
+            msgFrame.addEventListener("load", function _f() {
+              Enigmail.hdrView.enablePepMenus();
+              Enigmail.msg.messageAutoDecrypt();
+              Enigmail.msg.handleAttchmentEvent();
+            }, false);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -972,8 +975,35 @@ Enigmail.hdrView = {
 
   pEpIconPopup: function() {
     EnigmailDialog.alert(window, "pEp Status: " + this.pEpStatus.color + "\nKey IDs: " + this.pEpStatus.keyIDs.join(", "));
-  }
+  },
 
+  enablePepMenus: function() {
+    if (EnigmailPEPAdapter.usingPep()) {
+      document.getElementById("enigmailCreateRuleFromAddr").setAttribute("collapsed", "true");
+      document.getElementById("enigmailVerifyPepStatus").removeAttribute("collapsed");
+
+    }
+    else {
+      document.getElementById("enigmailCreateRuleFromAddr").removeAttribute("collapsed");
+      document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+    }
+  },
+
+  verifyPepTrustWords: function(emailAddressNode) {
+    if (emailAddressNode) {
+      if (typeof(findEmailNodeFromPopupNode) == "function") {
+        emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
+      }
+      let emailAddr = emailAddressNode.getAttribute("emailAddress");
+      EnigmailPEPAdapter.getTrustWordsForEmail(emailAddr, "en").
+      then(function _succeed(trustWords) {
+        EnigmailWindows.verifyPepTrustWords(window, emailAddr, trustWords);
+      }).
+      catch(function _err(data) {
+        EnigmailWindows.alert(window, "Cannot verify trustwords for " + emailAddr + ".");
+      });
+    }
+  }
 };
 
 window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);

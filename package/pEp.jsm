@@ -319,7 +319,6 @@ var EnigmailpEp = {
 
   parseMimeString: function(mimeStr) {
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [mimeStr,
         mimeStr.length, // msg Output
         ["OP"] // pep message
@@ -385,7 +384,6 @@ var EnigmailpEp = {
    */
   setIdentity: function(emailAddress, userId, name, fpr) {
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [{
         "user_id": userId,
         "username": name,
@@ -419,7 +417,6 @@ var EnigmailpEp = {
     if (!emailAddress) emailAddress = "";
 
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [
         emailAddress,
         userId, ["OP"]
@@ -450,7 +447,6 @@ var EnigmailpEp = {
     if (!maxWords) maxWords = 0;
 
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [
         fpr,
         language.toUpperCase(), ["OP"], // words
@@ -479,7 +475,6 @@ var EnigmailpEp = {
   getLanguageList: function() {
 
     try {
-      let msgId = "enigmail-" + String(gRequestId++);
       let params = [
         ["OP"] // list of languages
       ];

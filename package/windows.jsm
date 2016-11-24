@@ -542,5 +542,17 @@ const EnigmailWindows = {
 
     win.openDialog("chrome://enigmail/content/enigmailSearchKey.xul",
       "", "dialog,modal,centerscreen", inputObj, resultObj);
+  },
+
+  verifyPepTrustWords: function(window, emailAddress, trustWords) {
+    let inputObj = {
+      emailAddress: emailAddress,
+      trustWords: trustWords
+    };
+
+    window.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+      "", "dialog,modal,centerscreen", inputObj);
+
   }
+
 };
