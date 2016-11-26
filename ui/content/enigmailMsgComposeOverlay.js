@@ -3962,6 +3962,11 @@ Enigmail.msg = {
           if (pgpHeader.indexOf("=") > 0) pgpHeader += ";\r\n\t";
           pgpHeader += "url=" + this.identity.getCharAttribute("openPgpUrlName");
         }
+
+        if (openPgpHeaderMode === 0) {
+          pgpHeader = "preference=signencrypt";
+        }
+
         if (pgpHeader.length > 0) {
           this.setAdditionalHeader("OpenPGP", pgpHeader);
         }
