@@ -28,6 +28,7 @@ Cu.import("resource://enigmail/versioning.jsm"); /*global EnigmailVersioning: fa
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
+const MINIMUM_GPG_VERSION = "2.0.10";
 const GPG_BATCH_OPT_LIST = ["--batch", "--no-tty", "--status-fd", "2"];
 
 function pushTrimmedStr(arr, str, splitStr) {
@@ -111,19 +112,27 @@ const EnigmailGpg = {
   setAgentPath: function(path) {
     this._agentPath = path;
   },
+
+  /**
+   * return the minimum version of GnuPG that is supported by Enigmail
+   */
+  getMinimumGpgVersion: function() {
+    return MINIMUM_GPG_VERSION;
+  },
+
   /***
    determine if a specific feature is available in the GnuPG version used
 
    @featureName:  String; one of the following values:
-   version-supported    - is the gpg version supported at all (true for gpg >= 2.0.7)
+   version-supported    - is the gpg version supported at all (true for gpg >= 2.0.10)
    supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
    autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
    keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
    windows-photoid-bug  - is there a bug in gpg with the output of photoid on Windows (true for gpg < 2.0.16)
    genkey-no-protection - is "%no-protection" supported for generting keys (true for gpg >= 2.1)
-   search-keys-cmd      - what command to use to termine the --search-key operation. ("save" for gpg > 2.1; "quit" otherwise)
+   search-keys-cmd      - what command to use to terminate the --search-key operation. ("save" for gpg > 2.1; "quit" otherwise)
    socks-on-windows     - is SOCKS proxy supported on Windows (true for gpg >= 2.0.20)
-   supports-dirmngr     - is dirmngr supported
+   supports-dirmngr     - is dirmngr supported (true for gpg >= 2.1)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -144,7 +153,7 @@ const EnigmailGpg = {
 
     switch (featureName) {
       case "version-supported":
-        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.7");
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, MINIMUM_GPG_VERSION);
       case "supports-gpg-agent":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0");
       case "autostart-gpg-agent":

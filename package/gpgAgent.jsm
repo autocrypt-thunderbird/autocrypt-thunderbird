@@ -544,7 +544,7 @@ var EnigmailGpgAgent = {
       if (!domWindow) {
         domWindow = EnigmailWindows.getBestParentWin();
       }
-      EnigmailDialog.alert(domWindow, EnigmailLocale.getString("oldGpgVersion14", [gpgVersion]));
+      EnigmailDialog.alert(domWindow, EnigmailLocale.getString("oldGpgVersion20", [gpgVersion, EnigmailGpg.getMinimumGpgVersion()]));
       throw Components.results.NS_ERROR_FAILURE;
     }
 
