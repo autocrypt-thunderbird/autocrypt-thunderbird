@@ -551,6 +551,8 @@ var EnigmailGpgAgent = {
     EnigmailGpgAgent.gpgconfPath = EnigmailGpgAgent.resolveToolPath("gpgconf");
     EnigmailGpgAgent.connGpgAgentPath = EnigmailGpgAgent.resolveToolPath("gpg-connect-agent");
 
+    EnigmailGpgAgent.checkGpgHomeDir(domWindow, esvc);
+
     EnigmailLog.DEBUG("enigmail.js: Enigmail.setAgentPath: gpgconf found: " + (EnigmailGpgAgent.gpgconfPath ? "yes" : "no") + "\n");
   },
 
@@ -749,6 +751,46 @@ var EnigmailGpgAgent = {
 
     return homeDir;
   },
+
+  /**
+   * Check if the users directory for GnuPG exists and is writeable.
+   * Throw exception if directory cannot be created or adjusted.
+   */
+  checkGpgHomeDir: function(domWindow, esvc) {
+    EnigmailLog.DEBUG("gpgAgent.jsm: checkGpgHomeDir:\n");
+
+    let homeDir = EnigmailGpgAgent.getGpgHomeDir();
+    if (!homeDir) homeDir = EnigmailGpgAgent.determineGpgHomeDir(esvc);
+
+    EnigmailLog.DEBUG("gpgAgent.jsm: checkGpgHomeDir: got homedir = '" + homeDir + "'\n");
+
+    let homeDirObj = Components.classes[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+    EnigmailFiles.initPath(homeDirObj, homeDir);
+
+    let dirType = EnigmailFiles.ensureWritableDirectory(homeDirObj, 0x1C0); // 0700
+    let errMsg = "";
+    switch (dirType) {
+      case 1:
+        errMsg = "gpghomedir.notexists";
+        break;
+      case 2:
+        errMsg = "gpghomedir.notwritable";
+        break;
+      case 3:
+        errMsg = "gpghomedir.notdirectory";
+        break;
+    }
+
+    if (errMsg.length > 0) {
+      if (!domWindow) {
+        domWindow = EnigmailWindows.getBestParentWin();
+      }
+      EnigmailDialog.alert(domWindow, EnigmailLocale.getString(errMsg, homeDir) + "\n\n" + EnigmailLocale.getString("gpghomedir.notusable"));
+      throw Components.results.NS_ERROR_FAILURE;
+    }
+  },
+
+
 
   finalize: function() {
     if (EnigmailGpgAgent.gpgAgentProcess) {

@@ -323,6 +323,53 @@ const EnigmailFiles = {
   },
 
   /**
+   * Ensure that a directory exists and is writeable.
+   *
+   * @param dirObj      Object - nsIFile object for the directory to test
+   * @param permissions Number - file permissions in Unix style (e.g. 0700)
+   *
+   * @return Number:
+   *    0 - OK: directory exists (or was created) and is writeable
+   *    1 - NOK: Directory does not exist (and cannot be created)
+   *    2 - NOK: Directory exists but is readonly (and cannot be modified)
+   *    3 - NOK: File object with required name exists but is not a directory
+   */
+  ensureWritableDirectory: function(dirObj, permissions) {
+    let retVal = -1;
+    try {
+      if (dirObj.isDirectory()) {
+        try {
+          if (dirObj.isWritable()) {
+            retVal = 0;
+          }
+          else {
+            dirObj.permissions = permissions;
+            retVal = 0;
+          }
+        }
+        catch (x) {
+          retVal = 2;
+        }
+      }
+      else {
+        retVal = 3;
+      }
+    }
+    catch (x) {
+      // directory doesn't exist
+      try {
+        dirObj.create(Ci.nsIFile.DIRECTORY_TYPE, permissions);
+        retVal = 0;
+      }
+      catch (x2) {
+        retVal = 1;
+      }
+    }
+    return retVal;
+  },
+
+
+  /**
    *  Write data to a file
    *  @filePath |string| or |nsIFile| object - the file to be created
    *  @data     |string|       - the data to write to the file

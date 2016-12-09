@@ -1,6 +1,6 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, component: false */
 /*global EnigmailCore: false, Cc: false, Ci: false, EnigmailFiles: false, EnigmailLog: false, EnigmailPrefs: false */
-/*jshint -W097 */
+/*global Components: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,4 +45,40 @@ test(function shouldNotAppendExeInDosLikeEnvironment() {
 
     Assert.equal(actualPath, expectedPath);
   });
+});
+
+test(function checkDirectory() {
+  let md = do_get_cwd();
+
+  Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+
+  md.append("should-exist");
+  Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+
+  try {
+    md.permissions = 0;
+    Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+  }
+  catch (x) {
+    // don't try if permissions cannot be modified
+  }
+
+  md.remove(true);
+  md.create(Ci.nsIFile.FILE_TYPE, 0x1C0);
+  Assert.equal(3, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+
+  md.remove(false);
+
+  md.initWithPath("/does/not/exist");
+  Assert.equal(1, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+
+  if (EnigmailOS.isDosLike) {
+    let envS = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    let sysRoot = envS.get("SystemRoot");
+    md.initWithPath(sysRoot);
+  }
+  else
+    md.initWithPath("/");
+
+  Assert.equal(2, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
 });

@@ -20,6 +20,7 @@ Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 const getExecution = EnigmailLazy.loader("enigmail/execution.jsm", "EnigmailExecution");
 
 let operatingSystem = null;
+
 function getOS() {
   if (operatingSystem === null) {
     operatingSystem = Cc[XPCOM_APPINFO].getService(Ci.nsIXULRuntime).OS;
@@ -68,10 +69,15 @@ const EnigmailOS = {
    */
   isMac: isMac(),
 
-  // get a Windows registry value (string)
-  // @ keyPath: the path of the registry (e.g. Software\\GNU\\GnuPG)
-  // @ keyName: the name of the key to get (e.g. InstallDir)
-  // @ rootKey: HKLM, HKCU, etc. (according to constants in nsIWindowsRegKey)
+  /**
+   * get a Windows registry value (string)
+   *
+   * @param  keyPath String - the path of the registry (e.g. Software\\GNU\\GnuPG)
+   * @param  keyName String - the name of the key to get (e.g. InstallDir)
+   * @param  rootKey Number - HKLM, HKCU, etc. (according to constants in nsIWindowsRegKey)
+   *
+   * @return String - the found registry value (or empty string if not found)
+   */
   getWinRegistryString: function(keyPath, keyName, rootKey) {
     const registry = Cc["@mozilla.org/windows-registry-key;1"].createInstance(Ci.nsIWindowsRegKey);
 
