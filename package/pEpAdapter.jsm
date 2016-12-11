@@ -15,15 +15,48 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
+Cu.import("resource://enigmail/pEpListener.jsm"); /*global EnigmailpEpListener: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 
+const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
+
+
+// pEp JSON Server executable name
+const pepServerExecutable = "pep-mt-server";
 
 var gPepVersion = null;
+var gSecurityToken = null;
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
+
+
+function pepCallback(data) {
+  EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: got data '" + data + "'\n");
+
+}
+
+function startListener() {
+  EnigmailLog.DEBUG("pEpAdapter.jsm: startListener:\n");
+  gSecurityToken = EnigmailRNG.generateRandomString(40);
+  let portNum = EnigmailpEpListener.createListener(pepCallback, gSecurityToken);
+
+  if (portNum < 0) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: could not open socket\n");
+  }
+
+  EnigmailpEp.registerListener(portNum, gSecurityToken).then(function _ok(data) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp OK\n");
+
+  }).catch(unction _fail(data) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp failed\n");
+  });
+}
+
 
 var EnigmailPEPAdapter = {
 
@@ -93,10 +126,15 @@ var EnigmailPEPAdapter = {
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
 
+    let execFile = getFiles().resolvePathWithEnv(pepServerExecutable);
+    if (execFile) EnigmailpEp.setServerPath(execFile.path);
+
     try {
       EnigmailpEp.getPepVersion().then(function success(data) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
         if (Array.isArray(data)) {
           gPepVersion = data[0];
+          startListener();
         }
       }).
       catch(function failed(err) {

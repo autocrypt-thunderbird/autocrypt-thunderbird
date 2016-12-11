@@ -21,7 +21,7 @@ var EXPORTED_SYMBOLS = ["EnigmailpEp"];
 const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
-const pepServerPath = "/usr/local/bin/pep-mt-server";
+var gPepServerPath = null;
 const pepSecurityInfo = "/pEp-json-token-";
 
 const Cu = Components.utils;
@@ -38,8 +38,6 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 var gRequestId = 1;
 var gConnectionInfo = null;
 var gRetryCount = 0;
-var gPepServerStdin = null;
-var gPepServerStdout = "";
 
 var EnigmailpEp = {
 
@@ -540,6 +538,25 @@ var EnigmailpEp = {
     }
   },
 
+  registerListener: function(port, securityToken) {
+
+    try {
+      let params = [
+        "127.0.0.1",
+        port,
+        securityToken
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "registerEventListener", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
   /**
    * parse a JSON string. Ensure that character codes < 32 are correctly escaped first
    *
@@ -567,6 +584,10 @@ var EnigmailpEp = {
       return null;
     }
 
+  },
+
+  setServerPath: function(pathName) {
+    gPepServerPath = pathName;
   },
 
   /******************* internal (private) methods *********************/
@@ -664,17 +685,20 @@ var EnigmailpEp = {
   _startPepServer: function(funcType, deferred, functionCall, onLoadListener) {
     let self = this;
 
+    if (!gPepServerPath) {
+      deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
+    }
+
     let exec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 
     try {
-      exec.initWithPath(pepServerPath);
+      exec.initWithPath(gPepServerPath);
       if ((!exec.exists()) || (!exec.isExecutable())) {
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
       }
 
       EnigmailCore.getService(null, true);
-      observeShutdown();
 
       let process = subprocess.call({
         command: exec,
@@ -682,7 +706,7 @@ var EnigmailpEp = {
         environment: EnigmailCore.getEnvList(),
         mergeStderr: false,
         stdin: function(stdin) {
-          gPepServerStdin = stdin;
+          // do nothing
         },
         stdout: function(data) {
           // do nothing
@@ -692,30 +716,41 @@ var EnigmailpEp = {
         }
       });
 
+      process.wait();
+
+      gConnectionInfo = null;
+
+      // wait trying to access the pEp server for 1 second such that it can open the connection
+      // and write the connection info file
+
       EnigmailTimer.setTimeout(function _f() {
-          let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+        self.getConnectionInfo();
+        functionCall.security_token = (gConnectionInfo ? gConnectionInfo.security_token : "");
 
-          oReq.addEventListener("load", function _onload() {
-            try {
-              let parsedObj = self.parseJSON(this.responseText);
-              let r = onLoadListener(parsedObj);
+        let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
-              deferred.resolve(r);
-            }
-            catch (ex) {
-              deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
-            }
-          });
+        oReq.addEventListener("load", function _onload() {
+          try {
+            let parsedObj = self.parseJSON(this.responseText);
+            let r = onLoadListener(parsedObj);
 
-          oReq.addEventListener("error", function(e) {
-              deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
-            },
-            false);
+            deferred.resolve(r);
+          }
+          catch (ex) {
+            deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
+          }
+        });
 
-          oReq.open("POST", self.getConnectionInfo() + funcType);
-          oReq.send(JSON.stringify(functionCall));
-        },
-        1500);
+        oReq.addEventListener("error", function(e) {
+            let status = oReq.channel.QueryInterface(Ci.nsIRequest).status;
+
+            deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
+          },
+          false);
+
+        oReq.open("POST", self.getConnectionInfo() + funcType);
+        oReq.send(JSON.stringify(functionCall));
+      }, 1000);
     }
     catch (ex) {
       deferred.reject(makeError("PEP-unavailable", ex, "Cannot start PEP service"));
@@ -723,29 +758,6 @@ var EnigmailpEp = {
   }
 };
 
-
-// Mozilla-specific shutdown observer to stop pep mt-server
-function observeShutdown() {
-  // Register to observe XPCOM shutdown
-  const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
-  const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
-
-  const obsServ = Cc[NS_OBSERVERSERVICE_CONTRACTID].getService().
-  QueryInterface(Ci.nsIObserverService);
-  obsServ.addObserver({
-      observe: function(aSubject, aTopic, aData) {
-        if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
-          // XPCOM shutdown
-          if (gPepServerStdin) {
-            gPepServerStdin.write("q\n");
-            gPepServerStdin.close();
-          }
-        }
-      }
-    },
-    NS_XPCOM_SHUTDOWN_OBSERVER_ID,
-    false);
-}
 
 function makeError(str, ex, msg) {
   let o = {

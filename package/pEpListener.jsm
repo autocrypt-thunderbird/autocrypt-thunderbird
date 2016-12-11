@@ -27,8 +27,9 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false *
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
 
-function PepListener(callBackFunction) {
+function PepListener(callBackFunction, securityToken) {
   this.callBackFunction = callBackFunction;
+  this.securityToken = securityToken;
 }
 
 PepListener.prototype = {
@@ -41,7 +42,6 @@ PepListener.prototype = {
     onInputStreamReady: function(input) {
       let sin = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
       sin.init(input);
-      //sin.available();
       let requestData = "";
       while (sin.available()) {
         requestData = requestData + sin.read(512);
@@ -63,7 +63,15 @@ PepListener.prototype = {
       this.self.output.flush();
 
       if (this.self.callBackFunction) {
-        this.self.callBackFunction(requestData);
+        try {
+          let obj = JSON.parse(requestData);
+          if ("security_token" in obj && obj.security_token === this.self.securityToken) {
+            this.self.callBackFunction(obj);
+          }
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("pEpListener.callBackFunction failed with: " + ex.toString() + "\n");
+        }
       }
 
       let tm = Cc["@mozilla.org/thread-manager;1"].getService();
@@ -83,7 +91,7 @@ PepListener.prototype = {
 
   },
   onStopListening: function(serverSocket, status) {
-    EnigmailLog.DEBUG("pEpListener.onStopListening: Closing connection on " + serverSocket.port+ "\n");
+    EnigmailLog.DEBUG("pEpListener.onStopListening: Closing connection on " + serverSocket.port + "\n");
   }
 };
 
@@ -92,16 +100,16 @@ var EnigmailpEpListener = {
   /**
    *  returns port number or -1 in case of failure
    */
-  createListener: function(callBackFunction) {
+  createListener: function(callBackFunction, securityToken) {
     let serverSocket = Cc["@mozilla.org/network/server-socket;1"].createInstance(Ci.nsIServerSocket);
 
     let portNum = MIN_PORT_NUM;
     while (portNum < MAX_PORT_NUM) {
       try {
         serverSocket.init(portNum, true, -1);
-        let l = new PepListener(callBackFunction);
+        let l = new PepListener(callBackFunction, securityToken);
         serverSocket.asyncListen(l);
-        EnigmailLog.DEBUG("pEpListener.createListener: Listening on port " + portNum+ "\n");
+        EnigmailLog.DEBUG("pEpListener.createListener: Listening on port " + portNum + "\n");
         return portNum;
       }
       catch (ex) {

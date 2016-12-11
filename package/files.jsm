@@ -65,14 +65,15 @@ const EnigmailFiles = {
   },
 
   /**
-   * resolvePathWithEnv tries to resolve an file's path with the EnigmailService's environment PATH variable.
+   * resolvePathWithEnv tries to resolve an file's path with the environment PATH variable.
    *
    * @param     String  file        - file to be resolved
    *
    * @return    String  foundPath   - Returns found path. If no path is found, returns null.
    */
   resolvePathWithEnv: function(executable) {
-    const foundPath = EnigmailFiles.resolvePath(potentialWindowsExecutable(executable), EnigmailCore.getEnigmailService().environment.get("PATH"), EnigmailOS.isDosLike);
+    let envSvc = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    const foundPath = EnigmailFiles.resolvePath(potentialWindowsExecutable(executable), envSvc.get("PATH"), EnigmailOS.isDosLike);
     if (foundPath !== null) {
       foundPath.normalize();
     }
