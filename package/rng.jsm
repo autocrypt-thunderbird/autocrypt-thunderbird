@@ -15,8 +15,9 @@ const Ci = Components.interfaces;
 const SECURITY_RANDOM_GENERATOR = "@mozilla.org/security/random-generator;1";
 
 let rng = null;
+
 function randomNumberGenerator() {
-  if(rng === null) {
+  if (rng === null) {
     rng = Cc[SECURITY_RANDOM_GENERATOR].createInstance(Ci.nsIRandomGenerator);
   }
   return rng;
@@ -32,6 +33,21 @@ function bytesToUInt(byteObject) {
 }
 
 /**
+ * Create a string of random characters with numChars length
+ */
+function generateRandomString(numChars) {
+  let b = "";
+  let r = 0;
+  for (let i = 0; i < numChars; i++) {
+    r = Math.floor(Math.random() * 58);
+    b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 : 63)) + r);
+  }
+  return b;
+
+}
+
+
+/**
  * Generates a random UInt32 for use in randomising key selection and wait times between refreshing keys.
  *
  * @return random UInt32
@@ -41,5 +57,6 @@ function generateRandomUint32() {
 }
 
 const EnigmailRNG = {
-  generateRandomUint32: generateRandomUint32
+  generateRandomUint32: generateRandomUint32,
+  generateRandomString: generateRandomString
 };

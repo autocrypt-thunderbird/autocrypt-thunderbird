@@ -15,6 +15,7 @@ const Ci = Components.interfaces;
 
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 
 const EnigmailMime = {
   /***
@@ -24,13 +25,7 @@ const EnigmailMime = {
    * @return: string of 33 random characters and digits
    */
   createBoundary: function() {
-    let b = "";
-    let r = 0;
-    for (let i = 0; i < 33; i++) {
-      r = Math.floor(Math.random() * 58);
-      b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 : 63)) + r);
-    }
-    return b;
+    return EnigmailRNG.generateRandomString(33);
   },
 
   /***
