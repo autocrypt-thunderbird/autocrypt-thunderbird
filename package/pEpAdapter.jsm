@@ -52,7 +52,7 @@ function startListener() {
   EnigmailpEp.registerListener(portNum, gSecurityToken).then(function _ok(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp OK\n");
 
-  }).catch(unction _fail(data) {
+  }).catch(function _fail(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp failed\n");
   });
 }
