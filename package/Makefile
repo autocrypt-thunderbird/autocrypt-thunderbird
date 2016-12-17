@@ -47,6 +47,7 @@ MODFILES = \
            gpg.jsm \
            hash.jsm \
            httpProxy.jsm \
+           inbome.jsm \
            installGnuPG.jsm \
            key.jsm \
            keyEditor.jsm \

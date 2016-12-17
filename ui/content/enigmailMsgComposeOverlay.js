@@ -3997,7 +3997,7 @@ Enigmail.msg = {
       let k = keys[0].getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        this.setAdditionalHeader('INBOME', 'to=' + this.identity.email + '; type=OpenPGP; key=\r\n' + keyData);
+        this.setAdditionalHeader('INBOME', 'to=' + this.identity.email + '; key=\r\n' + keyData);
       }
     }
   },

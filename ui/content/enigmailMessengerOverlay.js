@@ -56,6 +56,7 @@ Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: 
 Components.utils.import("resource://enigmail/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Components.utils.import("resource://enigmail/inbome.jsm"); /*global EnigmailInbome: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -78,7 +79,8 @@ Enigmail.msg = {
   removeListener: false,
   enableExperiments: false,
   headersList: ["content-type", "content-transfer-encoding",
-    "x-enigmail-version", "x-pgp-encoding-format"
+    "x-enigmail-version", "x-pgp-encoding-format",
+    "inbome" // TODO - change to final name
   ],
   buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
   buggyMailType: null,
@@ -645,6 +647,12 @@ Enigmail.msg = {
 
         Enigmail.msg.savedHeaders[headerName] = headerValue;
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: header " + headerName + ": " + headerValue + "\n");
+      }
+
+      if (("inbome" in Enigmail.msg.savedHeaders) && ("from" in currentHeaderData)) {
+        EnigmailInbome.processInbomeHeader(currentHeaderData.from.headerValue,
+          Enigmail.msg.savedHeaders.inbome,
+          currentHeaderData.date.headerValue);
       }
 
       var msgSigned = null;

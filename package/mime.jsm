@@ -34,21 +34,11 @@ const EnigmailMime = {
    * @contentTypeStr: the string containing all parts of a content-type.
    *               (e.g. multipart/mixed; boundary="xyz") --> returns "xyz"
    *
-   * @return: String containing the boundary parameter; or null
+   * @return: String containing the boundary parameter; or ""
    */
 
   getBoundary: function(contentTypeStr) {
-    contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
-    let boundary = "";
-    let ct = contentTypeStr.split(/;/);
-    for (let i = 0; i < ct.length; i++) {
-      if (ct[i].search(/[ \t]*boundary[ \t]*=/i) >= 0) {
-        boundary = ct[i];
-        break;
-      }
-    }
-    boundary = boundary.replace(/\s*boundary\s*=/i, "").replace(/[\'\"]/g, "");
-    return boundary;
+    return EnigmailMime.getParameter(contentTypeStr, "boundary");
   },
 
   /***
@@ -57,21 +47,60 @@ const EnigmailMime = {
    * @contentTypeStr: the string containing all parts of a content-type.
    *               (e.g. multipart/signed; protocol="xyz") --> returns "xyz"
    *
-   * @return: String containing the protocol parameter; or null
+   * @return: String containing the protocol parameter; or ""
    */
 
   getProtocol: function(contentTypeStr) {
-    contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
-    let proto = "";
-    let ct = contentTypeStr.split(/;/);
-    for (let i = 0; i < ct.length; i++) {
-      if (ct[i].search(/[ \t]*protocol[ \t]*=/i) >= 0) {
-        proto = ct[i];
-        break;
-      }
+    return EnigmailMime.getParameter(contentTypeStr, "protocol");
+  },
+
+  /***
+   * determine an arbitrary "parameter" part of a mail header.
+   *
+   * @param headerStr: the string containing all parts of the header.
+   * @param parameter: the parameter we are looking for
+   *
+   *
+   * 'multipart/signed; protocol="xyz"', 'protocol' --> returns "xyz"
+   *
+   * @return: String containing the parameter; or ""
+   */
+
+  getParameter: function(headerStr, parameter) {
+    let paramsArr = EnigmailMime.getAllParameters(headerStr);
+    parameter = parameter.toLowerCase();
+    if (parameter in paramsArr) {
+      return paramsArr[parameter];
     }
-    proto = proto.replace(/\s*protocol\s*=/i, "").replace(/[\'\"]/g, "");
-    return proto;
+    else
+      return "";
+  },
+
+  /***
+   * get all parameter attributes of a mail header.
+   *
+   * @param headerStr: the string containing all parts of the header.
+   *
+   * @return: Array of Object containing the key value pairs
+   *
+   * 'multipart/signed; protocol="xyz"'; boundary="xxx"
+   *  --> returns [ ["protocol": "xyz"], ["boundary": "xxx"] ]
+   */
+
+  getAllParameters: function(headerStr) {
+
+    headerStr = headerStr.replace(/[\r\n]+[ \t]+/g, "");
+    let hdrMap = jsmime.headerparser.parseParameterHeader(";" + headerStr, true, true);
+
+    let paramArr = [];
+    let i = hdrMap.entries();
+    let p = i.next();
+    while (p.value) {
+      paramArr[p.value[0].toLowerCase()] = p.value[1];
+      p = i.next();
+    }
+
+    return paramArr;
   },
 
   /***

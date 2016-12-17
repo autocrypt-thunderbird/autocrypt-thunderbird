@@ -13,12 +13,21 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("mime.jsm"); /*global EnigmailMime: false */
 
 test(function getBoundaryTest() {
-  var got = EnigmailMime.getBoundary("content-type: application/pgp-encrypted;\n  boundary='abc'; procol='any'\n");
-  Assert.equal(got, "abc", "get boundary 1");
-  got = EnigmailMime.getBoundary("content-type: application/pgp-encrypted; boundary='abc'; protocol='any'");
-  Assert.equal(got, "abc", "get boundary 2");
+  var got = EnigmailMime.getBoundary("application/pgp-encrypted;\n  boundary='abc'; procol='any'\n");
+  Assert.equal(got, "'abc'", "get boundary 1");
+  got = EnigmailMime.getBoundary("application/pgp-encrypted; boundary='abc'; protocol='any'");
+  Assert.equal(got, "'abc'", "get boundary 2");
   got = EnigmailMime.getBoundary('content-type: application/pgp-encrypted; boundary="abc"; protocol="any"');
-  Assert.equal(got, "abc", "get boundary 2");
+  Assert.equal(got, "abc", "get boundary 3");
+  got = EnigmailMime.getProtocol('content-type: application/pgp-encrypted; boundary="abc"; protocol="SHA123"');
+  Assert.equal(got, "SHA123", "get protocol 1");
+  got = EnigmailMime.getParameter('application/pgp-encrypted; boundary="abc"; protocol="any"', "BOUNDARY");
+  Assert.equal(got, "abc", "getParameter 1");
+  got = EnigmailMime.getParameter('parameter1=abc; Param2=\r\n abc\r\n\t\t\tdef', "param2");
+  Assert.equal(got, "abcdef", "getParameter 2");
+  got = EnigmailMime.getParameter('parameter1=abc; Param2=\r\n abc\r\n def', "notexist");
+  Assert.equal(got, "", "getParameter 3");
+
 });
 
 test(function extractProtectedHeadersTest() {

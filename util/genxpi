@@ -96,6 +96,7 @@ zip --must-match\
     modules/gpg.jsm \
     modules/hash.jsm \
     modules/httpProxy.jsm \
+    modules/inbome.jsm \
     modules/installGnuPG.jsm \
     modules/key.jsm \
     modules/keyEditor.jsm \
