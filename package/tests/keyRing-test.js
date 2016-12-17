@@ -286,6 +286,26 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
   EnigmailKeyRing.getAllKeys();
   Assert.notEqual(gKeyListObj.keyList.length, 0);
+
+  // uses the key listing from shouldGetKeyValidityErrors
+  let key = EnigmailKeyRing.getKeyById("D535623BB60E9E71");
+
+  let pubKey = key.getMinimalPubKey();
+
+  Assert.equal(pubKey.exitCode, 0);
+
+  Assert.equal(pubKey.keyData.substr(0, 192),
+    "mQINBFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrWe" +
+    "tJfAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya8K" +
+    "TzjXR3qBQ1P7f5x71yeuo7Zrj7B0G44Xjfy+1L0eka9paBqmm3U5cUew5wSr772L");
+
+  Assert.equal(pubKey.keyData.substr(-52),
+    "p1ovyC/fp5XjZaLHcyPAWAXKLBn4tb400iHp7byO85tF/H0OOI1K");
+
+  Assert.equal(pubKey.keyData.length, 2972);
+
+
+
 })));
 
 test(function shouldCreateKeyListObject() {
@@ -524,7 +544,7 @@ test(function testGetValidKeysForMultipleRecipients() {
   // disabled key:
   // - this BEHAVIOR is PROBABLY WRONG:
   minTrustLevel = "?";
-  addrs = ["0005AAAA00010001" ];
+  addrs = ["0005AAAA00010001"];
   details = {};
   keys = [];
   keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addrs, minTrustLevel, details, keys);

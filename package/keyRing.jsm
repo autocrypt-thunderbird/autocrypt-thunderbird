@@ -1,5 +1,4 @@
-/*global Components: false */
-/*jshint -W097 */
+/*global Components: false, btoa: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1636,6 +1635,7 @@ function KeyObject(lineArr) {
   this.userIds = [];
   this.subKeys = [];
   this.fpr = "";
+  this.minimalKeyBlock = null;
   this.photoAvailable = false;
   this.secretAvailable = false;
   this._sigList = null;
@@ -1905,6 +1905,43 @@ KeyObject.prototype = {
     }
 
     return expiryDate;
+  },
+
+  /**
+   * Export the minimum size public key for the key
+   *
+   * @return String - if outputFile is NULL, the key block data; "" if a file is written
+   */
+
+  getMinimalPubKey: function() {
+
+    EnigmailLog.DEBUG("keyRing.jsm: KeyObject.getMinimalPubKey: " + this.keyId + "\n");
+
+    let retObj = {
+      exitCode: 0,
+      errorMsg: "",
+      keyData: ""
+    };
+
+    if (!this.minimalKeyBlock) {
+      let args = EnigmailGpg.getStandardArgs(true).concat(["--export-options", "export-minimal,no-export-attributes", "--export", this.fpr]);
+
+      const statusObj = {};
+      const exitCodeObj = {};
+      let keyBlock = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, statusObj);
+
+      let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + this.fpr, "m");
+      if (statusObj.value.search(r) < 0) {
+        retObj.exitCode = 2;
+        retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+      }
+      else {
+        this.minimalKeyBlock = btoa(keyBlock);
+      }
+    }
+
+    retObj.keyData = this.minimalKeyBlock;
+    return retObj;
   }
 };
 

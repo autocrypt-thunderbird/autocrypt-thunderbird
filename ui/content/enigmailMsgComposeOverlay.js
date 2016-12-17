@@ -3970,10 +3970,35 @@ Enigmail.msg = {
         if (pgpHeader.length > 0) {
           this.setAdditionalHeader("OpenPGP", pgpHeader);
         }
+
+        this.setINBOMEHeader();
       }
     }
     catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
+    }
+  },
+
+  setINBOMEHeader: function() {
+    if (!this.identity) {
+      this.identity = getCurrentIdentity();
+    }
+
+    let keys;
+    if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
+      keys = [EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"))];
+    }
+    else {
+      keys = EnigmailKeyRing.getKeysByUserId(this.identity.email);
+    }
+
+    // TODO: find best secret key
+    if (keys && Array.isArray(keys) && keys.length > 0) {
+      let k = keys[0].getMinimalPubKey();
+      if (k.exitCode === 0) {
+        let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
+        this.setAdditionalHeader('INBOME', 'to=' + this.identity.email + '; type=OpenPGP; key=\r\n' + keyData);
+      }
     }
   },
 
