@@ -70,6 +70,7 @@ zip --must-match\
     modules/app.jsm \
     modules/armor.jsm \
     modules/attachment.jsm \
+    modules/autocrypt.jsm \
     modules/card.jsm \
     modules/clipboard.jsm \
     modules/commandLine.jsm \
@@ -96,7 +97,6 @@ zip --must-match\
     modules/gpg.jsm \
     modules/hash.jsm \
     modules/httpProxy.jsm \
-    modules/inbome.jsm \
     modules/installGnuPG.jsm \
     modules/key.jsm \
     modules/keyEditor.jsm \

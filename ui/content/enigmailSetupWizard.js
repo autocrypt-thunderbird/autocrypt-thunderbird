@@ -849,7 +849,7 @@ function wizardGenKey() {
 
   var curId = wizardGetSelectedIdentity();
 
-  var userName = ""; // INBOME: no names on keys anymore
+  var userName = curId.fullName;
   var userEmail = curId.email;
 
   var ipcRequest = null;
@@ -883,7 +883,7 @@ function wizardGenKey() {
       "",
       EnigmailData.convertFromUnicode(userEmail),
       365 * 5 /* 5 years */ ,
-      2048, // INBOME: use 2048 bites
+      4096,
       ENIG_KEYTYPE_RSA,
       EnigmailData.convertFromUnicode(passphrase),
       listener);

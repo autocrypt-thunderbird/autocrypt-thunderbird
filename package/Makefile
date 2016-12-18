@@ -22,6 +22,7 @@ MODFILES = \
            app.jsm \
            armor.jsm \
            attachment.jsm \
+           autocrypt.jsm \
            card.jsm \
            clipboard.jsm \
            commandLine.jsm \
@@ -47,7 +48,6 @@ MODFILES = \
            gpg.jsm \
            hash.jsm \
            httpProxy.jsm \
-           inbome.jsm \
            installGnuPG.jsm \
            key.jsm \
            keyEditor.jsm \

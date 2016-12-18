@@ -113,17 +113,7 @@ const EnigmailMime = {
    */
 
   getCharset: function(contentTypeStr) {
-    contentTypeStr = contentTypeStr.replace(/[\r\n]/g, "");
-    let boundary = "";
-    let ct = contentTypeStr.split(/;/);
-    for (let i = 0; i < ct.length; i++) {
-      if (ct[i].search(/[ \t]*charset[ \t]*=/i) >= 0) {
-        boundary = ct[i];
-        break;
-      }
-    }
-    boundary = boundary.replace(/\s*charset\s*=/i, "").replace(/[\'\"]/g, "");
-    return boundary;
+    return EnigmailMime.getParameter(contentTypeStr, "charset");
   },
 
   /**

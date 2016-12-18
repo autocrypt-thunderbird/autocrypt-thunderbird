@@ -56,7 +56,7 @@ Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: 
 Components.utils.import("resource://enigmail/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Components.utils.import("resource://enigmail/inbome.jsm"); /*global EnigmailInbome: false */
+Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -80,7 +80,7 @@ Enigmail.msg = {
   enableExperiments: false,
   headersList: ["content-type", "content-transfer-encoding",
     "x-enigmail-version", "x-pgp-encoding-format",
-    "inbome" // TODO - change to final name
+    "autocrypt"
   ],
   buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
   buggyMailType: null,
@@ -642,16 +642,17 @@ Enigmail.msg = {
         var headerValue = "";
 
         if (mimeMsg.headers[headerName]) {
-          headerValue = mimeMsg.headers[headerName].toString();
+          headerValue = (headerName === "autocrypt" ? mimeMsg.headers[headerName] : mimeMsg.headers[headerName].toString());
         }
 
         Enigmail.msg.savedHeaders[headerName] = headerValue;
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: header " + headerName + ": " + headerValue + "\n");
+        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: header " + headerName + ": '" + headerValue + "'\n");
       }
 
-      if (("inbome" in Enigmail.msg.savedHeaders) && ("from" in currentHeaderData)) {
-        EnigmailInbome.processInbomeHeader(currentHeaderData.from.headerValue,
-          Enigmail.msg.savedHeaders.inbome,
+      if (("autocrypt" in Enigmail.msg.savedHeaders) && Enigmail.msg.savedHeaders.autocrypt.length > 0 &&
+        ("from" in currentHeaderData)) {
+        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue,
+          Enigmail.msg.savedHeaders.autocrypt,
           currentHeaderData.date.headerValue);
       }
 

@@ -3971,7 +3971,7 @@ Enigmail.msg = {
           this.setAdditionalHeader("OpenPGP", pgpHeader);
         }
 
-        this.setINBOMEHeader();
+        this.setAutocryptHeader();
       }
     }
     catch (ex) {
@@ -3979,7 +3979,7 @@ Enigmail.msg = {
     }
   },
 
-  setINBOMEHeader: function() {
+  setAutocryptHeader: function() {
     if (!this.identity) {
       this.identity = getCurrentIdentity();
     }
@@ -3997,7 +3997,7 @@ Enigmail.msg = {
       let k = keys[0].getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        this.setAdditionalHeader('INBOME', 'to=' + this.identity.email + '; key=\r\n' + keyData);
+        this.setAdditionalHeader('Autocrypt', 'to=' + this.identity.email + '; key=\r\n' + keyData);
       }
     }
   },
