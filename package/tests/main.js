@@ -1,4 +1,4 @@
-/*global do_subtest: false */
+/*global do_subtest: false, Components: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,34 +7,48 @@
 
 "use strict";
 
-do_subtest("armor-test.js");
-do_subtest("data-test.js");
-do_subtest("system-test.js");
-do_subtest("decryption-test.js");
-do_subtest("decryptPermanently-test.js");
-do_subtest("errorHandling-test.js");
-do_subtest("encryption-test.js");
-do_subtest("gpgAgent-test.js");
-do_subtest("enigmail-test.js");
-do_subtest("files-test.js");
-do_subtest("streams-test.js");
-do_subtest("keyRing-test.js");
-do_subtest("keyEditor-test.js");
-do_subtest("keyserver-test.js");
-do_subtest("keyserverUris-test.js");
-do_subtest("locale-test.js");
-do_subtest("log-test.js");
-do_subtest("mime-test.js");
-do_subtest("os-test.js");
-do_subtest("prefs-test.js");
-do_subtest("rules-test.js");
-do_subtest("funcs-test.js");
-do_subtest("mimeDecrypt-test.js");
-do_subtest("expiry-test.js");
-do_subtest("installGnuPG-test.js");
-do_subtest("keyRefreshService-test.js");
-do_subtest("tor-test.js");
-do_subtest("versioning-test.js");
-do_subtest("rng-test.js");
+function execTest(filename) {
+  const Cc = Components.classes;
+  const Ci = Components.interfaces;
+  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
-// do_subtest("pep-test.js"); // not yet enabled
+  let testcases = env.get("JS_TEST");
+
+  if (testcases && testcases.length > 0) {
+    if (testcases.search(filename) >= 0) do_subtest(filename);
+  }
+  else
+    do_subtest(filename);
+}
+
+execTest("armor-test.js");
+execTest("data-test.js");
+execTest("system-test.js");
+execTest("decryption-test.js");
+execTest("decryptPermanently-test.js");
+execTest("errorHandling-test.js");
+execTest("encryption-test.js");
+execTest("gpgAgent-test.js");
+execTest("enigmail-test.js");
+execTest("files-test.js");
+execTest("streams-test.js");
+execTest("keyRing-test.js");
+execTest("keyEditor-test.js");
+execTest("keyserver-test.js");
+execTest("keyserverUris-test.js");
+execTest("locale-test.js");
+execTest("log-test.js");
+execTest("mime-test.js");
+execTest("os-test.js");
+execTest("prefs-test.js");
+execTest("rules-test.js");
+execTest("funcs-test.js");
+execTest("mimeDecrypt-test.js");
+execTest("expiry-test.js");
+execTest("installGnuPG-test.js");
+execTest("keyRefreshService-test.js");
+execTest("tor-test.js");
+execTest("versioning-test.js");
+execTest("rng-test.js");
+
+// execTest("pep-test.js"); // not yet enabled
