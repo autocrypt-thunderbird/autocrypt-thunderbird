@@ -61,6 +61,7 @@ const UNKNOWN_SIGNATURE = "[User ID not found]";
 
 const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
+const KEYTYPE_ECC = 3;
 
 let keygenProcess = null;
 let gKeyListObj = null;
@@ -117,6 +118,7 @@ let gSubkeyIndex = [];
        * getSigningValidity
        * getPubKeyValidity
        * clone
+       * getMinimalPubKey
 
   * keySortList [Array]:  used for quickly sorting the keys
     - userId (in lower case)
@@ -753,17 +755,20 @@ var EnigmailKeyRing = {
 
     switch (keyType) {
       case KEYTYPE_DSA:
-        inputData += "DSA\nKey-Length: " + keyLength + "\nSubkey-Type: 16\nSubkey-Length: ";
+        inputData += "DSA\nKey-Length: " + keyLength + "\nSubkey-Type: 16\nSubkey-Length: " + keyLength + "\n";
         break;
       case KEYTYPE_RSA:
         inputData += "RSA\nKey-Usage: sign,auth\nKey-Length: " + keyLength;
-        inputData += "\nSubkey-Type: RSA\nSubkey-Usage: encrypt\nSubkey-Length: ";
+        inputData += "\nSubkey-Type: RSA\nSubkey-Usage: encrypt\nSubkey-Length: " + keyLength + "\n";
+        break;
+      case KEYTYPE_ECC:
+        inputData += "EDDSA\nKey-Curve: Ed25519\nKey-Usage: sign\n";
+        inputData += "Subkey-Type: ECDH\nSubkey-Curve: Curve25519\nSubkey-Usage: encrypt\n";
         break;
       default:
         return null;
     }
 
-    inputData += keyLength + "\n";
     if (name.replace(/ /g, "").length) {
       inputData += "Name-Real: " + name + "\n";
     }

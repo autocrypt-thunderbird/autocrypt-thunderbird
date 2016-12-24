@@ -133,6 +133,7 @@ const EnigmailGpg = {
    search-keys-cmd      - what command to use to terminate the --search-key operation. ("save" for gpg > 2.1; "quit" otherwise)
    socks-on-windows     - is SOCKS proxy supported on Windows (true for gpg >= 2.0.20)
    supports-dirmngr     - is dirmngr supported (true for gpg >= 2.1)
+   supports-ecc-keys    - are ECC (elliptic curve) keys supported (true for gpg >= 2.1)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -165,6 +166,8 @@ const EnigmailGpg = {
       case "windows-photoid-bug":
         return EnigmailVersioning.lessThan(gpgVersion, "2.0.16");
       case "supports-dirmngr":
+        return EnigmailVersioning.greaterThan(gpgVersion, "2.1");
+      case "supports-ecc-keys":
         return EnigmailVersioning.greaterThan(gpgVersion, "2.1");
       case "socks-on-windows":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.20");

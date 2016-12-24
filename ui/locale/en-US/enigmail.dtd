@@ -20,6 +20,7 @@
 <!ENTITY enigmail.keyGen.keyType.label    "Key type">
 <!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
+<!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 

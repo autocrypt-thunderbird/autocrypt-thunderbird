@@ -52,6 +52,11 @@ function enigmailKeygenLoad() {
     noPassphrase.setAttribute("collapsed", "true");
   }
 
+  if (EnigmailGpg.getGpgFeature("supports-ecc-keys")) {
+    document.getElementById("keyType_ecc").removeAttribute("hidden");
+  }
+
+
   if (gUserIdentityListPopup) {
     fillIdentityListPopup();
   }
@@ -76,6 +81,15 @@ function enigmailKeygenLoad() {
   if (EnigmailGpgAgent.agentType != "gpg") {
     EnigAlert(EnigGetString("onlyGPG"));
     return;
+  }
+}
+
+function updateKeySizeSel(selectedObj) {
+  if (selectedObj.id === "keyType_ecc") {
+    document.getElementById("keySize").setAttribute("disabled", "true");
+  }
+  else {
+    document.getElementById("keySize").removeAttribute("disabled");
   }
 }
 
