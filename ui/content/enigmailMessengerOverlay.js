@@ -655,6 +655,9 @@ Enigmail.msg = {
           Enigmail.msg.savedHeaders.autocrypt,
           currentHeaderData.date.headerValue);
       }
+      else {
+        Enigmail.msg.createArtificialAutocryptHeader();
+      }
 
       var msgSigned = null;
       var msgEncrypted = null;
@@ -2490,6 +2493,31 @@ Enigmail.msg = {
     }
 
     this.expiryTimer = undefined;
+  },
+
+  /**
+   * Create an artificial Autocrypt: header if there was no such header on the message
+   * and the message was signed
+   */
+  createArtificialAutocryptHeader: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: createArtificialAutocryptHeader\n");
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+    if (Enigmail.msg.savedHeaders && ("autocrypt" in Enigmail.msg.savedHeaders) && Enigmail.msg.savedHeaders.autocrypt.length > 0) return;
+    if (!(Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags)) return;
+
+    let securityInfo = Enigmail.msg.securityInfo;
+    let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
+    if (keyObj && keyObj.getEncryptionValidity().keyValid) {
+      if (securityInfo.statusFlags & nsIEnigmail.GOOD_SIGNATURE) {
+        let hdrData = "to=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
+          "; prefer-encrypted=" + ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
+            (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "yes" : "no") +
+          "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + "; key=LQ==";
+
+        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, [hdrData],
+          currentHeaderData.date.headerValue);
+      }
+    }
   }
 };
 

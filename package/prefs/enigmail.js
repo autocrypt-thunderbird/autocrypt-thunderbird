@@ -148,6 +148,10 @@ pref("extensions.enigmail.acceptedKeys", 1);
 // 1: if all keys found and accepted DEFAULT
 pref("extensions.enigmail.autoSendEncrypted", 1);
 
+// enable Autocrypt (see www.autocrypt.org)
+// 0: no
+// 1: yes
+pref("extensions.enigmail.autocryptMode", 1);
 // ask to confirm before sending
 // 0: never DEFAULT
 // 1: always

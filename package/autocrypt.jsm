@@ -107,6 +107,11 @@ var EnigmailAutocrypt = {
       paramArr["prefer-encrypted"] = "?";
     }
 
+    if ("_enigmail_artificial" in paramArr && paramArr.paramArr === "yes" && "_enigmail_fpr" in paramArr) {
+      paramArr.fpr = paramArr._enigmail_fpr;
+      paramArr.key = "";
+    }
+
     let lastDate = jsmime.headerparser.parseDateHeader(dateSent);
     let now = new Date();
     if (lastDate > now) {
@@ -271,11 +276,12 @@ function appendUser(connection, paramsArr) {
   let deferred = Promise.defer();
 
   connection.executeTransaction(function _trx() {
-    connection.execute("insert into autocrypt_keys (email, encryption_pref, keydata, type, last_changed, last_seen) values " +
-      "(:email, :pref, :keyData, :type, :lastChange, :lastSeen)", {
+    connection.execute("insert into autocrypt_keys (email, encryption_pref, keydata, fpr, type, last_changed, last_seen) values " +
+      "(:email, :pref, :keyData, :fpr, :type, :lastChange, :lastSeen)", {
         email: paramsArr.to,
         pref: paramsArr["prefer-encrypted"],
         keyData: paramsArr.key,
+        fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
         lastChange: paramsArr.dateSent.toJSON(),
         lastSeen: paramsArr.dateSent.toJSON()
@@ -332,10 +338,11 @@ function appendUser(connection, paramsArr) {
 
   connection.executeTransaction(function _trx() {
     connection.execute("update autocrypt_keys set encryption_pref = :pref, keydata = :keyData, last_changed = :lastChanged, " +
-      "last_seen = :lastSeen where email = :email and type = :type", {
+      "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type", {
         email: paramsArr.to,
         pref: paramsArr["prefer-encrypted"],
         keyData: paramsArr.key,
+        fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
         lastChanged: lastChanged.toJSON(),
         lastSeen: paramsArr.dateSent.toJSON()

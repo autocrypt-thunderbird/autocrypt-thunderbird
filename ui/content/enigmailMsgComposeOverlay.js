@@ -3980,6 +3980,8 @@ Enigmail.msg = {
   },
 
   setAutocryptHeader: function() {
+    if (EnigmailPrefs.getPref("autocryptMode") === 0) return;
+
     if (!this.identity) {
       this.identity = getCurrentIdentity();
     }
