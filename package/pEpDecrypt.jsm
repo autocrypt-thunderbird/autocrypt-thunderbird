@@ -22,6 +22,7 @@ Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: fa
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
@@ -97,6 +98,46 @@ var EnigmailPEPDecrypt = {
       };
     }
     else return null;
+  },
+
+  getMessageSender: function(url) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender:\n");
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+    let fromAddr = null;
+
+    let s = EnigmailStreams.newStringStreamListener(
+      function analyzeData(data) {
+        EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender: got " + data.length + " bytes\n");
+
+        let i = data.search(/\n\r?\n/);
+        if (i < 0) i = data.length;
+
+        let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+        hdr.initialize(data.substr(0, i));
+
+        if (hdr.hasHeader("from")) {
+          fromAddr = hdr.getHeader("from")[0].email;
+        }
+
+        if (inspector && inspector.eventLoopNestLevel > 0) {
+          // unblock the waiting lock
+          inspector.exitNestedEventLoop();
+        }
+      }
+    );
+
+    try {
+      var channel = EnigmailStreams.createChannel(url);
+      channel.asyncOpen(s, null);
+
+      // wait here for message parsing to terminate
+      inspector.enterNestedEventLoop(0);
+    }
+    catch (e) {
+      EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender: exception " + e + "\n");
+    }
+
+    return fromAddr;
   }
 };
 
@@ -135,14 +176,16 @@ PEPDecryptor.prototype = {
   onStopRequest: function() {
     // make the string a complete MIME message
 
-    let out = "Content-Typ: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
+    let out = "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
 
     if (!this.backgroundJob) {
       // only try to decrpt the message if not background-Job
 
       this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
-      let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData);
+      let fromAddr = EnigmailPEPDecrypt.getMessageSender(this.uri.spec);
+
+      let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, fromAddr);
 
       let color = COLOR_UNDEF;
       let fpr = [];

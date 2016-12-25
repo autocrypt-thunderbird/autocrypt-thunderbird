@@ -210,10 +210,7 @@ var EnigmailpEp = {
   /**
    * encrypt a message using the pEp server
    *
-   * @param fromAddr  : String          - sender Email address
-   * @param toAddrList: Array of String - array with all recipients
-   * @param subject   : String          - the message subject
-   * @param message   : String          - the message to encrypt
+   * @param mimeStr  : String          - complete MIME message
    * @param pEpMode   : optional Number - the PEP encryption mode:
    *                        0: none - message is not encrypted
    *                        1: inline PGP + PGP extensions
@@ -315,20 +312,43 @@ var EnigmailpEp = {
     }
   },
 
-  parseMimeString: function(mimeStr) {
+
+  /**
+   * encrypt a message using the pEp server
+   *
+   * @param mimeStr  : String          - complete MIME message
+   * @param pEpMode   : optional Number - the PEP encryption mode:
+   *                        0: none - message is not encrypted
+   *                        1: inline PGP + PGP extensions
+   *                        2: S/MIME (RFC5751)
+   *                        3: PGP/MIME (RFC3156)
+   *                        4: pEp encryption format
+   *
+   * @return: Promise.
+   *  then:  returned result (message Object)
+   *  catch: Error object (see above)
+   */
+  decryptMimeString: function(mimeStr) {
+
     try {
-      let params = [mimeStr,
-        mimeStr.length, // msg Output
-        ["OP"] // pep message
+      let params = [
+        mimeStr, // mimetext
+        mimeStr.length, // size
+        [], // extra
+        ["OP"], // resulting data
+        ["OP"], // rating
+        ["OP"] // decryption flags
       ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "mime_decode_message", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "MIME_decrypt_message", params);
+
     }
     catch (ex) {
       let deferred = Promise.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
+
   },
 
   /**
@@ -371,23 +391,22 @@ var EnigmailpEp = {
   /**
    * set a user identity in pEp
    *
-   * @param emailAddress: String          - the email address
-   * @param userId      : String          - unique C string to identify person that identity is refering to
-   * @param name        : String          - the user's name
-   * @param fpr         : String          - the fingerprint
+   * @param idObject -  Object:
+   *  - address: email Address
+   *  - fpr: fingerprint
+   *  - user_id: user ID (usually TOFU_email@address)
+   *  - username: name of person (Firstname Lastname),
+   *  - comm_type: type of communication (and trust)
+   *  - me: is this myself?
+   *  - flags
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  setIdentity: function(emailAddress, userId, name, fpr) {
+  setIdentity: function(idObject) {
     try {
-      let params = [{
-        "user_id": userId,
-        "username": name,
-        "address": emailAddress,
-        "fpr": fpr
-      }];
+      let params = [idObject];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
 
@@ -430,29 +449,22 @@ var EnigmailpEp = {
     }
   },
 
+
   /**
-   * get a user identity from pEp
-   *
-   * @param fpr:      String          - the fingerprint of the key to check
-   * @param language: String          - language (2-letter ISOCODE)
-   * @param maxWords: String          - maximum number of words (optional)
+   * get all own identities from pEp
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  getTrustWords: function(fpr, language, maxWords) {
-    if (!maxWords) maxWords = 0;
+  getOwnIdentities: function() {
 
     try {
       let params = [
-        fpr,
-        language.toUpperCase(), ["OP"], // words
-        ["OP"], // words_size
-        maxWords // max. number of words
+        ["OP"]
       ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "trustwords", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "own_identities_retrieve", params);
 
     }
     catch (ex) {
@@ -460,9 +472,62 @@ var EnigmailpEp = {
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
-
   },
 
+  /**
+   * check the trustwords for a pair of keys
+   *
+   * @param id1:      Object          - the 1st pEp ID to check
+   * @param id2:      Object          - the 2nd pEp ID to check
+   * @param language: String          - language (2-letter ISOCODE)
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  getTrustWords: function(id1, id2, language) {
+
+    try {
+      let params = [
+        id1,
+        id2,
+        language.toUpperCase(), ["OP"], // words
+        ["OP"], // words_size
+        false // full
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "get_trustwords", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  /**
+   * get a user identity from pEp
+   *
+   * @param idObject: Object          - pEp Identity object
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  trustIdentity: function(idObject) {
+    try {
+      let params = [idObject];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "trust_personal_key", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
   /**
    * get list of languaes for which pEp trustwords are available
    *
