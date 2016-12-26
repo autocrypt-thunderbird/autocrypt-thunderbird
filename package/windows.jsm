@@ -544,10 +544,10 @@ const EnigmailWindows = {
       "", "dialog,modal,centerscreen", inputObj, resultObj);
   },
 
-  verifyPepTrustWords: function(window, emailAddress, trustWords) {
+  verifyPepTrustWords: function(window, emailAddress, headerData) {
     let inputObj = {
       emailAddress: emailAddress,
-      trustWords: trustWords
+      headerData: headerData
     };
 
     window.openDialog("chrome://enigmail/content/pepTrustWords.xul",

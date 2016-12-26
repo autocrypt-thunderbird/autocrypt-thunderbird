@@ -997,13 +997,8 @@ Enigmail.hdrView = {
         emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
       }
       let emailAddr = emailAddressNode.getAttribute("emailAddress");
-      EnigmailPEPAdapter.getTrustWordsForEmail(emailAddr, "en").
-      then(function _succeed(trustWords) {
-        EnigmailWindows.verifyPepTrustWords(window, emailAddr, trustWords);
-      }).
-      catch(function _err(data) {
-        EnigmailWindows.alert(window, "Cannot verify trustwords for " + emailAddr + ".");
-      });
+
+      EnigmailWindows.verifyPepTrustWords(window, emailAddr, currentHeaderData);
     }
   }
 };

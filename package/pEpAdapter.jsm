@@ -252,6 +252,10 @@ var EnigmailPEPAdapter = {
     return deferred.promise;
   },
 
+  getIdentityForEmail: function(emailAddress) {
+    return EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress);
+  },
+
   getTrustWordsForEmail: function(emailAddress, languageCode) {
     let deferred = Promise.defer();
 

@@ -507,7 +507,7 @@ var EnigmailpEp = {
   },
 
   /**
-   * get a user identity from pEp
+   * set the trust level of a user identity in pEp to "trusted"
    *
    * @param idObject: Object          - pEp Identity object
    *
