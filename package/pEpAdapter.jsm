@@ -254,30 +254,5 @@ var EnigmailPEPAdapter = {
 
   getIdentityForEmail: function(emailAddress) {
     return EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress);
-  },
-
-  getTrustWordsForEmail: function(emailAddress, languageCode) {
-    let deferred = Promise.defer();
-
-    if (!languageCode) languageCode = "en";
-
-    EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress).then(function _f(data) {
-      if (typeof(data) === "object" && "result" in data && typeof(data.result[0]) === "object") {
-        return EnigmailpEp.getTrustWords(data.result[0].fpr, languageCode, 6);
-      }
-      else {
-        deferred.reject(0);
-        return null;
-      }
-    }).then(function _f(data) {
-      if (typeof(data) === "object" && "result" in data && typeof(data.result[0]) === "number") {
-        deferred.resolve(data.result[1]);
-      }
-      else {
-        deferred.reject(1);
-      }
-    });
-
-    return deferred.promise;
   }
 };

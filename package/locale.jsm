@@ -56,5 +56,21 @@ const EnigmailLocale = {
       }
     }
     return aStr;
+  },
+
+  /**
+   * Get the locale for the User Interface
+   *
+   * @return String  Locale (xx-YY)
+   */
+  getUILocale: function() {
+    let ps = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+    let uaPref = ps.getBranch("general.useragent.");
+
+    try {
+      return uaPref.getComplexValue("locale", Ci.nsISupportsString).data;
+    }
+    catch (e) {}
+    return uaPref.getCharPref("locale");
   }
 };
