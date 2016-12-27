@@ -91,8 +91,10 @@ function onLoad() {
   }).then(function _gotTrustWords(data) {
     if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
       let trustWords = data.result[0];
-      document.getElementById("emailAddress").setAttribute("value", emailId.address);
-      document.getElementById("wordList").setAttribute("value", trustWords);
+      document.getElementById("partnerEmailAddr").setAttribute("value", emailId.address);
+      document.getElementById("myEmailAddr").setAttribute("value", useOwnId.address);
+      document.getElementById("wordList").textContent = trustWords;
+      resizeDlg();
     }
     else {
       throw "error";
@@ -107,10 +109,10 @@ function onLoad() {
 
 function simulateTrustWords(useOwnId, emailId, locale) {
   let deferred = Promise.defer();
-  let tw = "HELLO WORLD";
+  let tw = "IMMUNITY STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";
 
   if (locale === "de") {
-    tw = "HALLO WELT";
+    tw = "IMMUNITÄT STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";
   }
 
   deferred.resolve({
@@ -137,3 +139,8 @@ function onAccept() {
 }
 
 function onCancel() {}
+
+
+function resizeDlg() {
+  window.sizeToContent();
+}

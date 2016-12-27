@@ -521,7 +521,7 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 /* pEp Message quality Rating */
 
-.enigmailPepRatingUnreliable {
+.enigmailPepRatingMistrust {
   list-style-image: url("chrome://enigmail/skin/pEpRed.png");
 }
 

@@ -934,7 +934,7 @@ Enigmail.hdrView = {
     }
   },
 
-  displayPepStatus: function(color, keyIDs, uri) {
+  displayPepStatus: function(rating, keyIDs, uri) {
 
     /*
     color:
@@ -958,25 +958,41 @@ Enigmail.hdrView = {
     }
 
     this.pEpStatus = {
-      color: color,
+      rating: rating,
+      color: "grey",
       keyIDs: keyIDs
     };
 
     this.pEpBox.removeAttribute("collapsed");
 
-    if (color < 3) {
-      this.pEpBox.setAttribute("class", "enigmailPepRatingUnreliable");
+    if (rating === -2 || rating === 2) {
+      this.pEpStatus.color = "grey";
+      this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
     }
-    else if (color > 6) {
+    else if (rating < 0) {
+      this.pEpStatus.color = "red";
+      this.pEpBox.setAttribute("class", "enigmailPepRatingMistrust");
+    }
+    else if (rating < 4) {
+      this.pEpStatus.color = "grey";
+      this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
+    }
+    else if (rating >= 8) {
+      this.pEpStatus.color = "green";
       this.pEpBox.setAttribute("class", "enigmailPepRatingTrusted");
     }
     else {
+      this.pEpStatus.color = "yellow";
       this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
     }
   },
 
   pEpIconPopup: function() {
-    EnigmailDialog.alert(window, "pEp Status: " + this.pEpStatus.color + "\nKey IDs: " + this.pEpStatus.keyIDs.join(", "));
+    let infoProp = "pepStatusInfo.info." + this.pEpStatus.color;
+    let colorProp = "pepStatusInfo.color." + this.pEpStatus.color;
+    let detailInfo = EnigmailLocale.getString(infoProp);
+    let colorLocale = EnigmailLocale.getString(colorProp);
+    EnigmailDialog.alert(window, EnigmailLocale.getString("pepStatusInfo.text", [colorLocale, detailInfo]));
   },
 
   enablePepMenus: function() {

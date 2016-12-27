@@ -800,8 +800,9 @@
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "Verify Trustwords">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
-<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please verify the following list of words with your correspondent">
-<!ENTITY enigmail.pEp.trustWordsDlg.emailAddr         "Email Address:">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you.They should match the Trustwords below.">
+<!ENTITY enigmail.pEp.trustWordsDlg.myEmailAddr       "Me:">
+<!ENTITY enigmail.pEp.trustWordsDlg.partnerEmailAddr  "Partner:">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of words">
-<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Verifed">
-<!ENTITY enigmail.pEp.trustWordsDlg.btnCancel         "Not Confirmed">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Confirm Trustword">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnCancel         "Wrong Trustwords">

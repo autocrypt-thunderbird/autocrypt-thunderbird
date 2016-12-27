@@ -28,7 +28,9 @@
 
   <vbox>
     <hbox align="center">
-      <label value="&enigmail.pEp.trustWordsDlg.overallDesc;"/>
+      <description style="width: 300px; font-weight: bold;">
+        &enigmail.pEp.trustWordsDlg.overallDesc;
+      </description>
     </hbox>
     <separator/>
     <grid>
@@ -39,12 +41,16 @@
 
       <rows>
       <row>
-        <label value="&enigmail.pEp.trustWordsDlg.emailAddr;"/>
-        <label id="emailAddress" value="..."/>
+        <label value="&enigmail.pEp.trustWordsDlg.partnerEmailAddr;"/>
+        <label id="partnerEmailAddr" value="..."/>
+      </row>
+      <row>
+        <label value="&enigmail.pEp.trustWordsDlg.myEmailAddr;"/>
+        <description id="myEmailAddr" value="..."/>
       </row>
       <row>
         <label value="&enigmail.pEp.trustWordsDlg.trustWords;"/>
-        <description id="wordList" value="..."/>
+        <description id="wordList" style="width: 250px; overflow:auto;"/>
       </row>
     </rows>
     </grid>
