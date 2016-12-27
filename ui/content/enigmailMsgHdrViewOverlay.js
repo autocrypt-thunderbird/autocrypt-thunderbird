@@ -934,6 +934,20 @@ Enigmail.hdrView = {
     }
   },
 
+  setSubject: function(subject) {
+    if (gFolderDisplay.selectedMessages.length === 1 && gFolderDisplay.selectedMessage) {
+      gFolderDisplay.selectedMessage.subject = EnigmailData.convertFromUnicode(subject, "utf-8");
+      this.updateHdrBox("subject", subject);
+    }
+  },
+
+  updateHdrBox: function(header, value) {
+    let e = document.getElementById("expanded" + header + "Box");
+    if (e) {
+      e.headerValue = value;
+    }
+  },
+
   displayPepStatus: function(rating, keyIDs, uri) {
 
     /*
@@ -1235,12 +1249,7 @@ if (messageHeaderSink) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= " + headerData + ", mimePart=" + mimePartNumber + "\n");
 
-        function updateHdrBox(header, value) {
-          let e = document.getElementById("expanded" + header + "Box");
-          if (e) {
-            e.headerValue = value;
-          }
-        }
+        let updateHdrBox = Enigmail.hdrView.updateHdrBox;
 
         let hdr;
         try {
@@ -1261,8 +1270,7 @@ if (messageHeaderSink) {
         if (!this.displaySubPart(mimePartNumber)) return;
 
         if ("subject" in hdr) {
-          msg.subject = EnigmailData.convertFromUnicode(hdr.subject, "utf-8");
-          updateHdrBox("subject", hdr.subject);
+          Enigmail.hdrView.setSubject(hdr.subject);
         }
 
         if ("date" in hdr) {

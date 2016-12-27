@@ -49,9 +49,10 @@ var EnigmailPEPDecrypt = {
    *
    * @return null    - if decryption unsuccessful
    *         Object: - if decryption successful
-   *          - longmsg - String: the decrypted message
-   *          - color:  - Number: the pEp rating of how securely the message was tansmitted
-   *          - fpr:    - Array of String: the list of fingerprints used for the message
+   *          - longmsg  - String: the decrypted message
+   *          - shortmsg - String; message subject (if any)
+   *          - color:   - Number: the pEp rating of how securely the message was tansmitted
+   *          - fpr:     - Array of String: the list of fingerprints used for the message
    */
   decryptMessageData: function(msgData, fromAddr) {
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
@@ -93,6 +94,7 @@ var EnigmailPEPDecrypt = {
     if (resultObj && (typeof(resultObj[3]) === "object")) {
       return {
         longmsg: resultObj[3].longmsg,
+        shortmsg: resultObj[3].shortmsg,
         color: resultObj[1].color,
         fpr: resultObj[2]
       };
@@ -149,6 +151,9 @@ function PEPDecryptor(contentType) {
   this.sourceData = "";
   this.uri = null;
   this.backgroundJob = false;
+  this.decryptedData = "";
+  this.decryptedHeaders = {};
+  this.mimePartNumber = "";
 }
 
 
@@ -164,6 +169,13 @@ PEPDecryptor.prototype = {
 
       this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
     }
+
+    if ("mimePart" in this.mimeSvc) {
+      this.mimePartNumber = this.mimeSvc.mimePart;
+    }
+    else {
+      this.mimePartNumber = "";
+    }
   },
 
   onDataAvailable: function(req, sup, stream, offset, count) {
@@ -176,46 +188,54 @@ PEPDecryptor.prototype = {
   onStopRequest: function() {
     // make the string a complete MIME message
 
-    let out = "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
+    this.decryptedData = "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
 
-    if (!this.backgroundJob) {
-      // only try to decrpt the message if not background-Job
+    this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
-      this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
+    let fromAddr = "*";
+    if (this.uri) {
+      fromAddr = EnigmailPEPDecrypt.getMessageSender(this.uri.spec);
+    }
 
-      let fromAddr = EnigmailPEPDecrypt.getMessageSender(this.uri.spec);
+    let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, fromAddr);
 
-      let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, fromAddr);
+    let color = COLOR_UNDEF;
+    let fpr = [];
 
-      let color = COLOR_UNDEF;
-      let fpr = [];
+    if (dec) {
+      this.decryptedData = dec.longmsg;
+      color = dec.color;
+      fpr = dec.fpr;
 
-      if (dec) {
-        out = dec.longmsg;
-        color = dec.color;
-        fpr = dec.fpr;
+      this.extractEncryptedHeaders();
 
-        let i = out.search(/\n\r?\n/);
-        if (i > 0) {
-          let hdr = out.substr(0, i);
-          if (hdr.search(/^content-type:\s+text\/(plain|html)/im) >= 0) {
-            EnigmailLog.DEBUG("pEpDecrypt.jsm: done: adding multipart/mixed around '" + hdr + "'\n");
+      // HACK: remove filename from 1st HTML part to make TB display message without attachment
+      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
+      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
 
-            let wrapper = EnigmailMime.createBoundary();
-            out = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
-              'Content-Disposition: inline\r\n\r\n' +
-              '--' + wrapper + '\r\n' +
-              out + '\r\n' +
-              '--' + wrapper + '--\r\n';
-          }
+      let i = this.decryptedData.search(/\n\r?\n/);
+      if (i > 0) {
+        let hdr = this.decryptedData.substr(0, i);
+        if (hdr.search(/^content-type:\s+text\/(plain|html)/im) >= 0) {
+          EnigmailLog.DEBUG("pEpDecrypt.jsm: done: adding multipart/mixed around '" + hdr + "'\n");
+
+          let wrapper = EnigmailMime.createBoundary();
+          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+            'Content-Disposition: inline\r\n\r\n' +
+            '--' + wrapper + '\r\n' +
+            this.decryptedData + '\r\n' +
+            '--' + wrapper + '--\r\n';
         }
+      }
 
+      if (!this.backgroundJob) {
+        // only display the decrption/verification status if not background-Job
         this.displayStatus(color, fpr);
       }
     }
 
-    gConv.setData(out, out.length);
-    this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+    gConv.setData(this.decryptedData, this.decryptedData.length);
+    this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
     this.mimeSvc.onStopRequest(null, null, 0);
   },
 
@@ -233,6 +253,7 @@ PEPDecryptor.prototype = {
 
       if (headerSink && this.uri) {
 
+        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
         headerSink.updateSecurityStatus(
           "",
           0,
@@ -251,5 +272,19 @@ PEPDecryptor.prototype = {
       EnigmailLog.writeException("pEpDecrypt.jsm", ex);
     }
     EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus done\n");
+  },
+
+  /**
+   * extract protected headers from the message and modify decrypted data to not
+   * contain them anymore
+   */
+  extractEncryptedHeaders: function() {
+    let r = EnigmailMime.extractProtectedHeaders(this.decryptedData);
+    if (!r) return;
+
+    this.decryptedHeaders = r.newHeaders;
+    if (r.startPos >= 0 && r.endPos > r.startPos) {
+      this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
+    }
   }
 };

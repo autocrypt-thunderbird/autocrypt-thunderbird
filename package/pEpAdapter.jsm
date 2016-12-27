@@ -172,7 +172,7 @@ var EnigmailPEPAdapter = {
 
     while (n.hasMore()) {
       let hdr = n.getNext();
-      if (hdr.search(/^(from|to)$/i) < 0) {
+      if (hdr.search(/^(from|to|mime-version)$/i) < 0) {
         printHdr += hdr + ": " + EnigmailMime.formatHeaderData(headers.extractHeader(hdr, true)) + "\r\n";
       }
     }

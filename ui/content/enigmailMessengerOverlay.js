@@ -521,6 +521,7 @@ Enigmail.msg = {
     if (((contentType.search(/^multipart\/signed(;|$)/i) === 0) && (contentType.search(/application\/pgp-signature/i) > 0)) ||
       ((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) && (contentType.search(/application\/pgp-encrypted/i) > 0))) {
       this.messageDecryptCb(event, isAuto, null);
+      this.movePEPsubject();
       return;
     }
 
@@ -796,10 +797,8 @@ Enigmail.msg = {
 
   messageParse: function(interactive, importOnly, contentEncoding, msgUriSpec) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParse: " + interactive + "\n");
-    var msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: msgFrame=" + msgFrame + "\n");
 
-    var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    var bodyElement = this.getBodyElement();
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: bodyElement=" + bodyElement + "\n");
 
     if (!bodyElement) return;
@@ -937,6 +936,12 @@ Enigmail.msg = {
       msgUriSpec);
   },
 
+  getBodyElement: function() {
+    let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+    let bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    return bodyElement;
+  },
+
 
   messageParseCallback: function(msgText, contentEncoding, charset, interactive,
     importOnly, messageUrl, signature, retry,
@@ -1019,6 +1024,9 @@ Enigmail.msg = {
         pEpResult = EnigmailPEPDecrypt.decryptMessageData(msgText, fromAddr);
         if (pEpResult) {
           plainText = pEpResult.longmsg;
+          if (pEpResult.shortmsg.length > 0) {
+            Enigmail.hdrView.setSubject(pEpResult.shortmsg);
+          }
           exitCode = 0;
         }
         else {
@@ -1202,9 +1210,6 @@ Enigmail.msg = {
       plainText: msgRfc822Text
     };
 
-    var msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-    var bodyElement = msgFrame.document.getElementsByTagName("body")[0];
-
     // don't display decrypted message if message selection has changed
     displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (msgUriSpec && displayedUriSpec && (displayedUriSpec != msgUriSpec)) return;
@@ -1215,7 +1220,8 @@ Enigmail.msg = {
 
     Enigmail.msg.noShowReload = true;
     var node;
-    bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    var bodyElement = this.getBodyElement();
+
     if (bodyElement.firstChild) {
       node = bodyElement.firstChild;
       var foundIndex = -1;
@@ -1291,6 +1297,29 @@ Enigmail.msg = {
     return;
   },
 
+  /**
+   * Extract the subject from the 1st content line and move it to the subject line
+   */
+  movePEPsubject: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: movePEPsubject:\n");
+
+    let bodyElement = this.getBodyElement();
+    if (bodyElement.textContent.search(/^\r?\n?Subject: [^\r\n]+\r?\n\r?\n/i) === 0 &&
+      ("subject" in currentHeaderData) &&
+      currentHeaderData.subject.headerValue === "pEp") {
+
+      if (gFolderDisplay.selectedMessage) {
+        let m = bodyElement.textContent.match(/^(\r?\n?Subject: [^\r\n]+\r?\n\r?\n)/i);
+        if (m && m.length > 0) {
+          let subject = m[0].replace(/[\r\n]/g, "");
+
+          bodyElement.textContent = bodyElement.textContent.substr(m[0].length);
+
+          Enigmail.hdrView.setSubject(subject);
+        }
+      }
+    }
+  },
 
   // check if an attachment could be signed
   checkSignedAttachment: function(attachmentObj, index) {
