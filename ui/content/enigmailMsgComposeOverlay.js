@@ -38,6 +38,7 @@ Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailP
 Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -4324,11 +4325,22 @@ Enigmail.msg = {
 
     var uiFlags = nsIEnigmail.UI_UNVERIFIED_ENC_OK;
 
-    var plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
-      signatureObj, exitCodeObj, statusFlagsObj,
-      keyIdObj, userIdObj, sigDetailsObj,
-      errorMsgObj, blockSeparationObj, encToDetailsObj);
+    var plainText = "";
 
+    if (EnigmailPEPAdapter.usingPep()) {
+      let pEpResult = EnigmailPEPDecrypt.decryptMessageData(cipherText, "*");
+      if (pEpResult && pEpResult.longmsg.length > 0) {
+        plainText = pEpResult.longmsg;
+        exitCodeObj.value = 0;
+        errorMsgObj.value = "";
+      }
+    }
+    else {
+      plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+        signatureObj, exitCodeObj, statusFlagsObj,
+        keyIdObj, userIdObj, sigDetailsObj,
+        errorMsgObj, blockSeparationObj, encToDetailsObj);
+    }
     // Decode plaintext from charset to unicode
     plainText = EnigmailData.convertToUnicode(plainText, charset).replace(/\r\n/g, "\n");
     if (EnigmailPrefs.getPref("keepSettingsForReply")) {
