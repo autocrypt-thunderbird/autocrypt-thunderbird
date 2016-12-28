@@ -69,6 +69,7 @@ MODFILES = \
            pEpAdapter.jsm \
            pEpDecrypt.jsm \
            pEpListener.jsm \
+           pEpMessageHist.jsm \
            pipeConsole.jsm \
            prefs.jsm \
            promise.jsm \

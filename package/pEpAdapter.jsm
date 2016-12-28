@@ -6,7 +6,7 @@
 "use strict";
 
 /**
- *  Module for interfacing to pEp (Enigmal-specific functions)
+ *  Module for interfacing to pEp (Enigmail-specific functions)
  */
 
 
@@ -22,6 +22,9 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://enigmail/pEpMessageHist.jsm"); /*global EnigmailPEPMessageHist: false */
+
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
 
@@ -274,5 +277,64 @@ var EnigmailPEPAdapter = {
 
   getIdentityForEmail: function(emailAddress) {
     return EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress);
+  },
+
+  /**
+   * Update the last sent date for PGP/MIME messages. We only do this such that
+   * we don't unnecessarily process earlier inline-PGP messages
+   */
+  processPGPMIME: function(headerData) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME\n");
+    if (!("from" in headerData) && ("date" in headerData)) return;
+
+    EnigmailPEPMessageHist.isLatestMessage(headerData.from.headerValue, headerData.date.headerValue).
+    then(function _result(latestMessage) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME: " + latestMessage + "\n");
+    }).catch(function _fail() {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME: error\n");
+    });
+  },
+
+  /**
+   * Update the last sent date for inline-PGP messages. We do this to make sure
+   * that pEp can potentially derive information from the message (such as extracting an
+   * attached key).
+   */
+  processInlinePGP: function(msgUri, headerData) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: " + msgUri + "\n");
+
+    if (!("from" in headerData) && ("date" in headerData)) return;
+
+    let stream = EnigmailStreams.newStringStreamListener(
+      function analyzeData(data) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: got " + data.length + " bytes\n");
+
+        if (data.indexOf("From -") === 0) {
+          // remove 1st line from Mails stored in msgbox format
+          data = data.replace(/^From .*\r?\n/, "");
+        }
+
+        EnigmailpEp.decryptMimeString(data).
+        then(function _ignore() {}).
+        catch(function _ignore() {});
+      }
+    );
+
+    EnigmailPEPMessageHist.isLatestMessage(headerData.from.headerValue, headerData.date.headerValue).
+    then(function _result(latestMessage) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: " + latestMessage + "\n");
+      try {
+        if (latestMessage) {
+          var channel = EnigmailStreams.createChannel(msgUri.spec);
+          channel.asyncOpen(stream, null);
+        }
+      }
+      catch (e) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: exception " + e.toString() + "\n");
+      }
+    }).catch(function _fail() {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: error\n");
+    });
+
   }
 };

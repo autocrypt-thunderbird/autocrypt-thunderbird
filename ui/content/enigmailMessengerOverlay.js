@@ -520,9 +520,14 @@ Enigmail.msg = {
     // don't parse message if we know it's a PGP/MIME message
     if (((contentType.search(/^multipart\/signed(;|$)/i) === 0) && (contentType.search(/application\/pgp-signature/i) > 0)) ||
       ((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) && (contentType.search(/application\/pgp-encrypted/i) > 0))) {
+      EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
       this.messageDecryptCb(event, isAuto, null);
       this.movePEPsubject();
       return;
+    }
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      EnigmailPEPAdapter.processInlinePGP(this.getCurrentMsgUrl(), currentHeaderData);
     }
 
     try {
