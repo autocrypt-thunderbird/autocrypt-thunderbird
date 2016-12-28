@@ -27,7 +27,7 @@ const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
 
 
 // pEp JSON Server executable name
-const pepServerExecutable = "pep-mt-server";
+const pepServerExecutable = "pep-json-server";
 
 var gPepVersion = null;
 var gSecurityToken = null;
@@ -153,7 +153,7 @@ var EnigmailPEPAdapter = {
       EnigmailpEp.getPepVersion().then(function success(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
         if (Array.isArray(data)) {
-          gPepVersion = data[0];
+          gPepVersion = String(data[0]);
           startListener();
         }
       }).
