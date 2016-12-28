@@ -100,6 +100,19 @@ var EnigmailPEPAdapter = {
     if (mode === 2) return true;
     if (mode === 0) return false;
 
+    // automatic mode
+    return (!this.isAccountCryptEnabled());
+
+  },
+
+  /**
+   * Determine if any account is enabled for crypto (S/MIME or Enigmail)
+   *
+   * @return: Boolean: true if at least one account is enabled for S/MIME or Enigmail,
+   *                   false otherwise
+   */
+
+  isAccountCryptEnabled: function() {
     // automatic mode: go through all identities
     let amService = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
     amService.LoadAccounts();
@@ -111,11 +124,11 @@ var EnigmailPEPAdapter = {
       if ((msgId.getUnicharAttribute("signing_cert_name") !== "") ||
         (msgId.getUnicharAttribute("encryption_cert_name") !== "") ||
         msgId.getBoolAttribute("enablePgp")) {
-        return false;
+        return true;
       }
     }
 
-    return true;
+    return false;
   },
 
   /**
@@ -125,6 +138,13 @@ var EnigmailPEPAdapter = {
    */
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
+
+    let pEpMode = EnigmailPrefs.getPref("juniorMode");
+    // force using Enigmail (do not use pEp)
+    if (pEpMode === 0) return;
+
+    // automatic mode, with Crypto enabled (do not use pEp)
+    if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
 
     let execFile = getFiles().resolvePathWithEnv(pepServerExecutable);
     if (execFile) EnigmailpEp.setServerPath(execFile.path);
