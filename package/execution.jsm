@@ -166,6 +166,8 @@ const EnigmailExecution = {
 
     let outputData = "";
     let errOutput = "";
+    errorMsgObj.value = "";
+    exitCodeObj.value = -1;
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
 
