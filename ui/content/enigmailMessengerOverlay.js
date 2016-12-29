@@ -472,10 +472,10 @@ Enigmail.msg = {
       this.messageReload(false);
   },
 
-  messageImport: function(event) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageImport: " + event + "\n");
+  messageImport: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageImport:\n");
 
-    return this.messageParse(!event, true, "", this.getCurrentMsgUriSpec());
+    return this.messageParse(true, true, "", this.getCurrentMsgUriSpec());
   },
 
   /***
@@ -496,14 +496,16 @@ Enigmail.msg = {
   },
 
   // callback function for automatic decryption
-  messageAutoDecrypt: function(event) {
-    Enigmail.msg.messageDecrypt(event, true);
+  messageAutoDecrypt: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageAutoDecrypt:\n");
+    Enigmail.msg.messageDecrypt(null, true);
   },
 
   // analyse message header and decrypt/verify message
   messageDecrypt: function(event, isAuto) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: " + event + "\n");
 
+    event = event ? true : false;
     var cbObj = {
       event: event,
       isAuto: isAuto
@@ -538,7 +540,7 @@ Enigmail.msg = {
       });
     }
     catch (ex) {
-      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: enigMessageDecrypt: cannot use MsgHdrToMimeMessage\n");
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: cannot use MsgHdrToMimeMessage\n");
       this.messageDecryptCb(event, isAuto, null);
     }
   },
@@ -691,7 +693,7 @@ Enigmail.msg = {
             mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
             mimeMsg.parts[0].parts[0].body.indexOf("Version: OpenPGP.js") >= 0 &&
             mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0) {
-            this.messageParse(!event, false, Enigmail.msg.savedHeaders["content-transfer-encoding"], this.getCurrentMsgUriSpec());
+            this.messageParse(event, false, Enigmail.msg.savedHeaders["content-transfer-encoding"], this.getCurrentMsgUriSpec());
             return;
           }
         }
@@ -776,7 +778,7 @@ Enigmail.msg = {
 
       // inline-PGP messages
       if (!isAuto || EnigmailPrefs.getPref("autoDecrypt")) {
-        this.messageParse(!event, false, contentEncoding, msgUriSpec);
+        this.messageParse(event, false, contentEncoding, msgUriSpec);
       }
     }
     catch (ex) {
@@ -2473,7 +2475,7 @@ Enigmail.msg = {
     // handline keys embedded in message body
 
     if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.INLINE_KEY) {
-      return Enigmail.msg.messageDecrypt(null, false);
+      return Enigmail.msg.messageDecrypt(true, false);
     }
 
     imported = this.importAttachedKeys();
