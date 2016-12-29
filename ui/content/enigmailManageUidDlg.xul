@@ -41,9 +41,6 @@
       <button id="setPrimary"
               label="&enigmail.manageUidDlg.setPrimary.label;"
               oncommand="setPrimaryUid()"/>
-      <button id="deleteUid"
-              label="&enigmail.manageUidDlg.deleteUid.label;"
-              oncommand="deleteUid()"/>
       <button id="revokeUid"
               label="&enigmail.manageUidDlg.revokeUid.label;"
               oncommand="revokeUid()"/>

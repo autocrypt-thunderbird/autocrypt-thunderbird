@@ -177,13 +177,13 @@
 
         <menuitem id="manageUid"
                   label="&enigmail.keyMan.manageUid.label;"
-                  observes="bcOneKey"
+                  observes="bcEditKey"
                   accesskey="&enigmail.keyMan.manageUid.accesskey;"
                   oncommand="enigmailManageUids()"/>
 
         <menuitem id="changeExpiry"
                   label="&enigmail.keyMan.changeExpiry.label;"
-                  observes="bcOneKey"
+                  observes="bcEditKey"
                   accesskey="&enigmail.keyMan.changeExpiry.accesskey;"
                   oncommand="enigEditKeyExpiry()"/>
 
@@ -343,13 +343,13 @@
 
       <menuseparator/>
 
-      <menuitem id="ctxManageUid" observes="bcOneKey" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
+      <menuitem id="ctxManageUid" observes="bcEditKey" label="&enigmail.keyMan.manageUid.label;" oncommand="enigmailManageUids()"/>
       <menuitem id="ctxChangeExpiry" observes="bcEditKey" label="&enigmail.keyMan.changeExpiry.label;" oncommand="enigEditKeyExpiry()"/>
       <menuitem id="ctxChangePwd" observes="bcEditKey" label="&enigmail.keyMan.changePwd.label;" oncommand="enigmailChangePwd()"/>
       <menuitem id="ctxRevokationCert" observes="bcRevoke" label="&enigmail.keyMan.ctxGenRevoke.label;" oncommand="enigCreateRevokeCert()"/>
       <menuitem id="ctxAddPhoto" observes="bcRevoke" label="&enigmail.keyMan.addPhoto.label;" oncommand="enigmailAddPhoto()"/>
 
-      <menuseparator/>
+      <menuseparator observes="bcEditKey"/>
 
       <menuitem id="ctxViewPhoto" observes="bcViewPhoto" label="&enigmail.keyMan.ctxViewPhoto.label;" oncommand="enigShowPhoto()"/>
       <menuitem id="ctxDetails" observes="bcOneKey" label="&enigmail.keyMan.keyProps.label;"

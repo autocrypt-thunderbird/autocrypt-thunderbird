@@ -155,19 +155,19 @@ function getSelectedKeyIds() {
 function enigmailKeyMenu() {
   var keyList = getSelectedKeys();
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
-    document.getElementById("bcRevoke").removeAttribute("disabled");
-    document.getElementById("bcEditKey").removeAttribute("disabled");
+    document.getElementById("bcRevoke").removeAttribute("collapsed");
+    document.getElementById("bcEditKey").removeAttribute("collapsed");
   }
   else {
-    document.getElementById("bcRevoke").setAttribute("disabled", "true");
-    document.getElementById("bcEditKey").setAttribute("disabled", "true");
+    document.getElementById("bcRevoke").setAttribute("collapsed", "true");
+    document.getElementById("bcEditKey").setAttribute("collapsed", "true");
   }
 
   if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
-    document.getElementById("bcViewPhoto").removeAttribute("disabled");
+    document.getElementById("bcViewPhoto").removeAttribute("collapsed");
   }
   else {
-    document.getElementById("bcViewPhoto").setAttribute("disabled", "true");
+    document.getElementById("bcViewPhoto").setAttribute("collapsed", "true");
   }
 
   if (enigGetClipboard().length > 0) {
