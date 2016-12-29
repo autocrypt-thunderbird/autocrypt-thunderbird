@@ -424,7 +424,11 @@
   <hbox id="expandedHeadersBottomBox">
     <vbox id="enigmail-pEp-status" insertbefore="otherActionsBox">
       <spacer flex="1" maxheight="40"/>
-      <image id="enigmail-pEp-icon" observes="enigmail-pEp-bc" style="width:48px; height:48px; margin-left:2px; margin-right:2px;" onclick="Enigmail.hdrView.pEpIconPopup();"/>
+      <image id="enigmail-pEp-icon"
+        observes="enigmail-pEp-bc"
+         tooltiptext="&enigmail.messeneger.pEpIcon.tootlip;"
+        style="width:48px; height:48px; margin-left:2px; margin-right:2px;"
+        onclick="Enigmail.hdrView.pEpIconPopup();"/>
       <spacer flex="1"/>
     </vbox>
   </hbox>

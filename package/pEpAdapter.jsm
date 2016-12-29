@@ -251,7 +251,10 @@ var EnigmailPEPAdapter = {
   /**
    * Obtain a list of supported languages for trustwords
    *
-   * @return Promise, delivering Array of 2-Letter ISO-Codes.
+   * @return Promise, delivering Array of Object:
+   *            - short: 2-Letter ISO-Codes
+   *            - long:  Language name in the language
+   *            - desc:  Describing sentence in the language
    */
   getSupportedLanguages: function() {
     let deferred = Promise.defer();
@@ -260,7 +263,11 @@ var EnigmailPEPAdapter = {
         let inArr = res.result[0].split(/\n/);
         let outArr = inArr.reduce(function _f(p, langLine) {
           let y = langLine.split(/","/);
-          if (langLine.length > 0) p.push(y[0].replace(/"/g, ""));
+          if (langLine.length > 0) p.push({
+            short: y[0].replace(/^"/, ""),
+            long: y[1],
+            desc: y[2].replace(/"$/, "")
+          });
           return p;
         }, []);
         deferred.resolve(outArr);

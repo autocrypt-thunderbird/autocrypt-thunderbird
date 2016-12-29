@@ -951,7 +951,7 @@ Enigmail.hdrView = {
   displayPepStatus: function(rating, keyIDs, uri) {
 
     /*
-    color:
+    rating:
     undefined = 0,
     cannot_decrypt = 1,
     have_no_key = 2,

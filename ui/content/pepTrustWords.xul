@@ -49,6 +49,15 @@
         <description id="myEmailAddr" value="..."/>
       </row>
       <row>
+        <hbox align="center">
+          <label value="&enigmail.pEp.trustWordsDlg.selectLanguage;"/>
+        </hbox>
+        <hbox flex="1" align="center">
+          <menulist type="menu" editable="false" id="selectTwLocale">
+          </menulist>
+        </hbox>
+      </row>
+      <row>
         <label value="&enigmail.pEp.trustWordsDlg.trustWords;"/>
         <description id="wordList" style="width: 250px; overflow:auto;"/>
       </row>

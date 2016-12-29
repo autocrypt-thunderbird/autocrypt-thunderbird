@@ -17,7 +17,8 @@ const INPUT = 0;
 const CLOSE_WIN = "close";
 var emailId = null;
 var useOwnId = null;
-var useLocale = "";
+var useLocale = "en";
+var emailAddress = "";
 
 function onLoad() {
   let argsObj = window.arguments[INPUT];
@@ -25,9 +26,8 @@ function onLoad() {
   let supportedLocale = [];
 
   let uiLocale = EnigmailLocale.getUILocale().substr(0, 2).toLowerCase();
-  useLocale = "en";
 
-  argsObj.emailAddress = argsObj.emailAddress.toLowerCase();
+  emailAddress = argsObj.emailAddress.toLowerCase();
 
   let allEmails = "";
 
@@ -49,7 +49,7 @@ function onLoad() {
     }
 
     for (let i = 0; i < ownIds.length; i++) {
-      if (ownIds[i].address.toLowerCase() === argsObj.emailAddress) {
+      if (ownIds[i].address.toLowerCase() === emailAddress) {
         EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotVerifyOwnId"));
         let deferred = Promise.defer();
         deferred.reject(CLOSE_WIN);
@@ -65,51 +65,68 @@ function onLoad() {
       }
     }
 
-    return EnigmailPEPAdapter.getIdentityForEmail(argsObj.emailAddress);
+    return EnigmailPEPAdapter.getIdentityForEmail(emailAddress);
   }).then(function _gotIdentityForEmail(data) {
     if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
       emailId = data.result[0];
     }
     else {
-      EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotFindKey", argsObj.emailAddress));
+      EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotFindKey", emailAddress));
       let deferred = Promise.defer();
       deferred.reject(CLOSE_WIN);
       return deferred.promise;
     }
 
     return EnigmailPEPAdapter.getSupportedLanguages();
-  }).then(function _gotLocale(localeArr) {
-    supportedLocale = localeArr;
-    let i = supportedLocale.indexOf(uiLocale);
-    if (i > 0) {
-      useLocale = uiLocale;
+  }).then(function _gotLocale(supportedLocale) {
+
+    for (let i = 0; i < supportedLocale.length; i++) {
+      let item = appendLocaleMenuEntry(supportedLocale[i].short, supportedLocale[i].long);
+      if (supportedLocale[i].short === uiLocale) {
+        useLocale = supportedLocale[i].short;
+        document.getElementById("selectTwLocale").selectedItem = item;
+      }
     }
 
-    // TODO: broken in pEp
-    //return EnigmailPEPAdapter.pep.getTrustWords(useOwnId, emailId, useLocale);
-    return simulateTrustWords(useOwnId, emailId, useLocale);
-  }).then(function _gotTrustWords(data) {
-    if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
-      let trustWords = data.result[0];
-      document.getElementById("partnerEmailAddr").setAttribute("value", emailId.address);
-      document.getElementById("myEmailAddr").setAttribute("value", useOwnId.address);
-      document.getElementById("wordList").textContent = trustWords;
-      resizeDlg();
-    }
-    else {
-      throw "error";
-    }
+    document.getElementById("partnerEmailAddr").setAttribute("value", emailId.address);
+    document.getElementById("myEmailAddr").setAttribute("value", useOwnId.address);
+    getTrustWords(useLocale);
   }).catch(function _err(errorMsg) {
     if (!((typeof errorMsg === typeof CLOSE_WIN) && (errorMsg === CLOSE_WIN))) {
-      EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.generalFailure", argsObj.emailAddress));
+      EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
     }
     window.close();
   });
 }
 
+function appendLocaleMenuEntry(localeShort, localeLong) {
+  let localeMenu = document.getElementById("selectTwLocale");
+  let m = localeMenu.appendItem(localeLong, localeShort);
+  m.setAttribute("oncommand", "getTrustWords('" + localeShort + "')");
+  return m;
+}
+
+
+function getTrustWords(language) {
+  // TODO: broken in pEp
+  //EnigmailPEPAdapter.pep.getTrustWords(useOwnId, emailId, language).
+  simulateTrustWords(useOwnId, emailId, language).
+  then(function _gotTrustWords(data) {
+    if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
+      let trustWords = data.result[0];
+      document.getElementById("wordList").textContent = trustWords;
+      resizeDlg();
+    }
+    else {
+      EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
+    }
+  }).
+  catch(function _err(errorMsg) {});
+}
+
 function simulateTrustWords(useOwnId, emailId, locale) {
   let deferred = Promise.defer();
-  let tw = "IMMUNITY STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";
+  let tw = locale + " - IMMUNITY EXCERCISE MASTERPLAN SOMETHING OVERWHELMING SEEMINLGY PERTURBATING SENSITIVITY IRREGULARLY SETTLEMENT";
 
   if (locale === "de") {
     tw = "IMMUNITÄT STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";

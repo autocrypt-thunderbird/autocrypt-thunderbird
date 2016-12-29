@@ -797,12 +797,15 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "Force using S/MIME and Enigmail">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Force using p≡p (Pretty Easy Privacy)">
 
-<!ENTITY enigmail.pEp.verifyTrustwords.label          "Verify Trustwords">
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "Verify p≡p Trustwords">
+<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "This message was encrypted with p≡p. Click the icon for more details.">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you.They should match the Trustwords below.">
 <!ENTITY enigmail.pEp.trustWordsDlg.myEmailAddr       "Me:">
 <!ENTITY enigmail.pEp.trustWordsDlg.partnerEmailAddr  "Partner:">
-<!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of words">
+<!ENTITY enigmail.pEp.trustWordsDlg.selectLanguage    "Select language of Trustwords">
+<!ENTITY enigmail.pEp.trustWordsDlg.selectLanguage    "Change language">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Confirm Trustword">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnCancel         "Wrong Trustwords">
