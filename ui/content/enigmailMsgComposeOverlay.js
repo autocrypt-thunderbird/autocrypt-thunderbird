@@ -3981,23 +3981,25 @@ Enigmail.msg = {
   },
 
   setAutocryptHeader: function() {
-    if (EnigmailPrefs.getPref("autocryptMode") === 0) return;
+    if (EnigmailPEPAdapter.usingPep() ||
+      EnigmailPrefs.getPref("autocryptMode") === 0) {
+      return;
+    }
 
     if (!this.identity) {
       this.identity = getCurrentIdentity();
     }
 
-    let keys;
+    let key;
     if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
-      keys = [EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"))];
+      key = EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"));
     }
     else {
-      keys = EnigmailKeyRing.getKeysByUserId(this.identity.email);
+      key = EnigmailKeyRing.getSecretKeyByUserId(this.identity.email);
     }
 
-    // TODO: find best secret key
-    if (keys && Array.isArray(keys) && keys.length > 0) {
-      let k = keys[0].getMinimalPubKey();
+    if (key) {
+      let k = key.getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
         this.setAdditionalHeader('Autocrypt', 'to=' + this.identity.email + '; key=\r\n' + keyData);

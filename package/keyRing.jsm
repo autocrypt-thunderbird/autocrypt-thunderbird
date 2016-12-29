@@ -63,7 +63,19 @@ const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
 const KEYTYPE_ECC = 3;
 
-let keygenProcess = null;
+const ALGO_SYMBOL = {
+  1: "RSA",
+  2: "RSA",
+  3: "RSA",
+  16: "ELG",
+  17: "DSA",
+  18: "ECDH",
+  19: "ECDSA",
+  20: "ELG",
+  22: "EDDSA"
+};
+
+let gKeygenProcess = null;
 let gKeyListObj = null;
 let gKeyIndex = [];
 let gSubkeyIndex = [];
@@ -85,7 +97,8 @@ let gSubkeyIndex = [];
     - ownerTrust      - owner trust as provided by GnuPG
     - photoAvailable  - [Boolean] true if photo is available
     - secretAvailable - [Boolean] true if secret key is available
-    - algorithm       - public key algorithm type
+    - algorithm       - public key algorithm type (number)
+    - algoSym         - public key algorithm type (String, e.g. RSA)
     - keySize         - size of public key
     - type            - "pub" or "grp"
     - userIds  - [Array]: - Contains ALL UIDs (including the primary UID)
@@ -101,7 +114,8 @@ let gSubkeyIndex = [];
                       * created    - Key creation date as printable string
                       * keyTrust   - key trust code as provided by GnuPG
                       * keyUseFor  - key usage type as provided by GnuPG
-                      * algorithm  - subkey algorithm type
+                      * algorithm  - subkey algorithm type (number)
+                      * algoSym    - subkey algorithm type (String, e.g. RSA)
                       * keySize    - subkey size
                       * type       -  "sub"
 
@@ -119,6 +133,7 @@ let gSubkeyIndex = [];
        * getPubKeyValidity
        * clone
        * getMinimalPubKey
+       * getVirtualKeySize
 
   * keySortList [Array]:  used for quickly sorting the keys
     - userId (in lower case)
@@ -242,6 +257,7 @@ var EnigmailKeyRing = {
    * @return Array of KeyObjects with the found keys (array length is 0 if no key found)
    */
   getKeysByUserId: function(searchTerm, onlyValidUid = true) {
+    EnigmailLog.DEBUG("keyRing.jsm: getKeysByUserId: '" + searchTerm + "'\n");
     let s = new RegExp(searchTerm, "i");
 
     let res = [];
@@ -265,12 +281,48 @@ var EnigmailKeyRing = {
   },
 
   /**
+   * get the "best" possible secret key for a given user ID
+   *
+   * @param searchTerm   - String: a regular expression to match against all UIDs of the keys.
+   *                               The search is always performed case-insensitively
+   * @return KeyObject with the found key, or null if no key found
+   */
+  getSecretKeyByUserId: function(searchTerm) {
+    EnigmailLog.DEBUG("keyRing.jsm: getSecretKeyByUserId: '" + searchTerm + "'\n");
+    let keyList = this.getKeysByUserId(searchTerm, true);
+
+    let foundKey = null;
+
+    for (let key of keyList) {
+      if (key.secretAvailable && key.getEncryptionValidity().keyValid && key.getSigningValidity().keyValid) {
+        if (!foundKey) {
+          foundKey = key;
+        }
+        else {
+          // prefer RSA or DSA over ECC (TODO: change this once ECC keys are widely supported)
+          if (foundKey.algoSym === key.algoSym && foundKey.keySize === key.keySize) {
+            if (key.expiryTime > foundKey.expiryTime) foundKey = key;
+          }
+          else if (foundKey.algoSym.search(/^(DSA|RSA)$/) < 0 && key.algoSym.search(/^(DSA|RSA)$/) === 0) {
+            foundKey = key;
+          }
+          else {
+            if (key.getVirtualKeySize() > foundKey.getVirtualKeySize()) foundKey = key;
+          }
+        }
+      }
+    }
+    return foundKey;
+  },
+
+  /**
    * get a list of keys for a given set of (sub-) key IDs
    *
    * @param keyIdList: Array of key IDs
                        OR String, with space-separated list of key IDs
    */
   getKeyListById: function(keyIdList) {
+    EnigmailLog.DEBUG("keyRing.jsm: getKeyListById: '" + keyIdList + "'\n");
     let keyArr;
     if (typeof keyIdList === "string") {
       keyArr = keyIdList.split(/ +/);
@@ -289,9 +341,9 @@ var EnigmailKeyRing = {
   },
 
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
+    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     var command = EnigmailGpg.agentPath;
     var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     importedKeysObj.value = "";
 
     var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
@@ -392,7 +444,7 @@ var EnigmailKeyRing = {
   },
 
   /**
-   * Get a list of UserIds for a give key.
+   * Get a list of UserIds for a given key.
    * Only the Only UIDs with highest trust level are returned.
    *
    * @param  String  keyId   key, optionally preceeded with 0x
@@ -718,7 +770,7 @@ var EnigmailKeyRing = {
   },
 
   isGeneratingKey: function() {
-    return keygenProcess !== null;
+    return gKeygenProcess !== null;
   },
 
   /**
@@ -807,7 +859,7 @@ var EnigmailKeyRing = {
           listener.onDataAvailable(data);
         },
         done: function(result) {
-          keygenProcess = null;
+          gKeygenProcess = null;
           try {
             if (result.exitCode === 0) {
               EnigmailKeyRing.clearCache();
@@ -824,7 +876,7 @@ var EnigmailKeyRing = {
       throw ex;
     }
 
-    keygenProcess = proc;
+    gKeygenProcess = proc;
 
     EnigmailLog.DEBUG("keyRing.jsm: generateKey: subprocess = " + proc + "\n");
 
@@ -1488,6 +1540,7 @@ function appendKeyItems(keyListString, keyListObj) {
             keyUseFor: listRow[KEY_USE_FOR_ID],
             keySize: listRow[KEY_SIZE_ID],
             algorithm: listRow[KEY_ALGO_ID],
+            algoSym: ALGO_SYMBOL[listRow[KEY_ALGO_ID]],
             created: EnigmailTime.getDateTime(listRow[CREATED_ID], true, false),
             type: "sub"
           });
@@ -1623,6 +1676,7 @@ function KeyObject(lineArr) {
     this.keyUseFor = lineArr[KEY_USE_FOR_ID];
     this.ownerTrust = lineArr[OWNERTRUST_ID];
     this.algorithm = lineArr[KEY_ALGO_ID];
+    this.algoSym = ALGO_SYMBOL[lineArr[KEY_ALGO_ID]];
     this.keySize = lineArr[KEY_SIZE_ID];
   }
   else {
@@ -1634,6 +1688,7 @@ function KeyObject(lineArr) {
     this.keyUseFor = "";
     this.ownerTrust = "";
     this.algorithm = "";
+    this.algoSym = "";
     this.keySize = "";
   }
   this.type = lineArr[ENTRY_ID];
@@ -1947,6 +2002,28 @@ KeyObject.prototype = {
 
     retObj.keyData = this.minimalKeyBlock;
     return retObj;
+  },
+
+  /**
+   * Obtain a "virtual" key size that allows to compare different algorithms with each other
+   * e.g. elliptic curve keys have small key sizes with high cryptographic strength
+   *
+   *
+   * @return Number: a virtual size
+   */
+  getVirtualKeySize: function() {
+    EnigmailLog.DEBUG("keyRing.jsm: KeyObject.getVirtualKeySize: " + this.keyId + "\n");
+
+    switch (this.algoSym) {
+      case "DSA":
+        return this.keySize / 2;
+      case "ECDSA":
+        return this.keySize * 8;
+      case "EDDSA":
+        return this.keySize * 32;
+      default:
+        return this.keySize;
+    }
   }
 };
 
