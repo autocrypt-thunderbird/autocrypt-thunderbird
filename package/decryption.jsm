@@ -696,16 +696,16 @@ const EnigmailDecryption = {
 
     EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptAttachment: parent=" + parent + ", outFileName=" + outFile.path + "\n");
 
-    var attachmentHead = byteData.substr(0, 200);
+    let attachmentHead = byteData.substr(0, 200);
     if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
       // attachment appears to be a PGP key file
 
       if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),
           EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
 
-        var preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
+        let preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
         exitCodeObj.keyList = preview;
-        var exitStatus = 0;
+        let exitStatus = 0;
 
         if (errorMsgObj.value === "") {
           if (preview.length > 0) {
@@ -740,24 +740,24 @@ const EnigmailDecryption = {
       return true;
     }
 
-    var outFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
+    //var outFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
 
-    var args = EnigmailGpg.getStandardArgs(true);
-    args = args.concat(["-o", outFileName, "--yes"]);
+    let args = EnigmailGpg.getStandardArgs(true);
+    args.push("--yes");
     args = args.concat(EnigmailPassword.command());
     args.push("-d");
 
 
     statusFlagsObj.value = 0;
 
-    var listener = EnigmailExecution.newSimpleListener(
+    let listener = EnigmailExecution.newSimpleListener(
       function _stdin(pipe) {
         pipe.write(byteData);
         pipe.close();
       });
 
 
-    var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent,
+    let proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent,
       listener, statusFlagsObj);
 
     if (!proc) {
@@ -767,12 +767,16 @@ const EnigmailDecryption = {
     // Wait for child STDOUT to close
     proc.wait();
 
-    var statusMsgObj = {};
-    var cmdLineObj = {};
+    let statusMsgObj = {};
+    let cmdLineObj = {};
 
     exitCodeObj.value = EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
-    return true;
+    if (listener.stdoutData.length > 0) {
+      return EnigmailFiles.writeFileContents(outFile, listener.stdoutData);
+    }
+
+    return false;
   },
 
   registerOn: function(target) {
