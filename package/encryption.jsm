@@ -468,14 +468,16 @@ const EnigmailEncryption = {
       args = args.concat(EnigmailPassword.command());
     }
 
-    const inFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(inFile.QueryInterface(Ci.nsIFile)));
+    //const inFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(inFile.QueryInterface(Ci.nsIFile)));
+    const fileContents = EnigmailFiles.readBinaryFile(inFile.QueryInterface(Ci.nsIFile));
+    const inFileName = inFile.QueryInterface(Ci.nsIFile).leafName;
     const outFilePath = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile)));
 
-    args = args.concat(["--yes", "-o", outFilePath, inFilePath]);
+    args = args.concat(["--yes", "-o", outFilePath, "--set-filename", inFileName]);
 
     let cmdErrorMsgObj = {};
 
-    const msg = EnigmailExecution.execCmd(EnigmailGpgAgent.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
+    const msg = EnigmailExecution.execCmd(EnigmailGpgAgent.agentPath, args, fileContents, exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
     if (exitCodeObj.value !== 0) {
       if (cmdErrorMsgObj.value) {
         errorMsgObj.value = EnigmailFiles.formatCmdLine(EnigmailGpgAgent.agentPath, args);
