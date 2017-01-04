@@ -1076,8 +1076,6 @@ if (messageHeaderSink) {
     EnigMimeHeaderSink.prototype = {
       _smimeHeaderSink: null,
 
-      workaroundMode: null,
-
       QueryInterface: function(iid) {
         //EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.QI: "+iid+"\n");
         if (iid.equals(Components.interfaces.nsIMsgSMIMEHeaderSink) &&

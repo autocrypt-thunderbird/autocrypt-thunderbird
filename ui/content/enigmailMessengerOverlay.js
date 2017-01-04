@@ -84,6 +84,7 @@ Enigmail.msg = {
   ],
   buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
   buggyMailType: null,
+  lastSMimeReloadURI: "",
 
   messengerStartup: function() {
 
@@ -486,10 +487,14 @@ Enigmail.msg = {
    *          - false if handler was changed and message is reloaded
    */
   checkPgpmimeHandler: function() {
-    if (EnigmailVerify.currentCtHandler !== EnigmailConstants.MIME_HANDLER_PGPMIME) {
-      EnigmailVerify.registerContentTypeHandler();
-      this.messageReload();
-      return false;
+    let uriSpec = this.getCurrentMsgUriSpec();
+    if (uriSpec !== this.lastSMimeReloadURI) {
+      if (EnigmailVerify.currentCtHandler !== EnigmailConstants.MIME_HANDLER_PGPMIME) {
+        this.lastSMimeReloadURI = uriSpec;
+        EnigmailVerify.registerContentTypeHandler();
+        this.messageReload();
+        return false;
+      }
     }
 
     return true;
