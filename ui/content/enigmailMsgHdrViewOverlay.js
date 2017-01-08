@@ -987,11 +987,11 @@ Enigmail.hdrView = {
       this.pEpStatus.color = "red";
       this.pEpBox.setAttribute("class", "enigmailPepRatingMistrust");
     }
-    else if (rating < 4) {
+    else if (rating < 6) {
       this.pEpStatus.color = "grey";
       this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
     }
-    else if (rating >= 8) {
+    else if (rating >= 7) {
       this.pEpStatus.color = "green";
       this.pEpBox.setAttribute("class", "enigmailPepRatingTrusted");
     }

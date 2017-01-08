@@ -1,4 +1,4 @@
-/*global Components: false, escape: false */
+/*global Components: false, btoa: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -32,8 +32,8 @@ const EnigmailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*"
 const EnigmailFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
-   * @mailAddrs |string| - address-list as specified in RFC 2822, 3.4
-   *                       separated by ","
+   * @param mailAddrs |string| - address-list as specified in RFC 2822, 3.4
+   *                             separated by ",", but in encdoded in Unicode
    *
    * @return |string|    - list of pure email addresses separated by ","
    */
@@ -67,6 +67,27 @@ const EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/, "").replace(/,$/, "");
 
     return mailAddrs;
+  },
+
+  /**
+   * get an array of email object (email, name) from an address string
+   * @param mailAddrs |string| - address-list as specified in RFC 2822, 3.4
+   *                             separated by ","; encoded according to RFC 2047
+   *
+   * @return |array| of object
+   */
+  parseEmails: function(mailAddrs, encoded = true) {
+
+    try {
+      let hdr = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser);
+      if (encoded) {
+        return hdr.parseEncodedHeader(mailAddrs, "utf-8");
+      }
+      return hdr.parseDecodedHeader(mailAddrs);
+    }
+    catch (ex) {}
+
+    return [];
   },
 
   /**

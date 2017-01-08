@@ -67,6 +67,7 @@ zip --must-match\
     components/pgpmimeHandler.js \
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
+    modules/addrbook.jsm \
     modules/app.jsm \
     modules/armor.jsm \
     modules/attachment.jsm \

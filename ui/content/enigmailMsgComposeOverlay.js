@@ -344,15 +344,38 @@ Enigmail.msg = {
     this.finalSignDependsOnEncrypt = (this.getAccDefault("signIfEnc") || this.getAccDefault("signIfNotEnc"));
   },
 
+  getOriginalMsgUri: function() {
+    let draftId = gMsgCompose.compFields.draftId;
+    let msgUri = null;
 
-  getMsgProperties: function(msgUri, draft) {
+    if (typeof(draftId) == "string" && draftId.length > 0) {
+      // original message is draft
+      msgUri = draftId.replace(/\?.*$/, "");
+    }
+    else if (typeof(gMsgCompose.originalMsgURI) == "string" && gMsgCompose.originalMsgURI.length > 0) {
+      // original message is a "true" mail
+      msgUri = gMsgCompose.originalMsgURI;
+    }
+
+    return msgUri;
+  },
+
+  getMsgHdr: function(msgUri) {
+    if (!msgUri) {
+      msgUri = this.getOriginalMsgUri();
+    }
+    let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
+    return messenger.messageServiceFromURI(msgUri).messageURIToMsgHdr(msgUri);
+  },
+
+  getMsgProperties: function(draft) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties:\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
-    var properties = 0;
+    let msgUri = this.getOriginalMsgUri();
+    let properties = 0;
     try {
-      var messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
-      var msgHdr = messenger.messageServiceFromURI(msgUri).messageURIToMsgHdr(msgUri);
+      let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
         properties = msgHdr.getUint32Property("enigmail");
         if (draft) {
@@ -493,18 +516,15 @@ Enigmail.msg = {
     var draftId = gMsgCompose.compFields.draftId;
 
     if (EnigmailPrefs.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof(draftId) == "string" && draftId.length > 0)) {
+      msgUri = this.getOriginalMsgUri();
+
       if (typeof(draftId) == "string" && draftId.length > 0) {
         // original message is draft
-        msgUri = draftId.replace(/\?.*$/, "");
         msgIsDraft = true;
-      }
-      else if (typeof(gMsgCompose.originalMsgURI) == "string" && gMsgCompose.originalMsgURI.length > 0) {
-        // original message is a "true" mail
-        msgUri = gMsgCompose.originalMsgURI;
       }
 
       if (msgUri) {
-        msgFlags = this.getMsgProperties(msgUri, msgIsDraft);
+        msgFlags = this.getMsgProperties(msgIsDraft);
         if (!msgIsDraft) {
           if (msgFlags & nsIEnigmail.DECRYPTION_OKAY) {
             EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen: has encrypted originalMsgUri\n");
@@ -3010,23 +3030,24 @@ Enigmail.msg = {
     let arrLen = {};
 
     if (compFields.to.length > 0) {
-      recList = compFields.splitRecipients(compFields.to, true, arrLen);
-      this.addRecipients(toAddrList, recList);
+      toAddrList = EnigmailFuncs.parseEmails(compFields.to, false);
     }
 
     if (compFields.cc.length > 0) {
-      recList = compFields.splitRecipients(compFields.cc, true, arrLen);
-      this.addRecipients(toAddrList, recList);
+      toAddrList = toAddrList.concat(EnigmailFuncs.parseEmails(compFields.cc, false));
     }
 
     if (compFields.bcc.length > 0) {
-      recList = compFields.splitRecipients(compFields.bcc, true, arrLen);
-      this.addRecipients(toAddrList, recList);
+      toAddrList = toAddrList.concat(EnigmailFuncs.parseEmails(compFields.bcc, false));
     }
 
     this.identity = getCurrentIdentity();
+    let from = {
+      email: this.identity.email,
+      name: this.identity.fullName
+    };
 
-    let rating = EnigmailPEPAdapter.getOutgoingMessageRating(this.identity.email, toAddrList);
+    let rating = EnigmailPEPAdapter.getOutgoingMessageRating(from, toAddrList);
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
 
@@ -4330,7 +4351,18 @@ Enigmail.msg = {
     var plainText = "";
 
     if (EnigmailPEPAdapter.usingPep()) {
-      let pEpResult = EnigmailPEPDecrypt.decryptMessageData(cipherText, "*");
+
+      let msgHdr = this.getMsgHdr();
+
+      let addresses = {
+        from: null,
+        to: EnigmailFuncs.parseEmails(msgHdr.recipients),
+        cc: EnigmailFuncs.parseEmails(msgHdr.ccList)
+      };
+      let fromAddr = EnigmailFuncs.parseEmails(msgHdr.author);
+      if (fromAddr.length > 0) addresses.from = fromAddr[0];
+
+      let pEpResult = EnigmailPEPDecrypt.decryptMessageData(cipherText, addresses);
       if (pEpResult && pEpResult.longmsg.length > 0) {
         plainText = pEpResult.longmsg;
         exitCodeObj.value = 0;

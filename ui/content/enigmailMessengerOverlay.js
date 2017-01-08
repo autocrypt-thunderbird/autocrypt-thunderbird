@@ -1031,9 +1031,15 @@ Enigmail.msg = {
         nsIEnigmail.UI_UNVERIFIED_ENC_OK) : 0;
 
       if (EnigmailPEPAdapter.usingPep()) {
-        let fromAddr = gFolderDisplay.selectedMessage.author;
-        if (fromAddr) fromAddr = EnigmailFuncs.stripEmail(fromAddr);
-        pEpResult = EnigmailPEPDecrypt.decryptMessageData(msgText, fromAddr);
+        let addresses = {
+          from: null,
+          to: EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.recipients),
+          cc: EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.ccList)
+        };
+        let fromAddr = EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.author);
+        if (fromAddr.length > 0) addresses.from = fromAddr[0];
+
+        pEpResult = EnigmailPEPDecrypt.decryptMessageData(msgText, addresses);
         if (pEpResult) {
           plainText = pEpResult.longmsg;
           if (pEpResult.shortmsg.length > 0) {
@@ -1324,6 +1330,7 @@ Enigmail.msg = {
         let m = bodyElement.textContent.match(/^(\r?\n?Subject: [^\r\n]+\r?\n\r?\n)/i);
         if (m && m.length > 0) {
           let subject = m[0].replace(/[\r\n]/g, "");
+          subject = subject.substr(9);
 
           bodyElement.textContent = bodyElement.textContent.substr(m[0].length);
 

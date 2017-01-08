@@ -19,6 +19,7 @@ COMPFILES = \
 PREFFILES = prefs/enigmail.js
 
 MODFILES = \
+           addrbook.jsm \
            app.jsm \
            armor.jsm \
            attachment.jsm \

@@ -49,6 +49,13 @@ var EnigmailpEp = {
    *   message  : an error message describing the failure
    */
 
+  /*
+   * pEpPerson:
+   *  - user_id
+   *  - username
+   *  - address
+   */
+
   /**
    * get the pEp version number
    *
@@ -250,25 +257,21 @@ var EnigmailpEp = {
   /**
    * decrypt a message using the pEp server
    *
-   * @param message   : String          - the message to decrypt
-   * @param sender    : String          - sender email address
+   * @param message   : String            - the message to decrypt
+   * @param sender    : pEpPerson          - sender information
+   * @param to        : Array of pEpPerson - recipients (To) information
+   * @param sender    : Array of pEpPerson - recipients (Cc) information
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  decryptMessage: function(message, sender) {
+  decryptMessage: function(message, sender, to, cc) {
 
     if (!sender) sender = "*";
 
     let msgId = "enigmail-" + String(gRequestId++);
     if (typeof(message) === "object") {
-      message.to = [];
-      message.from = {
-        "user_id": "",
-        "username": "name",
-        "address": sender
-      };
       message.shortmsg = "pEp";
       message.longmsg = "RFC 3156 message";
       message.msgId = msgId;
@@ -279,19 +282,15 @@ var EnigmailpEp = {
         // src message
         "shortmsg": "pEp",
         "longmsg": message,
-        "from": {
-          "user_id": "",
-          "username": "name",
-          "address": sender
-        },
-        "to": [{
-          "user_id": "",
-          "username": "name",
-          address: sender
-        }],
         msgId: msgId,
         dir: 0
       };
+    }
+
+    message.from = sender;
+    message.to = to;
+    if (cc) {
+      message.cc = cc;
     }
 
     try {
@@ -517,6 +516,10 @@ var EnigmailpEp = {
    */
   trustIdentity: function(idObject) {
     try {
+
+      if ("comm_type" in idObject) {
+        delete idObject.comm_type;
+      }
       let params = [idObject];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "trust_personal_key", params);
@@ -556,17 +559,17 @@ var EnigmailpEp = {
   /**
    * determine the trust color that an outgoing message would receive
    *
-   * @param fromAddr  : String          - sender Email address
-   * @param toAddrList: Array of String - array with all recipients
-   * @param message   : String          - the message to encrypt
+   * @param from:    Object (pEpPerson)          - sender
+   * @param to:      Array of Object (pEpPerson) - array with all recipients
+   * @param message: String                      - the message to encrypt
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  outgoingMessageColor: function(fromAddr, toAddrList, message) {
+  outgoingMessageColor: function(from, to, message) {
 
-    if (!toAddrList) toAddrList = [];
+    if (!to) to = [];
 
     try {
       let msgId = "enigmail-" + String(gRequestId++);
@@ -574,21 +577,8 @@ var EnigmailpEp = {
           "id": msgId,
           "dir": 1,
           "longmsg": message,
-          "from": {
-            "user_id": "",
-            "username": "",
-            "address": fromAddr,
-            "fpr": ""
-          },
-          to: toAddrList.reduce(function _f(p, addr) {
-            p.push({
-              "user_id": "",
-              "username": "",
-              "address": addr,
-              "fpr": ""
-            });
-            return p;
-          }, [])
+          "from": from,
+          "to": to
         },
         "O"
       ];

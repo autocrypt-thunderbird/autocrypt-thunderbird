@@ -54,7 +54,7 @@ var EnigmailPEPDecrypt = {
    *          - color:   - Number: the pEp rating of how securely the message was tansmitted
    *          - fpr:     - Array of String: the list of fingerprints used for the message
    */
-  decryptMessageData: function(msgData, fromAddr) {
+  decryptMessageData: function(msgData, adr) {
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
     let resultObj = null;
 
@@ -62,9 +62,18 @@ var EnigmailPEPDecrypt = {
     let e = msgData.search(/^-----END PGP MESSAGE-----/m);
     let pgpData = s >= 0 && e > s ? msgData.substring(s, e + 27) : msgData;
 
-    if (!fromAddr) fromAddr = "*";
+    let from = EnigmailPEPAdapter.emailToPepPerson(adr.from);
+    let to = [];
+    for (let i of adr.to) {
+      to.push(EnigmailPEPAdapter.emailToPepPerson(i));
+    }
 
-    EnigmailpEp.decryptMessage(pgpData, fromAddr).then(function _step2(res) {
+    let cc = [];
+    for (let i of adr.cc) {
+      cc.push(EnigmailPEPAdapter.emailToPepPerson(i));
+    }
+
+    EnigmailpEp.decryptMessage(pgpData, from, to, cc).then(function _step2(res) {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result;
@@ -102,14 +111,18 @@ var EnigmailPEPDecrypt = {
     else return null;
   },
 
-  getMessageSender: function(url) {
-    EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender:\n");
+  getEmailsFromMessage: function(url) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage:\n");
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
-    let fromAddr = null;
+    let addresses = {
+      from: null,
+      to: [],
+      cc: []
+    };
 
     let s = EnigmailStreams.newStringStreamListener(
       function analyzeData(data) {
-        EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender: got " + data.length + " bytes\n");
+        EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage: got " + data.length + " bytes\n");
 
         let i = data.search(/\n\r?\n/);
         if (i < 0) i = data.length;
@@ -118,7 +131,13 @@ var EnigmailPEPDecrypt = {
         hdr.initialize(data.substr(0, i));
 
         if (hdr.hasHeader("from")) {
-          fromAddr = hdr.getHeader("from")[0].email;
+          addresses.from = hdr.getHeader("from")[0];
+        }
+        if (hdr.hasHeader("to")) {
+          addresses.to = hdr.getHeader("to");
+        }
+        if (hdr.hasHeader("cc")) {
+          addresses.cc = hdr.getHeader("cc");
         }
 
         if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -136,10 +155,10 @@ var EnigmailPEPDecrypt = {
       inspector.enterNestedEventLoop(0);
     }
     catch (e) {
-      EnigmailLog.DEBUG("pEpDecrypt.jsm: getMessageSender: exception " + e + "\n");
+      EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage: exception " + e + "\n");
     }
 
-    return fromAddr;
+    return addresses;
   }
 };
 
@@ -192,12 +211,12 @@ PEPDecryptor.prototype = {
 
     this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
-    let fromAddr = "*";
+    let addresses;
     if (this.uri) {
-      fromAddr = EnigmailPEPDecrypt.getMessageSender(this.uri.spec);
+      addresses = EnigmailPEPDecrypt.getEmailsFromMessage(this.uri.spec);
     }
 
-    let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, fromAddr);
+    let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, addresses);
 
     let color = COLOR_UNDEF;
     let fpr = [];

@@ -24,6 +24,7 @@ Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/pEpMessageHist.jsm"); /*global EnigmailPEPMessageHist: false */
+Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -206,8 +207,8 @@ var EnigmailPEPAdapter = {
   /**
    * Get the encryption quality rating for a list of recipients
    *
-   * @param sender:     - String           email adress of message sender
-   * @param recipients: - Array of String  email adresses of message recipients
+   * @param sender:     - Object msgIAddressObject   message sender
+   * @param recipients: - Array of Object msgIAddressObject message recipients
    *
    * @return Number: quality of encryption (-3 ... 9)
    */
@@ -215,7 +216,14 @@ var EnigmailPEPAdapter = {
     let resultObj = null;
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
-    EnigmailPEPAdapter.pep.outgoingMessageColor(sender, recipients, "test").then(function _step2(res) {
+    let from = this.emailToPepPerson(sender);
+    let to = [];
+
+    for (let i of recipients) {
+      to.push(EnigmailPEPAdapter.emailToPepPerson(i));
+    }
+
+    EnigmailPEPAdapter.pep.outgoingMessageColor(from, to, "test").then(function _step2(res) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result;
@@ -284,6 +292,48 @@ var EnigmailPEPAdapter = {
 
   getIdentityForEmail: function(emailAddress) {
     return EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress);
+  },
+
+  /**
+   * Convert an msgIAddressObject object into a pEpPerson object
+   * If no name given, the name is looked up in the address book
+   *
+   * @param emailObj - Object msgIAddressObject
+   *
+   * @return pEpPerson object
+   */
+  emailToPepPerson: function(emailObj) {
+    let p = {
+      user_id: "",
+      username: "unknown",
+      address: ""
+    };
+
+    if (!emailObj) return p;
+
+    if ("email" in emailObj) {
+      p.address = emailObj.email;
+    }
+
+    if ("name" in emailObj && emailObj.name.length > 0) {
+      p.username = emailObj.name;
+    }
+    else {
+      let addr = EnigmailAddrbook.lookupEmailAddress(p.address);
+      if (addr) {
+        if (addr.displayName.length > 0) {
+          p.username = addr.displayName;
+        }
+        else {
+          p.username = (addr.firstName + " " + addr.lastName).trim();
+        }
+      }
+    }
+
+    if (p.username.length === 0 || p.username === "unknown") {
+      p.username = p.address.replace(/@.*$/, "");
+    }
+    return p;
   },
 
   /**
