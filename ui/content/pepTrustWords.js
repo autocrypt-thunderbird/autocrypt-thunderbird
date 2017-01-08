@@ -28,7 +28,7 @@ function onLoad() {
   }
 
   document.getElementById("partnerEmailAddr").setAttribute("value", argsObj.otherId.username + "<" + argsObj.otherId.address + ">");
-  document.getElementById("myEmailAddr").setAttribute("value", argsObj.otherId.address);
+  document.getElementById("myEmailAddr").setAttribute("value", argsObj.ownId.address);
   displayTrustWords(argsObj.trustWords);
 }
 

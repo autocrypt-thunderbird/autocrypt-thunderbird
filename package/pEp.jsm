@@ -531,6 +531,33 @@ var EnigmailpEp = {
       return deferred.promise;
     }
   },
+
+  /**
+   * reset the trust level of a user identity in pEp
+   *
+   * @param idObject: Object          - pEp Identity object
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  resetIdentityTrust: function(idObject) {
+    try {
+
+      if ("comm_type" in idObject) {
+        delete idObject.comm_type;
+      }
+      let params = [idObject];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "key_reset_trust", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
   /**
    * get list of languaes for which pEp trustwords are available
    *

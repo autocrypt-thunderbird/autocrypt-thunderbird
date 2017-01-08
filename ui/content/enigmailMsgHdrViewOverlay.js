@@ -65,11 +65,26 @@ Enigmail.hdrView = {
     var addrPopup = document.getElementById("emailAddressPopup");
     if (addrPopup) {
       var attr = addrPopup.getAttribute("onpopupshowing");
-      attr = "EnigmailFuncs.collapseAdvanced(this, 'hidden'); " + attr;
+      attr = "Enigmail.hdrView.displayAddressPopup(this); " + attr;
       addrPopup.setAttribute("onpopupshowing", attr);
     }
   },
 
+  displayAddressPopup: function(target) {
+    if (EnigmailPEPAdapter.usingPep()) {
+      let adr = findEmailNodeFromPopupNode(document.popupNode, 'emailAddressPopup');
+      if (adr) {
+        if (adr.getAttribute("headerName") === "from") {
+          Enigmail.hdrView.setPepVerifyFunction();
+        }
+        else {
+          document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+          document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
+        }
+      }
+    }
+    EnigmailFuncs.collapseAdvanced(target, 'hidden');
+  },
 
   statusBarHide: function() {
     try {
@@ -1012,12 +1027,22 @@ Enigmail.hdrView = {
   enablePepMenus: function() {
     if (EnigmailPEPAdapter.usingPep()) {
       document.getElementById("enigmailCreateRuleFromAddr").setAttribute("collapsed", "true");
-      document.getElementById("enigmailVerifyPepStatus").removeAttribute("collapsed");
-
     }
     else {
       document.getElementById("enigmailCreateRuleFromAddr").removeAttribute("collapsed");
       document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+      document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
+    }
+  },
+
+  setPepVerifyFunction: function() {
+    if (this.pEpStatus.color === "green") {
+      document.getElementById("enigmailRevokePepStatus").removeAttribute("collapsed");
+      document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+    }
+    else {
+      document.getElementById("enigmailVerifyPepStatus").removeAttribute("collapsed");
+      document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
     }
   },
 
@@ -1028,9 +1053,33 @@ Enigmail.hdrView = {
       }
       let emailAddr = emailAddressNode.getAttribute("emailAddress");
 
-      EnigmailWindows.verifyPepTrustWords(window, emailAddr, currentHeaderData);
+      EnigmailWindows.verifyPepTrustWords(window, emailAddr, currentHeaderData).
+      then(function _done() {
+        gDBView.reloadMessageWithAllParts();
+      }).
+      catch(function _err() {});
+    }
+  },
+
+  revokePepTrust: function(emailAddressNode) {
+    if (emailAddressNode) {
+      if (typeof(findEmailNodeFromPopupNode) == "function") {
+        emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
+      }
+      let emailAddr = emailAddressNode.getAttribute("emailAddress");
+
+      if (EnigmailDialog.confirmDlg(window,
+          EnigmailLocale.getString("pepRevokeTrust.question", emailAddr),
+          EnigmailLocale.getString("pepRevokeTrust.doRevoke"))) {
+        EnigmailPEPAdapter.resetTrustForEmail(emailAddr).
+        then(function _done() {
+          gDBView.reloadMessageWithAllParts();
+        }).
+        catch(function _err() {});
+      }
     }
   }
+
 };
 
 window.addEventListener("load", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);

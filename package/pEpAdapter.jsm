@@ -504,6 +504,21 @@ var EnigmailPEPAdapter = {
     // TODO: broken in pEp
     //return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
     return simulateTrustWords(ownId, otherId, language);
+  },
+
+  resetTrustForEmail: function(emailAddr) {
+    let deferred = Promise.defer();
+
+    EnigmailPEPAdapter.getIdentityForEmail(emailAddr).
+    then(function _gotIdentityForEmail(data) {
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
+        let emailId = data.result[0];
+        EnigmailPEPAdapter.pep.resetIdentityTrust(emailId);
+        deferred.resolve();
+      }
+    });
+
+    return deferred.promise;
   }
 };
 

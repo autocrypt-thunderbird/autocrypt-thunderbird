@@ -797,7 +797,8 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "Force using S/MIME and Enigmail">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Force using p≡p (Pretty Easy Privacy)">
 
-<!ENTITY enigmail.pEp.verifyTrustwords.label          "Verify p≡p Trustwords">
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "p≡p Handshake">
+<!ENTITY enigmail.pEp.revokeTrust.label               "Revoke p≡p Trust">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "This message was encrypted with p≡p. Click the icon for more details.">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
