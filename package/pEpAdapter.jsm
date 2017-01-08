@@ -25,6 +25,9 @@ Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/pEpMessageHist.jsm"); /*global EnigmailPEPMessageHist: false */
 Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -392,6 +395,134 @@ var EnigmailPEPAdapter = {
     }).catch(function _fail() {
       EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: error\n");
     });
+  },
 
+  /**
+   * prepare the relevant data for the Trustwords dialog
+   *
+   * @param emailAddress: String - the email address to verify
+   * @param headerData:   Object - nsIMsgHdr object for the message
+   *                         (to identify the ideal own identity)
+   * @return Promise(object)
+   */
+  prepareTrustWordsDlg: function(emailAddress, headerData) {
+    let deferred = Promise.defer();
+    let emailId = null;
+    let useOwnId = null;
+    let useLocale = "en";
+    let ownIds = [];
+    let supportedLocale = [];
+
+    let uiLocale = EnigmailLocale.getUILocale().substr(0, 2).toLowerCase();
+
+    emailAddress = emailAddress.toLowerCase();
+
+    let allEmails = "";
+
+    if ("from" in headerData) {
+      allEmails += headerData.from.headerValue + ",";
+    }
+    if ("to" in headerData) {
+      allEmails += headerData.to.headerValue + ",";
+    }
+    if ("cc" in headerData) {
+      allEmails += headerData.cc.headerValue + ",";
+    }
+
+    let emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
+
+    EnigmailPEPAdapter.pep.getOwnIdentities().then(function _gotOwnIds(data) {
+      if (("result" in data) && typeof data.result[0] === "object" && Array.isArray(data.result[0])) {
+        ownIds = data.result[0];
+      }
+
+      for (let i = 0; i < ownIds.length; i++) {
+        if (ownIds[i].address.toLowerCase() === emailAddress) {
+          deferred.reject("cannotVerifyOwnId");
+        }
+
+        useOwnId = ownIds[0];
+        for (let j = 0; j < emailsInMessage.length; j++) {
+          if (ownIds[i].address.toLowerCase() === emailsInMessage[j]) {
+            useOwnId = ownIds[i];
+            break;
+          }
+        }
+      }
+
+      return EnigmailPEPAdapter.getIdentityForEmail(emailAddress);
+    }).then(function _gotIdentityForEmail(data) {
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
+        emailId = data.result[0];
+      }
+      else {
+        deferred.reject("cannotFindKey");
+      }
+
+      return EnigmailPEPAdapter.getSupportedLanguages();
+    }).then(function _gotLocale(localeList) {
+      supportedLocale = localeList;
+
+      for (let i = 0; i < localeList.length; i++) {
+        if (localeList[i].short === uiLocale) {
+          useLocale = localeList[i].short;
+        }
+      }
+
+      return EnigmailPEPAdapter.getTrustWordsForLocale(useOwnId, emailId, useLocale);
+    }).then(function _gotTrustWords(data) {
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
+        let trustWords = data.result[0];
+        deferred.resolve({
+          ownId: useOwnId,
+          otherId: emailId,
+          locale: useLocale,
+          supportedLocale: supportedLocale,
+          trustWords: trustWords
+        });
+      }
+      else {
+        deferred.reject("generalFailure");
+      }
+    }).catch(function _err(errorMsg) {
+      deferred.reject(errorMsg);
+    });
+
+    return deferred.promise;
+  },
+
+  /**
+   * Get the trustwords for a pair of pEpPerson's and a given language
+   *
+   * @param ownId:   Object - pEpPerson object of own id
+   * @param otherId: Object - pEpPerson object of other person's identity
+   *
+   * @return Promise(data)
+   */
+  getTrustWordsForLocale: function(ownId, otherId, language) {
+
+    // TODO: broken in pEp
+    //return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
+    return simulateTrustWords(ownId, otherId, language);
   }
 };
+
+
+function simulateTrustWords(useOwnId, emailId, locale) {
+  let deferred = Promise.defer();
+  let tw = locale + " - IMMUNITY EXCERCISE MASTERPLAN SOMETHING OVERWHELMING SEEMINLGY PERTURBATING SENSITIVITY IRREGULARLY SETTLEMENT";
+
+  if (locale === "de") {
+    tw = "IMMUNITÄT STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";
+  }
+
+  deferred.resolve({
+    jsonrpc: "2.0",
+    result: [tw, {
+      status: 0,
+      hex: "PEP_STATUS_OK"
+    }],
+    id: 2
+  });
+  return deferred.promise;
+}

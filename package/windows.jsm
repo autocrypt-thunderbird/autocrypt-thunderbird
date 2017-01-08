@@ -19,6 +19,8 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -545,14 +547,25 @@ const EnigmailWindows = {
   },
 
   verifyPepTrustWords: function(window, emailAddress, headerData) {
-    let inputObj = {
-      emailAddress: emailAddress,
-      headerData: headerData
-    };
+    EnigmailPEPAdapter.prepareTrustWordsDlg(emailAddress, headerData).
+    then(function _ok(inputObj) {
+      window.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+        "", "dialog,modal,centerscreen", inputObj);
+    }).
+    catch(function _err(errorMsg) {
+      switch (errorMsg) {
+        case "cannotVerifyOwnId":
+          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.cannotVerifyOwnId"));
+          break;
+        case "cannotFindKey":
+          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.cannotFindKey", emailAddress));
+          break;
+        default:
+          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
+          break;
 
-    window.openDialog("chrome://enigmail/content/pepTrustWords.xul",
-      "", "dialog,modal,centerscreen", inputObj);
+      }
 
+    });
   }
-
 };
