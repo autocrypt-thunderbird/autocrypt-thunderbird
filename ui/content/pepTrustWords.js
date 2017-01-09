@@ -9,8 +9,7 @@
 
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 const INPUT = 0;
@@ -27,8 +26,11 @@ function onLoad() {
     }
   }
 
-  document.getElementById("partnerEmailAddr").setAttribute("value", argsObj.otherId.username + "<" + argsObj.otherId.address + ">");
+  document.getElementById("partnerEmailAddr").setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
   document.getElementById("myEmailAddr").setAttribute("value", argsObj.ownId.address);
+  document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
+  document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
+  document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
   displayTrustWords(argsObj.trustWords);
 }
 
@@ -62,14 +64,33 @@ function onAccept() {
   let argsObj = window.arguments[INPUT];
 
   if (argsObj.otherId) {
-    EnigmailPEPAdapter.pep.trustIdentity(argsObj.otherId).then(function _trustDone(data) {
+    EnigmailPEPAdapter.pep.resetIdentityTrust(argsObj.otherId).
+    then(function _resetDone() {
+      return EnigmailPEPAdapter.pep.trustIdentity(argsObj.otherId);
+    }).
+    then(function _trustDone(data) {
+      if (!("result" in data && (typeof data.result === "object") && data.result[0].status === 0)) {
+        EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
+      }
+      window.close();
+    }).
+    catch(function _err() {});
+  }
+
+  return false;
+}
+
+function onMistrustKey() {
+  let argsObj = window.arguments[INPUT];
+
+  if (argsObj.otherId) {
+    EnigmailPEPAdapter.pep.mistrustIdentity(argsObj.otherId).then(function _trustDone(data) {
       if (!("result" in data && (typeof data.result === "object") && data.result[0].status === 0)) {
         EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
       }
       window.close();
     });
   }
-  return false;
 }
 
 function onCancel() {}
@@ -77,4 +98,19 @@ function onCancel() {}
 
 function resizeDlg() {
   window.sizeToContent();
+}
+
+function onToggleAdvanced(element) {
+  if (element.getAttribute("state") === "false") {
+    element.setAttribute("state", "true");
+    element.setAttribute("class", "enigmailCollapseViewButton");
+    document.getElementById("viewAdvanced").removeAttribute("collapsed");
+  }
+  else {
+    element.setAttribute("state", "false");
+    element.setAttribute("class", "enigmailExpandViewButton");
+    document.getElementById("viewAdvanced").setAttribute("collapsed", "true");
+  }
+
+  resizeDlg();
 }

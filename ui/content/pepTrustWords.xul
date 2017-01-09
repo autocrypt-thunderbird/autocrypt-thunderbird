@@ -21,6 +21,7 @@
         onload="return onLoad();"
         ondialogaccept="return onAccept();"
         ondialogcancel="onCancel();"
+        ondialogextra1="onMistrustKey();"
         minheight="50">
 
 
@@ -65,10 +66,43 @@
     </grid>
   </vbox>
 
+  <vbox>
+    <hbox>
+        <vbox>
+          <image class="enigmailExpandViewButton" onclick="onToggleAdvanced(this);"
+               state="false"/>
+        </vbox>
+        <label value="Advanced" flex="1" pack="start"/>
+      </hbox>
+
+      <hbox id="viewAdvanced" collapsed="true">
+        <separator/>
+        <grid>
+          <columns>
+            <column />
+            <column flex="1"/>
+          </columns>
+
+          <rows>
+          <row>
+            <label id="partnerFprLbl" value="..."/>
+            <label id="partnerFpr" value="..."/>
+          </row>
+          <row>
+            <label value="&enigmail.pEp.trustWordsDlg.myFingerprint;"/>
+            <description id="myFpr" value="..."/>
+          </row>
+        </rows>
+      </grid>
+    </hbox>
+    <separator/>
+  </vbox>
+
   <vbox align="end">
     <hbox align="end">
       <button id="dialog.accept" dlgtype="accept" label="&enigmail.pEp.trustWordsDlg.btnVerified;"/>
-      <button dlgtype="cancel" label="&enigmail.pEp.trustWordsDlg.btnCancel;"/>
+      <button dlgtype="extra1" label="&enigmail.pEp.trustWordsDlg.btnMistrust;"/>
+      <button dlgtype="cancel" label="&enigmail.cancelKey.label;"/>
     </hbox>
   </vbox>
 </dialog>

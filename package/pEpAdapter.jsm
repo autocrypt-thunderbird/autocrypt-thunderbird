@@ -324,11 +324,11 @@ var EnigmailPEPAdapter = {
     else {
       let addr = EnigmailAddrbook.lookupEmailAddress(p.address);
       if (addr) {
-        if (addr.displayName.length > 0) {
-          p.username = addr.displayName;
+        if (addr.card.displayName.length > 0) {
+          p.username = addr.card.displayName;
         }
         else {
-          p.username = (addr.firstName + " " + addr.lastName).trim();
+          p.username = (addr.card.firstName + " " + addr.card.lastName).trim();
         }
       }
     }

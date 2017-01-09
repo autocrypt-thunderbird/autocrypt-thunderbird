@@ -1070,7 +1070,8 @@ Enigmail.hdrView = {
 
       if (EnigmailDialog.confirmDlg(window,
           EnigmailLocale.getString("pepRevokeTrust.question", emailAddr),
-          EnigmailLocale.getString("pepRevokeTrust.doRevoke"))) {
+          EnigmailLocale.getString("pepRevokeTrust.doRevoke"),
+          EnigmailLocale.getString("dlg.button.close"))) {
         EnigmailPEPAdapter.resetTrustForEmail(emailAddr).
         then(function _done() {
           gDBView.reloadMessageWithAllParts();
