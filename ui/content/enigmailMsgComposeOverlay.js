@@ -3024,6 +3024,18 @@ Enigmail.msg = {
   encryptPepMessage: function(msgSendType) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage:\n");
 
+    const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
+
+    let isDraft = false;
+
+    switch (msgSendType) {
+      case CiMsgCompDeliverMode.SaveAsDraft:
+      case CiMsgCompDeliverMode.SaveAsTemplate:
+      case CiMsgCompDeliverMode.AutoSaveAsDraft:
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: detected save draft\n");
+        return true;
+    }
+
     let compFields = gMsgCompose.compFields;
     let toAddrList = [];
     let recList;
@@ -3069,7 +3081,7 @@ Enigmail.msg = {
       this.statusEncrypted +
       "\n");
 
-    if (this.juniorMode) return this.encryptPepMessage();
+    if (this.juniorMode) return this.encryptPepMessage(msgSendType);
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;

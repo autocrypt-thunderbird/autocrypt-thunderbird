@@ -62,6 +62,16 @@ var EnigmailPEPDecrypt = {
     let e = msgData.search(/^-----END PGP MESSAGE-----/m);
     let pgpData = s >= 0 && e > s ? msgData.substring(s, e + 27) : msgData;
 
+    if (!adr) adr = {};
+
+    if (!("from" in adr)) {
+      adr.from = {
+        email: "unknown@localhost"
+      };
+    }
+    if (!("to" in adr)) adr.to = [];
+    if (!("cc" in adr)) adr.cc = [];
+
     let from = EnigmailPEPAdapter.emailToPepPerson(adr.from);
     let to = [];
     for (let i of adr.to) {
