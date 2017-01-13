@@ -293,7 +293,7 @@ PEPDecryptor.prototype = {
           "",
           "",
           this.uri,
-          "",
+          "", // encToDetails
           "");
       }
     }

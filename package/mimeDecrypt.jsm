@@ -402,7 +402,9 @@ EnigmailMimeDecrypt.prototype = {
           this.returnStatus.errorMsg,
           this.returnStatus.blockSeparation,
           this.uri,
-          this.returnStatus.encToDetails,
+          JSON.stringify({
+            encryptedTo: this.returnStatus.encToDetails
+          }),
           this.mimePartNumber);
       }
       this.statusDisplayed = true;

@@ -25,7 +25,7 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in wstring errorMsg,
                             in wstring blockSeparation,
                             in nsIURI uri,
-                            in wstring encToDetails,
+                            in wstring extraDetails,  // JSON-parseble string
                             in wstring mimePartNumber);
 
   void modifyMessageHeaders(in nsIURI uri,

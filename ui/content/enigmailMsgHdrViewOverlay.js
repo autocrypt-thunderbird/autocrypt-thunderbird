@@ -1261,7 +1261,7 @@ if (messageHeaderSink) {
         return true;
       },
 
-      updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails, mimePartNumber) {
+      updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, extraDetails, mimePartNumber) {
         // uriSpec is not used for Enigmail anymore. It is here becaue other addons and pEp rely on it
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
@@ -1272,11 +1272,22 @@ if (messageHeaderSink) {
         if (this.isCurrentMessage(uri)) {
 
           if (keyId === "enigmail:pEp") {
-            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri);
+            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri, extraDetails);
           }
           else {
 
             if (!this.displaySubPart(mimePartNumber)) return;
+
+            let encToDetails = "";
+            if (extraDetails && extraDetails.length > 0) {
+              try {
+                let o = JSON.parse(extraDetails);
+                if ("encryptedTo" in o) {
+                  encToDetails = o.encryptedTo;
+                }
+              }
+              catch (x) {}
+            }
 
             Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
               errorMsg, blockSeparation, encToDetails,
