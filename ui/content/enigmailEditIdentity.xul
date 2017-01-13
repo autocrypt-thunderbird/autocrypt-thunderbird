@@ -78,7 +78,6 @@
           <separator/>
 
           <checkbox id="enigmail_autoEncryptDrafts" checked="false"
-                    observes="enigmail_bcEnablePgp"
                     label="&enigmail.autoEncryptDrafts.label;"/>
 
           <separator/>

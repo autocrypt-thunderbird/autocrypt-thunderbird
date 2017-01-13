@@ -12,6 +12,7 @@
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -174,7 +175,14 @@ Enigmail.edit = {
       if (elem) elem.removeAttribute("disabled");
     }
     else {
-      if (elem) elem.setAttribute("disabled", "true");
+      if (elem) {
+        if (EnigmailPEPAdapter.usingPep()) {
+          elem.removeAttribute("disabled");
+        }
+        else {
+          elem.setAttribute("disabled", "true");
+        }
+      }
     }
 
     this.enableKeySel(this.cryptoChoicesEnabled && (this.pgpKeyMode.value == 1));
