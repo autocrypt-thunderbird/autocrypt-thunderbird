@@ -226,13 +226,13 @@ var EnigmailPEPAdapter = {
       to.push(EnigmailPEPAdapter.emailToPepPerson(i));
     }
 
-    EnigmailPEPAdapter.pep.outgoingMessageColor(from, to, "test").then(function _step2(res) {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: SUCCESS\n");
+    EnigmailPEPAdapter.pep.outgoingMessageRating(from, to, "test").then(function _step2(res) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result;
       }
       else
-        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: typeof res=" + typeof(res) + "\n");
+        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof(res) + "\n");
 
 
       if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -241,7 +241,7 @@ var EnigmailPEPAdapter = {
       }
 
     }).catch(function _error(err) {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageColor: ERROR\n");
+      EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: ERROR\n");
       EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
 
       if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -519,6 +519,27 @@ var EnigmailPEPAdapter = {
     });
 
     return deferred.promise;
+  },
+
+  calculateColorFromRating: function(rating) {
+    let color = "grey";
+    if (rating === -2 || rating === 2) {
+      color = "grey";
+    }
+    else if (rating < 0) {
+      color = "red";
+    }
+    else if (rating < 6) {
+      color = "grey";
+    }
+    else if (rating >= 7) {
+      color = "yellow";
+    }
+    else {
+      color = "green";
+    }
+
+    return color;
   }
 };
 

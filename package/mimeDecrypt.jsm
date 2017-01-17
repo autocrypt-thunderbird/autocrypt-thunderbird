@@ -457,11 +457,10 @@ EnigmailMimeDecrypt.prototype = {
     }
     catch (ex) {}
 
-    var i = this.decryptedData.search(/\n\r?\n/);
+    let i = this.decryptedData.search(/\n\r?\n/);
     if (i > 0) {
       var hdr = this.decryptedData.substr(0, i).split(/\r?\n/);
-      var j;
-      for (j in hdr) {
+      for (let j = 0; j < hdr.length; j++) {
         if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
           LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
 

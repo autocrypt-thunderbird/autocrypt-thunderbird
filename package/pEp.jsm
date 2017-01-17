@@ -261,12 +261,13 @@ var EnigmailpEp = {
    * @param sender    : pEpPerson          - sender information
    * @param to        : Array of pEpPerson - recipients (To) information
    * @param sender    : Array of pEpPerson - recipients (Cc) information
+   * @param replyTo   : Array of pEpPerson - Reply-to  information
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  decryptMessage: function(message, sender, to, cc) {
+  decryptMessage: function(message, sender, to, cc, replyTo) {
 
     if (!sender) sender = "*";
 
@@ -292,6 +293,10 @@ var EnigmailpEp = {
     if (cc) {
       message.cc = cc;
     }
+    if (replyTo) {
+      message.reply_to = replyTo;
+    }
+
 
     try {
       let params = [
@@ -351,10 +356,9 @@ var EnigmailpEp = {
   },
 
   /**
-   * determine the trust color of a pEp Identity
+   * determine the rating (=trust level) of a pEp Identity
    *
-   * @param mailAddr  : String          - Email address to check
-   * @param userId    : String          - pEp Identity to check
+   * @param userId    : Object          - pEp Identity to check
    *
    * one of mailAddr/userId may be null
    *
@@ -363,20 +367,13 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
 
-  getIdentityColor: function(mailAddr, userId, fpr) {
-    let pepId = {
-      "user_id": userId,
-      "username": null,
-      "address": mailAddr,
-      "fpr": fpr
-    };
-
+  getIdentityRating: function(userId) {
     try {
       let params = [
-        pepId, [""] // color
+        userId, [""] // color
       ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "identity_color", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "identity_rating", params);
 
     }
     catch (ex) {
@@ -479,12 +476,14 @@ var EnigmailpEp = {
    * @param id1:      Object          - the 1st pEp ID to check
    * @param id2:      Object          - the 2nd pEp ID to check
    * @param language: String          - language (2-letter ISOCODE)
+   * @param longList: Boolean         - if true, return complete list of trustWords, otherwise
+   *                                     return short list (default = false)
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  getTrustWords: function(id1, id2, language) {
+  getTrustWords: function(id1, id2, language, longList = false) {
 
     try {
       let params = [
@@ -492,7 +491,7 @@ var EnigmailpEp = {
         id2,
         language.toUpperCase(), ["OP"], // words
         ["OP"], // words_size
-        false // full
+        longList
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "get_trustwords", params);
@@ -610,7 +609,7 @@ var EnigmailpEp = {
 
 
   /**
-   * determine the trust color that an outgoing message would receive
+   * determine the trust color (rating) that an outgoing message would receive
    *
    * @param from:    Object (pEpPerson)          - sender
    * @param to:      Array of Object (pEpPerson) - array with all recipients
@@ -620,7 +619,7 @@ var EnigmailpEp = {
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  outgoingMessageColor: function(from, to, message) {
+  outgoingMessageRating: function(from, to, message) {
 
     if (!to) to = [];
 
@@ -636,7 +635,7 @@ var EnigmailpEp = {
         "O"
       ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "outgoing_message_color", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "outgoing_message_rating", params);
 
     }
     catch (ex) {

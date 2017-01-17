@@ -606,3 +606,30 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 .enigmailPepRatingTrusted {
   list-style-image: url("chrome://enigmail/skin/pEpGreen.png");
 }
+
+.enigmailPepIdentityMistrust
+{
+  background-image: url('chrome://enigmail/skin/pEpRed.png');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}
+
+.enigmailPepIdentityReliable
+{
+  background-image: url('chrome://enigmail/skin/pEpYellow.png');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}
+
+.enigmailPepIdentityTrusted
+{
+  background-image: url('chrome://enigmail/skin/pEpGreen.png');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}

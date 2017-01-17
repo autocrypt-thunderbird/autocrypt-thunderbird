@@ -83,7 +83,15 @@ var EnigmailPEPDecrypt = {
       cc.push(EnigmailPEPAdapter.emailToPepPerson(i));
     }
 
-    EnigmailpEp.decryptMessage(pgpData, from, to, cc).then(function _step2(res) {
+    let replyTo;
+    if ("replyTo" in adr) {
+      replyTo = [];
+      for (let i of adr.replyTo) {
+        replyTo.push(EnigmailPEPAdapter.emailToPepPerson(i));
+      }
+    }
+
+    EnigmailpEp.decryptMessage(pgpData, from, to, cc, replyTo).then(function _step2(res) {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result;
@@ -114,6 +122,12 @@ var EnigmailPEPDecrypt = {
       return {
         longmsg: resultObj[3].longmsg,
         shortmsg: resultObj[3].shortmsg,
+        persons: {
+          from: resultObj[3].from,
+          to: resultObj[3].to,
+          cc: resultObj[3].cc,
+          reply_to: resultObj[3].reply_to
+        },
         color: resultObj[1].color,
         fpr: resultObj[2]
       };
@@ -148,6 +162,9 @@ var EnigmailPEPDecrypt = {
         }
         if (hdr.hasHeader("cc")) {
           addresses.cc = hdr.getHeader("cc");
+        }
+        if (hdr.hasHeader("reply-to")) {
+          addresses.replyTo = hdr.getHeader("reply-to");
         }
 
         if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -259,7 +276,7 @@ PEPDecryptor.prototype = {
 
       if (!this.backgroundJob) {
         // only display the decrption/verification status if not background-Job
-        this.displayStatus(color, fpr);
+        this.displayStatus(color, fpr, dec.persons);
       }
     }
 
@@ -268,7 +285,7 @@ PEPDecryptor.prototype = {
     this.mimeSvc.onStopRequest(null, null, 0);
   },
 
-  displayStatus: function(color, fpr) {
+  displayStatus: function(color, fpr, persons) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus\n");
 
     if (this.msgWindow === null || this.backgroundJob)
@@ -293,7 +310,7 @@ PEPDecryptor.prototype = {
           "",
           "",
           this.uri,
-          "", // encToDetails
+          JSON.stringify(persons),
           "");
       }
     }

@@ -1322,6 +1322,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: movePEPsubject:\n");
 
     let bodyElement = this.getBodyElement();
+
     if (bodyElement.textContent.search(/^\r?\n?Subject: [^\r\n]+\r?\n\r?\n/i) === 0 &&
       ("subject" in currentHeaderData) &&
       currentHeaderData.subject.headerValue === "pEp") {
@@ -1331,8 +1332,28 @@ Enigmail.msg = {
         if (m && m.length > 0) {
           let subject = m[0].replace(/[\r\n]/g, "");
           subject = subject.substr(9);
+          let newText = bodyElement.textContent.substr(m[0].length);
 
-          bodyElement.textContent = bodyElement.textContent.substr(m[0].length);
+          let node = bodyElement.firstChild;
+          let found = false;
+
+          while ((!found) && node) {
+            if (node.nodeName == "DIV") {
+              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(newText);
+              found = true;
+            }
+            node = node.nextSibling;
+          }
+
+          // if no <DIV> node is found, try with <PRE> (bug 24762)
+          node = bodyElement.firstChild;
+          while ((!found) && node) {
+            if (node.nodeName == "PRE") {
+              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(newText);
+              found = true;
+            }
+            node = node.nextSibling;
+          }
 
           Enigmail.hdrView.setSubject(subject);
         }

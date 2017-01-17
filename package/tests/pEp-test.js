@@ -37,12 +37,12 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
 
     return EnigmailpEp.getPepVersion();
   }).
-  then(function _f(a){
+  then(function _f(a) {
     Assert.ok(a && a.length > 0);
 
     return EnigmailpEp.setIdentity("strike.devtest@gmail.com", "Enigmail-UnitTest-User", "anonymous strike", "65537E212DC19025AD38EDB2781617319CE311C4");
   }).
-  then(function _f(a){
+  then(function _f(a) {
     Assert.equal(0, a.result[0].status);
 
     return EnigmailpEp.getIdentity("strike.devtest@gmail.com", "Enigmail-UnitTest-User");
@@ -50,7 +50,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
   then(function _f(a) {
     Assert.equal("65537E212DC19025AD38EDB2781617319CE311C4", a.result[0].fpr);
 
-    return EnigmailpEp.getIdentityColor("strike.devtest@gmail.com", "Enigmail-UnitTest-User");
+    return EnigmailpEp.getIdentityRating("strike.devtest@gmail.com", "Enigmail-UnitTest-User");
   }).
   then(function _f(a) {
 

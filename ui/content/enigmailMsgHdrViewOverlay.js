@@ -87,11 +87,22 @@ Enigmail.hdrView = {
   },
 
   statusBarHide: function() {
+    function resetPepColors(textNode) {
+      let nodes = textNode.getElementsByTagName("mail-emailaddress");
+      for (let i = 0; i < nodes.length; i++) {
+        nodes[i].setAttribute("class", "");
+      }
+    }
+
     try {
       this.statusBar.removeAttribute("signed");
       this.statusBar.removeAttribute("encrypted");
       this.enigmailBox.setAttribute("collapsed", "true");
       this.pEpBox.setAttribute("collapsed", "true");
+      resetPepColors(gExpandedHeaderView.from.textNode);
+      resetPepColors(gExpandedHeaderView.to.textNode);
+      resetPepColors(gExpandedHeaderView.cc.textNode);
+      resetPepColors(gExpandedHeaderView["reply-to"].textNode);
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo.statusFlags = 0;
@@ -963,8 +974,29 @@ Enigmail.hdrView = {
     }
   },
 
-  displayPepStatus: function(rating, keyIDs, uri) {
+  displayPepStatus: function(rating, keyIDs, uri, personsStr) {
 
+    let persons = {};
+    try {
+      persons = JSON.parse(personsStr);
+    }
+    catch (ex) {}
+
+    if (typeof(keyIDs) === "string") {
+      keyIDs = keyIDs.split(/,/);
+    }
+
+    this.pEpStatus = {
+      rating: rating,
+      color: "grey",
+      keyIDs: keyIDs
+    };
+
+    this.displayPepMessageRating(rating);
+    this.displayPepIdentities(persons);
+  },
+
+  displayPepMessageRating: function(rating) {
     /*
     rating:
     undefined = 0,
@@ -981,16 +1013,6 @@ Enigmail.hdrView = {
     b0rken = -2,
     under_attack = -3
     */
-
-    if (typeof(keyIDs) === "string") {
-      keyIDs = keyIDs.split(/,/);
-    }
-
-    this.pEpStatus = {
-      rating: rating,
-      color: "grey",
-      keyIDs: keyIDs
-    };
 
     this.pEpBox.removeAttribute("collapsed");
 
@@ -1014,6 +1036,66 @@ Enigmail.hdrView = {
       this.pEpStatus.color = "yellow";
       this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
     }
+  },
+
+  displayPepEmailRating: function(textNode, person) {
+    let nodes = textNode.getElementsByTagName("mail-emailaddress");
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].getAttribute("hidden") !== "true" && nodes[i].getAttribute("emailAddress").toLowerCase() === person.address.toLowerCase()) {
+        EnigmailPEPAdapter.pep.getIdentityRating(person).
+        then(
+          function _gotRating(cbObj) {
+            if ("result" in cbObj && Array.isArray(cbObj.result) && typeof(cbObj.result[0]) === "object") {
+              if ("color" in cbObj.result[0]) {
+                let color = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result[0].color);
+                let setClass = "";
+
+                switch (color) {
+                  case "grey":
+                    setClass = "enigmailPepIdentityUnknown";
+                    break;
+                  case "red":
+                    setClass = "enigmailPepIdentityMistrust";
+                    break;
+                  case "yellow":
+                    setClass = "enigmailPepIdentityTrusted";
+                    break;
+                  case "green":
+                    setClass = "enigmailPepIdentityReliable";
+                }
+                nodes[i].setAttribute("class", setClass);
+              }
+            }
+          }).
+        catch(function _err() {});
+      }
+    }
+  },
+
+  displayPepIdentities: function(persons) {
+
+    if ("from" in persons) {
+      this.displayPepEmailRating(gExpandedHeaderView.from.textNode, persons.from);
+    }
+
+    if ("to" in persons) {
+      for (let p of persons.to) {
+        this.displayPepEmailRating(gExpandedHeaderView.to.textNode, p);
+      }
+    }
+
+    if ("cc" in persons) {
+      for (let p of persons.cc) {
+        this.displayPepEmailRating(gExpandedHeaderView.cc.textNode, p);
+      }
+    }
+
+    if ("reply_to" in persons) {
+      for (let p of persons.reply_to) {
+        this.displayPepEmailRating(gExpandedHeaderView["reply-to"].textNode, p);
+      }
+    }
+
   },
 
   pEpIconPopup: function() {
