@@ -1339,6 +1339,7 @@ var gKeyListView = {
   getCellText: function(row, col) {
 
     let r = this.getFilteredRow(row);
+    if (!r) return "";
     let keyObj = gKeyList[r.keyNum];
 
     switch (r.rowType) {
@@ -1347,7 +1348,7 @@ var gKeyListView = {
           case "enigUserNameCol":
             return keyObj.userId;
           case "keyCol":
-            return keyObj.keyId.substr(-8, 8);
+            return keyObj.keyId;
           case "typeCol":
             if (keyObj.secretAvailable) {
               return EnigmailLocale.getString("keyType.publicAndSec");
