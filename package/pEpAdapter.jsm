@@ -471,8 +471,8 @@ var EnigmailPEPAdapter = {
 
       return EnigmailPEPAdapter.getTrustWordsForLocale(useOwnId, emailId, useLocale);
     }).then(function _gotTrustWords(data) {
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
-        let trustWords = data.result[0];
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
+        let trustWords = data.result[1];
         deferred.resolve({
           ownId: useOwnId,
           otherId: emailId,
@@ -502,8 +502,8 @@ var EnigmailPEPAdapter = {
   getTrustWordsForLocale: function(ownId, otherId, language) {
 
     // TODO: broken in pEp
-    //return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
-    return simulateTrustWords(ownId, otherId, language);
+    return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
+    //return simulateTrustWords(ownId, otherId, language);
   },
 
   resetTrustForEmail: function(emailAddr) {
@@ -533,10 +533,10 @@ var EnigmailPEPAdapter = {
       color = "grey";
     }
     else if (rating >= 7) {
-      color = "yellow";
+      color = "green";
     }
     else {
-      color = "green";
+      color = "yellow";
     }
 
     return color;
@@ -554,7 +554,7 @@ function simulateTrustWords(useOwnId, emailId, locale) {
 
   deferred.resolve({
     jsonrpc: "2.0",
-    result: [tw, {
+    result: [47, tw, {
       status: 0,
       hex: "PEP_STATUS_OK"
     }],

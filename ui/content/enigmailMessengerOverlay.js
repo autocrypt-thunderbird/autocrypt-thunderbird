@@ -1045,6 +1045,8 @@ Enigmail.msg = {
           if (pEpResult.shortmsg.length > 0) {
             Enigmail.hdrView.setSubject(pEpResult.shortmsg);
           }
+
+
           exitCode = 0;
         }
         else {
@@ -1084,7 +1086,7 @@ Enigmail.msg = {
     var displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
       if (EnigmailPEPAdapter.usingPep() && pEpResult) {
-        Enigmail.hdrView.displayPepStatus(pEpResult.color, pEpResult.fpr, null);
+        Enigmail.hdrView.displayPepStatus(pEpResult.color, pEpResult.fpr, null, pEpResult.persons);
       }
       else {
         Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,

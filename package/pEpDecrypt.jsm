@@ -53,6 +53,11 @@ var EnigmailPEPDecrypt = {
    *          - shortmsg - String; message subject (if any)
    *          - color:   - Number: the pEp rating of how securely the message was tansmitted
    *          - fpr:     - Array of String: the list of fingerprints used for the message
+   *          - persons: - Object:
+   *                - from:       pEpPerson
+   *                - to:         Array of pEpPerson
+   *                - cc:         Array of pEpPerson
+   *                - reply_to:   Array of pEpPerson
    */
   decryptMessageData: function(msgData, adr) {
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);

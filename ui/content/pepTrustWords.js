@@ -51,8 +51,8 @@ function getTrustWords(locale) {
   let argsObj = window.arguments[INPUT];
   EnigmailPEPAdapter.getTrustWordsForLocale(argsObj.ownId, argsObj.otherId, locale).
   then(function _f(data) {
-    if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "string") {
-      let trustWords = data.result[0];
+    if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
+      let trustWords = data.result[1];
       displayTrustWords(trustWords);
     }
   }).

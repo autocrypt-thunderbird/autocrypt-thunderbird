@@ -74,13 +74,7 @@ Enigmail.hdrView = {
     if (EnigmailPEPAdapter.usingPep()) {
       let adr = findEmailNodeFromPopupNode(document.popupNode, 'emailAddressPopup');
       if (adr) {
-        if (adr.getAttribute("headerName") === "from") {
-          Enigmail.hdrView.setPepVerifyFunction();
-        }
-        else {
-          document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
-          document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
-        }
+        Enigmail.hdrView.setPepVerifyFunction(adr);
       }
     }
     EnigmailFuncs.collapseAdvanced(target, 'hidden');
@@ -974,13 +968,7 @@ Enigmail.hdrView = {
     }
   },
 
-  displayPepStatus: function(rating, keyIDs, uri, personsStr) {
-
-    let persons = {};
-    try {
-      persons = JSON.parse(personsStr);
-    }
-    catch (ex) {}
+  displayPepStatus: function(rating, keyIDs, uri, persons) {
 
     if (typeof(keyIDs) === "string") {
       keyIDs = keyIDs.split(/,/);
@@ -988,7 +976,8 @@ Enigmail.hdrView = {
 
     this.pEpStatus = {
       rating: rating,
-      color: "grey",
+      messageColor: "grey",
+      emailRatings: [],
       keyIDs: keyIDs
     };
 
@@ -1017,31 +1006,33 @@ Enigmail.hdrView = {
     this.pEpBox.removeAttribute("collapsed");
 
     if (rating === -2 || rating === 2) {
-      this.pEpStatus.color = "grey";
+      this.pEpStatus.messageColor = "grey";
       this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
     }
     else if (rating < 0) {
-      this.pEpStatus.color = "red";
+      this.pEpStatus.messageColor = "red";
       this.pEpBox.setAttribute("class", "enigmailPepRatingMistrust");
     }
     else if (rating < 6) {
-      this.pEpStatus.color = "grey";
+      this.pEpStatus.messageColor = "grey";
       this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
     }
     else if (rating >= 7) {
-      this.pEpStatus.color = "green";
+      this.pEpStatus.messageColor = "green";
       this.pEpBox.setAttribute("class", "enigmailPepRatingTrusted");
     }
     else {
-      this.pEpStatus.color = "yellow";
+      this.pEpStatus.messageColor = "yellow";
       this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
     }
   },
 
   displayPepEmailRating: function(textNode, person) {
     let nodes = textNode.getElementsByTagName("mail-emailaddress");
+    let emailAddress = person.address.toLowerCase();
+
     for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].getAttribute("hidden") !== "true" && nodes[i].getAttribute("emailAddress").toLowerCase() === person.address.toLowerCase()) {
+      if (nodes[i].getAttribute("hidden") !== "true" && nodes[i].getAttribute("emailAddress").toLowerCase() === emailAddress) {
         EnigmailPEPAdapter.pep.getIdentityRating(person).
         then(
           function _gotRating(cbObj) {
@@ -1058,12 +1049,13 @@ Enigmail.hdrView = {
                     setClass = "enigmailPepIdentityMistrust";
                     break;
                   case "yellow":
-                    setClass = "enigmailPepIdentityTrusted";
+                    setClass = "enigmailPepIdentityReliable";
                     break;
                   case "green":
-                    setClass = "enigmailPepIdentityReliable";
+                    setClass = "enigmailPepIdentityTrusted";
                 }
                 nodes[i].setAttribute("class", setClass);
+                Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = color;
               }
             }
           }).
@@ -1074,23 +1066,23 @@ Enigmail.hdrView = {
 
   displayPepIdentities: function(persons) {
 
-    if ("from" in persons) {
+    if ("from" in persons && persons.from) {
       this.displayPepEmailRating(gExpandedHeaderView.from.textNode, persons.from);
     }
 
-    if ("to" in persons) {
+    if ("to" in persons && persons.to) {
       for (let p of persons.to) {
         this.displayPepEmailRating(gExpandedHeaderView.to.textNode, p);
       }
     }
 
-    if ("cc" in persons) {
+    if ("cc" in persons && persons.cc) {
       for (let p of persons.cc) {
         this.displayPepEmailRating(gExpandedHeaderView.cc.textNode, p);
       }
     }
 
-    if ("reply_to" in persons) {
+    if ("reply_to" in persons && persons.reply_to) {
       for (let p of persons.reply_to) {
         this.displayPepEmailRating(gExpandedHeaderView["reply-to"].textNode, p);
       }
@@ -1099,8 +1091,8 @@ Enigmail.hdrView = {
   },
 
   pEpIconPopup: function() {
-    let infoProp = "pepStatusInfo.info." + this.pEpStatus.color;
-    let colorProp = "pepStatusInfo.color." + this.pEpStatus.color;
+    let infoProp = "pepStatusInfo.info." + this.pEpStatus.messageColor;
+    let colorProp = "pepStatusInfo.color." + this.pEpStatus.messageColor;
     let detailInfo = EnigmailLocale.getString(infoProp);
     let colorLocale = EnigmailLocale.getString(colorProp);
     EnigmailDialog.alert(window, EnigmailLocale.getString("pepStatusInfo.text", [colorLocale, detailInfo]));
@@ -1117,13 +1109,21 @@ Enigmail.hdrView = {
     }
   },
 
-  setPepVerifyFunction: function() {
-    if (this.pEpStatus.color === "green") {
-      document.getElementById("enigmailRevokePepStatus").removeAttribute("collapsed");
-      document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+  setPepVerifyFunction: function(addressNode) {
+    let emailAddress = addressNode.getAttribute("emailAddress").toLowerCase();
+    if (Enigmail.hdrView.pEpStatus.emailRatings[emailAddress]) {
+      let idColor = Enigmail.hdrView.pEpStatus.emailRatings[emailAddress];
+      if (idColor === "green") {
+        document.getElementById("enigmailRevokePepStatus").removeAttribute("collapsed");
+        document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
+      }
+      else {
+        document.getElementById("enigmailVerifyPepStatus").removeAttribute("collapsed");
+        document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
+      }
     }
     else {
-      document.getElementById("enigmailVerifyPepStatus").removeAttribute("collapsed");
+      document.getElementById("enigmailVerifyPepStatus").setAttribute("collapsed", "true");
       document.getElementById("enigmailRevokePepStatus").setAttribute("collapsed", "true");
     }
   },
@@ -1354,7 +1354,13 @@ if (messageHeaderSink) {
         if (this.isCurrentMessage(uri)) {
 
           if (keyId === "enigmail:pEp") {
-            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri, extraDetails);
+            let persons = {};
+            try {
+              persons = JSON.parse(extraDetails);
+            }
+            catch (ex) {}
+
+            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri, persons);
           }
           else {
 
