@@ -126,13 +126,13 @@ var EnigmailpEp = {
 
 
   /**
-   * get the path to the GnuPG executable
+   * get the path to the GnuPG executable, and the env. variables GNUPGHOME and GPG_AGENT_INFO
    *
    * @return: Promise.
    *  then:  String - Full path to gpg executable
    *  catch: Error object (see above)
    */
-  getGpgPath: function() {
+  getGpgEnv: function() {
 
     let onLoad = function(responseObj) {
       if ("result" in responseObj) {
@@ -142,9 +142,7 @@ var EnigmailpEp = {
       return responseObj;
     };
 
-    return this._callPepFunction(FT_CALL_FUNCTION, "get_gpg_path", [
-      ["OP"]
-    ], onLoad);
+    return this._callPepFunction(FT_CALL_FUNCTION, "getGpgEnvironment", [], onLoad);
 
   },
 

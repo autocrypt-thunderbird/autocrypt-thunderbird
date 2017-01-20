@@ -58,6 +58,9 @@ const nsIEnigmail = Ci.nsIEnigmail;
 
 const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
 
+var gPreferredGpgPath = null;
+var gOverwriteEnvVar = [];
+
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail encryption/decryption service
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,7 +172,14 @@ function initializeEnvironment(env) {
 
   for (var j = 0; j < passEnv.length; j++) {
     const envName = passEnv[j];
-    const envValue = env.get(envName);
+    let envValue;
+
+    if (envName in gOverwriteEnvVar) {
+      envValue = gOverwriteEnvVar[envName];
+    }
+    else {
+      envValue = env.get(envName);
+    }
     if (envValue) {
       EnigmailCore.addToEnvList(envName + "=" + envValue);
     }
@@ -261,7 +271,7 @@ Enigmail.prototype = {
       failureOn(ex, this);
     }
 
-    EnigmailGpgAgent.setAgentPath(domWindow, this);
+    EnigmailGpgAgent.setAgentPath(domWindow, this, gPreferredGpgPath);
     EnigmailGpgAgent.detectGpgAgent(domWindow, this);
 
     initializeAgentInfo();
@@ -276,12 +286,31 @@ Enigmail.prototype = {
   },
 
   reinitialize: function() {
+    EnigmailLog.DEBUG("enigmail.js: Enigmail.reinitialize:\n");
     this.initialized = false;
     this.initializationAttempted = true;
 
     EnigmailConsole.write("Reinitializing Enigmail service ...\n");
-    EnigmailGpgAgent.setAgentPath(null, this);
+    initializeEnvironment(this.environment);
+    EnigmailGpgAgent.setAgentPath(null, this, gPreferredGpgPath);
     this.initialized = true;
+  },
+
+  perferGpgPath: function(gpgPath) {
+    EnigmailLog.DEBUG("enigmail.js: Enigmail.perferGpgPath = " + gpgPath + "\n");
+    gPreferredGpgPath = gpgPath;
+  },
+
+  overwriteEnvVar: function(envVar) {
+    let envLines = envVar.split(/\n/);
+
+    gOverwriteEnvVar = [];
+    for (let i = 0; i < envLines.length; i++) {
+      let j = envLines[i].indexOf("=");
+      if (j > 0) {
+        gOverwriteEnvVar[envLines[i].substr(0, j)] = envLines[i].substr(j + 1);
+      }
+    }
   },
 
   getService: function(holder, win, startingPreferences) {

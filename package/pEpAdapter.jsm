@@ -14,6 +14,7 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/pEpListener.jsm"); /*global EnigmailpEpListener: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
@@ -48,6 +49,7 @@ function pepCallback(data) {
 }
 
 function startListener() {
+  /* not yet operational
   EnigmailLog.DEBUG("pEpAdapter.jsm: startListener:\n");
   gSecurityToken = EnigmailRNG.generateRandomString(40);
   let portNum = EnigmailpEpListener.createListener(pepCallback, gSecurityToken);
@@ -62,6 +64,7 @@ function startListener() {
   }).catch(function _fail(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp failed\n");
   });
+  */
 }
 
 
@@ -157,11 +160,38 @@ var EnigmailPEPAdapter = {
     if (execFile) EnigmailpEp.setServerPath(execFile.path);
 
     try {
-      EnigmailpEp.getPepVersion().then(function success(data) {
+      EnigmailpEp.getPepVersion().then(function _success(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
         if (Array.isArray(data)) {
           gPepVersion = String(data[0]);
           startListener();
+        }
+
+        return EnigmailpEp.getGpgEnv();
+      }).
+      then(function _gotGpgEnv(gpgEnv) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG env '" + JSON.stringify(gpgEnv) + "'\n");
+
+        let envStr = "";
+        // {"gnupg_path":"/usr/local/MacGPG2/bin/gpg2","gnupg_home":null,"gpg_agent_info":"xxxx"}
+        if (gpgEnv && typeof gpgEnv === "object" && "gnupg_path" in gpgEnv) {
+          if (typeof(gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
+            envStr += "GPG_AGENT_INFO=" + gpgEnv.gpg_agent_info + "\n";
+          }
+          if (typeof(gpgEnv.gnupg_home) === "string" && gpgEnv.gnupg_home.length > 0) {
+            envStr += "GNUPGHOME=" + gpgEnv.gnupg_home + "\n";
+          }
+
+          let enigmailSvc = Cc["@mozdev.org/enigmail/enigmail;1"].getService(Ci.nsIEnigmail);
+          enigmailSvc.perferGpgPath(gpgEnv.gnupg_path);
+          enigmailSvc.overwriteEnvVar(envStr);
+
+          if (enigmailSvc.initialized) {
+            enigmailSvc.reinitialize();
+          }
+          else {
+            enigmailSvc.initialize(null, false);
+          }
         }
       }).
       catch(function failed(err) {

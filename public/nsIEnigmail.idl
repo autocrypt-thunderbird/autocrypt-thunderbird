@@ -25,6 +25,8 @@ interface nsIEnigmail : nsISupports
   void initialize(in nsIDOMWindow domWindow, in string version);
   void reinitialize();
   void finalize();
+  void perferGpgPath(in string path);
+  void overwriteEnvVar(in string envVar);
 
   /* Cleartext signature parts */
   const long SIGNATURE_TEXT    = 1;

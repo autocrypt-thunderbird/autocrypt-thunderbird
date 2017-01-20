@@ -338,7 +338,7 @@ var EnigmailGpgAgent = {
 
     let exitCode = -1;
     let outStr = "";
-    EnigmailLog.DEBUG("gpgAgent.jsm: .setAgentPath: calling subprocess with '" + command.path + "'\n");
+    EnigmailLog.DEBUG("gpgAgent.jsm: .getGpgHomeDir: calling subprocess with '" + command.path + "'\n");
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
 
@@ -371,10 +371,15 @@ var EnigmailGpgAgent = {
     return null;
   },
 
-  setAgentPath: function(domWindow, esvc) {
+  setAgentPath: function(domWindow, esvc, preferredPath) {
     let agentPath = "";
     try {
-      agentPath = EnigmailPrefs.getPrefBranch().getCharPref("agentPath");
+      if (preferredPath) {
+        agentPath = preferredPath;
+      }
+      else {
+        agentPath = EnigmailPrefs.getPrefBranch().getCharPref("agentPath");
+      }
     }
     catch (ex) {}
 
