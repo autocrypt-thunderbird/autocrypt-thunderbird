@@ -1,4 +1,5 @@
 <!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Generate OpenPGP Key">
@@ -158,6 +159,9 @@
 
 <!ENTITY enigmail.signedsend.label            "Sign Message">
 <!ENTITY enigmail.encryptedsend.label         "Encrypt Message">
+
+<!ENTITY enigmail.pepEnableProtection.label         "Enable Protection">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "E">
 
 <!ENTITY enigmail.pgpAccountSettings.label     "Signing/Encryption Options...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Send Options...">
@@ -811,3 +815,5 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Confirm Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "Wrong Trustwords/Mistrust key">
+<!ENTITY enigmail.pEp.privacyStatus.label             "Privacy Status:">
+<!ENTITY enigmail.pEp.composestatus.label             "Unknown">

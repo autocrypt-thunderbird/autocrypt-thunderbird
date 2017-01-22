@@ -37,6 +37,7 @@
     <broadcaster id="enigmail-bc-sign" checked="false"/>
     <broadcaster id="enigmail-bc-attach" checked="false"/>
     <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
+    <broadcaster id="enigmail-bc-pepEncrypt" hidden="true" encrypt="true"/>
     <broadcaster id="enigmail-bc-sendprocess"/>
   </broadcasterset>
 
@@ -187,6 +188,24 @@
         </menupopup>
       </menu>
 
+      <menu id="menu_EnigmailPep"
+            label="&enigmail.pEp.label;"
+            accesskey="&enigmail.composemenu.accesskey;"
+            insertbefore="tasksMenu"
+            hidden="true">
+
+        <menupopup id="menu_EnigmailPopup"
+            onpopupshowing="Enigmail.msg.pepMenuPopup()">
+
+          <!-- encryption state / toggle menu -->
+          <menuitem id="enigmail_compose_pep_encrypt"
+                accesskey="&enigmail.pepEnableProtection.accesskey;"
+                label="&enigmail.pepEnableProtection.label;"
+                key="key_enigEncrypt"
+                oncommand="Enigmail.msg.onPepEncryptMenu()"
+                type="checkbox"/>
+      </menupopup>
+    </menu>
   </menubar>
 
   <!-- Enigmail toolbar button -->
@@ -246,13 +265,22 @@
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
 
+    <!-- encryption button for pEp -->
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-pepEncrypt"
+            buttontype="thunderbird"
+            tooltip="aTooltipSet"
+            observes="enigmail-bc-pepEncrypt"
+            oncommand="Enigmail.msg.onPepEncryptButton()"
+            label="&enigmail.pepEnableProtection.label;"/>
+
   </toolbarpalette>
 
   <!-- Enigmail bar above text editor field -->
 
   <toolbox id="compose-toolbox">
     <toolbar id="composeToolbar2"
-            defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-save,spring">
+            defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-pepEncrypt,button-save,spring">
     </toolbar>
     <toolbar id="enigmail-toolbar"
             insertafter="composeToolbar2"
@@ -267,5 +295,14 @@
     </toolbar>
   </toolbox>
 
+  <statusbar id="status-bar">
+    <statusbarpanel insertbefore="statusText" id="enigmail-pep-statusbar">
+      <hbox align="center">
+        <image class="enigmail-statusbar-pep-logo"/>
+        <label value="&enigmail.pEp.privacyStatus.label;"/>
+        <label id="enigmail-pep-privacy-status" value="&enigmail.pEp.composestatus.label;" class="enigmail-statusbar-pep-unsecure"/>
+      </hbox>
+    </statusbarpanel>
+  </statusbar>
 
 </overlay>

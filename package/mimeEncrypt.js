@@ -628,6 +628,7 @@ PgpMimeEncrypt.prototype = {
     let self = this;
     let resultObj = null;
     let originalSubject = null;
+    let sendFlags = 0;
     this.outQueue = "";
 
     if ((!this.isDraft) || self.msgIdentity.getBoolAttribute("autoEncryptDrafts")) {
@@ -639,6 +640,7 @@ PgpMimeEncrypt.prototype = {
       try {
         enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
         originalSubject = enigSecurityInfo.originalSubject;
+        sendFlags = enigSecurityInfo.sendFlags;
       }
       catch (ex) {}
 
@@ -652,46 +654,49 @@ PgpMimeEncrypt.prototype = {
       }
       else {
         toAddr = fromAddr;
+        sendFlags = Ci.nsIEnigmail.SEND_ENCRYPTED;
       }
 
-      let s = jsmime.headeremitter.emitStructuredHeader("from", fromAddr, {});
-      s += jsmime.headeremitter.emitStructuredHeader("to", toAddr, {});
+      if (sendFlags & Ci.nsIEnigmail.SEND_ENCRYPTED) {
+        let s = jsmime.headeremitter.emitStructuredHeader("from", fromAddr, {});
+        s += jsmime.headeremitter.emitStructuredHeader("to", toAddr, {});
 
-      if (originalSubject !== null) {
-        s += jsmime.headeremitter.emitStructuredHeader("subject", originalSubject, {});
+        if (originalSubject !== null) {
+          s += jsmime.headeremitter.emitStructuredHeader("subject", originalSubject, {});
+        }
+
+        EnigmailPEPAdapter.pep.encryptMimeString(s + this.pipeQueue, null).then(function _f(res) {
+          EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
+          if ((typeof(res) === "object") && ("result" in res)) {
+            resultObj = res.result;
+          }
+          else
+            EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: typeof res=" + typeof(res) + "\n");
+
+
+          if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
+            // unblock the waiting lock in finishCryptoEncapsulation
+            self.inspector.exitNestedEventLoop();
+          }
+
+        }).catch(function _error(err) {
+          EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: ERROR\n");
+          try {
+            EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
+          }
+          catch (x) {
+            EnigmailLog.DEBUG(err + "\n");
+          }
+
+          if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
+            // unblock the waiting lock in finishCryptoEncapsulation
+            self.inspector.exitNestedEventLoop();
+          }
+        });
+
+        // wait here for PEP to terminate
+        this.inspector.enterNestedEventLoop(0);
       }
-
-      EnigmailPEPAdapter.pep.encryptMimeString(s + this.pipeQueue, null).then(function _f(res) {
-        EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
-        if ((typeof(res) === "object") && ("result" in res)) {
-          resultObj = res.result;
-        }
-        else
-          EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: typeof res=" + typeof(res) + "\n");
-
-
-        if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
-          // unblock the waiting lock in finishCryptoEncapsulation
-          self.inspector.exitNestedEventLoop();
-        }
-
-      }).catch(function _error(err) {
-        EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: ERROR\n");
-        try {
-          EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
-        }
-        catch (x) {
-          EnigmailLog.DEBUG(err + "\n");
-        }
-
-        if (self.inspector && self.inspector.eventLoopNestLevel > 0) {
-          // unblock the waiting lock in finishCryptoEncapsulation
-          self.inspector.exitNestedEventLoop();
-        }
-      });
-
-      // wait here for PEP to terminate
-      this.inspector.enterNestedEventLoop(0);
     }
 
     if (resultObj !== null) {

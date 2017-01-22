@@ -462,6 +462,44 @@ Enigmail.msg = {
     Enigmail.msg.setOwnKeyStatus();
   },
 
+  setupMenuAndToolbar: function() {
+    let toolbarTxt = document.getElementById("enigmail-toolbar-text");
+    let encBroadcaster = document.getElementById("enigmail-bc-encrypt");
+    let signBroadcaster = document.getElementById("enigmail-bc-sign");
+    let attachBroadcaster = document.getElementById("enigmail-bc-attach");
+    let enigmailMenu = document.getElementById("menu_Enigmail");
+    let pepBroadcaster = document.getElementById("enigmail-bc-pepEncrypt");
+    let pepMenu = document.getElementById("menu_EnigmailPep");
+    let pepStatusbar = document.getElementById("enigmail-pep-statusbar");
+
+    if (this.juniorMode) {
+
+      encBroadcaster.setAttribute("hidden", "true");
+      signBroadcaster.setAttribute("hidden", "true");
+      attachBroadcaster.setAttribute("hidden", "true");
+      toolbarTxt.setAttribute("hidden", "true");
+      enigmailMenu.setAttribute("hidden", "true");
+      pepBroadcaster.removeAttribute("hidden");
+      pepMenu.removeAttribute("hidden");
+      pepStatusbar.removeAttribute("hidden");
+
+
+      this.setFinalSendMode("final-encryptNo");
+      this.setFinalSendMode("final-signNo");
+      this.setFinalSendMode("final-pgpmimeNo");
+      this.updateStatusBar();
+    }
+    else {
+      encBroadcaster.removeAttribute("hidden");
+      signBroadcaster.removeAttribute("hidden");
+      attachBroadcaster.removeAttribute("hidden");
+      toolbarTxt.removeAttribute("hidden");
+      enigmailMenu.removeAttribute("hidden");
+      pepBroadcaster.setAttribute("hidden", "true");
+      pepMenu.setAttribute("hidden", "true");
+      pepStatusbar.setAttribute("hidden", "true");
+    }
+  },
 
   composeOpen: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen\n");
@@ -476,13 +514,7 @@ Enigmail.msg = {
 
     this.juniorMode = EnigmailPEPAdapter.getPepJuniorMode();
 
-    if (this.juniorMode) {
-
-      this.setFinalSendMode("final-encryptNo");
-      this.setFinalSendMode("final-signNo");
-      this.setFinalSendMode("final-pgpmimeNo");
-      this.updateStatusBar();
-    }
+    this.setupMenuAndToolbar();
 
     this.determineSendFlagId = null;
     this.disableSmime = false;
@@ -1287,6 +1319,11 @@ Enigmail.msg = {
         break;
 
       case 'toggle-final-encrypt':
+        if (this.juniorMode) {
+          this.onPepEncryptButton(sendMode);
+          return;
+        }
+
         switch (this.statusEncrypted) {
           case EnigmailConstants.ENIG_FINAL_NO:
           case EnigmailConstants.ENIG_FINAL_FORCENO:
@@ -1899,7 +1936,10 @@ Enigmail.msg = {
   determineSendFlags: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
 
-    if (this.juniorMode) return;
+    if (this.juniorMode) {
+      this.getPepMessageRating();
+      return;
+    }
 
     this.statusEncryptedInStatusBar = null; // to double check broken promise for encryption
 
@@ -2074,6 +2114,28 @@ Enigmail.msg = {
         }
       }
     }
+  },
+
+  pepMenuPopup: function() {
+    let encMenu = document.getElementById("enigmail_compose_pep_encrypt");
+    let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
+
+    encMenu.setAttribute("checked", pepBc.getAttribute("encrypt"));
+  },
+
+  onPepEncryptMenu: function() {
+    // let encMenu = document.getElementById("enigmail_compose_pep_encrypt");
+    // let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
+    //
+    // pepBc.setAttribute("encrypt", encMenu.getAttribute("checked"));
+    this.onPepEncryptButton();
+  },
+
+  onPepEncryptButton: function() {
+    let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
+
+    pepBc.setAttribute("encrypt", pepBc.getAttribute("encrypt") === "true" ? "false" : "true");
+    this.getPepMessageRating();
   },
 
   displaySecuritySettings: function() {
@@ -3021,26 +3083,66 @@ Enigmail.msg = {
     return confirm;
   },
 
-  encryptPepMessage: function(msgSendType) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage:\n");
+  setPepPrivacyLabel: function(rating) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setPepPrivacyLabel: " + rating + "\n");
 
-    const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
+    let l = document.getElementById("enigmail-pep-privacy-status");
+    let bc = document.getElementById("enigmail-bc-pepEncrypt");
+    let color = EnigmailPEPAdapter.calculateColorFromRating(rating);
 
-    let isDraft = false;
-
-    switch (msgSendType) {
-      case CiMsgCompDeliverMode.SaveAsDraft:
-      case CiMsgCompDeliverMode.SaveAsTemplate:
-      case CiMsgCompDeliverMode.AutoSaveAsDraft:
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: detected save draft\n");
-        return true;
+    if (bc.getAttribute("encrypt") === "false") {
+      color = "grey";
+    }
+    else if (rating === 0) {
+      color = "?";
     }
 
+    switch (color) {
+      case "?":
+        l.setAttribute("value", EnigmailLocale.getString("msgCompose.pepSendUnknown"));
+        l.setAttribute("class", "enigmail-statusbar-pep-unsecure");
+        break;
+      case "green":
+        l.setAttribute("value", EnigmailLocale.getString("msgCompose.pepSendTrusted"));
+        l.setAttribute("class", "enigmail-statusbar-pep-trusted");
+        break;
+      case "yellow":
+        l.setAttribute("value", EnigmailLocale.getString("msgCompose.pepSendSecure"));
+        l.setAttribute("class", "enigmail-statusbar-pep-secure");
+        break;
+      default:
+        l.setAttribute("value", EnigmailLocale.getString("msgCompose.pepSendUnsecure"));
+        l.setAttribute("class", "enigmail-statusbar-pep-unsecure");
+    }
+  },
+
+  getPepMessageRating: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getPepMessageRating\n");
+
+    let rating = 0;
+    let o = this.compileFromAndTo();
+    if (o) {
+      rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+    }
+
+    this.setPepPrivacyLabel(rating);
+    this.determineSendFlagId = null;
+  },
+
+  compileFromAndTo: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.compileFromAndTo\n");
     let compFields = gMsgCompose.compFields;
     let toAddrList = [];
     let recList;
     let arrLen = {};
 
+    if (!Enigmail.msg.composeBodyReady) {
+      compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+    }
+    Recipients2CompFields(compFields);
+    gMsgCompose.expandMailingLists();
+
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: to='" + compFields.to + "'\n");
     if (compFields.to.length > 0) {
       toAddrList = EnigmailFuncs.parseEmails(compFields.to, false);
     }
@@ -3053,13 +3155,44 @@ Enigmail.msg = {
       toAddrList = toAddrList.concat(EnigmailFuncs.parseEmails(compFields.bcc, false));
     }
 
+    for (let addr of toAddrList) {
+      // determine incomplete addresses --> do not attempt pEp encryption
+      if (addr.email.search(/.@./) < 0) return null;
+    }
+
     this.identity = getCurrentIdentity();
     let from = {
       email: this.identity.email,
       name: this.identity.fullName
     };
+    return {
+      from: from,
+      toAddrList: toAddrList
+    };
+  },
 
-    let rating = EnigmailPEPAdapter.getOutgoingMessageRating(from, toAddrList);
+  encryptPepMessage: function(msgSendType) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage:\n");
+
+    const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    let isDraft = false;
+    let compFields = gMsgCompose.compFields;
+
+    switch (msgSendType) {
+      case CiMsgCompDeliverMode.SaveAsDraft:
+      case CiMsgCompDeliverMode.SaveAsTemplate:
+      case CiMsgCompDeliverMode.AutoSaveAsDraft:
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: detected save draft\n");
+        return true;
+    }
+
+    let rating = 0;
+    let o = this.compileFromAndTo();
+    if (o) {
+      EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+    }
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
 
@@ -3071,6 +3204,8 @@ Enigmail.msg = {
       let si = compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
       si.originalSubject = compFields.subject;
       compFields.subject = "";
+      let encrypt = document.getElementById("enigmail-bc-pepEncrypt").getAttribute("encrypt");
+      si.sendFlags = (encrypt === "true" ? nsIEnigmail.SEND_ENCRYPTED : 0);
     }
 
     return true;
@@ -4645,7 +4780,7 @@ Enigmail.msg = {
       this.addrOnChangeTimer = EnigmailTimer.setTimeout(function _f() {
         self.fireSendFlags();
         self.addrOnChangeTimer = null;
-      }, 200);
+      }, 250);
     }
   },
 

@@ -630,3 +630,40 @@ treechildren::-moz-tree-cell-text(STYLE) {}
   background-repeat: no-repeat;
   padding-left: 16px !important;
 }
+
+#button-enigmail-pepEncrypt[encrypt="true"] {
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptActive.png');
+}
+
+#button-enigmail-pepEncrypt[encrypt="false"] {
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.png');
+}
+
+.enigmail-statusbar-pep-logo
+{
+  list-style-image: url('chrome://enigmail/skin/pEpLogo.svg');
+  max-height: 12px;
+  margin: 0px 4px;
+}
+
+.enigmail-statusbar-pep-unsecure
+{
+  background-color: inherit;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-secure
+{
+  background-color: #ffd800;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-trusted
+{
+  background-color: #00a92b;
+  color: #ffffff;
+  padding-left: 3px;
+  padding-right: 3px;
+}
