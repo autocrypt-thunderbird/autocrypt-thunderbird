@@ -1091,11 +1091,13 @@ Enigmail.hdrView = {
   },
 
   pEpIconPopup: function() {
-    let infoProp = "pepStatusInfo.info." + this.pEpStatus.messageColor;
-    let colorProp = "pepStatusInfo.color." + this.pEpStatus.messageColor;
-    let detailInfo = EnigmailLocale.getString(infoProp);
-    let colorLocale = EnigmailLocale.getString(colorProp);
-    EnigmailDialog.alert(window, EnigmailLocale.getString("pepStatusInfo.text", [colorLocale, detailInfo]));
+    let rating = this.pEpStatus.rating;
+    if (rating > 7) rating = 7;
+
+    let descProp = "pepStatusInfo.info." + (rating < 0 ? "m" : "r") + rating;
+    let infoText = EnigmailLocale.getString("pepStatusInfo.text") + "\n\n" +
+      EnigmailLocale.getString(descProp);
+    EnigmailDialog.alert(window, infoText);
   },
 
   enablePepMenus: function() {
