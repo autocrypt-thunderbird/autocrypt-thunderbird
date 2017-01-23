@@ -4,26 +4,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* global EnigInitCommon: false, EnigmailEvents: false, EnigGetString: false, EnigGetOS: false */
 /* global Components: false */
 
 "use strict";
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
 
-Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 
-
-EnigInitCommon("enigmailAlertDlg");
 
 function onLoad() {
-  var dlg = document.getElementById("enigmailAlertDlg");
+  var dlg = document.getElementById("enigmailMsgBox");
   dlg.getButton("help").setAttribute("hidden", "true");
   dlg.getButton("cancel").setAttribute("hidden", "true");
   dlg.getButton("extra1").setAttribute("hidden", "true");
   dlg.getButton("extra2").setAttribute("hidden", "true");
-  dlg.setAttribute("title", EnigGetString("enigAlert"));
 
   if (window.screen.width > 500) {
     dlg.setAttribute("maxwidth", window.screen.width - 150);
@@ -33,13 +33,50 @@ function onLoad() {
     dlg.setAttribute("maxheight", window.screen.height - 100);
   }
 
-  var msgtext = window.arguments[0].msgtext;
-  var button1 = window.arguments[0].button1;
-  var button2 = window.arguments[0].button2;
-  var button3 = window.arguments[0].button3;
-  var checkboxLabel = window.arguments[0].checkboxLabel;
-  var m = msgtext.match(/(\n)/g);
-  var lines = 2;
+  let args = window.arguments[0];
+  let msgtext = args.msgtext;
+  let button1 = args.button1;
+  let button2 = args.button2;
+  let button3 = args.button3;
+  let checkboxLabel = args.checkboxLabel;
+  let iconType = args.iconType;
+
+  if (args.iconType) {
+    let icn = document.getElementById("infoImage");
+    icn.removeAttribute("collapsed");
+    let iconClass = "";
+
+    switch (args.iconType) {
+      case 2:
+        iconClass = "question-icon";
+        break;
+      case 3:
+        iconClass = "alert-icon";
+        break;
+      case 4:
+        iconClass = "error-icon";
+        break;
+      default:
+        iconClass = "message-icon";
+    }
+    icn.setAttribute("class", "spaced " + iconClass);
+  }
+
+  if (args.dialogTitle) {
+    if (EnigmailOS.isMac) {
+      let t = document.getElementById("macosDialogTitle");
+      t.setAttribute("value", args.dialogTitle);
+      t.removeAttribute("collapsed");
+    }
+
+    dlg.setAttribute("title", args.dialogTitle);
+  }
+  else {
+    dlg.setAttribute("title", EnigmailLocale.getString("enigAlert"));
+  }
+
+  let m = msgtext.match(/(\n)/g);
+  let lines = 2;
   if (!m) {
     lines = (msgtext.length / 80) + 2;
   }
@@ -77,7 +114,7 @@ function resizeDlg() {
 
   var txt = document.getElementById("msgtext");
   var box = document.getElementById("outerbox");
-  var dlg = document.getElementById("enigmailAlertDlg");
+  var dlg = document.getElementById("enigmailMsgBox");
 
   var deltaWidth = window.outerWidth - box.clientWidth;
   var newWidth = txt.scrollWidth + deltaWidth + 20;
@@ -104,15 +141,15 @@ function resizeDlg() {
 }
 
 function centerDialog() {
-  if (EnigGetOS() != "Darwin")
-    document.getElementById("enigmailAlertDlg").centerWindowOnScreen();
+  if (!EnigmailOS.isMac)
+    document.getElementById("enigmailMsgBox").centerWindowOnScreen();
 }
 
 function setButton(buttonId, label) {
   var labelType = "extra" + buttonId.toString();
   if (labelType == "extra0") labelType = "accept";
 
-  var dlg = document.getElementById("enigmailAlertDlg");
+  var dlg = document.getElementById("enigmailMsgBox");
   var elem = dlg.getButton(labelType);
 
   var i = label.indexOf(":");

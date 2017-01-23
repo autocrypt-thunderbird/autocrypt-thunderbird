@@ -119,7 +119,7 @@ const EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailAlertDlg.xul", "",
+    win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         msgtext: mesg,
         checkboxLabel: checkBoxLabel,
@@ -130,6 +130,48 @@ const EnigmailDialog = {
       result);
 
     if (checkBoxLabel) {
+      checkedObj.value = result.checked;
+    }
+    return result.value;
+  },
+
+  /**
+   * Displays an alert dialog with 1-3 optional buttons.
+   *
+   * @win:           nsIWindow - parent window to display modal dialog; can be null
+   * @argsObj:       Object:
+   *   - msgtext:       String    - message text
+   *   - dialogTitle:   String    - title of the dialog
+   *   - checkBoxLabel: String    - if not null, display checkbox with text; the
+   *                                checkbox state is returned in checkedObj.value
+   *   - iconType:      Number    - Icon type: 1=Message / 2=Question / 3=Alert / 4=Error
+   *
+   *   - buttonX:       String    - Button label (button 1-3)
+   *                                use "&" to indicate access key
+   *     use "buttonType:label" or ":buttonType" to indicate special button types
+   *        (buttonType is one of cancel, help, extra1, extra2)
+   *     if not button is provided, OK will be displayed
+   *
+   * @checkedObj:    Object    - holding the checkbox value
+   *
+   * @return: 0-2: button Number pressed
+   *          -1: ESC or close window button pressed
+   *
+   */
+  msgBox: function(win, argsObj, checkedObj) {
+    var result = {
+      value: -1,
+      checked: false
+    };
+
+    if (!win) {
+      win = EnigmailWindows.getBestParentWin();
+    }
+
+    win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "",
+      "chrome,dialog,modal,centerscreen,resizable", argsObj, result);
+
+    if (argsObj.checkBoxLabel) {
       checkedObj.value = result.checked;
     }
     return result.value;
