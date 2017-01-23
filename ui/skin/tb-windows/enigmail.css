@@ -593,23 +593,23 @@ treechildren::-moz-tree-cell-text(STYLE) {}
   }
 }
 
-/* pEp Message quality Rating */
+/* pEp-related styles */
 
 .enigmailPepRatingMistrust {
-  list-style-image: url("chrome://enigmail/skin/pEpRed.png");
+  list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
 }
 
 .enigmailPepRatingReliable {
-  list-style-image: url("chrome://enigmail/skin/pEpYellow.png");
+  list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
 }
 
 .enigmailPepRatingTrusted {
-  list-style-image: url("chrome://enigmail/skin/pEpGreen.png");
+  list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
 }
 
 .enigmailPepIdentityMistrust
 {
-  background-image: url('chrome://enigmail/skin/pEpRed.png');
+  background-image: url('chrome://enigmail/skin/pEpRed.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -618,7 +618,7 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 .enigmailPepIdentityReliable
 {
-  background-image: url('chrome://enigmail/skin/pEpYellow.png');
+  background-image: url('chrome://enigmail/skin/pEpYellow.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -627,7 +627,7 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 .enigmailPepIdentityTrusted
 {
-  background-image: url('chrome://enigmail/skin/pEpGreen.png');
+  background-image: url('chrome://enigmail/skin/pEpGreen.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -635,11 +635,40 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 }
 
 #button-enigmail-pepEncrypt[encrypt="true"] {
-  list-style-image: url('chrome://enigmail/skin/pEpEncryptActive.png');
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptActive.svg');
 }
 
 #button-enigmail-pepEncrypt[encrypt="false"] {
-  list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.png');
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.svg');
+}
+
+.enigmail-statusbar-pep-logo
+{
+  list-style-image: url('chrome://enigmail/skin/pEpLogo.svg');
+  max-height: 12px;
+  margin: 0px 4px;
+}
+
+.enigmail-statusbar-pep-unsecure
+{
+  background-color: inherit;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-secure
+{
+  background-color: #ffd800;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-trusted
+{
+  background-color: #00a92b;
+  color: #ffffff;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .enigmail-statusbar-pep-logo
