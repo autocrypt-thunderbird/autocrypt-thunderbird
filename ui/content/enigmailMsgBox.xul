@@ -42,7 +42,7 @@
     </vbox>
     <vbox flex="1">
       <vbox align="start" flex="1" style="overflow:auto" id="outerbox">
-        <label id="macosDialogTitle" collapsed="true" class="plain header"/>
+        <label id="macosDialogTitle" collapsed="true" class="plain enigmailDialogTitle"/>
         <hbox align="center" flex="1">
           <textbox flex="1" id="msgtext" class="plain" style="white-space: pre;" readonly="true"
               context="ctxmenu"/>

@@ -17,6 +17,7 @@ Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 
+var gAddHeight = 20;
 
 function onLoad() {
   var dlg = document.getElementById("enigmailMsgBox");
@@ -67,6 +68,7 @@ function onLoad() {
       let t = document.getElementById("macosDialogTitle");
       t.setAttribute("value", args.dialogTitle);
       t.removeAttribute("collapsed");
+      gAddHeight = 30;
     }
 
     dlg.setAttribute("title", args.dialogTitle);
@@ -130,7 +132,7 @@ function resizeDlg() {
   var boxHeight = box.clientHeight;
   var deltaHeight = window.outerHeight - boxHeight;
 
-  var newHeight = textHeight + deltaHeight + 20;
+  var newHeight = textHeight + deltaHeight + gAddHeight;
 
 
   if (newHeight > window.screen.height - 100) {
