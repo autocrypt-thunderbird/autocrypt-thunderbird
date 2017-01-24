@@ -17,8 +17,6 @@ Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 
-var gAddHeight = 20;
-
 function onLoad() {
   var dlg = document.getElementById("enigmailMsgBox");
   dlg.getButton("help").setAttribute("hidden", "true");
@@ -39,6 +37,7 @@ function onLoad() {
   let button1 = args.button1;
   let button2 = args.button2;
   let button3 = args.button3;
+  let buttonCancel = args.cancelButton;
   let checkboxLabel = args.checkboxLabel;
   let iconType = args.iconType;
 
@@ -68,7 +67,6 @@ function onLoad() {
       let t = document.getElementById("macosDialogTitle");
       t.setAttribute("value", args.dialogTitle);
       t.removeAttribute("collapsed");
-      gAddHeight = 30;
     }
 
     dlg.setAttribute("title", args.dialogTitle);
@@ -91,13 +89,16 @@ function onLoad() {
     }
   }
   if (button1) {
-    setButton(0, button1);
+    setButton("accept", button1);
   }
   if (button2) {
-    setButton(1, button2);
+    setButton("extra1", button2);
   }
   if (button3) {
-    setButton(2, button3);
+    setButton("extra2", button3);
+  }
+  if (buttonCancel) {
+    setButton("cancel", buttonCancel);
   }
 
   if (checkboxLabel) {
@@ -117,6 +118,7 @@ function resizeDlg() {
   var txt = document.getElementById("msgtext");
   var box = document.getElementById("outerbox");
   var dlg = document.getElementById("enigmailMsgBox");
+  var macTitle = document.getElementById("macosDialogTitle");
 
   var deltaWidth = window.outerWidth - box.clientWidth;
   var newWidth = txt.scrollWidth + deltaWidth + 20;
@@ -128,11 +130,11 @@ function resizeDlg() {
   txt.style["white-space"] = "pre-wrap";
   window.outerWidth = newWidth;
 
-  var textHeight = txt.scrollHeight;
+  var textHeight = txt.scrollHeight + macTitle.clientHeight;
   var boxHeight = box.clientHeight;
   var deltaHeight = window.outerHeight - boxHeight;
 
-  var newHeight = textHeight + deltaHeight + gAddHeight;
+  var newHeight = textHeight + deltaHeight + 20;
 
 
   if (newHeight > window.screen.height - 100) {
@@ -148,8 +150,7 @@ function centerDialog() {
 }
 
 function setButton(buttonId, label) {
-  var labelType = "extra" + buttonId.toString();
-  if (labelType == "extra0") labelType = "accept";
+  var labelType = buttonId;
 
   var dlg = document.getElementById("enigmailMsgBox");
   var elem = dlg.getButton(labelType);
@@ -158,7 +159,7 @@ function setButton(buttonId, label) {
   if (i === 0) {
     elem = dlg.getButton(label.substr(1));
     elem.setAttribute("hidden", "false");
-    elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
+    elem.setAttribute("oncommand", "dlgClose('" + buttonId + "')");
     return;
   }
   if (i > 0) {
@@ -175,11 +176,27 @@ function setButton(buttonId, label) {
     label = label.substr(0, i) + label.substr(i + 1);
   }
   elem.setAttribute("label", label);
-  elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
+  elem.setAttribute("oncommand", "dlgClose('" + buttonId + "')");
   elem.removeAttribute("hidden");
 }
 
-function dlgClose(buttonNumber) {
+function dlgClose(buttonId) {
+  let buttonNumber = 99;
+
+  switch (buttonId) {
+    case "accept":
+      buttonNumber = 0;
+      break;
+    case "extra1":
+      buttonNumber = 1;
+      break;
+    case "extra2":
+      buttonNumber = 2;
+      break;
+    case "cancel":
+      buttonNumber = -1;
+  }
+
   window.arguments[1].value = buttonNumber;
   window.arguments[1].checked = (document.getElementById("theCheckBox").getAttribute("checked") == "true");
   window.close();

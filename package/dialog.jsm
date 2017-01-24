@@ -40,33 +40,16 @@ const EnigmailDialog = {
    * @return:      Boolean   - true: OK pressed / false: Cancel or ESC pressed
    */
   confirmDlg: function(win, mesg, okLabel, cancelLabel) {
-    var buttonTitles = 0;
-    if (!okLabel && !cancelLabel) {
-      buttonTitles = (gPromptSvc.BUTTON_TITLE_YES * BUTTON_POS_0) +
-        (gPromptSvc.BUTTON_TITLE_NO * BUTTON_POS_1);
-    }
-    else {
-      if (okLabel) {
-        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_0);
-      }
-      else {
-        buttonTitles += gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0;
-      }
 
-      if (cancelLabel) {
-        buttonTitles += (gPromptSvc.BUTTON_TITLE_IS_STRING * gPromptSvc.BUTTON_POS_1);
-      }
-      else {
-        buttonTitles += gPromptSvc.BUTTON_TITLE_CANCEL * BUTTON_POS_1;
-      }
-    }
 
-    let buttonPressed = gPromptSvc.confirmEx(win,
-      EnigmailLocale.getString("enigConfirm"),
-      mesg,
-      buttonTitles,
-      okLabel, cancelLabel, null,
-      null, {});
+    let buttonPressed = EnigmailDialog.msgBox(win, {
+        msgtext: mesg,
+        button1: okLabel ? okLabel : EnigmailLocale.getString("dlg.button.ok"),
+        cancelButton: cancelLabel ? cancelLabel : EnigmailLocale.getString("dlg.button.cancel"),
+        iconType: 2,
+        dialogTitle: EnigmailLocale.getString("enigConfirm")
+      },
+      null);
 
     return (buttonPressed === 0);
   },
@@ -146,8 +129,9 @@ const EnigmailDialog = {
    *                                checkbox state is returned in checkedObj.value
    *   - iconType:      Number    - Icon type: 1=Message / 2=Question / 3=Alert / 4=Error
    *
-   *   - buttonX:       String    - Button label (button 1-3)
+   *   - buttonX:       String    - Button label (button 1-3) [button1 = "accept" button]
    *                                use "&" to indicate access key
+   *   - cancelButton   String    - Label for cancel button
    *     use "buttonType:label" or ":buttonType" to indicate special button types
    *        (buttonType is one of cancel, help, extra1, extra2)
    *     if not button is provided, OK will be displayed
@@ -155,7 +139,7 @@ const EnigmailDialog = {
    * @checkedObj:    Object    - holding the checkbox value
    *
    * @return: 0-2: button Number pressed
-   *          -1: ESC or close window button pressed
+   *          -1: cancel button, ESC or close window button pressed
    *
    */
   msgBox: function(win, argsObj, checkedObj) {

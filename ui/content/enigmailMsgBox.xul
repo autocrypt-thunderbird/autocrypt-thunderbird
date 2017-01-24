@@ -26,7 +26,7 @@
         minwidth="100"
         maxwidth="750"
         xmlns:html="http://www.w3.org/1999/xhtml"
-        ondialogaccept="dlgClose(0)">
+        ondialogaccept="dlgClose('accept')">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgBox.js"/>
 
