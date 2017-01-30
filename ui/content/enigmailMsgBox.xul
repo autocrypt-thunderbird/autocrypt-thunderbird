@@ -22,11 +22,9 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept,help,cancel,extra1,extra2"
         onload="onLoad();"
-        flex="1"
-        minwidth="100"
-        maxwidth="750"
         xmlns:html="http://www.w3.org/1999/xhtml"
-        ondialogaccept="dlgClose('accept')">
+        ondialogaccept="dlgClose('accept')"
+        buttonpack="center">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgBox.js"/>
 
@@ -36,23 +34,32 @@
     </menupopup>
   </popupset>
 
-  <hbox flex="1">
-    <vbox align="center">
-      <image id="infoImage" collapsed="true"/>
-    </vbox>
-    <vbox flex="1">
-      <vbox align="start" flex="1" style="overflow:auto" id="outerbox">
-        <label id="macosDialogTitle" collapsed="true" class="plain enigmailDialogTitle"/>
-        <hbox align="center" flex="1">
-          <textbox flex="1" id="msgtext" class="plain" style="white-space: pre;" readonly="true"
-              context="ctxmenu"/>
-        </hbox>
-      </vbox>
-
-      <vbox align="left">
-        <checkbox id="theCheckBox" hidden="true" checked="false" oncommand="checkboxCb()"/>
-      </vbox>
-    </vbox>
+  <hbox id="filler" style="min-width: 0%;">
+    <spacer style="width: 29em;"/>
   </hbox>
 
+<grid>
+  <columns>
+    <column/>
+    <column flex="1"/>
+  </columns>
+
+  <rows>
+    <row>
+      <hbox id="iconContainer" align="start">
+        <image id="infoImage" class="spaced" collapsed="true"/>
+      </hbox>
+      <vbox id="infoContainer" pack="center">
+        <label id="macosDialogTitle" collapsed="true" class="enigmailDialogTitle"/>
+        <vbox id="msgContainer" style="max-width: 45em;">
+          <description id="msgtext" context="ctxmenu" noinitialfocus="true" class="enigmailDialogBody"/>
+        </vbox>
+      </vbox>
+    </row>
+    <row id="checkboxContainer" hidden="true">
+      <spacer/>
+      <checkbox id="theCheckBox" hidden="true" checked="false" oncommand="checkboxCb()"/>
+    </row>
+  </rows>
+</grid>
 </dialog>

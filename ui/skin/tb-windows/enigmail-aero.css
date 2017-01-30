@@ -406,6 +406,14 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
   padding-bottom: 6px;
 }
 
+.enigmailDialogBody {
+  -moz-user-focus: normal;
+  -moz-user-select: text;
+  cursor: text !important;
+  white-space: pre-wrap;
+  unicode-bidi: -moz-plaintext;
+}
+
 .enigmailPrefsTitle {
   font-weight: bold;
   height: 25px;

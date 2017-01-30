@@ -40,6 +40,11 @@ const EnigmailConstants = {
   MIME_HANDLER_SMIME: 1,
   MIME_HANDLER_PGPMIME: 2,
 
+  ICONTYPE_INFO: 1,
+  ICONTYPE_QUESTION: 2,
+  ICONTYPE_ALERT: 3,
+  ICONTYPE_ERROR: 4,
+
   nsIEnigmail: Components.interfaces.nsIEnigmail
 
 };

@@ -24,13 +24,8 @@ function onLoad() {
   dlg.getButton("extra1").setAttribute("hidden", "true");
   dlg.getButton("extra2").setAttribute("hidden", "true");
 
-  if (window.screen.width > 500) {
-    dlg.setAttribute("maxwidth", window.screen.width - 150);
-  }
-
-  if (window.screen.height > 300) {
-    dlg.setAttribute("maxheight", window.screen.height - 100);
-  }
+  document.getElementById("filler").maxWidth = screen.availWidth - 50;
+  //dlg.maxHeight = screen.availHeight;
 
   let args = window.arguments[0];
   let msgtext = args.msgtext;
@@ -75,19 +70,6 @@ function onLoad() {
     dlg.setAttribute("title", EnigmailLocale.getString("enigAlert"));
   }
 
-  let m = msgtext.match(/(\n)/g);
-  let lines = 2;
-  if (!m) {
-    lines = (msgtext.length / 80) + 2;
-  }
-  else {
-    try {
-      lines = (m.length > 20 ? 20 : m.length + 2);
-    }
-    catch (ex) {
-      lines = 2;
-    }
-  }
   if (button1) {
     setButton("accept", button1);
   }
@@ -108,40 +90,25 @@ function onLoad() {
   }
   dlg.getButton("accept").focus();
   var textbox = document.getElementById("msgtext");
-  textbox.textContent = msgtext;
+  textbox.appendChild(textbox.ownerDocument.createTextNode(msgtext));
+
   window.addEventListener("keypress", onKeyPress);
   EnigmailEvents.dispatchEvent(resizeDlg, 0);
 }
 
 function resizeDlg() {
+  let availHeight = screen.availHeight;
+  if (window.outerHeight > availHeight - 100) {
+    let box = document.getElementById("msgContainer");
+    let dlg = document.getElementById("enigmailMsgBox");
+    let btnHeight = dlg.getButton("accept").parentNode.clientHeight + 20;
+    let boxHeight = box.clientHeight;
+    let dlgHeight = dlg.clientHeight;
 
-  var txt = document.getElementById("msgtext");
-  var box = document.getElementById("outerbox");
-  var dlg = document.getElementById("enigmailMsgBox");
-  var macTitle = document.getElementById("macosDialogTitle");
-
-  var deltaWidth = window.outerWidth - box.clientWidth;
-  var newWidth = txt.scrollWidth + deltaWidth + 20;
-
-  if (newWidth > window.screen.width - 50) {
-    newWidth = window.screen.width - 50;
+    box.setAttribute("style", "overflow: auto;");
+    box.setAttribute("height", boxHeight - btnHeight - (dlgHeight - availHeight));
+    window.outerHeight = availHeight;
   }
-
-  txt.style["white-space"] = "pre-wrap";
-  window.outerWidth = newWidth;
-
-  var textHeight = txt.scrollHeight + macTitle.clientHeight;
-  var boxHeight = box.clientHeight;
-  var deltaHeight = window.outerHeight - boxHeight;
-
-  var newHeight = textHeight + deltaHeight + 20;
-
-
-  if (newHeight > window.screen.height - 100) {
-    newHeight = window.screen.height - 100;
-  }
-
-  window.outerHeight = newHeight;
 }
 
 function centerDialog() {
