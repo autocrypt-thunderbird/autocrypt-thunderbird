@@ -3191,7 +3191,7 @@ Enigmail.msg = {
     let rating = 0;
     let o = this.compileFromAndTo();
     if (o) {
-      EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+      rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
     }
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
