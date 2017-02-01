@@ -117,8 +117,7 @@ const EnigmailDecryptPermanently = {
       function(resolve, reject) {
         let msgUriSpec = hdr.folder.getUriForMsg(hdr);
 
-        const msgSvc = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).
-        messageServiceFromURI(msgUriSpec);
+        const msgSvc = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(msgUriSpec);
 
         const decrypt = new DecryptMessageIntoFolder(destFolder, move, resolve);
 
@@ -436,7 +435,7 @@ DecryptMessageIntoFolder.prototype = {
                 let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachment.name, self.subject]);
 
                 if (!EnigmailDialog.confirmDlg(null, msg,
-                  EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
+                    EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
                   o.status = STATUS_FAILURE;
                   resolve(o);
                   return;
@@ -763,7 +762,7 @@ DecryptMessageIntoFolder.prototype = {
               let msg = EnigmailLocale.getString("converter.decryptBody.failed", this.subject);
 
               if (!EnigmailDialog.confirmDlg(null, msg,
-                EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
+                  EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
                 this.foundPGP = -1;
                 return -1;
               }

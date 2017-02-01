@@ -218,7 +218,7 @@ PEPDecryptor.prototype = {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
-      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
     }
 
     if ("mimePart" in this.mimeSvc) {
@@ -244,7 +244,7 @@ PEPDecryptor.prototype = {
     this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
     let addresses;
-    if (this.uri) {
+    if (this.uri && (!this.backgroundJob)) {
       addresses = EnigmailPEPDecrypt.getEmailsFromMessage(this.uri.spec);
     }
 
