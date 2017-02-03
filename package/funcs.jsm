@@ -374,6 +374,26 @@ const EnigmailFuncs = {
     if (a2.length > a1.length) return -2;
     if (a2.length < a1.length) return 2;
     return 0;
+  },
+
+  /**
+   * Get the nsIMsgAccount associated with a given nsIMsgIdentity
+   */
+  getAccountForIdentity: function(identity) {
+    let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+    for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+      let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+
+      for (let i = 0; i < ac.identities.length; i++) {
+        let id = ac.identities.queryElementAt(i, Ci.nsIMsgIdentity);
+        if (id.key === identity.key) {
+          return ac;
+        }
+      }
+    }
+
+    return null;
   }
 
 };

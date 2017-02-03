@@ -29,6 +29,7 @@ Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false 
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -36,6 +37,7 @@ const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
 
 // pEp JSON Server executable name
 const pepServerExecutable = "pep-json-server";
+const DECRYPT_FILTER_NAME = "pEp-Decrypt-on-Sending";
 
 var gPepVersion = null;
 var gSecurityToken = null;
@@ -570,6 +572,58 @@ var EnigmailPEPAdapter = {
     }
 
     return color;
+  },
+
+  /**
+   * Check and/or create filter rule for saving sent messages in decrypted form
+   */
+  ensureDecryptedCopy: function(identity) {
+    let acct = EnigmailFuncs.getAccountForIdentity(identity);
+    let filters = acct.incomingServer.getFilterList(null);
+
+    let pepFilter = filters.getFilterNamed(DECRYPT_FILTER_NAME);
+    if (pepFilter) {
+      let searchTerm = pepFilter.searchTerms.queryElementAt(0, Ci.nsIMsgSearchTerm);
+      let action = pepFilter.getActionAt(0);
+      if (searchTerm && action &&
+        pepFilter.searchTerms.length === 1 &&
+        searchTerm.attrib === Ci.nsMsgSearchAttrib.Size &&
+        searchTerm.op === Ci.nsMsgSearchOp.IsGreaterThan &&
+        searchTerm.value.size === 0 &&
+        pepFilter.actionCount === 1 &&
+        pepFilter.filterType === Ci.nsMsgFilterType.PostOutgoing &&
+        action.type === Ci.nsMsgFilterAction.Custom &&
+        action.customAction.id === EnigmailFilters.MOVE_DECRYPT) {
+
+        // set outbox
+        action.strValue = identity.fccFolder;
+      }
+      else {
+        filters.removeFilter(pepFilter);
+        pepFilter = null;
+      }
+    }
+
+    if (!pepFilter) {
+      pepFilter = filters.createFilter(DECRYPT_FILTER_NAME);
+
+      let searchTerm = pepFilter.createTerm();
+      searchTerm.attrib = Ci.nsMsgSearchAttrib.Size;
+      searchTerm.op = Ci.nsMsgSearchOp.IsGreaterThan;
+      searchTerm.booleanAnd = true;
+      searchTerm.value.attrib = Ci.nsMsgSearchAttrib.Size;
+      searchTerm.value.size = 0;
+
+      let action = pepFilter.createAction();
+      action.type = Ci.nsMsgFilterAction.Custom;
+      action.customId = EnigmailFilters.MOVE_DECRYPT;
+      action.strValue = identity.fccFolder;
+
+      pepFilter.appendTerm(searchTerm);
+      pepFilter.appendAction(action);
+      filters.insertFilterAt(0, pepFilter);
+
+    }
   }
 };
 

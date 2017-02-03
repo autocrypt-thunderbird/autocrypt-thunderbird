@@ -25,13 +25,18 @@ Cu.import("resource://enigmail/dialog.jsm");
  Filter actions for decrypting messages permanently
  ********************************************************************************/
 
+
+const MOVE_DECRYPT = "enigmail@enigmail.net#filterActionMoveDecrypt";
+const COPY_DECRYPT = "enigmail@enigmail.net#filterActionCopyDecrypt";
+
+
 /**
  * filter action for creating a decrypted version of the mail and
  * deleting the original mail at the same time
  */
 
 const filterActionMoveDecrypt = {
-  id: "enigmail@enigmail.net#filterActionMoveDecrypt",
+  id: MOVE_DECRYPT,
   name: EnigmailLocale.getString("filter.decryptMove.label"),
   value: "movemessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
@@ -73,7 +78,7 @@ const filterActionMoveDecrypt = {
  * message untouched
  */
 const filterActionCopyDecrypt = {
-  id: "enigmail@enigmail.net#filterActionCopyDecrypt",
+  id: COPY_DECRYPT,
   name: EnigmailLocale.getString("filter.decryptCopy.label"),
   value: "copymessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
@@ -107,6 +112,9 @@ const filterActionCopyDecrypt = {
 };
 
 const EnigmailFilters = {
+  MOVE_DECRYPT: MOVE_DECRYPT,
+  COPY_DECRYPT: COPY_DECRYPT,
+
   registerAll: function() {
     var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomAction(filterActionMoveDecrypt);
