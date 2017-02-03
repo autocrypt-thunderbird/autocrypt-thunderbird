@@ -3188,6 +3188,13 @@ Enigmail.msg = {
         return true;
     }
 
+    if (this.identity.getBoolAttribute("autoEncryptDrafts")) {
+      EnigmailPEPAdapter.deleteDecryptedCopyFilter(this.identity);
+    }
+    else {
+      EnigmailPEPAdapter.ensureDecryptedCopyFilter(this.identity);
+    }
+
     let rating = 0;
     let o = this.compileFromAndTo();
     if (o) {

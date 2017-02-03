@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailDecryptPermanently: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
+/*global Components: false, EnigmailDecryptPermanently: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailLazy: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,11 +15,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://enigmail/lazy.jsm");
+Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/decryptPermanently.jsm");
 Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/dialog.jsm");
+
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+
 
 /********************************************************************************
  Filter actions for decrypting messages permanently
@@ -59,7 +62,7 @@ const filterActionMoveDecrypt = {
   },
 
   validateActionValue: function(value, folder, type) {
-    EnigmailDialog.alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
+    getDialog().alert(null, EnigmailLocale.getString("filter.decryptMove.warnExperimental"));
 
     if (value === "") {
       return EnigmailLocale.getString("filter.folderRequired");

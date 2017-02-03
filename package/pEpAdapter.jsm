@@ -533,9 +533,7 @@ var EnigmailPEPAdapter = {
    */
   getTrustWordsForLocale: function(ownId, otherId, language) {
 
-    // TODO: broken in pEp
     return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
-    //return simulateTrustWords(ownId, otherId, language);
   },
 
   resetTrustForEmail: function(emailAddr) {
@@ -575,9 +573,31 @@ var EnigmailPEPAdapter = {
   },
 
   /**
-   * Check and/or create filter rule for saving sent messages in decrypted form
+   * Delete an existing standard pEp filter rule for storing unencrypted
+   * sent messages (if trusted server is disabled)
+   *
+   * @param identity - Object: nsIMsgIdentity for relevant account
    */
-  ensureDecryptedCopy: function(identity) {
+
+  deleteDecryptedCopyFilter: function(identity) {
+    let acct = EnigmailFuncs.getAccountForIdentity(identity);
+    let filters = acct.incomingServer.getFilterList(null);
+
+    let pepFilter = filters.getFilterNamed(DECRYPT_FILTER_NAME);
+    if (pepFilter) {
+      filters.removeFilter(pepFilter);
+    }
+  },
+
+  /**
+   * Check and/or create the pEp standard filter rule for saving sent messages
+   * in decrypted form (if trusted server is enabled)
+   *
+   * @param identity - Object: nsIMsgIdentity for relevant account
+   *
+   * @return Object: Filter rule (nsIMsgFilter)
+   */
+  ensureDecryptedCopyFilter: function(identity) {
     let acct = EnigmailFuncs.getAccountForIdentity(identity);
     let filters = acct.incomingServer.getFilterList(null);
 
@@ -587,9 +607,7 @@ var EnigmailPEPAdapter = {
       let action = pepFilter.getActionAt(0);
       if (searchTerm && action &&
         pepFilter.searchTerms.length === 1 &&
-        searchTerm.attrib === Ci.nsMsgSearchAttrib.Size &&
-        searchTerm.op === Ci.nsMsgSearchOp.IsGreaterThan &&
-        searchTerm.value.size === 0 &&
+        searchTerm.matchAll &&
         pepFilter.actionCount === 1 &&
         pepFilter.filterType === Ci.nsMsgFilterType.PostOutgoing &&
         action.type === Ci.nsMsgFilterAction.Custom &&
@@ -597,6 +615,7 @@ var EnigmailPEPAdapter = {
 
         // set outbox
         action.strValue = identity.fccFolder;
+        pepFilter.enabled = true;
       }
       else {
         filters.removeFilter(pepFilter);
@@ -608,11 +627,7 @@ var EnigmailPEPAdapter = {
       pepFilter = filters.createFilter(DECRYPT_FILTER_NAME);
 
       let searchTerm = pepFilter.createTerm();
-      searchTerm.attrib = Ci.nsMsgSearchAttrib.Size;
-      searchTerm.op = Ci.nsMsgSearchOp.IsGreaterThan;
-      searchTerm.booleanAnd = true;
-      searchTerm.value.attrib = Ci.nsMsgSearchAttrib.Size;
-      searchTerm.value.size = 0;
+      searchTerm.matchAll = true;
 
       let action = pepFilter.createAction();
       action.type = Ci.nsMsgFilterAction.Custom;
@@ -621,28 +636,12 @@ var EnigmailPEPAdapter = {
 
       pepFilter.appendTerm(searchTerm);
       pepFilter.appendAction(action);
+      pepFilter.enabled = true;
+      pepFilter.filterType = Ci.nsMsgFilterType.PostOutgoing;
+      pepFilter.filterDesc = EnigmailLocale.getString("filter.tempPepFilterDesc");
       filters.insertFilterAt(0, pepFilter);
-
     }
+
+    return pepFilter;
   }
 };
-
-
-function simulateTrustWords(useOwnId, emailId, locale) {
-  let deferred = Promise.defer();
-  let tw = locale + " - IMMUNITY EXCERCISE MASTERPLAN SOMETHING OVERWHELMING SEEMINLGY PERTURBATING SENSITIVITY IRREGULARLY SETTLEMENT";
-
-  if (locale === "de") {
-    tw = "IMMUNITÄT STICHPROBENARTIG INFEKTIÖS AUFZUPRÄGEN WANKEN KURSIEREN BEZIEHEN BOOMEN AUFGEHETZT AUSLÖSEN";
-  }
-
-  deferred.resolve({
-    jsonrpc: "2.0",
-    result: [47, tw, {
-      status: 0,
-      hex: "PEP_STATUS_OK"
-    }],
-    id: 2
-  });
-  return deferred.promise;
-}
