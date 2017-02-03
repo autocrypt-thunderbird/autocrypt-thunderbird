@@ -456,12 +456,14 @@ PgpMimeEncrypt.prototype = {
           this.inputMode = 1;
 
           if (this.cryptoMode == MIME_ENCRYPTED) {
-            let ct = this.getHeader("content-type", false);
-            if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
-              this.encapsulate = EnigmailMime.createBoundary();
-              this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
-                this.encapsulate + '"\r\n\r\n');
-              this.writeToPipe("--" + this.encapsulate + "\r\n");
+            if (!this.encHeader) {
+              let ct = this.getHeader("content-type", false);
+              if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
+                this.encapsulate = EnigmailMime.createBoundary();
+                this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
+                  this.encapsulate + '"\r\n\r\n');
+                this.writeToPipe("--" + this.encapsulate + "\r\n");
+              }
             }
           }
           else if (this.cryptoMode == MIME_SIGNED) {
