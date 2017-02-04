@@ -74,6 +74,8 @@ var EnigmailPEPAdapter = {
 
   pep: EnigmailpEp,
 
+  DECRYPT_FILTER_NAME: DECRYPT_FILTER_NAME,
+
   /**
    * Get the pEp JSON server version number.
    *
