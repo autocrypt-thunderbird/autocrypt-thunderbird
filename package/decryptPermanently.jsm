@@ -649,6 +649,13 @@ DecryptMessageIntoFolder.prototype = {
             m.initialize(data.substr(0, bodyIndex));
             let ct = m.extractHeader("content-type", false) || "";
 
+            if (part.search(/[^01\.]/) < 0 && ct.search(/protected-headers/i) >= 0) {
+              if (m.hasHeader("subject")) {
+                let subject = m.extractHeader("subject", false) || "";
+                self.mime.headers.subject = [subject];
+              }
+            }
+
             let boundary = getBoundary(getHeaderValue(mime, 'content-type'));
             if (!boundary) boundary = EnigmailMime.createBoundary();
 
@@ -658,11 +665,17 @@ DecryptMessageIntoFolder.prototype = {
             o.data = "--" + boundary + "\n";
             o.data += "Content-Type: " + ct + "\n";
 
-            let h = m.extractHeader("content-transfer-encoding", false);
-            if (h) o.data += "content-transfer-encoding: " + h + "\n";
-
-            h = m.extractHeader("content-description", true);
-            if (h) o.data += "content-description: " + h + "\n";
+            let h = m.headerNames;
+            while (h.hasMore()) {
+              let hdr = h.getNext();
+              if (hdr.search(/^content-type$/i) < 0) {
+                try {
+                  let hdrVal = m.getUnstructuredHeader(hdr);
+                  o.data += hdr + ": " + hdrVal + "\n";
+                }
+                catch (ex) {}
+              }
+            }
 
             o.data += data.substr(bodyIndex);
             if (subpart) {
