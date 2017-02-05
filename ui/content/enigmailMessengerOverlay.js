@@ -1257,6 +1257,7 @@ Enigmail.msg = {
           }
           if (foundIndex >= 0) {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
+            this.movePEPsubject();
             return;
           }
         }
@@ -1276,6 +1277,7 @@ Enigmail.msg = {
           }
           if (foundIndex >= 0) {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
+            this.movePEPsubject();
             return;
           }
         }
