@@ -57,6 +57,7 @@ Components.utils.import("resource://enigmail/protocolHandler.jsm"); /*global Eni
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -1332,18 +1333,14 @@ Enigmail.msg = {
       currentHeaderData.subject.headerValue === "pEp") {
 
       if (gFolderDisplay.selectedMessage) {
-        let m = bodyElement.textContent.match(/^(\r?\n?Subject: [^\r\n]+\r?\n\r?\n)/i);
-        if (m && m.length > 0) {
-          let subject = m[0].replace(/[\r\n]/g, "");
-          subject = subject.substr(9);
-          let newText = bodyElement.textContent.substr(m[0].length);
-
+        let m = EnigmailMime.extractSubjectFromBody(bodyElement.textContent);
+        if (m) {
           let node = bodyElement.firstChild;
           let found = false;
 
           while ((!found) && node) {
             if (node.nodeName == "DIV") {
-              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(newText);
+              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(m.messageBody);
               found = true;
             }
             node = node.nextSibling;
@@ -1353,13 +1350,13 @@ Enigmail.msg = {
           node = bodyElement.firstChild;
           while ((!found) && node) {
             if (node.nodeName == "PRE") {
-              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(newText);
+              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(m.messageBody);
               found = true;
             }
             node = node.nextSibling;
           }
 
-          Enigmail.hdrView.setSubject(subject);
+          Enigmail.hdrView.setSubject(m.subject);
         }
       }
     }

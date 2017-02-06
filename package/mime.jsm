@@ -182,6 +182,36 @@ const EnigmailMime = {
     return adrArr.join(", ");
   },
 
+  /**
+   * Extract the subject from the 1st line of the message body, if the message body starts
+   * with: "Subject: ...\r?\n\r?\n".
+   *
+   * @param msgBody - String: message body
+   *
+   * @return
+   * if subject is found:
+   *  Object:
+   *    - messageBody - String: message body without subject
+   *    - subject     - String: extracted subject
+   *
+   * if subject not found: null
+   */
+  extractSubjectFromBody: function(msgBody) {
+    let m = msgBody.match(/^(\r?\n?Subject: [^\r\n]+\r?\n\r?\n)/i);
+    if (m && m.length > 0) {
+      let subject = m[0].replace(/[\r\n]/g, "");
+      subject = subject.substr(9);
+      msgBody = msgBody.substr(m[0].length);
+
+      return {
+        messageBody: msgBody,
+        subject: subject
+      };
+    }
+
+    return null;
+  },
+
   /***
    * determine if the message data contains a first mime part with content-type = "text/rfc822-headers"
    * if so, extract the corresponding field(s)

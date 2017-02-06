@@ -13,6 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailDecryptPermanently"];
 
 const Cu = Components.utils;
 
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -24,17 +25,19 @@ Cu.import("resource://enigmail/glodaUtils.jsm"); /*global GlodaUtils: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
+Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
 Cu.import("resource://enigmail/glodaMime.jsm");
+
+const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 var EC = EnigmailCore;
 
@@ -411,10 +414,8 @@ DecryptMessageIntoFolder.prototype = {
               }
             );
 
-
             do {
-
-              var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, null, listener, statusFlagsObj);
+              var proc = EnigmailExecution.execStart(getGpgAgent().agentPath, args, false, null, listener, statusFlagsObj);
               if (!proc) {
                 resolve(o);
                 return;
@@ -649,10 +650,18 @@ DecryptMessageIntoFolder.prototype = {
             m.initialize(data.substr(0, bodyIndex));
             let ct = m.extractHeader("content-type", false) || "";
 
-            if (part.search(/[^01\.]/) < 0 && ct.search(/protected-headers/i) >= 0) {
-              if (m.hasHeader("subject")) {
-                let subject = m.extractHeader("subject", false) || "";
-                self.mime.headers.subject = [subject];
+            if (part.length > 0 && part.search(/[^01\.]/) < 0) {
+              if (ct.search(/protected-headers/i) >= 0) {
+                if (m.hasHeader("subject")) {
+                  let subject = m.extractHeader("subject", false) || "";
+                  self.mime.headers.subject = [subject];
+                }
+              }
+              else if (self.mime.headers.subject.join("") === "pEp") {
+                let subject = getPepSubject(data);
+                if (subject) {
+                  self.mime.headers.subject = [subject];
+                }
               }
             }
 
@@ -707,7 +716,6 @@ DecryptMessageIntoFolder.prototype = {
       if (ct == "text/html") {
         mime.body = this.stripHTMLFromArmoredBlocks(mime.body);
       }
-
 
       var enigmailSvc = EnigmailCore.getService();
       var exitCodeObj = {};
@@ -788,6 +796,16 @@ DecryptMessageIntoFolder.prototype = {
 
           if (ct == "text/html") {
             plaintext = plaintext.replace(/\n/ig, "<br/>\n");
+          }
+
+          if (i == 0 && this.mime.headers.subject && this.mime.headers.subject[0] === "pEp" &&
+            mime.partName.length > 0 && mime.partName.search(/[^01\.]/) < 0) {
+
+            let m = EnigmailMime.extractSubjectFromBody(plaintext);
+            if (m) {
+              plaintext = m.messageBody;
+              this.mime.headers.subject = [m.subject];
+            }
           }
 
           if (plaintext) {
@@ -1111,7 +1129,7 @@ function getContentType(shdr) {
 function getBoundary(shdr) {
   try {
     shdr = String(shdr);
-    return shdr.match(/boundary="?([A-z0-9'()+_,-.\/:=?]+)"?/i)[1];
+    return EnigmailMime.getBoundary(shdr);
   }
   catch (e) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: getBoundary: " + e + "\n");
@@ -1122,7 +1140,7 @@ function getBoundary(shdr) {
 function getCharset(shdr) {
   try {
     shdr = String(shdr);
-    return shdr.match(/charset="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+    return EnigmailMime.getParameter(shdr, 'charset').toLowerCase();
   }
   catch (e) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: getCharset: " + e + "\n");
@@ -1133,7 +1151,7 @@ function getCharset(shdr) {
 function getProtocol(shdr) {
   try {
     shdr = String(shdr);
-    return shdr.match(/protocol="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+    return EnigmailMime.getProtocol(shdr).toLowerCase();
   }
   catch (e) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: getProtocol: " + e + "\n");
@@ -1150,4 +1168,49 @@ function getSMimeProtocol(shdr) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: getSMimeProtocol: " + e + "\n");
     return "";
   }
+}
+
+function getPepSubject(mimeString) {
+  EnigmailLog.DEBUG("decryptPermanently.jsm: getPepSubject()\n");
+
+  let subject = null;
+
+  let emitter = {
+    ct: "",
+    firstPlainText: false,
+    startPart: function(partNum, headers) {
+      EnigmailLog.DEBUG("decryptPermanently.jsm: getPepSubject.startPart: partNum=" + partNum + "\n");
+      try {
+        this.ct = String(headers.getRawHeader("content-type")).toLowerCase();
+      }
+      catch (ex) {
+        this.ct = "";
+      }
+    },
+
+    endPart: function(partNum) {},
+
+    deliverPartData: function(partNum, data) {
+      EnigmailLog.DEBUG("decryptPermanently.jsm: getPepSubject.deliverPartData: partNum=" + partNum + " ct=" + this.ct + "\n");
+      if (!this.firstPlainText && this.ct.search(/^text\/plain/) === 0) {
+        // check data
+        this.firstPlainText = true;
+
+        let o = EnigmailMime.extractSubjectFromBody(data);
+        if (o) {
+          subject = o.subject;
+        }
+      }
+    }
+  };
+
+  let opt = {
+    strformat: "unicode",
+    bodyformat: "decode"
+  };
+
+  let p = new jsmime.MimeParser(emitter, opt);
+  p.deliverData(mimeString);
+
+  return subject;
 }
