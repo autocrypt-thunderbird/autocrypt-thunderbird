@@ -27,74 +27,44 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/pepTrustWords.js"/>
 
-  <vbox>
-    <hbox align="center">
-      <description style="width: 300px; font-weight: bold;">
+  <vbox flex="1">
+    <hbox align="center" flex="1">
+      <description style="max-width: 400px" flex="1">
         &enigmail.pEp.trustWordsDlg.overallDesc;
       </description>
     </hbox>
     <separator/>
-    <grid>
-      <columns>
-        <column />
-        <column flex="1"/>
-      </columns>
 
-      <rows>
-      <row>
-        <label value="&enigmail.pEp.trustWordsDlg.partnerEmailAddr;"/>
-        <label id="partnerEmailAddr" value="..."/>
-      </row>
-      <row>
-        <label value="&enigmail.pEp.trustWordsDlg.myEmailAddr;"/>
-        <description id="myEmailAddr" value="..."/>
-      </row>
-      <row>
-        <hbox align="center">
-          <label value="&enigmail.pEp.trustWordsDlg.selectLanguage;"/>
-        </hbox>
-        <hbox flex="1" align="center">
-          <menulist type="menu" editable="false" id="selectTwLocale">
-          </menulist>
-        </hbox>
-      </row>
-      <row>
-        <label value="&enigmail.pEp.trustWordsDlg.trustWords;"/>
-        <description id="wordList" style="width: 250px; overflow:auto;"/>
-      </row>
-    </rows>
-    </grid>
-  </vbox>
+    <label id="partnerEmailAddr" value="..." style="font-weight: bold;"/>
 
-  <vbox>
-    <hbox>
-        <vbox>
-          <image class="enigmailExpandViewButton" onclick="onToggleAdvanced(this);"
-               state="false"/>
-        </vbox>
-        <label value="Advanced" flex="1" pack="start"/>
+    <separator/>
+
+    <vbox align="end">
+      <hbox>
+        <menulist type="menu" editable="false" id="selectVerifyType">
+          <menupopup>
+            <menuitem label="&enigmail.pEp.trustWordsDlg.trustwordsShort;" value="tw-0" oncommand="changeVerifcationType('tw', false)"/>
+            <menuitem label="&enigmail.pEp.trustWordsDlg.fingerprint;" value="fpr" oncommand="changeVerifcationType('fpr')"/>
+            <menuitem label="&enigmail.pEp.trustWordsDlg.trustwordsLong;" value="tw-1" oncommand="changeVerifcationType('tw', true)"/>
+          </menupopup>
+        </menulist>
+
+        <menulist type="menu" editable="false" id="selectTwLocale"/>
       </hbox>
+    </vbox>
 
-      <hbox id="viewAdvanced" collapsed="true">
-        <separator/>
-        <grid>
-          <columns>
-            <column />
-            <column flex="1"/>
-          </columns>
+    <textbox id="wordList" style="max-width: 400px;" editable="false" multiline="true" rows="5" flex="1"/>
 
-          <rows>
-          <row>
-            <label id="partnerFprLbl" value="..."/>
-            <label id="partnerFpr" value="..."/>
-          </row>
-          <row>
-            <label value="&enigmail.pEp.trustWordsDlg.myFingerprint;"/>
-            <description id="myFpr" value="..."/>
-          </row>
-        </rows>
-      </grid>
-    </hbox>
+    <vbox id="fprBox">
+      <label value="&enigmail.pEp.trustWordsDlg.myFingerprint;"/>
+      <label id="myFpr" value="..."/>
+
+      <separator/>
+
+      <label id="partnerFprLbl" value="..."/>
+      <label id="partnerFpr" value="..."/>
+    </vbox>
+
     <separator/>
   </vbox>
 

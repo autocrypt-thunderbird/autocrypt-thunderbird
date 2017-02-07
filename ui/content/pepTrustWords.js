@@ -15,9 +15,12 @@ Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLoca
 const INPUT = 0;
 const CLOSE_WIN = "close";
 
+var gLocale = "";
+
 function onLoad() {
   let argsObj = window.arguments[INPUT];
   let supportedLocale = argsObj.supportedLocale;
+  gLocale = argsObj.locale;
 
   for (let i = 0; i < supportedLocale.length; i++) {
     let item = appendLocaleMenuEntry(supportedLocale[i].short, supportedLocale[i].long);
@@ -27,7 +30,6 @@ function onLoad() {
   }
 
   document.getElementById("partnerEmailAddr").setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
-  document.getElementById("myEmailAddr").setAttribute("value", argsObj.ownId.address);
   document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
   document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
   document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
@@ -43,13 +45,20 @@ function appendLocaleMenuEntry(localeShort, localeLong) {
 
 
 function displayTrustWords(trustWords) {
-  document.getElementById("wordList").textContent = trustWords;
-  resizeDlg();
+  document.getElementById("wordList").setAttribute("value", trustWords);
 }
 
 function getTrustWords(locale) {
+  gLocale = locale;
+  let verifyType = document.getElementById("selectVerifyType").selectedItem;
+
+  let longWordList = false;
+  if (verifyType && verifyType.value === "tw-1") {
+    longWordList = true;
+  }
+
   let argsObj = window.arguments[INPUT];
-  EnigmailPEPAdapter.getTrustWordsForLocale(argsObj.ownId, argsObj.otherId, locale).
+  EnigmailPEPAdapter.getTrustWordsForLocale(argsObj.ownId, argsObj.otherId, locale, longWordList).
   then(function _f(data) {
     if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
       let trustWords = data.result[1];
@@ -96,21 +105,19 @@ function onMistrustKey() {
 function onCancel() {}
 
 
-function resizeDlg() {
-  window.sizeToContent();
-}
+function changeVerifcationType(type) {
+  if (type === "tw") {
+    // display trustwords
+    document.getElementById("wordList").removeAttribute("collapsed");
+    document.getElementById("fprBox").setAttribute("collapsed", "true");
+    document.getElementById("selectTwLocale").removeAttribute("disabled");
 
-function onToggleAdvanced(element) {
-  if (element.getAttribute("state") === "false") {
-    element.setAttribute("state", "true");
-    element.setAttribute("class", "enigmailCollapseViewButton");
-    document.getElementById("viewAdvanced").removeAttribute("collapsed");
+    getTrustWords(gLocale);
   }
   else {
-    element.setAttribute("state", "false");
-    element.setAttribute("class", "enigmailExpandViewButton");
-    document.getElementById("viewAdvanced").setAttribute("collapsed", "true");
+    // display fingerprint
+    document.getElementById("fprBox").removeAttribute("collapsed");
+    document.getElementById("wordList").setAttribute("collapsed", "true");
+    document.getElementById("selectTwLocale").setAttribute("disabled", "true");
   }
-
-  resizeDlg();
 }

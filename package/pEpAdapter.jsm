@@ -503,7 +503,7 @@ var EnigmailPEPAdapter = {
         }
       }
 
-      return EnigmailPEPAdapter.getTrustWordsForLocale(useOwnId, emailId, useLocale);
+      return EnigmailPEPAdapter.getTrustWordsForLocale(useOwnId, emailId, useLocale, false);
     }).then(function _gotTrustWords(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
         let trustWords = data.result[1];
@@ -533,9 +533,9 @@ var EnigmailPEPAdapter = {
    *
    * @return Promise(data)
    */
-  getTrustWordsForLocale: function(ownId, otherId, language) {
+  getTrustWordsForLocale: function(ownId, otherId, language, longWords) {
 
-    return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language);
+    return EnigmailPEPAdapter.pep.getTrustWords(ownId, otherId, language, longWords);
   },
 
   resetTrustForEmail: function(emailAddr) {

@@ -806,13 +806,12 @@
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "This message was encrypted with p≡p. Click the icon for more details.">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
-<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you.They should match the Trustwords below.">
-<!ENTITY enigmail.pEp.trustWordsDlg.myEmailAddr       "Me:">
-<!ENTITY enigmail.pEp.trustWordsDlg.partnerEmailAddr  "Partner:">
-<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "My fingerprint:">
-<!ENTITY enigmail.pEp.trustWordsDlg.selectLanguage    "Select language of Trustwords">
-<!ENTITY enigmail.pEp.trustWordsDlg.selectLanguage    "Change language">
-<!ENTITY enigmail.pEp.trustWordsDlg.trustWords        "List of Trustwords">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you. They should match the Trustwords below.">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Fingerprint for my key:">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "Trustwords">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "Long Trustwords">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Fingerprint">
+
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Confirm Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "Wrong Trustwords/Mistrust key">
 <!ENTITY enigmail.pEp.privacyStatus.label             "Privacy Status:">
