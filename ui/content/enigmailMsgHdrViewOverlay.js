@@ -1039,21 +1039,8 @@ Enigmail.hdrView = {
             if ("result" in cbObj && Array.isArray(cbObj.result) && typeof(cbObj.result[0]) === "object") {
               if ("color" in cbObj.result[0]) {
                 let color = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result[0].color);
-                let setClass = "";
+                let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result[0].color);
 
-                switch (color) {
-                  case "grey":
-                    setClass = "enigmailPepIdentityUnknown";
-                    break;
-                  case "red":
-                    setClass = "enigmailPepIdentityMistrust";
-                    break;
-                  case "yellow":
-                    setClass = "enigmailPepIdentityReliable";
-                    break;
-                  case "green":
-                    setClass = "enigmailPepIdentityTrusted";
-                }
                 nodes[i].setAttribute("class", setClass);
                 Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = color;
               }

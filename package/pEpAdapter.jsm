@@ -443,6 +443,7 @@ var EnigmailPEPAdapter = {
     let deferred = Promise.defer();
     let emailId = null;
     let useOwnId = null;
+    let emailIdRating = null;
     let useLocale = "en";
     let ownIds = [];
     let supportedLocale = [];
@@ -493,6 +494,14 @@ var EnigmailPEPAdapter = {
         deferred.reject("cannotFindKey");
       }
 
+      return EnigmailPEPAdapter.pep.getIdentityRating(emailId);
+
+    }).then(function _gotIdentityRating(data) {
+      if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
+        "color" in data.result[0]) {
+        emailIdRating = data.result[0];
+      }
+
       return EnigmailPEPAdapter.getSupportedLanguages();
     }).then(function _gotLocale(localeList) {
       supportedLocale = localeList;
@@ -510,6 +519,7 @@ var EnigmailPEPAdapter = {
         deferred.resolve({
           ownId: useOwnId,
           otherId: emailId,
+          userRating: emailIdRating,
           locale: useLocale,
           supportedLocale: supportedLocale,
           trustWords: trustWords
@@ -572,6 +582,30 @@ var EnigmailPEPAdapter = {
     }
 
     return color;
+  },
+
+  /**
+   * Get CSS class for pEp rating
+   */
+  getRatingClass: function(rating) {
+    let setClass = "";
+    let color = this.calculateColorFromRating(rating);
+
+    switch (color) {
+      case "grey":
+        setClass = "enigmailPepIdentityUnknown";
+        break;
+      case "red":
+        setClass = "enigmailPepIdentityMistrust";
+        break;
+      case "yellow":
+        setClass = "enigmailPepIdentityReliable";
+        break;
+      case "green":
+        setClass = "enigmailPepIdentityTrusted";
+    }
+
+    return setClass;
   },
 
   /**

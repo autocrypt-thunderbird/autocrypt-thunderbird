@@ -1209,8 +1209,11 @@ function getPepSubject(mimeString) {
     bodyformat: "decode"
   };
 
-  let p = new jsmime.MimeParser(emitter, opt);
-  p.deliverData(mimeString);
+  try {
+    let p = new jsmime.MimeParser(emitter, opt);
+    p.deliverData(mimeString);
+  }
+  catch (ex) {}
 
   return subject;
 }
