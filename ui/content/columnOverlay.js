@@ -9,10 +9,21 @@
 
 /* global Components: false, gDBView: false */
 
+Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+
+
 if (!Enigmail) var Enigmail = {};
 
 Enigmail.columnHandler = {
   nsIEnigmail: Components.interfaces.nsIEnigmail,
+  _usingPep: null,
+  isUsingPep: function() {
+    if (this._usingPep === null) {
+      this._usingPep = EnigmailPEPAdapter.usingPep();
+    }
+
+    return this._usingPep;
+  },
   getCellText: function(row, col) {
     return null;
   },
@@ -25,15 +36,33 @@ Enigmail.columnHandler = {
   getCellProperties: function(row, col, props) {
     let key = gDBView.getKeyAt(row);
     let hdr = gDBView.db.GetMsgHdrForKey(key);
-    let statusFlags = hdr.getUint32Property("enigmail");
     let newProp = null;
-    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
-      (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
-      newProp = "enigSignedEncrypted";
-    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
-      newProp = "enigSigned";
-    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
-      newProp = "enigEncrypted";
+
+    if (this.isUsingPep()) {
+      let rating = hdr.getUint32Property("enigmailPep");
+
+      switch (rating) {
+        case 1:
+          newProp = "enigmailPepMistrust";
+          break;
+        case 2:
+          newProp = "enigmailPepReliable";
+          break;
+        case 3:
+          newProp = "enigmailPepTrusted";
+          break;
+      }
+    }
+    else {
+      let statusFlags = hdr.getUint32Property("enigmail");
+      if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
+        (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
+        newProp = "enigSignedEncrypted";
+      else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
+        newProp = "enigSigned";
+      else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
+        newProp = "enigEncrypted";
+    }
 
     if (newProp) {
       let atomService = Components.classes["@mozilla.org/atom-service;1"].
@@ -48,6 +77,10 @@ Enigmail.columnHandler = {
   getRowProperties: function(row, props) {},
   getImageSrc: function(row, col) {},
   getSortLongForRow: function(hdr) {
+    if (this.isUsingPep()) {
+      return hdr.getUint32Property("enigmailPep");
+    }
+
     var statusFlags = hdr.getUint32Property("enigmail");
     if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
       (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))

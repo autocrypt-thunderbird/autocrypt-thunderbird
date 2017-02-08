@@ -917,9 +917,27 @@ Enigmail.hdrView = {
     if (!msg || !msg.folder) return;
 
     var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-    if (this.statusBar.getAttribute("encrypted") == "ok")
-      Enigmail.msg.securityInfo.statusFlags |= Components.interfaces.nsIEnigmail.DECRYPTION_OKAY;
-    msgHdr.setUint32Property("enigmail", Enigmail.msg.securityInfo.statusFlags);
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      let pepColor = 0;
+      switch (this.pEpStatus.messageColor) {
+        case "red":
+          pepColor = 1;
+          break;
+        case "yellow":
+          pepColor = 2;
+          break;
+        case "green":
+          pepColor = 3;
+          break;
+      }
+      msgHdr.setUint32Property("enigmailPep", pepColor);
+    }
+    else {
+      if (this.statusBar.getAttribute("encrypted") == "ok")
+        Enigmail.msg.securityInfo.statusFlags |= Components.interfaces.nsIEnigmail.DECRYPTION_OKAY;
+      msgHdr.setUint32Property("enigmail", Enigmail.msg.securityInfo.statusFlags);
+    }
   },
 
   enigCanDetachAttachments: function() {
@@ -1025,6 +1043,8 @@ Enigmail.hdrView = {
       this.pEpStatus.messageColor = "yellow";
       this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
     }
+
+    this.updateMsgDb();
   },
 
   displayPepEmailRating: function(textNode, person) {

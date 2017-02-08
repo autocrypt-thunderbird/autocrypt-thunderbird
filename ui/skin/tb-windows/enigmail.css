@@ -716,3 +716,21 @@ treechildren::-moz-tree-cell-text(STYLE) {}
   padding-left: 3px;
   padding-right: 3px;
 }
+
+/*
+  icon in the Enigmail/pEp column
+*/
+treechildren::-moz-tree-image(enigmailPepMistrust)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpRed.svg');
+}
+
+treechildren::-moz-tree-image(enigmailPepReliable)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpYellow.svg');
+}
+
+treechildren::-moz-tree-image(enigmailPepTrusted)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpGreen.svg');
+}
