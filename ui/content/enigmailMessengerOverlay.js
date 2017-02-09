@@ -110,6 +110,13 @@ Enigmail.msg = {
       }
     }
 
+    if (EnigmailPEPAdapter.usingPep()) {
+      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
+    }
+    else {
+      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
+    }
+
     Enigmail.msg.messagePane = document.getElementById("messagepane");
 
     if (!Enigmail.msg.messagePane) return; // TB on Mac OS X calls this twice -- once far too early

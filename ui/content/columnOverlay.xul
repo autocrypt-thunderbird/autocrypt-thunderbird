@@ -20,7 +20,7 @@
     <splitter class="tree-splitter" />
     <treecol id="enigmailStatusCol" persist="hidden ordinal width"
              currentView="unthreaded" flex="2"
-             label="&enigmail.msgViewColumn.label;" tooltiptext="&enigmail.msgViewColumn.tooltip;" />
+             label="" tooltiptext="&enigmail.msgViewColumn.tooltip;" />
    </treecols>
   </tree>
 
