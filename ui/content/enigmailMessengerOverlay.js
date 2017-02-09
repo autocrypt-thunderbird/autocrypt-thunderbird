@@ -110,12 +110,6 @@ Enigmail.msg = {
       }
     }
 
-    if (EnigmailPEPAdapter.usingPep()) {
-      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
-    }
-    else {
-      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
-    }
 
     Enigmail.msg.messagePane = document.getElementById("messagepane");
 
@@ -138,6 +132,13 @@ Enigmail.msg = {
       "Enigmail.msg.msgPrint('", "');");
 
     Enigmail.msg.overrideLayoutChange();
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
+    }
+    else {
+      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
+    }
 
     Enigmail.msg.savedHeaders = null;
 

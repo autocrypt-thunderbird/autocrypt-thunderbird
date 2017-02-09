@@ -636,14 +636,23 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 .enigmailPepRatingMistrust {
   list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
 }
 
 .enigmailPepRatingReliable {
   list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
 }
 
 .enigmailPepRatingTrusted {
   list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
+}
+
+.enigmailPepRatingUnknown {
 }
 
 .enigmailPepIdentityMistrust
@@ -679,35 +688,6 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 #button-enigmail-pepEncrypt[encrypt="false"] {
   list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.svg');
-}
-
-.enigmail-statusbar-pep-logo
-{
-  list-style-image: url('chrome://enigmail/skin/pEpLogo.svg');
-  max-height: 12px;
-  margin: 0px 4px;
-}
-
-.enigmail-statusbar-pep-unsecure
-{
-  background-color: inherit;
-  padding-left: 3px;
-  padding-right: 3px;
-}
-
-.enigmail-statusbar-pep-secure
-{
-  background-color: #ffd800;
-  padding-left: 3px;
-  padding-right: 3px;
-}
-
-.enigmail-statusbar-pep-trusted
-{
-  background-color: #00a92b;
-  color: #ffffff;
-  padding-left: 3px;
-  padding-right: 3px;
 }
 
 .enigmail-statusbar-pep-logo

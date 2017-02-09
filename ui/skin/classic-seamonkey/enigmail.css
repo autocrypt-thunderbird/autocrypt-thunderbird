@@ -624,14 +624,23 @@ treechildren::-moz-tree-cell-text(STYLE) {}
 
 .enigmailPepRatingMistrust {
   list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
 }
 
 .enigmailPepRatingReliable {
   list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
 }
 
 .enigmailPepRatingTrusted {
   list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
+}
+
+.enigmailPepRatingUnknown {
 }
 
 .enigmailPepIdentityMistrust
