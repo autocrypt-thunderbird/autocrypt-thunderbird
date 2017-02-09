@@ -369,6 +369,10 @@ EnigmailMimeDecrypt.prototype = {
 
     this.displayStatus();
 
+    // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
+    this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
+    this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+
     this.returnData(this.decryptedData);
     this.decryptedData = "";
 
