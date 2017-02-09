@@ -17,6 +17,9 @@ if (!Enigmail) var Enigmail = {};
 Enigmail.columnHandler = {
   nsIEnigmail: Components.interfaces.nsIEnigmail,
   _usingPep: null,
+  resetUsingPep: function() {
+    this._usingPep = null;
+  },
   isUsingPep: function() {
     if (this._usingPep === null) {
       this._usingPep = EnigmailPEPAdapter.usingPep();
@@ -109,6 +112,11 @@ window.addEventListener("load",
     var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);
     ObserverService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
+
+    let folderTree = document.getElementById("folderTree");
+    folderTree.addEventListener("select", function _f() {
+      Enigmail.columnHandler.resetUsingPep();
+    });
   },
   false
 );
