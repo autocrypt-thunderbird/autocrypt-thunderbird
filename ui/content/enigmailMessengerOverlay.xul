@@ -308,6 +308,13 @@
                   class="enigMsgHdrView-flat-button"
                   oncommand="Enigmail.msg.handleUnknownKey();"/>
         </vbox>
+        <vbox flex="0" pack="center">
+          <button id="enigmail_confirmKey" pack="center"
+                  label="&enigmail.confirmKey.label;"
+                  hidden="true"
+                  class="enigMsgHdrView-flat-button"
+                  oncommand="Enigmail.msg.confirmWksRequest();"/>
+        </vbox>
         <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
           <observes element="enigmailStatusText" attribute="class"/>
           <button id="enigmailStatusHdrDetails" pack="center"

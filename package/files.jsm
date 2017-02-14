@@ -235,7 +235,11 @@ const EnigmailFiles = {
       }
     }
 
-    const cmdStr = getQuoted(EnigmailFiles.getFilePathDesc(command)) + " ";
+    if (command instanceof Ci.nsIFile) {
+      command = EnigmailFiles.getFilePathDesc(command);
+    }
+
+    const cmdStr = getQuoted(command) + " ";
     const argStr = args.map(getQuoted).join(" ").replace(/\\\\/g, '\\');
     return cmdStr + argStr;
   },

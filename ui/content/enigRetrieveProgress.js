@@ -17,6 +17,8 @@
 
 "use strict";
 
+Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
+
 var msgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
 
 // dialog is just an array we'll use to store various properties from the dialog document...
@@ -85,7 +87,6 @@ function onLoad() {
   // Set global variables.
   EnigmailLog.DEBUG("enigRetrieveProgress: onLoad\n");
   var inArg = window.arguments[0];
-  var subject;
   window.arguments[1].result = false;
 
   dialog = {};
@@ -97,12 +98,67 @@ function onLoad() {
     return;
 
   // Set up dialog button callbacks.
-  var object = this;
+  /*var object = this;
   doSetOKCancel("", function() {
     return object.onCancel();
   });
+*/
 
+  gEnigCallbackFunc = inArg.cbFunc;
+  msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
+  if (inArg.accessType == nsIEnigmail.UPLOAD_WKD) {
+    onLoadWkd(inArg);
+  }
+  else {
+    onLoadGpg(inArg);
+  }
+
+}
+
+function onLoadWkd(inArg) {
+  EnigmailLog.DEBUG("enigRetrieveProgress: onLoadWkd: ident=" + inArg.senderIdent.email + ", key=" + inArg.keyFpr + "\n");
+  try {
+    var statTxt = document.getElementById("dialog.status2");
+    statTxt.value = EnigmailLocale.getString("keyserverProgress.wksCheck");
+    document.getElementById("progressWindow").setAttribute("title", EnigmailLocale.getString("keyserverTitle.uploading"));
+
+    var progressDlg = document.getElementById("dialog.progress");
+    progressDlg.setAttribute("mode", "undetermined");
+
+    EnigmailWks.isWksSupportedAsync(inArg.senderIdent.email, window, function(is_supported) {
+      if (msgProgress && msgProgress.processCanceledByUser) {
+        window.close();
+        return;
+      }
+
+      if (is_supported) {
+        statTxt.value = EnigmailLocale.getString("keyserverTitle.uploading");
+
+        EnigmailWks.submitKey(inArg.senderIdent, {
+          'fpr': inArg.keyFpr
+        }, window, function() {
+          progressDlg.setAttribute("value", 100);
+          progressDlg.setAttribute("mode", "normal");
+
+          window.close();
+        });
+      }
+      else {
+        var errorMsg = EnigmailLocale.getString("keyserverProgress.noWks");
+        window.close();
+        gEnigCallbackFunc(-1, errorMsg, true);
+      }
+    });
+  }
+  catch (ex) {
+    EnigmailLog.DEBUG(ex);
+  }
+}
+
+function onLoadGpg(inArg) {
+  EnigmailLog.DEBUG("enigRetrieveProgress: onLoadGpg\n");
+  var subject;
   var statTxt = document.getElementById("dialog.status2");
   if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
@@ -112,8 +168,6 @@ function onLoad() {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.refreshing");
     subject = EnigmailLocale.getString("keyserverTitle.refreshing");
   }
-
-  msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
   var procListener = {
     done: function(exitCode) {
@@ -131,7 +185,6 @@ function onLoad() {
 
   msgProgress.registerListener(progressListener);
   msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
-  gEnigCallbackFunc = inArg.cbFunc;
 
   var errorMsgObj = {};
   gProcess = EnigmailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);

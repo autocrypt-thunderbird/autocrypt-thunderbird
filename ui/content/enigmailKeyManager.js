@@ -29,6 +29,8 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
+Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 
 
 const INPUT = 0;
@@ -161,6 +163,7 @@ function enigmailKeyMenu() {
   else {
     document.getElementById("bcRevoke").setAttribute("collapsed", "true");
     document.getElementById("bcEditKey").setAttribute("collapsed", "true");
+    document.getElementById("bcUploadToWkd").setAttribute("disabled", "true");
   }
 
   if (keyList.length == 1 && gKeyList[keyList[0]].photoAvailable) {
@@ -869,6 +872,22 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
   return "";
 }
 
+function enigmailUploadToWkd() {
+  enigmailKeyServerAccess(nsIEnigmail.UPLOAD_WKD, enigmailUploadToWkdCb);
+}
+
+function enigmailUploadToWkdCb(exitCode, errorMsg, msgBox) {
+  if (msgBox) {
+    if (exitCode !== 0) {
+      EnigLongAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
+    }
+  }
+  else {
+    return (EnigGetString(exitCode === 0 ? "sendKeysOk" : "sendKeysFailed"));
+  }
+  return "";
+}
+
 function enigmailReceiveKey() {
   enigmailKeyServerAccess(nsIEnigmail.DOWNLOAD_KEY, enigmailReceiveKeyCb);
 }
@@ -1184,6 +1203,32 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
     keyList: "0x" + keyIds.join(" 0x"),
     cbFunc: callbackFunc
   };
+
+  // UPLOAD_WKD needs a nsIMsgIdentity
+  if ( accessType == nsIEnigmail.UPLOAD_WKD ) {
+    try {
+      let key = gKeyList[selKeyList[0]];
+
+      for ( let uid of key.userIds ) {
+        let email = EnigmailFuncs.stripEmail(uid.userId);
+        let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
+
+        if ( maybeIdent && maybeIdent.identity ) {
+          keyDlObj.senderIdent = maybeIdent.identity;
+          keyDlObj.keyFpr = key.fpr;
+          break;
+        }
+      }
+
+      if ( keyDlObj.senderIdent === undefined ) {
+        let uids = key.userIds.map(function(x) { return " - " + x.userId; }).join("\n");
+        EnigAlert(EnigmailLocale.getString("noWksIdentity",[uids]));
+        return;
+      }
+    } catch (ex) {
+      EnigmailLog.DEBUG(ex + "\n");
+    }
+  }
 
   window.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
     "", "dialog,modal,centerscreen", keyDlObj, resultObj);

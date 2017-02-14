@@ -22,7 +22,7 @@ test(function mimeEmitterBasicTest() {
     ["1.1", "text/plain; part=1"],
     ["1.2", "multipart/mixed; part=2"],
     ["1.2.1", "text/plain; part=2.1"],
-    ["1.3", "text/plain; part=3"],
+    ["1.3", "text/plain; part=3"]
   ];
 
   function walkMimeTree(node) {

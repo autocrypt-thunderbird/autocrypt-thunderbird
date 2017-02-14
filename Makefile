@@ -10,7 +10,7 @@ DEPTH		= .
 include $(DEPTH)/config/autoconf.mk
 
 DIRS = ipc public
-DIRS += ui package lang
+DIRS += ui package lang stdlib
 
 ALL = dirs xpi
 

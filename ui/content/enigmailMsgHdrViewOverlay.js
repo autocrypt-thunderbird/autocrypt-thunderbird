@@ -31,6 +31,7 @@ Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailC
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -360,6 +361,29 @@ Enigmail.hdrView = {
       }
       else {
         statusMsg = EnigmailLocale.getString("decryptedMsg");
+
+        // Check whenever this is a Wks confirmation request
+        try {
+          var msg = gFolderDisplay.selectedMessage;
+          if (!(!msg || !msg.folder)) {
+            var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
+            EnigmailStdlib.msgHdrGetHeaders(msgHdr,function(k) {
+              let phase = k.get("wks-phase");
+
+              if (phase === "confirm") {
+                let view = Enigmail.hdrView;
+
+                view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
+                view.enigmailBox.removeAttribute("collapsed");
+                document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
+                document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+              }
+            });
+          }
+        } catch(e) {
+          EnigmailLog.DEBUG(e);
+        }
+
       }
       if (!statusInfo) {
         statusInfo = statusMsg;
@@ -473,6 +497,7 @@ Enigmail.hdrView = {
       else {
         document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
       }
+      document.getElementById("enigmail_confirmKey").setAttribute("hidden", "true");
 
     }
     else {

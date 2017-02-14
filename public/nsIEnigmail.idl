@@ -58,6 +58,7 @@ interface nsIEnigmail : nsISupports
   const long SEND_STRIP_WHITESPACE = 0x0400;  // 1024
   const long SEND_ATTACHMENT       = 0x0800;  // 2048
   const long ENCRYPT_HEADERS       = 0x1000;  // 4096
+  const long SEND_VERBATIM         = 0x2000;  // 8192
 
   /* Status flags */
   const unsigned long GOOD_SIGNATURE        = 0x00000001;
@@ -102,6 +103,7 @@ interface nsIEnigmail : nsISupports
   const long DOWNLOAD_KEY     = 0x02;
   const long UPLOAD_KEY       = 0x04;
   const long REFRESH_KEY      = 0x08;
+  const long UPLOAD_WKD       = 0x10;
 
   /* attachment handling */
 

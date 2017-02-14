@@ -71,6 +71,7 @@
     <broadcaster id="bcDeleteKey" disabled="false"/>
     <broadcaster id="bcClipbrd" disabled="false"/>
     <broadcaster id="bcEnableKey" disabled="false" label=""/>
+    <broadcaster id="bcUploadToWkd" disabled="false"/>
   </broadcasterset>
 
   <menubar id="main-menubar" grippyhidden="true">
@@ -276,6 +277,10 @@
                   observes="bcNoKey"
                   accesskey="&enigmail.keyMan.uploadToServer.accesskey;"
                   oncommand="enigmailUploadKeys()"/>
+        <menuitem label="&enigmail.keyMan.uploadToWkd.label;"
+                  id="uploadToWkd"
+                  observes="bcUploadToWkd"
+                  oncommand="enigmailUploadToWkd()"/>
         <menuseparator/>
         <menuitem label="&enigmail.keyMan.refreshAllKeys.label;"
                   id="refreshAllKeys"
@@ -327,6 +332,10 @@
       <menuitem label="&enigmail.keyMan.ctxRefreshKey.label;"
                 id="ctxRefreshKey"
                 oncommand="enigmailReceiveKey()"/>
+      <menuitem label="&enigmail.keyMan.uploadToWkd.label;"
+                id="ctxUploadToWkd"
+                observes="bcUploadToWkd"
+                oncommand="enigmailUploadToWkd()"/>
 
       <menuseparator/>
 

@@ -23,6 +23,8 @@
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
 
+<!ENTITY enigmail.keyUpload.desc          "Publishing your public key on the internet allows others to send you encrypted email without contacing you first.">
+
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
 <!ENTITY enigmail.passwordSettings.label   "Passphrase settings">
@@ -105,6 +107,7 @@
 <!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
 <!ENTITY enigmail.importpublickey.label  "Import Public Key">
 <!ENTITY enigmail.importKey.label        "Import Key">
+<!ENTITY enigmail.confirmKey.label       "Confirm Request">
 
 <!ENTITY enigmail.autoDecrypt.label      "Automatically Decrypt/Verify Messages">
 <!ENTITY enigmail.clearPassphrase.label  "Clear Saved Passphrase">
@@ -487,6 +490,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
 <!ENTITY enigmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your providers Webkey Directory">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
