@@ -463,6 +463,7 @@ Enigmail.msg = {
   },
 
   setupMenuAndToolbar: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setupMenuAndToolbar\n");
     let toolbarTxt = document.getElementById("enigmail-toolbar-text");
     let encBroadcaster = document.getElementById("enigmail-bc-encrypt");
     let signBroadcaster = document.getElementById("enigmail-bc-sign");
@@ -477,7 +478,9 @@ Enigmail.msg = {
       encBroadcaster.setAttribute("hidden", "true");
       signBroadcaster.setAttribute("hidden", "true");
       attachBroadcaster.setAttribute("hidden", "true");
-      toolbarTxt.setAttribute("hidden", "true");
+      if (toolbarTxt) {
+        toolbarTxt.setAttribute("hidden", "true");
+      }
       enigmailMenu.setAttribute("hidden", "true");
       pepBroadcaster.removeAttribute("hidden");
       pepMenu.removeAttribute("hidden");
@@ -493,7 +496,9 @@ Enigmail.msg = {
       encBroadcaster.removeAttribute("hidden");
       signBroadcaster.removeAttribute("hidden");
       attachBroadcaster.removeAttribute("hidden");
-      toolbarTxt.removeAttribute("hidden");
+      if (toolbarTxt) {
+        toolbarTxt.removeAttribute("hidden");
+      }
       enigmailMenu.removeAttribute("hidden");
       pepBroadcaster.setAttribute("hidden", "true");
       pepMenu.setAttribute("hidden", "true");

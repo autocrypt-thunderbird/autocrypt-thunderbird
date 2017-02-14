@@ -118,6 +118,7 @@ zip --must-match\
     modules/pEp.jsm \
     modules/pEpAdapter.jsm \
     modules/pEpDecrypt.jsm \
+    modules/pEpFilter.jsm \
     modules/pEpListener.jsm \
     modules/pEpMessageHist.jsm \
     modules/pipeConsole.jsm \

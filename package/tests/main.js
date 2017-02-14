@@ -50,5 +50,6 @@ execTest("keyRefreshService-test.js");
 execTest("tor-test.js");
 execTest("versioning-test.js");
 execTest("rng-test.js");
+execTest("filters-test.js");
 
 // execTest("pep-test.js"); // not yet enabled

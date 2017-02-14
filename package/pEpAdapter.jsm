@@ -29,7 +29,7 @@ Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false 
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
+Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -37,7 +37,6 @@ const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
 
 // pEp JSON Server executable name
 const pepServerExecutable = "pep-json-server";
-const DECRYPT_FILTER_NAME = "pEp-Decrypt-on-Sending";
 
 var gPepVersion = null;
 var gSecurityToken = null;
@@ -73,8 +72,6 @@ function startListener() {
 var EnigmailPEPAdapter = {
 
   pep: EnigmailpEp,
-
-  DECRYPT_FILTER_NAME: DECRYPT_FILTER_NAME,
 
   /**
    * Get the pEp JSON server version number.
@@ -608,76 +605,13 @@ var EnigmailPEPAdapter = {
     return setClass;
   },
 
-  /**
-   * Delete an existing standard pEp filter rule for storing unencrypted
-   * sent messages (if trusted server is disabled)
-   *
-   * @param identity - Object: nsIMsgIdentity for relevant account
-   */
+  /* imported from EnigmailPEPFilter */
 
-  deleteDecryptedCopyFilter: function(identity) {
-    let acct = EnigmailFuncs.getAccountForIdentity(identity);
-    let filters = acct.incomingServer.getFilterList(null);
+  DECRYPT_FILTER_NAME: EnigmailPEPFilter.DECRYPT_FILTER_NAME,
 
-    let pepFilter = filters.getFilterNamed(DECRYPT_FILTER_NAME);
-    if (pepFilter) {
-      filters.removeFilter(pepFilter);
-    }
-  },
+  deleteDecryptedCopyFilter: EnigmailPEPFilter.deleteDecryptedCopyFilter,
 
-  /**
-   * Check and/or create the pEp standard filter rule for saving sent messages
-   * in decrypted form (if trusted server is enabled)
-   *
-   * @param identity - Object: nsIMsgIdentity for relevant account
-   *
-   * @return Object: Filter rule (nsIMsgFilter)
-   */
-  ensureDecryptedCopyFilter: function(identity) {
-    let acct = EnigmailFuncs.getAccountForIdentity(identity);
-    let filters = acct.incomingServer.getFilterList(null);
+  ensureDecryptedCopyFilter: EnigmailPEPFilter.ensureDecryptedCopyFilter,
 
-    let pepFilter = filters.getFilterNamed(DECRYPT_FILTER_NAME);
-    if (pepFilter) {
-      let searchTerm = pepFilter.searchTerms.queryElementAt(0, Ci.nsIMsgSearchTerm);
-      let action = pepFilter.getActionAt(0);
-      if (searchTerm && action &&
-        pepFilter.searchTerms.length === 1 &&
-        searchTerm.matchAll &&
-        pepFilter.actionCount === 1 &&
-        pepFilter.filterType === Ci.nsMsgFilterType.PostOutgoing &&
-        action.type === Ci.nsMsgFilterAction.Custom &&
-        action.customAction.id === EnigmailFilters.MOVE_DECRYPT) {
-
-        // set outbox
-        action.strValue = identity.fccFolder;
-        pepFilter.enabled = true;
-      }
-      else {
-        filters.removeFilter(pepFilter);
-        pepFilter = null;
-      }
-    }
-
-    if (!pepFilter) {
-      pepFilter = filters.createFilter(DECRYPT_FILTER_NAME);
-
-      let searchTerm = pepFilter.createTerm();
-      searchTerm.matchAll = true;
-
-      let action = pepFilter.createAction();
-      action.type = Ci.nsMsgFilterAction.Custom;
-      action.customId = EnigmailFilters.MOVE_DECRYPT;
-      action.strValue = identity.fccFolder;
-
-      pepFilter.appendTerm(searchTerm);
-      pepFilter.appendAction(action);
-      pepFilter.enabled = true;
-      pepFilter.filterType = Ci.nsMsgFilterType.PostOutgoing;
-      pepFilter.filterDesc = EnigmailLocale.getString("filter.tempPepFilterDesc");
-      filters.insertFilterAt(0, pepFilter);
-    }
-
-    return pepFilter;
-  }
+  ensureAutoProcessFilter: EnigmailPEPFilter.ensureAutoProcessFilter
 };

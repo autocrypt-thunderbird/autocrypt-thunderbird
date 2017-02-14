@@ -45,6 +45,10 @@ const EnigmailConstants = {
   ICONTYPE_ALERT: 3,
   ICONTYPE_ERROR: 4,
 
+  FILTER_MOVE_DECRYPT: "enigmail@enigmail.net#filterActionMoveDecrypt",
+  FILTER_COPY_DECRYPT: "enigmail@enigmail.net#filterActionCopyDecrypt",
+
+
   nsIEnigmail: Components.interfaces.nsIEnigmail
 
 };
