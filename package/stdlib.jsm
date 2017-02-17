@@ -5,6 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/**
+ * Wrapper library for TB-stdlib to avoid naming conflicts
+ */
+
 
 "use strict";
 
@@ -14,16 +18,19 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/stdlib/compose.jsm"); /* global composeInIframe: false, getEditorForIframe,
-  quoteMsgHdr: false, citeString, htmlToPlainText: false, simpleWrap, plainTextToHtml: false, replyAllParams,
-  determineComposeHtml: false, composeMessageTo, getSignatureContentsForAccount: false */
-Cu.import("resource://enigmail/stdlib/misc.jsm"); /* global gIdentities: false, fillIdentities: false, getIdentities: false, getDefaultIdentity: false, getIdentityForEmail,
-  range: false, MixIn: false, combine: false, entries, NS_FAILED: false, NS_SUCCEEDED, dateAsInMessageList: false, escapeHtml: false, sanitize: false, parseMimeLine,
-  encodeUrlParameters: false, decodeUrlParameters, systemCharset, isOSX: false, isWindows: false, isAccel: false */
-Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm"); /* global msgHdrToMessageBody: false, msgHdrToNeckoURL: false, msgHdrGetTags: false, msgUriToMsgHdr,
-  msgHdrGetUri: false, msgHdrFromNeckoUrl: false, msgHdrSetTags: false, msgHdrIsDraft: false, msgHdrIsSent: false, msgHdrIsArchive: false, msgHdrIsInbox: false,
-  msgHdrIsRss: false, msgHdrIsNntp: false, msgHdrIsJunk: false, msgHdrsMarkAsRead: false, msgHdrsArchive: false, msgHdrsDelete,
-  getMail3Pane: false, msgHdrGetHeaders: false, msgHdrsModifyRaw */
+Cu.import("resource://enigmail/stdlib/compose.jsm");
+/* global composeInIframe: false, getEditorForIframe,
+ quoteMsgHdr: false, citeString, htmlToPlainText: false, simpleWrap, plainTextToHtml: false, replyAllParams,
+ determineComposeHtml: false, composeMessageTo, getSignatureContentsForAccount: false */
+Cu.import("resource://enigmail/stdlib/misc.jsm");
+/* global gIdentities: false, fillIdentities: false, getIdentities: false, getDefaultIdentity: false, getIdentityForEmail,
+ range: false, MixIn: false, combine: false, entries, NS_FAILED: false, NS_SUCCEEDED, dateAsInMessageList: false, escapeHtml: false, sanitize: false, parseMimeLine,
+ encodeUrlParameters: false, decodeUrlParameters, systemCharset, isOSX: false, isWindows: false, isAccel: false */
+Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm");
+/* global msgHdrToMessageBody: false, msgHdrToNeckoURL: false, msgHdrGetTags: false, msgUriToMsgHdr,
+ msgHdrGetUri: false, msgHdrFromNeckoUrl: false, msgHdrSetTags: false, msgHdrIsDraft: false, msgHdrIsSent: false, msgHdrIsArchive: false, msgHdrIsInbox: false,
+ msgHdrIsRss: false, msgHdrIsNntp: false, msgHdrIsJunk: false, msgHdrsMarkAsRead: false, msgHdrsArchive: false, msgHdrsDelete,
+ getMail3Pane: false, msgHdrGetHeaders: false, msgHdrsModifyRaw */
 Cu.import("resource://enigmail/stdlib/send.jsm"); /* global sendMessage: false */
 
 var EnigmailStdlib = {
@@ -85,6 +92,6 @@ var EnigmailStdlib = {
   'msgHdrGetHeaders': msgHdrGetHeaders,
   'msgHdrsModifyRaw': msgHdrsModifyRaw,
 
-  // sendjsm
+  // send.jsm
   'sendMessage': sendMessage
 };

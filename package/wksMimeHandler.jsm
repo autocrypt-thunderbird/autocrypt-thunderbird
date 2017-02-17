@@ -103,7 +103,7 @@ PgpWkdHandler.prototype = {
     let jsonStr = this.requestToJsonString();
     let msg = "";
 
-    if (jsonStr.search(/^type:\s+confirmation-request/mi) >= 0) {
+    if (this.data.search(/^\s*type:\s+confirmation-request/mi) >= 0) {
       msg = EnigmailLocale.getString("wkdMessage.body.req");
     }
     else {

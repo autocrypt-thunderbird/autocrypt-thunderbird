@@ -34,7 +34,11 @@ var EnigmailWks = {
   wksClientPath: null,
 
   /**
-   * Get WKS Client path. Calls cb(path) or cb(null)
+   * Get WKS Client path (gpg-wks-client)
+   *
+   * @param window: Object - parent window for dialog display
+   * @param cb    : Function(retValue) - callback function.
+   *                 retValue: nsIFile Object to gpg-wks-client executable or NULL
    */
   getWksClientPathAsync: function(window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: getWksClientPathAsync\n");
@@ -93,7 +97,14 @@ var EnigmailWks = {
     }
   },
 
-  /* calls cb(true) / cb(false) */
+  /**
+   * Determine if WKS is supported by email provider
+   *
+   * @param email : String - user's email address
+   * @param window: Object - parent window of dialog display
+   * @param cb    : Function(retValue) - callback function.
+   *                   retValue: Boolean: true if WKS is supported / false otherwise
+   */
   isWksSupportedAsync: function(email, window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: isWksSupportedAsync: email = " + email + "\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
@@ -112,7 +123,16 @@ var EnigmailWks = {
     });
   },
 
-  /* calls cb(true) / cb(false) */
+  /**
+   * Submit a key to the email provider (= send publication request)
+   *
+   * @param ident : nsIMsgIdentity - user's ID
+   * @param key   : Enigmail KeyObject of user's key
+   * @param window: Object - parent window of dialog display
+   * @param cb    : Function(retValue) - callback function.
+   *                   retValue: Boolean: true if submit was successful / false otherwise
+   */
+
   submitKey: function(ident, key, window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: submitKey: email = " + ident.email + "\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
@@ -162,8 +182,19 @@ var EnigmailWks = {
     });
   },
 
+  /**
+   * Submit a key to the email provider (= send publication request)
+   *
+   * @param ident : nsIMsgIdentity - user's ID
+   * @param body  : String -  complete message source of the confirmation-request email obtained
+   *                    from the email provider
+   * @param window: Object - parent window of dialog display
+   * @param cb    : Function(retValue) - callback function.
+   *                   retValue: Boolean: true if submit was successful / false otherwise
+   */
+
   confirmKey: function(ident, body, window, cb) {
-    var sanitized = body.replace(/\r?\n/, "\r\n");
+    var sanitized = body.replace(/\r?\n/g, "\r\n");
     EnigmailLog.DEBUG("webKey.jsm: confirmKey: ident=" + ident.email + "\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
       if (wks_client === null) {
@@ -227,6 +258,14 @@ var EnigmailWks = {
 };
 
 
+/**
+ * Check if a file exists and is executable
+ *
+ * @param path        : String - directory name
+ * @param execFileName: String - executable name
+ *
+ * @return Object - nsIFile if file exists; NULL otherwise 
+ */
 function checkIfExists(path, execFileName) {
   let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 
