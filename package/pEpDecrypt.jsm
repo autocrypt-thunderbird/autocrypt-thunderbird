@@ -304,7 +304,7 @@ PEPDecryptor.prototype = {
 
       if (headerSink && this.uri) {
 
-        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
+        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
         headerSink.updateSecurityStatus(
           "",
           0,

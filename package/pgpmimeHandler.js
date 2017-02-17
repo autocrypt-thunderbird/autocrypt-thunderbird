@@ -19,6 +19,7 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("resource://enigmail/wksMimeHandler.jsm"); /*global EnigmailWksMimeHandler: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
@@ -179,6 +180,9 @@ PgpMimeHandler.prototype = {
           cth = EnigmailVerify.newVerifier("application/(x-)?pkcs7-signature");
         }
       }
+    }
+    else if (ct.search(/application\/vnd.gnupg.wks/i) === 0) {
+      cth = EnigmailWksMimeHandler.newHandler();
     }
 
     if (!cth) {

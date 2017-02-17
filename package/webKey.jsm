@@ -112,14 +112,20 @@ var EnigmailWks = {
     });
   },
 
+  /* calls cb(true) / cb(false) */
   submitKey: function(ident, key, window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: submitKey: email = " + ident.email + "\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
       if (wks_client === null) {
         cb(false);
+        return;
       }
       let listener = EnigmailExecution.newSimpleListener(null, function(ret) {
-        EnigmailLog.DEBUG("send " + listener.stdoutData + "\n");
+        if (ret !== 0) {
+          cb(false);
+          return;
+        }
+        EnigmailLog.DEBUG("webKey.jsm: submitKey: send " + listener.stdoutData + "\n");
         let si = Components.classes["@mozdev.org/enigmail/composefields;1"].createInstance(Components.interfaces.nsIEnigMsgCompFields);
         let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
         let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
@@ -143,7 +149,10 @@ var EnigmailWks = {
           }, {}, {});
 
           if (cb !== null) {
-            cb();
+            cb(true);
+          }
+          else {
+            cb(false);
           }
         }
       });

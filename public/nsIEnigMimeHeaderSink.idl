@@ -28,8 +28,9 @@ interface nsIEnigMimeHeaderSink : nsISupports
                             in wstring extraDetails,  // JSON-parseble string
                             in wstring mimePartNumber);
 
-  void modifyMessageHeaders(in nsIURI uri,
-                            in wstring headerData,
+  void processDecryptionResult(in nsIURI uri,
+                            in wstring actionType,
+                            in wstring processData,
                             in wstring mimePartNumber);
 
   void handleSMimeMessage(in nsIURI uri);

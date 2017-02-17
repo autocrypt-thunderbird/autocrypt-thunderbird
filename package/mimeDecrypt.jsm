@@ -394,7 +394,7 @@ EnigmailMimeDecrypt.prototype = {
 
       if (headerSink && this.uri && !this.backgroundJob) {
 
-        headerSink.modifyMessageHeaders(this.uri, JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
+        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
 
         headerSink.updateSecurityStatus(
           this.msgUriSpec,

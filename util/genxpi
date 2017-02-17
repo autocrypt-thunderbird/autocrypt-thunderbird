@@ -146,6 +146,7 @@ zip --must-match\
     modules/versioning.jsm \
     modules/webKey.jsm \
     modules/windows.jsm \
+    modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
     wrappers/gpg-agent-wrapper \
     chrome/${xpiModule}.jar \

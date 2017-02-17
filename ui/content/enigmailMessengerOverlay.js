@@ -538,7 +538,9 @@ Enigmail.msg = {
     // don't parse message if we know it's a PGP/MIME message
     if (((contentType.search(/^multipart\/signed(;|$)/i) === 0) && (contentType.search(/application\/pgp-signature/i) > 0)) ||
       ((contentType.search(/^multipart\/encrypted(;|$)/i) === 0) && (contentType.search(/application\/pgp-encrypted/i) > 0))) {
-      EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
+      if (EnigmailPEPAdapter.usingPep()) {
+        EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
+      }
       this.messageDecryptCb(event, isAuto, null);
       this.movePEPsubject();
       return;
@@ -2606,27 +2608,30 @@ Enigmail.msg = {
       var msg = gFolderDisplay.selectedMessage;
       if (!(!msg || !msg.folder)) {
         var accMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].
-          getService(Components.interfaces.nsIMsgAccountManager);
+        getService(Components.interfaces.nsIMsgAccountManager);
         var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
         let email = EnigmailFuncs.stripEmail(msgHdr.recipients);
         let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
 
-        if ( maybeIdent.identity ) {
+        if (maybeIdent.identity) {
           EnigmailStdlib.msgHdrsModifyRaw([msgHdr], function(data) {
-            EnigmailWks.confirmKey(maybeIdent.identity,data,window,function(ret) {
-              if(ret) {
-                EnigmailDialog.alert(window,EnigmailLocale.getString("wksConfirmSuccess"));
-              } else {
-                EnigmailDialog.alert(window,EnigmailLocale.getString("wksConfirmFailure"));
+            EnigmailWks.confirmKey(maybeIdent.identity, data, window, function(ret) {
+              if (ret) {
+                EnigmailDialog.alert(window, EnigmailLocale.getString("wksConfirmSuccess"));
+              }
+              else {
+                EnigmailDialog.alert(window, EnigmailLocale.getString("wksConfirmFailure"));
               }
             });
             return null;
           });
-        } else {
-          EnigmailDialog.alert(window,EnigmailLocale.getString("wksNoIdentity",[email]));
+        }
+        else {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("wksNoIdentity", [email]));
         }
       }
-    } catch (e) {
+    }
+    catch (e) {
       EnigmailLog.DEBUG(e + "\n");
     }
   }

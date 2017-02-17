@@ -361,29 +361,6 @@ Enigmail.hdrView = {
       }
       else {
         statusMsg = EnigmailLocale.getString("decryptedMsg");
-
-        // Check whenever this is a Wks confirmation request
-        try {
-          var msg = gFolderDisplay.selectedMessage;
-          if (!(!msg || !msg.folder)) {
-            var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-            EnigmailStdlib.msgHdrGetHeaders(msgHdr,function(k) {
-              let phase = k.get("wks-phase");
-
-              if (phase === "confirm") {
-                let view = Enigmail.hdrView;
-
-                view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
-                view.enigmailBox.removeAttribute("collapsed");
-                document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
-                document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
-              }
-            });
-          }
-        } catch(e) {
-          EnigmailLog.DEBUG(e);
-        }
-
       }
       if (!statusInfo) {
         statusInfo = statusMsg;
@@ -461,6 +438,28 @@ Enigmail.hdrView = {
     this.displayStatusBar();
     this.updateMsgDb();
 
+  },
+
+  /**
+   * Check whether we got a WKS request
+   */
+  checkWksConfirmRequest: function(jsonStr) {
+    let requestObj;
+    try {
+      requestObj = JSON.parse(jsonStr);
+    }
+    catch (ex) {
+      return;
+    }
+
+    if ("type" in requestObj && requestObj.type.toLowerCase() === "confirmation-request") {
+      let view = Enigmail.hdrView;
+
+      view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
+      view.enigmailBox.removeAttribute("collapsed");
+      document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
+      document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+    }
   },
 
   displayStatusBar: function() {
@@ -1426,13 +1425,30 @@ if (messageHeaderSink) {
         return;
       },
 
+      processDecryptionResult: function(uri, actionType, processData, mimePartNumber) {
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.processDecryptionResult:\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: actionType= " + actionType + ", mimePart=" + mimePartNumber + "\n");
+
+        let msg = gFolderDisplay.selectedMessage;
+        if (!msg) return;
+        if (!this.isCurrentMessage(uri) || gFolderDisplay.selectedMessages.length !== 1) return;
+
+        switch (actionType) {
+          case "modifyMessageHeaders":
+            this.modifyMessageHeaders(uri, processData, mimePartNumber);
+            return;
+          case "wksConfirmRequest":
+            Enigmail.hdrView.checkWksConfirmRequest(processData);
+            return;
+        }
+      },
+
       modifyMessageHeaders: function(uri, headerData, mimePartNumber) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: headerData= " + headerData + ", mimePart=" + mimePartNumber + "\n");
 
         let updateHdrBox = Enigmail.hdrView.updateHdrBox;
-
         let hdr;
+
         try {
           hdr = JSON.parse(headerData);
         }
@@ -1441,14 +1457,10 @@ if (messageHeaderSink) {
           return;
         }
 
-        let msg = gFolderDisplay.selectedMessage;
-
-        if (!msg) return;
-
         if (typeof(hdr) !== "object") return;
-        if (!this.isCurrentMessage(uri) || gFolderDisplay.selectedMessages.length !== 1) return;
-
         if (!this.displaySubPart(mimePartNumber)) return;
+
+        let msg = gFolderDisplay.selectedMessage;
 
         if ("subject" in hdr) {
           Enigmail.hdrView.setSubject(hdr.subject);

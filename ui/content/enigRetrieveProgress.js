@@ -97,13 +97,6 @@ function onLoad() {
   if (!enigmailSvc)
     return;
 
-  // Set up dialog button callbacks.
-  /*var object = this;
-  doSetOKCancel("", function() {
-    return object.onCancel();
-  });
-*/
-
   gEnigCallbackFunc = inArg.cbFunc;
   msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
 
@@ -137,11 +130,17 @@ function onLoadWkd(inArg) {
 
         EnigmailWks.submitKey(inArg.senderIdent, {
           'fpr': inArg.keyFpr
-        }, window, function() {
-          progressDlg.setAttribute("value", 100);
-          progressDlg.setAttribute("mode", "normal");
-
-          window.close();
+        }, window, function(success) {
+          if (success) {
+            progressDlg.setAttribute("value", 100);
+            progressDlg.setAttribute("mode", "normal");
+            window.close();
+          }
+          else {
+            let errorMsg = EnigmailLocale.getString("keyserverProgress.wksUploadFailed");
+            window.close();
+            gEnigCallbackFunc(-1, errorMsg, true);
+          }
         });
       }
       else {

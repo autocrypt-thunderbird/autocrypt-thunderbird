@@ -91,6 +91,7 @@ MODFILES = \
            versioning.jsm \
            webKey.jsm \
            windows.jsm \
+           wksMimeHandler.jsm \
            zbase32.jsm
 
 all: deploy
