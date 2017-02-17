@@ -38,15 +38,25 @@ function matchesKeyserverAction(action, flag) {
 }
 
 function getRequestAction(actionFlags, keys) {
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.DOWNLOAD_KEY)) { return ["--recv-keys"].concat(keys); }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.SEARCH_KEY)) { return ["--search-keys"].concat(keys); }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.UPLOAD_KEY)) { return ["--send-keys"].concat(keys); }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.REFRESH_KEY))  { return ["--refresh-keys"]; }
+  if (matchesKeyserverAction(actionFlags, nsIEnigmail.DOWNLOAD_KEY)) {
+    return ["--recv-keys"].concat(keys);
+  }
+  if (matchesKeyserverAction(actionFlags, nsIEnigmail.SEARCH_KEY)) {
+    return ["--search-keys"].concat(keys);
+  }
+  if (matchesKeyserverAction(actionFlags, nsIEnigmail.UPLOAD_KEY)) {
+    return ["--send-keys"].concat(keys);
+  }
+  if (matchesKeyserverAction(actionFlags, nsIEnigmail.REFRESH_KEY)) {
+    return ["--refresh-keys"];
+  }
   return null;
 }
 
 function getInputData(actionFlags) {
-  if (matchesKeyserverAction(actionFlags, Ci.nsIEnigmail.SEARCH_KEY)) {return "quit\n";}
+  if (matchesKeyserverAction(actionFlags, Ci.nsIEnigmail.SEARCH_KEY)) {
+    return "quit\n";
+  }
   return null;
 }
 
@@ -71,14 +81,13 @@ function flatten(arrOfArr) {
 }
 
 function isDownload(action) {
-    return matchesKeyserverAction(action, Ci.nsIEnigmail.REFRESH_KEY) || matchesKeyserverAction(action, Ci.nsIEnigmail.DOWNLOAD_KEY);
+  return matchesKeyserverAction(action, Ci.nsIEnigmail.REFRESH_KEY) || matchesKeyserverAction(action, Ci.nsIEnigmail.DOWNLOAD_KEY);
 }
 
 function gpgRequest(keyId, uri, action, usingTor) {
   const proxyHost = getProxyModule().getHttpProxy(uri.keyserverName);
   const args = flatten([
-    buildStandardArgs(action),
-    ["--keyserver", uri],
+    buildStandardArgs(action), ["--keyserver", uri],
     buildProxyInfo(uri, proxyHost),
     getRequestAction(action, keyId)
   ]);
@@ -95,8 +104,7 @@ function gpgRequest(keyId, uri, action, usingTor) {
 
 function requestOverTorWithSocks(keyId, uri, torProperties, action) {
   const args = flatten([
-    buildStandardArgs(action),
-    ["--keyserver", uri],
+    buildStandardArgs(action), ["--keyserver", uri],
     buildProxyInfo(uri, torProperties.args),
     getRequestAction(action, keyId)
   ]);
@@ -113,8 +121,7 @@ function requestOverTorWithSocks(keyId, uri, torProperties, action) {
 function requestOverTorWithHelper(keyId, uri, torProperties, action) {
   const args = flatten([
     torProperties.args,
-    buildStandardArgs(action),
-    ["--keyserver", uri],
+    buildStandardArgs(action), ["--keyserver", uri],
     getRequestAction(action, keyId)
   ]);
 
@@ -140,7 +147,7 @@ function buildRequests(keyId, action, tor) {
 
   if (tor.isPreferred(action)) {
     uris.forEach(function(uri) {
-      if(torProperties.helper !== null) {
+      if (torProperties.helper !== null) {
         requests.push(requestOverTorWithHelper(keyId, uri, torProperties.helper, action));
       }
       if (torProperties.socks !== null) {
@@ -207,7 +214,8 @@ function execute(request, listener, subproc) {
       },
       mergeStderr: false
     });
-  } catch (ex) {
+  }
+  catch (ex) {
     EnigmailLog.ERROR("keyserver.jsm: execute: subprocess.call failed with '" + ex.toString() + "'\n");
     throw ex;
   }
@@ -251,8 +259,9 @@ function invalidArgumentsExist(actionFlags, keyserver, searchTerms, errorMsgObj)
 
   return false;
 }
+
 function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
-  if(invalidArgumentsExist(actionFlags, keyserver, searchTerms, errorMsgObj)) {
+  if (invalidArgumentsExist(actionFlags, keyserver, searchTerms, errorMsgObj)) {
     return null;
   }
 
@@ -285,13 +294,13 @@ function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
  * @param    String  keyId   - ID of the key to be refreshed
  */
 function refresh(keyId) {
-  EnigmailLog.WRITE("[KEYSERVER]: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString()+ "\n");
+  EnigmailLog.WRITE("[KEYSERVER]: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString() + "\n");
   const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, EnigmailTor, EnigmailHttpProxy);
 
-  for (let i=0; i<requests.length; i++) {
+  for (let i = 0; i < requests.length; i++) {
     const successStatus = executeRefresh(requests[i], subprocess);
-    if (successStatus || i === requests.length-1) {
+    if (successStatus || i === requests.length - 1) {
       logRefreshAction(successStatus, requests[i].usingTor, keyId);
       return;
     }
@@ -301,12 +310,14 @@ function refresh(keyId) {
 function logRefreshAction(successStatus, usingTor, keyId) {
   if (successStatus) {
     EnigmailLog.CONSOLE("Refreshed key " + keyId + " over Tor: " + usingTor + ". Refreshed successfully: " + successStatus + "\n\n");
-  } else {
+  }
+  else {
     EnigmailLog.CONSOLE("Failed to refresh key " + keyId + "\n\n");
   }
 }
 
 let currentProxyModule = null;
+
 function getProxyModule() {
   if (currentProxyModule === null) {
     currentProxyModule = EnigmailHttpProxy;
@@ -314,7 +325,7 @@ function getProxyModule() {
   return currentProxyModule;
 }
 
-const EnigmailKeyServer= {
+const EnigmailKeyServer = {
   access: access,
   refresh: refresh
 };

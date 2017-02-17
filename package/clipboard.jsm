@@ -96,7 +96,7 @@ var EnigmailClipboard = {
       let clipBoardHlp = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
       clipBoardHlp.copyStringToClipboard(str, useClipboard);
       if (clipBoard.supportsSelectionClipboard() &&
-          (useClipboard === Ci.nsIClipboard.kSelectionClipboard || clipBoardType === undefined)) {
+        (useClipboard === Ci.nsIClipboard.kSelectionClipboard || clipBoardType === undefined)) {
         clipBoardHlp.copyStringToClipboard(str, Ci.nsIClipboard.kSelectionClipboard);
       }
     }

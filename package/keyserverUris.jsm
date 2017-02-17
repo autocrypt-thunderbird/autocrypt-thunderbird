@@ -103,7 +103,9 @@ function buildKeyserverUris() {
     return a.concat(b);
   });
 
-  return uris.map(function(uri) {return combineIntoURI(uri.protocol, uri.domain, uri.port);});
+  return uris.map(function(uri) {
+    return combineIntoURI(uri.protocol, uri.domain, uri.port);
+  });
 }
 
 /**

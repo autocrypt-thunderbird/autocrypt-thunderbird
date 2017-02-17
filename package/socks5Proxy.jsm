@@ -40,8 +40,7 @@ function createScriptableInputStream(inputStream) {
 
 function buildListener(hasFoundTor, isDoneChecking) {
   const listener = {
-    onStartRequest: function(request, context) {
-    },
+    onStartRequest: function(request, context) {},
     onStopRequest: function(request, context, statusCode) {
       isDoneChecking();
     },
@@ -55,7 +54,7 @@ function buildListener(hasFoundTor, isDoneChecking) {
 }
 
 function getCurrentThread() {
-    return Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager).currentThread;
+  return Cc["@mozilla.org/thread-manager;1"].getService(Ci.nsIThreadManager).currentThread;
 }
 
 function filterWith(portPref) {
@@ -82,8 +81,13 @@ function checkTorExists(portPref) {
   let doneCheckingTor = false;
   let foundTor = false;
 
-  function isDoneChecking() { doneCheckingTor = true; }
-  function hasFoundTor(val) { foundTor = val; }
+  function isDoneChecking() {
+    doneCheckingTor = true;
+  }
+
+  function hasFoundTor(val) {
+    foundTor = val;
+  }
 
   const listener = buildListener(hasFoundTor, isDoneChecking);
 
@@ -91,7 +95,7 @@ function checkTorExists(portPref) {
   const ioservice = createCheckTorURIChannel().asyncOpen(listener, sharedContext);
   const currentThread = getCurrentThread();
 
-  while(!doneCheckingTor)  {
+  while (!doneCheckingTor) {
     currentThread.processNextEvent(true);
   }
 

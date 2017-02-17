@@ -1205,27 +1205,30 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
   };
 
   // UPLOAD_WKD needs a nsIMsgIdentity
-  if ( accessType == nsIEnigmail.UPLOAD_WKD ) {
+  if (accessType == nsIEnigmail.UPLOAD_WKD) {
     try {
       let key = gKeyList[selKeyList[0]];
 
-      for ( let uid of key.userIds ) {
+      for (let uid of key.userIds) {
         let email = EnigmailFuncs.stripEmail(uid.userId);
         let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
 
-        if ( maybeIdent && maybeIdent.identity ) {
+        if (maybeIdent && maybeIdent.identity) {
           keyDlObj.senderIdent = maybeIdent.identity;
           keyDlObj.keyFpr = key.fpr;
           break;
         }
       }
 
-      if ( keyDlObj.senderIdent === undefined ) {
-        let uids = key.userIds.map(function(x) { return " - " + x.userId; }).join("\n");
-        EnigAlert(EnigmailLocale.getString("noWksIdentity",[uids]));
+      if (keyDlObj.senderIdent === undefined) {
+        let uids = key.userIds.map(function(x) {
+          return " - " + x.userId;
+        }).join("\n");
+        EnigAlert(EnigmailLocale.getString("noWksIdentity", [uids]));
         return;
       }
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.DEBUG(ex + "\n");
     }
   }

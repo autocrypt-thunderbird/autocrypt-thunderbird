@@ -307,7 +307,7 @@ function appendUser(connection, paramsArr) {
  *
  * @return Promise
  */
- function updateUser(connection, paramsArr, currData) {
+function updateUser(connection, paramsArr, currData) {
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser\n");
 
   let deferred = Promise.defer();
