@@ -643,6 +643,54 @@ var EnigmailpEp = {
     }
   },
 
+  /**
+   * Get list of all blaclisted keys (fpr)
+   */
+  blacklistGetKeyList: function() {
+    try {
+      let params = [
+        "O"
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_retrieve", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  blacklistAddKey: function(fpr) {
+    try {
+      let params = [
+        fpr
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_add", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  blacklistDeleteKey: function(fpr) {
+    try {
+      let params = [
+        fpr
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_delete", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
   registerListener: function(port, securityToken) {
 
     try {

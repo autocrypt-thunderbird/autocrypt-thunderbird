@@ -520,6 +520,7 @@
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
 <!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
+<!ENTITY enigmail.keyMan.pEpBlacklisted.label      "Blacklist">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
 <!ENTITY enigmail.keyMan.addToPRRule.label         "Add to Per-Recipient Rule">
 <!ENTITY enigmail.keyMan.emptyTree.tooltip         "Enter search terms in the box above">

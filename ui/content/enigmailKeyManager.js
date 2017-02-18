@@ -31,6 +31,7 @@ Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 
 const INPUT = 0;
@@ -48,6 +49,7 @@ var gTreeChildren = null;
 var gShowInvalidKeys = null;
 var gShowUntrustedKeys = null;
 var gShowOthersKeys = null;
+var gPepKeyBlacklist = [];
 
 function enigmailKeyManagerLoad() {
   EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -65,7 +67,15 @@ function enigmailKeyManagerLoad() {
     gShowAllKeysElement.setAttribute("checked", "true");
   }
 
-  gUserList.addEventListener('click', enigmailOnClick, true);
+  if (EnigmailPEPAdapter.usingPep()) {
+    pEpLoadBlacklist();
+  }
+  else {
+    let c = document.getElementById("pepBlacklistCol");
+    c.parentNode.removeChild(c);
+  }
+
+  gUserList.addEventListener('click', onListClick, true);
   document.getElementById("bcEnableKey").setAttribute("label", EnigGetString("keyMan.disableKey"));
   document.getElementById("pleaseWait").showPopup(gSearchInput, -1, -1, "tooltip", "after_end", "");
   document.getElementById("statusText").value = EnigGetString("keyMan.loadingKeys");
@@ -114,6 +124,17 @@ function buildKeyList(refresh) {
   keyListObj = EnigmailKeyRing.getAllKeys(window, getSortColumn(), getSortDirection());
 
   if (!keyListObj.keySortList) return;
+
+  if (gUserList.getAttribute("sortResource") === "pepBlacklistCol") {
+    let sortDirection = (gUserList.getAttribute("sortDirection") === "ascending" ? 1 : -1);
+
+    keyListObj.keySortList.sort(function(a, b) {
+      let i1 = gPepKeyBlacklist.indexOf(a.fpr) >= 0 ? 1 : 0;
+      let i2 = gPepKeyBlacklist.indexOf(b.fpr) >= 0 ? 1 : 0;
+
+      return (i1 > i2) ? -sortDirection : sortDirection;
+    });
+  }
 
   gKeyList = keyListObj.keyList;
   gKeySortList = keyListObj.keySortList;
@@ -212,7 +233,25 @@ function enigmailKeyMenu() {
 }
 
 
-function enigmailOnClick(event) {
+function onListClick(event) {
+
+  if (event.detail > 2) return;
+
+  if (event.type === "click") {
+    // Mouse event
+    let row = {};
+    let col = {};
+    let elt = {};
+    gUserList.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
+
+    if (!col.value) // not clicked on a valid column (e.g. scrollbar)
+      return;
+
+    if ((event.detail === 1) && (col.value.id === "pepBlacklistCol")) {
+      pEpHandleBlacklistClick(row.value);
+    }
+  }
+
   if (event.detail != 2) {
     return;
   }
@@ -252,6 +291,76 @@ function enigmailKeyDetails() {
     if (EnigmailWindows.openKeyDetails(window, gKeyList[keyList[0]].keyId, false)) {
       refreshKeys();
     }
+  }
+}
+
+function pEpLoadBlacklist() {
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+  EnigmailPEPAdapter.pep.blacklistGetKeyList().then(
+    function _ok(retObj) {
+      if (retObj && typeof(retObj) === "object" && "result" in retObj) {
+        gPepKeyBlacklist = retObj.result[0].map(
+          function _upperCase(x) {
+            return x.toUpperCase();
+          });
+      }
+
+      if (inspector && inspector.eventLoopNestLevel > 0) {
+        // unblock the waiting lock in finishCryptoEncapsulation
+        inspector.exitNestedEventLoop();
+      }
+    }
+  ).catch(function _err(retObj) {
+    gPepKeyBlacklist = [];
+    if (inspector && inspector.eventLoopNestLevel > 0) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      inspector.exitNestedEventLoop();
+    }
+  });
+
+  inspector.enterNestedEventLoop(0);
+}
+
+function pEpHandleBlacklistClick(rowNum) {
+  let action = 0;
+  let msg = "";
+  let button = "";
+  let key;
+  let keyList = getSelectedKeys();
+
+  if (keyList.length == 1) {
+    key = gKeyList[keyList[0]];
+    if (gPepKeyBlacklist.indexOf(key.fpr) >= 0) {
+      action = -1;
+      msg = EnigmailLocale.getString("keyman.removeBlacklistKey.msg", [key.userId, key.fprFormatted]);
+      button = EnigmailLocale.getString("keyman.removeBlacklistKey.button");
+    }
+    else {
+      action = 1;
+      msg = EnigmailLocale.getString("keyman.addBlacklistKey.msg", [key.userId, key.fprFormatted]);
+      button = EnigmailLocale.getString("keyman.addBlacklistKey.button");
+    }
+  }
+  else return;
+
+  if (EnigmailDialog.confirmDlg(window, msg, button)) {
+    let blacklistOp;
+
+    if (action > 0) {
+      blacklistOp = EnigmailPEPAdapter.pep.blacklistAddKey.bind(EnigmailPEPAdapter.pep);
+    }
+    else {
+      blacklistOp = EnigmailPEPAdapter.pep.blacklistDeleteKey.bind(EnigmailPEPAdapter.pep);
+    }
+
+    blacklistOp(key.fpr).then(function _f(x) {
+      EnigmailLog.DEBUG("enigmailKeyManager.js: pEpHandleBlacklistClick: success\n");
+      pEpLoadBlacklist();
+      gUserList.treeBoxObject.invalidateRow(rowNum);
+    }).
+    catch(function _err(x) {
+      EnigmailLog.DEBUG("enigmailKeyManager.js: pEpHandleBlacklistClick: got Error: " + JSON.stringify(x) + "\n");
+    });
   }
 }
 
@@ -834,7 +943,7 @@ function enigmailCopyToClipbrd() {
     return;
   }
   if (EnigmailClipboard.setClipboardContent(keyData)) {
-    EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailImportFromClipbrd: set clipboard data");
+    EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailImportFromClipbrd: set clipboard data\n");
     EnigAlert(EnigGetString("copyToClipbrdOK"));
   }
   else {
@@ -1056,7 +1165,7 @@ function enigmailImportKeysFromUrl() {
     var p = new Promise(
       function(resolve, reject) {
         var cbFunc = function _cb(data) {
-          EnigmailLog.DEBUG("enigmailImportKeysFromUrl: _cbFunc()");
+          EnigmailLog.DEBUG("enigmailImportKeysFromUrl: _cbFunc()\n");
           var errorMsgObj = {};
 
           // preview
@@ -1265,8 +1374,14 @@ function sortTree(column) {
     columnName = gUserList.getAttribute("sortResource");
   }
   gUserList.setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
-  gUserList.setAttribute("sortResource", columnName);
-  document.getElementById(columnName).setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+  let col = document.getElementById(columnName);
+  if (col) {
+    col.setAttribute("sortDirection", order == 1 ? "ascending" : "descending");
+    gUserList.setAttribute("sortResource", columnName);
+  }
+  else {
+    gUserList.setAttribute("sortResource", "enigUserNameCol");
+  }
   buildKeyList(false);
 }
 
@@ -1463,7 +1578,21 @@ var gKeyListView = {
   getColumnProperties: function(col) {
     return "";
   },
+
   getImageSrc: function(row, col) {
+    let r = this.getFilteredRow(row);
+    if (!r) return "";
+    let keyObj = gKeyList[r.keyNum];
+
+    if (r.rowType === "key" && col.id === "pepBlacklistCol") {
+      if (gPepKeyBlacklist.indexOf(keyObj.fpr) >= 0) {
+        return "chrome://enigmail/content/check1.png";
+      }
+      else {
+        return "chrome://enigmail/content/check0.png";
+      }
+    }
+
     return null;
   },
 

@@ -450,6 +450,12 @@
                    onclick="sortTree(this)"
                    hidden="true"
                    persist="width ordinal hidden"/>
+          <treecol id="pepBlacklistCol" style="width:30px"
+                   label="&enigmail.keyMan.pEpBlacklisted.label;"
+                   flex="1"
+                   class="sortDirectionIndicator"
+                   onclick="sortTree(this)"
+                   persist="width ordinal"/>
         </treecols>
 
         <treechildren id="pgpKeyListChildren" properties=""

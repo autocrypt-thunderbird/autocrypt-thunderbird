@@ -257,15 +257,15 @@ var EnigmailWks = {
   }
 };
 
-
 /**
  * Check if a file exists and is executable
  *
- * @param path        : String - directory name
+ * @param path:         String - directory name
  * @param execFileName: String - executable name
  *
- * @return Object - nsIFile if file exists; NULL otherwise 
+ * @return Object - nsIFile if file exists; NULL otherwise
  */
+
 function checkIfExists(path, execFileName) {
   let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 
