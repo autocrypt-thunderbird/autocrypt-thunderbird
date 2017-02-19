@@ -32,6 +32,7 @@ Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: 
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
+Components.utils.import("resource://enigmail/webKey.jsm"); /* global EnigmailWks: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -330,7 +331,7 @@ Enigmail.hdrView = {
       else if (statusFlags & nsIEnigmail.IMPORTED_KEY) {
         statusLine = "";
         statusInfo = "";
-        EnigmailDialog.alert(window, errorMsg);
+        EnigmailDialog.info(window, errorMsg);
       }
       else {
         statusInfo = EnigmailLocale.getString("failedDecryptVerify");
@@ -454,11 +455,15 @@ Enigmail.hdrView = {
 
     if ("type" in requestObj && requestObj.type.toLowerCase() === "confirmation-request") {
       let view = Enigmail.hdrView;
+      EnigmailWks.getWksClientPathAsync(window, function _res(wksClientPath) {
+        if (!wksClientPath) return;
 
-      view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
-      view.enigmailBox.removeAttribute("collapsed");
-      document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
-      document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+        view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
+        view.enigmailBox.removeAttribute("collapsed");
+        document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
+        document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+        view.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
+      });
     }
   },
 
@@ -1128,7 +1133,7 @@ Enigmail.hdrView = {
     let descProp = "pepStatusInfo.info." + (rating < 0 ? "m" : "r") + rating;
     let infoText = EnigmailLocale.getString("pepStatusInfo.text") + "\n\n" +
       EnigmailLocale.getString(descProp);
-    EnigmailDialog.alert(window, infoText);
+    EnigmailDialog.info(window, infoText);
   },
 
   enablePepMenus: function() {

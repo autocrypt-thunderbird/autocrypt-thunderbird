@@ -18,7 +18,7 @@
 
 // imported packages
 /* global EnigmailLog: false, EnigmailEvents: false, EnigmailKeyRing: false, EnigmailWindows: false, EnigmailKeyEditor: false */
-/* global EnigmailKey: false, EnigmailLocale: false, EnigmailPrefs: false */
+/* global EnigmailKey: false, EnigmailLocale: false, EnigmailPrefs: false, EnigmailConstants: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeyManager");
@@ -609,7 +609,7 @@ function createNewMail() {
 
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
 
@@ -659,7 +659,7 @@ function enigEditKeyTrust() {
 
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
   var userIdList = [];
@@ -678,7 +678,7 @@ function enigEditKeyExpiry() {
 
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
   var userIdList = [];
@@ -697,7 +697,7 @@ function enigEditKeyExpiry() {
 function enigSignKey() {
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
   if (EnigSignKey(gKeyList[keyList[0]].userId, gKeyList[keyList[0]].keyId, null)) {
@@ -722,7 +722,7 @@ function enigCreateRevokeCert() {
 function enigmailExportKeys() {
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
 
@@ -737,17 +737,21 @@ function enigmailExportKeys() {
   var exportSecretKey = false;
   if (secretFound) {
     // double check that also the pivate keys shall be exportet
-    var r = EnigLongAlert(EnigGetString("exportSecretKey"), null,
-      EnigGetString("keyMan.button.exportPubKey"),
-      EnigGetString("keyMan.button.exportSecKey"),
-      ":cancel");
+    var r = EnigmailDialog.msgBox(window, {
+      msgtext: EnigGetString("exportSecretKey"),
+      dialogTitle: EnigGetString("enigConfirm"),
+      button1: EnigGetString("keyMan.button.exportPubKey"),
+      button2: EnigGetString("keyMan.button.exportSecKey"),
+      cancelButton: ":cancel",
+      iconType: EnigmailConstants.ICONTYPE_QUESTION
+    });
     switch (r) {
       case 0: // export pub key only
         break;
       case 1: // export secret key
         exportSecretKey = true;
         break;
-      case 2: // cancel
+      default: // cancel
         return;
     }
   }
@@ -796,7 +800,7 @@ function enigmailExportKeys() {
     EnigAlert(EnigGetString("saveKeysFailed") + "\n\n" + errorMsgObj.value);
   }
   else {
-    EnigAlert(EnigGetString("saveKeysOK"));
+    EnigmailDialog.info(window, EnigGetString("saveKeysOK"));
   }
 }
 
@@ -919,7 +923,6 @@ function enigmailImportFromClipbrd() {
         return a.id;
       });
       EnigmailDialog.keyImportDlg(window, keyList);
-      //EnigLongAlert(errorMsgObj.value);
       refreshKeys();
     }
   }
@@ -932,7 +935,7 @@ function enigmailCopyToClipbrd() {
 
   var keyList = getSelectedKeyIds();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
   var exitCodeObj = {};
@@ -944,7 +947,7 @@ function enigmailCopyToClipbrd() {
   }
   if (EnigmailClipboard.setClipboardContent(keyData)) {
     EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailImportFromClipbrd: set clipboard data\n");
-    EnigAlert(EnigGetString("copyToClipbrdOK"));
+    EnigmailDialog.info(window, EnigGetString("copyToClipbrdOK"));
   }
   else {
     EnigAlert(EnigGetString("copyToClipbrdFailed"));
@@ -972,7 +975,7 @@ function enigmailUploadKeys() {
 function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode !== 0) {
-      EnigLongAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
+      EnigAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
     }
   }
   else {
@@ -988,7 +991,7 @@ function enigmailUploadToWkd() {
 function enigmailUploadToWkdCb(exitCode, errorMsg, msgBox) {
   if (msgBox) {
     if (exitCode !== 0) {
-      EnigLongAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
+      EnigAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
     }
   }
   else {
@@ -1007,7 +1010,17 @@ function userAcceptsWarning(warningMessage) {
   }
 
   let checkedObj = {};
-  const confirm = EnigLongAlert(warningMessage, EnigGetString("dlgNoPrompt"), EnigGetString("dlg.button.continue"), ":cancel", null, checkedObj) === 0;
+
+  let confirm = EnigmailDialog.msgBox(window, {
+      msgtext: warningMessage,
+      checkboxLabel: EnigGetString("dlgNoPrompt"),
+      button1: EnigGetString("dlg.button.continue"),
+      cancelButton: ":cancel",
+      iconType: EnigmailConstants.ICONTYPE_QUESTION,
+      dialogTitle: EnigmailLocale.getString("enigConfirm")
+    },
+    checkedObj) === 0;
+
   if (checkedObj.value)
     EnigSetPref("warnRefreshAll", false);
   return confirm;
@@ -1116,7 +1129,7 @@ function enigmailDownloadContactKeys() {
 }
 
 function displayResult(arrayOfMsgText) {
-  EnigLongAlert(arrayOfMsgText.join("\n"));
+  EnigmailDialog.info(window, arrayOfMsgText.join("\n"));
 }
 
 function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
@@ -1140,7 +1153,7 @@ function enigmailReceiveKeyCb(exitCode, errorMsg, msgBox) {
 function addToPRRule() {
   var keyList = getSelectedKeys();
   if (keyList.length === 0) {
-    EnigAlert(EnigGetString("noKeySelected"));
+    EnigmailDialog.info(window, EnigGetString("noKeySelected"));
     return;
   }
 
@@ -1219,7 +1232,7 @@ function enigmailImportKeysFromUrl() {
         refreshKeys();
       })
       .catch(function(reason) {
-        EnigLongAlert("Error: " + reason.value);
+        EnigmailDialog.alert(window, EnigGetString("generalError", [reason.value]));
       });
   }
 }
@@ -1436,6 +1449,8 @@ var gKeyListView = {
 
   getCellProperties: function(row, col) {
     let r = this.getFilteredRow(row);
+    if (!r) return "";
+
     let keyObj = gKeyList[r.keyNum];
 
     let keyTrustStyle = "";
@@ -1581,7 +1596,7 @@ var gKeyListView = {
 
   getImageSrc: function(row, col) {
     let r = this.getFilteredRow(row);
-    if (!r) return "";
+    if (!r) return null;
     let keyObj = gKeyList[r.keyNum];
 
     if (r.rowType === "key" && col.id === "pepBlacklistCol") {
@@ -1600,7 +1615,10 @@ var gKeyListView = {
    * indentation level for rows
    */
   getLevel: function(row) {
-    switch (this.getFilteredRow(row).rowType) {
+    let r = this.getFilteredRow(row);
+    if (!r) return 0;
+
+    switch (r.rowType) {
       case "key":
         return 0;
       case "uidHdr":
@@ -1628,7 +1646,9 @@ var gKeyListView = {
     return false;
   },
   isContainer: function(row) {
-    switch (this.getFilteredRow(row).rowType) {
+    let r = this.getFilteredRow(row);
+    if (!r) return false;
+    switch (r.rowType) {
       case "key":
         return true;
     }
@@ -1637,6 +1657,7 @@ var gKeyListView = {
   },
   isContainerEmpty: function(row) {
     let r = this.getFilteredRow(row);
+    if (!r) return true;
     switch (r.rowType) {
       case "key":
         return false;
@@ -1672,6 +1693,7 @@ var gKeyListView = {
 
   toggleOpenState: function(row) {
     let r = this.getFilteredRow(row);
+    if (!r) return;
     let realRow = this.keyFilterList[row];
     switch (r.rowType) {
       case "key":

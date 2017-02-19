@@ -6,8 +6,8 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
-/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigAlert: false, EnigGetString: false */
-/* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false */
+/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false */
+/* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 
 "use strict";
 
@@ -126,15 +126,15 @@ function enigmailDlgOnAccept() {
   // Remove trailing whitespace
   ruleEmail.value = ruleEmail.value.replace(/\s+$/, "").replace(/^\s+/, "");
   if (ruleEmail.value.length === 0) {
-    EnigAlert(EnigGetString("noEmptyRule"));
+    EnigmailDialog.info(window, EnigGetString("noEmptyRule"));
     return false;
   }
   if (ruleEmail.value.search(/[<\>]/) >= 0) {
-    EnigAlert(EnigGetString("invalidAddress"));
+    EnigmailDialog.info(window, EnigGetString("invalidAddress"));
     return false;
   }
   if (ruleEmail.value.search(/[{}]/) >= 0) {
-    EnigAlert(EnigGetString("noCurlyBrackets"));
+    EnigmailDialog.info(window, EnigGetString("noCurlyBrackets"));
     return false;
   }
   var encryptionList = document.getElementById("encryptionList");

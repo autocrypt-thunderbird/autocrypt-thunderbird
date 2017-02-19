@@ -152,7 +152,7 @@ function setPrimaryUid() {
       uidList.selectedItem.value.substr(4),
       function _cb(exitCode, errorMsg) {
         if (exitCode === 0) {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("changePrimUidOK"));
+          EnigmailDialog.info(window, EnigmailLocale.getString("changePrimUidOK"));
           window.arguments[1].refresh = true;
           reloadUidList();
         }
@@ -174,7 +174,7 @@ function revokeUid() {
       uidList.selectedItem.value.substr(4),
       function _cb(exitCode, errorMsg) {
         if (exitCode === 0) {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("revokeUidOK", uidList.selectedItem.label));
+          EnigmailDialog.info(window, EnigmailLocale.getString("revokeUidOK", uidList.selectedItem.label));
           window.arguments[1].refresh = true;
           reloadUidList();
         }

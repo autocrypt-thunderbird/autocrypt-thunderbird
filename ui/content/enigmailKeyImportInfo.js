@@ -93,7 +93,7 @@ function onLoad() {
     keysInfoBox.appendChild(keysGrid);
   }
   else {
-    EnigmailDialog.longAlert(window, EnigmailData.convertGpgToUnicode(EnigmailLocale.getString("importInfoNoKeys")));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("importInfoNoKeys"));
     EnigmailEvents.dispatchEvent(window.close, 0);
     return;
   }

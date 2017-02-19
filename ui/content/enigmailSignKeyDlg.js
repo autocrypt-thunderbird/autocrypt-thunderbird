@@ -35,7 +35,7 @@ function onLoad() {
   }
   var keys = EnigmailKeyRing.getAllSecretKeys(true);
   if (keys.length === 0) {
-    EnigmailDialog.alert(null, EnigmailLocale.getString("noTrustedOwnKeys"));
+    EnigmailDialog.info(null, EnigmailLocale.getString("noTrustedOwnKeys"));
     window.close();
     return;
   }

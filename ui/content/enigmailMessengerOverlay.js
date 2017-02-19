@@ -150,7 +150,7 @@ Enigmail.msg = {
       let msg = EnigmailKeyUsability.keyExpiryCheck();
 
       if (msg && msg.length > 0) {
-        EnigmailDialog.alert(window, msg);
+        EnigmailDialog.info(window, msg);
       }
 
       this.expiryTimer = undefined;
@@ -221,7 +221,7 @@ Enigmail.msg = {
 
   viewOpenpgpInfo: function() {
     if (Enigmail.msg.securityInfo) {
-      EnigmailDialog.longAlert(window, EnigmailLocale.getString("securityInfo") + Enigmail.msg.securityInfo.statusInfo);
+      EnigmailDialog.info(window, EnigmailLocale.getString("securityInfo") + Enigmail.msg.securityInfo.statusInfo);
     }
   },
 
@@ -1092,7 +1092,7 @@ Enigmail.msg = {
 
     if (importOnly) {
       if (interactive && errorMsg)
-        EnigmailDialog.longAlert(window, errorMsg);
+        EnigmailDialog.alert(window, errorMsg);
       return;
     }
 
@@ -1155,7 +1155,7 @@ Enigmail.msg = {
 
     if (!plainText) {
       if (interactive && Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusInfo)
-        EnigmailDialog.longAlert(window, Enigmail.msg.securityInfo.statusInfo);
+        EnigmailDialog.info(window, Enigmail.msg.securityInfo.statusInfo);
       return;
     }
 
@@ -1837,7 +1837,7 @@ Enigmail.msg = {
 
     if (Enigmail.msg.decryptedMessage.url != mailNewsUrl.spec) {
       Enigmail.msg.decryptedMessage = null;
-      EnigmailDialog.alert(window, EnigmailLocale.getString("useButton"));
+      EnigmailDialog.info(window, EnigmailLocale.getString("useButton"));
       return;
     }
 
@@ -1854,7 +1854,7 @@ Enigmail.msg = {
     var textContent = this.getDecryptedMessage("text/plain", true);
 
     if (!EnigmailFiles.writeFileContents(saveFile.path, textContent, null)) {
-      EnigmailDialog.alert(window, "Error in saving to file " + saveFile.path);
+      EnigmailDialog.alert(window, EnigmailLocale.getString("fileSaveError", [saveFile.path]));
       return;
     }
 
@@ -2149,7 +2149,7 @@ Enigmail.msg = {
     var r = enigmailSvc.verifyAttachment(window, outFile1, outFile2, statusFlagsObj, errorMsgObj);
 
     if (r === 0)
-      EnigmailDialog.alert(window, EnigmailLocale.getString("signature.verifiedOK", [this.getAttachmentName(origAtt)]) + "\n\n" + errorMsgObj.value);
+      EnigmailDialog.info(window, EnigmailLocale.getString("signature.verifiedOK", [this.getAttachmentName(origAtt)]) + "\n\n" + errorMsgObj.value);
     else
       EnigmailDialog.alert(window, EnigmailLocale.getString("signature.verifyFailed", [this.getAttachmentName(origAtt)]) + "\n\n" +
         errorMsgObj.value);
@@ -2357,11 +2357,11 @@ Enigmail.msg = {
           exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("decryptOkNoSig"), EnigmailLocale.getString("msgOvl.button.contAnyway"));
         }
         else {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("decryptOkNoSig"));
+          EnigmailDialog.info(window, EnigmailLocale.getString("decryptOkNoSig"));
         }
       }
       else {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("failedDecrypt") + "\n\n" + errorMsgObj.value);
+        EnigmailDialog.info(window, EnigmailLocale.getString("failedDecrypt") + "\n\n" + errorMsgObj.value);
         exitStatus = false;
       }
     }
@@ -2552,12 +2552,15 @@ Enigmail.msg = {
       }
 
       let checkedObj = {};
-      const r = EnigmailDialog.longAlert(window, msg,
-        EnigmailLocale.getString("dlgNoPrompt"), // checkBoxLabel
-        EnigmailLocale.getString("dlg.button.close"), // okLabel
-        actionButtonText, // labelButton2
-        null, // labelButton3
-        checkedObj); // checkedObj
+      const r = EnigmailDialog.msgBox(window, {
+          msgtext: msg,
+          dialogTitle: EnigmailLocale.getString("enigInfo"),
+          checkboxLabel: EnigmailLocale.getString("dlgNoPrompt"),
+          button1: EnigmailLocale.getString("dlg.button.close"),
+          button2: actionButtonText,
+          iconType: EnigmailConstants.ICONTYPE_INFO
+        },
+        checkedObj);
       if (r >= 0 && checkedObj.value) {
         // Do not show me this dialog again
         EnigmailPrefs.setPref("warnOnMissingOwnerTrust", false);
@@ -2617,7 +2620,7 @@ Enigmail.msg = {
           EnigmailStdlib.msgHdrsModifyRaw([msgHdr], function(data) {
             EnigmailWks.confirmKey(maybeIdent.identity, data, window, function(ret) {
               if (ret) {
-                EnigmailDialog.alert(window, EnigmailLocale.getString("wksConfirmSuccess"));
+                EnigmailDialog.info(window, EnigmailLocale.getString("wksConfirmSuccess"));
               }
               else {
                 EnigmailDialog.alert(window, EnigmailLocale.getString("wksConfirmFailure"));

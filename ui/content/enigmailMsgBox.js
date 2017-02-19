@@ -84,12 +84,13 @@ function onLoad() {
   }
 
   if (checkboxLabel) {
-    var prefCheck = document.getElementById("theCheckBox");
-    prefCheck.setAttribute("label", checkboxLabel);
-    prefCheck.removeAttribute("hidden");
+    let checkboxElem = document.getElementById("theCheckBox");
+    checkboxElem.setAttribute("label", checkboxLabel);
+    document.getElementById("checkboxContainer").removeAttribute("hidden");
   }
+
   dlg.getButton("accept").focus();
-  var textbox = document.getElementById("msgtext");
+  let textbox = document.getElementById("msgtext");
   textbox.appendChild(textbox.ownerDocument.createTextNode(msgtext));
 
   window.addEventListener("keypress", onKeyPress);

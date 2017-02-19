@@ -144,7 +144,7 @@ function startKeyGen() {
     }
 
     if (!passphrase) {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("keygen.passRequired"));
+      EnigmailDialog.info(window, EnigmailLocale.getString("keygen.passRequired"));
       return;
     }
   }

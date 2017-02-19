@@ -4008,10 +4008,10 @@ Enigmail.msg = {
       if (errorMsg !== "") {
         txt = errorMsg + "\n" + txt;
       }
-      EnigmailDialog.alert(window, EnigmailLocale.getString("sendAborted") + txt);
+      EnigmailDialog.info(window, EnigmailLocale.getString("sendAborted") + txt);
     }
     else {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("sendAborted") + "\n" +
+      EnigmailDialog.info(window, EnigmailLocale.getString("sendAborted") + "\n" +
         EnigmailLocale.getString("msgCompose.internalError"));
     }
   },
@@ -4558,7 +4558,7 @@ Enigmail.msg = {
         displayMsg = statusLines.join("\n");
 
         if (interactive)
-          EnigmailDialog.alert(window, displayMsg);
+          EnigmailDialog.info(window, displayMsg);
       }
     }
 
@@ -4756,7 +4756,7 @@ Enigmail.msg = {
         accessKey: EnigmailLocale.getString("msgCompose.detailsButton.accessKey"),
         label: EnigmailLocale.getString("msgCompose.detailsButton.label"),
         callback: function(aNotificationBar, aButton) {
-          EnigmailDialog.alert(window, detailsText);
+          EnigmailDialog.info(window, detailsText);
         }
       });
     }

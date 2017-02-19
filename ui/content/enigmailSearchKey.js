@@ -324,7 +324,7 @@ function importKeys(connType, txt, errorTxt) {
     EnigmailDialog.keyImportDlg(window, gEnigRequest.importedKeyList.length > 0 ? gEnigRequest.importedKeyList : gEnigRequest.dlKeyList);
   }
   else if (gEnigRequest.errorTxt) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
   }
 
   gEnigRequest.httpInProgress = false;
@@ -336,7 +336,7 @@ function importHtmlKeys(txt) {
   let errorMsgObj = {};
 
   if (txt.length === 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
   }
   else {
     let enigmailSvc = GetEnigmailSvc();
@@ -420,7 +420,7 @@ function newHttpRequest(requestType, requestCallbackFunc) {
       var msg = EnigmailLocale.getString("protocolNotSupported", gEnigRequest.protocol);
       if (!EnigmailPrefs.getPref("useGpgKeysTool"))
         msg += " " + EnigmailLocale.getString("gpgkeysDisabled");
-      EnigmailDialog.alert(window, msg);
+      EnigmailDialog.info(window, msg);
       closeDialog();
       return;
   }
@@ -497,7 +497,7 @@ function scanKeys(connType, htmlTxt) {
         var htmlNode = domParser.parseFromString("<p>" + htmlTxt + "</p>", "text/xml");
 
         if (htmlNode.firstChild.nodeName == "parsererror") {
-          EnigmailDialog.alert(window, "internalError");
+          EnigmailDialog.alert(window, EnigmailLocale.getString("internalError"));
           return false;
         }
         enigScanHtmlKeys(htmlNode.firstChild.firstChild.data);
@@ -514,7 +514,7 @@ function scanKeys(connType, htmlTxt) {
         scanKeybaseKeys(resp.completions);
       }
       else {
-        EnigmailDialog.alert(window, "Internal Error: " + resp.status.name);
+        EnigmailDialog.alert(window, EnigmailLocale.getString("internalError") + ": " + resp.status.name);
         return false;
       }
       break;
@@ -541,7 +541,7 @@ function scanKeys(connType, htmlTxt) {
   document.getElementById("progress.box").setAttribute("hidden", "true");
   document.getElementById("selall-button").removeAttribute("hidden");
   if (gEnigRequest.keyList.length === 0) {
-    EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
     closeDialog();
   }
 

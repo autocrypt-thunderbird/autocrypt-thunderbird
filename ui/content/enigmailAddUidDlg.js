@@ -48,7 +48,7 @@ function onAccept() {
       }
       else {
         window.arguments[1].refresh = true;
-        EnigmailDialog.alert(window, EnigmailLocale.getString("addUidOK"));
+        EnigmailDialog.info(window, EnigmailLocale.getString("addUidOK"));
       }
       window.close();
     });

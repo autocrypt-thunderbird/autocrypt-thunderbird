@@ -7,19 +7,21 @@
 
 /* eslint no-invalid-this: 0 */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
-
-/* global EnigmailLog: false, doSetOKCancel: false, EnigmailLocale: false, EnigmailKeyServer: false */
-/* global EnigmailErrorHandling: false */
-
-// from enigmailCommon.js:
-/* global GetEnigmailSvc: false, nsIEnigmail: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
-
 "use strict";
 
-Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
+const Cu = Components.utils;
+const Ci = Components.interfaces;
+const Cc = Components.classes;
+const nsIEnigmail = Ci.nsIEnigmail;
 
-var msgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 
 // dialog is just an array we'll use to store various properties from the dialog document...
 var dialog;
@@ -37,13 +39,13 @@ var gErrorData = '';
 // all progress notifications are done through the nsIWebProgressListener implementation...
 var progressListener = {
   onStateChange: function(aWebProgress, aRequest, aStateFlags, aStatus) {
-    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_START) {
+    if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
       // dialog.progress.setAttribute( "value", 0 );
       // Put progress meter in undetermined mode.
       dialog.progress.setAttribute("mode", "undetermined");
     }
 
-    if (aStateFlags & Components.interfaces.nsIWebProgressListener.STATE_STOP) {
+    if (aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
       // we are done transmitting
       // Indicate completion in status area.
 
@@ -73,9 +75,9 @@ var progressListener = {
   },
 
   QueryInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsIWebProgressListener) ||
-      iid.equals(Components.interfaces.nsISupportsWeakReference) ||
-      iid.equals(Components.interfaces.nsISupports))
+    if (iid.equals(Ci.nsIWebProgressListener) ||
+      iid.equals(Ci.nsISupportsWeakReference) ||
+      iid.equals(Ci.nsISupports))
       return this;
 
     throw Components.results.NS_NOINTERFACE;
@@ -93,12 +95,12 @@ function onLoad() {
   dialog.strings = [];
   dialog.progress = document.getElementById("dialog.progress");
 
-  var enigmailSvc = GetEnigmailSvc();
+  var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc)
     return;
 
   gEnigCallbackFunc = inArg.cbFunc;
-  msgProgress = Components.classes["@mozilla.org/messenger/progress;1"].createInstance(Components.interfaces.nsIMsgProgress);
+  msgProgress = Cc["@mozilla.org/messenger/progress;1"].createInstance(Ci.nsIMsgProgress);
 
   if (inArg.accessType == nsIEnigmail.UPLOAD_WKD) {
     onLoadWkd(inArg);
@@ -134,6 +136,7 @@ function onLoadWkd(inArg) {
           if (success) {
             progressDlg.setAttribute("value", 100);
             progressDlg.setAttribute("mode", "normal");
+            EnigmailDialog.info(window, EnigmailLocale.getString("keyserverProgress.wksUploadCompleted"));
             window.close();
           }
           else {
@@ -183,12 +186,12 @@ function onLoadGpg(inArg) {
   };
 
   msgProgress.registerListener(progressListener);
-  msgProgress.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_START, 0);
+  msgProgress.onStateChange(null, null, Ci.nsIWebProgressListener.STATE_START, 0);
 
   var errorMsgObj = {};
   gProcess = EnigmailKeyServer.access(inArg.accessType, inArg.keyServer, inArg.keyList, procListener, errorMsgObj);
   if (!gProcess) {
-    EnigAlert(EnigmailLocale.getString("sendKeysFailed") + "\n" + EnigConvertGpgToUnicode(errorMsgObj.value));
+    EnigmailDialog.alert(window, EnigmailLocale.getString("sendKeysFailed") + "\n" + EnigmailData.convertGpgToUnicode(errorMsgObj.value));
   }
 
   document.getElementById("progressWindow").setAttribute("title", subject);
@@ -267,7 +270,7 @@ function processEnd(progressBar, exitCode) {
 
   if (progressBar) {
     try {
-      progressBar.onStateChange(null, null, Components.interfaces.nsIWebProgressListener.STATE_STOP, 0);
+      progressBar.onStateChange(null, null, Ci.nsIWebProgressListener.STATE_STOP, 0);
     }
     catch (ex) {}
   }

@@ -262,17 +262,8 @@ function EnigConfirm(mesg, okLabel, cancelLabel) {
 }
 
 
-function EnigConfirmPref(mesg, prefText, okLabel, cancelLabel) {
-  return EnigmailDialog.confirmPref(window, mesg, prefText, okLabel, cancelLabel);
-}
-
 function EnigError(mesg) {
   return gEnigPromptSvc.alert(window, EnigGetString("enigError"), mesg);
-}
-
-function EnigPrefWindow(showBasic, clientType, selectTab) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigPrefWindow\n");
-  EnigmailWindows.openPrefWindow(window, showBasic, selectTab);
 }
 
 
@@ -336,10 +327,6 @@ function EnigGetDefaultPref(prefName) {
 
 function EnigSetPref(prefName, value) {
   return EnigmailPrefs.setPref(prefName, value);
-}
-
-function EnigGetSignMsg(identity) {
-  EnigmailFuncs.getSignMsg(identity);
 }
 
 
@@ -436,12 +423,6 @@ function EnigGetString(aStr) {
       argList.push(arguments[i]);
     }
   return EnigmailLocale.getString(aStr, (arguments.length > 1 ? argList : null));
-}
-
-// Remove all quoted strings (and angle brackets) from a list of email
-// addresses, returning a list of pure email addresses
-function EnigStripEmail(mailAddrs) {
-  return EnigmailFuncs.stripEmail(mailAddrs);
 }
 
 

@@ -227,7 +227,7 @@ function saveRevCert(inputKeyFile, keyId, uid, resolve, reject) {
   if (outFile) {
     try {
       inputKeyFile.copyToFollowingLinks(outFile.parent, outFile.leafName);
-      EnigAlert(EnigGetString("revokeCertOK"));
+      EnigmailDialog.info(window, EnigGetString("revokeCertOK"));
     }
     catch (ex) {
       EnigAlert(EnigGetString("revokeCertFailed"));
@@ -291,7 +291,7 @@ function enigmailKeygenStart() {
   if (gKeygenRequest) {
     let req = gKeygenRequest.QueryInterface(Components.interfaces.nsIRequest);
     if (req.isPending()) {
-      EnigAlert(EnigGetString("genGoing"));
+      EnigmailDialog.info(window, EnigGetString("genGoing"));
       return;
     }
   }
@@ -313,7 +313,7 @@ function enigmailKeygenStart() {
 
     if (!noPassphraseElement.checked) {
       if (passphraseElement.value.trim() === "") {
-        EnigAlert(EnigGetString("passCheckBox"));
+        EnigmailDialog.info(window, EnigGetString("passCheckBox"));
         return;
       }
 
@@ -334,11 +334,11 @@ function enigmailKeygenStart() {
   if (!noExpiry.checked) {
     expiryTime = Number(expireInput.value) * Number(timeScale.value);
     if (expiryTime > 36500) {
-      EnigAlert(EnigGetString("expiryTooLong"));
+      EnigmailDialog.info(window, EnigGetString("expiryTooLong"));
       return;
     }
     if (expiryTime <= 0) {
-      EnigAlert(EnigGetString("expiryTooShort"));
+      EnigmailDialog.info(window, EnigGetString("expiryTooShort"));
       return;
     }
   }
@@ -346,7 +346,7 @@ function enigmailKeygenStart() {
   var keyType = Number(document.getElementById("keyType").value);
 
   if ((keyType == KEYTYPE_DSA) && (keySize > 3072)) {
-    EnigAlert(EnigGetString("dsaSizeLimit"));
+    EnigmailDialog.info(window, EnigGetString("dsaSizeLimit"));
     keySize = 3072;
   }
 
@@ -357,7 +357,7 @@ function enigmailKeygenStart() {
   var userEmail = curId.email;
 
   if (!userName) {
-    EnigAlert(EnigGetString("keygen.missingUserName"));
+    EnigmailDialog.info(window, EnigGetString("keygen.missingUserName"));
     return;
   }
 

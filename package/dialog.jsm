@@ -74,11 +74,29 @@ const EnigmailDialog = {
   },
 
   /**
+   * Displays an information dialog.
+   *
+   * @win:         nsIWindow - parent window to display modal dialog; can be null
+   * @mesg:        String    - message text
+   *
+   * no return value
+   */
+  info: function(win, mesg) {
+    EnigmailDialog.msgBox(win, {
+        msgtext: mesg,
+        button1: EnigmailLocale.getString("dlg.button.close"),
+        iconType: EnigmailConstants.ICONTYPE_INFO,
+        dialogTitle: EnigmailLocale.getString("enigConfirm")
+      },
+      null);
+  },
+
+  /**
    * Displays an alert dialog with 1-3 optional buttons.
    *
    * @win:           nsIWindow - parent window to display modal dialog; can be null
    * @mesg:          String    - message text
-   * @checkBoxLabel: String    - if not null, display checkbox with text; the
+   * @checkboxLabel: String    - if not null, display checkbox with text; the
    *                             checkbox state is returned in checkedObj.value
    * @button-Labels: String    - use "&" to indicate access key
    *     use "buttonType:label" or ":buttonType" to indicate special button types
@@ -89,7 +107,7 @@ const EnigmailDialog = {
    *          -1: ESC or close window button pressed
    *
    */
-  longAlert: function(win, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
+  longAlert: function(win, mesg, checkboxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
     var result = {
       value: -1,
       checked: false
@@ -102,7 +120,7 @@ const EnigmailDialog = {
     win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "_blank",
       "chrome,dialog,modal,centerscreen,resizable,titlebar", {
         msgtext: mesg,
-        checkboxLabel: checkBoxLabel,
+        checkboxLabel: checkboxLabel,
         iconType: EnigmailConstants.ICONTYPE_ALERT,
         button1: okLabel,
         button2: labelButton2,
@@ -110,7 +128,7 @@ const EnigmailDialog = {
       },
       result);
 
-    if (checkBoxLabel) {
+    if (checkboxLabel) {
       checkedObj.value = result.checked;
     }
     return result.value;
@@ -123,7 +141,7 @@ const EnigmailDialog = {
    * @argsObj:       Object:
    *   - msgtext:       String    - message text
    *   - dialogTitle:   String    - title of the dialog
-   *   - checkBoxLabel: String    - if not null, display checkbox with text; the
+   *   - checkboxLabel: String    - if not null, display checkbox with text; the
    *                                checkbox state is returned in checkedObj.value
    *   - iconType:      Number    - Icon type: 1=Message / 2=Question / 3=Alert / 4=Error
    *
@@ -153,7 +171,7 @@ const EnigmailDialog = {
     win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", argsObj, result);
 
-    if (argsObj.checkBoxLabel) {
+    if (argsObj.checkboxLabel) {
       checkedObj.value = result.checked;
     }
     return result.value;
@@ -192,11 +210,15 @@ const EnigmailDialog = {
       let checkBoxObj = {
         value: false
       };
-      let buttonPressed = gPromptSvc.confirmEx(win,
-        EnigmailLocale.getString("enigAlert"),
-        mesg, (gPromptSvc.BUTTON_TITLE_OK * BUTTON_POS_0),
-        null, null, null,
-        EnigmailLocale.getString("dlgNoPrompt"), checkBoxObj);
+
+      let buttonPressed = EnigmailDialog.msgBox(win, {
+          msgtext: mesg,
+          dialogTitle: EnigmailLocale.getString("enigInfo"),
+          iconType: EnigmailConstants.ICONTYPE_INFO,
+          checkboxLabel: EnigmailLocale.getString("dlgNoPrompt")
+        },
+        checkBoxObj);
+
       if (checkBoxObj.value && buttonPressed === 0) {
         EnigmailPrefs.setPref(prefText, dontDisplay);
       }
@@ -388,7 +410,7 @@ const EnigmailDialog = {
    *
    * @win:           nsIWindow - parent window to display modal dialog; can be null
    * @mesg:          String    - message text
-   * @checkBoxLabel: String    - if not null, display checkbox with text; the
+   * @checkboxLabel: String    - if not null, display checkbox with text; the
    *                             checkbox state is returned in checkedObj.value
    * @button-Labels: String    - use "&" to indicate access key
    *     use "buttonType:label" or ":buttonType" to indicate special button types
@@ -399,7 +421,7 @@ const EnigmailDialog = {
    *          -1: ESC or close window button pressed
    *
    */
-  keyImportDlg: function(win, keyList, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
+  keyImportDlg: function(win, keyList, checkboxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
     var result = {
       value: -1,
       checked: false
@@ -412,12 +434,12 @@ const EnigmailDialog = {
     win.openDialog("chrome://enigmail/content/enigmailKeyImportInfo.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         keyList: keyList,
-        checkboxLabel: checkBoxLabel,
+        checkboxLabel: checkboxLabel,
         button1: okLabel
       },
       result);
 
-    if (checkBoxLabel) {
+    if (checkboxLabel) {
       checkedObj.value = result.checked;
     }
     return result.value;

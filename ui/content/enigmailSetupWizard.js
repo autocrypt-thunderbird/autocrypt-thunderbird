@@ -9,7 +9,7 @@
 
 // modules
 /* global EnigmailData: false, EnigmailLog: false, EnigmailLocale: false, EnigmailGpg: false, EnigmailKeyEditor: false */
-/* global EnigmailOS: false, EnigmailPrefs: false, EnigmailGpgAgent: false */
+/* global EnigmailOS: false, EnigmailPrefs: false, EnigmailGpgAgent: false, EnigmailDialog: false */
 
 // variables from enigmailKeygen.js and enigmailCommon.js */
 /* global EnigGetWindowOptions: false, gKeygenRequest: true, gGeneratedKey: true, EnigConfirm: false, EnigGetString: false*/
@@ -81,14 +81,14 @@ function onCancel() {
     }
   }
   else {
-    var r = (EnigLongAlert(EnigGetString("setupWizard.reallyCancel"), null, EnigGetString("dlg.button.close"), EnigGetString("dlg.button.continue")) === 0);
+    let doCancel = EnigConfirm(EnigGetString("setupWizard.reallyCancel"), EnigGetString("dlg.button.close"), EnigGetString("dlg.button.continue"));
 
-    if (r && gDownoadObj) {
+    if (doCancel && gDownoadObj) {
       gDownoadObj.abort();
       gDownoadObj = null;
     }
 
-    return r;
+    return doCancel;
   }
 }
 
@@ -470,7 +470,7 @@ function browseBackupFile(referencedId, referencedVar) {
 function importKeyFiles() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles\n");
   if (document.getElementById("publicKeysFile").value.length === 0) {
-    EnigAlert(EnigGetString("setupWizard.specifyFile"));
+    EnigmailDialog.info(window, EnigGetString("setupWizard.specifyFile"));
     return false;
   }
 
@@ -825,7 +825,7 @@ function checkPassphrase() {
     if (!passphrase) return false;
 
     if (passphrase.length < 8) {
-      EnigAlert(EnigGetString("passphrase.min8keys"));
+      EnigmailDialog.info(window, EnigGetString("passphrase.min8keys"));
       return false;
     }
   }
@@ -1231,7 +1231,7 @@ function ensureGpgHomeDir() {
   homeDir.normalize();
 
   if (!homeDir.isDirectory()) {
-    EnigAlert("not a directory");
+    EnigmailDialog.alert(window, EnigmailLocale.getString("setupWizard.noGpgHomeDir", [homeDirPath]));
     throw "not a directory";
   }
   return {
@@ -1373,6 +1373,5 @@ function doImportSettings() {
 
 
 function displayUnmatchedIds(emailArr) {
-  EnigAlert("The following identities of your old setup could not be matched:\n- " + emailArr.join("\n- ") +
-    "\nThe settings for these identities were skipped.");
+  EnigAlert(EnigGetString("setupWizard.unmachtedIds", ["- " + emailArr.join("\n- ")]));
 }

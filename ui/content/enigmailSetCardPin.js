@@ -72,7 +72,7 @@ function onAccept() {
     pinObserver,
     function _ChangePinCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
-        EnigmailDialog.alert(window, EnigmailLocale.getString("cardPin.processFailed") + "\n" + pinObserver.result);
+        EnigmailDialog.info(window, EnigmailLocale.getString("cardPin.processFailed") + "\n" + pinObserver.result);
       }
       else
         window.close();
