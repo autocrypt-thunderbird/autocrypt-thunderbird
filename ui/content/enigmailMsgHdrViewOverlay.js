@@ -1033,23 +1033,6 @@ Enigmail.hdrView = {
   },
 
   displayPepMessageRating: function(rating) {
-    /*
-    rating:
-    undefined = 0,
-    cannot_decrypt = 1,
-    have_no_key = 2,
-    unencrypted = 3,
-    unencrypted_for_some = 4,
-    unreliable = 5,
-    reliable = 6,
-    trusted = 7,
-    trusted_and_anonymized = 8,
-    fully_anonymous = 9,
-    mistrust = -1,
-    b0rken = -2,
-    under_attack = -3
-    */
-
     this.pEpBox.removeAttribute("collapsed");
 
     if (rating === -2 || rating === 2) {

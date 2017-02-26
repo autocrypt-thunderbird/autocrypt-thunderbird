@@ -300,7 +300,8 @@
       <hbox align="center">
         <image class="enigmail-statusbar-pep-logo"/>
         <label value="&enigmail.pEp.privacyStatus.label;"/>
-        <label id="enigmail-pep-privacy-status" value="&enigmail.pEp.composestatus.label;" class="enigmail-statusbar-pep-unsecure"/>
+        <label id="enigmail-pep-privacy-status" value="&enigmail.pEp.composestatus.label;" class="enigmail-statusbar-pep-unsecure"
+          onclick="Enigmail.msg.onPepHandshakeButton(window)"/>
       </hbox>
     </statusbarpanel>
   </statusbar>

@@ -548,14 +548,21 @@ const EnigmailWindows = {
   },
 
   /**
-   * TODO: document me!
+   * Open the Trustwords dialog for a specific pair of keys
+   *
+   * @param win:          Object - nsIWindow
+   * @param emailAddress: String - Email address of peer to verify
+   * @param headerData:   either: Object - nsIMsgHdr object for the message (to identify the ideal own identity)
+   *                      or:     String - own email address to compare with
+   *
+   * @return: Promise (resolve() case of success; rejection otherwise). 
    */
-  verifyPepTrustWords: function(window, emailAddress, headerData) {
+  verifyPepTrustWords: function(win, emailAddress, headerData) {
     let deferred = Promise.defer();
 
     EnigmailPEPAdapter.prepareTrustWordsDlg(emailAddress, headerData).
     then(function _ok(inputObj) {
-      window.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+      win.openDialog("chrome://enigmail/content/pepTrustWords.xul",
         "", "dialog,modal,centerscreen", inputObj);
       deferred.resolve();
     }).
@@ -575,5 +582,17 @@ const EnigmailWindows = {
     });
 
     return deferred.promise;
+  },
+
+  pepHandshake: function(window, direction, myself, peers) {
+    let inputObj = {
+      myself: myself,
+      peers: peers,
+      direction: direction
+    };
+
+    window.openDialog("chrome://enigmail/content/pepHandshake.xul",
+      "", "dialog,modal,centerscreen", inputObj);
+
   }
 };

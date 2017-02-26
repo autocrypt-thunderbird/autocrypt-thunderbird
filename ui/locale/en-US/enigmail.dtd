@@ -820,3 +820,6 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "Wrong Trustwords/Mistrust key">
 <!ENTITY enigmail.pEp.privacyStatus.label             "Privacy Status:">
 <!ENTITY enigmail.pEp.composestatus.label             "Unknown">
+
+<!ENTITY enigmail.pepHandshake.SuggestionTitle       "p≡p Suggestion">
+<!ENTITY enigmail.pepHandshake.explanation           "Explanation">

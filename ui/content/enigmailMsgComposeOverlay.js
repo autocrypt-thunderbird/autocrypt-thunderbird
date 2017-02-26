@@ -29,7 +29,7 @@ Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: 
 Components.utils.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /* global: EnigmailWindows: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
@@ -538,15 +538,15 @@ Enigmail.msg = {
     var adrCol = document.getElementById("addressCol2#1"); // recipients field
     if (adrCol) {
       let attr = adrCol.getAttribute("oninput");
-      adrCol.setAttribute("oninput", attr + "; Enigmail.msg.addressOnChange();");
+      adrCol.setAttribute("oninput", attr + "; Enigmail.msg.addressOnChange(this);");
       attr = adrCol.getAttribute("onchange");
-      adrCol.setAttribute("onchange", attr + "; Enigmail.msg.addressOnChange();");
+      adrCol.setAttribute("onchange", attr + "; Enigmail.msg.addressOnChange(this);");
       adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
     adrCol = document.getElementById("addressCol1#1"); // to/cc/bcc/... field
     if (adrCol) {
       let attr = adrCol.getAttribute("oncommand");
-      adrCol.setAttribute("oncommand", attr + "; Enigmail.msg.addressOnChange();");
+      adrCol.setAttribute("oncommand", attr + "; Enigmail.msg.addressOnChange(this);");
       adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
 
@@ -2143,6 +2143,30 @@ Enigmail.msg = {
     this.getPepMessageRating();
   },
 
+  onPepHandshakeButton: function(window) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPepHandshakeButton()\n");
+
+    let o = this.compileFromAndTo();
+    let toAddr = EnigmailFuncs.stripEmail(o.toAddrList.join(",")).split(/,/);
+
+    if (o.toAddrList.length === 0) {
+      EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));
+      return;
+    }
+
+    let myId = getCurrentIdentity();
+    let inputObj = {
+      myself: myId.email,
+      addresses: toAddr,
+      direction: 1,
+      parentWindow: window,
+      onComplete: Enigmail.msg.getPepMessageRating.bind(Enigmail.msg)
+    };
+
+    window.openDialog("chrome://enigmail/content/pepPrepHandshake.xul",
+      "", "dialog,modal,centerscreen", inputObj);
+  },
+
   displaySecuritySettings: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.displaySecuritySettings\n");
 
@@ -2185,7 +2209,7 @@ Enigmail.msg = {
 
 
   signingNoLongerDependsOnEnc: function() {
-    if (this.finalSignDependsOnEncrypt) {
+    if (this.finalSignDependsOnEncrypt && (!this.juniorMode)) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.signingNoLongerDependsOnEnc(): unbundle final signing\n");
       this.finalSignDependsOnEncrypt = false;
 

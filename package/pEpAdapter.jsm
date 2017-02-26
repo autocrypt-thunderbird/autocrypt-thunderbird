@@ -27,7 +27,6 @@ Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/pEpMessageHist.jsm"); /*global EnigmailPEPMessageHist: false */
 Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
 
@@ -253,6 +252,10 @@ var EnigmailPEPAdapter = {
     let from = this.emailToPepPerson(sender);
     let to = [];
 
+    if (recipients.length === 0) {
+      return 0;
+    }
+
     for (let i of recipients) {
       to.push(EnigmailPEPAdapter.emailToPepPerson(i));
     }
@@ -431,9 +434,10 @@ var EnigmailPEPAdapter = {
   /**
    * prepare the relevant data for the Trustwords dialog
    *
-   * @param emailAddress: String - the email address to verify
-   * @param headerData:   Object - nsIMsgHdr object for the message
-   *                         (to identify the ideal own identity)
+   * @param emailAddress: String - the email address of the peer to verify
+   * @param headerData:   either: Object - nsIMsgHdr object for the message
+   *                                (to identify the ideal own identity)
+   *                      or:     String - email address of own identity
    * @return Promise(object)
    */
   prepareTrustWordsDlg: function(emailAddress, headerData) {
@@ -451,14 +455,19 @@ var EnigmailPEPAdapter = {
 
     let allEmails = "";
 
-    if ("from" in headerData) {
-      allEmails += headerData.from.headerValue + ",";
+    if (typeof(headerData) === "string") {
+      allEmails = headerData;
     }
-    if ("to" in headerData) {
-      allEmails += headerData.to.headerValue + ",";
-    }
-    if ("cc" in headerData) {
-      allEmails += headerData.cc.headerValue + ",";
+    else {
+      if ("from" in headerData) {
+        allEmails += headerData.from.headerValue + ",";
+      }
+      if ("to" in headerData) {
+        allEmails += headerData.to.headerValue + ",";
+      }
+      if ("cc" in headerData) {
+        allEmails += headerData.cc.headerValue + ",";
+      }
     }
 
     let emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
@@ -552,11 +561,75 @@ var EnigmailPEPAdapter = {
     then(function _gotIdentityForEmail(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
         let emailId = data.result[0];
-        EnigmailPEPAdapter.pep.resetIdentityTrust(emailId);
-        deferred.resolve();
+        EnigmailPEPAdapter.pep.resetIdentityTrust(emailId).then(
+          function _ok() {
+            deferred.resolve();
+          }
+        ).catch(function _err() {
+          deferred.resolve();
+        });
       }
     });
 
+    return deferred.promise;
+  },
+
+  getRatingsForEmails: function(emailArr) {
+    EnigmailLog.DEBUG("pEpAdapter.getRatingsForEmails(" + emailArr.length + ")\n");
+
+    let deferred = Promise.defer();
+    let identities = [];
+
+    function getNextIdentity(emailNum) {
+      if (emailNum >= emailArr.length) {
+        EnigmailLog.DEBUG("pEpAdapter.getRatingsForEmails: done\n");
+        deferred.resolve(identities);
+        return;
+      }
+
+      if (emailArr[emailNum].indexOf("@") < 0) {
+        // skip if not an email address
+        getNextIdentity(emailNum + 1);
+        return;
+      }
+
+      let identity = null;
+      let rating = 3; // default rating: no key available
+
+      EnigmailPEPAdapter.getIdentityForEmail(emailArr[emailNum]).then(
+        function _gotIdentity(data) {
+          if (data && ("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
+            identity = data.result[0];
+            return EnigmailPEPAdapter.pep.getIdentityRating(identity);
+          }
+          else {
+            let deferred = Promise.defer();
+            deferred.resolve({
+              status: 0
+            });
+            return deferred.promise;
+          }
+        }).then(
+        function _gotRating(data) {
+          if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
+            "color" in data.result[0]) {
+            rating = data.result[0].color;
+          }
+
+          identities.push({
+            email: emailArr[emailNum],
+            user_id: identity,
+            rating: rating
+          });
+          getNextIdentity(emailNum + 1);
+        }).catch(
+        function _err(data) {
+          EnigmailLog.DEBUG("pEpAdapter.getIdentitiesForEmails: ERROR: " + JSON.stringify(data) + "\n");
+          deferred.reject(data);
+        });
+    }
+
+    getNextIdentity(0);
     return deferred.promise;
   },
 
@@ -603,6 +676,47 @@ var EnigmailPEPAdapter = {
     }
 
     return setClass;
+  },
+
+  getRatingLabel: function(ratingNum) {
+    let ratingDesc = "Undefined";
+
+    switch (ratingNum) {
+      case 1:
+        ratingDesc = "CannotDecrypt";
+        break;
+      case 2:
+        ratingDesc = "HaveNoKey";
+        break;
+      case 3:
+        ratingDesc = "Unencrypted";
+        break;
+      case 4:
+        ratingDesc = "UnencryptedForSome";
+        break;
+      case 5:
+        ratingDesc = "Unreliable";
+        break;
+      case 6:
+        ratingDesc = "Reliable";
+        break;
+      case 7:
+      case 8:
+      case 9:
+        ratingDesc = "Trusted";
+        break;
+      case -2:
+        ratingDesc = "Broken";
+        break;
+      case -1:
+        ratingDesc = "Mistrust";
+        break;
+      case -3:
+        ratingDesc = "UnderAttack";
+        break;
+    }
+
+    return ratingDesc;
   },
 
   /* imported from EnigmailPEPFilter */

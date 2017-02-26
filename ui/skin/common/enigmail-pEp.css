@@ -1,0 +1,188 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/**
+ * Enigmail styles related to pEp
+ */
+
+.enigmailPepRatingMistrust {
+  list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
+}
+
+.enigmailPepRatingReliable {
+  list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
+}
+
+.enigmailPepRatingTrusted {
+  list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
+  padding: 8px 4px 4px 4px;
+  max-height: 5em;
+}
+
+.enigmailPepRatingUnknown {
+}
+
+.enigmailPepIdentityMistrust
+{
+  background-image: url('chrome://enigmail/skin/pEpRed.svg');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}
+
+.enigmailPepIdentityReliable
+{
+  background-image: url('chrome://enigmail/skin/pEpYellow.svg');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}
+
+.enigmailPepIdentityTrusted
+{
+  background-image: url('chrome://enigmail/skin/pEpGreen.svg');
+  background-size: 14px 14px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 16px !important;
+}
+
+.enigmailPepIdentityUnknown
+{
+}
+
+.enigmailPepIdentityMistrust[size="medium"]
+{
+  background-image: url('chrome://enigmail/skin/pEpRed.svg');
+  background-size: 27px 27px;
+  min-height: 41px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 29px !important;
+}
+
+.enigmailPepIdentityReliable[size="medium"]
+{
+  background-image: url('chrome://enigmail/skin/pEpYellow.svg');
+  background-size: 27px 27px;
+  min-height: 41px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 29px !important;
+}
+
+.enigmailPepIdentityTrusted[size="medium"]
+{
+  background-image: url('chrome://enigmail/skin/pEpGreen.svg');
+  background-size: 27px 27px;
+  min-height: 41px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 29px !important;
+}
+
+.enigmailPepIdentityUnknown[size="medium"] {
+  background-image: url('chrome://enigmail/skin/pEpGrey.svg');
+  background-size: 27px 27px;
+  min-height: 41px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 29px !important;
+}
+
+#button-enigmail-pepEncrypt[encrypt="true"] {
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptActive.svg');
+}
+
+#button-enigmail-pepEncrypt[encrypt="false"] {
+  list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.svg');
+}
+
+.enigmail-statusbar-pep-logo
+{
+  list-style-image: url('chrome://enigmail/skin/pEpLogo.svg');
+  max-height: 12px;
+  margin: 0px 4px;
+}
+
+.enigmail-statusbar-pep-unsecure
+{
+  background-color: inherit;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-secure
+{
+  background-color: #ffd800;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-statusbar-pep-trusted
+{
+  background-color: #00a92b;
+  color: #ffffff;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.enigmail-pepHandshakeTitle
+{
+  font-size: 120%;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px 80px 5px 80px;
+}
+
+.enigmail-pepHandshakeTitle[color="green"]
+{
+  color: white;
+  background-color: #00a92b;
+}
+
+.enigmail-pepHandshakeTitle[color="yellow"]
+{
+  color: black;
+  background-color: #ffd800;
+}
+
+
+.enigmail-pepHandshakeTitle[color="red"]
+{
+  color: white;
+  background-color: #f01c1c;
+}
+
+.enigmail-pepHandshakeTitle[color="grey"]
+{
+  color: white;
+  background-color: #666666;
+}
+
+/*
+  icon in the Enigmail/pEp column
+*/
+treechildren::-moz-tree-image(enigmailPepMistrust)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpRed.svg');
+}
+
+treechildren::-moz-tree-image(enigmailPepReliable)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpYellow.svg');
+}
+
+treechildren::-moz-tree-image(enigmailPepTrusted)
+{
+  list-style-image: url('chrome://enigmail/skin/col-pEpGreen.svg');
+}

@@ -358,8 +358,6 @@ var EnigmailpEp = {
    *
    * @param userId    : Object          - pEp Identity to check
    *
-   * one of mailAddr/userId may be null
-   *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
