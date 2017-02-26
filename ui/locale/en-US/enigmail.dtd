@@ -823,3 +823,5 @@
 
 <!ENTITY enigmail.pepHandshake.SuggestionTitle       "p≡p Suggestion">
 <!ENTITY enigmail.pepHandshake.explanation           "Explanation">
+
+<!ENTITY enigmail.pepPrepHandshake.desc              "Loading data, please wait ...">
