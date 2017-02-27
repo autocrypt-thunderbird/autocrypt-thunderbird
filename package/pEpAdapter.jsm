@@ -287,8 +287,8 @@ var EnigmailPEPAdapter = {
     // wait here for PEP to terminate
     inspector.enterNestedEventLoop(0);
 
-    if (resultObj && Array.isArray(resultObj) && "color" in resultObj[0]) {
-      return resultObj[0].color;
+    if (resultObj && Array.isArray(resultObj) && "rating" in resultObj[0]) {
+      return resultObj[0].rating;
     }
     return 3; // unencrypted
   },
@@ -504,7 +504,7 @@ var EnigmailPEPAdapter = {
 
     }).then(function _gotIdentityRating(data) {
       if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
-        "color" in data.result[0]) {
+        "rating" in data.result[0]) {
         emailIdRating = data.result[0];
       }
 
@@ -612,8 +612,8 @@ var EnigmailPEPAdapter = {
         }).then(
         function _gotRating(data) {
           if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
-            "color" in data.result[0]) {
-            rating = data.result[0].color;
+            "rating" in data.result[0]) {
+            rating = data.result[0].rating;
           }
 
           identities.push({

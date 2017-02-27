@@ -2146,6 +2146,12 @@ Enigmail.msg = {
   onPepHandshakeButton: function(window) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPepHandshakeButton()\n");
 
+    let bc = document.getElementById("enigmail-bc-pepEncrypt");
+    if (bc.getAttribute("encrypt") === "false") {
+      EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noProtection"));
+      return;
+    }
+
     let o = this.compileFromAndTo();
     let toAddr = EnigmailFuncs.stripEmail(o.toAddrList.join(",")).split(/,/);
 
@@ -4545,7 +4551,7 @@ Enigmail.msg = {
       let fromAddr = EnigmailFuncs.parseEmails(msgHdr.author);
       if (fromAddr.length > 0) addresses.from = fromAddr[0];
 
-      let pEpResult = EnigmailPEPDecrypt.decryptMessageData(cipherText, addresses);
+      let pEpResult = EnigmailPEPDecrypt.decryptMessageData(false, cipherText, addresses);
       if (pEpResult && pEpResult.longmsg.length > 0) {
         plainText = pEpResult.longmsg;
         exitCodeObj.value = 0;

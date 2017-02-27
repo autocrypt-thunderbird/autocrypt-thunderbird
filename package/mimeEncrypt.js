@@ -124,8 +124,8 @@ PgpMimeEncrypt.prototype = {
         try {
           var enigSecurityInfo = securityInfo.QueryInterface(Ci.nsIEnigMsgCompFields);
           return (enigSecurityInfo.sendFlags & (Ci.nsIEnigmail.SEND_SIGNED |
-                                                Ci.nsIEnigmail.SEND_ENCRYPTED |
-                                                Ci.nsIEnigmail.SEND_VERBATIM)) !== 0;
+            Ci.nsIEnigmail.SEND_ENCRYPTED |
+            Ci.nsIEnigmail.SEND_VERBATIM)) !== 0;
         }
         catch (ex) {
           return false;
@@ -399,7 +399,8 @@ PgpMimeEncrypt.prototype = {
     if (EnigmailPEPAdapter.usingPep()) {
       this.processPepEncryption();
       return;
-    } else if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
+    }
+    else if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
       this.flushOutput();
       return;
     }
@@ -468,11 +469,11 @@ PgpMimeEncrypt.prototype = {
       let line = buffer.substr(0, length);
       if (this.inputMode === 0) {
         if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
-          line = EnigmailData.decodeQuotedPrintable(line.replace("=\r\n",""));
+          line = EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", ""));
         }
 
         if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) === 0 ||
-            line.match(/^(From|To|Subject|Message-ID|Date|User-Agent|MIME-Version):/i) === null) {
+          line.match(/^(From|To|Subject|Message-ID|Date|User-Agent|MIME-Version):/i) === null) {
           this.headerData += line;
         }
 
@@ -499,7 +500,7 @@ PgpMimeEncrypt.prototype = {
 
           this.writeToPipe(this.headerData);
           if (this.cryptoMode == MIME_SIGNED ||
-              (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
+            (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
             this.writeOut(this.headerData);
           }
         }
@@ -519,7 +520,7 @@ PgpMimeEncrypt.prototype = {
           this.writeOut(line);
         }
         else if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
-          this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n","")));
+          this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", "")));
         }
       }
       else if (this.inputMode == 2) {
@@ -724,7 +725,7 @@ PgpMimeEncrypt.prototype = {
             EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
           }
           catch (x) {
-            EnigmailLog.DEBUG(err + "\n");
+            EnigmailLog.DEBUG(JSON.stringify(err) + "\n");
           }
 
           if (self.inspector && self.inspector.eventLoopNestLevel > 0) {

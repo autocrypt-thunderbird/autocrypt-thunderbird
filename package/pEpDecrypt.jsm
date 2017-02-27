@@ -45,13 +45,17 @@ var EnigmailPEPDecrypt = {
   /**
    * Decrypt a message using pEp
    *
-   * @param msgData: String - the message to be decrypted
+   * @param isPgpMime:   Boolean - true if PGP/MIME decryption, false for inline-PGP (or unknown)
+   * @param msgData:     String - the message to be decrypted
+   * @param adr:         Object -
+   *          from: email, [to, cc, reply_to]: Array of emails
+   * @param contentType: String - the content-type string (only required for PGP/MIME)
    *
    * @return null    - if decryption unsuccessful
    *         Object: - if decryption successful
    *          - longmsg  - String: the decrypted message
    *          - shortmsg - String; message subject (if any)
-   *          - color:   - Number: the pEp rating of how securely the message was tansmitted
+   *          - rating:  - Number: the pEp rating of how securely the message was tansmitted
    *          - fpr:     - Array of String: the list of fingerprints used for the message
    *          - persons: - Object:
    *                - from:       pEpPerson
@@ -59,10 +63,7 @@ var EnigmailPEPDecrypt = {
    *                - cc:         Array of pEpPerson
    *                - reply_to:   Array of pEpPerson
    */
-  decryptMessageData: function(msgData, adr) {
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
-    let resultObj = null;
-
+  decryptMessageData: function(isPgpMime, msgData, adr, contentType) {
     let s = msgData.search(/^-----BEGIN PGP MESSAGE-----/m);
     let e = msgData.search(/^-----END PGP MESSAGE-----/m);
     let pgpData = s >= 0 && e > s ? msgData.substring(s, e + 27) : msgData;
@@ -96,48 +97,14 @@ var EnigmailPEPDecrypt = {
       }
     }
 
-    EnigmailpEp.decryptMessage(pgpData, from, to, cc, replyTo).then(function _step2(res) {
-      EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
-      if ((typeof(res) === "object") && ("result" in res)) {
-        resultObj = res.result;
-      }
-      else
-        EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: typeof res=" + typeof(res) + "\n");
-
-
-      if (inspector && inspector.eventLoopNestLevel > 0) {
-        // unblock the waiting lock in finishCryptoEncapsulation
-        inspector.exitNestedEventLoop();
-      }
-
-    }).catch(function _error(err) {
-      EnigmailLog.DEBUG("pEpDecrypt.jsm: processPepEncryption: ERROR\n");
-      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
-
-      if (inspector && inspector.eventLoopNestLevel > 0) {
-        // unblock the waiting lock in finishCryptoEncapsulation
-        inspector.exitNestedEventLoop();
-      }
-    });
-
-    // wait here for PEP to terminate
-    inspector.enterNestedEventLoop(0);
-
-    if (resultObj && (typeof(resultObj[3]) === "object")) {
-      return {
-        longmsg: resultObj[3].longmsg,
-        shortmsg: resultObj[3].shortmsg,
-        persons: {
-          from: resultObj[3].from,
-          to: resultObj[3].to,
-          cc: resultObj[3].cc,
-          reply_to: resultObj[3].reply_to
-        },
-        color: resultObj[1].color,
-        fpr: resultObj[2]
-      };
+    if (isPgpMime) {
+      return decryptPgpMime(msgData, from, to, cc, replyTo);
     }
-    else return null;
+    else {
+      return decryptInlinePgp(pgpData, from, to, cc, replyTo);
+    }
+
+
   },
 
   getEmailsFromMessage: function(url) {
@@ -248,14 +215,14 @@ PEPDecryptor.prototype = {
       addresses = EnigmailPEPDecrypt.getEmailsFromMessage(this.uri.spec);
     }
 
-    let dec = EnigmailPEPDecrypt.decryptMessageData(this.sourceData, addresses);
+    let dec = EnigmailPEPDecrypt.decryptMessageData(true, this.sourceData, addresses, this.contentType);
 
-    let color = COLOR_UNDEF;
+    let rating = COLOR_UNDEF;
     let fpr = [];
 
     if (dec) {
       this.decryptedData = dec.longmsg;
-      color = dec.color;
+      rating = dec.rating;
       fpr = dec.fpr;
 
       this.extractEncryptedHeaders();
@@ -281,7 +248,7 @@ PEPDecryptor.prototype = {
 
       if (!this.backgroundJob) {
         // only display the decrption/verification status if not background-Job
-        this.displayStatus(color, fpr, dec.persons);
+        this.displayStatus(rating, fpr, dec.persons);
       }
     }
 
@@ -290,7 +257,7 @@ PEPDecryptor.prototype = {
     this.mimeSvc.onStopRequest(null, null, 0);
   },
 
-  displayStatus: function(color, fpr, persons) {
+  displayStatus: function(rating, fpr, persons) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus\n");
 
     if (this.msgWindow === null || this.backgroundJob)
@@ -304,19 +271,13 @@ PEPDecryptor.prototype = {
 
       if (headerSink && this.uri) {
 
+        let r = {
+          fpr: fpr.join(","),
+          persons: persons,
+          rating: rating
+        };
         headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
-        headerSink.updateSecurityStatus(
-          "",
-          0,
-          color,
-          "enigmail:pEp",
-          fpr.join(","),
-          "",
-          "",
-          "",
-          this.uri,
-          JSON.stringify(persons),
-          "");
+        headerSink.processDecryptionResult(this.uri, "displayPepStatus", JSON.stringify(r), this.mimePartNumber);
       }
     }
     catch (ex) {
@@ -339,3 +300,133 @@ PEPDecryptor.prototype = {
     }
   }
 };
+
+
+function decryptPgpMime(msgData, from, to, cc, replyTo) {
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+  let resultObj;
+  let msgStr = "";
+
+  let mapAddr = function _map(x) {
+    return x.address;
+  };
+
+  if (to) {
+    msgStr += to.map(mapAddr).join(", ") + ", ";
+  }
+  if (cc) {
+    msgStr += cc.map(mapAddr).join(", ") + ", ";
+  }
+  if (replyTo) {
+    msgStr += replyTo.map(mapAddr).join(", ") + ", ";
+  }
+
+  msgStr = msgStr.replace(/, [, ]+/g, ", ").replace(/, $/, "");
+  if (msgStr.length > 0) {
+    msgStr = "To: " + msgStr + "\r\n";
+  }
+
+  msgStr = "From:" + from.address + "\r\n" + msgStr + msgData;
+
+  EnigmailpEp.decryptMimeString(msgStr).then(function _step2(res) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
+    if ((typeof(res) === "object") && ("result" in res)) {
+      resultObj = res.result;
+    }
+    else
+      EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: typeof res=" + typeof(res) + "\n");
+
+
+    if (inspector && inspector.eventLoopNestLevel > 0) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      inspector.exitNestedEventLoop();
+    }
+
+  }).catch(function _error(err) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: processPepEncryption: ERROR\n");
+    try {
+      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
+    }
+    catch (x) {
+      EnigmailLog.DEBUG(JSON.stringify(err) + "\n");
+    }
+
+    if (inspector && inspector.eventLoopNestLevel > 0) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      inspector.exitNestedEventLoop();
+    }
+  });
+
+  // wait here for PEP to terminate
+  inspector.enterNestedEventLoop(0);
+
+  if (resultObj && (typeof(resultObj[3]) === "string")) {
+    return {
+      longmsg: resultObj[3],
+      shortmsg: "", // resultObj[3].shortmsg,
+      persons: {
+        from: from,
+        to: to,
+        cc: cc,
+        reply_to: replyTo
+      },
+      rating: resultObj[1].rating,
+      fpr: resultObj[2]
+    };
+  }
+  else return null;
+}
+
+
+function decryptInlinePgp(pgpData, from, to, cc, replyTo) {
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+  let resultObj;
+
+  EnigmailpEp.decryptMessage(pgpData, from, to, cc, replyTo).then(function _step2(res) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
+    if ((typeof(res) === "object") && ("result" in res)) {
+      resultObj = res.result;
+    }
+    else
+      EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: typeof res=" + typeof(res) + "\n");
+
+    if (inspector && inspector.eventLoopNestLevel > 0) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      inspector.exitNestedEventLoop();
+    }
+
+  }).catch(function _error(err) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: processPepEncryption: ERROR\n");
+    try {
+      EnigmailLog.DEBUG(err.code + ": " + ("exception" in err ? err.exception.toString() : err.message) + "\n");
+    }
+    catch (x) {
+      EnigmailLog.DEBUG(JSON.stringify(err) + "\n");
+    }
+
+    if (inspector && inspector.eventLoopNestLevel > 0) {
+      // unblock the waiting lock in finishCryptoEncapsulation
+      inspector.exitNestedEventLoop();
+    }
+  });
+
+  // wait here for PEP to terminate
+  inspector.enterNestedEventLoop(0);
+
+  if (resultObj && (typeof(resultObj[3]) === "object")) {
+    return {
+      longmsg: resultObj[3].longmsg,
+      shortmsg: "", // resultObj[3].shortmsg,
+      persons: {
+        from: resultObj[3].from,
+        to: resultObj[3].to,
+        cc: resultObj[3].cc,
+        reply_to: resultObj[3].reply_to
+      },
+      rating: resultObj[1].rating,
+      fpr: resultObj[2]
+    };
+  }
+  else return null;
+}

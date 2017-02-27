@@ -1069,12 +1069,12 @@ Enigmail.hdrView = {
         then(
           function _gotRating(cbObj) {
             if ("result" in cbObj && Array.isArray(cbObj.result) && typeof(cbObj.result[0]) === "object") {
-              if ("color" in cbObj.result[0]) {
-                let color = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result[0].color);
-                let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result[0].color);
+              if ("rating" in cbObj.result[0]) {
+                let rating = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result[0].rating);
+                let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result[0].rating);
 
                 nodes[i].setAttribute("class", setClass);
-                Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = color;
+                Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = rating;
               }
             }
           }).
@@ -1374,34 +1374,22 @@ if (messageHeaderSink) {
 
         if (this.isCurrentMessage(uri)) {
 
-          if (keyId === "enigmail:pEp") {
-            let persons = {};
+          if (!this.displaySubPart(mimePartNumber)) return;
+
+          let encToDetails = "";
+          if (extraDetails && extraDetails.length > 0) {
             try {
-              persons = JSON.parse(extraDetails);
-            }
-            catch (ex) {}
-
-            Enigmail.hdrView.displayPepStatus(statusFlags, userId, uri, persons);
-          }
-          else {
-
-            if (!this.displaySubPart(mimePartNumber)) return;
-
-            let encToDetails = "";
-            if (extraDetails && extraDetails.length > 0) {
-              try {
-                let o = JSON.parse(extraDetails);
-                if ("encryptedTo" in o) {
-                  encToDetails = o.encryptedTo;
-                }
+              let o = JSON.parse(extraDetails);
+              if ("encryptedTo" in o) {
+                encToDetails = o.encryptedTo;
               }
-              catch (x) {}
             }
-
-            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
-              errorMsg, blockSeparation, encToDetails,
-              null, mimePartNumber);
+            catch (x) {}
           }
+
+          Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+            errorMsg, blockSeparation, encToDetails,
+            null, mimePartNumber);
         }
 
         if (uriSpec && uriSpec.search(/^enigmail:message\//) === 0) {
@@ -1427,6 +1415,13 @@ if (messageHeaderSink) {
             return;
           case "wksConfirmRequest":
             Enigmail.hdrView.checkWksConfirmRequest(processData);
+            return;
+          case "displayPepStatus":
+            try {
+              let o = JSON.parse(processData);
+              Enigmail.hdrView.displayPepStatus(o.rating, o.fpr, uri, o.persons);
+            }
+            catch (x) {}
             return;
         }
       },

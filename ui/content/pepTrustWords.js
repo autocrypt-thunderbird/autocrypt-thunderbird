@@ -31,7 +31,7 @@ function onLoad() {
 
   let partnerEmail = document.getElementById("partnerEmailAddr");
   partnerEmail.setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
-  partnerEmail.setAttribute("class", EnigmailPEPAdapter.getRatingClass(argsObj.userRating.color));
+  partnerEmail.setAttribute("class", EnigmailPEPAdapter.getRatingClass(argsObj.userRating.rating));
   document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
   document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
   document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));

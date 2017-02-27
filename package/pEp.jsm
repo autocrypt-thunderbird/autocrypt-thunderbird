@@ -301,7 +301,7 @@ var EnigmailpEp = {
         message, // pEp Message Obj
         ["OP"], // msg Output
         ["OP"], // StringList Output
-        ["OP"], // pep color Output
+        ["OP"], // pep rating Output
         ["OP"] // flags
       ];
 
@@ -316,15 +316,9 @@ var EnigmailpEp = {
 
 
   /**
-   * encrypt a message using the pEp server
+   * decrypt a complete mime string using the pEp server
    *
    * @param mimeStr  : String          - complete MIME message
-   * @param pEpMode   : optional Number - the PEP encryption mode:
-   *                        0: none - message is not encrypted
-   *                        1: inline PGP + PGP extensions
-   *                        2: S/MIME (RFC5751)
-   *                        3: PGP/MIME (RFC3156)
-   *                        4: pEp encryption format
    *
    * @return: Promise.
    *  then:  returned result (message Object)
@@ -366,7 +360,7 @@ var EnigmailpEp = {
   getIdentityRating: function(userId) {
     try {
       let params = [
-        userId, [""] // color
+        userId, [""] // rating
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "identity_rating", params);
@@ -605,7 +599,7 @@ var EnigmailpEp = {
 
 
   /**
-   * determine the trust color (rating) that an outgoing message would receive
+   * determine the trust rating that an outgoing message would receive
    *
    * @param from:    Object (pEpPerson)          - sender
    * @param to:      Array of Object (pEpPerson) - array with all recipients

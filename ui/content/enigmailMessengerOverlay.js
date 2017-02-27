@@ -1052,7 +1052,7 @@ Enigmail.msg = {
         let fromAddr = EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.author);
         if (fromAddr.length > 0) addresses.from = fromAddr[0];
 
-        pEpResult = EnigmailPEPDecrypt.decryptMessageData(msgText, addresses);
+        pEpResult = EnigmailPEPDecrypt.decryptMessageData(false, msgText, addresses);
         if (pEpResult) {
           plainText = pEpResult.longmsg;
           if (pEpResult.shortmsg.length > 0) {
@@ -1099,7 +1099,7 @@ Enigmail.msg = {
     var displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
       if (EnigmailPEPAdapter.usingPep() && pEpResult) {
-        Enigmail.hdrView.displayPepStatus(pEpResult.color, pEpResult.fpr, null, pEpResult.persons);
+        Enigmail.hdrView.displayPepStatus(pEpResult.rating, pEpResult.fpr, null, pEpResult.persons);
       }
       else {
         Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
