@@ -23,6 +23,7 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
@@ -222,6 +223,9 @@ PEPDecryptor.prototype = {
 
     if (dec) {
       this.decryptedData = dec.longmsg;
+      if (dec.shortmsg && dec.shortmsg.length > 0) {
+        this.decryptedHeaders.subject = dec.shortmsg;
+      }
       rating = dec.rating;
       fpr = dec.fpr;
 
@@ -362,9 +366,20 @@ function decryptPgpMime(msgData, from, to, cc, replyTo) {
   inspector.enterNestedEventLoop(0);
 
   if (resultObj && (typeof(resultObj[3]) === "string")) {
+
+    let msgSubject = "";
+    let i = resultObj[3].search(/\r?\n\r?\n/);
+    if (i > 0) {
+      let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      hdr.initialize(resultObj[3].substr(0, i));
+      if (hdr.hasHeader("subject")) {
+        msgSubject = jsmime.headerparser.decodeRFC2047Words(hdr.extractHeader("subject", true)) || "";
+      }
+    }
+
     return {
       longmsg: resultObj[3],
-      shortmsg: "", // resultObj[3].shortmsg,
+      shortmsg: msgSubject,
       persons: {
         from: from,
         to: to,
