@@ -29,6 +29,7 @@ Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false 
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
+Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -328,7 +329,22 @@ var EnigmailPEPAdapter = {
   },
 
   getIdentityForEmail: function(emailAddress) {
-    return EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress);
+    let deferred = Promise.defer();
+    EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress).then(function _ok(data) {
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
+        if ("username" in data.result[0] && data.result[0].username) {
+          let u = jsmime.headerparser.parseAddressingHeader(data.result[0].username, true);
+          if (Array.isArray(u) && u.length > 0) {
+            data.result[0].username = u[0].name;
+          }
+        }
+      }
+      deferred.resolve(data);
+    }).catch(function _err(data) {
+      deferred.reject(data);
+    });
+
+    return deferred.promise;
   },
 
   /**
