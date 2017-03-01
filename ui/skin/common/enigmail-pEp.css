@@ -8,26 +8,49 @@
  * Enigmail styles related to pEp
  */
 
-.enigmailPepRatingMistrust {
+.enigmailPepRating {
+  padding: 2px 2px 2px 2px;
+  max-height: 5em;
+  margin-top: 6px;
+  margin-bottom: 2px;
+
+  border: 3px solid transparent;
+
+  border-radius: 2px;
+
+}
+
+.enigmailPepRating[ratingcode="mistrust"] {
   list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
-  padding: 8px 4px 4px 4px;
-  max-height: 5em;
 }
 
-.enigmailPepRatingReliable {
+.enigmailPepRating[ratingcode="reliable"] {
   list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
-  padding: 8px 4px 4px 4px;
-  max-height: 5em;
 }
 
-.enigmailPepRatingTrusted {
+.enigmailPepRating[ratingcode="trusted"] {
   list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
-  padding: 8px 4px 4px 4px;
-  max-height: 5em;
 }
 
-.enigmailPepRatingUnknown {
+
+.enigmailPepRating:hover {
+  background-color: #DDDDDD;
+
+  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
+  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
 }
+
+.enigmailPepRating:active {
+  background-color: #CCCCCC;
+
+  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
+  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
+  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+}
+
 
 .enigmailPepIdentityMistrust
 {

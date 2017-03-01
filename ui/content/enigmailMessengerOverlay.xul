@@ -433,7 +433,8 @@
       <spacer flex="1" maxheight="40"/>
       <image id="enigmail-pEp-icon"
         observes="enigmail-pEp-bc"
-         tooltiptext="&enigmail.messeneger.pEpIcon.tootlip;"
+        tooltiptext="&enigmail.messeneger.pEpIcon.tootlip;"
+        class="enigmailPepRating" 
         style="width:48px; height:48px; margin-left:2px; margin-right:2px;"
         onclick="Enigmail.hdrView.pEpIconPopup();"/>
       <spacer flex="1"/>

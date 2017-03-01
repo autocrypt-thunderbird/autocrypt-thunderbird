@@ -204,6 +204,11 @@
                 key="key_enigEncrypt"
                 oncommand="Enigmail.msg.onPepEncryptMenu()"
                 type="checkbox"/>
+
+          <menuitem id="enigmail_composeMenu_pep_handshake"
+                accesskey="&enigmail.pEp.verifyTrustwords.accesskey;"
+                label="&enigmail.pEp.verifyTrustwords.label;"
+                oncommand="Enigmail.msg.onPepHandshakeButton(event)"/>
       </menupopup>
     </menu>
   </menubar>
@@ -270,10 +275,17 @@
             id="button-enigmail-pepEncrypt"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
+            type="menu-button"
             observes="enigmail-bc-pepEncrypt"
             oncommand="Enigmail.msg.onPepEncryptButton()"
-            label="&enigmail.pepEnableProtection.label;"/>
-
+            label="&enigmail.pepEnableProtection.label;">
+      <menupopup>
+        <menuitem id="enigmail_composeBtn_pep_handshake"
+              accesskey="&enigmail.pEp.verifyTrustwords.accesskey;"
+              label="&enigmail.pEp.verifyTrustwords.label;"
+              oncommand="Enigmail.msg.onPepHandshakeButton(event)"/>
+      </menupopup>
+    </toolbarbutton>
   </toolbarpalette>
 
   <!-- Enigmail bar above text editor field -->
@@ -301,7 +313,7 @@
         <image class="enigmail-statusbar-pep-logo"/>
         <label value="&enigmail.pEp.privacyStatus.label;"/>
         <label id="enigmail-pep-privacy-status" value="&enigmail.pEp.composestatus.label;" class="enigmail-statusbar-pep-unsecure"
-          onclick="Enigmail.msg.onPepHandshakeButton(window)"/>
+          onclick="Enigmail.msg.onPepHandshakeButton(event)"/>
       </hbox>
     </statusbarpanel>
   </statusbar>

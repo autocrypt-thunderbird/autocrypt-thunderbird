@@ -1037,23 +1037,23 @@ Enigmail.hdrView = {
 
     if (rating === -2 || rating === 2) {
       this.pEpStatus.messageColor = "grey";
-      this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
+      this.pEpBox.setAttribute("ratingcode", "unknown");
     }
     else if (rating < 0) {
       this.pEpStatus.messageColor = "red";
-      this.pEpBox.setAttribute("class", "enigmailPepRatingMistrust");
+      this.pEpBox.setAttribute("ratingcode", "mistrust");
     }
     else if (rating < 6) {
       this.pEpStatus.messageColor = "grey";
-      this.pEpBox.setAttribute("class", "enigmailPepRatingUnknown");
+      this.pEpBox.setAttribute("ratingcode", "unknown");
     }
     else if (rating >= 7) {
       this.pEpStatus.messageColor = "green";
-      this.pEpBox.setAttribute("class", "enigmailPepRatingTrusted");
+      this.pEpBox.setAttribute("ratingcode", "trusted");
     }
     else {
       this.pEpStatus.messageColor = "yellow";
-      this.pEpBox.setAttribute("class", "enigmailPepRatingReliable");
+      this.pEpBox.setAttribute("ratingcode", "reliable");
     }
 
     this.updateMsgDb();
@@ -1110,13 +1110,54 @@ Enigmail.hdrView = {
   },
 
   pEpIconPopup: function() {
-    let rating = this.pEpStatus.rating;
-    if (rating > 7) rating = 7;
+    // let rating = this.pEpStatus.rating;
+    let addrs = "";
+    if ("from" in currentHeaderData) {
+      addrs = currentHeaderData.from.headerValue;
+    }
+    if ("to" in currentHeaderData) {
+      addrs += "," + currentHeaderData.to.headerValue;
+    }
+    if ("cc" in currentHeaderData) {
+      addrs += "," + currentHeaderData.cc.headerValue;
+    }
+    if ("bcc" in currentHeaderData) {
+      addrs += "," + currentHeaderData.bcc.headerValue;
+    }
 
-    let descProp = "pepStatusInfo.info." + (rating < 0 ? "m" : "r") + rating;
-    let infoText = EnigmailLocale.getString("pepStatusInfo.text") + "\n\n" +
-      EnigmailLocale.getString(descProp);
-    EnigmailDialog.info(window, infoText);
+    let emailsInMessage = EnigmailFuncs.stripEmail(addrs).toLowerCase().split(/,/);
+
+    if (emailsInMessage.length === 0) {
+      EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));
+      return;
+    }
+
+    EnigmailPEPAdapter.pep.getOwnIdentities().then(function _gotOwnIds(data) {
+      if (("result" in data) && typeof data.result[0] === "object" && Array.isArray(data.result[0])) {
+        let ownIds = data.result[0];
+        let myEmail = "";
+
+        for (let i = 0; i < ownIds.length; i++) {
+          for (let j = 0; j < emailsInMessage.length; j++) {
+            if (ownIds[i].address.toLowerCase() === emailsInMessage[j]) {
+              myEmail = ownIds[i].address;
+              break;
+            }
+          }
+        }
+
+        let inputObj = {
+          myself: myEmail,
+          addresses: emailsInMessage,
+          direction: 0,
+          parentWindow: window,
+          onComplete: Enigmail.msg.reloadCompleteMsg.bind(Enigmail.msg)
+        };
+
+        window.openDialog("chrome://enigmail/content/pepPrepHandshake.xul",
+          "", "dialog,modal,centerscreen", inputObj);
+      }
+    });
   },
 
   enablePepMenus: function() {

@@ -2129,21 +2129,18 @@ Enigmail.msg = {
   },
 
   onPepEncryptMenu: function() {
-    // let encMenu = document.getElementById("enigmail_compose_pep_encrypt");
-    // let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
-    //
-    // pepBc.setAttribute("encrypt", encMenu.getAttribute("checked"));
-    this.onPepEncryptButton();
-  },
-
-  onPepEncryptButton: function() {
     let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
 
     pepBc.setAttribute("encrypt", pepBc.getAttribute("encrypt") === "true" ? "false" : "true");
     this.getPepMessageRating();
   },
 
-  onPepHandshakeButton: function(window) {
+  onPepEncryptButton: function() {
+    this.onPepEncryptMenu();
+  },
+
+  onPepHandshakeButton: function(event) {
+    event.stopPropagation();
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPepHandshakeButton()\n");
 
     let bc = document.getElementById("enigmail-bc-pepEncrypt");

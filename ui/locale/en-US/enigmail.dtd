@@ -806,6 +806,7 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Force using p≡p (Pretty Easy Privacy)">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "p≡p Handshake">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "H">
 <!ENTITY enigmail.pEp.revokeTrust.label               "Cancel p≡p Trust">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "This message was encrypted with p≡p. Click the icon for more details.">
 

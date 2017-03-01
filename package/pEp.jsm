@@ -39,6 +39,8 @@ var gRequestId = 1;
 var gConnectionInfo = null;
 var gRetryCount = 0;
 
+var gRequestArr = [];
+
 var EnigmailpEp = {
 
   /**
@@ -683,6 +685,28 @@ var EnigmailpEp = {
     }
   },
 
+  /**
+   * Enable or disable the passive mode for pEp.
+   * Passive mode means that no key is attached to a message
+   *
+   * @param isPassive: Boolean - true: enable passive mode / false: disable passive mode
+   */
+  setPassiveMode: function(isPassive) {
+    try {
+      let params = [
+        isPassive
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "config_passive_mode", params);
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+
+  },
+
   registerListener: function(port, securityToken) {
 
     try {
@@ -764,8 +788,7 @@ var EnigmailpEp = {
       "jsonrpc": "2.0"
     };
 
-    // create a XMLHttpRequest() in Mozilla priviledged environment
-    let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+    let oReq = getXmlRequest();
 
     if (!onLoadListener) {
       onLoadListener = function(obj) {
@@ -810,6 +833,7 @@ var EnigmailpEp = {
     }
 
     oReq.addEventListener("error", function(e) {
+        dropXmlRequest(this);
         self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
           let r = onErrorListener(this.responseText);
           deferred.resolve(r);
@@ -872,7 +896,7 @@ var EnigmailpEp = {
         self.getConnectionInfo();
         functionCall.security_token = (gConnectionInfo ? gConnectionInfo.security_token : "");
 
-        let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+        let oReq = getXmlRequest();
 
         oReq.addEventListener("load", function _onload() {
           try {
@@ -887,6 +911,7 @@ var EnigmailpEp = {
         });
 
         oReq.addEventListener("error", function(e) {
+            dropXmlRequest(this);
             let status = oReq.channel.QueryInterface(Ci.nsIRequest).status;
 
             deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
@@ -912,4 +937,19 @@ function makeError(str, ex, msg) {
   };
 
   return o;
+}
+
+function getXmlRequest() {
+  return Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+  // if (gRequestArr.length === 0) {
+  //   // create a XMLHttpRequest() in Mozilla priviledged environment
+  //
+  //   gRequestArr[0] = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+  // }
+  //
+  // return gRequestArr[0];
+}
+
+function dropXmlRequest(oReq) {
+  //gRequestArr = [];
 }

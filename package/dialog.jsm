@@ -86,7 +86,7 @@ const EnigmailDialog = {
         msgtext: mesg,
         button1: EnigmailLocale.getString("dlg.button.close"),
         iconType: EnigmailConstants.ICONTYPE_INFO,
-        dialogTitle: EnigmailLocale.getString("enigConfirm")
+        dialogTitle: EnigmailLocale.getString("enigInfo")
       },
       null);
   },
