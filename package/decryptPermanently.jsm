@@ -1182,6 +1182,13 @@ function getPepSubject(mimeString) {
       EnigmailLog.DEBUG("decryptPermanently.jsm: getPepSubject.startPart: partNum=" + partNum + "\n");
       try {
         this.ct = String(headers.getRawHeader("content-type")).toLowerCase();
+        if (!subject && !this.firstPlainText) {
+          let s = headers.getRawHeader("subject");
+          if (s) {
+            subject = String(s);
+            this.firstPlainText = true;
+          }
+        }
       }
       catch (ex) {
         this.ct = "";

@@ -19,10 +19,11 @@ Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: f
 var EnigmailListEditor = {
   onLoad: function() {
     EnigmailLog.DEBUG("EnigmailFilterOverlay.js: onLoad()\n");
+    this.onSelect();
 
-    //this.prefixCommand("editButton", "EnigmailListEditor.onEditButton()");
     let fl = document.getElementById("filterList");
     fl.addEventListener("select", EnigmailListEditor.onSelect.bind(EnigmailListEditor));
+    fl.addEventListener("click", EnigmailListEditor.onClick.bind(EnigmailListEditor), true);
   },
 
   onSelect: function() {
@@ -37,6 +38,12 @@ var EnigmailListEditor = {
       // disable modification or deletion of the pEp-specific message decryption rule
       document.getElementById("editButton").setAttribute("disabled", "true");
       document.getElementById("deleteButton").setAttribute("disabled", "true");
+    }
+  },
+
+  onClick: function(event) {
+    if ("label" in event.target && event.target.label === EnigmailPEPAdapter.DECRYPT_FILTER_NAME) {
+      event.stopPropagation();
     }
   }
 };
