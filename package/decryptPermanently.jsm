@@ -31,6 +31,7 @@ Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
@@ -76,27 +77,30 @@ const EnigmailDecryptPermanently = {
    *  Parameters
    *   aMsgHdrs:     Array of nsIMsgDBHdr
    *   targetFolder: String; target folder URI
+   *   copyListener: listener for async request
    *   move:         Boolean: type of action; true = "move" / false = "copy"
-   *   requireSync:  Boolean: true = require  function to behave synchronously
-   *                          false = async function (no useful return value)
    *
    **/
 
-  dispatchMessages: function(aMsgHdrs, targetFolder, move, requireSync) {
-    var inspector = Cc["@mozilla.org/jsinspector;1"].getService(Ci.nsIJSInspector);
+  dispatchMessages: function(aMsgHdrs, targetFolder, copyListener, move) {
+    EnigmailLog.DEBUG("decryptPermanently.jsm: dispatchMessages()\n");
 
-    var promise = EnigmailDecryptPermanently.decryptMessage(aMsgHdrs[0], targetFolder, move);
-    var done = false;
+    if (copyListener) {
+      copyListener.OnStartCopy();
+    }
+    let promise = EnigmailDecryptPermanently.decryptMessage(aMsgHdrs[0], targetFolder, move);
 
     var processNext = function(data) {
       aMsgHdrs.splice(0, 1);
       if (aMsgHdrs.length > 0) {
-        EnigmailDecryptPermanently.dispatchMessages(aMsgHdrs, targetFolder, move, false);
+        EnigmailDecryptPermanently.dispatchMessages(aMsgHdrs, targetFolder, move);
       }
       else {
         // last message was finished processing
-        done = true;
-        inspector.exitNestedEventLoop();
+        if (copyListener) {
+          copyListener.OnStopCopy(0);
+        }
+        EnigmailLog.DEBUG("decryptPermanently.jsm: dispatchMessages - DONE\n");
       }
     };
 
@@ -105,14 +109,6 @@ const EnigmailDecryptPermanently = {
     promise.catch(function(err) {
       processNext(null);
     });
-
-    if (requireSync && !done) {
-      // wait here until all messages processed, such that the function returns
-      // synchronously
-      inspector.enterNestedEventLoop({
-        value: 0
-      });
-    }
   },
 
   decryptMessage: function(hdr, destFolder, move) {
@@ -278,11 +274,15 @@ DecryptMessageIntoFolder.prototype = {
             },
             GetMessageId: function(messageId) {},
             OnProgress: function(progress, progressMax) {},
-            OnStartCopy: function() {},
-            SetMessageKey: function(key) {},
+            OnStartCopy: function() {
+              EnigmailLog.DEBUG("decryptPermanently.jsm: copyListener: OnStartCopy()\n");
+            },
+            SetMessageKey: function(key) {
+              EnigmailLog.DEBUG("decryptPermanently.jsm: copyListener: SetMessageKey(" + key + ")\n");
+            },
             OnStopCopy: function(statusCode) {
+              EnigmailLog.DEBUG("decryptPermanently.jsm: copyListener: OnStopCopy()\n");
               if (statusCode !== 0) {
-                //XXX complain?
                 EnigmailLog.DEBUG("decryptPermanently.jsm: Error copying message: " + statusCode + "\n");
                 try {
                   tempFile.remove(false);
@@ -301,9 +301,7 @@ DecryptMessageIntoFolder.prototype = {
               EnigmailLog.DEBUG("decryptPermanently.jsm: Copy complete\n");
 
               if (self.move) {
-                EnigmailLog.DEBUG("decryptPermanently.jsm: Delete original\n");
-                var folderInfoObj = {};
-                self.hdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(self.hdr.messageKey, null, true);
+                deleteOriginalMail(self.hdr);
               }
 
               try {
@@ -323,8 +321,9 @@ DecryptMessageIntoFolder.prototype = {
             }
           };
 
+          EnigmailLog.DEBUG("decryptPermanently.jsm: copySvc ready for copy\n");
           copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(self.destFolder, false), self.hdr,
-            false, 0, null, copyListener, null);
+            false, 0, "", copyListener, null);
         }
       ).catch(
         function catchErr(errorMsg) {
@@ -679,12 +678,17 @@ DecryptMessageIntoFolder.prototype = {
               let hdr = h.getNext();
               if (hdr.search(/^content-type$/i) < 0) {
                 try {
-                  let hdrVal = m.getUnstructuredHeader(hdr);
+                  EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: hdr=" + hdr + "\n");
+                  let hdrVal = m.getUnstructuredHeader(hdr.toLowerCase());
                   o.data += hdr + ": " + hdrVal + "\n";
                 }
-                catch (ex) {}
+                catch (ex) {
+                  EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: exception " + ex.toString() + "\n");
+                }
               }
             }
+
+            EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: done\n");
 
             o.data += data.substr(bodyIndex);
             if (subpart) {
@@ -701,7 +705,7 @@ DecryptMessageIntoFolder.prototype = {
           channel.asyncOpen(s, null);
         }
         catch (e) {
-          EnigmailLog.DEBUG("decryptPermanently.jsm: decryptPGPMIME: exception " + e + "\n");
+          EnigmailLog.DEBUG("decryptPermanently.jsm: decryptPGPMIME: exception " + e.toString() + "\n");
         }
       }
     );
@@ -1223,4 +1227,24 @@ function getPepSubject(mimeString) {
   catch (ex) {}
 
   return subject;
+}
+
+/**
+ * Lazy deletion of original messages
+ */
+function deleteOriginalMail(msgHdr) {
+  EnigmailLog.DEBUG("decryptPermanently.jsm: deleteOriginalMail(" + msgHdr.messageKey + ")\n");
+
+  let delMsg = function() {
+    try {
+      EnigmailLog.DEBUG("decryptPermanently.jsm: deleting original message " + msgHdr.messageKey + "\n");
+      let folderInfoObj = {};
+      msgHdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(msgHdr.messageKey, null, true);
+    }
+    catch (e) {
+      EnigmailLog.DEBUG("decryptPermanently.jsm: deletion failed. Error: " + e.toString() + "\n");
+    }
+  };
+
+  EnigmailTimer.setTimeout(delMsg, 500);
 }

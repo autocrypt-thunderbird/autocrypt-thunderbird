@@ -152,6 +152,7 @@ pref("extensions.enigmail.autoSendEncrypted", 1);
 // 0: no
 // 1: yes
 pref("extensions.enigmail.autocryptMode", 0);
+
 // ask to confirm before sending
 // 0: never DEFAULT
 // 1: always

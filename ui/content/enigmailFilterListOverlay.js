@@ -34,7 +34,7 @@ var EnigmailListEditor = {
     var l = document.getElementById("filterList");
     if (l.selectedItems.length !== 1) return;
 
-    if (currentFilter().filterName === EnigmailPEPAdapter.DECRYPT_FILTER_NAME) {
+    if (currentFilter().filterName === EnigmailPEPAdapter.filter.DECRYPT_FILTER_NAME) {
       // disable modification or deletion of the pEp-specific message decryption rule
       document.getElementById("editButton").setAttribute("disabled", "true");
       document.getElementById("deleteButton").setAttribute("disabled", "true");
@@ -42,7 +42,7 @@ var EnigmailListEditor = {
   },
 
   onClick: function(event) {
-    if ("label" in event.target && event.target.label === EnigmailPEPAdapter.DECRYPT_FILTER_NAME) {
+    if ("label" in event.target && event.target.label === EnigmailPEPAdapter.filter.DECRYPT_FILTER_NAME) {
       event.stopPropagation();
     }
   }

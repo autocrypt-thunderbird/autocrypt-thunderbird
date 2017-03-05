@@ -47,9 +47,7 @@ const filterActionMoveDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, true, true);
-
-    return;
+    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, aListener, true);
   },
 
   isValidForType: function(type, scope) {
@@ -67,7 +65,7 @@ const filterActionMoveDecrypt = {
   },
 
   allowDuplicates: false,
-  isAsync: false,
+  isAsync: true,
   needsBody: true
 };
 
@@ -88,8 +86,7 @@ const filterActionCopyDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, false, true);
-    return;
+    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, aListener, false);
   },
 
   isValidForType: function(type, scope) {
@@ -105,7 +102,7 @@ const filterActionCopyDecrypt = {
   },
 
   allowDuplicates: false,
-  isAsync: false,
+  isAsync: true,
   needsBody: true
 };
 
@@ -207,7 +204,8 @@ const newMailListener = {
     if (!processReadMail && aMsgHdr.isRead) return;
     if (inboxOnly && !isInbox) return;
 
-    let msgStream = aMsgHdr.folder.getMsgInputStream(aMsgHdr, false);
+    let reusableObj = {};
+    let msgStream = aMsgHdr.folder.getMsgInputStream(aMsgHdr, reusableObj);
     let inputStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 
     let msg = "";
@@ -273,7 +271,8 @@ const EnigmailFilters = {
    *  - consumeMessage: function(messageStructure)
    */
   addNewMailConsumer: function(consumer) {
-    consumerList.append(consumer);
+    EnigmailLog.DEBUG("pEpFilter.jsm: addNewMailConsumer()\n");
+    consumerList.push(consumer);
   },
 
   removeNewMailConsumer: function(consumer) {

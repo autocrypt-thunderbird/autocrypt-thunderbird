@@ -3221,10 +3221,10 @@ Enigmail.msg = {
     }
 
     if (this.identity.getBoolAttribute("autoEncryptDrafts")) {
-      EnigmailPEPAdapter.deleteDecryptedCopyFilter(this.identity);
+      EnigmailPEPAdapter.filter.deleteDecryptedCopyFilter(this.identity);
     }
     else {
-      EnigmailPEPAdapter.ensureDecryptedCopyFilter(this.identity);
+      EnigmailPEPAdapter.filter.ensureDecryptedCopyFilter(this.identity);
     }
 
     let rating = 0;

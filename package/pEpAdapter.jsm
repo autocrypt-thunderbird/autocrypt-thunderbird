@@ -73,6 +73,8 @@ var EnigmailPEPAdapter = {
 
   pep: EnigmailpEp,
 
+  filter: EnigmailPEPFilter,
+
   /**
    * Get the pEp JSON server version number.
    *
@@ -733,15 +735,5 @@ var EnigmailPEPAdapter = {
     }
 
     return ratingDesc;
-  },
-
-  /* imported from EnigmailPEPFilter */
-
-  DECRYPT_FILTER_NAME: EnigmailPEPFilter.DECRYPT_FILTER_NAME,
-
-  deleteDecryptedCopyFilter: EnigmailPEPFilter.deleteDecryptedCopyFilter,
-
-  ensureDecryptedCopyFilter: EnigmailPEPFilter.ensureDecryptedCopyFilter,
-
-  ensureAutoProcessFilter: EnigmailPEPFilter.ensureAutoProcessFilter
+  }
 };
