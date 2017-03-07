@@ -322,6 +322,13 @@ DecryptMessageIntoFolder.prototype = {
           };
 
           EnigmailLog.DEBUG("decryptPermanently.jsm: copySvc ready for copy\n");
+          try {
+            if (self.mime.headers.subject) {
+              self.hdr.subject = self.mime.headers.subject.join();
+            }
+          }
+          catch (ex) {}
+
           copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(self.destFolder, false), self.hdr,
             false, 0, "", copyListener, null);
         }
