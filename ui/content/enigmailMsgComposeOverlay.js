@@ -377,6 +377,7 @@ Enigmail.msg = {
     try {
       let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
+        this.setOriginalSubject(msgHdr.subject);
         properties = msgHdr.getUint32Property("enigmail");
         if (draft) {
           try {
@@ -460,6 +461,30 @@ Enigmail.msg = {
       if (flags & nsIEnigmail.SEND_ATTACHMENT) Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
     }
     Enigmail.msg.setOwnKeyStatus();
+  },
+
+  setOriginalSubject: function(subject) {
+    const CT = Components.interfaces.nsIMsgCompType;
+    let subjElem = document.getElementById("msgSubject");
+    let prefix = "";
+
+    if (!subjElem) return;
+
+    switch (gMsgCompose.type) {
+      case CT.ForwardInline:
+      case CT.ForwardAsAttachment:
+        prefix = this.getMailPref("mail.forward_subject_prefix") + ": ";
+    }
+
+    switch (gMsgCompose.type) {
+      case CT.Draft:
+      case CT.Template:
+      case CT.ForwardInline:
+      case CT.ForwardAsAttachment:
+        gMsgCompose.compFields.subject = prefix + subject;
+        subjElem.value = prefix + subject;
+        break;
+    }
   },
 
   setupMenuAndToolbar: function() {
