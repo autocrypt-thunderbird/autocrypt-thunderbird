@@ -453,11 +453,11 @@
 <!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Owner Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the owner of the key to sign other keys properly?">
-<!ENTITY enigmail.keyTrust.dontKnow.label          "I don't know">
-<!ENTITY enigmail.keyTrust.noTrust.label           "I do NOT trust">
-<!ENTITY enigmail.keyTrust.marginalTrust.label     "I trust marginally">
-<!ENTITY enigmail.keyTrust.fullTrust.label         "I trust fully">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label     "I trust ultimately">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "Unknown (Not yet specified)">
+<!ENTITY enigmail.keyTrust.noTrust.label           "Not Trusted (Not trusted to sign keys properly)">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "Marginal (Somewhat trusted to sign keys properly)">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "Complete (Fully trusted to sign keys properly)">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Ultimate (Only use for keys you own yourself)">
 
 <!ENTITY enigmail.keyExpiry.title                   "Enigmail - Change Expiration Date">
 <!ENTITY enigmail.keyExpiry.expiryKey.label         "Keys to change expiration date:">

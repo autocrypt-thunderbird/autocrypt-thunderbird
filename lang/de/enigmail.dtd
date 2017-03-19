@@ -433,14 +433,14 @@
 <!ENTITY enigmail.addUidDlg.name.label             "Name">
 <!ENTITY enigmail.addUidDlg.email.label            "E-Mail">
 
-<!ENTITY enigmail.keyTrust.title                   "Enigmail – Besitzervertrauen festlegen">
+<!ENTITY enigmail.keyTrust.title                   "Enigmail – Vertrauen zu Besitzer festlegen">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Vertrauenswürdiger Schlüssel:">
-<!ENTITY enigmail.keyTrust.trustLevel.label        "Wie weit trauen Sie diesem Benutzer zu, Schlüssel anderer Benutzer vor der Unterschrift korrekt zu prüfen?">
-<!ENTITY enigmail.keyTrust.dontKnow.label          "Ich weiß es nicht">
-<!ENTITY enigmail.keyTrust.noTrust.label           "Ich vertraue ihm NICHT">
-<!ENTITY enigmail.keyTrust.marginalTrust.label     "Ich vertraue ihm ein bisschen">
-<!ENTITY enigmail.keyTrust.fullTrust.label         "Ich vertraue ihm">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Ich vertraue ihm absolut">
+<!ENTITY enigmail.keyTrust.trustLevel.label        "Wie weit trauen Sie dem Besitzer zu, Identitäten anderer Benutzer vor Unterschrift zu prüfen?">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "Unbekannt (Noch nicht zugewiesen)">
+<!ENTITY enigmail.keyTrust.noTrust.label           "Kein Vertrauen (Dieser Person wird explizit nicht vertraut)">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "Geringes Vertrauen (Dieser Person wird eingeschränkt vertraut)">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "Volles Vertrauen (Dieser Person wird vollkommen vertraut)">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Absolutes Vertrauen (Nur für Schlüssel, die man selbst besitzt)">
 
 <!ENTITY enigmail.keyExpiry.title                   "Enigmail – Ablaufdatum ändern">
 <!ENTITY enigmail.keyExpiry.expiryKey.label         "Zu ändernde Schlüssel:">
