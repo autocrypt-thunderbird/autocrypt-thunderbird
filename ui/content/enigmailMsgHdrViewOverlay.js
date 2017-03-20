@@ -151,6 +151,10 @@ Enigmail.hdrView = {
 
     if (EnigmailPEPAdapter.usingPep()) return;
 
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.xtraStatus && Enigmail.msg.securityInfo.xtraStatus === "wks-request") {
+      return;
+    }
+
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     this.statusBar = document.getElementById("enigmail-status-bar");
@@ -450,6 +454,7 @@ Enigmail.hdrView = {
       requestObj = JSON.parse(jsonStr);
     }
     catch (ex) {
+      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: checkWksConfirmRequest parsing JSON failed\n");
       return;
     }
 
@@ -463,7 +468,15 @@ Enigmail.hdrView = {
         document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
         document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
         view.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
+        if (!Enigmail.msg.securityInfo) {
+          Enigmail.msg.securityInfo = {};
+        }
+        Enigmail.msg.securityInfo.xtraStatus = "wks-request";
+
       });
+    }
+    else {
+      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: checkWksConfirmRequest failed condition\n");
     }
   },
 
@@ -758,6 +771,9 @@ Enigmail.hdrView = {
 
   messageUnload: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageUnload\n");
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.xtraStatus) {
+      Enigmail.msg.securityInfo.xtraStatus = "";
+    }
   },
 
   hdrViewUnload: function() {

@@ -2616,7 +2616,7 @@ Enigmail.msg = {
         let email = EnigmailFuncs.stripEmail(msgHdr.recipients);
         let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
 
-        if (maybeIdent.identity) {
+        if (maybeIdent && maybeIdent.identity) {
           EnigmailStdlib.msgHdrsModifyRaw([msgHdr], function(data) {
             EnigmailWks.confirmKey(maybeIdent.identity, data, window, function(ret) {
               if (ret) {

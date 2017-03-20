@@ -19,6 +19,9 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false *
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+
+const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
 var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 var gDebugLog = false;
@@ -100,7 +103,11 @@ PgpWkdHandler.prototype = {
   onStopRequest: function() {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStopRequest\n");
 
-    let jsonStr = this.requestToJsonString();
+    if (this.data.search(/-----BEGIN PGP MESSAGE-----/i) >= 0) {
+      this.decryptChallengeData();
+    }
+
+    let jsonStr = this.requestToJsonString(this.data);
     let msg = "";
 
     if (this.data.search(/^\s*type:\s+confirmation-request/mi) >= 0) {
@@ -112,6 +119,22 @@ PgpWkdHandler.prototype = {
 
     this.returnData(msg);
     this.displayStatus(jsonStr);
+  },
+
+  decryptChallengeData: function() {
+    EnigmailLog.DEBUG("wksMimeHandler.jsm: decryptChallengeData()\n");
+    let windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+    let win = windowManager.getMostRecentWindow(null);
+    let statusFlagsObj = {};
+
+    let res = EnigmailDecryption.decryptMessage(win,
+      0,
+      this.data, {}, {}, statusFlagsObj, {}, {}, {}, {}, {}, {});
+
+    if (statusFlagsObj.value & Ci.nsIEnigmail.DECRYPTION_OKAY) {
+      this.data = res;
+    }
+    EnigmailLog.DEBUG("wksMimeHandler.jsm: decryptChallengeData: decryption result: " + res + "\n");
   },
 
   // convert request data into JSON-string and parse it
