@@ -31,6 +31,7 @@ Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandli
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 const EC = EnigmailCore;
@@ -92,6 +93,21 @@ const EnigmailDecryption = {
       args.push(keySrvArgs);
       args.push("--keyserver");
       args.push(keyserver);
+    }
+
+    if (EnigmailGpg.getGpgFeature("supports-sender") &&
+      win && win.gFolderDisplay && win.gFolderDisplay.selectedMessage) {
+      var fromAddr = win.gFolderDisplay.selectedMessage.author;
+      try {
+        fromAddr = EnigmailFuncs.stripEmail(fromAddr);
+      }
+      catch (ex) {
+        fromAddr = false;
+      }
+      if (fromAddr) {
+        args.push("--sender");
+        args.push(fromAddr.toLowerCase());
+      }
     }
 
     if (noOutput) {

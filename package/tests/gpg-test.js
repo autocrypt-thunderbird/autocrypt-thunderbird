@@ -195,6 +195,20 @@ test(function testGetGpgFeatureForWhenVersionSupportsGenKeyNoProtection() {
   });
 });
 
+test(function testGetGpgFeatureForWhenVersionDoesNotSupportSender() {
+  TestHelper.resetting(EnigmailGpg, "agentVersion", "2.1.14", function() {
+    const output = EnigmailGpg.getGpgFeature("supports-sender");
+    Assert.equal(output, false);
+  });
+});
+
+test(function testGetGpgFeatureForWhenVersionDoesSupportSender() {
+  TestHelper.resetting(EnigmailGpg, "agentVersion", "2.1.15", function() {
+    const output = EnigmailGpg.getGpgFeature("supports-sender");
+    Assert.equal(output, true);
+  });
+});
+
 test(function testGetGpgFeatureForWhenVersionDoesNotSupportGenKeyNoProtection() {
   TestHelper.resetting(EnigmailGpg, "agentVersion", "2.0", function() {
     const output = EnigmailGpg.getGpgFeature("genkey-no-protection");

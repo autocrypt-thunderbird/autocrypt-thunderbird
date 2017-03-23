@@ -134,6 +134,7 @@ const EnigmailGpg = {
    socks-on-windows     - is SOCKS proxy supported on Windows (true for gpg >= 2.0.20)
    supports-dirmngr     - is dirmngr supported (true for gpg >= 2.1)
    supports-ecc-keys    - are ECC (elliptic curve) keys supported (true for gpg >= 2.1)
+   supports-sender      - does gnupg understand the --sender argument
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -178,6 +179,8 @@ const EnigmailGpg = {
         }
         else
           return "quit";
+      case "supports-sender":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.15");
     }
 
     return undefined;
