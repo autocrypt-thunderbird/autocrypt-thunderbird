@@ -252,8 +252,11 @@ pref("mail.identity.default.defaultEncryptionPolicy", 0);
 pref("mail.identity.default.openPgpHeaderMode", 0);
 pref("mail.identity.default.openPgpUrlName", "");
 pref("mail.identity.default.pgpMimeMode", true);
-pref("mail.identity.default.attachPgpKey", false);
+pref("mail.identity.default.attachPgpKey", true);
 pref("mail.identity.default.autoEncryptDrafts", true);
+pref("mail.identity.default.protectSubject", true);
+pref("mail.identity.default.warnWeakReply", true);
+pref("mail.identity.default.enablePEP", true);
 
 // prefer S/MIME or PGP/MIME (0: S/MIME, 1: PGP/MIME)
 pref("mail.identity.default.mimePreferOpenPGP", 1);

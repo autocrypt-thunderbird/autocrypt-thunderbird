@@ -121,6 +121,11 @@
   -moz-appearance: none;
 }
 
+.enigmailTitle {
+  font-size: larger;
+  font-weight: bold;
+}
+
 #messagepanebox[enigSigned="ok"] #messagepane {
   color: red;
 }

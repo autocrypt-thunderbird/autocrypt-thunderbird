@@ -1,6 +1,8 @@
 <!ENTITY enigmail.label                   "Enigmail">
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 
+<!ENTITY enigmail.about.license           "Enigmail is open source and licensed under the <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
+
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Generate OpenPGP Key">
 <!ENTITY enigmail.useForSigning.label     "Use generated key for the selected identity">
@@ -826,3 +828,19 @@
 <!ENTITY enigmail.pepHandshake.explanation           "Explanation">
 
 <!ENTITY enigmail.pepPrepHandshake.desc              "Loading data, please wait ...">
+
+<!ENTITY enigmail.pepPref.window.title               "Enigmail/p≡p Preferences">
+<!ENTITY enigmail.pepPref.accountTab.label           "Account">
+<!ENTITY enigmail.pepPref.compatTab.label            "Compatibility">
+<!ENTITY enigmail.pepPref.aboutTab.label             "About">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "Account Security">
+<!ENTITY enigmail.pepPref.storeSecurely.title        "Store Messages Securely for these accounts">
+<!ENTITY enigmail.pepPref.storeSecurely.label        "Store messages securely">
+<!ENTITY enigmail.pepPref.enableEncryption.label     "Enable privacy protection">
+<!ENTITY enigmail.pepPref.passiveMode.label          "Do not attach my key to every message">
+<!ENTITY enigmail.pepPref.protectedSubject.label     "Enable protected message subjects">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message looses security through reply or forward">
+<!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP Compatibility">
+<!ENTITY enigmail.pepPref.autoKeyLookup.label        "Lookup keys on server automatically">
+<!ENTITY enigmail.pepPref.credits.label              "Credits">
+<!ENTITY enigmail.pepPref.thanksTo.label             "Thanks to">

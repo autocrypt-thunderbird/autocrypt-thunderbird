@@ -286,7 +286,15 @@ const EnigmailWindows = {
 
     EnigmailCore.getService(win, true); // true: starting preferences dialog
 
-    win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+    let url;
+
+    if (EnigmailPEPAdapter.usingPep()) {
+      url = "chrome://enigmail/content/pref-pep.xul";
+    }
+    else {
+      url = "chrome://enigmail/content/pref-enigmail.xul";
+    }
+    win.openDialog(url,
       "_blank", "chrome,resizable=yes", {
         'showBasic': showBasic,
         'clientType': 'thunderbird',
@@ -555,7 +563,7 @@ const EnigmailWindows = {
    * @param headerData:   either: Object - nsIMsgHdr object for the message (to identify the ideal own identity)
    *                      or:     String - own email address to compare with
    *
-   * @return: Promise (resolve() case of success; rejection otherwise). 
+   * @return: Promise (resolve() case of success; rejection otherwise).
    */
   verifyPepTrustWords: function(win, emailAddress, headerData) {
     let deferred = Promise.defer();

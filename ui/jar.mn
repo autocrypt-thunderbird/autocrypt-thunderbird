@@ -67,6 +67,8 @@ enigmail.jar:
 	content/enigmail/enigmailSignKeyDlg.xul        (content/enigmailSignKeyDlg.xul)
 	content/enigmail/pref-enigmail.xul             (content/pref-enigmail.xul)
 	content/enigmail/pref-enigmail.js              (content/pref-enigmail.js)
+	content/enigmail/pref-pep.xul                  (content/pref-pep.xul)
+	content/enigmail/pref-pep.js                   (content/pref-pep.js)
 	content/enigmail/am-enigprefs.xul              (content/am-enigprefs.xul)
 	content/enigmail/am-enigprefs.js               (content/am-enigprefs.js)
 	content/enigmail/am-enigprefs-edit.xul         (content/am-enigprefs-edit.xul)
