@@ -152,6 +152,7 @@ var EnigmailPEPAdapter = {
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
 
+    let self = this;
     let pEpMode = EnigmailPrefs.getPref("juniorMode");
     // force using Enigmail (do not use pEp)
     if (pEpMode === 0) return;
@@ -196,6 +197,8 @@ var EnigmailPEPAdapter = {
             enigmailSvc.initialize(null, false);
           }
         }
+
+        self.setOwnIdentities(0);
       }).
       catch(function failed(err) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: error during pEp init:\n");
@@ -205,6 +208,47 @@ var EnigmailPEPAdapter = {
       });
     }
     catch (ex) {}
+  },
+
+  setOwnIdentities: function(accountNum) {
+    let self = this;
+    let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+    let id;
+
+    // pEp currently only supports 1 identity per account, we therefore only set the 1st id of each accunt
+    if (accountManager.accounts.length > accountNum) {
+      let ac = accountManager.accounts.queryElementAt(accountNum, Ci.nsIMsgAccount);
+      try {
+        id = ac.identities.queryElementAt(0, Ci.nsIMsgIdentity);
+      }
+      catch (ex) {
+        id = null;
+      }
+
+      if (!id) {
+        self.setOwnIdentities(accountNum + 1);
+        return;
+      }
+
+      let pepId = {
+        address: id.email.toLowerCase(),
+        user_id: "",
+        username: id.fullName
+      };
+
+      EnigmailLog.DEBUG("pEpAdapter.jsm: setOwnIdentities: " + id.identityName + "\n");
+      self.pep.setMyself(pepId).then(
+        function _ok() {
+          self.setOwnIdentities(accountNum + 1);
+        }).catch(
+        function _err(data) {
+          EnigmailLog.DEBUG("pEpAdapter.jsm: setOwnIdentities: ERROR: '" + JSON.stringify(data) + "'\n");
+        });
+    }
+    else {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: setOwnIdentities: done.\n");
+    }
+
   },
 
   /**

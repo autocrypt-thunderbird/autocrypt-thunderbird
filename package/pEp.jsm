@@ -377,26 +377,23 @@ var EnigmailpEp = {
   },
 
   /**
-   * set a user identity in pEp
+   * tell pEp our own user identity
    *
    * @param idObject -  Object:
    *  - address: email Address
-   *  - fpr: fingerprint
    *  - user_id: user ID (usually TOFU_email@address)
    *  - username: name of person (Firstname Lastname),
-   *  - comm_type: type of communication (and trust)
-   *  - me: is this myself?
-   *  - flags
    *
    * @return: Promise.
    *  then:  returned result
    *  catch: Error object (see above)
    */
-  setIdentity: function(idObject) {
+
+  setMyself: function(idObject) {
     try {
       let params = [idObject];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "set_identity", params);
+      return this._callPepFunction(FT_CALL_FUNCTION, "myself", params);
 
     }
     catch (ex) {
