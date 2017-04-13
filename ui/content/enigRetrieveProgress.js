@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* eslint no-invalid-this: 0 */
+/* eslint no-invalid-this: 0, no-loop-func: 0 */
 
 "use strict";
 
@@ -22,6 +22,7 @@ Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandli
 Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 
 // dialog is just an array we'll use to store various properties from the dialog document...
 var dialog;
@@ -112,45 +113,72 @@ function onLoad() {
 }
 
 function onLoadWkd(inArg) {
-  EnigmailLog.DEBUG("enigRetrieveProgress: onLoadWkd: ident=" + inArg.senderIdent.email + ", key=" + inArg.keyFpr + "\n");
   try {
     var statTxt = document.getElementById("dialog.status2");
-    statTxt.value = EnigmailLocale.getString("keyserverProgress.wksCheck");
+    statTxt.value = EnigmailLocale.getString("keyserverTitle.uploading");
     document.getElementById("progressWindow").setAttribute("title", EnigmailLocale.getString("keyserverTitle.uploading"));
 
     var progressDlg = document.getElementById("dialog.progress");
     progressDlg.setAttribute("mode", "undetermined");
 
-    EnigmailWks.isWksSupportedAsync(inArg.senderIdent.email, window, function(is_supported) {
-      if (msgProgress && msgProgress.processCanceledByUser) {
-        window.close();
-        return;
-      }
+    let uploads = [];
 
-      if (is_supported) {
-        statTxt.value = EnigmailLocale.getString("keyserverTitle.uploading");
+    // For each key fpr/sender identity pair, check whenever WKS is supported
+    // Result is an array of booleans
+    for (let i = 0; i < inArg.senderIdentities.length; i++) {
+      let keyFpr = inArg.fprList[i];
+      let senderIdent = inArg.senderIdentities[i];
 
-        EnigmailWks.submitKey(inArg.senderIdent, {
-          'fpr': inArg.keyFpr
-        }, window, function(success) {
-          if (success) {
-            progressDlg.setAttribute("value", 100);
-            progressDlg.setAttribute("mode", "normal");
-            EnigmailDialog.info(window, EnigmailLocale.getString("keyserverProgress.wksUploadCompleted"));
-            window.close();
+      let was_uploaded = new Promise(function(resolve, reject) {
+        EnigmailLog.DEBUG("enigRetrieveProgress: onLoadWkd: ident=" + senderIdent.email + ", key=" + keyFpr + "\n");
+        EnigmailWks.isWksSupportedAsync(senderIdent.email, window, function(is_supported) {
+          if (msgProgress && msgProgress.processCanceledByUser) {
+            reject("canceled");
           }
-          else {
-            let errorMsg = EnigmailLocale.getString("keyserverProgress.wksUploadFailed");
-            window.close();
-            gEnigCallbackFunc(-1, errorMsg, true);
-          }
+
+          resolve(is_supported);
         });
-      }
-      else {
-        var errorMsg = EnigmailLocale.getString("keyserverProgress.noWks");
-        window.close();
-        gEnigCallbackFunc(-1, errorMsg, true);
-      }
+      }).then(function(is_supported) {
+        if (is_supported) {
+          let keyFpr = inArg.fprList[i];
+          let senderIdent = inArg.senderIdentities[i];
+
+          return new Promise(function(resolve, reject) {
+            EnigmailWks.submitKey(senderIdent, {
+              'fpr': keyFpr
+            }, window, function(success) {
+              if (success) {
+                resolve(senderIdent);
+              }
+              else {
+                reject();
+              }
+            });
+          });
+        }
+        else {
+          return new Promise.resolve(null);
+        }
+      });
+
+      uploads.push(was_uploaded);
+    }
+
+    Promise.all(uploads).catch(function(reason) {
+      let errorMsg = EnigmailLocale.getString("keyserverProgress.wksUploadFailed");
+      window.close();
+      gEnigCallbackFunc(-1, errorMsg, true);
+    }).then(function(senders) {
+      let uploaded_uids = [];
+      senders.forEach(function(val) {
+        if (val !== null) {
+          uploaded_uids.push(val.email);
+        }
+      });
+      progressDlg.setAttribute("value", 100);
+      progressDlg.setAttribute("mode", "normal");
+      EnigmailDialog.info(window, EnigmailLocale.getString("keyserverProgress.wksUploadCompleted"));
+      window.close();
     });
   }
   catch (ex) {

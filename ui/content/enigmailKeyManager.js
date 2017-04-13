@@ -1323,6 +1323,8 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
     accessType: accessType,
     keyServer: resultObj.value,
     keyList: "0x" + keyIds.join(" 0x"),
+    fprList: [],
+    senderIdentities: [],
     cbFunc: callbackFunc
   };
 
@@ -1336,13 +1338,12 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
         let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
 
         if (maybeIdent && maybeIdent.identity) {
-          keyDlObj.senderIdent = maybeIdent.identity;
-          keyDlObj.keyFpr = key.fpr;
-          break;
+          keyDlObj.senderIdentities.push(maybeIdent.identity);
+          keyDlObj.fprList.push(key.fpr);
         }
       }
 
-      if (keyDlObj.senderIdent === undefined) {
+      if (keyDlObj.senderIdentities.length === 0) {
         let uids = key.userIds.map(function(x) {
           return " - " + x.userId;
         }).join("\n");
