@@ -693,6 +693,8 @@ Um Ihren privaten Schlüssel zu schützen, fragen die folgenden zwei Dialoge Sie
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "Die Passphrase sollte ein Satz aus mindestens 8 Zeichen, Ziffern und Satzzeichen sein. Umlaute und andere sprachenspezifische Zeichen, zum Beispiel ä, é, ñ, sind <html:b>nicht</html:b> empfehlenswert (weil nicht jedes Programm damit richtig umgeht).">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Bitte bestätigen Sie Ihre Passphrase durch erneutes Eingeben">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Qualität der Passphrase:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "Das Passwort sollte mindestens aus 8 Zeichen bestehen">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passErrorRepeat "Die Passwörter stimmen nicht überein">
 
 <!-- wizard: no key found step -->
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "OpenPGP-Schlüssel erzeugen oder importieren">

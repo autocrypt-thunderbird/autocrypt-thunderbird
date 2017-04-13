@@ -293,3 +293,21 @@ treechildren::-moz-tree-cell-text(STYLE) {}
     transform: rotate(360deg);
   }
 }
+
+/***************************************************
+ * Styles for Setup Wizard and Key Generation
+ ***************************************************/
+
+#passphraseBox #passphraseError
+{
+  margin-top: 3px;
+  margin-bottom: 3px;
+  color: red;
+}
+
+#passphraseBox #passphraseErrorRepeat
+{
+  margin-top: 3px;
+  margin-bottom: 3px;
+  color: red;
+}

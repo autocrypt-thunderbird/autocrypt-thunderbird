@@ -604,6 +604,33 @@ function displayKeyCreate() {
 
 }
 
+function checkPassphraseOnChange(passphrase) {
+  if(passphrase.value.length > 0) {
+    var qualityCheck = EnigmailPasswordCheck.checkQuality(passphrase.value);
+    var qualityError = document.getElementById("passphraseError");
+    var passRepeat = document.getElementById("passphraseRepeat").value;
+    var passImg = document.getElementById("passphraseErrorImg");
+    
+    if(!qualityCheck.valid) {
+      qualityError.hidden = false;
+      passImg.hidden = false;
+    }
+    else {
+      qualityError.hidden = true;
+      passImg.hidden = true;
+    }
+    
+    //qualityError never checked, only length
+    if(passphrase.value.length < 8) {
+      qualityError.hidden = false;
+      passImg.hidden = false;
+    }
+    else {
+      qualityError.hidden = true;
+      passImg.hidden = true;
+    }
+  }
+}
 
 function checkPassphraseQuality(txtBox) {
   var qualityRes = EnigmailPasswordCheck.checkQuality(txtBox.value);
@@ -627,8 +654,19 @@ function checkPassphraseQuality(txtBox) {
 function checkPassphrasesEqual() {
   let p1 = document.getElementById("passphrase").value;
   let p2 = document.getElementById("passphraseRepeat").value;
+  var repeatError = document.getElementById("passphraseErrorRepeat");
+  var passRepImg = document.getElementById("passphraseErrorRepImg");
+    
+  if(p1 != p2 && p1.length > 0 && p2.length > 0) {
+    repeatError.hidden = false;
+    passRepImg.hidden = false;
+  }
+  else {
+    repeatError.hidden = true;
+    passRepImg.hidden = true;
+  }
 
-  disableNext(p1.length === 0 || p1 != p2);
+  disableNext(p1.length < 8 || p1 != p2);
 }
 
 

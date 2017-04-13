@@ -292,9 +292,17 @@
 
     <vbox id="passphraseBox" align="start">
       <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
-      <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)"/>
+      <hbox>
+        <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)" onblur="checkPassphraseOnChange(this)"/>
+  <image id="passphraseErrorImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+      </hbox>
+      <label id="passphraseError" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passError;" class="passphraseError"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
-      <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
+      <hbox>
+  <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
+  <image id="passphraseErrorRepImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+      </hbox>
+      <label id="passphraseErrorRepeat" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passErrorRepeat;" class="passphraseError"/>
       <description>&enigmail.setupWiz.pgKeyCreate.passQuality;</description>
       <progressmeter id="passphraseQuality" mode="determined" value="0"/>
     </vbox>
