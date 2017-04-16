@@ -761,7 +761,7 @@ function loadKeys() {
     cell.setAttribute('label', keyList[i].userId);
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild(document.createElement('treecell'));
-    cell.setAttribute('label', "0x" + keyList[i].keyId.substr(-8, 8));
+    cell.setAttribute('label', "0x" + keyList[i].keyId);
     cell.setAttribute('observes', "bcKeyEnabled");
     cell = row.appendChild(document.createElement('treecell'));
     cell.setAttribute('label', keyList[i].created);
@@ -1179,7 +1179,7 @@ function wizardApplyId(identity, keyId) {
 
   identity.setBoolAttribute("enablePgp", true);
   identity.setIntAttribute("pgpKeyMode", 1);
-  identity.setCharAttribute("pgpkeyId", "0x" + keyId.substr(-8, 8));
+  identity.setCharAttribute("pgpkeyId", "0x" + keyId);
   identity.setIntAttribute("openPgpHeaderMode", 0);
 
   // process signing settings:

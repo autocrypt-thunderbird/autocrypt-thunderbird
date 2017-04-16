@@ -158,11 +158,11 @@ var EnigmailKey = {
       if (key) {
         if (key.keyTrust === "r") {
           // Key has already been revoked
-          getDialog().alert(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId.substr(-8, 8)));
+          getDialog().alert(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId));
         }
         else {
 
-          let userId = key.userId + " - 0x" + key.keyId.substr(-8, 8);
+          let userId = key.userId + " - 0x" + key.keyId;
           if (!getDialog().confirmDlg(null,
               EnigmailLocale.getString("revokeKeyQuestion", userId),
               EnigmailLocale.getString("keyMan.button.revokeKey"))) {
@@ -177,7 +177,7 @@ var EnigmailKey = {
       }
       else {
         // Suitable key for revocation certificate is not present in keyring
-        getDialog().alert(null, EnigmailLocale.getString("revokeKeyNotPresent", keyId.substr(-8, 8)));
+        getDialog().alert(null, EnigmailLocale.getString("revokeKeyNotPresent", keyId));
       }
     }
   },

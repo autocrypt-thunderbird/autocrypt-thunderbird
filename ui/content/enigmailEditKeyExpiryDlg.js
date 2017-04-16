@@ -132,7 +132,7 @@ function addSubkey(treeChildren, subkey, selectCol = false) {
     aRow.appendChild(selectCol);
   }
   aRow.appendChild(createCell(subkeyStr)); // subkey type
-  aRow.appendChild(createCell("0x" + subkey.keyId.substr(-8, 8))); // key id
+  aRow.appendChild(createCell("0x" + subkey.keyId)); // key id
   aRow.appendChild(createCell(EnigmailLocale.getString("keyAlgorithm_" + subkey.algorithm))); // algorithm
   aRow.appendChild(createCell(subkey.keySize)); // size
   aRow.appendChild(createCell(subkey.created)); // created

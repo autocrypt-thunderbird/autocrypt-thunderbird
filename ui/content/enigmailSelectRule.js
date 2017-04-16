@@ -75,5 +75,5 @@ function createNewRuleWithKey() {
 
 function editDlgOnLoad() {
   enigmailDlgOnLoad();
-  document.getElementById("editDialogTitle").setAttribute("value", EnigGetString("addKeyToRule", window.arguments[0].userId, "0x" + window.arguments[0].keyId.substr(-8, 8)));
+  document.getElementById("editDialogTitle").setAttribute("value", EnigGetString("addKeyToRule", window.arguments[0].userId, "0x" + window.arguments[0].keyId));
 }

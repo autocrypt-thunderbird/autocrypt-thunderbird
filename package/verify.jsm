@@ -52,7 +52,7 @@ const EnigmailVerifyAttachment = {
       const detailArr = retObj.sigDetails.split(/ /);
       const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
       const msg1 = retObj.errorMsg.split(/\n/)[0];
-      const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + retObj.keyId.substr(-8, 8), dateTime]);
+      const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + retObj.keyId, dateTime]);
       errorMsgObj.value = msg1 + "\n" + msg2;
     }
     else {

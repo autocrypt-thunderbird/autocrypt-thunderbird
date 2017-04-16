@@ -61,7 +61,7 @@ function onLoad() {
   var keyIdList = document.getElementById("keyIdList");
 
   for (let i = 0; i < gKeyList.length; i++) {
-    var keyId = gKeyList[i].userId + " - 0x" + gKeyList[i].keyId.substr(-8, 8);
+    var keyId = gKeyList[i].userId + " - 0x" + gKeyList[i].keyId;
     keyIdList.appendItem(keyId);
   }
 }

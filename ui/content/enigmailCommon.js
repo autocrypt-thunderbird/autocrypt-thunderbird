@@ -493,7 +493,7 @@ function EnigRevokeKey(keyId, userId, callbackFunc) {
   if (!enigmailSvc)
     return false;
 
-  var userDesc = "0x" + keyId.substr(-8, 8) + " - " + userId;
+  var userDesc = "0x" + keyId + " - " + userId;
   if (!EnigConfirm(EnigGetString("revokeKeyQuestion", userDesc), EnigGetString("keyMan.button.revokeKey")))
     return false;
 
@@ -548,7 +548,7 @@ function EnigGetFilePath(nsFileObj) {
 
 function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
   var defaultFileName = userId.replace(/[<\>]/g, "");
-  defaultFileName += " (0x" + keyId.substr(-8, 8) + ") rev.asc";
+  defaultFileName += " (0x" + keyId + ") rev.asc";
   var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
     "", true, "*.asc",
     defaultFileName, [EnigGetString("asciiArmorFile"), "*.asc"]);

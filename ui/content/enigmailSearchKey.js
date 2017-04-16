@@ -867,7 +867,7 @@ function createListRow(keyId, subKey, userId, dateField, trustStatus) {
   }
   else {
     EnigSetActive(selectCol, 0);
-    keyCol.setAttribute("label", keyId.substr(-8));
+    keyCol.setAttribute("label", keyId);
   }
 
 

@@ -147,7 +147,7 @@ function enigmailKeygenTerminate(exitCode) {
     if (gUseForSigning.checked) {
       curId.setBoolAttribute("enablePgp", true);
       curId.setIntAttribute("pgpKeyMode", 1);
-      curId.setCharAttribute("pgpkeyId", "0x" + gGeneratedKey.substr(-8, 8));
+      curId.setCharAttribute("pgpkeyId", "0x" + gGeneratedKey);
 
       enigmailKeygenUpdate(false, true);
 
@@ -195,9 +195,8 @@ function genAndSaveRevCert(keyId, uid) {
   return new Promise(
     function(resolve, reject) {
 
-      let keyIdShort = "0x" + keyId.substr(-16, 16);
       let keyFile = EnigmailApp.getProfileDirectory();
-      keyFile.append(keyIdShort + "_rev.asc");
+      keyFile.append("0x" + keyId + "_rev.asc");
 
       // create a revokation cert in the TB profile directoy
       EnigmailKeyEditor.genRevokeCert(window, "0x" + keyId, keyFile, "1", "",
@@ -218,7 +217,7 @@ function genAndSaveRevCert(keyId, uid) {
 function saveRevCert(inputKeyFile, keyId, uid, resolve, reject) {
 
   let defaultFileName = uid.replace(/[\\\/<\>]/g, "");
-  defaultFileName += " (0x" + keyId.substr(-8, 8) + ") rev.asc";
+  defaultFileName += " (0x" + keyId + ") rev.asc";
 
   let outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
     "", true, "*.asc",

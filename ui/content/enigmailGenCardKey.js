@@ -209,7 +209,7 @@ function startKeyGen() {
         if (document.getElementById("useForSigning").checked && generateObserver.keyId) {
           gUsedId.setBoolAttribute("enablePgp", true);
           gUsedId.setIntAttribute("pgpKeyMode", 1);
-          gUsedId.setCharAttribute("pgpkeyId", "0x" + generateObserver.keyId.substr(-8, 8));
+          gUsedId.setCharAttribute("pgpkeyId", "0x" + generateObserver.keyId);
         }
 
         var msg = EnigmailLocale.getString("keygen.completed", generateObserver.keyId);

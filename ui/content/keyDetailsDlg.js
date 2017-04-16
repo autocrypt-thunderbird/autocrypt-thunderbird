@@ -457,7 +457,7 @@ function createSubkeyItem(subkey) {
 
   let keyObj = {
     keyType: subkeyType,
-    keyId: "0x" + subkey.keyId.substr(-8, 8),
+    keyId: "0x" + subkey.keyId,
     algo: EnigmailLocale.getString("keyAlgorithm_" + subkey.algorithm),
     size: subkey.keySize,
     creationDate: subkey.created,

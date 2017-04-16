@@ -1106,7 +1106,6 @@ var EnigmailKeyRing = {
       let k = gKeyListObj.keyList[i];
       gKeyIndex[k.keyId] = k;
       gKeyIndex[k.fpr] = k;
-      gKeyIndex[k.keyId.substr(-8, 8)] = k;
 
       // add subkeys
       for (let j in k.subKeys) {

@@ -8,7 +8,7 @@
 
 function onLoad() {
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);
-  document.getElementById("keyDesc").setAttribute("value", "0x" + window.arguments[0].keyId.substr(-8, 8) +
+  document.getElementById("keyDesc").setAttribute("value", "0x" + window.arguments[0].keyId +
     " - " + window.arguments[0].userId);
 }
 

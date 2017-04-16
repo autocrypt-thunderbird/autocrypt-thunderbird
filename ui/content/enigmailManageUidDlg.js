@@ -23,7 +23,7 @@ var gEnigmailUid;
 function onLoad() {
   window.arguments[1].refresh = false;
   reloadUidList();
-  var keyId = gUserId + " - 0x" + window.arguments[0].keyId.substr(-8, 8);
+  var keyId = gUserId + " - 0x" + window.arguments[0].keyId;
   document.getElementById("keyId").value = keyId;
 
   if (!window.arguments[0].ownKey) {

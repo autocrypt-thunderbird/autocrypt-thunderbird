@@ -270,7 +270,7 @@ Enigmail.hdrView = {
         var detailArr = sigDetails.split(/ /);
 
         let dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
-        var txt = EnigmailLocale.getString("keyAndSigDate", [keyId.substr(-8, 8), dateTime]);
+        var txt = EnigmailLocale.getString("keyAndSigDate", [keyId, dateTime]);
         statusArr.push(txt);
         statusInfo += "\n" + txt;
         var fpr = "";

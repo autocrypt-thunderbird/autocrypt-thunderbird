@@ -580,7 +580,7 @@ function enigCreateKeyMsg() {
   var keyAttachment = Cc["@mozilla.org/messengercompose/attachment;1"].createInstance(Ci.nsIMsgAttachment);
   keyAttachment.url = tmpFileURI.spec;
   if (keyList.length == 1) {
-    keyAttachment.name = "0x" + keyList[0].substr(-8, 8) + ".asc";
+    keyAttachment.name = "0x" + keyList[0] + ".asc";
   }
   else {
     keyAttachment.name = "pgpkeys.asc";
@@ -764,10 +764,10 @@ function enigmailExportKeys() {
 
     defaultFileName = gKeyList[keyList[0]].userId.replace(/[<\>]/g, "");
     if (exportSecretKey) {
-      defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId.substr(-8, 8)) + ".asc";
+      defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId) + ".asc";
     }
     else {
-      defaultFileName = EnigGetString("specificPubKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId.substr(-8, 8)) + ".asc";
+      defaultFileName = EnigGetString("specificPubKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId) + ".asc";
     }
   }
   else {
@@ -1296,7 +1296,6 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
   var keyList = [];
   var keyIds = [];
   for (var i = 0; i < selKeyList.length; i++) {
-    //keyList.push("0x" + gKeyList[selKeyList[i]].keyId.substr(-8, 8) + " - " + gKeyList[selKeyList[i]].userId);
     keyIds.push(gKeyList[selKeyList[i]].keyId);
   }
   if (accessType != nsIEnigmail.REFRESH_KEY) {
@@ -1405,7 +1404,7 @@ function getSortColumn() {
     case "enigUserNameCol":
       return "userid";
     case "keyCol":
-      return "keyidshort";
+      return "keyid";
     case "typeCol":
       return "keytype";
     case "validityCol":
