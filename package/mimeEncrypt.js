@@ -107,7 +107,7 @@ PgpMimeEncrypt.prototype = {
     try {
 
       if (EnigmailPEPAdapter.usingPep()) {
-        return true;
+        return msgIdentity.getBoolAttribute("enablePEP");
       }
       else {
         if (this.checkSMime) {

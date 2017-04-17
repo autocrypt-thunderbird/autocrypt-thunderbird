@@ -209,6 +209,11 @@
                 accesskey="&enigmail.pEp.verifyTrustwords.accesskey;"
                 label="&enigmail.pEp.verifyTrustwords.label;"
                 oncommand="Enigmail.msg.onPepHandshakeButton(event)"/>
+
+          <menuitem id="enigmail_composeMenu_pep_pref"
+                accesskey="&enigmail.prefs.accesskey;"
+                label="&enigmail.prefs.label;"
+                oncommand="EnigmailWindows.openPrefWindow(window, true, )"/>
       </menupopup>
     </menu>
   </menubar>

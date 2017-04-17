@@ -301,6 +301,11 @@ Enigmail.msg = {
       this.statusAttachOwnKey = EnigmailLocale.getString("attachOwnKeyNo");
     }
 
+    if (this.juniorMode) {
+      let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
+      pepBc.setAttribute("encrypt", this.pepEnabled() ? "true" : "false");
+    }
+
     // reset default send settings, unless we have changed them already
     if (!this.sendModeDirty) {
       this.mimePreferOpenPGP = this.identity.getIntAttribute("mimePreferOpenPGP");
@@ -2148,12 +2153,40 @@ Enigmail.msg = {
 
   pepMenuPopup: function() {
     let encMenu = document.getElementById("enigmail_compose_pep_encrypt");
+    let hsMenu = document.getElementById("enigmail_composeMenu_pep_handshake");
+
     let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
 
-    encMenu.setAttribute("checked", pepBc.getAttribute("encrypt"));
+    if (this.pepEnabled()) {
+      encMenu.setAttribute("checked", pepBc.getAttribute("encrypt"));
+      encMenu.removeAttribute("disabled");
+      hsMenu.removeAttribute("disabled");
+    }
+    else {
+      encMenu.setAttribute("checked", "false");
+      encMenu.setAttribute("disabled", "true");
+      hsMenu.setAttribute("disabled", "true");
+    }
+  },
+
+  /**
+   * Determine if pEp was disabled by the user
+   */
+  pepEnabled: function() {
+    let id = getCurrentIdentity();
+    return id.getBoolAttribute("enablePEP");
+  },
+
+  pepDisabledError: function() {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("pep.alert.disabledForIdentity"));
   },
 
   onPepEncryptMenu: function() {
+    if (!this.pepEnabled()) {
+      this.pepDisabledError();
+      return;
+    }
+
     let pepBc = document.getElementById("enigmail-bc-pepEncrypt");
 
     pepBc.setAttribute("encrypt", pepBc.getAttribute("encrypt") === "true" ? "false" : "true");
@@ -2165,6 +2198,11 @@ Enigmail.msg = {
   },
 
   onPepHandshakeButton: function(event) {
+    if (!this.pepEnabled()) {
+      this.pepDisabledError();
+      return;
+    }
+
     event.stopPropagation();
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPepHandshakeButton()\n");
 
@@ -3176,14 +3214,19 @@ Enigmail.msg = {
   getPepMessageRating: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getPepMessageRating\n");
 
-    let rating = 0;
-    let o = this.compileFromAndTo();
-    if (o) {
-      rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
-    }
+    if (this.pepEnabled()) {
+      let rating = 0;
+      let o = this.compileFromAndTo();
+      if (o) {
+        rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+      }
 
-    this.setPepPrivacyLabel(rating);
-    this.determineSendFlagId = null;
+      this.setPepPrivacyLabel(rating);
+      this.determineSendFlagId = null;
+    }
+    else {
+      this.setPepPrivacyLabel(0);
+    }
   },
 
   compileFromAndTo: function() {
@@ -3253,9 +3296,11 @@ Enigmail.msg = {
     }
 
     let rating = 0;
-    let o = this.compileFromAndTo();
-    if (o) {
-      rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+    if (this.pepEnabled()) {
+      let o = this.compileFromAndTo();
+      if (o) {
+        rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+      }
     }
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
