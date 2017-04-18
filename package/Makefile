@@ -50,6 +50,7 @@ MODFILES = \
            hash.jsm \
            httpProxy.jsm \
            installGnuPG.jsm \
+           installPep.jsm \
            key.jsm \
            keyEditor.jsm \
            keyRing.jsm \

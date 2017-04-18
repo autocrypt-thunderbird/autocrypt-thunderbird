@@ -99,6 +99,7 @@ zip --must-match\
     modules/hash.jsm \
     modules/httpProxy.jsm \
     modules/installGnuPG.jsm \
+    modules/installPep.jsm \
     modules/key.jsm \
     modules/keyEditor.jsm \
     modules/keyRing.jsm \
