@@ -688,13 +688,19 @@ PgpMimeEncrypt.prototype = {
       let fromAddr = jsmime.headerparser.parseAddressingHeader(self.msgIdentity.email);
 
       let toAddr;
+      let encryptFlags = 0;
 
       if (!this.isDraft) {
         toAddr = jsmime.headerparser.parseAddressingHeader(this.recipientList);
+
+        if (!self.msgIdentity.getBoolAttribute("attachPgpKey")) {
+          encryptFlags = 0x4; // do not attach own key
+        }
       }
       else {
         toAddr = fromAddr;
         sendFlags = Ci.nsIEnigmail.SEND_ENCRYPTED;
+        encryptFlags = 0x2 + 0x4; // unsigned message; do not attach own key
       }
 
       if (sendFlags & Ci.nsIEnigmail.SEND_ENCRYPTED) {
@@ -705,7 +711,7 @@ PgpMimeEncrypt.prototype = {
           s += jsmime.headeremitter.emitStructuredHeader("subject", originalSubject, {});
         }
 
-        EnigmailPEPAdapter.pep.encryptMimeString(s + this.pipeQueue, null).then(function _f(res) {
+        EnigmailPEPAdapter.pep.encryptMimeString(s + this.pipeQueue, null, encryptFlags).then(function _f(res) {
           EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
           if ((typeof(res) === "object") && ("result" in res)) {
             resultObj = res.result;

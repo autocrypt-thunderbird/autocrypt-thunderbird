@@ -224,12 +224,17 @@ var EnigmailpEp = {
    *                        2: S/MIME (RFC5751)
    *                        3: PGP/MIME (RFC3156)
    *                        4: pEp encryption format
+   * @param encryptFlags: optional Number - bitmap for encryption modes
+   *                        0x0: default
+   *                        0x1: force encryption
+   *                        0x2: force unsigned message
+   *                        0x4: do not attach own key
    *
    * @return: Promise.
    *  then:  returned result (message Object)
    *  catch: Error object (see above)
    */
-  encryptMimeString: function(mimeStr, pEpMode) {
+  encryptMimeString: function(mimeStr, pEpMode, encryptFlags = 0) {
 
     if (pEpMode === null) pEpMode = 4;
 
@@ -240,7 +245,7 @@ var EnigmailpEp = {
         [], // extra
         ["OP"], // resulting data
         pEpMode, // encryption_format
-        0 // encryption flags
+        encryptFlags // encryption flags
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "MIME_encrypt_message", params);
@@ -332,7 +337,7 @@ var EnigmailpEp = {
       let params = [
         mimeStr, // mimetext
         mimeStr.length, // size
-        [], // extra
+        ["OP"], // extra
         ["OP"], // resulting data
         ["OP"], // rating
         ["OP"] // decryption flags

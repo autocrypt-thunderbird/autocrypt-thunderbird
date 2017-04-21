@@ -3311,8 +3311,14 @@ Enigmail.msg = {
       }
 
       let si = compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
-      si.originalSubject = compFields.subject;
-      compFields.subject = "";
+      if (this.getBoolAttribute("protectSubject")) {
+        si.originalSubject = compFields.subject;
+        compFields.subject = "";
+      }
+      else {
+        si.originalSubject = null;
+      }
+
       let encrypt = document.getElementById("enigmail-bc-pepEncrypt").getAttribute("encrypt");
       si.sendFlags = (encrypt === "true" ? nsIEnigmail.SEND_ENCRYPTED : 0);
     }
