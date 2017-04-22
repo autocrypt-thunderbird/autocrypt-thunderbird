@@ -3288,6 +3288,7 @@ Enigmail.msg = {
         return true;
     }
 
+    // autoEncryptDrafts equals "trusted server" in pEp mode
     if (this.identity.getBoolAttribute("autoEncryptDrafts")) {
       EnigmailPEPAdapter.filter.deleteDecryptedCopyFilter(this.identity);
     }
@@ -3311,7 +3312,7 @@ Enigmail.msg = {
       }
 
       let si = compFields.securityInfo.QueryInterface(Components.interfaces.nsIEnigMsgCompFields);
-      if (this.getBoolAttribute("protectSubject")) {
+      if (this.identity.getBoolAttribute("protectSubject")) {
         si.originalSubject = compFields.subject;
         compFields.subject = "";
       }
