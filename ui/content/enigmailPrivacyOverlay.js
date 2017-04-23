@@ -14,13 +14,24 @@ var EnigmailPrefOverlay = {
   },
 
   initJuniorMode: function(event) {
+    let prefGroup = document.getElementById("enigmail_juniorModeGroup");
+    if (EnigmailPEPAdapter.isPepAvailable()) {
+      prefGroup.removeAttribute("hidden");
+    }
+    else {
+      prefGroup.setAttribute("hidden", "true");
+    }
+
     let jm = EnigmailPrefs.getPref("juniorMode");
     document.getElementById("enigmail_juniorMode").value = jm;
+
   },
 
   onWindowClose: function(event) {
     try {
-      EnigmailPEPAdapter.initialize();
+      if (EnigmailPEPAdapter.isPepAvailable()) {
+        EnigmailPEPAdapter.initialize();
+      }
     }
     catch (ex) {}
   },

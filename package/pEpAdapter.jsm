@@ -29,6 +29,8 @@ Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false 
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
+Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("resource://enigmail/installPep.jsm"); /*global EnigmailInstallPep: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 
@@ -36,10 +38,11 @@ const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
 
 
 // pEp JSON Server executable name
-const pepServerExecutable = "pep-json-server";
+const PEP_SERVER_EXECUTABLE = "pep-json-server";
 
 var gPepVersion = null;
 var gSecurityToken = null;
+var gPepAvailable = null;
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
@@ -103,6 +106,70 @@ var EnigmailPEPAdapter = {
   },
 
   /**
+   * Determine if the pEp JSON adapter is available at all
+   *
+   * @return Boolean - true if pEp is available / false otherwise
+   */
+  isPepAvailable: function() {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable()\n");
+
+    if (gPepAvailable === null) {
+      gPepAvailable = false;
+      let execFile = getFiles().resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
+      if (execFile && execFile.exists() && execFile.isExecutable()) {
+        EnigmailCore.getService(null, true);
+        let pepVersionStr = "";
+
+        let process = subprocess.call({
+          command: execFile,
+          arguments: ["--version"],
+          charset: null,
+          environment: EnigmailCore.getEnvList(),
+          mergeStderr: false,
+          stdin: function(stdin) {
+            // do nothing
+          },
+          stdout: function(data) {
+            pepVersionStr += data;
+          },
+          stderr: function(data) {
+            // do nothing
+          }
+        });
+
+        process.wait();
+        EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable: got version '" + pepVersionStr + "'\n");
+        if (pepVersionStr.search(/pEp JSON/i) >= 0) {
+          gPepAvailable = true;
+        }
+      }
+      else {
+        this.installPep();
+      }
+    }
+
+    return gPepAvailable;
+  },
+
+  /**
+   * try to download and install pEp (runs asynchronously!)
+   */
+  installPep: function() {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: installPep()\n");
+    let progressListener = {
+      onError: function(err) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: got error " + err.type + "\n");
+      },
+      onInstalled: function() {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: installation completed\n");
+        gPepAvailable = null;
+      }
+    };
+
+    EnigmailInstallPep.startInstaller(progressListener);
+  },
+
+  /**
    * Determine if pEp should be used or Enigmail
    *
    * @return: Boolean: true - use pEp  / false - use Enigmail
@@ -110,11 +177,14 @@ var EnigmailPEPAdapter = {
   getPepJuniorMode: function() {
 
     let mode = EnigmailPrefs.getPref("juniorMode");
-    if (mode === 2) return true;
     if (mode === 0) return false;
 
-    // automatic mode
-    return (!this.isAccountCryptEnabled());
+    // manual pEp or automatic mode
+    if (mode === 2 || (!this.isAccountCryptEnabled())) {
+      return this.isPepAvailable();
+    }
+
+    return false;
 
   },
 
@@ -160,7 +230,7 @@ var EnigmailPEPAdapter = {
     // automatic mode, with Crypto enabled (do not use pEp)
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
 
-    let execFile = getFiles().resolvePathWithEnv(pepServerExecutable);
+    let execFile = getFiles().resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
     if (execFile) EnigmailpEp.setServerPath(execFile.path);
 
     try {
@@ -177,7 +247,6 @@ var EnigmailPEPAdapter = {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG env '" + JSON.stringify(gpgEnv) + "'\n");
 
         let envStr = "";
-        // {"gnupg_path":"/usr/local/MacGPG2/bin/gpg2","gnupg_home":null,"gpg_agent_info":"xxxx"}
         if (gpgEnv && typeof gpgEnv === "object" && "gnupg_path" in gpgEnv) {
           if (typeof(gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
             envStr += "GPG_AGENT_INFO=" + gpgEnv.gpg_agent_info + "\n";

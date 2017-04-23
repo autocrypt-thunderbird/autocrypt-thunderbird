@@ -17,9 +17,6 @@ var EXPORTED_SYMBOLS = ["EnigmailInstallPep"];
   void    onError    ({type: errorType, name: errorName})
   void    onInstalled ()
 
-  requestObj:
-    abort():  cancel download
-
 */
 
 const Cu = Components.utils;
@@ -444,7 +441,7 @@ Installer.prototype = {
 
     function performInstall(response) {
       var arraybuffer = response; // not responseText
-      EnigmailLog.DEBUG("installPep.jsm: performDownload: bytes " + arraybuffer.byteLength + "\n");
+      EnigmailLog.DEBUG("installPep.jsm: performInstall: bytes " + arraybuffer.byteLength + "\n");
 
       try {
         var flags = 0x02 | 0x08 | 0x20;
@@ -463,7 +460,7 @@ Installer.prototype = {
 
         self.installerFile.createUnique(self.installerFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
 
-        EnigmailLog.DEBUG("installPep.jsm: performDownload: writing file to " + self.installerFile.path + "\n");
+        EnigmailLog.DEBUG("installPep.jsm: performInstall: writing file to " + self.installerFile.path + "\n");
 
         fileOutStream.init(self.installerFile, flags, EXEC_FILE_PERMS, 0);
 
@@ -478,7 +475,7 @@ Installer.prototype = {
         fileOutStream.close();
 
         if (!self.checkHashSum()) {
-          EnigmailLog.ERROR("installPep.jsm: performDownload: HASH sum mismatch!\n");
+          EnigmailLog.ERROR("installPep.jsm: performInstall: HASH sum mismatch!\n");
           deferred.reject("Aborted due to hash sum error");
           return null;
         }
@@ -509,6 +506,15 @@ Installer.prototype = {
     }
 
     try {
+      // "main" part of performDownload
+
+      if (!this.url || this.url.length === 0) {
+        onError({
+          type: "downloadPep.noURL"
+        });
+        return;
+      }
+
       // create a  XMLHttpRequest object
       var oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
@@ -540,18 +546,6 @@ Installer.prototype = {
 
 
 var EnigmailInstallPep = {
-
-  // check if there is a downloadable item for the given platform
-  // returns true if item available
-  checkAvailability: function() {
-    switch (EnigmailOS.getOS()) {
-      case "Darwin":
-      case "WINNT":
-        return true;
-    }
-
-    return false;
-  },
 
   startInstaller: function(progressListener) {
 
