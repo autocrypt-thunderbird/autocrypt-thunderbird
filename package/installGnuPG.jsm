@@ -527,7 +527,7 @@ Installer.prototype = {
 
         switch (EnigmailOS.getOS()) {
           case "Darwin":
-            self.installerFile.append("gpgtools.dmg");
+            self.installerFile.append("GnuPG-Installer.dmg");
             self.performCleanup = self.cleanupMacOs;
             break;
           case "WINNT":
