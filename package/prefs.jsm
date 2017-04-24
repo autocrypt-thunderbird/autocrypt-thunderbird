@@ -207,5 +207,56 @@ var EnigmailPrefs = {
     }
 
     return prefObj;
+  },
+
+  /**
+   * register a listener to listen to a change in the Enigmail preferences.
+   *
+   * @param prefName: String        - name of Enigmail preference
+   * @param observerFunc: Function - callback function to be triggered
+   *
+   * @return Object: observer object (to be used to deregister the observer)
+   */
+  registerPrefObserver: function(prefName, observerFunc) {
+    EnigmailLog.DEBUG("prefs.jsm: registerPrefObserver(" + prefName + ")\n");
+    let branch = this.getPrefRoot();
+
+    let observer = {
+      observe: function(aSubject, aTopic, aData) {
+        try {
+          if (String(aData) == ENIGMAIL_PREFS_ROOT + this.prefName) {
+            EnigmailLog.DEBUG("prefs.jsm: preference observed: " + aData + "\n");
+            observerFunc();
+          }
+        }
+        catch (ex) {}
+      },
+
+      prefName: prefName,
+
+      QueryInterface: function(iid) {
+        if (iid.equals(Ci.nsIObserver) ||
+          iid.equals(Ci.nsISupportsWeakReference) ||
+          iid.equals(Ci.nsISupports))
+          return this;
+
+        throw Components.results.NS_NOINTERFACE;
+      }
+    };
+    branch.addObserver(ENIGMAIL_PREFS_ROOT, observer, false);
+    return observer;
+  },
+
+  /**
+   * de-register an observer created by registerPrefObserver().
+   *
+   * @param observer: Object - observer object returned by registerPrefObserver
+   */
+  unregisterPrefObserver(observer) {
+    EnigmailLog.DEBUG("prefs.jsm: unregisterPrefObserver(" + observer.prefName + ")\n");
+
+    let branch = this.getPrefRoot();
+
+    branch.removeObserver(ENIGMAIL_PREFS_ROOT, observer);
   }
 };
