@@ -35,26 +35,21 @@
   <menubar id="mail-menubar">
     <menu id="menu_Enigmail"
           label="&enigmail.label;"
+          enigmaillabel="&enigmail.label;"
+          peplabel="&enigmail.pEp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu" />
-  </menubar>
-
-  <!-- Menu insert point for Spicebird -->
-  <menubar id="framework-menubar">
-    <menu id="menu_Enigmail"
-          label="&enigmail.label;"
-          accesskey="&enigmail.messengermenu.accesskey;"
-          insertafter="messageMenu,go-menu,view-menu" insertbefore="tools-menu"
-          app="mailnews"/>
   </menubar>
 
   <!-- Thunderbird secondary pane -->
   <popup id="appmenuSecondaryPane">
         <splitmenu id="menu_Enigmail2ndPane"
           label="&enigmail.label;"
+          enigmaillabel="&enigmail.label;"
+          peplabel="&enigmail.pEp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertafter="appmenu_customize">
-        <menupopup id="enigmail_2ndPanePopup" onpopupshowing="Enigmail.msg.displayMainMenu(this)"/>
+        <menupopup id="enigmail_2ndPanePopup" onpopupshowing="Enigmail.msg.setupMainMenu(this)"/>
     </splitmenu>
   </popup>
 
@@ -62,11 +57,12 @@
   <menu id="menu_Enigmail">
 
     <menupopup id="menu_EnigmailPopup"
-      onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.updateOptionsDisplay());">
+      onpopupshowing="Enigmail.msg.displayMainMenu(this)">
 
       <menuitem id="enigmail_wizard_basic"
            label="&enigmail.setupWiz.label;"
            advanced="reverse"
+           enigmailtype="enigmail"
            accesskey="&enigmail.setupWiz.accesskey;"
            oncommand="EnigmailWindows.openSetupWizard(window, true);" />
 
@@ -143,7 +139,9 @@
           id="enigmailDecryptToFolder"
           label="&enigmail.decryptToFolder.label;"
           accesskey="&enigmail.decryptToFolder.accesskey;"
+          enigmailtype="enigmail"
           oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
+
         <menupopup id="enigmailDecryptfileHereMenu"
                    type="folder"
                    mode="filing"
@@ -153,7 +151,7 @@
                    recentAccessKey="&enigmail.recent.accesskey;"/>
       </menu>
 
-      <menuseparator/>
+      <menuseparator enigmailtype="enigmail"/>
 
       <menuitem id="enigmail_keymgmt"
            label="&enigmail.keyManWindow.label;"
@@ -170,9 +168,10 @@
       <menuitem id="enigmail_RulesEditor"
           label="&enigmail.editRules.label;"
           accesskey="&enigmail.editRules.accesskey;"
+          enigmailtype="enigmail"
           oncommand="EnigmailWindows.openRulesEditor();"/>
 
-      <menuseparator/>
+      <menuseparator enigmailtype="enigmail"/>
 
       <menuitem id="enigmail_prefs"
            label="&enigmail.prefs.label;"
@@ -182,6 +181,7 @@
       <menuitem id="enigmail_help"
            label="&enigmail.help.label;"
            accesskey="&enigmail.help.accesskey;"
+           enigmailtype="enigmail"
            oncommand="EnigmailWindows.openHelpWindow('messenger');" />
 
       <menu id="enigmail_debugMenu"
@@ -212,6 +212,7 @@
       <menuitem id="enigmail_about"
            label="&enigmail.about.label;"
            accesskey="&enigmail.about.accesskey;"
+           enigmailtype="enigmail"
            oncommand="EnigmailWindows.openAboutWindow();" />
 
     </menupopup>
@@ -434,7 +435,7 @@
       <image id="enigmail-pEp-icon"
         observes="enigmail-pEp-bc"
         tooltiptext="&enigmail.messeneger.pEpIcon.tootlip;"
-        class="enigmailPepRating" 
+        class="enigmailPepRating"
         style="width:48px; height:48px; margin-left:2px; margin-right:2px;"
         onclick="Enigmail.hdrView.pEpIconPopup();"/>
       <spacer flex="1"/>

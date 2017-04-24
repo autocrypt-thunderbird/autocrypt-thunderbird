@@ -134,6 +134,9 @@ Enigmail.msg = {
       "Enigmail.msg.msgPrint('", "');");
 
     Enigmail.msg.overrideLayoutChange();
+    Enigmail.msg.setMainMenuLabel();
+
+    Enigmail.msg.juniorModeObserver = EnigmailPrefs.registerPrefObserver("juniorMode", Enigmail.msg.setMainMenuLabel);
 
     if (EnigmailPEPAdapter.usingPep()) {
       document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
@@ -234,6 +237,15 @@ Enigmail.msg = {
     ReloadMessage();
   },
 
+  messengerClose: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messengerClose()\n");
+
+    if (this.juniorModeObserver) {
+      EnigmailPrefs.unregisterPrefObserver(this.juniorModeObserver);
+      this.juniorModeObserver = null;
+    }
+
+  },
 
   reloadCompleteMsg: function() {
     gDBView.reloadMessageWithAllParts();
@@ -437,7 +449,43 @@ Enigmail.msg = {
     }
   },
 
+  setMainMenuLabel: function() {
+    let usePep = EnigmailPEPAdapter.usingPep();
+    let o = ["menu_Enigmail", "menu_Enigmail2ndPane"];
+
+    for (let menuId of o) {
+      let menu = document.getElementById(menuId);
+
+      let lbl = menu.getAttribute(usePep ? "peplabel" : "enigmaillabel");
+      menu.setAttribute("label", lbl);
+    }
+  },
+
   displayMainMenu: function(menuPopup) {
+
+    let usePep = EnigmailPEPAdapter.usingPep();
+    let obj = menuPopup.firstChild;
+
+    while (obj) {
+      if (obj.getAttribute("enigmailtype") == "enigmail" || obj.getAttribute("advanced") == "true") {
+        if (usePep) {
+          obj.setAttribute("hidden", "true");
+        }
+        else {
+          obj.removeAttribute("hidden");
+        }
+      }
+
+      obj = obj.nextSibling;
+    }
+
+    if (!usePep) {
+      EnigmailFuncs.collapseAdvanced(menuPopup, 'hidden', Enigmail.msg.updateOptionsDisplay());
+    }
+
+  },
+
+  setupMainMenu: function(menuPopup) {
 
     function traverseTree(currentElement, func) {
       if (currentElement) {
@@ -2641,3 +2689,4 @@ Enigmail.msg = {
 };
 
 window.addEventListener("load", Enigmail.msg.messengerStartup.bind(Enigmail.msg), false);
+window.addEventListener("unload", Enigmail.msg.messengerClose.bind(Enigmail.msg), false);
