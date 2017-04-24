@@ -839,7 +839,7 @@
 <!ENTITY enigmail.pepPref.storeSecurely.title        "Store Messages Securely for these accounts">
 <!ENTITY enigmail.pepPref.storeSecurely.label        "Store messages securely">
 <!ENTITY enigmail.pepPref.enableEncryption.label     "Enable privacy protection">
-<!ENTITY enigmail.pepPref.passiveMode.label          "Do not attach my key to every message">
+<!ENTITY enigmail.pepPref.passiveMode.label          "Attach my key to outgoing messages">
 <!ENTITY enigmail.pepPref.protectedSubject.label     "Enable protected message subjects">
 <!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message looses security through reply or forward">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP Compatibility">
