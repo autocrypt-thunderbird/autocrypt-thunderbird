@@ -173,6 +173,7 @@ function PEPDecryptor(contentType) {
   this.decryptedData = "";
   this.decryptedHeaders = {};
   this.mimePartNumber = "";
+  this.requestingSubpart = false;
 }
 
 
@@ -187,6 +188,7 @@ PEPDecryptor.prototype = {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
       this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
+      this.requestingSubpart = (this.uri.spec.search(/[\&\?]part=/) >= 0);
     }
 
     if ("mimePart" in this.mimeSvc) {
@@ -212,7 +214,7 @@ PEPDecryptor.prototype = {
     this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
     let addresses;
-    if (this.uri && (!this.backgroundJob)) {
+    if (this.uri && (!this.backgroundJob) && (!this.requestingSubpart)) {
       addresses = EnigmailPEPDecrypt.getEmailsFromMessage(this.uri.spec);
     }
 
@@ -264,7 +266,7 @@ PEPDecryptor.prototype = {
   displayStatus: function(rating, fpr, persons) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus\n");
 
-    if (this.msgWindow === null || this.backgroundJob)
+    if (this.msgWindow === null || this.backgroundJob || this.requestingSubpart)
       return;
 
     let uriSpec = (this.uri ? this.uri.spec : null);
