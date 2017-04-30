@@ -592,7 +592,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
 
   var keyCol = document.createElement("treecell");
   if (userObj.keyTrust != KEY_IS_GROUP) {
-    keyCol.setAttribute("label", keyValue.substring(8, 16));
+    keyCol.setAttribute("label", "0x"+keyValue);
   }
   else {
     keyCol.setAttribute("label", EnigGetString("keyTrust.group"));

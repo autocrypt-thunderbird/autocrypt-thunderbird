@@ -1882,7 +1882,7 @@ KeyObject.prototype = {
 
       if (this.keyTrust.search(/u/i) < 0) {
         // public key invalid
-        retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
+        retVal.reason = EnigmailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
       }
       else {
         let expired = 0,

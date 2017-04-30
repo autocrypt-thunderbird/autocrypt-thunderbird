@@ -2517,7 +2517,7 @@ Enigmail.msg = {
     } while (doRulesProcessingAgain);
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\"\n");
-    EnigmailLog.DEBUG("  <=== keySelection()");
+    EnigmailLog.DEBUG("  <=== keySelection()\n");
     return {
       sendFlags: sendFlags,
       toAddrStr: toAddrStr,
@@ -2900,7 +2900,7 @@ Enigmail.msg = {
       this.statusEncryptedInStatusBar = EnigmailConstants.ENIG_FINAL_NO;
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage: No default encryption because test failed\n");
     }
-    EnigmailLog.DEBUG("  <=== encryptTestMessage()");
+    EnigmailLog.DEBUG("  <=== encryptTestMessage()\n");
     return {
       doRulesProcessingAgain: false,
       createNewRule: false,
