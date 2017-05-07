@@ -26,11 +26,68 @@ const MAX_PORT_NUM = 15991;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
+const HTTP_OK = "200";
+const HTTP_ERR_BAD_REQUEST = "400";
+const HTTP_ERR_UNAUTHORIZED = "401";
+const HTTP_ERR_INTERNAL_ERROR = "500";
+const HTTP_ERR_NOT_IMPLEMENTED = "501";
 
 function PepListener(callBackFunction, securityToken) {
   this.callBackFunction = callBackFunction;
   this.securityToken = securityToken;
 }
+
+function getHttpBody(req) {
+  let i = req.search(/\r?\n\r?\n/);
+  if (i > 0) {
+    ++i;
+    return req.substr(i);
+  }
+
+  return req;
+}
+
+/**
+ * Create a HTTP resonse to send back
+ */
+function createHttpResponse(statusCode, messageData) {
+  let dt = new Date();
+
+  let retObj;
+  let statusMsg;
+
+  if (statusCode === HTTP_OK) {
+    retObj = {
+      jsonrpc: "2.0",
+      result: [{
+        status: 0,
+        hex: "PEP_STATUS_OK"
+      }],
+      id: messageData
+    };
+    statusMsg = "OK";
+  }
+  else {
+    retObj = {
+      jsonrpc: "2.0",
+      error: {
+        code: -statusCode,
+        message: messageData
+      }
+    };
+    statusMsg = messageData;
+  }
+
+  let data = JSON.stringify(retObj);
+
+  let msg = "HTTP/1.1 " + statusCode + " " + statusMsg + "\r\n" +
+    "Content-Type: text/plain\r\n" +
+    "Date: " + dt.toUTCString() + "\r\n" +
+    "Content-Length: " + (data.length + 2) + "\r\n\r\n" + data + "\r\n";
+
+  return msg;
+}
+
 
 PepListener.prototype = {
 
@@ -43,36 +100,28 @@ PepListener.prototype = {
       let sin = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
       sin.init(input);
       let requestData = "";
+
       while (sin.available()) {
-        requestData = requestData + sin.read(512);
+        requestData += sin.read(512);
       }
       EnigmailLog.DEBUG("pEpListener.onInputStreamReady: got data '" + requestData + "'\n");
 
-      let s;
-
+      // TODO: remove - for testing only
       if (requestData.replace(/[\r\n]/g, "") === "quit") {
         EnigmailLog.DEBUG("pEpListener.onInputStreamReady: got QUIT\n");
-        s = "OK, goodbye\n";
+        let s = "OK, goodbye\n";
         this.self.output.write(s, s.length);
         this.self.output.close();
         this.self.input.close();
         return;
       }
-      s = "got data!\n";
-      this.self.output.write(s, s.length);
-      this.self.output.flush();
 
-      if (this.self.callBackFunction) {
-        try {
-          let obj = JSON.parse(requestData);
-          if ("security_token" in obj && obj.security_token === this.self.securityToken) {
-            this.self.callBackFunction(obj);
-          }
-        }
-        catch (ex) {
-          EnigmailLog.DEBUG("pEpListener.callBackFunction failed with: " + ex.toString() + "\n");
-        }
-      }
+      let responseData = this.self.handleHttpRequest(requestData);
+
+      EnigmailLog.DEBUG("pEpListener.onInputStreamReady: sending response '" + responseData + "'\n");
+
+      this.self.output.write(responseData, responseData.length);
+      this.self.output.flush();
 
       let tm = Cc["@mozilla.org/thread-manager;1"].getService();
       input.asyncWait(this.self.reader, 0, 0, tm.mainThread);
@@ -90,8 +139,61 @@ PepListener.prototype = {
     this.input.asyncWait(this.reader, 0, 0, tm.mainThread);
 
   },
+
   onStopListening: function(serverSocket, status) {
     EnigmailLog.DEBUG("pEpListener.onStopListening: Closing connection on " + serverSocket.port + "\n");
+  },
+
+  /**
+   * handle a HTTP request and return the HTTP response message string
+   *
+   * @param requestData - String: HTTP request
+   *
+   * @return String: HTTP response
+   */
+  handleHttpRequest: function(requestData) {
+    let responseData = "";
+    let obj;
+
+    if (requestData.search(/^POST/i) === 0) {
+      requestData = getHttpBody(requestData);
+
+      try {
+        obj = JSON.parse(requestData);
+      }
+      catch (ex) {
+        return createHttpResponse(HTTP_ERR_BAD_REQUEST, "Bad request: no proper JSON object.");
+      }
+
+      try {
+        let tok = this.securityToken;
+        if ("security_token" in obj && obj.security_token === this.securityToken) {
+          let msgId = 1;
+          if ("id" in obj) {
+            msgId = obj.id;
+          }
+
+          if (this.callBackFunction) {
+            let r = this.callBackFunction(obj);
+            if (r === 0) {
+              return createHttpResponse(HTTP_OK, msgId);
+            }
+            return createHttpResponse(HTTP_ERR_NOT_IMPLEMENTED, "Method not implemented.");
+          }
+
+          return createHttpResponse(HTTP_OK, msgId);
+        }
+        else {
+          return createHttpResponse(HTTP_ERR_UNAUTHORIZED, "Wrong security token.");
+        }
+      }
+      catch (ex) {
+        EnigmailLog.DEBUG("pEpListener.handleHttpRequest failed with: " + ex.toString() + "\n");
+        return createHttpResponse(HTTP_ERR_INTERNAL_ERROR, "Internal exception.");
+      }
+    }
+
+    return createHttpResponse(HTTP_ERR_BAD_REQUEST, "Bad request: unsupported HTTP method.");
   }
 };
 

@@ -32,6 +32,7 @@ Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: fals
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/installPep.jsm"); /*global EnigmailInstallPep: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://enigmail/pEpMessage.jsm"); /*global EnigmailPEPMessage: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -47,15 +48,27 @@ var gPepAvailable = null;
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
 
-function pepCallback(data) {
-  EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: got data '" + data + "'\n");
+function pepCallback(dataObj) {
+  EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback()\n");
 
+  if ("method" in dataObj) {
+    switch (dataObj.method) {
+      case "messageToSend":
+        EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: messageToSend\n");
+
+        EnigmailPEPMessage.sendMessage(dataObj.params);
+        return 0;
+    }
+  }
+
+  return 1;
 }
 
 function startListener() {
-  /* not yet operational
-  EnigmailLog.DEBUG("pEpAdapter.jsm: startListener:\n");
+
+  EnigmailLog.DEBUG("pEpAdapter.jsm: startListener():\n");
   gSecurityToken = EnigmailRNG.generateRandomString(40);
+
   let portNum = EnigmailpEpListener.createListener(pepCallback, gSecurityToken);
 
   if (portNum < 0) {
@@ -68,7 +81,6 @@ function startListener() {
   }).catch(function _fail(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp failed\n");
   });
-  */
 }
 
 
@@ -510,7 +522,7 @@ var EnigmailPEPAdapter = {
    */
   processPGPMIME: function(headerData) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME\n");
-    if (!("from" in headerData) && ("date" in headerData)) return;
+    if (!(("from" in headerData) && ("date" in headerData))) return;
 
     EnigmailPEPMessageHist.isLatestMessage(headerData.from.headerValue, headerData.date.headerValue).
     then(function _result(latestMessage) {

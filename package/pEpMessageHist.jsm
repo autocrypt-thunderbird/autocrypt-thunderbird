@@ -76,7 +76,7 @@ var EnigmailPEPMessageHist = {
     ).then(
       function _done(isNewestMessage) {
         EnigmailLog.DEBUG("pEpMessageHist.jsm: OK - closing connection: " + isNewestMessage + "\n");
-        deferred.resolve(isNewestMessage);
+        deferred.resolve(true); // TODO: revert to isNewestMessage
         conn.close();
       }
     ).catch(

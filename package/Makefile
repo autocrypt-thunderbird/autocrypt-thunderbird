@@ -72,6 +72,7 @@ MODFILES = \
            pEpDecrypt.jsm \
            pEpFilter.jsm \
            pEpListener.jsm \
+           pEpMessage.jsm \
            pEpMessageHist.jsm \
            pipeConsole.jsm \
            prefs.jsm \
