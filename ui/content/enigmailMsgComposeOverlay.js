@@ -930,7 +930,9 @@ Enigmail.msg = {
     var keyAttachment = Components.classes["@mozilla.org/messengercompose/attachment;1"].createInstance(Components.interfaces.nsIMsgAttachment);
     keyAttachment.url = tmpFileURI.spec;
     if ((uid.length == 1) && (uid[0].search(/^(0x)?[a-fA-F0-9]+$/) === 0)) {
-      keyAttachment.name = "0x" + uid[0] + ".asc";
+      keyAttachment.name = uid[0].substr(-16, 16) + ".asc";
+      if (keyAttachment.name.search(/^0x/) < 0)
+        keyAttachment.name = "0x"+keyAttachment.name;
     }
     else {
       keyAttachment.name = "pgpkeys.asc";
