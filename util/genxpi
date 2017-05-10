@@ -128,6 +128,7 @@ zip --must-match\
     modules/promise.jsm \
     modules/rng.jsm \
     modules/rules.jsm \
+    modules/send.jsm \
     modules/socks5Proxy.jsm \
     modules/stdlib/send.jsm \
     modules/stdlib/compose.jsm \

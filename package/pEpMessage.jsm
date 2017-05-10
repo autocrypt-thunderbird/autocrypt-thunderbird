@@ -17,9 +17,8 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 
 const testMessage = {
   "dir": 1,
@@ -77,6 +76,8 @@ var EnigmailPEPMessage = {
    *   - compFields: nsIMsgCompFields object
    */
   mimeStringFromMessage: function(pepMessage) {
+    EnigmailLog.DEBUG("pEpMessage.mimeStringFromMessage()\n");
+
     let boundary = EnigmailMime.createBoundary();
     let msgFormat = "plain";
     let now = new Date();
@@ -196,42 +197,12 @@ var EnigmailPEPMessage = {
     return m;
   },
 
-  sendMessage: function(pepMessage) {
-    let tmpFile, msgIdentity;
-    try {
-      tmpFile = EnigmailFiles.getTempDirObj();
-      tmpFile.append("message.eml");
-      tmpFile.createUnique(0, 384); // == 0600, octal is deprecated
-    }
-    catch (ex) {
-      return false;
-    }
+  sendMessage: function(pepMessage, listener = null) {
+    EnigmailLog.DEBUG("pEpMessage.sendMessage()\n");
 
     let msg = this.mimeStringFromMessage(pepMessage);
-    EnigmailFiles.writeFileContents(tmpFile, msg.data);
-    try {
-      msgIdentity = EnigmailStdlib.getIdentityForEmail(msg.compFields.from);
-    }
-    catch (ex) {
-      msgIdentity = EnigmailStdlib.getDefaultIdentity();
-    }
 
-    let acct = EnigmailFuncs.getAccountForIdentity(msgIdentity.identity);
-    if (!acct) return false;
-
-    let msgSend = Cc["@mozilla.org/messengercompose/send;1"].createInstance(Ci.nsIMsgSend);
-    msgSend.sendMessageFile(msgIdentity,
-      acct.key,
-      msg.compFields,
-      tmpFile,
-      true, // Delete  File On Completion
-      false, (Services.io.offline ? Ci.nsIMsgSend.nsMsgQueueForLater : Ci.nsIMsgSend.nsMsgDeliverNow),
-      null,
-      null,
-      null,
-      ""); // password
-
-    return true;
+    return EnigmailSend.sendMessage(msg.data, msg.compFields, listener);
   },
 
   getTestMessage: function() {

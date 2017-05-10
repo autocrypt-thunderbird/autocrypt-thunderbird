@@ -106,16 +106,6 @@ PepListener.prototype = {
       }
       EnigmailLog.DEBUG("pEpListener.onInputStreamReady: got data '" + requestData + "'\n");
 
-      // TODO: remove - for testing only
-      if (requestData.replace(/[\r\n]/g, "") === "quit") {
-        EnigmailLog.DEBUG("pEpListener.onInputStreamReady: got QUIT\n");
-        let s = "OK, goodbye\n";
-        this.self.output.write(s, s.length);
-        this.self.output.close();
-        this.self.input.close();
-        return;
-      }
-
       let responseData = this.self.handleHttpRequest(requestData);
 
       EnigmailLog.DEBUG("pEpListener.onInputStreamReady: sending response '" + responseData + "'\n");
@@ -188,7 +178,7 @@ PepListener.prototype = {
         }
       }
       catch (ex) {
-        EnigmailLog.DEBUG("pEpListener.handleHttpRequest failed with: " + ex.toString() + "\n");
+        EnigmailLog.writeException("pEpListener.handleHttpRequest", ex);
         return createHttpResponse(HTTP_ERR_INTERNAL_ERROR, "Internal exception.");
       }
     }

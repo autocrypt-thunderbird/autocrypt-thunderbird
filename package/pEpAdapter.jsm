@@ -36,6 +36,7 @@ Cu.import("resource://enigmail/pEpMessage.jsm"); /*global EnigmailPEPMessage: fa
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 
 // pEp JSON Server executable name
@@ -56,7 +57,12 @@ function pepCallback(dataObj) {
       case "messageToSend":
         EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: messageToSend\n");
 
-        EnigmailPEPMessage.sendMessage(dataObj.params);
+        EnigmailPEPMessage.sendMessage(dataObj.params[0]);
+        return 0;
+      case "notifyHandshake":
+        EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: notifyHandshake\n");
+
+        getDialog().info(null, "got pEp handshake");
         return 0;
     }
   }

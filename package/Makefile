@@ -80,6 +80,7 @@ MODFILES = \
            protocolHandler.jsm \
            rng.jsm \
            rules.jsm \
+           send.jsm \
            socks5Proxy.jsm \
            stdlib.jsm \
            streams.jsm \
