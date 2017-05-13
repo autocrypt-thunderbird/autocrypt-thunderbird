@@ -17,6 +17,7 @@ const Cu = Components.utils;
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
 
 var EnigmailSend = {
@@ -53,7 +54,7 @@ var EnigmailSend = {
 
     EnigmailLog.DEBUG("EnigmailSend.sendMessage: identity key: " + msgIdentity.identity.key + "\n");
 
-    let acct = this.getAccountForIdentity(msgIdentity.identity);
+    let acct = EnigmailFuncs.getAccountForIdentity(msgIdentity.identity);
     if (!acct) return false;
 
     EnigmailLog.DEBUG("EnigmailSend.sendMessage: account key: " + acct.key + "\n");
