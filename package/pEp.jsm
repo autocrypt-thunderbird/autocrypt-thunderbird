@@ -919,6 +919,7 @@ var EnigmailpEp = {
     let self = this;
 
     if (!gPepServerPath) {
+      DEBUG_LOG("_startPepServer: cannot find executable");
       deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
     }
 
@@ -927,6 +928,7 @@ var EnigmailpEp = {
     try {
       exec.initWithPath(gPepServerPath);
       if ((!exec.exists()) || (!exec.isExecutable())) {
+        DEBUG_LOG("_startPepServer: executable not available");
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
       }
@@ -950,6 +952,8 @@ var EnigmailpEp = {
       });
 
       process.wait();
+
+      DEBUG_LOG("_startPepServer: JSON server started");
 
       gConnectionInfo = null;
 
