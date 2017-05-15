@@ -22,6 +22,8 @@ const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
 var gPepServerPath = null;
+var gLogFunction = null;
+
 const pepSecurityInfo = "/pEp-json-token-";
 
 const Cu = Components.utils;
@@ -30,7 +32,6 @@ const Ci = Components.interfaces;
 
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -66,7 +67,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getPepVersion: function() {
-
+    DEBUG_LOG("getPepVersion()");
     let onLoad = function(responseObj) {
       let version = null;
 
@@ -86,6 +87,7 @@ var EnigmailpEp = {
    * @return String - URL to connecto to pEp JSON Server
    */
   getConnectionInfo: function() {
+    DEBUG_LOG("getConnectionInfo()");
     if (!gConnectionInfo) {
       let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
@@ -135,7 +137,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getGpgEnv: function() {
-
+    DEBUG_LOG("getGpgEnv()");
     let onLoad = function(responseObj) {
       if ("result" in responseObj) {
         return responseObj.result[0];
@@ -148,6 +150,18 @@ var EnigmailpEp = {
 
   },
 
+
+  /**
+   * Register a debugging log function.
+   * The log function must have the form f(logDataStr)
+   *
+   * @param logFunction: function - the function to register
+   */
+
+  registerLogHandler: function(logFunction) {
+    gLogFunction = logFunction;
+    DEBUG_LOG("registered log handler");
+  },
 
   /**
    * encrypt a message using the pEp server
@@ -168,6 +182,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   encryptMessage: function(fromAddr, toAddrList, subject, messageObj, pEpMode) {
+    DEBUG_LOG("encryptMessage (" + fromAddr + ")");
 
     if (pEpMode === null) pEpMode = 4;
     if (!toAddrList) toAddrList = [];
@@ -235,6 +250,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   encryptMimeString: function(mimeStr, pEpMode, encryptFlags = 0) {
+    DEBUG_LOG("encryptMimeString()");
 
     if (pEpMode === null) pEpMode = 4;
 
@@ -273,6 +289,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   decryptMessage: function(message, sender, to, cc, replyTo) {
+    DEBUG_LOG("decryptMessage()");
 
     if (!sender) sender = "*";
 
@@ -332,6 +349,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   decryptMimeString: function(mimeStr) {
+    DEBUG_LOG("decryptMimeString()");
 
     try {
       let params = [
@@ -365,6 +383,7 @@ var EnigmailpEp = {
    */
 
   getIdentityRating: function(userId) {
+    DEBUG_LOG("getIdentityRating()");
     try {
       let params = [
         userId, [""] // rating
@@ -395,6 +414,7 @@ var EnigmailpEp = {
    */
 
   setMyself: function(idObject) {
+    DEBUG_LOG("setMyself()");
     try {
       let params = [idObject];
 
@@ -420,6 +440,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getIdentity: function(emailAddress, userId) {
+    DEBUG_LOG("getIdentity()");
     if (!userId) userId = "";
     if (!emailAddress) emailAddress = "";
 
@@ -448,6 +469,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getOwnIdentities: function() {
+    DEBUG_LOG("getOwnIdentities()");
 
     try {
       let params = [
@@ -478,6 +500,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getTrustWords: function(id1, id2, language, longList = false) {
+    DEBUG_LOG("getTrustWords()");
 
     try {
       let params = [
@@ -508,6 +531,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   trustIdentity: function(idObject) {
+    DEBUG_LOG("trustIdentity()");
     try {
 
       if ("comm_type" in idObject) {
@@ -535,6 +559,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   resetIdentityTrust: function(idObject) {
+    DEBUG_LOG("resetIdentityTrust()");
     try {
 
       if ("comm_type" in idObject) {
@@ -563,6 +588,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   mistrustIdentity: function(idObject) {
+    DEBUG_LOG("mistrustIdentity()");
     try {
       let params = [idObject];
 
@@ -585,6 +611,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   getLanguageList: function() {
+    DEBUG_LOG("getLanguageList()");
 
     try {
       let params = [
@@ -614,6 +641,7 @@ var EnigmailpEp = {
    *  catch: Error object (see above)
    */
   outgoingMessageRating: function(from, to, message) {
+    DEBUG_LOG("outgoingMessageRating()");
 
     if (!to) to = [];
 
@@ -643,6 +671,7 @@ var EnigmailpEp = {
    * Get list of all blaclisted keys (fpr)
    */
   blacklistGetKeyList: function() {
+    DEBUG_LOG("blacklistGetKeyList()");
     try {
       let params = [
         "O"
@@ -658,6 +687,7 @@ var EnigmailpEp = {
   },
 
   blacklistAddKey: function(fpr) {
+    DEBUG_LOG("blacklistAddKey()");
     try {
       let params = [
         fpr
@@ -673,6 +703,7 @@ var EnigmailpEp = {
   },
 
   blacklistDeleteKey: function(fpr) {
+    DEBUG_LOG("blacklistDeleteKey()");
     try {
       let params = [
         fpr
@@ -694,6 +725,7 @@ var EnigmailpEp = {
    * @param isPassive: Boolean - true: enable passive mode / false: disable passive mode
    */
   setPassiveMode: function(isPassive) {
+    DEBUG_LOG("setPassiveMode()");
     try {
       let params = [
         isPassive
@@ -710,6 +742,7 @@ var EnigmailpEp = {
   },
 
   registerListener: function(port, securityToken) {
+    DEBUG_LOG("registerListener()");
 
     try {
       let params = [
@@ -719,6 +752,26 @@ var EnigmailpEp = {
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "registerEventListener", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  unregisterListener: function(port, securityToken) {
+    DEBUG_LOG("unregisterListener()");
+
+    try {
+      let params = [
+        "127.0.0.1",
+        port,
+        securityToken
+      ];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "unregisterEventListener", params);
 
     }
     catch (ex) {
@@ -758,6 +811,8 @@ var EnigmailpEp = {
   },
 
   setServerPath: function(pathName) {
+    DEBUG_LOG("setServerPath()");
+
     gPepServerPath = pathName;
   },
 
@@ -777,6 +832,8 @@ var EnigmailpEp = {
    * @return Object - a Promise
    */
   _callPepFunction: function(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred) {
+    DEBUG_LOG("_callPepFunction(" + funcType + ", " + functionName + ")");
+
     if (!deferred) deferred = Promise.defer();
     let self = this;
 
@@ -834,7 +891,10 @@ var EnigmailpEp = {
       };
     }
 
-    oReq.addEventListener("error", function(e) {
+    oReq.addEventListener("error",
+      function(e) {
+        DEBUG_LOG("XMLHttpRequest: got error: " + e);
+
         dropXmlRequest(this);
         self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
           let r = onErrorListener(this.responseText);
@@ -854,6 +914,8 @@ var EnigmailpEp = {
    */
 
   _startPepServer: function(funcType, deferred, functionCall, onLoadListener) {
+    DEBUG_LOG("_startPepServer:(" + funcType + ")");
+
     let self = this;
 
     if (!gPepServerPath) {
@@ -912,7 +974,10 @@ var EnigmailpEp = {
           }
         });
 
-        oReq.addEventListener("error", function(e) {
+        oReq.addEventListener("error",
+          function(e) {
+            DEBUG_LOG("XMLHttpRequest: got error: " + e);
+
             dropXmlRequest(this);
             let status = oReq.channel.QueryInterface(Ci.nsIRequest).status;
 
@@ -929,6 +994,10 @@ var EnigmailpEp = {
     }
   }
 };
+
+function DEBUG_LOG(logStr) {
+  if (gLogFunction) gLogFunction("pEp.jsm: " + logStr + "\n");
+}
 
 
 function makeError(str, ex, msg) {

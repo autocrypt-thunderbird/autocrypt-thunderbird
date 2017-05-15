@@ -101,9 +101,16 @@ PepListener.prototype = {
       sin.init(input);
       let requestData = "";
 
-      while (sin.available()) {
-        requestData += sin.read(512);
+      try {
+        while (sin.available()) {
+          requestData += sin.read(512);
+        }
       }
+      catch (ex) {
+        EnigmailLog.DEBUG("pEpListener.onInputStreamReady: input stream closed\n");
+        return;
+      }
+
       EnigmailLog.DEBUG("pEpListener.onInputStreamReady: got data '" + requestData + "'\n");
 
       let responseData = this.self.handleHttpRequest(requestData);

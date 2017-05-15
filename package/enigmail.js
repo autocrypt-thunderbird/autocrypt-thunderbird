@@ -58,7 +58,7 @@ const nsIObserver = Ci.nsIObserver;
 const nsIEnvironment = Ci.nsIEnvironment;
 const nsIEnigmail = Ci.nsIEnigmail;
 
-const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "xpcom-shutdown";
+const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "quit-application";
 
 var gPreferredGpgPath = null;
 var gOverwriteEnvVar = [];
@@ -237,6 +237,9 @@ Enigmail.prototype = {
 
   finalize: function() {
     EnigmailLog.DEBUG("enigmail.js: Enigmail.finalize:\n");
+
+    EnigmailPEPAdapter.onShutdown();
+
     if (!this.initialized) return;
 
     EnigmailGpgAgent.finalize();

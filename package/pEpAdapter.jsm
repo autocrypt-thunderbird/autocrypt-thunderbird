@@ -45,6 +45,7 @@ const PEP_SERVER_EXECUTABLE = "pep-json-server";
 var gPepVersion = null;
 var gSecurityToken = null;
 var gPepAvailable = null;
+var gPepListenerPort = -1;
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
@@ -75,13 +76,14 @@ function startListener() {
   EnigmailLog.DEBUG("pEpAdapter.jsm: startListener():\n");
   gSecurityToken = EnigmailRNG.generateRandomString(40);
 
-  let portNum = EnigmailpEpListener.createListener(pepCallback, gSecurityToken);
+  gPepListenerPort = EnigmailpEpListener.createListener(pepCallback, gSecurityToken);
 
-  if (portNum < 0) {
+  if (gPepListenerPort < 0) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: could not open socket\n");
+    return;
   }
 
-  EnigmailpEp.registerListener(portNum, gSecurityToken).then(function _ok(data) {
+  EnigmailpEp.registerListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp OK\n");
 
   }).catch(function _fail(data) {
@@ -203,7 +205,6 @@ var EnigmailPEPAdapter = {
     }
 
     return false;
-
   },
 
   /**
@@ -233,6 +234,31 @@ var EnigmailPEPAdapter = {
   },
 
   /**
+   * Thunderbird shutdown callback (called from enigmail.js)
+   */
+  onShutdown: function() {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown()\n");
+
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+    if (gPepListenerPort > 0) {
+      EnigmailpEp.unregisterListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp OK\n" + data + "\n");
+        gPepListenerPort = -1;
+        inspector.exitNestedEventLoop();
+      }).catch(function _fail(data) {
+        EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp failed\n");
+        inspector.exitNestedEventLoop();
+      });
+    }
+
+    // onShutdown should be synchronus in order for Thunderbird to wait
+    // with shutting down until we're completed
+    inspector.enterNestedEventLoop(0);
+    EnigmailpEp.registerLogHandler(null);
+  },
+
+  /**
    * Initialize the pEpAdapter (should be called during startup of application)
    *
    * no input and no retrun values
@@ -244,6 +270,8 @@ var EnigmailPEPAdapter = {
     let pEpMode = EnigmailPrefs.getPref("juniorMode");
     // force using Enigmail (do not use pEp)
     if (pEpMode === 0) return;
+
+    EnigmailpEp.registerLogHandler(EnigmailLog.DEBUG);
 
     // automatic mode, with Crypto enabled (do not use pEp)
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
