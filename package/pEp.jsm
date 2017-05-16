@@ -23,6 +23,7 @@ const FT_CREATE_SESSION = "createSession";
 
 var gPepServerPath = null;
 var gLogFunction = null;
+var gShuttingDown = false;
 
 const pepSecurityInfo = "/pEp-json-token-";
 
@@ -764,6 +765,8 @@ var EnigmailpEp = {
   unregisterListener: function(port, securityToken) {
     DEBUG_LOG("unregisterListener()");
 
+    gShuttingDown = true;
+
     try {
       let params = [
         "127.0.0.1",
@@ -896,10 +899,17 @@ var EnigmailpEp = {
         DEBUG_LOG("XMLHttpRequest: got error: " + e);
 
         dropXmlRequest(this);
-        self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
-          let r = onErrorListener(this.responseText);
-          deferred.resolve(r);
-        });
+        if (!gShuttingDown) {
+          self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
+            let r = onErrorListener(this.responseText);
+            deferred.resolve(r);
+          });
+        }
+        else {
+          deferred.resolve({
+            result: -1
+          });
+        }
       },
       false);
 

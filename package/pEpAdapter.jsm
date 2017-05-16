@@ -243,7 +243,7 @@ var EnigmailPEPAdapter = {
 
     if (gPepListenerPort > 0) {
       EnigmailpEp.unregisterListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
-        EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp OK\n" + data + "\n");
+        EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp OK\n");
         gPepListenerPort = -1;
         inspector.exitNestedEventLoop();
       }).catch(function _fail(data) {
