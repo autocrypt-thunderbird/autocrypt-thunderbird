@@ -618,6 +618,10 @@ function signKeyCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay")) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
+  } 
+  else if (keyEdit.doCheck(GET_BOOL, "sign_uid.replace_expired_okay")) {
+    ret.exitCode = 0;
+    ret.writeTxt = "Y";
   }
   else if (keyEdit.doCheck(GET_LINE, "sign_uid.class")) {
     ret.exitCode = 0;
