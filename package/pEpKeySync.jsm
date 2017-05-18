@@ -5,7 +5,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailPEPMessage"];
+var EXPORTED_SYMBOLS = ["EnigmailPEPKeySync"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -19,6 +19,11 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
+Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
+Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+
 
 const testMessage = {
   "dir": 1,
@@ -63,9 +68,83 @@ const testMessage = {
   "enc_format": 3
 };
 
+const keySyncMsg = {
+  "jsonrpc": "2.0",
+  "id": 2002,
+  "security_token": "mmhqlMwmlFBwd5NO3UK7jD18FRs7wW0rm5KetnSe",
+  "method": "notifyHandshake",
+  "params": [{
+    "address": "enigtest@brunschwig.net",
+    "fpr": "7A0D51844B9C06849E3C313F9B299A39D1CCD0BD",
+    "user_id": "pEp_own_userId",
+    "username": "anonymous",
+    "comm_type": 255,
+    "me": false,
+    "flags": 0
+  }, {
+    "address": "enigtest@brunschwig.net",
+    "fpr": "F871CDB8990483FD6B305B8F319B7AE82E21E970",
+    "user_id": "fcb950d2-3931-11e7-a0bf-97c07b2bb40e",
+    "username": "anonymous",
+    "comm_type": 255,
+    "lang": "en",
+    "me": false,
+    "flags": 0
+  }, {
+    "sync_handshake_signal": 1
+  }]
+};
+
 const CRLF = "\r\n";
 
-var EnigmailPEPMessage = {
+var EnigmailPEPKeySync = {
+
+
+  notifyHandshake: function(pepParams) {
+    let uiLocale = EnigmailLocale.getUILocale().substr(0, 2).toLowerCase();
+    let useLocale = uiLocale;
+    let supportedLocale = [];
+
+    EnigmailpEp.getLanguageList().then(function _success(res) {
+      let deferred = Promise.defer();
+
+      let outArr = EnigmailpEp.processLanguageList(res);
+      deferred.resolve(outArr);
+    }).then(function _ok(localeList) {
+      supportedLocale = localeList;
+
+      for (let i = 0; i < localeList.length; i++) {
+        if (localeList[i].short === uiLocale) {
+          useLocale = localeList[i].short;
+        }
+      }
+
+      return EnigmailpEp.getTrustWords(pepParams[0], pepParams[1], useLocale, false);
+
+    }).then(function _displayDialog(data) {
+      // open trustwords dialog
+      if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
+        let trustWords = data.result[1];
+
+        let win = EnigmailWindows.getBestParentWin();
+        let inputObj = {
+          supportedLocale: supportedLocale,
+          locale: useLocale,
+          trustWords: trustWords,
+          dialogMode: 1
+        };
+        win.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+          "", "dialog,modal,centerscreen", inputObj);
+      }
+
+    }).catch(function _err(err) {
+
+    });
+
+
+  },
+
+
   /**
    * Convert a pEp message into a regular MIME string
    *
@@ -83,7 +162,7 @@ var EnigmailPEPMessage = {
     let now = new Date();
     let composeFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
     composeFields.characterSet = "UTF-8";
-    composeFields.messageId = EnigmailRNG.generateRandomString(27);
+    composeFields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
 
     let mimeStr = "Message-Id: " + composeFields.messageId + CRLF;
     mimeStr += "Date: " + now.toUTCString() + CRLF;
@@ -205,7 +284,12 @@ var EnigmailPEPMessage = {
     return EnigmailSend.sendMessage(msg.data, msg.compFields, listener);
   },
 
+
   getTestMessage: function() {
     return testMessage;
+  },
+
+  getTestKeySync: function() {
+    return keySyncMsg;
   }
 };

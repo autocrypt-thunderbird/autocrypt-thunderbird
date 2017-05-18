@@ -78,7 +78,8 @@ var EnigmailpEp = {
       return version;
     };
 
-    return this._callPepFunction(FT_CALL_FUNCTION, "get_engine_version", [], onLoad);
+    // TODO: switch back to "version" once fixed in adapter
+    return this._callPepFunction(FT_CALL_FUNCTION, "getGpgEnvironment", [], onLoad);
 
   },
 
@@ -629,6 +630,35 @@ var EnigmailpEp = {
     }
   },
 
+  /**
+   * Process the output from pEp for the language list and return an array of languages
+   *
+   * @param languageStr - String: string of pEp output
+   *
+   * @return Array of Object:
+   *            - short: 2-Letter ISO-Codes
+   *            - long:  Language name in the language
+   *            - desc:  Describing sentence in the language
+   */
+  processLanguageList: function(languageStr) {
+
+    if ((typeof(languageStr) === "object") && ("result" in languageStr)) {
+      let inArr = languageStr.result[0].split(/\n/);
+      let outArr = inArr.reduce(function _f(p, langLine) {
+        let y = langLine.split(/","/);
+        if (langLine.length > 0) p.push({
+          short: y[0].replace(/^"/, ""),
+          long: y[1],
+          desc: y[2].replace(/"$/, "")
+        });
+        return p;
+      }, []);
+      return outArr;
+    }
+    else {
+      return [];
+    }
+  },
 
   /**
    * determine the trust rating that an outgoing message would receive

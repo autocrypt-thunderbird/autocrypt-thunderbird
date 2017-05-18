@@ -32,11 +32,11 @@ Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: fals
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/installPep.jsm"); /*global EnigmailInstallPep: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("resource://enigmail/pEpMessage.jsm"); /*global EnigmailPEPMessage: false */
+Cu.import("resource://enigmail/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 
 // pEp JSON Server executable name
@@ -46,6 +46,7 @@ var gPepVersion = null;
 var gSecurityToken = null;
 var gPepAvailable = null;
 var gPepListenerPort = -1;
+var gOwnIdentities = [];
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
@@ -58,12 +59,12 @@ function pepCallback(dataObj) {
       case "messageToSend":
         EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: messageToSend\n");
 
-        EnigmailPEPMessage.sendMessage(dataObj.params[0]);
+        EnigmailPEPKeySync.sendMessage(dataObj.params[0]);
         return 0;
       case "notifyHandshake":
         EnigmailLog.DEBUG("pEpAdapter.jsm: pepCallback: notifyHandshake\n");
 
-        getDialog().info(null, "got pEp handshake");
+        EnigmailPEPKeySync.notifyHandshake(dataObj.params);
         return 0;
     }
   }
@@ -242,12 +243,20 @@ var EnigmailPEPAdapter = {
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
     if (gPepListenerPort > 0) {
+      EnigmailTimer.setTimeout(function _f() {
+        // wait at most 1 second to continue shutdown
+        if (gPepListenerPort > 0) {
+          inspector.exitNestedEventLoop();
+        }
+      }, 1000);
+
       EnigmailpEp.unregisterListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp OK\n");
         gPepListenerPort = -1;
         inspector.exitNestedEventLoop();
       }).catch(function _fail(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp failed\n");
+        gPepListenerPort = -1;
         inspector.exitNestedEventLoop();
       });
     }
@@ -353,7 +362,10 @@ var EnigmailPEPAdapter = {
 
       EnigmailLog.DEBUG("pEpAdapter.jsm: setOwnIdentities: " + id.identityName + "\n");
       self.pep.setMyself(pepId).then(
-        function _ok() {
+        function _ok(data) {
+          if (data) {
+            self.processOwnIdentity(data);
+          }
           self.setOwnIdentities(accountNum + 1);
         }).catch(
         function _err(data) {
@@ -363,7 +375,34 @@ var EnigmailPEPAdapter = {
     else {
       EnigmailLog.DEBUG("pEpAdapter.jsm: setOwnIdentities: done.\n");
     }
+  },
 
+  processOwnIdentity: function(identityData) {
+    EnigmailLog.DEBUG("pEpAdapter.jsm: processOwnIdentity()\n");
+    if ("result" in identityData) {
+      let id = identityData.result[0];
+
+      gOwnIdentities[id.address.toLowerCase()] = id;
+    }
+  },
+
+
+  /**
+   * get the pEp Identity of own emails (i.e. for those what we should have a secret key)
+   * for a given email address.
+   *
+   * @param emailAddress: String - my own email address
+   *
+   * @return Object: pEp Identity or null (if not found)
+   */
+  getOwnIdentityForEmail: function(emailAddress) {
+    emailAddress = emailAddress.toLowerCase();
+
+    if (emailAddress in gOwnIdentities) {
+      return gOwnIdentities[emailAddress];
+    }
+
+    return null;
   },
 
   /**
@@ -466,22 +505,8 @@ var EnigmailPEPAdapter = {
   getSupportedLanguages: function() {
     let deferred = Promise.defer();
     EnigmailpEp.getLanguageList().then(function _success(res) {
-      if ((typeof(res) === "object") && ("result" in res)) {
-        let inArr = res.result[0].split(/\n/);
-        let outArr = inArr.reduce(function _f(p, langLine) {
-          let y = langLine.split(/","/);
-          if (langLine.length > 0) p.push({
-            short: y[0].replace(/^"/, ""),
-            long: y[1],
-            desc: y[2].replace(/"$/, "")
-          });
-          return p;
-        }, []);
-        deferred.resolve(outArr);
-      }
-      else {
-        deferred.resolve([]);
-      }
+      let outArr = EnigmailpEp.processLanguageList(res);
+      deferred.resolve(outArr);
     }).catch(function _err(err) {
       deferred.resolve([]);
     });
@@ -705,7 +730,8 @@ var EnigmailPEPAdapter = {
           userRating: emailIdRating,
           locale: useLocale,
           supportedLocale: supportedLocale,
-          trustWords: trustWords
+          trustWords: trustWords,
+          dialogMode: 0
         });
       }
       else {

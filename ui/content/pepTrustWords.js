@@ -17,6 +17,16 @@ const CLOSE_WIN = "close";
 
 var gLocale = "";
 
+/**
+  Argmuments (param[0]):
+    - supportedLocale,
+    - locale
+    - otherId
+    - userRating
+    - ownId
+    - trustWords
+    - dialogMode (0: user/user, 1: keySync)
+*/
 function onLoad() {
   let argsObj = window.arguments[INPUT];
   let supportedLocale = argsObj.supportedLocale;
@@ -30,11 +40,20 @@ function onLoad() {
   }
 
   let partnerEmail = document.getElementById("partnerEmailAddr");
-  partnerEmail.setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
-  partnerEmail.setAttribute("class", EnigmailPEPAdapter.getRatingClass(argsObj.userRating.rating));
-  document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
-  document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
-  document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
+  if (argsObj.dialogMode === 0) {
+    partnerEmail.setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
+    partnerEmail.setAttribute("class", EnigmailPEPAdapter.getRatingClass(argsObj.userRating.rating));
+    document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
+    document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
+    document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
+  }
+  else {
+    partnerEmail.setAttribute("value", "Key sync");
+    document.getElementById("partnerFpr").setAttribute("collapsed", "true");
+    document.getElementById("myFpr").setAttribute("collapsed", "true");
+    document.getElementById("selectVerifyType").setAttribute("collapsed", "true");
+  }
+
   displayTrustWords(argsObj.trustWords);
 }
 
