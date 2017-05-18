@@ -893,7 +893,7 @@ Enigmail.msg = {
   },
 
   extractAndAttachKey: function(uid) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.attachKey: \n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.extractAndAttachKey: \n");
     var enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc)
       return null;
@@ -932,7 +932,7 @@ Enigmail.msg = {
     if ((uid.length == 1) && (uid[0].search(/^(0x)?[a-fA-F0-9]+$/) === 0)) {
       keyAttachment.name = uid[0].substr(-16, 16) + ".asc";
       if (keyAttachment.name.search(/^0x/) < 0)
-        keyAttachment.name = "0x"+keyAttachment.name;
+        keyAttachment.name = "0x" + keyAttachment.name;
     }
     else {
       keyAttachment.name = "pgpkeys.asc";
@@ -3273,8 +3273,35 @@ Enigmail.msg = {
     };
   },
 
+  attachPepKey: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.attachPepKey()\n");
+
+    if (this.identity.getBoolAttribute("attachPgpKey")) {
+      let id = EnigmailPEPAdapter.getOwnIdentityForEmail(this.identity.email);
+      if (id) {
+
+        let userIdValue = "0x" + id.fpr;
+
+        if (this.attachOwnKeyObj.attachedKey && (this.attachOwnKeyObj.attachedKey != userIdValue)) {
+          // remove attached key if user ID changed
+          this.removeAttachedKey();
+        }
+
+        if (!this.attachOwnKeyObj.attachedKey) {
+          let attachedObj = this.extractAndAttachKey([userIdValue]);
+          if (attachedObj) {
+            attachedObj.name = "pEpkey.asc";
+            this.attachOwnKeyObj.attachedObj = attachedObj;
+            this.attachOwnKeyObj.attachedKey = userIdValue;
+            gMsgCompose.compFields.addAttachment(attachedObj);
+          }
+        }
+      }
+    }
+  },
+
   encryptPepMessage: function(msgSendType) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage:\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage()\n");
 
     const CiMsgCompDeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
@@ -3290,13 +3317,16 @@ Enigmail.msg = {
         return true;
     }
 
-    // autoEncryptDrafts equals "trusted server" in pEp mode
-    if (this.identity.getBoolAttribute("autoEncryptDrafts")) {
-      EnigmailPEPAdapter.filter.deleteDecryptedCopyFilter(this.identity);
+    try {
+      // autoEncryptDrafts equals "trusted server" in pEp mode
+      if (this.identity.getBoolAttribute("autoEncryptDrafts")) {
+        EnigmailPEPAdapter.filter.deleteDecryptedCopyFilter(this.identity);
+      }
+      else {
+        EnigmailPEPAdapter.filter.ensureDecryptedCopyFilter(this.identity);
+      }
     }
-    else {
-      EnigmailPEPAdapter.filter.ensureDecryptedCopyFilter(this.identity);
-    }
+    catch (ex) {}
 
     let rating = 0;
     if (this.pepEnabled()) {
@@ -3324,6 +3354,10 @@ Enigmail.msg = {
 
       let encrypt = document.getElementById("enigmail-bc-pepEncrypt").getAttribute("encrypt");
       si.sendFlags = (encrypt === "true" ? nsIEnigmail.SEND_ENCRYPTED : 0);
+    }
+    else {
+      // attach own key
+      this.attachPepKey();
     }
 
     return true;
