@@ -299,7 +299,7 @@ function pEpLoadBlacklist() {
   EnigmailPEPAdapter.pep.blacklistGetKeyList().then(
     function _ok(retObj) {
       if (retObj && typeof(retObj) === "object" && "result" in retObj) {
-        gPepKeyBlacklist = retObj.result[0].map(
+        gPepKeyBlacklist = retObj.result.outParams[0].map(
           function _upperCase(x) {
             return x.toUpperCase();
           });

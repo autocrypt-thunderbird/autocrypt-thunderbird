@@ -338,7 +338,7 @@ function decryptPgpMime(msgData, from, to, cc, replyTo) {
   EnigmailpEp.decryptMimeString(msgStr).then(function _step2(res) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
     if ((typeof(res) === "object") && ("result" in res)) {
-      resultObj = res.result;
+      resultObj = res.result.outParams;
     }
     else
       EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: typeof res=" + typeof(res) + "\n");
@@ -403,7 +403,7 @@ function decryptInlinePgp(pgpData, from, to, cc, replyTo) {
   EnigmailpEp.decryptMessage(pgpData, from, to, cc, replyTo).then(function _step2(res) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: SUCCESS\n");
     if ((typeof(res) === "object") && ("result" in res)) {
-      resultObj = res.result;
+      resultObj = res.result.outParams;
     }
     else
       EnigmailLog.DEBUG("pEpDecrypt.jsm: decryptMessage: typeof res=" + typeof(res) + "\n");

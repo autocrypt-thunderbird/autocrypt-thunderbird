@@ -9,7 +9,6 @@ var EXPORTED_SYMBOLS = ["EnigmailPEPKeySync"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
@@ -123,8 +122,8 @@ var EnigmailPEPKeySync = {
 
     }).then(function _displayDialog(data) {
       // open trustwords dialog
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
-        let trustWords = data.result[1];
+      if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[1] === "string") {
+        let trustWords = data.result.outParams[1];
 
         let win = EnigmailWindows.getBestParentWin();
         let inputObj = {

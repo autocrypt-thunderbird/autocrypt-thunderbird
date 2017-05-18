@@ -291,8 +291,8 @@ var EnigmailPEPAdapter = {
     try {
       EnigmailpEp.getPepVersion().then(function _success(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
-        if (Array.isArray(data)) {
-          gPepVersion = String(data[0]);
+        if (typeof(data) === "string") {
+          gPepVersion = data;
           startListener();
         }
 
@@ -303,6 +303,9 @@ var EnigmailPEPAdapter = {
 
         let envStr = "";
         if (gpgEnv && typeof gpgEnv === "object" && "gnupg_path" in gpgEnv) {
+
+          EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG path '" + gpgEnv.gnupg_path + "'\n");
+
           if (typeof(gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
             envStr += "GPG_AGENT_INFO=" + gpgEnv.gpg_agent_info + "\n";
           }
@@ -380,7 +383,7 @@ var EnigmailPEPAdapter = {
   processOwnIdentity: function(identityData) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: processOwnIdentity()\n");
     if ("result" in identityData) {
-      let id = identityData.result[0];
+      let id = identityData.result.outParams[0];
 
       gOwnIdentities[id.address.toLowerCase()] = id;
     }
@@ -464,7 +467,7 @@ var EnigmailPEPAdapter = {
     EnigmailPEPAdapter.pep.outgoingMessageRating(from, to, "test").then(function _step2(res) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: SUCCESS\n");
       if ((typeof(res) === "object") && ("result" in res)) {
-        resultObj = res.result;
+        resultObj = res.result.outParams;
       }
       else
         EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof(res) + "\n");
@@ -517,11 +520,11 @@ var EnigmailPEPAdapter = {
   getIdentityForEmail: function(emailAddress) {
     let deferred = Promise.defer();
     EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress).then(function _ok(data) {
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
-        if ("username" in data.result[0] && data.result[0].username) {
-          let u = jsmime.headerparser.parseAddressingHeader(data.result[0].username, true);
+      if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
+        if ("username" in data.result.outParams[0] && data.result.outParams[0].username) {
+          let u = jsmime.headerparser.parseAddressingHeader(data.result.outParams[0].username, true);
           if (Array.isArray(u) && u.length > 0) {
-            data.result[0].username = u[0].name;
+            data.result.outParams[0].username = u[0].name;
           }
         }
       }
@@ -675,8 +678,8 @@ var EnigmailPEPAdapter = {
     let emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
 
     EnigmailPEPAdapter.pep.getOwnIdentities().then(function _gotOwnIds(data) {
-      if (("result" in data) && typeof data.result[0] === "object" && Array.isArray(data.result[0])) {
-        ownIds = data.result[0];
+      if (("result" in data) && typeof data.result.outParams[0] === "object" && Array.isArray(data.result.outParams[0])) {
+        ownIds = data.result.outParams[0];
       }
 
       for (let i = 0; i < ownIds.length; i++) {
@@ -695,8 +698,8 @@ var EnigmailPEPAdapter = {
 
       return EnigmailPEPAdapter.getIdentityForEmail(emailAddress);
     }).then(function _gotIdentityForEmail(data) {
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
-        emailId = data.result[0];
+      if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
+        emailId = data.result.outParams[0];
       }
       else {
         deferred.reject("cannotFindKey");
@@ -705,9 +708,9 @@ var EnigmailPEPAdapter = {
       return EnigmailPEPAdapter.pep.getIdentityRating(emailId);
 
     }).then(function _gotIdentityRating(data) {
-      if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
-        "rating" in data.result[0]) {
-        emailIdRating = data.result[0];
+      if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
+        "rating" in data.result.outParams[0]) {
+        emailIdRating = data.result.outParams[0];
       }
 
       return EnigmailPEPAdapter.getSupportedLanguages();
@@ -722,8 +725,8 @@ var EnigmailPEPAdapter = {
 
       return EnigmailPEPAdapter.getTrustWordsForLocale(useOwnId, emailId, useLocale, false);
     }).then(function _gotTrustWords(data) {
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
-        let trustWords = data.result[1];
+      if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[1] === "string") {
+        let trustWords = data.result.outParams[1];
         deferred.resolve({
           ownId: useOwnId,
           otherId: emailId,
@@ -762,8 +765,8 @@ var EnigmailPEPAdapter = {
 
     EnigmailPEPAdapter.getIdentityForEmail(emailAddr).
     then(function _gotIdentityForEmail(data) {
-      if (("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
-        let emailId = data.result[0];
+      if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
+        let emailId = data.result.outParams[0];
         EnigmailPEPAdapter.pep.resetIdentityTrust(emailId).then(
           function _ok() {
             deferred.resolve();
@@ -801,8 +804,8 @@ var EnigmailPEPAdapter = {
 
       EnigmailPEPAdapter.getIdentityForEmail(emailArr[emailNum]).then(
         function _gotIdentity(data) {
-          if (data && ("result" in data) && typeof data.result === "object" && typeof data.result[0] === "object") {
-            identity = data.result[0];
+          if (data && ("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
+            identity = data.result.outParams[0];
             return EnigmailPEPAdapter.pep.getIdentityRating(identity);
           }
           else {
@@ -814,9 +817,9 @@ var EnigmailPEPAdapter = {
           }
         }).then(
         function _gotRating(data) {
-          if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
-            "rating" in data.result[0]) {
-            rating = data.result[0].rating;
+          if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
+            "rating" in data.result.outParams[0]) {
+            rating = data.result.outParams[0].rating;
           }
 
           identities.push({

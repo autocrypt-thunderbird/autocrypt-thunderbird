@@ -81,8 +81,8 @@ function getTrustWords(locale) {
   let argsObj = window.arguments[INPUT];
   EnigmailPEPAdapter.getTrustWordsForLocale(argsObj.ownId, argsObj.otherId, locale, longWordList).
   then(function _f(data) {
-    if (("result" in data) && typeof data.result === "object" && typeof data.result[1] === "string") {
-      let trustWords = data.result[1];
+    if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[1] === "string") {
+      let trustWords = data.result.outParams[1];
       displayTrustWords(trustWords);
     }
   }).
@@ -99,7 +99,7 @@ function onAccept() {
       return EnigmailPEPAdapter.pep.trustIdentity(argsObj.otherId);
     }).
     then(function _trustDone(data) {
-      if (!("result" in data && (typeof data.result === "object") && data.result[0].status === 0)) {
+      if (!("result" in data && (typeof data.result === "object") && data.result.return.status === 0)) {
         EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
       }
       window.close();
@@ -115,7 +115,7 @@ function onMistrustKey() {
 
   if (argsObj.otherId) {
     EnigmailPEPAdapter.pep.mistrustIdentity(argsObj.otherId).then(function _trustDone(data) {
-      if (!("result" in data && (typeof data.result === "object") && data.result[0].status === 0)) {
+      if (!("result" in data && (typeof data.result === "object") && data.result.return.status === 0)) {
         EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
       }
       window.close();

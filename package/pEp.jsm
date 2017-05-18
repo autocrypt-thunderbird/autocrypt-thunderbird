@@ -73,13 +73,13 @@ var EnigmailpEp = {
       let version = null;
 
       if ("result" in responseObj) {
-        version = responseObj.result;
+        version = responseObj.result.return;
       }
       return version;
     };
 
     // TODO: switch back to "version" once fixed in adapter
-    return this._callPepFunction(FT_CALL_FUNCTION, "getGpgEnvironment", [], onLoad);
+    return this._callPepFunction(FT_CALL_FUNCTION, "version", [], onLoad);
 
   },
 
@@ -142,7 +142,7 @@ var EnigmailpEp = {
     DEBUG_LOG("getGpgEnv()");
     let onLoad = function(responseObj) {
       if ("result" in responseObj) {
-        return responseObj.result[0];
+        return responseObj.result.return;
       }
 
       return responseObj;
@@ -643,7 +643,7 @@ var EnigmailpEp = {
   processLanguageList: function(languageStr) {
 
     if ((typeof(languageStr) === "object") && ("result" in languageStr)) {
-      let inArr = languageStr.result[0].split(/\n/);
+      let inArr = languageStr.result.outParams[0].split(/\n/);
       let outArr = inArr.reduce(function _f(p, langLine) {
         let y = langLine.split(/","/);
         if (langLine.length > 0) p.push({

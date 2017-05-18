@@ -158,9 +158,9 @@ function reloadEmail(index) {
 
   EnigmailPEPAdapter.pep.getIdentityRating(gInputArgs.peers[index].user_id).then(
     function _gotRating(data) {
-      if ("result" in data && Array.isArray(data.result) && typeof(data.result[0]) === "object" &&
-        "rating" in data.result[0]) {
-        rating = data.result[0].rating;
+      if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
+        "rating" in data.result.outParams[0]) {
+        rating = data.result.outParams[0].rating;
         gInputArgs.peers[index].rating = rating;
       }
 

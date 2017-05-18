@@ -1084,10 +1084,10 @@ Enigmail.hdrView = {
         EnigmailPEPAdapter.pep.getIdentityRating(person).
         then(
           function _gotRating(cbObj) {
-            if ("result" in cbObj && Array.isArray(cbObj.result) && typeof(cbObj.result[0]) === "object") {
-              if ("rating" in cbObj.result[0]) {
-                let rating = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result[0].rating);
-                let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result[0].rating);
+            if ("result" in cbObj && Array.isArray(cbObj.result) && typeof(cbObj.result.outParams[0]) === "object") {
+              if ("rating" in cbObj.result.outParams[0]) {
+                let rating = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result.outParams[0].rating);
+                let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result.outParams[0].rating);
 
                 nodes[i].setAttribute("class", setClass);
                 Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = rating;
@@ -1149,8 +1149,8 @@ Enigmail.hdrView = {
     }
 
     EnigmailPEPAdapter.pep.getOwnIdentities().then(function _gotOwnIds(data) {
-      if (("result" in data) && typeof data.result[0] === "object" && Array.isArray(data.result[0])) {
-        let ownIds = data.result[0];
+      if (("result" in data) && typeof data.result.outParams[0] === "object" && Array.isArray(data.result.outParams[0])) {
+        let ownIds = data.result.outParams[0];
         let myEmail = "";
 
         for (let i = 0; i < ownIds.length; i++) {

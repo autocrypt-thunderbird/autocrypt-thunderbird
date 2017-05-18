@@ -59,10 +59,13 @@ function createHttpResponse(statusCode, messageData) {
   if (statusCode === HTTP_OK) {
     retObj = {
       jsonrpc: "2.0",
-      result: [{
-        status: 0,
-        hex: "PEP_STATUS_OK"
-      }],
+      result: {
+        outParams: [],
+        return: {
+          status: 0,
+          hex: "PEP_STATUS_OK"
+        }
+      },
       id: messageData
     };
     statusMsg = "OK";
