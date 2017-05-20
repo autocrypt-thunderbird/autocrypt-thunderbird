@@ -240,9 +240,10 @@ var EnigmailPEPAdapter = {
   onShutdown: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown()\n");
 
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
-
     if (gPepListenerPort > 0) {
+
+      let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
       EnigmailTimer.setTimeout(function _f() {
         // wait at most 1 second to continue shutdown
         if (gPepListenerPort > 0) {
@@ -259,12 +260,12 @@ var EnigmailPEPAdapter = {
         gPepListenerPort = -1;
         inspector.exitNestedEventLoop();
       });
-    }
 
-    // onShutdown should be synchronus in order for Thunderbird to wait
-    // with shutting down until we're completed
-    inspector.enterNestedEventLoop(0);
-    EnigmailpEp.registerLogHandler(null);
+      // onShutdown should be synchronus in order for Thunderbird to wait
+      // with shutting down until we're completed
+      inspector.enterNestedEventLoop(0);
+      EnigmailpEp.registerLogHandler(null);
+    }
   },
 
   /**
