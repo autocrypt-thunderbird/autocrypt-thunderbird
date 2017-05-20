@@ -68,6 +68,13 @@
         <description class="enigmailTitle">&enigmail.pepPref.openpgpCompatibility.label;</description>
 
         <checkbox id="lookupKeys" label="&enigmail.pepPref.autoKeyLookup.label;"/>
+
+
+        <spacer style="min-height: 20px;" flex="1"/>
+
+        <hbox align="end">
+          <button id="debugLog" label="&enigmail.viewlog.label;" oncommand="EnigmailWindows.openDebugLog()"/>
+        </hbox>
       </vbox>
 
       <!-- "About" Tab -->
