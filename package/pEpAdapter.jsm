@@ -129,9 +129,11 @@ var EnigmailPEPAdapter = {
   /**
    * Determine if the pEp JSON adapter is available at all
    *
+   * @param attemptInstall: Boolean - try to install pEp if possible
+   *
    * @return Boolean - true if pEp is available / false otherwise
    */
-  isPepAvailable: function() {
+  isPepAvailable: function(attemptInstall = true) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable()\n");
 
     if (gPepAvailable === null) {
@@ -164,7 +166,7 @@ var EnigmailPEPAdapter = {
           gPepAvailable = true;
         }
       }
-      else {
+      else if (attemptInstall) {
         this.installPep();
       }
     }
@@ -202,7 +204,7 @@ var EnigmailPEPAdapter = {
 
     // manual pEp or automatic mode
     if (mode === 2 || (!this.isAccountCryptEnabled())) {
-      return this.isPepAvailable();
+      return this.isPepAvailable(true);
     }
 
     return false;

@@ -10,15 +10,6 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailInstallPep"];
 
-/* Usage:
-  EnigmailInstallPep.startInstaller(progressListener).
-
-  progressListener needs to implement the following methods:
-  void    onError    ({type: errorType, name: errorName})
-  void    onInstalled ()
-
-*/
-
 const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -316,6 +307,17 @@ Installer.prototype = {
     return this.hash == hashStr;
   },
 
+  getUrlObj: function() {
+    let o = {
+      url: this.url,
+      hash: this.hash,
+      comamnd: this.command,
+      mount: this.mount
+    };
+
+    return o;
+  },
+
   getDownloadUrl: function(on) {
 
     let deferred = Promise.defer();
@@ -547,13 +549,47 @@ Installer.prototype = {
 
 var EnigmailInstallPep = {
 
-  startInstaller: function(progressListener) {
+  /**
+   * Start downloading and installing pEp
+   *
+   * @param progressListener: Object (optional)
+   *     progressListener needs to implement the following methods:
+   *       void    onError    ({type: errorType, name: errorName})
+   *       void    onInstalled ()
+   *
+   * @return Installer object
+   */
 
-    var i = new Installer(progressListener);
+  startInstaller: function(progressListener) {
+    EnigmailLog.DEBUG("installPep.jsm: startInstaller()\n");
+
+    let i = new Installer(progressListener);
     i.getDownloadUrl(i).
-    then(function _dl() {
+    then(function _gotUrl() {
       i.performDownload();
     });
     return i;
+  },
+
+  isPepInstallerAvailable: function() {
+    EnigmailLog.DEBUG("installPep.jsm: isPepInstallerAvailable()\n");
+
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+    let urlObj = null;
+
+    let i = new Installer(null);
+
+    i.getDownloadUrl(i).
+    then(function _gotUrl() {
+      urlObj = i.getUrlObj();
+      inspector.exitNestedEventLoop();
+    }).
+    catch(function _err(data) {
+      inspector.exitNestedEventLoop();
+    });
+
+    inspector.enterNestedEventLoop(0);
+
+    return (urlObj ? urlObj.url !== null && urlObj.url !== "" : false);
   }
 };

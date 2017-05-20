@@ -60,6 +60,7 @@ Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailA
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 Components.utils.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Components.utils.import("resource://enigmail/configure.jsm"); /*global EnigmailConfigure: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -200,8 +201,7 @@ Enigmail.msg = {
     top.controllers.appendController(treeController);
 
     if (EnigmailPrefs.getPref("configuredVersion") === "") {
-      EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
-      EnigmailWindows.openSetupWizard(window, false);
+      EnigmailConfigure.configureEnigmail(window, false);
     }
   },
 

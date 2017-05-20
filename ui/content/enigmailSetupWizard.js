@@ -48,6 +48,7 @@ var gPassPhraseQuality = null;
 var gPageStack = []; // required for correct stepping back
 
 function onLoad() {
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: onLoad()\n");
   gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
 
   fillIdentities('checkbox');
@@ -140,7 +141,7 @@ function onNext() {
     }
   }
 
-  EnigmailLog.DEBUG("onNext\n");
+  EnigmailLog.DEBUG("enigmailSetupWizard.js: onNext()\n");
   gLastDirection = 1;
   setLastPage();
   var wizard = getWizard();
@@ -605,13 +606,13 @@ function displayKeyCreate() {
 }
 
 function checkPassphraseOnChange(passphrase) {
-  if(passphrase.value.length > 0) {
+  if (passphrase.value.length > 0) {
     var qualityCheck = EnigmailPasswordCheck.checkQuality(passphrase.value);
     var qualityError = document.getElementById("passphraseError");
     var passRepeat = document.getElementById("passphraseRepeat").value;
     var passImg = document.getElementById("passphraseErrorImg");
-    
-    if(!qualityCheck.valid) {
+
+    if (!qualityCheck.valid) {
       qualityError.hidden = false;
       passImg.hidden = false;
     }
@@ -619,9 +620,9 @@ function checkPassphraseOnChange(passphrase) {
       qualityError.hidden = true;
       passImg.hidden = true;
     }
-    
+
     //qualityError never checked, only length
-    if(passphrase.value.length < 8) {
+    if (passphrase.value.length < 8) {
       qualityError.hidden = false;
       passImg.hidden = false;
     }
@@ -656,8 +657,8 @@ function checkPassphrasesEqual() {
   let p2 = document.getElementById("passphraseRepeat").value;
   var repeatError = document.getElementById("passphraseErrorRepeat");
   var passRepImg = document.getElementById("passphraseErrorRepImg");
-    
-  if(p1 != p2 && p1.length > 0 && p2.length > 0) {
+
+  if (p1 != p2 && p1.length > 0 && p2.length > 0) {
     repeatError.hidden = false;
     passRepImg.hidden = false;
   }

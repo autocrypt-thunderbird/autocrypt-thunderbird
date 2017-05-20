@@ -1,4 +1,3 @@
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,6 +24,9 @@ Cu.import("resource://enigmail/app.jsm");
 Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/dialog.jsm");
 Cu.import("resource://enigmail/windows.jsm");
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+Cu.import("resource://enigmail/installPep.jsm"); /* global EnigmailInstallPep: false */
+
 
 function upgradeRecipientsSelection() {
   // Upgrade perRecipientRules and recipientsSelectionOption to
@@ -214,14 +216,35 @@ function defaultPgpMime() {
   }
 }
 
+/**
+ * Determin if pEp is avaliable, and if it is not available,
+ * whether it can be downaloaded and installed. This does not
+ * trigger installation.
+ */
+
+function isPepInstallable() {
+  if (EnigmailPEPAdapter.isPepAvailable(false)) {
+    return true;
+  }
+
+  return EnigmailInstallPep.isPepInstallerAvailable();
+}
+
 const EnigmailConfigure = {
   configureEnigmail: function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail\n");
     let oldVer = EnigmailPrefs.getPref("configuredVersion");
 
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+
     if (oldVer === "") {
-      EnigmailWindows.openSetupWizard(win, false);
+      EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
+
+      if (EnigmailPrefs.getPref("juniorMode") === 0 || (!isPepInstallable())) {
+        // start wizard if pEp Junior Mode is fored off or if pep cannot
+        // be installed/used
+        EnigmailWindows.openSetupWizard(win, false);
+      }
     }
     else {
       if (oldVer < "0.95") {

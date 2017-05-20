@@ -39,6 +39,8 @@ const EnigmailWindows = {
    * no return value
    */
   openSetupWizard: function(win, skipIntro) {
+    EnigmailLog.DEBUG("windows.jsm: openSetupWizard()\n");
+
     let param = "";
     if (skipIntro) {
       param = "?skipIntro=true";
@@ -129,7 +131,7 @@ const EnigmailWindows = {
    * @return:    the frame object or null if not found
    */
   getFrame: function(win, frameName) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: getFrame: name=" + frameName + "\n");
+    EnigmailLog.DEBUG("windows.jsm: getFrame: name=" + frameName + "\n");
     for (var j = 0; j < win.frames.length; j++) {
       if (win.frames[j].name == frameName) {
         return win.frames[j];
