@@ -85,7 +85,7 @@ var EnigmailPrefs = {
     }
     catch (ex) {
       // Failed to get pref value
-      EnigmailLog.ERROR("enigmailCommon.jsm: getPref: unknown prefName:" + prefName + " \n");
+      EnigmailLog.ERROR("prefs.jsm: getPref: unknown prefName:" + prefName + " \n");
     }
 
     return prefValue;
@@ -100,7 +100,7 @@ var EnigmailPrefs = {
    * @return Boolean Was the value stored successfully?
    */
   setPref: function(prefName, value) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: setPref: " + prefName + ", " + value + "\n");
+    EnigmailLog.DEBUG("prefs.jsm: setPref: " + prefName + ", " + value + "\n");
 
     if (!p.branch) {
       initPrefService();
@@ -159,7 +159,7 @@ var EnigmailPrefs = {
    * no return value
    */
   savePrefs: function() {
-    EnigmailLog.DEBUG("enigmailCommon.js: savePrefs\n");
+    EnigmailLog.DEBUG("prefs.jsm: savePrefs\n");
     try {
       p.service.savePrefFile(null);
     }
