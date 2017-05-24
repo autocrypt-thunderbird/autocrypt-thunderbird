@@ -1519,22 +1519,22 @@ if (messageHeaderSink) {
         }
 
         if ("from" in hdr) {
-          gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, EnigmailData.convertFromUnicode(hdr.from, "utf-8"));
+          gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, hdr.from);
           msg.setStringProperty("Enigmail-From", hdr.from);
         }
 
         if ("to" in hdr) {
-          gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, EnigmailData.convertFromUnicode(hdr.to, "utf-8"));
+          gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, hdr.to);
           msg.setStringProperty("Enigmail-To", hdr.to);
         }
 
         if ("cc" in hdr) {
-          gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, EnigmailData.convertFromUnicode(hdr.cc, "utf-8"));
+          gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, hdr.cc);
           msg.setStringProperty("Enigmail-Cc", hdr.cc);
         }
 
         if ("reply-to" in hdr) {
-          gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], EnigmailData.convertFromUnicode(hdr["reply-to"], "utf-8"));
+          gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
           msg.setStringProperty("Enigmail-ReplyTo", hdr["reply-to"]);
         }
 
