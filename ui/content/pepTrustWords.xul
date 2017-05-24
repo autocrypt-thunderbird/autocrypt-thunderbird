@@ -20,7 +20,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="return onLoad();"
         ondialogaccept="return onAccept();"
-        ondialogcancel="onCancel();"
+        ondialogcancel="return onCancel();"
         ondialogextra1="onMistrustKey();"
         minheight="50">
 
@@ -28,9 +28,14 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/pepTrustWords.js"/>
 
   <vbox flex="1">
-    <hbox align="center" flex="1">
+    <hbox align="center" flex="1" id="overallDesc">
       <description style="max-width: 400px" flex="1">
         &enigmail.pEp.trustWordsDlg.overallDesc;
+      </description>
+    </hbox>
+    <hbox align="center" flex="1" id="keySyncDesc" collapsed="true">
+      <description style="max-width: 400px" flex="1">
+        &enigmail.pEp.trustWordsDlg.keySyncDesc;
       </description>
     </hbox>
     <separator/>

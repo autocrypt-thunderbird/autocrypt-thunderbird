@@ -20,8 +20,11 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+
+
+const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 
 
 const testMessage = {
@@ -100,16 +103,20 @@ var EnigmailPEPKeySync = {
 
 
   notifyHandshake: function(pepParams) {
+    EnigmailLog.DEBUG("pEpMessage.notifyHandshake()\n");
+
+    let myId = pepParams[0];
+    let partnerId = pepParams[1];
+
     let uiLocale = EnigmailLocale.getUILocale().substr(0, 2).toLowerCase();
     let useLocale = uiLocale;
     let supportedLocale = [];
 
     EnigmailpEp.getLanguageList().then(function _success(res) {
       let deferred = Promise.defer();
+      EnigmailLog.DEBUG("pEpMessage.notifyHandshake: got language list 1: " + JSON.stringify(res) + "\n");
 
-      let outArr = EnigmailpEp.processLanguageList(res);
-      deferred.resolve(outArr);
-    }).then(function _ok(localeList) {
+      let localeList = EnigmailpEp.processLanguageList(res);
       supportedLocale = localeList;
 
       for (let i = 0; i < localeList.length; i++) {
@@ -118,26 +125,33 @@ var EnigmailPEPKeySync = {
         }
       }
 
-      return EnigmailpEp.getTrustWords(pepParams[0], pepParams[1], useLocale, false);
+      return EnigmailpEp.getTrustWords(myId, partnerId, useLocale, false);
 
     }).then(function _displayDialog(data) {
       // open trustwords dialog
       if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[1] === "string") {
-        let trustWords = data.result.outParams[1];
+        try {
+          let trustWords = data.result.outParams[1];
 
-        let win = EnigmailWindows.getBestParentWin();
-        let inputObj = {
-          supportedLocale: supportedLocale,
-          locale: useLocale,
-          trustWords: trustWords,
-          dialogMode: 1
-        };
-        win.openDialog("chrome://enigmail/content/pepTrustWords.xul",
-          "", "dialog,modal,centerscreen", inputObj);
+          let win = getWindows().getBestParentWin();
+          let inputObj = {
+            supportedLocale: supportedLocale,
+            locale: useLocale,
+            trustWords: trustWords,
+            dialogMode: 1,
+            ownId: myId,
+            otherId: partnerId
+          };
+          win.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+            "", "dialog,modal,centerscreen", inputObj);
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("pEpMessage.notifyHandshake: caught exception: " + ex.toString() + "\n");
+        }
       }
 
     }).catch(function _err(err) {
-
+      EnigmailLog.DEBUG("pEpMessage.notifyHandshake: caught error: " + JSON.stringify(err) + "\n");
     });
 
 

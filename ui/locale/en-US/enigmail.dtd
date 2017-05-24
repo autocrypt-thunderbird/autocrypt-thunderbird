@@ -816,6 +816,7 @@
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you. They should match the Trustwords below.">
+<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "You are about to add a device to your p≡p device group. Confirm by successfully verifying the following Trustwords.">
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Fingerprint for my key:">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "Trustwords">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "Long Trustwords">

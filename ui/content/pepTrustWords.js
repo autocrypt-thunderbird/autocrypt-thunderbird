@@ -15,7 +15,16 @@ Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLoca
 const INPUT = 0;
 const CLOSE_WIN = "close";
 
+const MODE_USER_USER = 0;
+const MODE_KEY_SYNC = 1;
+
+const PEP_SYNC_HANDSHAKE_ACCEPTED = 0;
+const PEP_SYNC_HANDSHAKE_REJECTED = 1;
+const PEP_SYNC_HANDSHAKE_CANCEL = -1;
+
+
 var gLocale = "";
+var gDialogMode = MODE_USER_USER;
 
 /**
   Argmuments (param[0]):
@@ -32,6 +41,8 @@ function onLoad() {
   let supportedLocale = argsObj.supportedLocale;
   gLocale = argsObj.locale;
 
+  if ("dialogMode" in argsObj) gDialogMode = argsObj.dialogMode;
+
   for (let i = 0; i < supportedLocale.length; i++) {
     let item = appendLocaleMenuEntry(supportedLocale[i].short, supportedLocale[i].long);
     if (supportedLocale[i].short === argsObj.locale) {
@@ -40,7 +51,7 @@ function onLoad() {
   }
 
   let partnerEmail = document.getElementById("partnerEmailAddr");
-  if (argsObj.dialogMode === 0) {
+  if (gDialogMode === MODE_USER_USER) {
     partnerEmail.setAttribute("value", argsObj.otherId.username + " <" + argsObj.otherId.address + ">");
     partnerEmail.setAttribute("class", EnigmailPEPAdapter.getRatingClass(argsObj.userRating.rating));
     document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
@@ -48,10 +59,12 @@ function onLoad() {
     document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
   }
   else {
-    partnerEmail.setAttribute("value", "Key sync");
+    partnerEmail.setAttribute("collapsed", "true");
     document.getElementById("partnerFpr").setAttribute("collapsed", "true");
-    document.getElementById("myFpr").setAttribute("collapsed", "true");
+    document.getElementById("fprBox").setAttribute("collapsed", "true");
     document.getElementById("selectVerifyType").setAttribute("collapsed", "true");
+    document.getElementById("overallDesc").setAttribute("collapsed", "true");
+    document.getElementById("keySyncDesc").removeAttribute("collapsed");
   }
 
   displayTrustWords(argsObj.trustWords);
@@ -91,6 +104,15 @@ function getTrustWords(locale) {
 
 
 function onAccept() {
+  if (gDialogMode == MODE_USER_USER) {
+    return acceptUserHandshake();
+  }
+  else {
+    return completeKeySync(PEP_SYNC_HANDSHAKE_ACCEPTED);
+  }
+}
+
+function acceptUserHandshake() {
   let argsObj = window.arguments[INPUT];
 
   if (argsObj.otherId) {
@@ -110,20 +132,47 @@ function onAccept() {
   return false;
 }
 
+
 function onMistrustKey() {
+  if (gDialogMode === MODE_USER_USER) {
+    let argsObj = window.arguments[INPUT];
+
+    if (argsObj.otherId) {
+      EnigmailPEPAdapter.pep.mistrustIdentity(argsObj.otherId).then(function _trustDone(data) {
+        if (!("result" in data && (typeof data.result === "object") && data.result.return.status === 0)) {
+          EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
+        }
+        window.close();
+      });
+    }
+  }
+  else completeKeySync(PEP_SYNC_HANDSHAKE_REJECTED);
+}
+
+function completeKeySync(keySyncResult) {
   let argsObj = window.arguments[INPUT];
 
   if (argsObj.otherId) {
-    EnigmailPEPAdapter.pep.mistrustIdentity(argsObj.otherId).then(function _trustDone(data) {
+    EnigmailPEPAdapter.pep.deliverHandshakeResult(argsObj.otherId, keySyncResult).
+    then(function _syncDone(data) {
       if (!("result" in data && (typeof data.result === "object") && data.result.return.status === 0)) {
         EnigmailWindows.alert(null, EnigmailLocale.getString("pepTrustWords.cannotStoreChange", argsObj.otherId.address));
       }
       window.close();
-    });
+    }).
+    catch(function _err() {});
   }
+
+  return false;
 }
 
-function onCancel() {}
+function onCancel() {
+  if (gDialogMode === MODE_KEY_SYNC) {
+    completeKeySync(PEP_SYNC_HANDSHAKE_CANCEL);
+  }
+
+  return true;
+}
 
 
 function changeVerifcationType(type) {

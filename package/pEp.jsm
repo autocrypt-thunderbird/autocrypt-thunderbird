@@ -604,6 +604,33 @@ var EnigmailpEp = {
     }
   },
 
+  /**
+   * reset the trust level of a user identity in pEp
+   *
+   * @param partnerId:   Object - pEp Identity object of partner
+   * @param resultValue: Number - Handshake result value (from pEp sync.h):
+   *                    SYNC_HANDSHAKE_CANCEL  = -1
+   *                    SYNC_HANDSHAKE_ACCEPTED = 0
+   *                    SYNC_HANDSHAKE_REJECTED = 1
+   *
+   * @return: Promise.
+   *  then:  returned result
+   *  catch: Error object (see above)
+   */
+  deliverHandshakeResult: function(partnerId, resultValue) {
+    DEBUG_LOG("deliverHandshakeResult()");
+    try {
+      let params = [partnerId, resultValue];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "deliverHandshakeResult", params);
+
+    }
+    catch (ex) {
+      let deferred = Promise.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
 
   /**
    * get list of languaes for which pEp trustwords are available
@@ -655,9 +682,7 @@ var EnigmailpEp = {
       }, []);
       return outArr;
     }
-    else {
-      return [];
-    }
+    return [];
   },
 
   /**
