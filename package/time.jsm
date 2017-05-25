@@ -16,7 +16,8 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/locale.jsm");
 
-const DATE_FORMAT_CONTRACTID = "@mozilla.org/intl/scriptabledateformat;1";
+const DATE_2DIGIT = "2-digit";
+
 
 const EnigmailTime = {
   /**
@@ -32,15 +33,20 @@ const EnigmailTime = {
     if (dateNum && dateNum !== 0) {
       let dat = new Date(dateNum * 1000);
       let appLocale = EnigmailLocale.get();
-      let dateTimeFormat = Cc[DATE_FORMAT_CONTRACTID].getService(Ci.nsIScriptableDateFormat);
 
-      let dateFormat = (withDate ? dateTimeFormat.dateFormatShort : dateTimeFormat.dateFormatNone);
-      let timeFormat = (withTime ? dateTimeFormat.timeFormatNoSeconds : dateTimeFormat.timeFormatNone);
-      return dateTimeFormat.FormatDateTime(appLocale.getCategory("NSILOCALE_TIME"),
-        dateFormat,
-        timeFormat,
-        dat.getFullYear(), dat.getMonth() + 1, dat.getDate(),
-        dat.getHours(), dat.getMinutes(), 0);
+      var options = {};
+
+      if (withDate) {
+        options.day = DATE_2DIGIT;
+        options.month = DATE_2DIGIT;
+        options.year = DATE_2DIGIT;
+      }
+      if (withTime) {
+        options.hour = DATE_2DIGIT;
+        options.minute = DATE_2DIGIT;
+      }
+
+      return new Intl.DateTimeFormat(appLocale.getCategory("NSILOCALE_TIME"), options).format(dat);
     }
     else {
       return "";

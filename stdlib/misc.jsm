@@ -37,8 +37,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/mailServices.js");
 // That one doesn't belong to MailServices.
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",
-  "@mozilla.org/intl/scriptabledateformat;1",
-  "nsIScriptableDateFormat");
+  "@mozilla.org/intl/scriptabledateformat;1");
 
 Cu.import("resource://enigmail/log.jsm");
 
@@ -202,18 +201,26 @@ function getIdentityForEmail(anEmailAddress) {
  * @return {String} a string containing the formatted date
  */
 function dateAsInMessageList(aDate) {
+  const DATE_2DIGIT = "2-digit";
   let now = new Date();
   // Is it today?
   let isToday =
     now.getFullYear() == aDate.getFullYear() &&
     now.getMonth() == aDate.getMonth() &&
     now.getDate() == aDate.getDate();
-  let format = isToday ? Ci.nsIScriptableDateFormat.dateFormatNone : Ci.nsIScriptableDateFormat.dateFormatShort;
-  // That is an ugly XPCOM call!
-  return MailServices.i18nDateFormatter.FormatDateTime(
-    "", format, Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
-    aDate.getFullYear(), aDate.getMonth() + 1, aDate.getDate(),
-    aDate.getHours(), aDate.getMinutes(), aDate.getSeconds());
+
+  let options = {
+    hour: DATE_2DIGIT,
+    minute: DATE_2DIGIT
+  };
+
+  if (!isToday) {
+    options.day = DATE_2DIGIT;
+    options.month = DATE_2DIGIT;
+    options.year = DATE_2DIGIT;
+  }
+
+  return new Intl.DateTimeFormat([], options).format(aDate);
 }
 
 
