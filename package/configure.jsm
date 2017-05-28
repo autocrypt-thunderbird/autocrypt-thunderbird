@@ -190,6 +190,14 @@ function upgradeOldPgpMime() {
 }
 
 /**
+ * Replace short key IDs with FPR in identity settings
+ */
+function replaceKeyIdWithFpr() {
+  // TODO: completeme!
+}
+
+
+/**
  * Change the default to PGP/MIME for all accounts, except nntp
  */
 function defaultPgpMime() {
@@ -299,6 +307,9 @@ const EnigmailConfigure = {
 
       if (vc.compare(oldVer, "1.9a2pre") < 0) {
         defaultPgpMime();
+      }
+      if (vc.compare(oldVer, "2.0a1pre") < 0) {
+        replaceKeyIdWithFpr();
       }
     }
 

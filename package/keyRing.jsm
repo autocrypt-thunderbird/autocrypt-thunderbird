@@ -24,12 +24,12 @@ Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 
 
 const nsIEnigmail = Ci.nsIEnigmail;
@@ -165,6 +165,7 @@ var EnigmailKeyRing = {
   getAllKeys: function(win, sortColumn, sortDirection) {
     if (gKeyListObj.keySortList.length === 0) {
       loadKeyList(win, sortColumn, sortDirection);
+      getWindows().keyManReloadKeys();
     }
     else {
       if (sortColumn) {
@@ -1337,7 +1338,7 @@ function loadKeyList(win, sortColumn, sortDirection) {
     if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
         EnigmailLocale.getString("keyMan.button.generateKey"),
         EnigmailLocale.getString("keyMan.button.skip"))) {
-      EnigmailWindows.openKeyGen();
+      getWindows().openKeyGen();
       EnigmailKeyRing.clearCache();
       loadKeyList(win, sortColumn, sortDirection);
     }

@@ -61,7 +61,7 @@ function enigmailKeyManagerLoad() {
   gShowUntrustedKeys = document.getElementById("showUntrustedKeys");
   gShowOthersKeys = document.getElementById("showOthersKeys");
 
-  window.addEventListener("reload-keycache", refreshKeys);
+  window.addEventListener("reload-keycache", reloadKeys);
 
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
@@ -111,6 +111,9 @@ function refreshKeys() {
   buildKeyList(true);
 }
 
+function reloadKeys() {
+  buildKeyList(false);
+}
 
 function buildKeyList(refresh) {
   EnigmailLog.DEBUG("enigmailKeyManager.js: buildKeyList\n");

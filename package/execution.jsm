@@ -170,6 +170,7 @@ const EnigmailExecution = {
     exitCodeObj.value = -1;
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
     try {
       subprocess.call({
@@ -181,9 +182,11 @@ const EnigmailExecution = {
           exitCodeObj.value = result.exitCode;
           outputData = result.stdout;
           errOutput = result.stderr;
+          inspector.exitNestedEventLoop();
         },
         mergeStderr: false
-      }).wait();
+      });
+      inspector.enterNestedEventLoop(0);
     }
     catch (ex) {
       EnigmailLog.ERROR("execution.jsm: EnigmailExecution.simpleExecCmd: " + command.path + " failed\n");
@@ -216,6 +219,8 @@ const EnigmailExecution = {
     let outputData = "";
     let errOutput = "";
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
     const procBuilder = new EnigmailExecution.processBuilder();
     procBuilder.setCommand(command);
     procBuilder.setArguments(args);
@@ -233,12 +238,14 @@ const EnigmailExecution = {
         if (result.stdout) outputData = result.stdout;
         if (result.stderr) errOutput = result.stderr;
         exitCodeObj.value = result.exitCode;
+        inspector.exitNestedEventLoop();
       }
     );
 
     const proc = procBuilder.build();
     try {
-      subprocess.call(proc).wait();
+      subprocess.call(proc);
+      inspector.enterNestedEventLoop(1);
     }
     catch (ex) {
       EnigmailLog.ERROR("execution.jsm: EnigmailExecution.execCmd: subprocess.call failed with '" + ex.toString() + "'\n");

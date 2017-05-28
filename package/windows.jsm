@@ -202,8 +202,8 @@ const EnigmailWindows = {
 
   keyManReloadKeys: function() {
     let windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-    let winName = "enigmail:KeyManager";
-    let spec = "chrome://enigmail/content/enigmailKeygen.xul";
+    const winName = "enigmail:KeyManager";
+    const spec = "chrome://enigmail/content/enigmailKeygen.xul";
 
     let winEnum = windowManager.getEnumerator(null);
     let recentWin = null;
@@ -213,7 +213,7 @@ const EnigmailWindows = {
         recentWin = thisWin;
         break;
       }
-      if (winName && thisWin.name && thisWin.name == winName) {
+      if (thisWin.name && thisWin.name == winName) {
         let evt = new thisWin.Event("reload-keycache", {
           "bubbles": true,
           "cancelable": false
