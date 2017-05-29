@@ -16,10 +16,15 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
+const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 
 const nsIEnigmail = Ci.nsIEnigmail;
 const DAY = 86400; // number of seconds of 1 day
@@ -44,12 +49,12 @@ var EnigmailKeyUsability = {
       let keys;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = EnigmailKeyRing.getKeyById(keySpec);
+        let key = getKeyRing().getKeyById(keySpec);
         if (!key) return p;
         keys = [key];
       }
       else {
-        keys = EnigmailKeyRing.getKeysByUserId(keySpec);
+        keys = getKeyRing().getKeysByUserId(keySpec);
         if (keys.length === 0) return p;
       }
 
@@ -202,12 +207,12 @@ var EnigmailKeyUsability = {
       let keys;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = EnigmailKeyRing.getKeyById(keySpec);
+        let key = getKeyRing().getKeyById(keySpec);
         if (!key) return p;
         keys = [key];
       }
       else {
-        keys = EnigmailKeyRing.getKeysByUserId(keySpec);
+        keys = getKeyRing().getKeysByUserId(keySpec);
         if (keys.length === 0) return p;
       }
 
@@ -259,6 +264,55 @@ var EnigmailKeyUsability = {
         keyDesc += "- " + getKeyDesc(keysMissingOwnertrust[i]) + "\n";
       }
       return EnigmailLocale.getString("expiry.keysMissingOwnerTrust", keyDesc);
+    }
+  },
+
+  /**
+   * Run the check for Ownertrust ("You rely on certifications") and
+   * Display a message if something needs to be done
+   */
+  checkOwnertrust: function() {
+    EnigmailLog.DEBUG("keyUsability.jsm: checkOwnertrust\n");
+
+    var resultObj = {};
+    let msg = this.keyOwnerTrustCheck(resultObj);
+
+    if (msg && (msg.length > 0) && EnigmailPrefs.getPref("warnOnMissingOwnerTrust")) {
+      let actionButtonText = "";
+
+      if (resultObj && resultObj.Count === 1) {
+        // single key is concerned
+        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyProperties");
+      }
+      else {
+        // Multiple keys concerned
+        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyManager");
+      }
+
+      let checkedObj = {};
+      let r = getDialog().msgBox(null, {
+          msgtext: msg,
+          dialogTitle: EnigmailLocale.getString("enigInfo"),
+          checkboxLabel: EnigmailLocale.getString("dlgNoPrompt"),
+          button1: EnigmailLocale.getString("dlg.button.close"),
+          button2: actionButtonText,
+          iconType: EnigmailConstants.ICONTYPE_INFO
+        },
+        checkedObj);
+      if (r >= 0 && checkedObj.value) {
+        // Do not show me this dialog again
+        EnigmailPrefs.setPref("warnOnMissingOwnerTrust", false);
+      }
+      if (r == 1) {
+        if (resultObj && resultObj.Count === 1) {
+          // single key is concerned, open key details dialog
+          getWindows().openKeyDetails(null, resultObj.keyId, false);
+        }
+        else {
+          // Multiple keys concerned, open Key Manager
+          getWindows().openKeyManager(null);
+        }
+      }
     }
   }
 };

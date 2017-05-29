@@ -28,8 +28,10 @@ Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
+const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
 
 
 const nsIEnigmail = Ci.nsIEnigmail;
@@ -79,6 +81,7 @@ let gKeygenProcess = null;
 let gKeyListObj = null;
 let gKeyIndex = [];
 let gSubkeyIndex = [];
+let gKeyCheckDone = false;
 
 /*
 
@@ -166,6 +169,10 @@ var EnigmailKeyRing = {
     if (gKeyListObj.keySortList.length === 0) {
       loadKeyList(win, sortColumn, sortDirection);
       getWindows().keyManReloadKeys();
+      if (!gKeyCheckDone) {
+        gKeyCheckDone = true;
+        runKeyUsabilityCheck();
+      }
     }
     else {
       if (sortColumn) {
@@ -1662,6 +1669,27 @@ function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDir
   }
 
   gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
+}
+
+function runKeyUsabilityCheck() {
+  EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck()\n");
+
+  EnigmailTimer.setTimeout(function _f() {
+    try {
+      let msg = getKeyUsability().keyExpiryCheck();
+
+      if (msg && msg.length > 0) {
+        getDialog().info(null, msg);
+      }
+      else {
+        getKeyUsability().checkOwnertrust();
+      }
+    }
+    catch (ex) {
+      EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.toString() + "\n");
+    }
+
+  }, 60 * 1000); // 1 minute
 }
 
 /************************ IMPLEMENTATION of KeyObject ************************/

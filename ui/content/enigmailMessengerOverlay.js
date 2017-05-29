@@ -150,18 +150,12 @@ Enigmail.msg = {
 
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
 
-    Enigmail.msg.expiryTimer = EnigmailTimer.setTimeout(function _f() {
-      let msg = EnigmailKeyUsability.keyExpiryCheck();
+    EnigmailTimer.setTimeout(function _f() {
+      // if nothing happened, then load all keys after 1 hour
+      // to trigger the key check
+      EnigmailKeyRing.getAllKeys();
 
-      if (msg && msg.length > 0) {
-        EnigmailDialog.info(window, msg);
-      }
-
-      this.expiryTimer = undefined;
-    }.bind(Enigmail.msg), 60000); // 1 minute
-
-    // Enable automatic check for suitable Ownertrust ("You rely on certifications")
-    Enigmail.msg.OTcheckTimer = EnigmailTimer.setTimeout(Enigmail.msg.checkOwnertrust.bind(Enigmail.msg), 10000); // 10 seconds
+    }, 3600 * 1000); // 1 hour
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
@@ -2578,54 +2572,6 @@ Enigmail.msg = {
     if (imported) this.messageReload(false);
 
     return null;
-  },
-
-  // check if all used keys have suitable Ownertrust ("You rely on certifications")
-  checkOwnertrust: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: checkOwnertrust\n");
-
-    var resultObj = {};
-    let msg = EnigmailKeyUsability.keyOwnerTrustCheck(resultObj);
-
-    if (msg && (msg.length > 0) && EnigmailPrefs.getPref("warnOnMissingOwnerTrust")) {
-      let actionButtonText = "";
-
-      if (resultObj && resultObj.Count === 1) {
-        // single key is concerned
-        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyProperties");
-      }
-      else {
-        // Multiple keys concerned
-        actionButtonText = EnigmailLocale.getString("expiry.OpenKeyManager");
-      }
-
-      let checkedObj = {};
-      const r = EnigmailDialog.msgBox(window, {
-          msgtext: msg,
-          dialogTitle: EnigmailLocale.getString("enigInfo"),
-          checkboxLabel: EnigmailLocale.getString("dlgNoPrompt"),
-          button1: EnigmailLocale.getString("dlg.button.close"),
-          button2: actionButtonText,
-          iconType: EnigmailConstants.ICONTYPE_INFO
-        },
-        checkedObj);
-      if (r >= 0 && checkedObj.value) {
-        // Do not show me this dialog again
-        EnigmailPrefs.setPref("warnOnMissingOwnerTrust", false);
-      }
-      if (r == 1) {
-        if (resultObj && resultObj.Count === 1) {
-          // single key is concerned, open key details dialog
-          EnigmailWindows.openKeyDetails(window, resultObj.keyId, false);
-        }
-        else {
-          // Multiple keys concerned, open Key Manager
-          EnigmailWindows.openKeyManager(window);
-        }
-      }
-    }
-
-    this.expiryTimer = undefined;
   },
 
   /**
