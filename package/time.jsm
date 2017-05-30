@@ -17,7 +17,7 @@ const Cu = Components.utils;
 Cu.import("resource://enigmail/locale.jsm");
 
 const DATE_2DIGIT = "2-digit";
-
+const DATE_4DIGIT = "numeric";
 
 const EnigmailTime = {
   /**
@@ -39,7 +39,13 @@ const EnigmailTime = {
       if (withDate) {
         options.day = DATE_2DIGIT;
         options.month = DATE_2DIGIT;
-        options.year = DATE_2DIGIT;
+        let year = dat.getFullYear();
+        if (year > 2099) {
+          options.year = DATE_4DIGIT;
+        }
+        else {
+          options.year = DATE_2DIGIT;
+        }
       }
       if (withTime) {
         options.hour = DATE_2DIGIT;

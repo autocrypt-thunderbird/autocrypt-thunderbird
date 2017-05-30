@@ -202,6 +202,7 @@ function getIdentityForEmail(anEmailAddress) {
  */
 function dateAsInMessageList(aDate) {
   const DATE_2DIGIT = "2-digit";
+  const DATE_4DIGIT = "numeric";
   let now = new Date();
   // Is it today?
   let isToday =
@@ -217,7 +218,13 @@ function dateAsInMessageList(aDate) {
   if (!isToday) {
     options.day = DATE_2DIGIT;
     options.month = DATE_2DIGIT;
-    options.year = DATE_2DIGIT;
+    let year = aDate.getFullYear();
+    if (year > 2099) {
+      options.year = DATE_4DIGIT;
+    }
+    else {
+      options.year = DATE_2DIGIT;
+    }
   }
 
   return new Intl.DateTimeFormat([], options).format(aDate);
