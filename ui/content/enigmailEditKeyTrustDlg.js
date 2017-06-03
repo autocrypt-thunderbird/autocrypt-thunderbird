@@ -43,7 +43,7 @@ function onLoad() {
 
     if (gKeyList.length > 0) {
       for (let i = 0; i < gKeyList.length; i++) {
-        currTrust = (("-nmfuq").indexOf(gKeyList[i].keyTrust) % 5) + 1;
+        currTrust = (("-nmfuq").indexOf(gKeyList[i].ownerTrust) % 5) + 1;
         if (lastTrust == -1) lastTrust = currTrust;
         if (currTrust != lastTrust) {
           currTrust = -1;
