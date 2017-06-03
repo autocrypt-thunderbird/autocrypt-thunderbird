@@ -80,7 +80,7 @@ PgpMimeEncrypt.prototype = {
 
   // nsIStreamListener interface
   onStartRequest: function(request) {
-    LOCAL_DEBUG("mimeEncrypt.js: onStartRequest\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: onStartRequest\n");
     this.encHeader = null;
   },
 
@@ -93,7 +93,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   onStopRequest: function(request, win, status) {
-    LOCAL_DEBUG("mimeEncrypt.js: onStopRequest\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
   },
 
   disableSMimeCheck: function() {
@@ -103,7 +103,7 @@ PgpMimeEncrypt.prototype = {
 
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function(msgIdentity, msgCompFields) {
-    LOCAL_DEBUG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
     try {
 
       if (EnigmailPEPAdapter.usingPep()) {
@@ -144,7 +144,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
-    LOCAL_DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
 
     if (EnigmailPEPAdapter.usingPep()) {
       this.recipientList = recipientList;
@@ -243,7 +243,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   startCryptoHeaders: function() {
-    LOCAL_DEBUG("mimeEncrypt.js: startCryptoHeaders\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: startCryptoHeaders\n");
 
     if (this.cryptoMode == MIME_SIGNED) this.signedHeaders1(false);
     if (this.cryptoMode == MIME_ENCRYPTED) this.encryptedHeaders();
@@ -344,7 +344,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   encryptedHeaders: function(isEightBit) {
-    LOCAL_DEBUG("mimeEncrypt.js: encryptedHeaders\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: encryptedHeaders\n");
     let subj = "";
 
     if (this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
@@ -393,13 +393,13 @@ PgpMimeEncrypt.prototype = {
   },
 
   finishCryptoHeaders: function() {
-    LOCAL_DEBUG("mimeEncrypt.js: finishCryptoHeaders\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoHeaders\n");
 
     this.writeOut("\r\n--" + this.cryptoBoundary + "--\r\n");
   },
 
   finishCryptoEncapsulation: function(abort, sendReport) {
-    LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
     if (EnigmailPEPAdapter.usingPep()) {
       this.processPepEncryption();
@@ -646,7 +646,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   done: function(exitCode) {
-    LOCAL_DEBUG("mimeEncrypt.js: done: " + exitCode + "\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: done: " + exitCode + "\n");
 
     let retStatusObj = {};
 

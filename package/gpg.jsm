@@ -61,13 +61,10 @@ function getDirmngrTorStatus(exitCodeObj) {
 
   let stdout = "";
   try {
-    subprocess.call({
+    exitCodeObj.value = subprocess.call({
       command: command,
       arguments: args,
       environment: EnigmailCore.getEnvList(),
-      done: function(result) {
-        exitCodeObj.value = result.exitCode;
-      },
       stdin: function(stdin) {
         stdin.write("GETINFO tor\r\n");
         stdin.write("bye\r\n");

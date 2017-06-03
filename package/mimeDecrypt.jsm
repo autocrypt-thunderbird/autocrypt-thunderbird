@@ -118,6 +118,8 @@ EnigmailMimeDecrypt.prototype = {
     this.decryptedHeaders = {};
     this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
+    this.inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
     if (uri) {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
@@ -356,7 +358,8 @@ EnigmailMimeDecrypt.prototype = {
       this.closePipe = true;
     }
 
-    this.proc.wait();
+    // wait here for this.proc to terminate
+    this.inspector.enterNestedEventLoop(0);
 
     this.returnStatus = {};
     EnigmailDecryption.decryptMessageEnd(this.statusStr,
@@ -443,7 +446,8 @@ EnigmailMimeDecrypt.prototype = {
     this.statusStr += s;
   },
 
-  done: function(exitCode) {
+  done: function(result) {
+    let exitCode = result.exitCode;
     LOCAL_DEBUG("mimeDecrypt.jsm: done: " + exitCode + "\n");
 
     if (gDebugLogLevel > 4)
@@ -480,6 +484,9 @@ EnigmailMimeDecrypt.prototype = {
     }
 
     this.exitCode = exitCode;
+    if (this.inspector && this.inspector.eventLoopNestLevel > 0) {
+      this.inspector.exitNestedEventLoop();
+    }
   },
 
   extractContentType: function(data) {

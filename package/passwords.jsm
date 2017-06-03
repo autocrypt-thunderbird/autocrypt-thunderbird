@@ -63,14 +63,11 @@ const EnigmailPassword = {
         if (data.search(/^ERR/m) >= 0) {
           ++isError;
         }
-      },
-      done: function(result) {
-        exitCode = result.exitCode;
       }
     };
 
     try {
-      subprocess.call(proc).wait();
+      exitCode = subprocess.call(proc).wait();
     }
     catch (ex) {}
 

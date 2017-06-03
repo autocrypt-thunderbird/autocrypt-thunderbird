@@ -130,23 +130,26 @@ var EnigmailGpgAgent = {
     }
 
     const psCmd = EnigmailFiles.resolvePath("ps", path, false);
+    let outStr = "";
 
     const proc = {
       command: psCmd,
       arguments: ["-o", "comm", "-p", pid],
       environment: EnigmailCore.getEnvList(),
       charset: null,
-      done: function(result) {
-        EnigmailLog.DEBUG("gpgAgent.jsm: isCmdGpgAgent: got data: '" + result.stdout + "'\n");
-        var data = result.stdout.replace(/[\r\n]/g, " ");
-        if (data.search(/gpg-agent/) >= 0) {
-          ret = true;
-        }
+      stdout: function(data) {
+        outStr += data;
       }
     };
 
     try {
       subprocess.call(proc).wait();
+
+      EnigmailLog.DEBUG("gpgAgent.jsm: isCmdGpgAgent: got data: '" + outStr + "'\n");
+      var data = outStr.replace(/[\r\n]/g, " ");
+      if (data.search(/gpg-agent/) >= 0) {
+        ret = true;
+      }
     }
     catch (ex) {}
 
@@ -168,6 +171,7 @@ var EnigmailGpgAgent = {
 
     let pid = -1;
     let exitCode = -1;
+    let outStr = "";
     if (!EnigmailCore.getService()) return false;
 
     const proc = {
@@ -182,18 +186,19 @@ var EnigmailGpgAgent = {
         pipe.write("/bye\n");
         pipe.close();
       },
-      done: function(result) {
-        exitCode = result.exitCode;
-        const data = result.stdout.replace(/[\r\n]/g, "");
-        if (data.search(/^pid: [0-9]+$/) === 0) {
-          pid = data.replace(/^pid: /, "");
-        }
+      stdout: function(data) {
+        outStr += data;
       }
     };
 
     try {
-      subprocess.call(proc).wait();
+      exitCode = subprocess.call(proc).wait();
       if (exitCode) pid = -2;
+
+      const data = outStr.replace(/[\r\n]/g, "");
+      if (data.search(/^pid: [0-9]+$/) === 0) {
+        pid = data.replace(/^pid: /, "");
+      }
     }
     catch (ex) {}
 
@@ -219,34 +224,37 @@ var EnigmailGpgAgent = {
 
     const DEFAULT = 7;
     const CFGVALUE = 9;
+    let outStr = "";
 
     const proc = {
       command: EnigmailGpgAgent.gpgconfPath,
       arguments: ["--list-options", "gpg-agent"],
       charset: null,
       environment: EnigmailCore.getEnvList(),
-      done: function(result) {
-        const lines = result.stdout.split(/[\r\n]/);
-
-        for (let i = 0; i < lines.length; i++) {
-          EnigmailLog.DEBUG("gpgAgent.jsm: getAgentMaxIdle: line: " + lines[i] + "\n");
-
-          if (lines[i].search(/^default-cache-ttl:/) === 0) {
-            const m = lines[i].split(/:/);
-            if (m[CFGVALUE].length === 0) {
-              maxIdle = Math.round(m[DEFAULT] / 60);
-            }
-            else {
-              maxIdle = Math.round(m[CFGVALUE] / 60);
-            }
-
-            break;
-          }
-        }
+      stdout: function(data) {
+        outStr += data;
       }
     };
 
     subprocess.call(proc).wait();
+
+    const lines = outStr.split(/[\r\n]/);
+
+    for (let i = 0; i < lines.length; i++) {
+      EnigmailLog.DEBUG("gpgAgent.jsm: getAgentMaxIdle: line: " + lines[i] + "\n");
+
+      if (lines[i].search(/^default-cache-ttl:/) === 0) {
+        const m = lines[i].split(/:/);
+        if (m[CFGVALUE].length === 0) {
+          maxIdle = Math.round(m[DEFAULT] / 60);
+        }
+        else {
+          maxIdle = Math.round(m[CFGVALUE] / 60);
+        }
+
+        break;
+      }
+    }
     return maxIdle;
   },
 
@@ -269,14 +277,12 @@ var EnigmailGpgAgent = {
       },
       stdout: function(data) {
         EnigmailLog.DEBUG("gpgAgent.jsm: setAgentMaxIdle.stdout: " + data + "\n");
-      },
-      done: function(result) {
-        EnigmailLog.DEBUG("gpgAgent.jsm: setAgentMaxIdle.stdout: gpgconf exitCode=" + result.exitCode + "\n");
       }
     };
 
     try {
-      subprocess.call(proc);
+      let exitCode = subprocess.call(proc);
+      EnigmailLog.DEBUG("gpgAgent.jsm: setAgentMaxIdle.stdout: gpgconf exitCode=" + exitCode + "\n");
     }
     catch (ex) {
       EnigmailLog.DEBUG("gpgAgent.jsm: setAgentMaxIdle: exception: " + ex.toString() + "\n");
@@ -347,15 +353,14 @@ var EnigmailGpgAgent = {
       arguments: args,
       environment: EnigmailCore.getEnvList(),
       charset: null,
-      done: function(result) {
-        exitCode = result.exitCode;
-        outStr = result.stdout;
+      stdout: function(data) {
+        outStr += data;
       },
       mergeStderr: false
     };
 
     try {
-      subprocess.call(proc).wait();
+      exitCode = subprocess.call(proc).wait();
     }
     catch (ex) {
       EnigmailLog.ERROR("gpgAgent.jsm: .getGpgHomeDir: subprocess.call failed with '" + ex.toString() + "'\n");
@@ -501,16 +506,17 @@ var EnigmailGpgAgent = {
       arguments: args,
       environment: EnigmailCore.getEnvList(),
       charset: null,
-      done: function(result) {
-        exitCode = result.exitCode;
-        outStr = result.stdout;
-        errStr = result.stderr;
+      stdout: function(data) {
+        outStr += data;
+      },
+      stderr: function(data) {
+        errStr += data;
       },
       mergeStderr: false
     };
 
     try {
-      subprocess.call(proc).wait();
+      exitCode = subprocess.call(proc).wait();
     }
     catch (ex) {
       EnigmailLog.ERROR("gpgAgent.jsm: .setAgentPath: subprocess.call failed with '" + ex.toString() + "'\n");
@@ -618,20 +624,22 @@ var EnigmailGpgAgent = {
           EnigmailLog.CONSOLE("enigmail> " + command.path + "\n");
 
           try {
-            subprocess.call({
+            exitCode = subprocess.call({
               command: command,
               environment: EnigmailCore.getEnvList(),
               stdin: "/echo OK\n",
               charset: null,
-              done: function(result) {
-                EnigmailLog.DEBUG("detectGpgAgent detection terminated with " + result.exitCode + "\n");
-                exitCode = result.exitCode;
-                outStr = result.stdout;
-                errorStr = result.stderr;
-                if (result.stdout.substr(0, 2) == "OK") exitCode = 0;
+              stdout: function(data) {
+                outStr += data;
+              },
+              stderr: function(data) {
+                errorStr += data;
               },
               mergeStderr: false
             }).wait();
+
+            EnigmailLog.DEBUG("detectGpgAgent detection terminated with " + exitCode + "\n");
+            if (outStr.substr(0, 2) == "OK") exitCode = 0;
           }
           catch (ex) {
             EnigmailLog.ERROR("gpgAgent.jsm: detectGpgAgent: " + command.path + " failed\n");
@@ -806,7 +814,8 @@ var EnigmailGpgAgent = {
     if (EnigmailGpgAgent.gpgAgentProcess) {
       EnigmailLog.DEBUG("gpgAgent.jsm: EnigmailGpgAgent.finalize: stopping gpg-agent PID=" + EnigmailGpgAgent.gpgAgentProcess + "\n");
       try {
-        const libc = ctypes.open(subprocess.getPlatformValue(0));
+        // TODO: replace with connect to agent and kill it
+        /*const libc = ctypes.open(subprocess.getPlatformValue(0));
 
         //int kill(pid_t pid, int sig);
         const kill = libc.declare("kill",
@@ -815,7 +824,7 @@ var EnigmailGpgAgent = {
           ctypes.int32_t,
           ctypes.int);
 
-        kill(parseInt(EnigmailGpgAgent.gpgAgentProcess, 10), 15);
+        kill(parseInt(EnigmailGpgAgent.gpgAgentProcess, 10), 15); */
       }
       catch (ex) {
         EnigmailLog.ERROR("gpgAgent.jsm: EnigmailGpgAgent.finalize ERROR: " + ex + "\n");

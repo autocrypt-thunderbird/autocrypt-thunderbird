@@ -170,7 +170,6 @@ const EnigmailExecution = {
     exitCodeObj.value = -1;
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
     try {
       subprocess.call({
@@ -182,11 +181,9 @@ const EnigmailExecution = {
           exitCodeObj.value = result.exitCode;
           outputData = result.stdout;
           errOutput = result.stderr;
-          inspector.exitNestedEventLoop();
         },
         mergeStderr: false
-      });
-      inspector.enterNestedEventLoop(0);
+      }).wait();
     }
     catch (ex) {
       EnigmailLog.ERROR("execution.jsm: EnigmailExecution.simpleExecCmd: " + command.path + " failed\n");
@@ -233,10 +230,18 @@ const EnigmailExecution = {
         pipe.close();
       }
     );
+    procBuilder.setStdout(
+      function(data) {
+        outputData += data;
+      }
+    );
+    procBuilder.setStderr(
+      function(data) {
+        errOutput += data;
+      }
+    );
     procBuilder.setDone(
       function(result) {
-        if (result.stdout) outputData = result.stdout;
-        if (result.stderr) errOutput = result.stderr;
         exitCodeObj.value = result.exitCode;
         inspector.exitNestedEventLoop();
       }
@@ -342,6 +347,9 @@ const EnigmailExecution = {
     };
     this.setStdout = function(stdout) {
       this.process.stdout = stdout;
+    };
+    this.setStderr = function(stderr) {
+      this.process.stderr = stderr;
     };
     this.setDone = function(done) {
       this.process.done = done;

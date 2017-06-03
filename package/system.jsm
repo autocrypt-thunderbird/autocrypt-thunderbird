@@ -95,8 +95,8 @@ function getWindowsCopdepage() {
       environment: [],
       charset: null,
       mergeStderr: false,
-      done: function(result) {
-        output = result.stdout;
+      stdout: function(data) {
+        output += data;
       }
     });
     p.wait();
@@ -143,8 +143,8 @@ function getUnixCharset() {
       environment: [],
       charset: null,
       mergeStderr: false,
-      done: function(result) {
-        output = result.stdout;
+      stdout: function(data) {
+        output += data;
       }
     });
     p.wait();
