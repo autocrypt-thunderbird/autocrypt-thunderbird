@@ -808,23 +808,23 @@ var EnigmailGpgAgent = {
     }
   },
 
-
-
   finalize: function() {
     if (EnigmailGpgAgent.gpgAgentProcess) {
-      EnigmailLog.DEBUG("gpgAgent.jsm: EnigmailGpgAgent.finalize: stopping gpg-agent PID=" + EnigmailGpgAgent.gpgAgentProcess + "\n");
+      EnigmailLog.DEBUG("gpgAgent.jsm: EnigmailGpgAgent.finalize: stopping gpg-agent\n");
       try {
-        // TODO: replace with connect to agent and kill it
-        /*const libc = ctypes.open(subprocess.getPlatformValue(0));
+        const proc = {
+          command: EnigmailGpgAgent.connGpgAgentPath,
+          arguments: [],
+          charset: null,
+          environment: EnigmailCore.getEnvList(),
+          stdin: function(pipe) {
+            pipe.write("killagent\n");
+            pipe.write("/bye\n");
+            pipe.close();
+          }
+        };
 
-        //int kill(pid_t pid, int sig);
-        const kill = libc.declare("kill",
-          ctypes.default_abi,
-          ctypes.int,
-          ctypes.int32_t,
-          ctypes.int);
-
-        kill(parseInt(EnigmailGpgAgent.gpgAgentProcess, 10), 15); */
+        subprocess.call(proc).wait();
       }
       catch (ex) {
         EnigmailLog.ERROR("gpgAgent.jsm: EnigmailGpgAgent.finalize ERROR: " + ex + "\n");
