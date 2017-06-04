@@ -424,14 +424,20 @@ EnigmailMimeDecrypt.prototype = {
 
   // API for decryptMessage Listener
   stdin: function(pipe) {
-    LOCAL_DEBUG("mimeDecrypt.jsm: stdin\n");
-    if (this.outQueue.length > 0) {
-      pipe.write(this.outQueue);
-      this.bytesWritten += this.outQueue.length;
-      this.outQueue = "";
-      if (this.closePipe) pipe.close();
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: stdin()\n");
+
+    if (this.closePipe) {
+      if (this.outQueue.length > 0) {
+        pipe.write(this.outQueue);
+        this.bytesWritten += this.outQueue.length;
+        this.outQueue = "";
+      }
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: stdin: closing pipe\n");
+      pipe.close();
     }
-    this.pipe = pipe;
+    else {
+      this.pipe = pipe;
+    }
   },
 
   stdout: function(s) {

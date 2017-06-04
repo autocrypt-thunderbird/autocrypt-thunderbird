@@ -133,7 +133,7 @@ function run_test() {
   });
 
   p.wait();
-  Assert.equal(gTestLines.join("").length + (isWindows ? 3 : 0), gResultData.length, "comparing result");
+  Assert.equal(gTestLines.join("").length + (isWindows ? 3 : 0) + 30, gResultData.length, "comparing result");
 
 
   /////////////////////////////////////////////////////////////////

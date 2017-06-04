@@ -173,7 +173,7 @@ let readAllData = Task.async(function*(pipe, read, callback) {
 
 let write = (pipe, data) => {
   let buffer = new Uint8Array(Array.from(data, c => c.charCodeAt(0)));
-  return pipe.write(data);
+  return pipe.write(buffer);
 };
 
 var subprocess = {
