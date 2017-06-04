@@ -183,10 +183,11 @@ var subprocess = {
   registerDebugHandler: function() {},
 
   call: function(options) {
-    var result;
+    let result;
     let stdoutData = "";
     let stderrData = "";
     let completePromise = null;
+    let stdinClosed = false;
 
     let procPromise = Task.spawn(function*() {
       let opts = {};
@@ -335,9 +336,12 @@ var subprocess = {
           },
 
           close() {
-            procPromise.then(proc => {
-              proc.stdin.close();
-            });
+            if (!stdinClosed) {
+              stdinClosed = true;
+              procPromise.then(proc => {
+                proc.stdin.close();
+              });
+            }
           }
       });
     }
