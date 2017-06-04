@@ -77,6 +77,7 @@ function run_test() {
         pipe.write(gTestLines[i]);
       }
       pipe.close();
+      pipe.close(); // even if errorneous, this should simply succeed
     },
     stdout: function(data) {
       gResultData += data;
@@ -147,7 +148,7 @@ function run_test() {
     command: pl,
     arguments: [cmd.path, 'dump'],
     environment: envList,
-    workdir: do_get_file(".", true),
+    workdir: do_get_file(".", true).path,
     stdin: function(pipe) {
       for (var i = 0; i < gTestLines.length; i++) {
         pipe.write(gTestLines[i]);
@@ -259,7 +260,7 @@ function run_test() {
   p = subprocess.call({
     command: pl.path,
     arguments: [cmd.path, 'getenv', 'TESTVAR'],
-    cwd: do_get_file(".", true),
+    workdir: do_get_file(".", true).path,
     environment: envList,
     done: function(result) {
       gResultData = result.stdout;
