@@ -520,9 +520,13 @@ MimeVerify.prototype = {
       this.signedData = this.signedData.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
 
       pipe.write(this.signedData);
-      if (this.closePipe) pipe.close();
     }
-    this.pipe = pipe;
+    if (this.closePipe) {
+      pipe.close();
+    }
+    else {
+      this.pipe = pipe;
+    }
   },
 
   stdout: function(s) {
