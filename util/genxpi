@@ -137,8 +137,16 @@ zip --must-match\
     modules/stdlib.jsm \
     modules/streams.jsm \
     modules/subprocess.jsm \
-    modules/subprocess_worker_unix.js \
-    modules/subprocess_worker_win.js \
+    modules/enigmailprocess_shared_unix.js \
+    modules/enigmailprocess_worker_common.js \
+    modules/enigmailprocess_common.jsm \
+    modules/enigmailprocess_shared_win.js \
+    modules/enigmailprocess_worker_unix.js \
+    modules/enigmailprocess_main.jsm \
+    modules/enigmailprocess_unix.jsm \
+    modules/enigmailprocess_worker_win.js \
+    modules/enigmailprocess_shared.js \
+    modules/enigmailprocess_win.jsm \
     modules/system.jsm \
     modules/time.jsm \
     modules/timer.jsm \

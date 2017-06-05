@@ -3,5 +3,6 @@ module.exports = {
 
   "rules": {
     "no-constant-condition": 0,
+    "no-invalid-this": 0
   }
 };

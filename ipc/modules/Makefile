@@ -9,9 +9,17 @@ include $(DEPTH)/config/autoconf.mk
 
 
 EXTRA_JS_MODULES =  \
-                   subprocess.jsm \
-                   subprocess_worker_win.js \
-                   subprocess_worker_unix.js
+	subprocess.jsm \
+	enigmailprocess_shared_unix.js \
+	enigmailprocess_worker_common.js \
+	enigmailprocess_common.jsm \
+	enigmailprocess_shared_win.js \
+	enigmailprocess_worker_unix.js \
+	enigmailprocess_main.jsm \
+	enigmailprocess_unix.jsm \
+	enigmailprocess_worker_win.js \
+	enigmailprocess_shared.js \
+	enigmailprocess_win.jsm
 
 all: $(EXTRA_JS_MODULES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules $^

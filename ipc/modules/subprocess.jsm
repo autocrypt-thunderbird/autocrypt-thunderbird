@@ -5,7 +5,7 @@
 
 /*
  * Import into a JS component using
- * 'Components.utils.import("resource://firefogg/subprocess.jsm");'
+ * 'Components.utils.import("resource://enigmail/subprocess.jsm");'
  *
  * This object allows to start a process, and read/write data to/from it
  * using stdin/stdout/stderr streams.
@@ -133,7 +133,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-Cu.import("resource://gre/modules/Subprocess.jsm"); /* global Subprocess: false */
+Cu.import("resource://enigmail/enigmailprocess_main.jsm"); /* global SubprocessMain: false */
 Cu.import("resource://gre/modules/Task.jsm"); /* global Task: false */
 
 var EXPORTED_SYMBOLS = ["subprocess"];
@@ -203,7 +203,7 @@ var subprocess = {
         opts.command = options.command.path;
       }
       else {
-        opts.command = yield Subprocess.pathSearch(options.command);
+        opts.command = yield SubprocessMain.pathSearch(options.command);
       }
 
       if (options.workdir) {
@@ -228,7 +228,7 @@ var subprocess = {
       }
 
 
-      let proc = yield Subprocess.call(opts);
+      let proc = yield SubprocessMain.call(opts);
 
       Object.defineProperty(result, "pid", {
         value: proc.pid,
