@@ -305,7 +305,10 @@ var subprocess = {
                 stderr: stderrData,
                 exitCode: result.exitCode
               };
-              options.done(r);
+              try {
+                options.done(r);
+              }
+              catch (ex) {}
             }
             resolve(result.exitCode);
           });
@@ -315,12 +318,16 @@ var subprocess = {
     });
 
     procPromise.catch(e => {
-      if (options.done)
-        options.done({
-          exitCode: -1,
-          stdout: "",
-          stderr: ""
-        }, e);
+      if (options.done) {
+        try {
+          options.done({
+            exitCode: -1,
+            stdout: "",
+            stderr: ""
+          }, e);
+        }
+        catch (ex) {}
+      }
       else
         Cu.reportError(e instanceof Error ? e : e.message || e);
     });
