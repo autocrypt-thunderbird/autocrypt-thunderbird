@@ -170,7 +170,6 @@ PgpMimeEncrypt.prototype = {
     if (!outStream) throw Cr.NS_ERROR_NULL_POINTER;
 
     try {
-      this.inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
       this.outStream = outStream;
       this.isDraft = isDraft;
@@ -437,7 +436,7 @@ PgpMimeEncrypt.prototype = {
         this.pipe.close();
 
       // wait here for this.proc to terminate
-      this.inspector.enterNestedEventLoop(0);
+      this.proc.wait();
 
       LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation: exitCode = " + this.exitCode + "\n");
       if (this.exitCode !== 0) throw Cr.NS_ERROR_FAILURE;
@@ -665,10 +664,6 @@ PgpMimeEncrypt.prototype = {
     if (this.exitCode !== 0)
       EnigmailDialog.alert(this.win, retStatusObj.errorMsg);
 
-    if (this.inspector && this.inspector.eventLoopNestLevel > 0) {
-      // unblock the waiting lock in finishCryptoEncapsulation
-      this.inspector.exitNestedEventLoop();
-    }
   },
 
   processPepEncryption: function() {

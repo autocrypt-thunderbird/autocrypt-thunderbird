@@ -389,19 +389,12 @@ const EnigmailEncryption = {
       plainText = plainText.replace(/\n/g, "\r\n");
     }
 
-    var inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
-
     var listener = EnigmailExecution.newSimpleListener(
       function _stdin(pipe) {
         pipe.write(plainText);
         pipe.close();
       },
-      function _done(exitCode) {
-        // unlock wait
-        if (inspector.eventLoopNestLevel > 0) {
-          inspector.exitNestedEventLoop();
-        }
-      });
+      function _done(exitCode) {});
 
 
     var proc = EnigmailEncryption.encryptMessageStart(parent, uiFlags,
@@ -415,7 +408,7 @@ const EnigmailEncryption = {
     }
 
     // Wait for child pipes to close
-    inspector.enterNestedEventLoop(0);
+    proc.wait();
 
     var retStatusObj = {};
     exitCodeObj.value = EnigmailEncryption.encryptMessageEnd(fromMailAddr, EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,

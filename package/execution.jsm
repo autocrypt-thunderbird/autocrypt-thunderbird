@@ -54,7 +54,7 @@ const EnigmailExecution = {
    * @listener:       Object - Listener to interact with subprocess; see spec. above
    * @statusflagsObj: Object - .value will hold status Flags
    *
-   * @return:         handle to suprocess
+   * @return:         handle to subprocess
    */
   execStart: function(command, args, needPassphrase, domWindow, listener, statusFlagsObj) {
     EnigmailLog.WRITE("execution.jsm: execStart: " +
@@ -216,7 +216,6 @@ const EnigmailExecution = {
     let outputData = "";
     let errOutput = "";
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
     const procBuilder = new EnigmailExecution.processBuilder();
     procBuilder.setCommand(command);
@@ -243,14 +242,12 @@ const EnigmailExecution = {
     procBuilder.setDone(
       function(result) {
         exitCodeObj.value = result.exitCode;
-        inspector.exitNestedEventLoop();
       }
     );
 
     const proc = procBuilder.build();
     try {
-      subprocess.call(proc);
-      inspector.enterNestedEventLoop(1);
+      subprocess.call(proc).wait();
     }
     catch (ex) {
       EnigmailLog.ERROR("execution.jsm: EnigmailExecution.execCmd: subprocess.call failed with '" + ex.toString() + "'\n");
