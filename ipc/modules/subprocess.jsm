@@ -15,8 +15,6 @@
  *    command:     '/bin/foo',
  *    arguments:   ['-v', 'foo'],
  *    environment: [ "XYZ=abc", "MYVAR=def" ],
- *    charset: 'UTF-8',
- *    workdir: '/home/foo',
  *    //stdin: "some value to write to stdin\nfoobar",
  *    stdin: function(stdin) {
  *      stdin.write("some value to write to stdin\nfoobar");
@@ -53,14 +51,6 @@
  *              "VAR=data". Please note that if environment is defined, it
  *              replaces any existing environment variables for the subprocess.
  *
- * charset:     Output is decoded with given charset and a string is returned.
- *              If charset is undefined, "UTF-8" is used as default.
- *              To get binary data, set this explicitly to null and the
- *              returned string is not decoded in any way.
- *
- * workdir:     optional; String containing the platform-dependent path to a
- *              directory to become the current working directory of the subprocess.
- *
  * stdin:       optional input data for the process to be passed on standard
  *              input. stdin can either be a string or a function.
  *              A |string| gets written to stdin and stdin gets closed;
@@ -91,12 +81,6 @@
  *
  * mergeStderr: optional boolean value. If true, stderr is merged with stdout;
  *              no data will be provided to stderr. Default is false.
- *
- * bufferedOutput: optional boolean value. If true, stderr and stdout are buffered
- *              and will only deliver data when a certain amount of output is
- *              available. Enabling the option will give you some performance
- *              benefits if you read a lot of data. Don't enable this if your
- *              application works in a conversation-like mode. Default is false.
  *
  *
  * Description of object returned by subprocess.call(...)
@@ -132,250 +116,216 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 Cu.import("resource://enigmail/enigmailprocess_main.jsm"); /* global SubprocessMain: false */
+Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 Cu.import("resource://gre/modules/Task.jsm"); /* global Task: false */
 
 var EXPORTED_SYMBOLS = ["subprocess"];
 
-
-const Runtime = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
-//const Environment = require("sdk/system/environment").env;
 const DEFAULT_ENVIRONMENT = [];
 
 var gDebugFunction = null;
 
-function awaitPromise(promise) {
-  let value;
-  let resolved = null;
-  promise.then(val => {
-    resolved = true;
-    value = val;
-  }, val => {
-    resolved = false;
-    value = val;
-  });
-
-  while (resolved === null)
-    Services.tm.mainThread.processNextEvent(true);
-
-  if (resolved === true)
-    return value;
-  throw value;
-}
-
-let readAllData = Task.async(function*(pipe, read, callback) {
-  /* eslint no-cond-assign: 0 */
-  let string;
-  while (string = yield read(pipe))
-    callback(string);
-});
-
-let write = (pipe, data) => {
+function write(pipe, data) {
   let buffer = new Uint8Array(Array.from(data, c => c.charCodeAt(0)));
   return pipe.write(buffer);
-};
+}
+
+function read(pipe) {
+  return pipe.read().then(buffer => {
+    try {
+      if (buffer.byteLength > 0) {
+        let d = new DataView(buffer);
+        let r = "";
+        for (let i = 0; i < d.byteLength; i++) {
+          r += String.fromCharCode(d.getUint8(i));
+        }
+        return r;
+      }
+    }
+    catch (ex) {
+      DEBUG_LOG("err: " + ex.toString());
+    }
+    return "";
+  });
+}
+
+
+var readAllData = Task.async(function*(pipe, read, callback) {
+  /* eslint no-cond-assign: 0 */
+  let string;
+  while (string = yield read(pipe)) {
+    callback(string);
+  }
+});
+
+
 
 var subprocess = {
-  registerLogHandler: function(func) {
+  registerLogHandler: function() {},
+
+  registerDebugHandler: function(func) {
     gDebugFunction = func;
   },
-  registerDebugHandler: function() {},
 
   call: function(options) {
-    let result;
+
+    let resolved = null;
+    let promises = [];
+    let inputPromises = [];
+    let stdinClosed = false;
     let stdoutData = "";
     let stderrData = "";
-    let completePromise = null;
-    let stdinClosed = false;
 
-    let procPromise = Task.spawn(function*() {
-      let opts = {};
+    function writePipe(pipe, value) {
+      let p = write(pipe, value);
+      promises.push(p);
+      inputPromises.push(p);
+    }
 
-      if (options.mergeStderr) {
-        opts.stderr = "stdout";
-      }
-      else {
-        opts.stderr = "pipe";
-      }
+    function subProcessThen(proc) {
 
-      if (options.command instanceof Ci.nsIFile) {
-        opts.command = options.command.path;
-      }
-      else {
-        opts.command = yield SubprocessMain.pathSearch(options.command);
-      }
+      if (typeof options.stdin === "function") {
+        // Some callers (e.g. child_process.js) depend on this
+        // being called synchronously.
+        options.stdin({
+          write(val) {
+              writePipe(proc.stdin, val);
+            },
 
-      if (options.workdir) {
-        opts.workdir = options.workdir;
-      }
-
-      opts.arguments = options.arguments || [];
-
-
-      // Set up environment
-
-      let envVars = options.environment || DEFAULT_ENVIRONMENT;
-      if (envVars.length) {
-        let environment = {};
-        for (let val of envVars) {
-          let idx = val.indexOf("=");
-          if (idx >= 0)
-            environment[val.slice(0, idx)] = val.slice(idx + 1);
-        }
-
-        opts.environment = environment;
-      }
-
-
-      let proc = yield SubprocessMain.call(opts);
-
-      Object.defineProperty(result, "pid", {
-        value: proc.pid,
-        enumerable: true,
-        configurable: true
-      });
-
-
-      let promises = [];
-
-      // Set up IO handlers.
-
-      let read = pipe => pipe.readString();
-      if (options.charset === null) {
-        read = pipe => {
-          // return pipe.read().then(buffer => {
-          //   return String.fromCharCode(...buffer);
-          // });
-
-          return pipe.read().then(buffer => {
-            try {
-              if (buffer.byteLength > 0) {
-                let d = new DataView(buffer);
-                let r = "";
-                for (let i = 0; i < d.byteLength; i++) {
-                  r += String.fromCharCode(d.getUint8(i));
+            close() {
+              Promise.all(inputPromises).then(() => {
+                if (!stdinClosed) {
+                  stdinClosed = true;
+                  proc.stdin.close();
                 }
-                return r;
-              }
+              });
             }
-            catch (ex) {
-              DEBUG_LOG("err: " + ex.toString());
-            }
-            return "";
-          });
-        };
-      }
+        });
 
-      if (options.stdout) {
-        promises.push(readAllData(proc.stdout, read, options.stdout));
       }
       else {
-        promises.push(readAllData(proc.stdout, read, function _f(data) {
-          stdoutData += data;
+        if (typeof options.stdin === "string") {
+          DEBUG_LOG("write Stdin");
+          writePipe(proc.stdin, options.stdin);
+        }
+
+        Promise.all(inputPromises).then(() => {
+          proc.stdin.close();
+        });
+      }
+
+
+      promises.push(
+        readAllData(proc.stdout, read, data => {
+          DEBUG_LOG("Got Stdout: " + data.length + "\n");
+          if (typeof options.stdout === "function") {
+            try {
+              options.stdout(data);
+            }
+            catch (ex) {}
+          }
+          else
+            stdoutData += data;
         }));
-      }
 
-      if (proc.stderr) {
-        if (options.stderr) {
-          promises.push(readAllData(proc.stderr, read, options.stderr));
-        }
-        else {
-          promises.push(readAllData(proc.stderr, read, function _f(data) {
-            stderrData += data;
-          }));
-        }
-      }
-
-      // Process stdin
-
-      if (typeof options.stdin === "string") {
-        write(proc.stdin, options.stdin);
-        proc.stdin.close();
-      }
-
-      // Handle process completion
-      completePromise = new Promise(function _f(resolve, reject) {
-        Promise.all(promises)
-          .then(() => proc.wait())
-          .then(result => {
-            if (options.done) {
-              let r = {
-                stdout: stdoutData,
-                stderr: stderrData,
-                exitCode: result.exitCode
-              };
+      if (!options.mergeStderr) {
+        promises.push(
+          readAllData(proc.stderr, read, data => {
+            DEBUG_LOG("Got Stderr: " + data.length + "\n");
+            if (typeof options.stderr === "function") {
               try {
-                options.done(r);
+                options.stderr(data);
               }
               catch (ex) {}
             }
-            resolve(result.exitCode);
-          });
-      });
+            else
+              stdoutData += data;
 
-      return proc;
-    });
-
-    procPromise.catch(e => {
-      if (options.done) {
-        try {
-          options.done({
-            exitCode: -1,
-            stdout: "",
-            stderr: ""
-          }, e);
-        }
-        catch (ex) {}
+          }));
       }
-      else
-        Cu.reportError(e instanceof Error ? e : e.message || e);
-    });
 
-    if (typeof options.stdin === "function") {
-      // Some callers (e.g. child_process.js) depend on this
-      // being called synchronously.
-      options.stdin({
-        write(val) {
-            procPromise.then(proc => {
-              write(proc.stdin, val);
-            });
-          },
-
-          close() {
-            if (!stdinClosed) {
-              stdinClosed = true;
-              procPromise.then(proc => {
-                proc.stdin.close();
+      Promise.all(promises)
+        .then(() => proc.wait())
+        .then(result => {
+          DEBUG_LOG("Complete: " + result.exitCode + "\n");
+          resolved = result.exitCode;
+          if (typeof options.done === "function") {
+            try {
+              options.done({
+                exitCode: result.exitCode,
+                stdout: stdoutData,
+                stderr: stderrData
               });
             }
+            catch (ex) {}
           }
-      });
+        })
+        .catch(error => {
+          resolved = -1;
+          throw ("subprocess.jsm: error: " + error);
+        });
+
     }
 
-    result = {
-      get pid() {
-        return awaitPromise(procPromise.then(proc => {
-          return proc.pid;
-        }));
+    let opts = {};
+    if (options.mergeStderr) {
+      opts.stderr = "stdout";
+    }
+    else {
+      opts.stderr = "pipe";
+    }
+
+    if (options.command instanceof Ci.nsIFile) {
+      opts.command = options.command.path;
+    }
+    else {
+      opts.command = options.command;
+    }
+
+    if (options.workdir) {
+      opts.workdir = options.workdir;
+    }
+
+    opts.arguments = options.arguments || [];
+
+
+    // Set up environment
+
+    let envVars = options.environment || DEFAULT_ENVIRONMENT;
+    if (envVars.length) {
+      let environment = {};
+      for (let val of envVars) {
+        let idx = val.indexOf("=");
+        if (idx >= 0)
+          environment[val.slice(0, idx)] = val.slice(idx + 1);
+      }
+
+      opts.environment = environment;
+    }
+
+    let subproc = SubprocessMain.call(opts).then(subProcessThen).catch(
+      error => {
+        resolved = -1;
+        throw ("subprocess.jsm: launch error: " + error);
+      }
+    );
+
+    return {
+      wait: function() {
+        let mainThread = Services.tm.mainThread;
+        while (resolved === null)
+          mainThread.processNextEvent(true);
+
+        return resolved;
       },
 
-      wait() {
-        return awaitPromise(procPromise.then(() => {
-          return awaitPromise(completePromise);
-        }).then(exitCode => {
-          return exitCode;
-        }));
-      },
-
-      kill(hard = false) {
-        procPromise.then(proc => {
+      kill: function(hard = false) {
+        subproc.then(proc => {
           proc.kill(hard ? 0 : undefined);
         });
       }
     };
-
-    return result;
   }
 };
 
