@@ -29,6 +29,8 @@ Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
+
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
@@ -82,6 +84,7 @@ let gKeyListObj = null;
 let gKeyIndex = [];
 let gSubkeyIndex = [];
 let gKeyCheckDone = false;
+let gLoadingKeys = false;
 
 /*
 
@@ -1166,41 +1169,40 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
   return listText;
 }
 
-
 /**
  * Get key list from GnuPG. If the keys may be pre-cached already
  *
  * @win        - |object| parent window for displaying error messages
  * @secretOnly - |boolean| true: get secret keys / false: get public keys
  *
- * @return - |array| of : separated key list entries as specified in GnuPG doc/DETAILS
+ * @return Promise(|array| of : separated key list entries as specified in GnuPG doc/DETAILS)
  */
 function obtainKeyList(win, secretOnly) {
-  EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
+  return new Promise((resolve, reject) => {
+    EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
-  let userList = null;
-  try {
-    const exitCodeObj = {};
-    const errorMsgObj = {};
+    let args = EnigmailGpg.getStandardArgs(true);
 
-    userList = getUserIdList(secretOnly,
-      exitCodeObj, {},
-      errorMsgObj);
-    if (exitCodeObj.value !== 0) {
-      getDialog().alert(win, errorMsgObj.value);
-      return null;
+    if (secretOnly) {
+      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
     }
-  }
-  catch (ex) {
-    EnigmailLog.ERROR("ERROR in keyRing.jsm: obtainKeyList: " + ex.toString() + "\n");
-  }
+    else {
+      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
+    }
 
-  if (typeof(userList) == "string") {
-    return userList.split(/\n/);
-  }
-  else {
-    return [];
-  }
+    let statusFlagsObj = {};
+    let keyListStr = "";
+    let listener = {
+      stdout: data => {
+        keyListStr += data;
+      },
+      stderr: data => {},
+      done: exitCode => {
+        resolve(keyListStr.split(/\n/));
+      }
+    };
+    EnigmailExecution.execStart(EnigmailGpg.agentPath, args, false, win, listener, statusFlagsObj);
+  });
 }
 
 function sortByUserId(keyListObj, sortDirection) {
@@ -1243,7 +1245,8 @@ const sortFunctions = {
 
   trust: function(keyListObj, sortDirection) {
     return function(a, b) {
-      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyNum].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyNum].ownerTrust)) ? -
+      return (EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[a.keyNum].ownerTrust) < EnigmailTrust.trustLevelsSorted().indexOf(keyListObj.keyList[b.keyNum].ownerTrust)) ?
+        -
         sortDirection : sortDirection;
     };
   },
@@ -1335,23 +1338,58 @@ function getKeyListEntryOfKey(keyId) {
 function loadKeyList(win, sortColumn, sortDirection) {
   EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
 
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-
-  var aGpgUserList = obtainKeyList(win, false);
-  if (!aGpgUserList) return;
-
-  var aGpgSecretsList = obtainKeyList(win, true);
-  if (!aGpgSecretsList) {
-    if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
-        EnigmailLocale.getString("keyMan.button.generateKey"),
-        EnigmailLocale.getString("keyMan.button.skip"))) {
-      getWindows().openKeyGen();
-      EnigmailKeyRing.clearCache();
-      loadKeyList(win, sortColumn, sortDirection);
-    }
+  if (gLoadingKeys) {
+    waitForKeyList();
+    return;
   }
+  gLoadingKeys = true;
 
-  createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection);
+  let aGpgUserList, aGpgSecretsList;
+
+  try {
+    const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
+
+    obtainKeyList(win, false)
+      .then(keyList => {
+        return new Promise((resolve, reject) => {
+          if (!keyList) {
+            reject();
+          }
+          aGpgUserList = keyList;
+          EnigmailLog.DEBUG("keyRing.jsm: loadKeyList: got pubkey lines: " + keyList.length + "\n");
+
+          let r = obtainKeyList(win, true);
+          resolve(r);
+        });
+      })
+      .then(keyList => {
+        EnigmailLog.DEBUG("keyRing.jsm: loadKeyList: got seckey lines: " + keyList.length + "\n");
+        aGpgSecretsList = keyList;
+
+        if ((!aGpgSecretsList) || aGpgSecretsList.length === 0) {
+          gLoadingKeys = false;
+          if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
+              EnigmailLocale.getString("keyMan.button.generateKey"),
+              EnigmailLocale.getString("keyMan.button.skip"))) {
+            getWindows().openKeyGen();
+            EnigmailKeyRing.clearCache();
+            EnigmailKeyRing.newloadKeyList();
+          }
+        }
+        else {
+          createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection);
+          gLoadingKeys = false;
+        }
+      })
+      .catch(() => {
+        EnigmailLog.ERROR("keyRing.jsm: loadKeyList: error\n");
+        gLoadingKeys = false;
+      });
+    waitForKeyList();
+  }
+  catch (ex) {
+    EnigmailLog.ERROR("keyRing.jsm: loadKeyList: exception: " + ex.toString());
+  }
 }
 
 
@@ -1690,6 +1728,12 @@ function runKeyUsabilityCheck() {
     }
 
   }, 60 * 1000); // 1 minute
+}
+
+function waitForKeyList() {
+  let mainThread = Services.tm.mainThread;
+  while (gLoadingKeys)
+    mainThread.processNextEvent(true);
 }
 
 /************************ IMPLEMENTATION of KeyObject ************************/
