@@ -240,7 +240,7 @@ var subprocess = {
               catch (ex) {}
             }
             else
-              stdoutData += data;
+              stderrData += data;
 
           }));
       }
