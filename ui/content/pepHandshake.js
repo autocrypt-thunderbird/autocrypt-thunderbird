@@ -47,7 +47,7 @@ function onLoad() {
 }
 
 function displayOverallTrust() {
-  let minTrust = 999;
+  let minTrust = 9;
   for (let i = 0; i < gInputArgs.peers.length; i++) {
     let p = gInputArgs.peers[i];
     if (p.email.toLowerCase() !== gInputArgs.myself) {

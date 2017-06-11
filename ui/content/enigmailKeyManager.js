@@ -1853,6 +1853,7 @@ var gKeyListView = {
       return this.showOrHideAllKeys();
     }
 
+    if (!gKeyList) return [];
     let showInvalidKeys = gShowInvalidKeys.getAttribute("checked") == "true";
     let showUntrustedKeys = gShowUntrustedKeys.getAttribute("checked") == "true";
     let showOthersKeys = gShowOthersKeys.getAttribute("checked") == "true";
