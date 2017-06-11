@@ -354,6 +354,7 @@ EnigmailMimeDecrypt.prototype = {
       this.pipe.close();
     }
     else {
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: pipe not yet ready\n");
       this.closePipe = true;
     }
 
@@ -433,6 +434,7 @@ EnigmailMimeDecrypt.prototype = {
       }
       EnigmailLog.DEBUG("mimeDecrypt.jsm: stdin: closing pipe\n");
       pipe.close();
+      this.pipe = null;
     }
     else {
       this.pipe = pipe;
