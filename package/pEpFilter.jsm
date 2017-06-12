@@ -18,6 +18,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services */
+Cu.import("resource://enigmail/timer.jsm"); /* global EnigmailTimer: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 
@@ -28,6 +29,12 @@ const getPepAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPE
 const DECRYPT_FILTER_NAME = "pEp-Decrypt-on-Sending";
 const AUTOPROCESS_FILTER_NAME = "pEp-Process-Sync-Message";
 const AUTOPROCESS_HEADER = "pep-auto-consume";
+
+const PEP_DECRYPT_FLAGS = {
+  own_private_key: 1,
+  consume: 2,
+  ignore: 4
+};
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPFilter"];
 
@@ -111,14 +118,49 @@ var EnigmailPEPFilter = {
     return pepFilter;
   },
 
-  newMailConsumer: function(messageStruct, rawMessageData) {
+  newMailConsumer: function(messageStruct, rawMessageData, msgHdr) {
     EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer()\n");
 
+    let processAttempts = 0;
+
+    function delMsg(msgHdr) {
+      let folderInfoObj = {};
+      msgHdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(msgHdr.messageKey, null, true);
+    }
+
     function processMailWithPep() {
+      EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: processMailWithPep(" + msgHdr.messageKey + ")\n");
       getPepAdapter().pep.decryptMimeString(rawMessageData).
       then(resultObj => {
-        EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: processMailWithPep()\n");
-        // TODO: loop until decrypt status is "consume"
+        let e = msgHdr.propertyEnumerator;
+        if (!e.hasMore()) {
+          EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: message " + msgHdr.messageKey + " was deleted\n");
+          return;
+        }
+
+        if (resultObj && "result" in resultObj) {
+          let decryptFlag = resultObj.result.outParams[0];
+          EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: flag for " + msgHdr.messageKey + ": " + decryptFlag + "\n");
+
+          if (++processAttempts > 3) {
+            // ignore messages after more than 3 attempts
+            return;
+          }
+
+          switch (decryptFlag) {
+            case PEP_DECRYPT_FLAGS.ignore:
+              EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: next round\n");
+              EnigmailTimer.setTimeout(function _f() {
+                processMailWithPep();
+              }, 600000); // 10 minutes
+              break;
+            case PEP_DECRYPT_FLAGS.consume:
+              delMsg(msgHdr);
+              break;
+            default:
+              return;
+          }
+        }
       }).
       catch(err => {
 

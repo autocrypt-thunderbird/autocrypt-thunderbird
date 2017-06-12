@@ -203,7 +203,7 @@ JsmimeEmitter.prototype = {
   }
 };
 
-function processIncomingMail(url, requireBody) {
+function processIncomingMail(url, requireBody, aMsgHdr) {
   EnigmailLog.DEBUG("filters.jsm: processIncomingMail()\n");
 
   let inputStream = EnigmailStreams.newStringStreamListener(msgData => {
@@ -220,7 +220,7 @@ function processIncomingMail(url, requireBody) {
 
       for (let c of consumerList) {
         try {
-          c.consumeMessage(e.getMimeTree(), msgData);
+          c.consumeMessage(e.getMimeTree(), msgData, aMsgHdr);
         }
         catch (ex) {
           EnigmailLog.DEBUG("filters.jsm: processIncomingMail: exception: " + ex.toString() + "\n");
@@ -297,7 +297,7 @@ const newMailListener = {
 
     let ret = getRequireMessageProcessing(aMsgHdr);
     if (ret) {
-      processIncomingMail(ret.url, ret.requireBody);
+      processIncomingMail(ret.url, ret.requireBody, aMsgHdr);
     }
   }
 };
@@ -328,7 +328,7 @@ const EnigmailFilters = {
    *                                  (Inbox and folders that listen to new mail)
    *   - unreadOnly:       Boolean - only process unread mails
    *   - selfSentOnly:     Boolean - only process mails with sender Email == Account Email
-   *  - consumeMessage: function(messageStructure, rawMessageData)
+   *  - consumeMessage: function(messageStructure, rawMessageData, nsIMsgHdr)
    */
   addNewMailConsumer: function(consumer) {
     EnigmailLog.DEBUG("filters.jsm: addNewMailConsumer()\n");
