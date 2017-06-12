@@ -22,10 +22,10 @@ const EnigmailTimer = {
    * @sleepTimeMs:      Number - optional number of miliseconds to delay
    *                             (0 if not specified)
    */
-  setTimeout: function(callbackFunction, sleepTimeMs) {
+  setTimeout: function(callbackFunction, sleepTimeMs = 0) {
     const timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     timer.initWithCallback(callbackFunction,
-      sleepTimeMs || 0,
+      sleepTimeMs,
       Ci.nsITimer.TYPE_ONE_SHOT);
     return timer;
   }
