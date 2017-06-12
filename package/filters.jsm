@@ -20,6 +20,7 @@ Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/decryptPermanently.jsm");
 Cu.import("resource://enigmail/log.jsm");
+Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false */
 Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
@@ -27,6 +28,7 @@ Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
+var gNewMailListenerInitiated = false;
 
 /**
  * filter action for creating a decrypted version of the mail and
@@ -106,10 +108,31 @@ const filterActionCopyDecrypt = {
   needsBody: true
 };
 
+
 function initNewMailListener() {
-  let notificationService = Cc["@mozilla.org/messenger/msgnotificationservice;1"]
-    .getService(Ci.nsIMsgFolderNotificationService);
-  notificationService.addListener(newMailListener, notificationService.msgAdded);
+  EnigmailLog.DEBUG("filters.jsm: initNewMailListener()\n");
+
+  if (!gNewMailListenerInitiated) {
+    let notificationService = Cc["@mozilla.org/messenger/msgnotificationservice;1"]
+      .getService(Ci.nsIMsgFolderNotificationService);
+    notificationService.addListener(newMailListener, notificationService.msgAdded);
+  }
+  gNewMailListenerInitiated = true;
+}
+
+function getIdentityForSender(senderEmail, msgServer) {
+  let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+  let identities = accountManager.getIdentitiesForServer(msgServer);
+
+  for (let i = 0; i < identities.length; i++) {
+    let id = identities.queryElementAt(i, Ci.nsIMsgIdentity);
+    if (id.email.toLowerCase() === senderEmail.toLowerCase()) {
+      return id;
+    }
+  }
+
+  return null;
 }
 
 var consumerList = [];
@@ -117,18 +140,18 @@ var consumerList = [];
 
 function JsmimeEmitter(requireBody) {
   this.requireBody = requireBody;
-}
-
-JsmimeEmitter.prototype = {
-  mimeTree: {
+  this.mimeTree = {
     partNum: "",
     headers: null,
     body: "",
     parent: null,
     subParts: []
-  },
-  stack: [],
-  currPartNum: "",
+  };
+  this.stack = [];
+  this.currPartNum = "";
+}
+
+JsmimeEmitter.prototype = {
 
   createPartObj: function(partNum, headers, parent) {
     return {
@@ -180,48 +203,10 @@ JsmimeEmitter.prototype = {
   }
 };
 
-const newMailListener = {
-  msgAdded: function(aMsgHdr) {
-    EnigmailLog.DEBUG("pEpFilter.jsm: newMailListener.msgAdded() - got new mail in " + aMsgHdr.folder.prettiestName + "\n");
+function processIncomingMail(url, requireBody) {
+  EnigmailLog.DEBUG("filters.jsm: processIncomingMail()\n");
 
-    let isInbox = aMsgHdr.folder.getFlag(Ci.nsMsgFolderFlags.CheckNew) || aMsgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Inbox);
-    let requireBody = false;
-    let inboxOnly = true;
-    let processReadMail = false;
-
-    for (let c of consumerList) {
-      if (!c.incomingMailOnly) {
-        inboxOnly = false;
-      }
-      if (!c.unreadOnly) {
-        processReadMail = true;
-      }
-      if (!c.headersOnly) {
-        requireBody = true;
-      }
-    }
-
-    if (!processReadMail && aMsgHdr.isRead) return;
-    if (inboxOnly && !isInbox) return;
-
-    let reusableObj = {};
-    let msgStream = aMsgHdr.folder.getMsgInputStream(aMsgHdr, reusableObj);
-    let inputStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-
-    let msg = "";
-    inputStream.init(msgStream);
-
-    try {
-      let avail = inputStream.available();
-      while (avail) {
-        msg += inputStream.read(avail);
-        avail = inputStream.available();
-      }
-    }
-    finally {
-      inputStream.close();
-    }
-
+  let inputStream = EnigmailStreams.newStringStreamListener(msgData => {
     let opt = {
       strformat: "unicode",
       bodyformat: "decode"
@@ -230,16 +215,90 @@ const newMailListener = {
     try {
       let e = new JsmimeEmitter(requireBody);
       let p = new jsmime.MimeParser(e, opt);
-      p.deliverData(msg);
+      p.deliverData(msgData);
+
 
       for (let c of consumerList) {
         try {
-          c.consumeMessage(p.getMimeTree());
+          c.consumeMessage(e.getMimeTree(), msgData);
         }
-        catch (ex) {}
+        catch (ex) {
+          EnigmailLog.DEBUG("filters.jsm: processIncomingMail: exception: " + ex.toString() + "\n");
+        }
       }
     }
     catch (ex) {}
+  });
+
+  try {
+    let channel = EnigmailStreams.createChannel(url);
+    channel.asyncOpen(inputStream, null);
+  }
+  catch (e) {
+    EnigmailLog.DEBUG("filters.jsm: processIncomingMail: open stream exception " + e.toString() + "\n");
+  }
+}
+
+function getRequireMessageProcessing(aMsgHdr) {
+  let isInbox = aMsgHdr.folder.getFlag(Ci.nsMsgFolderFlags.CheckNew) || aMsgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Inbox);
+  let requireBody = false;
+  let inboxOnly = true;
+  let selfSentOnly = false;
+  let processReadMail = false;
+
+  for (let c of consumerList) {
+    if (!c.incomingMailOnly) {
+      inboxOnly = false;
+    }
+    if (!c.unreadOnly) {
+      processReadMail = true;
+    }
+    if (!c.headersOnly) {
+      requireBody = true;
+    }
+    if (c.selfSentOnly) {
+      selfSentOnly = true;
+    }
+  }
+
+  if (!processReadMail && aMsgHdr.isRead) return null;
+  if (inboxOnly && !isInbox) return null;
+  if (selfSentOnly) {
+    let sender = EnigmailFuncs.parseEmails(aMsgHdr.author, true);
+    let id = null;
+    if (sender && sender[0]) {
+      id = getIdentityForSender(sender[0].email, aMsgHdr.folder.server);
+    }
+
+    if (!id) return null;
+  }
+
+  EnigmailLog.DEBUG("filters.jsm: getRequireMessageProcessing: author: " + aMsgHdr.author + "\n");
+
+  let messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+  let msgSvc = messenger.messageServiceFromURI(aMsgHdr.folder.getUriForMsg(aMsgHdr));
+  let u = {};
+  msgSvc.GetUrlForUri(aMsgHdr.folder.getUriForMsg(aMsgHdr), u, null);
+
+  let op = (u.value.spec.indexOf("?") > 0 ? "&" : "?");
+  let url = u.value.spec + op + "header=enigmailFilter";
+
+  return {
+    url: url,
+    requireBody: requireBody
+  };
+}
+
+const newMailListener = {
+  msgAdded: function(aMsgHdr) {
+    EnigmailLog.DEBUG("filters.jsm: newMailListener.msgAdded() - got new mail in " + aMsgHdr.folder.prettiestName + "\n");
+
+    if (consumerList.length === 0) return;
+
+    let ret = getRequireMessageProcessing(aMsgHdr);
+    if (ret) {
+      processIncomingMail(ret.url, ret.requireBody);
+    }
   }
 };
 
@@ -268,10 +327,11 @@ const EnigmailFilters = {
    *   - incomingMailOnly: Boolean - only work on folder(s) that obtain new mail
    *                                  (Inbox and folders that listen to new mail)
    *   - unreadOnly:       Boolean - only process unread mails
-   *  - consumeMessage: function(messageStructure)
+   *   - selfSentOnly:     Boolean - only process mails with sender Email == Account Email
+   *  - consumeMessage: function(messageStructure, rawMessageData)
    */
   addNewMailConsumer: function(consumer) {
-    EnigmailLog.DEBUG("pEpFilter.jsm: addNewMailConsumer()\n");
+    EnigmailLog.DEBUG("filters.jsm: addNewMailConsumer()\n");
     consumerList.push(consumer);
   },
 

@@ -34,6 +34,7 @@ Cu.import("resource://enigmail/installPep.jsm"); /*global EnigmailInstallPep: fa
 Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
 
 
 const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
@@ -297,6 +298,7 @@ var EnigmailPEPAdapter = {
         if (typeof(data) === "string") {
           gPepVersion = data;
           startListener();
+          self.setupIncomingFilter();
         }
 
         return EnigmailpEp.getGpgEnv();
@@ -926,5 +928,15 @@ var EnigmailPEPAdapter = {
     }
 
     return ratingDesc;
+  },
+
+  setupIncomingFilter: function() {
+    EnigmailFilters.addNewMailConsumer({
+      headersOnly: false,
+      incomingMailOnly: true,
+      unreadOnly: false,
+      selfSentOnly: true,
+      consumeMessage: EnigmailPEPFilter.newMailConsumer.bind(EnigmailPEPFilter)
+    });
   }
 };

@@ -19,9 +19,12 @@ Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+
+const getPepAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPEPAdapter");
+
 
 // pEp JSON Server executable name
-const pepServerExecutable = "pep-json-server";
 const DECRYPT_FILTER_NAME = "pEp-Decrypt-on-Sending";
 const AUTOPROCESS_FILTER_NAME = "pEp-Process-Sync-Message";
 const AUTOPROCESS_HEADER = "pep-auto-consume";
@@ -106,5 +109,30 @@ var EnigmailPEPFilter = {
     }
 
     return pepFilter;
+  },
+
+  newMailConsumer: function(messageStruct, rawMessageData) {
+    EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer()\n");
+
+    function processMailWithPep() {
+      getPepAdapter().pep.decryptMimeString(rawMessageData).
+      then(resultObj => {
+        EnigmailLog.DEBUG("pEpFilter.jsm: newMailConsumer: processMailWithPep()\n");
+        // TODO: loop until decrypt status is "consume"
+      }).
+      catch(err => {
+
+      });
+    }
+
+    if (getPepAdapter().usingPep()) {
+      // ensure line ends are CRLF
+      rawMessageData.replace(/\r?\n/g, "\n").replace(/\n/g, "\r\n");
+
+      let c = messageStruct.headers.getRawHeader("pep-auto-consume");
+      if (c && c.join("").toLowerCase() === "yes") {
+        processMailWithPep();
+      }
+    }
   }
 };

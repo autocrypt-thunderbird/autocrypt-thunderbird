@@ -302,7 +302,7 @@ EnigmailMimeDecrypt.prototype = {
         if (this.uri.spec.search(/[&\?]header=[^&]+/) > 0 &&
           this.uri.spec.search(/[&\?]examineEncryptedParts=true/) < 0) {
 
-          if (this.uri.spec.search(/[&\?]header=filter(&.*)?$/) > 0) {
+          if (this.uri.spec.search(/[&\?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
             EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
             return;
           }

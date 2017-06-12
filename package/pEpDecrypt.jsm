@@ -174,6 +174,7 @@ function PEPDecryptor(contentType) {
   this.decryptedHeaders = {};
   this.mimePartNumber = "";
   this.requestingSubpart = false;
+  this.ignoreMessage = false;
 }
 
 
@@ -189,6 +190,7 @@ PEPDecryptor.prototype = {
 
       this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
       this.requestingSubpart = (this.uri.spec.search(/[\&\?]part=/) >= 0);
+      this.ignoreMessage = (this.uri.spec.search(/[\&\?]header=enigmailFilter/) >= 0);
     }
 
     if ("mimePart" in this.mimeSvc) {
@@ -208,6 +210,11 @@ PEPDecryptor.prototype = {
 
   onStopRequest: function() {
     // make the string a complete MIME message
+
+    if (this.ignoreMessage) {
+      this.mimeSvc.onStopRequest(null, null, 0);
+      return;
+    }
 
     this.decryptedData = "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
 

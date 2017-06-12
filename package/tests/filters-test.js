@@ -11,9 +11,10 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false */
 
-testing("filters.jsm"); /* global JsmimeEmitter: false */
+testing("filters.jsm"); /* global JsmimeEmitter: false, EnigmailFilters: false, processIncomingMail: false */
+component("enigmail/files.jsm"); /* global EnigmailFiles: false */
 
-// testing: readFile
+// testing: JsmimeEmitter
 test(function mimeEmitterBasicTest() {
 
   let msgPart = 0;
@@ -67,4 +68,37 @@ test(function mimeEmitterBasicTest() {
 
   let t = p.getMimeTree();
   walkMimeTree(t);
+});
+
+
+// testing: processIncomingMail
+test(function processIncomingMailTest() {
+
+  var testString = "Subject: Test\r\nContent-Type: text/plain\r\n\r\nThis is a test\r\n";
+
+  EnigmailFilters.addNewMailConsumer({
+    consumeMessage: function(msg, rawMessageData) {
+      try {
+        Assert.equal(rawMessageData, testString);
+        let ct = msg.headers.contentType.type;
+        Assert.equal(ct, "text/plain");
+      }
+      catch (ex) {
+        Assert.equal(ex.toString(), "");
+      }
+      do_test_finished();
+    }
+  });
+  var md = do_get_cwd().clone();
+  md.append("test-message.txt");
+
+  var ioService = Components.classes["@mozilla.org/network/io-service;1"]
+    .getService(Components.interfaces.nsIIOService);
+
+  EnigmailFiles.writeFileContents(md, testString, null);
+
+  do_test_pending();
+
+  var fileUri = ioService.newFileURI(md);
+  processIncomingMail(fileUri.spec, true);
 });
