@@ -10,6 +10,8 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
+Components.utils.import("resource://gre/modules/Timer.jsm"); /* global setTimeout: false, clearTimeout: false */
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
@@ -23,10 +25,18 @@ const EnigmailTimer = {
    *                             (0 if not specified)
    */
   setTimeout: function(callbackFunction, sleepTimeMs = 0) {
-    const timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    timer.initWithCallback(callbackFunction,
-      sleepTimeMs,
-      Ci.nsITimer.TYPE_ONE_SHOT);
-    return timer;
-  }
+
+    let timeoutID;
+
+    function callbackWrapper() {
+      callbackFunction();
+      clearTimeout(timeoutID);
+    }
+
+    timeoutID = setTimeout(callbackWrapper, sleepTimeMs);
+
+    return timeoutID;
+  },
+
+  clearTimeout: clearTimeout
 };
