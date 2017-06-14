@@ -81,6 +81,16 @@ const EnigmailLog = {
       }
     }
 
+    let otherPref = ["dom.workers.maxPerDomain"];
+    let root = prefs.getPrefRoot();
+    for (let op of otherPref) {
+      try {
+        data += op + ": " + root.getIntPref(op) + "\n";
+      }
+      catch (ex) {
+        data += ex.toString() + "\n";
+      }
+    }
     return data + "\n" + EnigmailLog.data;
   },
 
