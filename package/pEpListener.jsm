@@ -25,6 +25,7 @@ const MAX_PORT_NUM = 15991;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const HTTP_OK = "200";
 const HTTP_ERR_BAD_REQUEST = "400";
@@ -157,6 +158,8 @@ PepListener.prototype = {
 
     if (requestData.search(/^POST/i) === 0) {
       requestData = getHttpBody(requestData);
+
+      requestData = EnigmailData.convertToUnicode(requestData, "utf-8");
 
       try {
         obj = JSON.parse(requestData);
