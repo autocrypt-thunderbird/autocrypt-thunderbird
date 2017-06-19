@@ -18,6 +18,22 @@ component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/glodaMime.jsm");
 component("enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
+const inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+const copyListener = {
+  QueryInterface: function(iid) {
+    if (iid.equals(Ci.nsIMsgCopyServiceListener) || iid.equals(Ci.nsISupports)) {
+      return this;
+    }
+    throw Components.results.NS_NOINTERFACE;
+  },
+  GetMessageId: function(messageId) {},
+  OnProgress: function(progress, progressMax) {},
+  OnStartCopy: function() {},
+  SetMessageKey: function(key) {}
+};
+
+
 test(withTestGpgHome(withEnigmail(function messageIsCopiedToNewDir() {
   loadSecretKey();
   MailHelper.cleanMailFolder(MailHelper.getRootFolder());
@@ -27,11 +43,15 @@ test(withTestGpgHome(withEnigmail(function messageIsCopiedToNewDir() {
   const header = MailHelper.fetchFirstMessageHeaderIn(sourceFolder);
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = false;
-  const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
 
-  Assert.equal(targetFolder.getTotalMessages(false), 1);
-  Assert.equal(sourceFolder.getTotalMessages(false), 1);
+  copyListener.OnStopCopy = function(statusCode) {
+    Assert.equal(targetFolder.getTotalMessages(false), 1);
+    Assert.equal(sourceFolder.getTotalMessages(false), 1);
+    inspector.exitNestedEventLoop();
+  };
+  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  inspector.enterNestedEventLoop(0);
+
 })));
 
 test(withTestGpgHome(withEnigmail(function messageIsMovedToNewDir() {
@@ -43,11 +63,9 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedToNewDir() {
   const header = MailHelper.fetchFirstMessageHeaderIn(sourceFolder);
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
-  const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  inspector.enterNestedEventLoop(0);
 
-  Assert.equal(targetFolder.getTotalMessages(false), 1);
-  Assert.equal(sourceFolder.getTotalMessages(false), 0);
 })));
 
 test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
@@ -59,10 +77,16 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
   const header = MailHelper.fetchFirstMessageHeaderIn(sourceFolder);
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
-  const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  copyListener.OnStopCopy = function(statusCode) {
+    Assert.equal(targetFolder.getTotalMessages(false), 1);
+    inspector.exitNestedEventLoop();
+  };
+
+  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  inspector.enterNestedEventLoop(0);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
+  Assert.ok(dispatchedHeader !== null);
   do_test_pending();
   msgHdrToMimeMessage(
     dispatchedHeader,
@@ -86,10 +110,15 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
   const header = MailHelper.fetchFirstMessageHeaderIn(sourceFolder);
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
-  const reqSync = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, move, reqSync);
+  copyListener.OnStopCopy = function(statusCode) {
+    inspector.exitNestedEventLoop();
+  };
+  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  inspector.enterNestedEventLoop(0);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
+  Assert.ok(dispatchedHeader !== null);
+
   do_test_pending();
   msgHdrToMimeMessage(
     dispatchedHeader,

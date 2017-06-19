@@ -66,8 +66,13 @@ const MailHelper = {
   },
 
   fetchFirstMessageHeaderIn: function(mailFolder) {
-    let msgDb = mailFolder.msgDatabase;
+    let folderInfo = {};
+    let msgDb = mailFolder.getDBFolderInfoAndDB(folderInfo);
     let enumerator = msgDb.EnumerateMessages();
-    return enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
+    if (enumerator.hasMoreElements()) {
+      return enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
+    }
+    else
+      return null;
   }
 };

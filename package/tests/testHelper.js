@@ -135,13 +135,14 @@ function withTestGpgHome(f) {
   };
 }
 
-function withPreferences(func){
+function withPreferences(func) {
   return function() {
     const keyRefreshPrefs = EnigmailPrefs.getPref("keyRefreshOn");
     const keyserverPrefs = EnigmailPrefs.getPref("keyserver");
     try {
       func();
-    } finally {
+    }
+    finally {
       EnigmailPrefs.setPref("keyRefreshOn", keyRefreshPrefs);
       EnigmailPrefs.setPref("keyserver", keyserverPrefs);
     }
@@ -186,7 +187,6 @@ function setupTestAccounts() {
       id = ac.identities.queryElementAt(idNumber - 1, Ci.nsIMsgIdentity);
     }
 
-    id.identityName = idName;
     id.fullName = fullName;
     id.email = email;
     id.composeHtml = true;
@@ -262,16 +262,18 @@ CustomAssert.registerExtraAssertionsOn(Assert);
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 function withLogFiles(f) {
-  return function () {
+  return function() {
     try {
       EnigmailLog.setLogLevel(5);
       f();
-    } finally {
+    }
+    finally {
       EnigmailLog.onShutdown();
       EnigmailLog.createLogFiles();
     }
   };
 }
+
 function assertLogContains(expected) {
   let failureMessage = "Expected log to contain: " + expected;
   Assert.ok(EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs).indexOf(expected) !== -1, failureMessage);
