@@ -85,7 +85,7 @@ function startListener() {
     return;
   }
 
-  EnigmailpEp.registerListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
+  EnigmailpEp.registerTbListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: startListener: registration with pEp OK\n");
 
   }).catch(function _fail(data) {
@@ -254,7 +254,7 @@ var EnigmailPEPAdapter = {
         }
       }, 1000);
 
-      EnigmailpEp.unregisterListener(gPepListenerPort, gSecurityToken).then(function _ok(data) {
+      EnigmailpEp.unregisterListener().then(function _ok(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: onShutdown: de-registring from pEp OK\n");
         gPepListenerPort = -1;
         inspector.exitNestedEventLoop();

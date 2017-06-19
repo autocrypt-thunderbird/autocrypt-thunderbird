@@ -40,6 +40,7 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 var gRequestId = 1;
 var gConnectionInfo = null;
 var gRetryCount = 0;
+var gTbListener = null;
 
 var gRequestArr = [];
 
@@ -797,17 +798,34 @@ var EnigmailpEp = {
 
   },
 
-  registerListener: function(port, securityToken) {
+  registerTbListener: function(port, securityToken) {
+    gTbListener = {
+      port: port,
+      securityToken: securityToken
+    };
+
+    return this.registerListener();
+  },
+
+
+  registerListener: function() {
     DEBUG_LOG("registerListener()");
 
     try {
-      let params = [
-        "127.0.0.1",
-        port,
-        securityToken
-      ];
+      if (gTbListener) {
+        let params = [
+          "127.0.0.1",
+          gTbListener.port,
+          gTbListener.securityToken
+        ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "registerEventListener", params);
+        return this._callPepFunction(FT_CALL_FUNCTION, "registerEventListener", params);
+      }
+      else {
+        let deferred = Promise.defer();
+        deferred.resolve(0);
+        return deferred.promise;
+      }
 
     }
     catch (ex) {
@@ -823,14 +841,21 @@ var EnigmailpEp = {
     gShuttingDown = true;
 
     try {
-      let params = [
-        "127.0.0.1",
-        port,
-        securityToken
-      ];
 
-      return this._callPepFunction(FT_CALL_FUNCTION, "unregisterEventListener", params);
+      if (gTbListener) {
+        let params = [
+          "127.0.0.1",
+          gTbListener.port,
+          gTbListener.securityToken
+        ];
 
+        return this._callPepFunction(FT_CALL_FUNCTION, "unregisterEventListener", params);
+      }
+      else {
+        let deferred = Promise.defer();
+        deferred.resolve(0);
+        return deferred.promise;
+      }
     }
     catch (ex) {
       let deferred = Promise.defer();
@@ -926,7 +951,10 @@ var EnigmailpEp = {
             ++gRetryCount;
 
             if (gRetryCount < 2) {
-              self._callPepFunction(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred);
+              self.registerListener()
+                .then(function _f() {
+                  self._callPepFunction(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred);
+                });
               return;
             }
           }
