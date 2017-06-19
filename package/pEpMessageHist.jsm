@@ -17,7 +17,7 @@ Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 var EnigmailPEPMessageHist = {
@@ -32,7 +32,7 @@ var EnigmailPEPMessageHist = {
   isLatestMessage: function(fromAddr, dateSent) {
     EnigmailLog.DEBUG("pEpMessageHist.jsm: isLatestMessage: from=" + fromAddr + "\n");
 
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
 
     fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
     let lastDate = jsmime.headerparser.parseDateHeader(dateSent);
@@ -103,7 +103,7 @@ var EnigmailPEPMessageHist = {
 function checkDatabaseStructure(connection) {
   EnigmailLog.DEBUG("pEpMessageHist.jsm: checkDatabaseStructure\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   connection.tableExists("pep_senderlist").then(
     function onSuccess(exists) {
@@ -158,7 +158,7 @@ function createSenderListTable(connection, deferred) {
 function findUserRecord(connection, email) {
   EnigmailLog.DEBUG("pEpMessageHist.jsm: findUserRecord\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
   let data = null;
   let numRows = 0;
 
@@ -197,7 +197,7 @@ function findUserRecord(connection, email) {
 function appendUser(connection, paramsArr) {
   EnigmailLog.DEBUG("pEpMessageHist.jsm: appendUser\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   connection.executeTransaction(function _trx() {
     connection.execute("insert into pep_senderlist (email, last_date) values " +
@@ -229,7 +229,7 @@ function appendUser(connection, paramsArr) {
 function updateUser(connection, paramsArr, currData) {
   EnigmailLog.DEBUG("pEpMessageHist.jsm: updateUser\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   let lastDate = new Date(currData.getResultByName("last_date"));
 

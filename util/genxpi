@@ -125,7 +125,6 @@ zip --must-match\
     modules/pEpMessageHist.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
-    modules/promise.jsm \
     modules/rng.jsm \
     modules/rules.jsm \
     modules/send.jsm \

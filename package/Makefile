@@ -76,7 +76,6 @@ MODFILES = \
            pEpMessageHist.jsm \
            pipeConsole.jsm \
            prefs.jsm \
-           promise.jsm \
            protocolHandler.jsm \
            rng.jsm \
            rules.jsm \

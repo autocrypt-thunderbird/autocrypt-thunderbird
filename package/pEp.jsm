@@ -32,7 +32,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -225,7 +225,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -271,7 +271,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -335,7 +335,7 @@ var EnigmailpEp = {
       return this._callPepFunction(FT_CALL_FUNCTION, "decrypt_message", params);
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -368,7 +368,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -396,7 +396,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -425,7 +425,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -457,7 +457,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -483,7 +483,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -518,7 +518,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -546,7 +546,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -574,7 +574,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -599,7 +599,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -627,7 +627,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -652,7 +652,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -718,7 +718,7 @@ var EnigmailpEp = {
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -737,7 +737,7 @@ var EnigmailpEp = {
       return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_retrieve", params);
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -753,7 +753,7 @@ var EnigmailpEp = {
       return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_add", params);
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -769,7 +769,7 @@ var EnigmailpEp = {
       return this._callPepFunction(FT_CALL_FUNCTION, "blacklist_delete", params);
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -791,7 +791,7 @@ var EnigmailpEp = {
       return this._callPepFunction(FT_CALL_FUNCTION, "config_passive_mode", params);
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -822,14 +822,14 @@ var EnigmailpEp = {
         return this._callPepFunction(FT_CALL_FUNCTION, "registerEventListener", params);
       }
       else {
-        let deferred = Promise.defer();
+        let deferred = PromiseUtils.defer();
         deferred.resolve(0);
         return deferred.promise;
       }
 
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -852,13 +852,13 @@ var EnigmailpEp = {
         return this._callPepFunction(FT_CALL_FUNCTION, "unregisterEventListener", params);
       }
       else {
-        let deferred = Promise.defer();
+        let deferred = PromiseUtils.defer();
         deferred.resolve(0);
         return deferred.promise;
       }
     }
     catch (ex) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
@@ -910,14 +910,14 @@ var EnigmailpEp = {
    *            funcName(responseObj)
    * @param onErrorListene  - function: if the call fails, callback function of the form:
    *            funcName(responseText)
-   * @param deferred         - object: optional Promise.defer() object
+   * @param deferred         - object: optional PromiseUtils.defer() object
    *
    * @return Object - a Promise
    */
   _callPepFunction: function(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred) {
     DEBUG_LOG("_callPepFunction(" + funcType + ", " + functionName + ")");
 
-    if (!deferred) deferred = Promise.defer();
+    if (!deferred) deferred = PromiseUtils.defer();
     let self = this;
 
     let conn = this.getConnectionInfo();

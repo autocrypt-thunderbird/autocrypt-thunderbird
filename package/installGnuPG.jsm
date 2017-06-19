@@ -35,7 +35,7 @@ Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 
 const Cc = Components.classes;
@@ -405,7 +405,7 @@ Installer.prototype = {
 
   getDownloadUrl: function(on) {
 
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
 
     function reqListener() {
       // "this" is set by the calling XMLHttpRequest
@@ -474,7 +474,7 @@ Installer.prototype = {
     EnigmailLog.DEBUG("installGnuPG.jsm: performDownload: " + this.url + "\n");
 
     var self = this;
-    var deferred = Promise.defer();
+    var deferred = PromiseUtils.defer();
 
     function onProgress(event) {
 

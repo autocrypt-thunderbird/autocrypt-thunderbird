@@ -21,7 +21,7 @@ Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 
 
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
@@ -113,7 +113,7 @@ var EnigmailPEPKeySync = {
     let supportedLocale = [];
 
     EnigmailpEp.getLanguageList().then(function _success(res) {
-      let deferred = Promise.defer();
+      let deferred = PromiseUtils.defer();
       EnigmailLog.DEBUG("pEpMessage.notifyHandshake: got language list 1: " + JSON.stringify(res) + "\n");
 
       let localeList = EnigmailpEp.processLanguageList(res);

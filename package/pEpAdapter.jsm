@@ -20,7 +20,7 @@ Cu.import("resource://enigmail/pEpListener.jsm"); /*global EnigmailpEpListener: 
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
@@ -511,7 +511,7 @@ var EnigmailPEPAdapter = {
    *            - desc:  Describing sentence in the language
    */
   getSupportedLanguages: function() {
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
     EnigmailpEp.getLanguageList().then(function _success(res) {
       let outArr = EnigmailpEp.processLanguageList(res);
       deferred.resolve(outArr);
@@ -523,7 +523,7 @@ var EnigmailPEPAdapter = {
   },
 
   getIdentityForEmail: function(emailAddress) {
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
     EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress).then(function _ok(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
         if ("username" in data.result.outParams[0] && data.result.outParams[0].username) {
@@ -651,7 +651,7 @@ var EnigmailPEPAdapter = {
    * @return Promise(object)
    */
   prepareTrustWordsDlg: function(emailAddress, headerData) {
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
     let emailId = null;
     let useOwnId = null;
     let emailIdRating = null;
@@ -766,7 +766,7 @@ var EnigmailPEPAdapter = {
   },
 
   resetTrustForEmail: function(emailAddr) {
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
 
     EnigmailPEPAdapter.getIdentityForEmail(emailAddr).
     then(function _gotIdentityForEmail(data) {
@@ -788,7 +788,7 @@ var EnigmailPEPAdapter = {
   getRatingsForEmails: function(emailArr) {
     EnigmailLog.DEBUG("pEpAdapter.getRatingsForEmails(" + emailArr.length + ")\n");
 
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
     let identities = [];
 
     function getNextIdentity(emailNum) {
@@ -814,7 +814,7 @@ var EnigmailPEPAdapter = {
             return EnigmailPEPAdapter.pep.getIdentityRating(identity);
           }
           else {
-            let deferred = Promise.defer();
+            let deferred = PromiseUtils.defer();
             deferred.resolve({
               status: 0
             });

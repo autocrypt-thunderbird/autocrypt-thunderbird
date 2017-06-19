@@ -20,7 +20,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
@@ -568,7 +568,7 @@ const EnigmailWindows = {
    * @return: Promise (resolve() case of success; rejection otherwise).
    */
   verifyPepTrustWords: function(win, emailAddress, headerData) {
-    let deferred = Promise.defer();
+    let deferred = PromiseUtils.defer();
 
     EnigmailPEPAdapter.prepareTrustWordsDlg(emailAddress, headerData).
     then(function _ok(inputObj) {

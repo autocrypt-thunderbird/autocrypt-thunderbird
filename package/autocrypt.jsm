@@ -22,7 +22,7 @@ Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
+Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 var EnigmailAutocrypt = {
@@ -172,7 +172,7 @@ var EnigmailAutocrypt = {
 function checkDatabaseStructure(connection) {
   EnigmailLog.DEBUG("autocrypt.jsm: checkDatabaseStructure\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   connection.tableExists("autocrypt_keys").then(
     function onSuccess(exists) {
@@ -233,7 +233,7 @@ function createAutocryptTable(connection, deferred) {
 function findUserRecord(connection, email, type) {
   EnigmailLog.DEBUG("autocrypt.jsm: findUserRecord\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
   let data = null;
   let numRows = 0;
 
@@ -273,7 +273,7 @@ function findUserRecord(connection, email, type) {
 function appendUser(connection, paramsArr) {
   EnigmailLog.DEBUG("autocrypt.jsm: appendUser\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   connection.executeTransaction(function _trx() {
     connection.execute("insert into autocrypt_keys (email, encryption_pref, keydata, fpr, type, last_changed, last_seen) values " +
@@ -310,7 +310,7 @@ function appendUser(connection, paramsArr) {
 function updateUser(connection, paramsArr, currData) {
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser\n");
 
-  let deferred = Promise.defer();
+  let deferred = PromiseUtils.defer();
 
   let lastSeen = new Date(currData.getResultByName("last_seen"));
   let lastChanged = new Date(currData.getResultByName("last_changed"));

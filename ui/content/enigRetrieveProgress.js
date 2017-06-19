@@ -22,7 +22,6 @@ Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandli
 Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Cu.import("resource://enigmail/promise.jsm"); /*global Promise: false */
 
 // dialog is just an array we'll use to store various properties from the dialog document...
 var dialog;
