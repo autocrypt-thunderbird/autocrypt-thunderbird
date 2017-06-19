@@ -70,14 +70,12 @@ const EnigmailDecryptPermanently = {
    *  of the message processing. Because there is only a negligible performance gain when dispatching
    *  several message at once we serialize to not overwhelm low power devices.
    *
-   *  The function is implemented such that the 1st call (requireSync == true) is a synchronous function,
-   *  while any other call is asynchronous. This is required to make the filters work correctly in case
-   *  there are other filters that work on the message. (see bug 374).
+   *  The function is implemented asynchronously.
    *
    *  Parameters
    *   aMsgHdrs:     Array of nsIMsgDBHdr
    *   targetFolder: String; target folder URI
-   *   copyListener: listener for async request
+   *   copyListener: listener for async request (nsIMsgCopyServiceListener)
    *   move:         Boolean: type of action; true = "move" / false = "copy"
    *
    **/
