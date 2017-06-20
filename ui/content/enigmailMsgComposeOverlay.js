@@ -39,6 +39,7 @@ Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
@@ -480,6 +481,8 @@ Enigmail.msg = {
       case CT.ForwardAsAttachment:
         prefix = this.getMailPref("mail.forward_subject_prefix") + ": ";
     }
+
+    subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
 
     switch (gMsgCompose.type) {
       case CT.Draft:
