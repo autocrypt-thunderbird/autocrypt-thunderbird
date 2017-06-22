@@ -30,6 +30,7 @@ Enigmail.edit = {
   pgpSignEncPolicy: null,
   autoEncryptDrafts: null,
   advancedSettings: null,
+  usingPep: null,
 
   onInit: function() {
     // initialize all of our elements based on the current identity values....
@@ -45,6 +46,7 @@ Enigmail.edit = {
     this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
     this.autoEncryptDrafts = document.getElementById("enigmail_autoEncryptDrafts");
     this.mimePreferOpenPGP = document.getElementById("enigmail_mimePreferOpenPGP");
+    this.usingPep = EnigmailPEPAdapter.usingPep();
 
     if (this.identity) {
       this.enablePgp.checked = this.identity.getBoolAttribute("enablePgp");
@@ -160,8 +162,18 @@ Enigmail.edit = {
       this.identity.setIntAttribute("openPgpHeaderMode", this.advancedSettings.openPgpHeaderMode);
       this.identity.setCharAttribute("openPgpUrlName", this.advancedSettings.openPgpUrlName);
       this.identity.setBoolAttribute("attachPgpKey", this.advancedSettings.attachPgpKey);
-
     }
+
+    let usingPep = EnigmailPEPAdapter.usingPep();
+
+    if (usingPep !== this.usingPep) {
+      EnigmailPEPAdapter.handleJuniorModeChange();
+    }
+
+    if (usingPep) {
+      EnigmailPEPAdapter.setOwnIdentities(0);
+    }
+
   },
 
   toggleEnable: function() {

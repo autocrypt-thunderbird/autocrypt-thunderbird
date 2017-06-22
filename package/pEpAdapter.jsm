@@ -48,6 +48,8 @@ var gSecurityToken = null;
 var gPepAvailable = null;
 var gPepListenerPort = -1;
 var gOwnIdentities = [];
+var gJmObservers = null;
+var gJmObserverId = 0;
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
@@ -180,6 +182,8 @@ var EnigmailPEPAdapter = {
    */
   installPep: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: installPep()\n");
+
+    let self = this;
     let progressListener = {
       onError: function(err) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: got error " + err.type + "\n");
@@ -187,6 +191,8 @@ var EnigmailPEPAdapter = {
       onInstalled: function() {
         EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: installation completed\n");
         gPepAvailable = null;
+
+        self.initialize();
       }
     };
 
@@ -278,13 +284,18 @@ var EnigmailPEPAdapter = {
    */
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
-
     let self = this;
+
+    if (gJmObservers === null) {
+      gJmObservers = {};
+      EnigmailPrefs.registerPrefObserver("juniorMode", self.handleJuniorModeChange);
+    }
+
+    EnigmailpEp.registerLogHandler(EnigmailLog.DEBUG);
+
     let pEpMode = EnigmailPrefs.getPref("juniorMode");
     // force using Enigmail (do not use pEp)
     if (pEpMode === 0) return;
-
-    EnigmailpEp.registerLogHandler(EnigmailLog.DEBUG);
 
     // automatic mode, with Crypto enabled (do not use pEp)
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
@@ -299,6 +310,7 @@ var EnigmailPEPAdapter = {
           gPepVersion = data;
           startListener();
           self.setupIncomingFilter();
+          self.handleJuniorModeChange();
         }
 
         return EnigmailpEp.getGpgEnv();
@@ -938,5 +950,28 @@ var EnigmailPEPAdapter = {
       selfSentOnly: true,
       consumeMessage: EnigmailPEPFilter.newMailConsumer.bind(EnigmailPEPFilter)
     });
+  },
+
+  registerJuniorModeObserver: function(observer) {
+    let observerId = "O" + (gJmObserverId++);
+    gJmObservers[observerId] = observer;
+    return observerId;
+  },
+
+  unregisterJuniorModeObserver: function(observerId) {
+    if (observerId in gJmObservers) {
+      delete gJmObservers[observerId];
+    }
+  },
+
+  handleJuniorModeChange: function() {
+    for (let i in gJmObservers) {
+      try {
+        gJmObservers[i]();
+      }
+      catch (ex) {}
+    }
   }
 };
+
+// Enigmail.msg.juniorModeObserver = EnigmailPrefs.registerPrefObserver("juniorMode", Enigmail.msg.setMainMenuLabel);

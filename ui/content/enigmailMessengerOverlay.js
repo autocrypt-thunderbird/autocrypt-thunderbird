@@ -137,7 +137,7 @@ Enigmail.msg = {
     Enigmail.msg.overrideLayoutChange();
     Enigmail.msg.setMainMenuLabel();
 
-    Enigmail.msg.juniorModeObserver = EnigmailPrefs.registerPrefObserver("juniorMode", Enigmail.msg.setMainMenuLabel);
+    Enigmail.msg.juniorModeObserver = EnigmailPEPAdapter.registerJuniorModeObserver(Enigmail.msg.setMainMenuLabel);
 
     if (EnigmailPEPAdapter.usingPep()) {
       document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
@@ -235,7 +235,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messengerClose()\n");
 
     if (this.juniorModeObserver) {
-      EnigmailPrefs.unregisterPrefObserver(this.juniorModeObserver);
+      EnigmailPEPAdapter.unregisterJuniorModeObserver(this.juniorModeObserver);
       this.juniorModeObserver = null;
     }
 

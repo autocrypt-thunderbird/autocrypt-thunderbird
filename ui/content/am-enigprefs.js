@@ -4,14 +4,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/* global Components: false */
 
 "use strict";
+
+Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 if (!Enigmail) var Enigmail = {};
 
 var gPref = null;
+var gUsingPep = null;
 
 function onInit() {
+  gUsingPep = EnigmailPEPAdapter.usingPep();
   Enigmail.edit.onInit();
 }
 
@@ -26,6 +31,16 @@ function onPreInit(account, accountValues) {
 
 function onSave() {
   Enigmail.edit.onSave();
+  /*
+    let usingPep = EnigmailPEPAdapter.usingPep();
+
+    if (usingPep !== gUsingPep) {
+      EnigmailPEPAdapter.handleJuniorModeChange();
+    }
+
+    if (usingPep) {
+      EnigmailPEPAdapter.setOwnIdentities(0);
+    } */
 }
 
 function onLockPreference() {
