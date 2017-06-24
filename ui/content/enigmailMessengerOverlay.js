@@ -26,7 +26,7 @@ catch (ex) {
 /* global ReloadMessage: false, gDBView: false, gSignatureStatus: false, gEncryptionStatus: false, showMessageReadSecurityInfo: false */
 /* global gFolderDisplay: false, messenger: false, currentAttachments: false, msgWindow: false, ChangeMailLayout: false, MsgToggleMessagePane: false */
 /* global currentHeaderData: false, gViewAllHeaders: false, gExpandedHeaderList: false, goDoCommand: false, HandleSelectedAttachments: false */
-/* global statusFeedback: false */
+/* global statusFeedback: false, global displayAttachmentsForExpandedView: false */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
@@ -589,6 +589,7 @@ Enigmail.msg = {
     }
 
     if (EnigmailPEPAdapter.usingPep()) {
+      this.hidePgpKeys();
       EnigmailPEPAdapter.processInlinePGP(this.getCurrentMsgUrl(), currentHeaderData);
     }
 
@@ -1498,6 +1499,42 @@ Enigmail.msg = {
       EnigmailDialog.alert(window, EnigmailLocale.getString("fixBrokenExchangeMsg.failed"));
       hideAndResetExchangePane();
     });
+  },
+
+  /**
+   * Hide attachments containing OpenPGP keys
+   */
+  hidePgpKeys: function() {
+    let keys = [];
+    for (let i = 0; i < currentAttachments.length; i++) {
+      if (currentAttachments[i].contentType.search(/^application\/pgp-keys/i) === 0) {
+        keys.push(i);
+      }
+    }
+
+    if (keys.length > 0) {
+      let attachmentList = document.getElementById("attachmentList");
+
+      for (let i = keys.length; i > 0; i--) {
+        currentAttachments.splice(keys[i - 1], 1);
+      }
+
+      if (attachmentList) {
+        // delete all keys from attachment list
+        while (attachmentList.itemCount > 0) {
+          attachmentList.removeItemAt(0);
+        }
+
+        // build new attachment list
+
+        /* global gBuildAttachmentsForCurrentMsg: true */
+        let orig = gBuildAttachmentsForCurrentMsg;
+        gBuildAttachmentsForCurrentMsg = false;
+        displayAttachmentsForExpandedView();
+        gBuildAttachmentsForCurrentMsg = orig;
+      }
+    }
+
   },
 
   /**
