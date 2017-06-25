@@ -81,6 +81,8 @@ enigmail.jar:
 	content/enigmail/enigmailKeyserverDlg.js       (content/enigmailKeyserverDlg.js)
 	content/enigmail/enigmailKeySelection.xul      (content/enigmailKeySelection.xul)
 	content/enigmail/enigmailKeySelection.js       (content/enigmailKeySelection.js)
+	content/enigmail/enigmailLocateKeys.xul        (content/enigmailLocateKeys.xul)
+	content/enigmail/enigmailLocateKeys.js         (content/enigmailLocateKeys.js)
 	content/enigmail/enigmailMsgComposeOverlay.xul (content/enigmailMsgComposeOverlay.xul)
 	content/enigmail/enigmailMsgComposeOverlay.js  (content/enigmailMsgComposeOverlay.js)
 	content/enigmail/enigmailMsgComposeHelper.js   (content/enigmailMsgComposeHelper.js)

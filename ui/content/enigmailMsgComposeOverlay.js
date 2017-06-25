@@ -39,6 +39,7 @@ Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Components.utils.import("resource://enigmail/autoKeyLocate.jsm"); /*global EnigmailAutoKeyLocate: false */
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -2816,7 +2817,9 @@ Enigmail.msg = {
     ) {
 
       // check for invalid recipient keys
-      var resultObj = {};
+      var resultObj = {
+        foundKeys: false
+      };
       var inputObj = {};
       inputObj.toAddr = toAddrStr;
       inputObj.invalidAddr = Enigmail.hlp.getInvalidAddress(testErrorMsgObj.value);
@@ -2845,8 +2848,17 @@ Enigmail.msg = {
       inputObj.options += ",";
       inputObj.dialogHeader = EnigmailLocale.getString("recipientsSelectionHdr");
 
-      // perform key selection dialog:
-      window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+      if (EnigmailAutoKeyLocate.isAvailable()) {
+        // try --auto-key-locate first
+        window.openDialog("chrome://enigmail/content/enigmailLocateKeys.xul", "",
+          "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+      }
+
+      if (!resultObj.foundKeys) {
+        // show key selection dialog, if auto-key-locate fails
+        window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "",
+          "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+      }
 
       // process result from key selection dialog:
       try {

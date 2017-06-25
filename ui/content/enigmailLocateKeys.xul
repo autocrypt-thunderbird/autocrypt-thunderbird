@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/dialogs.css" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<?xul-overlay href="chrome://global/content/dialogOverlay.xul"?>
+
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        class="dialog"
+        title=""
+        id="progressWindow"
+        style="width: 36em;"
+        onload="onLoad()"
+        onunload="onUnload()"
+        oncancel="return onCancel()">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailLocateKeys.js"/>
+
+    <grid flex="1">
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>
+
+      <rows>
+        <row>
+          <hbox pack="end">
+            <label id="dialog.dummy1" value=" "/>
+          </hbox>
+          <label id="dialog.status" crop="center" value=" "/>
+        </row>
+        <row class="thin-separator">
+          <hbox pack="end">
+            <label value="&enigmail.progressText.label;" control="dialog.progress"/>
+          </hbox>
+          <progressmeter id="dialog.progress" mode="normal" value="0"/>
+          <hbox pack="end">
+            <label id="dialog.progressText"/>
+          </hbox>
+        </row>
+        <row>
+          <hbox pack="end">
+            <label id="dialog.dummy2" value=" "/>
+          </hbox>
+          <vbox>
+            <separator/>
+            <label id="dialog.status2" crop="center" value=""/>
+          </vbox>
+        </row>
+      </rows>
+    </grid>
+    <separator/>
+    <hbox id="CancelButton" pack="center">
+      <button id="cancel" label="&enigmail.cancelKey.label;" oncommand="return onCancel();"/>
+    </hbox>
+
+</window>

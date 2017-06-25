@@ -132,6 +132,7 @@ const EnigmailGpg = {
    supports-dirmngr     - is dirmngr supported (true for gpg >= 2.1)
    supports-ecc-keys    - are ECC (elliptic curve) keys supported (true for gpg >= 2.1)
    supports-sender      - does gnupg understand the --sender argument
+   supports-wkd         - does gpg support wkd (web key directory) (true for gpg >= 2.1.19)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -178,6 +179,8 @@ const EnigmailGpg = {
           return "quit";
       case "supports-sender":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.15");
+      case "supports-wkd":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.19");
     }
 
     return undefined;

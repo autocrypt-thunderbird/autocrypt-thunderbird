@@ -24,6 +24,7 @@ MODFILES = \
            armor.jsm \
            attachment.jsm \
            autocrypt.jsm \
+           autoKeyLocate.jsm \
            card.jsm \
            clipboard.jsm \
            commandLine.jsm \
