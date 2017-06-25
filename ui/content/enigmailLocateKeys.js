@@ -24,12 +24,12 @@ Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/autoKeyLocate.jsm"); /*global EnigmailAutoKeyLocate: false */
 
 function onLoad() {
-  document.getElementById("dialog.status2").value = "Locating Keys...";
+  let inArg = window.arguments[0].toAddr.toString();
+
+  EnigmailLog.DEBUG("enigmailLocateKeys.js: onLoad(); to =" + inArg + "\n");
   let progressDlg = document.getElementById("dialog.progress");
   progressDlg.setAttribute("mode", "undetermined");
 
-  let inArg = window.arguments[0].toAddr.toString();
-  EnigmailLog.DEBUG("enigmailLocateKeys.js: to: " + inArg + "\n");
 
   if (inArg.trim() !== "") {
     let listener = EnigmailExecution.newSimpleListener(null, function(ret) {

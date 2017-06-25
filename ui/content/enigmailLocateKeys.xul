@@ -33,9 +33,11 @@
       <rows>
         <row>
           <hbox pack="end">
-            <label id="dialog.dummy1" value=" "/>
+            <!--label id="dialog.dummy1" value=" "/-->
+            <spacer/>
           </hbox>
-          <label id="dialog.status" crop="center" value=" "/>
+          <spacer/>
+          <!--label id="dialog.status1" crop="center" value=" "/ -->
         </row>
         <row class="thin-separator">
           <hbox pack="end">
@@ -48,11 +50,12 @@
         </row>
         <row>
           <hbox pack="end">
-            <label id="dialog.dummy2" value=" "/>
+            <!--label id="dialog.dummy" value=" "/ -->
+            <spacer/>
           </hbox>
           <vbox>
             <separator/>
-            <label id="dialog.status2" crop="center" value=""/>
+            <label id="dialog.status" crop="center" value="&enigmail.locateKeys.locating;"/>
           </vbox>
         </row>
       </rows>
