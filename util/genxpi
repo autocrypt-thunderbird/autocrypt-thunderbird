@@ -72,6 +72,7 @@ zip --must-match\
     modules/armor.jsm \
     modules/attachment.jsm \
     modules/autocrypt.jsm \
+    modules/autoKeyLocate.jsm \
     modules/card.jsm \
     modules/clipboard.jsm \
     modules/commandLine.jsm \
