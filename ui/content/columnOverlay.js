@@ -42,7 +42,7 @@ Enigmail.columnHandler = {
     let newProp = null;
 
     if (this.isUsingPep()) {
-      let rating = hdr.getUint32Property("enigmailPep");
+      let rating = hdr.getUint32Property("enigmailPep") & 0xFF;
 
       switch (rating) {
         case 1:

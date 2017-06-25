@@ -964,6 +964,13 @@ Enigmail.hdrView = {
     var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
 
     if (EnigmailPEPAdapter.usingPep()) {
+      let rating = 0;
+      if (this.pEpStatus.rating !== null) {
+        rating = this.pEpStatus.rating;
+      }
+
+      rating = (rating + 0xFF) << 8;
+
       let pepColor = 0;
       switch (this.pEpStatus.messageColor) {
         case "red":
@@ -976,7 +983,8 @@ Enigmail.hdrView = {
           pepColor = 3;
           break;
       }
-      msgHdr.setUint32Property("enigmailPep", pepColor);
+
+      msgHdr.setUint32Property("enigmailPep", rating + pepColor);
     }
     else {
       if (this.statusBar.getAttribute("encrypted") == "ok")

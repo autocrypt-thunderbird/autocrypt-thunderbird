@@ -99,6 +99,7 @@ Enigmail.msg = {
   statusInlinePGPStr: "???",
   statusAttachOwnKey: "???",
   juniorMode: false,
+  origPepRating: null,
 
   sendProcess: false,
   composeBodyReady: false,
@@ -561,6 +562,9 @@ Enigmail.msg = {
     this.enableUndoEncryption(false);
 
     this.displayProtectHeadersStatus();
+    if (this.juniorMode) {
+      this.getOriginalPepMsgRating();
+    }
 
     var toobarElem = document.getElementById("composeToolbar2");
     if (toobarElem && (EnigmailOS.getOS() == "Darwin")) {
@@ -650,6 +654,15 @@ Enigmail.msg = {
     this.updateStatusBar();
   },
 
+  getOriginalPepMsgRating: function() {
+    let msgUri = this.getOriginalMsgUri();
+
+    let msgHdr = this.getMsgHdr(msgUri);
+    if (msgHdr) {
+      let r = msgHdr.getUint32Property("enigmailPep");
+      this.origPepRating = (r - (r & 0xFF)) >> 8;
+    }
+  },
 
   // check if an signature is related to another attachment
   findRelatedAttachment: function(bucketList, node) {
@@ -752,6 +765,7 @@ Enigmail.msg = {
     this.sendProcess = false;
     this.trustAllKeys = false;
     this.mimePreferOpenPGP = 0;
+    this.origPepRating = null;
 
     if (!closing) {
       this.setIdentityDefaults();
@@ -3336,6 +3350,19 @@ Enigmail.msg = {
       let o = this.compileFromAndTo();
       if (o) {
         rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
+
+        if (this.origPepRating !== null && rating < this.origPepRating && this.identity.getBoolAttribute("warnWeakReply")) {
+          let msgInput = {
+            msgtext: EnigmailLocale.getString("pep.alert.weakReply"),
+            button1: EnigmailLocale.getString("dlg.button.continue"),
+            cancelButton: EnigmailLocale.getString("dlg.button.cancel"),
+            iconType: EnigmailConstants.ICONTYPE_ALERT,
+            dialogTitle: EnigmailLocale.getString("warning")
+          };
+
+          if (EnigmailDialog.msgBox(window, msgInput) !== 0) return false;
+
+        }
       }
     }
 
