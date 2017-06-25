@@ -874,7 +874,7 @@ Enigmail.msg = {
       }
 
       if (!this.attachOwnKeyObj.attachedKey) {
-        var attachedObj = this.extractAndAttachKey([userIdValue]);
+        var attachedObj = this.extractAndAttachKey([userIdValue], true);
         if (attachedObj) {
           this.attachOwnKeyObj.attachedObj = attachedObj;
           this.attachOwnKeyObj.attachedKey = userIdValue;
@@ -901,7 +901,7 @@ Enigmail.msg = {
     window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
-      this.extractAndAttachKey(resultObj.userList);
+      this.extractAndAttachKey(resultObj.userList, true);
     }
     catch (ex) {
       // cancel pressed -> do nothing
@@ -909,7 +909,7 @@ Enigmail.msg = {
     }
   },
 
-  extractAndAttachKey: function(uid) {
+  extractAndAttachKey: function(uid, warnOnError) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.extractAndAttachKey: \n");
     var enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc)
@@ -935,9 +935,9 @@ Enigmail.msg = {
     var exitCodeObj = {};
     var errorMsgObj = {};
 
-    EnigmailKeyRing.extractKey(false, uid.join(" "), tmpFile /*.path */ , exitCodeObj, errorMsgObj);
+    EnigmailKeyRing.extractKey(false, uid.join(" "), tmpFile, exitCodeObj, errorMsgObj);
     if (exitCodeObj.value !== 0) {
-      EnigmailDialog.alert(window, errorMsgObj.value);
+      if (warnOnError) EnigmailDialog.alert(window, errorMsgObj.value);
       return null;
     }
 
@@ -3305,7 +3305,7 @@ Enigmail.msg = {
         }
 
         if (!this.attachOwnKeyObj.attachedKey) {
-          let attachedObj = this.extractAndAttachKey([userIdValue]);
+          let attachedObj = this.extractAndAttachKey([userIdValue], false);
           if (attachedObj) {
             attachedObj.name = "pEpkey.asc";
             this.attachOwnKeyObj.attachedObj = attachedObj;
