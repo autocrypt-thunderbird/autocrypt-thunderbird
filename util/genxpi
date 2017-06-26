@@ -115,6 +115,7 @@ zip --must-match\
     modules/mimeDecrypt.jsm \
     modules/mimeVerify.jsm \
     modules/os.jsm \
+    modules/openpgp.jsm \
     modules/passwordCheck.jsm \
     modules/passwords.jsm \
     modules/pEp.jsm \
@@ -134,6 +135,8 @@ zip --must-match\
     modules/stdlib/compose.jsm \
     modules/stdlib/misc.jsm \
     modules/stdlib/msgHdrUtils.jsm \
+    modules/stdlib/openpgp-lib.js \
+    modules/stdlib/openpgp.worker.min.js \
     modules/stdlib.jsm \
     modules/streams.jsm \
     modules/subprocess.jsm \
