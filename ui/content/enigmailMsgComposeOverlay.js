@@ -3363,17 +3363,21 @@ Enigmail.msg = {
       if (o) {
         rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
 
-        if (this.origPepRating !== null && rating < this.origPepRating && this.identity.getBoolAttribute("warnWeakReply")) {
-          let msgInput = {
-            msgtext: EnigmailLocale.getString("pep.alert.weakReply"),
-            button1: EnigmailLocale.getString("dlg.button.continue"),
-            cancelButton: EnigmailLocale.getString("dlg.button.cancel"),
-            iconType: EnigmailConstants.ICONTYPE_ALERT,
-            dialogTitle: EnigmailLocale.getString("warning")
-          };
+        let isDraft = (typeof(gMsgCompose.compFields.draftId) === "string" && gMsgCompose.compFields.draftId.length > 0);
 
-          if (EnigmailDialog.msgBox(window, msgInput) !== 0) return false;
+        if (this.origPepRating !== null && !isDraft) {
+          if (this.origPepRating >= 6 && rating < 6 && this.identity.getBoolAttribute("warnWeakReply")) {
+            let msgInput = {
+              msgtext: EnigmailLocale.getString("pep.alert.weakReply"),
+              button1: EnigmailLocale.getString("dlg.button.continue"),
+              cancelButton: EnigmailLocale.getString("dlg.button.cancel"),
+              iconType: EnigmailConstants.ICONTYPE_ALERT,
+              dialogTitle: EnigmailLocale.getString("warning")
+            };
 
+            if (EnigmailDialog.msgBox(window, msgInput) !== 0) return false;
+
+          }
         }
       }
     }
