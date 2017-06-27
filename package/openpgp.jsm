@@ -21,8 +21,6 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-//var p = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
-//var document = p.parseFromString("<html/>", "text/xml");
 
 var appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
 
@@ -35,12 +33,3 @@ Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js",
 
 
 var EnigmailOpenPGP = window.openpgp;
-
-/*
-var file = Components.classes["@mozilla.org/file/local;1"].
-createInstance(Components.interfaces.nsILocalFile);
-file.initWithPath("/Users/pbr/enigmail/develop/libs/test.asc");
-
-var txt = EnigmailFiles.readFile(file);
-var m = openpgp.message.readArmored(txt);
-*/
