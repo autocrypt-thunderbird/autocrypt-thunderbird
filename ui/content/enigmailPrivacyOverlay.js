@@ -7,6 +7,7 @@
 
 Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 
 var EnigmailPrefOverlay = {
   juniorModeCallback: function(item) {
@@ -14,11 +15,14 @@ var EnigmailPrefOverlay = {
   },
 
   initJuniorMode: function(event) {
+    EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode()\n");
     let prefGroup = document.getElementById("enigmail_juniorModeGroup");
     if (EnigmailPEPAdapter.isPepAvailable()) {
+      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
       prefGroup.removeAttribute("hidden");
     }
     else {
+      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp NOT available\n");
       prefGroup.setAttribute("hidden", "true");
     }
 

@@ -168,6 +168,7 @@ Enigmail.edit = {
 
     if (usingPep !== this.usingPep) {
       EnigmailPEPAdapter.handleJuniorModeChange();
+      this.usingPep = usingPep;
     }
 
     if (usingPep) {
