@@ -575,12 +575,6 @@ const EnigmailKeyEditor = {
 
 }; // EnigmailKeyEditor
 
-// TODO: function probably not used ?!
-function keyReadCallback(outputData, ret) {
-
-  outputData.keyObj = new EnigmailKey.Entry(outputData.key);
-  ret.exitCode = 0;
-}
 
 function signKeyCallback(inputData, keyEdit, ret) {
 
@@ -618,7 +612,7 @@ function signKeyCallback(inputData, keyEdit, ret) {
   else if (keyEdit.doCheck(GET_BOOL, "sign_uid.local_promote_okay")) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";
-  } 
+  }
   else if (keyEdit.doCheck(GET_BOOL, "sign_uid.replace_expired_okay")) {
     ret.exitCode = 0;
     ret.writeTxt = "Y";

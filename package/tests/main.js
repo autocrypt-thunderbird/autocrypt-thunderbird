@@ -32,6 +32,7 @@ execTest("gpgAgent-test.js");
 execTest("enigmail-test.js");
 execTest("files-test.js");
 execTest("streams-test.js");
+execTest("key-test.js");
 execTest("keyRing-test.js");
 execTest("keyEditor-test.js");
 execTest("keyserver-test.js");
