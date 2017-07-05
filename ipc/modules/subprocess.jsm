@@ -249,6 +249,7 @@ var subprocess = {
         .then(() => proc.wait())
         .then(result => {
           DEBUG_LOG("Complete: " + result.exitCode + "\n");
+          if (result.exitCode === null) result.exitCode = -1;
           resolved = result.exitCode;
           if (typeof options.done === "function") {
             try {
