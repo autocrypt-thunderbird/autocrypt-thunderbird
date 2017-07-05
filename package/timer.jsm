@@ -20,9 +20,11 @@ const EnigmailTimer = {
    * wait a defined number of miliseconds, then call a callback function
    * asynchronously
    *
-   * @callbackFunction: Function - any function specification
-   * @sleepTimeMs:      Number - optional number of miliseconds to delay
+   * @param callbackFunction: Function - any function specification
+   * @param sleepTimeMs:      Number - optional number of miliseconds to delay
    *                             (0 if not specified)
+   *
+   * @return Number: timeoutID
    */
   setTimeout: function(callbackFunction, sleepTimeMs = 0) {
 
@@ -38,5 +40,10 @@ const EnigmailTimer = {
     return timeoutID;
   },
 
+  /**
+   * Cancel a timeout callback
+   *
+   * @param Number: timeoutID
+   */
   clearTimeout: clearTimeout
 };

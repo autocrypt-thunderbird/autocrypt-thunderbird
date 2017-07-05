@@ -24,7 +24,6 @@ MODFILES = \
            armor.jsm \
            attachment.jsm \
            autocrypt.jsm \
-           autoKeyLocate.jsm \
            card.jsm \
            clipboard.jsm \
            commandLine.jsm \
@@ -94,6 +93,7 @@ MODFILES = \
            verify.jsm \
            versioning.jsm \
            webKey.jsm \
+           wkdLookup.jsm \
            windows.jsm \
            wksMimeHandler.jsm \
            zbase32.jsm

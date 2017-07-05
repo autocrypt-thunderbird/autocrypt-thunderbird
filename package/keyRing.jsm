@@ -1049,7 +1049,20 @@ var EnigmailKeyRing = {
     return foundKeyId;
   },
 
-
+  /**
+   *  Determine the key ID for a set of given addresses
+   *
+   * @param addresses: Array of String - email addresses
+   * @param minTrustLevel: String      - f for Fully trusted keys / ? for any valid key
+   * @param details:  Object           - holds details for invalid keys:
+   *                                      - errArray: {
+   *                                       * addr: email addresses
+   *                                       * msg:  related error
+   *                                       }
+   * @param resultingArray: Array of String - list of found key IDs
+   *
+   * @return Boolean: true if at least one key missing; false otherwise
+   */
   getValidKeysForAllRecipients: function(addresses, minTrustLevel, details, resultingArray) {
 
     let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf(minTrustLevel);

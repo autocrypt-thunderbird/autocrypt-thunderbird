@@ -39,7 +39,7 @@ Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Components.utils.import("resource://enigmail/autoKeyLocate.jsm"); /*global EnigmailAutoKeyLocate: false */
+Components.utils.import("resource://enigmail/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -1623,6 +1623,8 @@ Enigmail.msg = {
     this.statusSigned = signFinally;
     this.reasonEncrypted = encReason;
     this.reasonSigned = signReason;
+
+    this.fireSearchKeys();
   },
 
   /**
@@ -1991,9 +1993,11 @@ Enigmail.msg = {
   determineSendFlags: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
 
+    let detailsObj = {};
+
     if (this.juniorMode) {
       this.getPepMessageRating();
-      return;
+      return detailsObj;
     }
 
     this.statusEncryptedInStatusBar = null; // to double check broken promise for encryption
@@ -2049,7 +2053,7 @@ Enigmail.msg = {
         }
       }
 
-      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "));
+      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "), detailsObj);
 
       this.autoPgpEncryption = (validKeyList !== null);
 
@@ -2070,6 +2074,7 @@ Enigmail.msg = {
     this.updateStatusBar();
     this.determineSendFlagId = null;
 
+    return detailsObj;
   },
 
   setChecked: function(elementId, checked) {
@@ -2389,6 +2394,18 @@ Enigmail.msg = {
     this.setAdditionalHeader("X-Enigmail-Draft-Status", draftStatus);
   },
 
+  getForceRecipientDlg: function() {
+    // force add-rule dialog for each missing key?:
+    let forceRecipientSettings = false;
+    // if keys are ONLY assigned by rules, force add-rule dialog for each missing key
+    if (EnigmailPrefs.getPref("assignKeysByRules") &&
+      !EnigmailPrefs.getPref("assignKeysByEmailAddr") &&
+      !EnigmailPrefs.getPref("assignKeysManuallyIfMissing") &&
+      !EnigmailPrefs.getPref("assignKeysManuallyAlways")) {
+      forceRecipientSettings = true;
+    }
+    return forceRecipientSettings;
+  },
 
   getSenderUserId: function() {
     var userIdValue = null;
@@ -2479,15 +2496,7 @@ Enigmail.msg = {
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\"\n");
 
-    // force add-rule dialog for each missing key?:
-    var forceRecipientSettings = false;
-    // if keys are ONLY assigned by rules, force add-rule dialog for each missing key
-    if (EnigmailPrefs.getPref("assignKeysByRules") &&
-      !EnigmailPrefs.getPref("assignKeysByEmailAddr") &&
-      !EnigmailPrefs.getPref("assignKeysManuallyIfMissing") &&
-      !EnigmailPrefs.getPref("assignKeysManuallyAlways")) {
-      forceRecipientSettings = true;
-    }
+    var forceRecipientSettings = this.getForceRecipientDlg();
 
     // REPEAT 1 or 2 times:
     // NOTE: The only way to call this loop twice is to come to the "continue;" statement below,
@@ -2848,17 +2857,9 @@ Enigmail.msg = {
       inputObj.options += ",";
       inputObj.dialogHeader = EnigmailLocale.getString("recipientsSelectionHdr");
 
-      if (EnigmailAutoKeyLocate.isAvailable()) {
-        // try --auto-key-locate first
-        window.openDialog("chrome://enigmail/content/enigmailLocateKeys.xul", "",
-          "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-      }
-
-      if (!resultObj.foundKeys) {
-        // show key selection dialog, if auto-key-locate fails
-        window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "",
-          "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-      }
+      // perform key selection dialog:
+      window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "",
+        "dialog,modal,centerscreen,resizable", inputObj, resultObj);
 
       // process result from key selection dialog:
       try {
@@ -5025,6 +5026,55 @@ Enigmail.msg = {
         if (typeof subjElem.oninput === "function") subjElem.oninput();
       }
     }
+  },
+
+  fireSearchKeys: function() {
+    if (this.isEnigmailEnabled()) {
+
+      if (this.searchKeysTimeout) {
+        EnigmailTimer.clearTimeout(this.searchKeysTimeout);
+      }
+
+      this.searchKeysTimeout = EnigmailTimer.setTimeout(function _f() {
+          Enigmail.msg.checkKeyForEmails();
+        },
+        10000); // 10 Seconds
+    }
+  },
+
+  /**
+   * Determine if all addressees have a valid key ID; if not, attempt to
+   * import them via WKD or Autocrypt.
+   */
+  checkKeyForEmails: function() {
+    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+    try {
+      if (this.juniorMode) return;
+
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.checkKeyForEmails()\n");
+
+      let self = this;
+      let missingKeys = this.determineSendFlags();
+
+      if ("errArray" in missingKeys && missingKeys.errArray.length > 0) {
+        let keyList = missingKeys.errArray.map(function(i) {
+          return i.addr;
+        }).join(",");
+
+        if (keyList.length > 0) {
+          // TODO: add Autocrypt
+          EnigmailWkdLookup.findKeys(keyList).
+          then((foundKeys) => {
+            if (foundKeys) {
+              self.processFinalState();
+              self.updateStatusBar();
+            }
+          });
+        }
+      }
+    }
+    catch (ex) {}
   }
 };
 

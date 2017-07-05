@@ -72,7 +72,6 @@ zip --must-match\
     modules/armor.jsm \
     modules/attachment.jsm \
     modules/autocrypt.jsm \
-    modules/autoKeyLocate.jsm \
     modules/card.jsm \
     modules/clipboard.jsm \
     modules/commandLine.jsm \
@@ -159,6 +158,7 @@ zip --must-match\
     modules/verify.jsm \
     modules/versioning.jsm \
     modules/webKey.jsm \
+    modules/wkdLookup.jsm \
     modules/windows.jsm \
     modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
