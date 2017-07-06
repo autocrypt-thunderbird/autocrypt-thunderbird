@@ -814,14 +814,8 @@ var EnigmailGpgAgent = {
       try {
         const proc = {
           command: EnigmailGpgAgent.connGpgAgentPath,
-          arguments: [],
-          charset: null,
-          environment: EnigmailCore.getEnvList(),
-          stdin: function(pipe) {
-            pipe.write("killagent\n");
-            pipe.write("/bye\n");
-            pipe.close();
-          }
+          arguments: ['killagent', '/bye'],
+          environment: EnigmailCore.getEnvList()
         };
 
         subprocess.call(proc).wait();
