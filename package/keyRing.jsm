@@ -354,7 +354,7 @@ var EnigmailKeyRing = {
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     var command = EnigmailGpg.agentPath;
-    var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
+    var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
     importedKeysObj.value = "";
 
     var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
@@ -371,20 +371,19 @@ var EnigmailKeyRing = {
     var statusMsg = statusMsgObj.value;
 
     var keyList = [];
+    let importedKeys = [];
 
-    if (exitCodeObj.value === 0) {
+    if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
       // Normal
-      EnigmailKeyRing.clearCache();
-
+      exitCodeObj.value = 0;
       var statusLines = statusMsg.split(/\r?\n/);
-
-      // Discard last null string, if any
 
       for (let j = 0; j < statusLines.length; j++) {
         var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
         if (matches && (matches.length > 2)) {
           if (typeof(keyList[matches[2]]) != "undefined") {
             keyList[matches[2]] |= Number(matches[1]);
+            importedKeys.push(matches[2]);
           }
           else
             keyList[matches[2]] = Number(matches[1]);
@@ -396,6 +395,10 @@ var EnigmailKeyRing = {
       for (let j in keyList) {
         importedKeysObj.value += j + ":" + keyList[j] + ";";
       }
+    }
+
+    if (importedKeys.length > 0) {
+      EnigmailKeyRing.updateKeys(importedKeys);
     }
 
     return exitCodeObj.value;
@@ -662,7 +665,7 @@ var EnigmailKeyRing = {
       }
     }
 
-    const args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--import"]);
+    const args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
 
     const exitCodeObj = {};
     const statusMsgObj = {};
@@ -680,7 +683,6 @@ var EnigmailKeyRing = {
     if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
       exitCode = 0;
       // Normal return
-      EnigmailKeyRing.clearCache();
       if (statusMsg.search(/^IMPORT_OK /m) > -1) {
         let l = statusMsg.split(/\r|\n/);
         for (let i = 0; i < l.length; i++) {
@@ -689,6 +691,10 @@ var EnigmailKeyRing = {
             EnigmailLog.DEBUG("enigmail.js: Enigmail.importKey: IMPORTED 0x" + matches[2] + "\n");
             importedKeysObj.value.push(matches[2]);
           }
+        }
+
+        if (importedKeysObj.value.length > 0) {
+          EnigmailKeyRing.updateKeys(importedKeysObj.value);
         }
       }
     }
@@ -1137,6 +1143,26 @@ var EnigmailKeyRing = {
         gSubkeyIndex[k.subKeys[j].keyId] = k;
       }
     }
+  },
+
+  /**
+   * Update specific keys in the key cache. If the key objects don't exist yet,
+   * they will be created
+   *
+   * @param keys: Array of String - key IDs or fingerprints
+   */
+  updateKeys: function(keys) {
+    EnigmailLog.DEBUG("keyRing.jsm: updateKeys(" + keys.join(",") + ")\n");
+
+    function onlyUnique(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+
+    let uniqueKeys = [...new Set(keys)]; // make key IDs unique
+
+    // TODO: complete implementation
+
+    this.clearCache();
   }
 }; //  EnigmailKeyRing
 

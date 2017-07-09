@@ -153,6 +153,12 @@ pref("extensions.enigmail.autoSendEncrypted", 1);
 // 1: yes
 pref("extensions.enigmail.autocryptMode", 0);
 
+// enable automatic lookup of keys using Web Key Directory (WKD)
+// (see https://tools.ietf.org/html/draft-koch-openpgp-webkey-service)
+// 0: no
+// 1: yes DEFAULT
+pref("extensions.enigmail.autoWkdLookup", 1);
+
 // ask to confirm before sending
 // 0: never DEFAULT
 // 1: always

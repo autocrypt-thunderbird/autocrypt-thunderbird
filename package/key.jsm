@@ -122,13 +122,14 @@ var EnigmailKey = {
    *
    * @param keyBlockStr  String: the contents of one or more public keys
    * @param errorMsgObj  Object: obj.value will contain an error message in case of failures
+   * @param interactive  Boolean: if in interactive mode, may display dialogs (default: true)
    *
    * @return Array of objects with the following structure:
    *          - id (key ID)
    *          - name (the UID of the key)
    *          - state (one of "old" [existing key], "new" [new key], "invalid" [key cannot not be imported])
    */
-  getKeyListFromKeyBlock: function(keyBlockStr, errorMsgObj) {
+  getKeyListFromKeyBlock: function(keyBlockStr, errorMsgObj, interactive = true) {
     EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock\n");
 
     let blocks;
@@ -198,7 +199,7 @@ var EnigmailKey = {
       retArr.push(keyList[k]);
     }
 
-    if (retArr.length === 1) {
+    if (interactive && retArr.length === 1) {
       key = retArr[0];
       if (("revoke" in key) && (!("name" in key))) {
         this.importRevocationCert(key.id, blocks.join("\n"));

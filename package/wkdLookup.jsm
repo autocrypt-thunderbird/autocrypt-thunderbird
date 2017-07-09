@@ -7,7 +7,7 @@
 
 /**
  *  Lookup keys by email addresses using WKD. A an email address is lookep up at most
- *  once a day.
+ *  once a day. (see https://tools.ietf.org/html/draft-koch-openpgp-webkey-service)
  */
 
 var EXPORTED_SYMBOLS = ["EnigmailWkdLookup"];
@@ -20,10 +20,10 @@ Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-Cu.import("resource://enigmail/gpg.jsm"); /* global EnigmailGpg: false*/
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("resource://enigmail/zbase32.jsm"); /*global EnigmailZBase32: false */
+Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
+Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 
 
 var EnigmailWkdLookup = {
@@ -39,31 +39,28 @@ var EnigmailWkdLookup = {
     return new Promise((resolve, reject) => {
       EnigmailLog.DEBUG("wkdLookup.jsm: findKeys(" + emailList + ")\n");
 
-      if (!this.isAvailable()) resolve(false);
-      if (emailList.trim() == "") resolve(false);
+      if (emailList.trim() == "") {
+        resolve(false);
+        return;
+      }
 
       let self = this;
+      let emails = emailList.split(",");
 
-      let listener = EnigmailExecution.newSimpleListener(null, function(ret) {
-        EnigmailLog.DEBUG(listener.stdoutData);
-        EnigmailLog.DEBUG(listener.stderrData);
-        let imported = listener.stdoutData.includes("IMPORT_OK");
-        if (ret === 0 && imported) {
-          EnigmailKeyRing.clearCache();
-          resolve(true);
-        }
-        else
+      // do a little sanity test such that we don't do the lookup for nothing too often
+      for (let e of emails) {
+        if (e.search(/.@.+\...+$/) < 0) {
           resolve(false);
+          return;
+        }
+      }
 
-      });
-
-      Promise.all(emailList.split(",").map(
+      Promise.all(emails.map(
           function(mailAddr) {
             return self.determineLastAttempt(mailAddr.trim().toLowerCase());
           }))
         .then(function(checks) {
           let toCheck = [];
-          let emails = emailList.split(",");
 
           EnigmailLog.DEBUG("wkdLookup.jsm: findKeys: checks " + checks.length + "\n");
 
@@ -78,13 +75,25 @@ var EnigmailWkdLookup = {
           }
 
           if (toCheck.length > 0) {
-            let proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, [
-              "--status-fd", "1",
-              "--no-auto-check-trustdb",
-              "--auto-key-locate", "wkd",
-              "--locate-keys"
-            ].concat(toCheck), false, null, listener, {
-              value: null
+
+            Promise.all(toCheck.map((email) => {
+              return self.downloadWkdKey(email);
+            })).then((dataArr) => {
+
+              let gotKeys = [];
+              for (let i = 0; i < dataArr.length; i++) {
+                if (dataArr[i] !== null) {
+                  gotKeys.push(dataArr[i]);
+                }
+              }
+
+              if (gotKeys.length > 0) {
+                importDownloadedKeys(gotKeys);
+                resolve(true);
+              }
+              else
+                resolve(false);
+
             });
           }
           else {
@@ -134,10 +143,71 @@ var EnigmailWkdLookup = {
   },
 
   /**
-   * determine if WKD support is available in GnuPG
+   * get the WKD URL for an email address
+   *
+   * @param email: String - email address
+   *
+   * @return String: URL (or null if not possible)
    */
-  isAvailable: function() {
-    return EnigmailGpg.getGpgFeature("supports-wkd");
+
+  getWkdUrlFromEmail: function(email) {
+    email = email.toLowerCase().trim();
+    let at = email.indexOf("@");
+
+    let domain = email.substr(at + 1);
+    let user = email.substr(0, at);
+
+    var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].
+    createInstance(Ci.nsIScriptableUnicodeConverter);
+    converter.charset = "UTF-8";
+    var data = converter.convertToByteArray(user, {});
+
+    var ch = Components.classes["@mozilla.org/security/hash;1"].createInstance(Components.interfaces.nsICryptoHash);
+    ch.init(ch.SHA1);
+    ch.update(data, data.length);
+    let gotHash = ch.finish(false);
+    let encodedHash = EnigmailZBase32.encode(gotHash);
+
+    let url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash;
+    return url;
+  },
+
+  downloadWkdKey: function(email) {
+    EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey(" + email + ")\n");
+
+    return new Promise((resolve, reject) => {
+      let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+
+      oReq.addEventListener("load", function _f() {
+        EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: data for " + email + "\n");
+        try {
+
+          let d = new DataView(oReq.response);
+          let keyData = "";
+          for (let i = 0; i < d.byteLength; i++) {
+            keyData += String.fromCharCode(d.getUint8(i));
+          }
+          resolve(keyData);
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: error " + ex.toString() + "\n");
+          resolve(null);
+        }
+      });
+
+      oReq.addEventListener("error", (e) => {
+          EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: error for " + email + "\n");
+          EnigmailLog.DEBUG("   got error: " + e + "\n");
+          resolve(null);
+        },
+        false);
+
+      oReq.overrideMimeType("application/octet-stream");
+      oReq.responseType = "arraybuffer";
+      oReq.open("GET", EnigmailWkdLookup.getWkdUrlFromEmail(email));
+
+      oReq.send();
+    });
   }
 };
 
@@ -216,4 +286,25 @@ function timeForRecheck(connection, email) {
     EnigmailLog.DEBUG("wkdLookup.jsm: timeForRecheck - error" + error + "\n");
     Promise.reject(error);
   });
+}
+
+
+function importDownloadedKeys(keysArr) {
+  EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys(" + keysArr.length + ")\n");
+
+  let keyData = "";
+  for (let k in keysArr) {
+    try {
+      keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.enums.armor.public_key, keysArr[k]);
+    }
+    catch (ex) {}
+  }
+
+  let keyList = EnigmailKey.getKeyListFromKeyBlock(keyData, {}, false);
+
+  for (let k in keyList) {
+    EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: fpr=" + keyList[k].fpr + "\n");
+  }
+
+  EnigmailKeyRing.importKey(null, false, keyData, "", {}, {});
 }

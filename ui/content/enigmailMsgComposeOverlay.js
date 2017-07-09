@@ -1624,6 +1624,19 @@ Enigmail.msg = {
     this.reasonEncrypted = encReason;
     this.reasonSigned = signReason;
 
+    switch (this.statusEncrypted) {
+      case EnigmailConstants.ENIG_FINAL_CONFLICT:
+      case EnigmailConstants.ENIG_FINAL_FORCENO:
+      case EnigmailConstants.ENIG_FINAL_YES:
+        return;
+    }
+
+    switch (this.statusPGPMime) {
+      case EnigmailConstants.ENIG_FINAL_SMIME:
+      case EnigmailConstants.ENIG_FINAL_FORCESMIME:
+        return;
+    }
+
     this.fireSearchKeys();
   },
 
@@ -5031,14 +5044,15 @@ Enigmail.msg = {
   fireSearchKeys: function() {
     if (this.isEnigmailEnabled()) {
 
-      if (this.searchKeysTimeout) {
-        EnigmailTimer.clearTimeout(this.searchKeysTimeout);
-      }
+      if (this.searchKeysTimeout) return;
+
+      let self = this;
 
       this.searchKeysTimeout = EnigmailTimer.setTimeout(function _f() {
-          Enigmail.msg.checkKeyForEmails();
+          self.searchKeysTimeout = null;
+          Enigmail.msg.findMissingKeys();
         },
-        10000); // 10 Seconds
+        20000); // 20 Seconds
     }
   },
 
@@ -5046,13 +5060,15 @@ Enigmail.msg = {
    * Determine if all addressees have a valid key ID; if not, attempt to
    * import them via WKD or Autocrypt.
    */
-  checkKeyForEmails: function() {
+  findMissingKeys: function() {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     try {
       if (this.juniorMode) return;
 
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.checkKeyForEmails()\n");
+      if (EnigmailPrefs.getPref("autoWkdLookup") === 0) return;
+
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.findMissingKeys()\n");
 
       let self = this;
       let missingKeys = this.determineSendFlags();
