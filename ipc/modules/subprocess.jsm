@@ -131,16 +131,25 @@ function write(pipe, data) {
   return pipe.write(buffer);
 }
 
+function arrayBufferToString(buffer) {
+  const MAXLEN = 102400;
+
+  let uArr = new Uint8Array(buffer);
+  let ret = "";
+  let len = buffer.byteLength;
+
+  for (let j = 0; j < Math.floor(len / MAXLEN) + 1; j++) {
+    ret += String.fromCharCode.apply(null, uArr.subarray(j * MAXLEN, ((j + 1) * MAXLEN)));
+  }
+
+  return ret;
+}
+
 function read(pipe) {
   return pipe.read().then(buffer => {
     try {
       if (buffer.byteLength > 0) {
-        let d = new DataView(buffer);
-        let r = "";
-        for (let i = 0; i < d.byteLength; i++) {
-          r += String.fromCharCode(d.getUint8(i));
-        }
-        return r;
+        return arrayBufferToString(buffer);
       }
     }
     catch (ex) {
