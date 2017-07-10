@@ -152,5 +152,22 @@ const EnigmailData = {
     }
 
     return hex;
+  },
+
+  /**
+   * Convert an ArrayBuffer object into a string
+   */
+  arrayBufferToString: function(buffer) {
+    const MAXLEN = 102400;
+
+    let uArr = new Uint8Array(buffer);
+    let ret = "";
+    let len = buffer.byteLength;
+
+    for (let j = 0; j < Math.floor(len / MAXLEN) + 1; j++) {
+      ret += String.fromCharCode.apply(null, uArr.subarray(j * MAXLEN, ((j + 1) * MAXLEN)));
+    }
+
+    return ret;
   }
 };

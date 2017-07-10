@@ -24,7 +24,7 @@ Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/zbase32.jsm"); /*global EnigmailZBase32: false */
 Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 var EnigmailWkdLookup = {
 
@@ -181,12 +181,7 @@ var EnigmailWkdLookup = {
       oReq.addEventListener("load", function _f() {
         EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: data for " + email + "\n");
         try {
-
-          let d = new DataView(oReq.response);
-          let keyData = "";
-          for (let i = 0; i < d.byteLength; i++) {
-            keyData += String.fromCharCode(d.getUint8(i));
-          }
+          let keyData = EnigmailData.arrayBufferToString(oReq.response);
           resolve(keyData);
         }
         catch (ex) {
