@@ -100,6 +100,11 @@ function loadkeyList() {
   document.getElementById("progressBar").setAttribute("collapsed", "true");
 }
 
+function clearKeyCache() {
+  EnigmailKeyRing.clearCache();
+  refreshKeys();
+}
+
 function refreshKeys() {
   EnigmailLog.DEBUG("enigmailKeyManager.js: refreshKeys\n");
   var keyList = getSelectedKeys();
@@ -120,9 +125,9 @@ function buildKeyList(refresh) {
 
   var keyListObj = {};
 
-  if (refresh) {
-    EnigmailKeyRing.clearCache();
-  }
+  // if (refresh) {
+  //   EnigmailKeyRing.clearCache();
+  // }
 
   keyListObj = EnigmailKeyRing.getAllKeys(window, getSortColumn(), getSortDirection());
 

@@ -5078,6 +5078,8 @@ Enigmail.msg = {
           return i.addr;
         }).join(",");
 
+        // TODO: optimize: only check keys that were not yet checked
+
         if (keyList.length > 0) {
           // TODO: add Autocrypt
           EnigmailWkdLookup.findKeys(keyList).

@@ -114,7 +114,7 @@
         <menuitem label="&enigmail.keyMan.reload.label;"
                 id="refreshKeys"
                 accesskey="&enigmail.keyMan.reload.accesskey;"
-                oncommand="refreshKeys();"/>
+                oncommand="clearKeyCache();"/>
 
         <menuseparator/>
 

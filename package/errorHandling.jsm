@@ -282,11 +282,6 @@ function importOk(c) {
   else {
     EnigmailLog.DEBUG("errorHandling.jsm: importOk: key without FPR imported\n");
   }
-
-  let importFlag = Number(lineSplit[1]);
-  if (importFlag & (1 | 2 | 8)) {
-    EnigmailCore.getKeyRing().clearCache();
-  }
 }
 
 function unverifiedSignature(c) {

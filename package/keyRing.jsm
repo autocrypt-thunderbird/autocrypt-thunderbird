@@ -383,11 +383,11 @@ var EnigmailKeyRing = {
         if (matches && (matches.length > 2)) {
           if (typeof(keyList[matches[2]]) != "undefined") {
             keyList[matches[2]] |= Number(matches[1]);
-            importedKeys.push(matches[2]);
           }
           else
             keyList[matches[2]] = Number(matches[1]);
 
+          importedKeys.push(matches[2]);
           EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
         }
       }
@@ -1371,11 +1371,12 @@ function getKeyListEntryOfKey(keyId) {
  *                               userid, keyid, keyidshort, fpr, keytype, validity, trust, expiry.
  *                              Null will sort by userid.
  * @param sortDirection - |number| 1 = ascending / -1 = descending
+ * @param onlyKeys   - |array| of Strings: if defined, only (re-)load selected key IDs
  *
  * no return value
  */
 function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
-  EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
+  EnigmailLog.DEBUG("keyRing.jsm: loadKeyList( " + onlyKeys + ")\n");
 
   if (gLoadingKeys) {
     waitForKeyList();
@@ -1405,7 +1406,7 @@ function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
         EnigmailLog.DEBUG("keyRing.jsm: loadKeyList: got seckey lines: " + keyList.length + "\n");
         aGpgSecretsList = keyList;
 
-        if ((!aGpgSecretsList) || aGpgSecretsList.length === 0) {
+        if ((!onlyKeys) && ((!aGpgSecretsList) || aGpgSecretsList.length === 0)) {
           gLoadingKeys = false;
           if (getDialog().confirmDlg(EnigmailLocale.getString("noSecretKeys"),
               EnigmailLocale.getString("keyMan.button.generateKey"),
@@ -1713,21 +1714,28 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, endIndex) {
  */
 
 function deleteKeysFromCache(keyList) {
+  EnigmailLog.DEBUG("keyRing.jsm: deleteKeysFromCache(" + keyList.join(",") + ")\n");
+
   let deleted = [];
+  let foundKeys = [];
   for (let keyId of keyList) {
-    let k = EnigmailKeyRing.getKeyById(keyId);
+    let k = EnigmailKeyRing.getKeyById(keyId, true);
     if (k) {
-      let foundIndex = -1;
-      for (let i = 0; i < gKeyListObj.keyList.length; i++) {
-        if (gKeyListObj.keyList[i].fpr == k.fpr) {
-          foundIndex = i;
-          break;
-        }
+      foundKeys.push(k);
+    }
+  }
+
+  for (let k of foundKeys) {
+    let foundIndex = -1;
+    for (let i = 0; i < gKeyListObj.keyList.length; i++) {
+      if (gKeyListObj.keyList[i].fpr == k.fpr) {
+        foundIndex = i;
+        break;
       }
-      if (foundIndex >= 0) {
-        gKeyListObj.keyList.splice(foundIndex, 1);
-        deleted.push(k);
-      }
+    }
+    if (foundIndex >= 0) {
+      gKeyListObj.keyList.splice(foundIndex, 1);
+      deleted.push(k);
     }
   }
 
