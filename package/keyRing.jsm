@@ -1153,16 +1153,11 @@ var EnigmailKeyRing = {
    */
   updateKeys: function(keys) {
     EnigmailLog.DEBUG("keyRing.jsm: updateKeys(" + keys.join(",") + ")\n");
-
-    function onlyUnique(value, index, self) {
-      return self.indexOf(value) === index;
-    }
-
     let uniqueKeys = [...new Set(keys)]; // make key IDs unique
 
-    // TODO: complete implementation
+    deleteKeysFromCache(uniqueKeys);
 
-    this.clearCache();
+    loadKeyList(null, null, 1, uniqueKeys);
   }
 }; //  EnigmailKeyRing
 
@@ -1211,12 +1206,13 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 /**
  * Get key list from GnuPG. If the keys may be pre-cached already
  *
- * @win        - |object| parent window for displaying error messages
- * @secretOnly - |boolean| true: get secret keys / false: get public keys
+ * @param win        - Object      : parent window for displaying error messages
+ * @param secretOnly - Boolean     : true: get secret keys / false: get public keys
+ * @param onlyKeys   - Array of String: only load data for specified key IDs
  *
- * @return Promise(|array| of : separated key list entries as specified in GnuPG doc/DETAILS)
+ * @return Promise(Array of : separated key list entries as specified in GnuPG doc/DETAILS)
  */
-function obtainKeyList(win, secretOnly) {
+function obtainKeyList(win, secretOnly, onlyKeys = null) {
   return new Promise((resolve, reject) => {
     EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
@@ -1227,6 +1223,10 @@ function obtainKeyList(win, secretOnly) {
     }
     else {
       args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
+    }
+
+    if (onlyKeys) {
+      args = args.concat(onlyKeys);
     }
 
     let statusFlagsObj = {};
@@ -1374,7 +1374,7 @@ function getKeyListEntryOfKey(keyId) {
  *
  * no return value
  */
-function loadKeyList(win, sortColumn, sortDirection) {
+function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
   EnigmailLog.DEBUG("keyRing.jsm: loadKeyList()\n");
 
   if (gLoadingKeys) {
@@ -1388,7 +1388,7 @@ function loadKeyList(win, sortColumn, sortDirection) {
   try {
     const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
 
-    obtainKeyList(win, false)
+    obtainKeyList(win, false, onlyKeys)
       .then(keyList => {
         return new Promise((resolve, reject) => {
           if (!keyList) {
@@ -1397,7 +1397,7 @@ function loadKeyList(win, sortColumn, sortDirection) {
           aGpgUserList = keyList;
           EnigmailLog.DEBUG("keyRing.jsm: loadKeyList: got pubkey lines: " + keyList.length + "\n");
 
-          let r = obtainKeyList(win, true);
+          let r = obtainKeyList(win, true, onlyKeys);
           resolve(r);
         });
       })
@@ -1412,11 +1412,11 @@ function loadKeyList(win, sortColumn, sortDirection) {
               EnigmailLocale.getString("keyMan.button.skip"))) {
             getWindows().openKeyGen();
             EnigmailKeyRing.clearCache();
-            EnigmailKeyRing.newloadKeyList();
+            EnigmailKeyRing.loadKeyList();
           }
         }
         else {
-          createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection);
+          createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection, onlyKeys === null);
           gLoadingKeys = false;
         }
       })
@@ -1544,17 +1544,20 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
  * Create a list of objects representing the keys in a key list.
  * The internal cache is first deleted.
  *
- * @param keyListString: array of |string| formatted output from GnuPG for key listing
- * @param keyListObj:    |object| holding the resulting key list:
+ * @param keyListString: Array of String formatted output from GnuPG for key listing
+ * @param keyListObj:    Object holding the resulting key list:
  *                         obj.keyList:     Array holding key objects
  *                         obj.keySortList: Array holding values to make sorting easier
+ * @param reset:        Boolean - true: delete existting key cache
  *
  * no return value
  */
-function createKeyObjects(keyListString, keyListObj) {
-  keyListObj.keyList = [];
-  keyListObj.keySortList = [];
-  keyListObj.trustModel = "?";
+function createKeyObjects(keyListString, keyListObj, reset = true) {
+  if (reset) {
+    keyListObj.keyList = [];
+    keyListObj.keySortList = [];
+    keyListObj.trustModel = "?";
+  }
 
   appendKeyItems(keyListString, keyListObj);
 }
@@ -1700,14 +1703,44 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, endIndex) {
 
 }
 
+/**
+ * Delete a set of keys from the key cache. Does not rebuild key indexes.
+ * Not found keys are skipped.
+ *
+ * @param keyList: Array of Strings: key IDs (or fpr) to delete
+ *
+ * @return Array of deleted key objects
+ */
 
-function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection) {
+function deleteKeysFromCache(keyList) {
+  let deleted = [];
+  for (let keyId of keyList) {
+    let k = EnigmailKeyRing.getKeyById(keyId);
+    if (k) {
+      let foundIndex = -1;
+      for (let i = 0; i < gKeyListObj.keyList.length; i++) {
+        if (gKeyListObj.keyList[i].fpr == k.fpr) {
+          foundIndex = i;
+          break;
+        }
+      }
+      if (foundIndex >= 0) {
+        gKeyListObj.keyList.splice(foundIndex, 1);
+        deleted.push(k);
+      }
+    }
+  }
+
+  return deleted;
+}
+
+function createAndSortKeyList(aGpgUserList, aGpgSecretsList, sortColumn, sortDirection, resetKeyCache) {
   EnigmailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
 
   if (typeof sortColumn !== "string") sortColumn = "userid";
   if (!sortDirection) sortDirection = 1;
 
-  createKeyObjects(aGpgUserList, gKeyListObj);
+  createKeyObjects(aGpgUserList, gKeyListObj, resetKeyCache);
 
   // create a hash-index on key ID (8 and 16 characters and fingerprint)
   // in a single array
