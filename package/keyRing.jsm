@@ -1158,6 +1158,7 @@ var EnigmailKeyRing = {
     deleteKeysFromCache(uniqueKeys);
 
     loadKeyList(null, null, 1, uniqueKeys);
+    getWindows().keyManReloadKeys();
   }
 }; //  EnigmailKeyRing
 
@@ -1602,12 +1603,6 @@ function appendKeyItems(keyListString, keyListObj) {
           }
           if (typeof(keyObj.userId) !== "string") {
             keyObj.userId = EnigmailData.convertGpgToUnicode(listRow[USERID_ID]);
-            keyListObj.keySortList.push({
-              userId: keyObj.userId.toLowerCase(),
-              keyId: keyObj.keyId,
-              fpr: keyObj.fpr,
-              keyNum: numKeys - 1
-            });
             if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST_ID]) < TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust)) {
               // reduce key trust if primary UID is less trusted than public key
               keyObj.keyTrust = listRow[KEY_TRUST_ID];
@@ -1674,6 +1669,19 @@ function appendKeyItems(keyListString, keyListObj) {
       }
     }
   }
+
+  // (re-) build key sort list (quick index to keys)
+  keyListObj.keySortList = [];
+  for (let i = 0; i < keyListObj.keyList.length; i++) {
+    let keyObj = keyListObj.keyList[i];
+    keyListObj.keySortList.push({
+      userId: keyObj.userId.toLowerCase(),
+      keyId: keyObj.keyId,
+      fpr: keyObj.fpr,
+      keyNum: i
+    });
+  }
+
 }
 
 /**
