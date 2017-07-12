@@ -52,7 +52,15 @@ const EnigmailTime = {
         options.minute = DATE_2DIGIT;
       }
 
-      return new Intl.DateTimeFormat(appLocale.getCategory("NSILOCALE_TIME"), options).format(dat);
+      let useLocale = appLocale.getCategory("NSILOCALE_TIME").substr(0, 5);
+      useLocale = useLocale.replace(/_/g, "-");
+
+      try {
+        return new Intl.DateTimeFormat(useLocale, options).format(dat);
+      }
+      catch (ex) {
+        return new Intl.DateTimeFormat("en-US", options).format(dat);
+      }
     }
     else {
       return "";
