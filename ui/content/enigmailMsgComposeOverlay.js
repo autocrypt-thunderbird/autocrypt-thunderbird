@@ -1427,11 +1427,11 @@ Enigmail.msg = {
     key function to process the final encrypt/sign/pgpmime state from all settings
     @param sendFlags: contains the sendFlags if the message is really processed. Optional, can be null
       - uses as INPUT:
-        - this.sendMode
-        - this.encryptByRules, this.signByRules, pgpmimeByRules
-        - this.encryptForced, this.encryptSigned
-    - uses as OUTPUT:
-      - this.statusEncrypt, this.statusSign, this.statusPGPMime
+         - this.sendMode
+         - this.encryptByRules, this.signByRules, pgpmimeByRules
+         - this.encryptForced, this.encryptSigned
+      - uses as OUTPUT:
+         - this.statusEncrypt, this.statusSign, this.statusPGPMime
 
     no return value
   */
@@ -1636,8 +1636,6 @@ Enigmail.msg = {
       case EnigmailConstants.ENIG_FINAL_FORCESMIME:
         return;
     }
-
-    this.fireSearchKeys();
   },
 
   /**
@@ -5020,6 +5018,7 @@ Enigmail.msg = {
         this.determineSendFlagId = EnigmailEvents.dispatchEvent(
           function _sendFlagWrapper() {
             Enigmail.msg.determineSendFlags();
+            Enigmail.msg.fireSearchKeys();
           },
           0);
       }
