@@ -24,9 +24,10 @@ Cu.import("resource://enigmail/app.jsm");
 Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/dialog.jsm");
 Cu.import("resource://enigmail/windows.jsm");
+Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 Cu.import("resource://enigmail/installPep.jsm"); /* global EnigmailInstallPep: false */
-
+Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 
 function upgradeRecipientsSelection() {
   // Upgrade perRecipientRules and recipientsSelectionOption to
@@ -122,78 +123,37 @@ function upgradePrefsSending() {
   EnigmailPrefs.getPrefBranch().clearUserPref("alwaysTrustSend");
 }
 
-
-function upgradeHeadersView() {
-  // all headers hack removed -> make sure view is correct
-  var hdrMode = null;
-  try {
-    hdrMode = EnigmailPrefs.getPref("show_headers");
-  }
-  catch (ex) {}
-
-  if (!hdrMode) hdrMode = 1;
-  try {
-    EnigmailPrefs.getPrefBranch().clearUserPref("show_headers");
-  }
-  catch (ex) {}
-
-  EnigmailPrefs.getPrefRoot().setIntPref("mail.show_headers", hdrMode);
-}
-
-function upgradeCustomHeaders() {
-  try {
-    var extraHdrs = " " + EnigmailPrefs.getPrefRoot().getCharPref("mailnews.headers.extraExpandedHeaders").toLowerCase() + " ";
-
-    var extraHdrList = [
-      "x-enigmail-version",
-      "content-transfer-encoding",
-      "openpgp",
-      "x-mimeole",
-      "x-bugzilla-reason",
-      "x-php-bug"
-    ];
-
-    for (let hdr in extraHdrList) {
-      extraHdrs = extraHdrs.replace(" " + extraHdrList[hdr] + " ", " ");
-    }
-
-    extraHdrs = extraHdrs.replace(/^ */, "").replace(/ *$/, "");
-    EnigmailPrefs.getPrefRoot().setCharPref("mailnews.headers.extraExpandedHeaders", extraHdrs);
-  }
-  catch (ex) {}
-}
-
-/**
- * Change from global PGP/MIME setting to per-identity setting
- */
-function upgradeOldPgpMime() {
-  var pgpMimeMode = false;
-  try {
-    pgpMimeMode = (EnigmailPrefs.getPref("usePGPMimeOption") == 2);
-  }
-  catch (ex) {
-    return;
-  }
-
-  try {
-    var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
-    for (var i = 0; i < accountManager.allIdentities.length; i++) {
-      var id = accountManager.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
-      if (id.getBoolAttribute("enablePgp")) {
-        id.setBoolAttribute("pgpMimeMode", pgpMimeMode);
-      }
-    }
-
-    EnigmailPrefs.getPrefBranch().clearUserPref("usePGPMimeOption");
-  }
-  catch (ex) {}
-}
-
 /**
  * Replace short key IDs with FPR in identity settings
  */
 function replaceKeyIdWithFpr() {
-  // TODO: completeme!
+  try {
+    const GetKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
+
+    var accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+    for (var i = 0; i < accountManager.allIdentities.length; i++) {
+      var id = accountManager.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
+      if (id.getBoolAttribute("enablePgp")) {
+        let keyId = id.getCharAttribute("pgpkeyId");
+
+        if (keyId.search(/^(0x)?[a-fA-F0-9]{8}$/) === 0) {
+
+          EnigmailCore.getService();
+
+          let k = GetKeyRing().getKeyById(keyId);
+          if (k) {
+            id.setCharAttribute("pgpkeyId", "0x" + k.fpr);
+          }
+          else {
+            id.setCharAttribute("pgpkeyId", "");
+          }
+        }
+      }
+    }
+  }
+  catch (ex) {
+    EnigmailDialog.alert("config upgrade: error" + ex.toString());
+  }
 }
 
 
@@ -249,23 +209,12 @@ const EnigmailConfigure = {
       EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
 
       if (EnigmailPrefs.getPref("juniorMode") === 0 || (!isPepInstallable())) {
-        // start wizard if pEp Junior Mode is fored off or if pep cannot
+        // start wizard if pEp Junior Mode is forced off or if pep cannot
         // be installed/used
         EnigmailWindows.openSetupWizard(win, false);
       }
     }
     else {
-      if (oldVer < "0.95") {
-        try {
-          upgradeHeadersView();
-          upgradeOldPgpMime();
-          upgradeRecipientsSelection();
-        }
-        catch (ex) {}
-      }
-      if (vc.compare(oldVer, "1.0") < 0) {
-        upgradeCustomHeaders();
-      }
       if (vc.compare(oldVer, "1.7a1pre") < 0) {
         // 1: rules only
         //     => assignKeysByRules true; rest false
@@ -315,5 +264,9 @@ const EnigmailConfigure = {
 
     EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
     EnigmailPrefs.savePrefs();
+  },
+
+  upgradeTo20: function() {
+    replaceKeyIdWithFpr();
   }
 };
