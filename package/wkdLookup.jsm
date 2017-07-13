@@ -208,7 +208,7 @@ var EnigmailWkdLookup = {
 
 
 /**
- * Ensure that the database has the auto_key_locate_timestamps table.
+ * Ensure that the database has the wkd_lookup_timestamp table.
  *
  * @param connection: Object - SQLite connection
  *
@@ -217,7 +217,7 @@ var EnigmailWkdLookup = {
 function checkDatabaseStructure(connection) {
   EnigmailLog.DEBUG("wkdLookup.jsm: checkDatabaseStructure\n");
 
-  return connection.tableExists("auto_key_locate_timestamps").then(
+  return connection.tableExists("wkd_lookup_timestamp").then(
     function onSuccess(exists) {
       EnigmailLog.DEBUG("wkdLookup.jsm: checkDatabaseStructure - success\n");
       if (!exists) {
@@ -234,7 +234,7 @@ function checkDatabaseStructure(connection) {
 }
 
 /**
- * Create the "auto_key_locate_timestamps" table.
+ * Create the "wkd_lookup_timestamp" table.
  *
  * @param connection: Object - SQLite connection
  *
@@ -244,7 +244,7 @@ function createAutoKeyLocateTable(connection) {
   EnigmailLog.DEBUG("wkdLookup.jsm: createAutoKeyLocateTable\n");
 
   return connection.execute(
-    "create table auto_key_locate_timestamps (" +
+    "create table wkd_lookup_timestamp (" +
     "email text not null primary key, " + // email address of correspondent
     "last_seen integer);"); // timestamp of last mail received for the email/type combination
 }
@@ -266,10 +266,10 @@ function timeForRecheck(connection, email) {
   };
 
   return connection.execute(
-    "select count(*) from auto_key_locate_timestamps where email = :email and :now - last_seen < 60*60*24", obj
+    "select count(*) from wkd_lookup_timestamp where email = :email and :now - last_seen < 60*60*24", obj
   ).then(function(val) {
     return connection.execute(
-      "insert or replace into auto_key_locate_timestamps values (:email, :now)", obj
+      "insert or replace into wkd_lookup_timestamp values (:email, :now)", obj
     ).then(function() {
       return Promise.resolve(val);
     });
