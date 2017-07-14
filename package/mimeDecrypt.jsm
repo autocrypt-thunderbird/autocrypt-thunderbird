@@ -200,7 +200,7 @@ EnigmailMimeDecrypt.prototype = {
     let ret = false;
 
     str = str.replace(/[\r\n]/, "");
-    if (str.search(/^[A-Za-z0-9+\/=]+$/) === 0) {
+    if (str.search(/^[A-Za-z0-9+/=]+$/) === 0) {
       let excess = str.length % 4;
       str = str.substring(0, str.length - excess);
 
@@ -262,7 +262,7 @@ EnigmailMimeDecrypt.prototype = {
       // return if not decrypting currently displayed message (except if
       // printing, replying, etc)
 
-      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
       try {
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
@@ -299,18 +299,18 @@ EnigmailMimeDecrypt.prototype = {
           msgSvc.GetUrlForUri(this.msgUriSpec, url, null);
         }
 
-        if (this.uri.spec.search(/[&\?]header=[^&]+/) > 0 &&
-          this.uri.spec.search(/[&\?]examineEncryptedParts=true/) < 0) {
+        if (this.uri.spec.search(/[&?]header=[^&]+/) > 0 &&
+          this.uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
 
-          if (this.uri.spec.search(/[&\?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
+          if (this.uri.spec.search(/[&?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
             EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
             return;
           }
         }
 
-        if (this.uri.spec.search(/[&\?]header=[^&]+/) < 0 &&
-          this.uri.spec.search(/[&\?]part=[\.0-9]+/) < 0 &&
-          this.uri.spec.search(/[&\?]examineEncryptedParts=true/) < 0) {
+        if (this.uri.spec.search(/[&?]header=[^&]+/) < 0 &&
+          this.uri.spec.search(/[&?]part=[.0-9]+/) < 0 &&
+          this.uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
 
           if (this.uri && url && url.value) {
 

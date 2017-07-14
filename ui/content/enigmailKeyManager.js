@@ -770,7 +770,7 @@ function enigmailExportKeys() {
   var defaultFileName;
   if (keyList.length == 1) {
 
-    defaultFileName = gKeyList[keyList[0]].userId.replace(/[<\>]/g, "");
+    defaultFileName = gKeyList[keyList[0]].userId.replace(/[<>]/g, "");
     if (exportSecretKey) {
       defaultFileName = EnigGetString("specificPubSecKeyFilename", defaultFileName, gKeyList[keyList[0]].keyId) + ".asc";
     }

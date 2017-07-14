@@ -930,7 +930,7 @@ Enigmail.msg = {
       msgText = msgText.replace(/\r/g, "\n");
 
       // content is in encrypted.asc part:
-      let idx = msgText.search(/Content-Type: application\/octet\-stream; name=\"encrypted.asc\"/i);
+      let idx = msgText.search(/Content-Type: application\/octet-stream; name="encrypted.asc"/i);
       if (idx >= 0) {
         msgText = msgText.slice(idx);
       }
@@ -967,11 +967,11 @@ Enigmail.msg = {
     // Encode ciphertext to charset from unicode
     msgText = EnigmailData.convertFromUnicode(msgText, charset);
 
-    var mozPlainText = bodyElement.innerHTML.search(/class=\"moz-text-plain\"/);
+    var mozPlainText = bodyElement.innerHTML.search(/class="moz-text-plain"/);
 
     if ((mozPlainText >= 0) && (mozPlainText < 40)) {
       // workaround for too much expanded emoticons in plaintext msg
-      var r = new RegExp(/( )(;-\)|:-\)|;\)|:\)|:-\(|:\(|:-\\|:-P|:-D|:-\[|:-\*|\>:o|8-\)|:-\$|:-X|\=-O|:-\!|O:-\)|:\'\()( )/g);
+      var r = new RegExp(/( )(;-\)|:-\)|;\)|:\)|:-\(|:\(|:-\\|:-P|:-D|:-\[|:-\*|>:o|8-\)|:-\$|:-X|=-O|:-!|O:-\)|:'\()( )/g);
       if (msgText.search(r) >= 0) {
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParse: performing emoticons fixing\n");
         msgText = msgText.replace(r, "$2");
@@ -1441,7 +1441,7 @@ Enigmail.msg = {
 
     // check if filename is a signature
     if ((this.getAttachmentName(attachmentList[index]).search(/\.(sig|asc)$/i) > 0) ||
-      (attachmentList[index].contentType.match(/^application\/pgp\-signature/i))) {
+      (attachmentList[index].contentType.match(/^application\/pgp-signature/i))) {
       findFile = new RegExp(attName.replace(/\.(sig|asc)$/, ""));
     }
     else
@@ -1604,8 +1604,8 @@ Enigmail.msg = {
   // check if the attachment could be encrypted
   checkEncryptedAttach: function(attachment) {
     return (this.getAttachmentName(attachment).match(/\.(gpg|pgp|asc)$/i) ||
-      (attachment.contentType.match(/^application\/pgp(\-.*)?$/i)) &&
-      (attachment.contentType.search(/^application\/pgp\-signature/i) < 0));
+      (attachment.contentType.match(/^application\/pgp(-.*)?$/i)) &&
+      (attachment.contentType.search(/^application\/pgp-signature/i) < 0));
   },
 
   getAttachmentName: function(attachment) {
@@ -1636,7 +1636,7 @@ Enigmail.msg = {
       return text;
 
     // Hyperlink email addresses
-    var addrs = text.match(/\b[A-Za-z0-9_+\-\.]+@[A-Za-z0-9\-\.]+\b/g);
+    var addrs = text.match(/\b[A-Za-z0-9_+.-]+@[A-Za-z0-9.-]+\b/g);
 
     var newText, offset, loc;
     if (addrs && addrs.length) {
@@ -1654,7 +1654,7 @@ Enigmail.msg = {
           newText += text.substr(offset, loc - offset);
 
         // Strip any period off the end of address
-        addr = addr.replace(/[\.]$/, "");
+        addr = addr.replace(/[.]$/, "");
 
         if (!addr.length)
           continue;
@@ -1688,7 +1688,7 @@ Enigmail.msg = {
 
         // Strip delimiters off the end of URL
         url = url.replace(/\s$/, "");
-        url = url.replace(/([\),\.']|&gt;|&quot;)$/, "");
+        url = url.replace(/([),.']|&gt;|&quot;)$/, "");
 
         if (!url.length)
           continue;
@@ -2166,7 +2166,7 @@ Enigmail.msg = {
     var origAtt, signatureAtt;
 
     if ((this.getAttachmentName(anAttachment).search(/\.sig$/i) > 0) ||
-      (anAttachment.contentType.search(/^application\/pgp\-signature/i) === 0)) {
+      (anAttachment.contentType.search(/^application\/pgp-signature/i) === 0)) {
       // we have the .sig file; need to know the original file;
 
       signatureAtt = anAttachment;

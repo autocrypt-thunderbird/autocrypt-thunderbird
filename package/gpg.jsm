@@ -145,7 +145,7 @@ const EnigmailGpg = {
       return undefined;
     }
 
-    gpgVersion = gpgVersion.replace(/\-.*$/, "");
+    gpgVersion = gpgVersion.replace(/-.*$/, "");
     if (gpgVersion.search(/^\d+\.\d+/) < 0) {
       // not a valid version number
       return undefined;

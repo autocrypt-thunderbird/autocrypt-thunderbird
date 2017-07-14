@@ -61,8 +61,8 @@ function extractAgentInfo(fullStr) {
   if (fullStr) {
     return fullStr.
     replace(/[\r\n]/g, "").
-    replace(/^.*\=/, "").
-    replace(/\;.*$/, "");
+    replace(/^.*=/, "").
+    replace(/;.*$/, "");
   }
   else {
     return "";

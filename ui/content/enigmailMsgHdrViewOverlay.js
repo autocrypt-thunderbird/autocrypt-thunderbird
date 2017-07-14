@@ -1341,8 +1341,8 @@ if (messageHeaderSink) {
           msgFolder = p.replace(/\?.*$/, "").replace(/>[^>]+$/, "");
         }
         else if (url.schemeIs("news")) {
-          msgNum = url.path.replace(/(.*[\?&]key=)([0-9]+)([^0-9].*)?/, "$2");
-          msgFolder = url.path.replace(/(.*[\?&]group=)([^&]+)(&.*)?/, "$2");
+          msgNum = url.path.replace(/(.*[?&]key=)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = url.path.replace(/(.*[?&]group=)([^&]+)(&.*)?/, "$2");
         }
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: msgNum=" + msgNum + " / folder=" + msgFolder + "\n");

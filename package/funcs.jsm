@@ -225,7 +225,7 @@ const EnigmailFuncs = {
     for (var i = 0; i < lines.length; i++) {
       preface = "";
       oldCiteLevel = citeLevel;
-      if (lines[i].search(/^[\> \t]*\>$/) === 0)
+      if (lines[i].search(/^[> \t]*>$/) === 0)
         lines[i] += " ";
 
       citeLevel = gTxtConverter.citeLevelTXT(lines[i], logLineStart);
@@ -252,7 +252,7 @@ const EnigmailFuncs = {
           '</span>';
       }
       else if (lines[i] == "-- ") {
-        preface += '<div class=\"moz-txt-sig\">';
+        preface += '<div class="moz-txt-sig">';
         isSignature = true;
       }
       lines[i] = preface + gTxtConverter.scanTXT(lines[i].substr(logLineStart.value), convFlags);
@@ -359,7 +359,7 @@ const EnigmailFuncs = {
    *      Throws an error if mime1 or mime2 do not comply to the required format
    */
   compareMimePartLevel: function(mime1, mime2) {
-    let s = new RegExp("^[0-9]+(\.[0-9]+)*$");
+    let s = new RegExp("^[0-9]+(\\.[0-9]+)*$");
     if (mime1.search(s) < 0) throw "Invalid mime1";
     if (mime2.search(s) < 0) throw "Invalid mime2";
 

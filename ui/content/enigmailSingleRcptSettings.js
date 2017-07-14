@@ -129,7 +129,7 @@ function enigmailDlgOnAccept() {
     EnigmailDialog.info(window, EnigGetString("noEmptyRule"));
     return false;
   }
-  if (ruleEmail.value.search(/[<\>]/) >= 0) {
+  if (ruleEmail.value.search(/[<>]/) >= 0) {
     EnigmailDialog.info(window, EnigGetString("invalidAddress"));
     return false;
   }

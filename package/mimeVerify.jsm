@@ -174,7 +174,7 @@ MimeVerify.prototype = {
       let hdr = EnigmailFuncs.getHeaderData(contentTypeLine);
       hdr.boundary = hdr.boundary || "";
       hdr.micalg = hdr.micalg || "";
-      this.boundary = hdr.boundary.replace(/[\'\"]/g, "");
+      this.boundary = hdr.boundary.replace(/['"]/g, "");
     }
 
   },
@@ -399,7 +399,7 @@ MimeVerify.prototype = {
       // return if not decrypting currently displayed message (except if
       // printing, replying, etc)
 
-      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
       try {
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
@@ -435,11 +435,11 @@ MimeVerify.prototype = {
           msgSvc.GetUrlForUri(this.msgUriSpec, url, null);
         }
 
-        if (this.uri.spec.search(/[\&\?]header=[a-zA-Z0-9]*$/) < 0 &&
-          this.uri.spec.search(/[\&\?]part=[\.0-9]+/) < 0 &&
-          this.uri.spec.search(/[\&\?]examineEncryptedParts=true/) < 0) {
+        if (this.uri.spec.search(/[&?]header=[a-zA-Z0-9]*$/) < 0 &&
+          this.uri.spec.search(/[&?]part=[.0-9]+/) < 0 &&
+          this.uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
 
-          if (this.uri.spec.search(/[\&\?]header=filter\&.*$/) > 0)
+          if (this.uri.spec.search(/[&?]header=filter&.*$/) > 0)
             return;
 
           if (this.uri && url && url.value) {
@@ -485,7 +485,7 @@ MimeVerify.prototype = {
   returnData: function(data) {
     EnigmailLog.DEBUG("mimeVerify.jsm: returnData: " + data.length + " bytes\n");
 
-    let m = data.match(/^(content-type: +)([\w\/]+)/im);
+    let m = data.match(/^(content-type: +)([\w/]+)/im);
     if (m && m.length >= 3) {
       let contentType = m[2];
       if (contentType.search(/^text/i) === 0) {

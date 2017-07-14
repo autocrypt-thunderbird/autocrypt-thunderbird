@@ -264,7 +264,7 @@ const EnigmailFiles = {
   getEscapedFilename: function(fileNameStr) {
     if (EnigmailOS.isDosLike) {
       // escape the backslashes and the " character (for Windows and OS/2)
-      fileNameStr = fileNameStr.replace(/([\\\"])/g, "\\$1");
+      fileNameStr = fileNameStr.replace(/([\\"])/g, "\\$1");
     }
 
     if (EnigmailOS.getOS() == "WINNT") {

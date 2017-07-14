@@ -944,7 +944,7 @@ function stripEmailFromKey(uid) {
   }
   catch (ex) {
     // remove quotes
-    return EnigmailFuncs.stripEmail(uid.replace(/\"/g, "")).toLowerCase();
+    return EnigmailFuncs.stripEmail(uid.replace(/"/g, "")).toLowerCase();
   }
   finally {
     // search for last ocurrence of < >

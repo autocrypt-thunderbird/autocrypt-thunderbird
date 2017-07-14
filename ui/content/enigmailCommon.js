@@ -390,9 +390,9 @@ function EnigFormatFpr(fingerprint) {
 function EnigGetWindowOptions() {
   var winOptions = [];
   if (window.location.search) {
-    var optList = window.location.search.substr(1).split(/\&/);
+    var optList = window.location.search.substr(1).split(/&/);
     for (var i = 0; i < optList.length; i++) {
-      var anOption = optList[i].split(/\=/);
+      var anOption = optList[i].split(new RegExp("="));
       winOptions[anOption[0]] = unescape(anOption[1]);
     }
   }
@@ -546,7 +546,7 @@ function EnigGetFilePath(nsFileObj) {
 }
 
 function EnigCreateRevokeCert(keyId, userId, callbackFunc) {
-  var defaultFileName = userId.replace(/[<\>]/g, "");
+  var defaultFileName = userId.replace(/[<>]/g, "");
   defaultFileName += " (0x" + keyId + ") rev.asc";
   var outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
     "", true, "*.asc",

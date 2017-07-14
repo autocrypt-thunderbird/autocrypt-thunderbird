@@ -41,7 +41,7 @@ function toHexString(charCode) {
 
 function sanitizeFileName(str) {
   // remove shell escape, #, ! and / from string
-  return str.replace(/[`\/\#\!]/g, "");
+  return str.replace(/[`/#!]/g, "");
 }
 
 function sanitizeHash(str) {

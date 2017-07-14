@@ -171,7 +171,7 @@ const EnigmailMime = {
 
     for (let i in adrArr) {
       try {
-        const m = adrArr[i].match(/(.*[\w\s]+?)<([\w\-][\w\-\.]+@[\w\-][\w\-\.]+[a-zA-Z]{1,4})>/);
+        const m = adrArr[i].match(/(.*[\w\s]+?)<([\w-][\w.-]+@[\w-][\w.-]+[a-zA-Z]{1,4})>/);
         if (m && m.length == 3) {
           adrArr[i] = this.encodeHeaderValue(m[1]) + " <" + m[2] + ">";
         }

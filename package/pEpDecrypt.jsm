@@ -188,9 +188,9 @@ PEPDecryptor.prototype = {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
-      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
-      this.requestingSubpart = (this.uri.spec.search(/[\&\?]part=/) >= 0);
-      this.ignoreMessage = (this.uri.spec.search(/[\&\?]header=enigmailFilter/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[&?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
+      this.requestingSubpart = (this.uri.spec.search(/[&?]part=/) >= 0);
+      this.ignoreMessage = (this.uri.spec.search(/[&?]header=enigmailFilter/) >= 0);
     }
 
     if ("mimePart" in this.mimeSvc) {

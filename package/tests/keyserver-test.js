@@ -21,7 +21,7 @@ function setupKeyserverPrefs(keyservers, autoOn) {
 }
 
 function isGpgExecutable(fullPath) {
-  let path = fullPath.replace(/^(.*\/)([^\/]+)$/, "$2");
+  let path = fullPath.replace(/^(.*\/)([^/]+)$/, "$2");
   return (path.search(/^gpg/i) === 0);
 }
 

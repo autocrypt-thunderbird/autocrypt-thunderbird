@@ -310,7 +310,7 @@ var EnigmailKeyRing = {
           foundKey = key;
         }
         else {
-          // prefer RSA or DSA over ECC (TODO: change this once ECC keys are widely supported)
+          // prefer RSA or DSA over ECC (long-term: change this once ECC keys are widely supported)
           if (foundKey.algoSym === key.algoSym && foundKey.keySize === key.keySize) {
             if (key.expiryTime > foundKey.expiryTime) foundKey = key;
           }
@@ -2004,7 +2004,7 @@ KeyObject.prototype = {
             ++found;
             if (this.subKeys[sk].keyTrust.search(/e/i) >= 0) ++expired;
             if (this.subKeys[sk].keyTrust.search(/r/i) >= 0) ++revoked;
-            if (this.subKeys[sk].keyTrust.search(/[di\-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
+            if (this.subKeys[sk].keyTrust.search(/[di-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
           }
         }
 
@@ -2059,7 +2059,7 @@ KeyObject.prototype = {
             ++found;
             if (this.subKeys[sk].keyTrust.search(/e/i) >= 0) ++expired;
             if (this.subKeys[sk].keyTrust.search(/r/i) >= 0) ++revoked;
-            if (this.subKeys[sk].keyTrust.search(/[di\-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
+            if (this.subKeys[sk].keyTrust.search(/[di-]/i) >= 0 || this.subKeys[sk].keyUseFor.search(/D/) >= 0) ++unusable;
           }
         }
 

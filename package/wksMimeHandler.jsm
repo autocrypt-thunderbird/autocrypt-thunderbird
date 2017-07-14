@@ -86,7 +86,7 @@ PgpWkdHandler.prototype = {
     this.backgroundJob = false;
 
     if (this.uri) {
-      this.backgroundJob = (this.uri.spec.search(/[\&\?]header=(print|quotebody|enigmailConvert)/) >= 0);
+      this.backgroundJob = (this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
     }
 
   },

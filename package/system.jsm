@@ -151,12 +151,12 @@ function getUnixCharset() {
 
     let m = output.match(/^(LC_ALL=)(.*)$/m);
     if (m && m.length > 2) {
-      lc = m[2].replace(/\"/g, "");
+      lc = m[2].replace(/"/g, "");
     }
     else return "iso-8859-1";
   }
 
-  let i = lc.search(/[\.@]/);
+  let i = lc.search(/[.@]/);
 
   if (i < 0) return "iso-8859-1";
 

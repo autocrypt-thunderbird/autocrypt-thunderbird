@@ -385,7 +385,7 @@ DecryptMessageIntoFolder.prototype = {
         self.readAttachment(attachment, strippedName).then(
           function(o) {
             var attachmentHead = o.data.substr(0, 30);
-            if (attachmentHead.match(/\-\-\-\-\-BEGIN PGP \w+ KEY BLOCK\-\-\-\-\-/)) {
+            if (attachmentHead.match(/-----BEGIN PGP \w+ KEY BLOCK-----/)) {
               // attachment appears to be a PGP key file, we just go-a-head
               resolve(o);
               return;
@@ -653,7 +653,7 @@ DecryptMessageIntoFolder.prototype = {
             m.initialize(data.substr(0, bodyIndex));
             let ct = m.extractHeader("content-type", false) || "";
 
-            if (part.length > 0 && part.search(/[^01\.]/) < 0) {
+            if (part.length > 0 && part.search(/[^01.]/) < 0) {
               if (ct.search(/protected-headers/i) >= 0) {
                 if (m.hasHeader("subject")) {
                   let subject = m.extractHeader("subject", false) || "";
@@ -807,7 +807,7 @@ DecryptMessageIntoFolder.prototype = {
           }
 
           if (i == 0 && this.mime.headers.subject && this.mime.headers.subject[0] === "pEp" &&
-            mime.partName.length > 0 && mime.partName.search(/[^01\.]/) < 0) {
+            mime.partName.length > 0 && mime.partName.search(/[^01.]/) < 0) {
 
             let m = EnigmailMime.extractSubjectFromBody(plaintext);
             if (m) {
@@ -1039,7 +1039,7 @@ DecryptMessageIntoFolder.prototype = {
  */
 
 function formatHeader(headerLabel) {
-  return headerLabel.replace(/^.|(\-.)/g, function(match) {
+  return headerLabel.replace(/^.|(-.)/g, function(match) {
     return match.toUpperCase();
   });
 }
@@ -1170,7 +1170,7 @@ function getProtocol(shdr) {
 function getSMimeProtocol(shdr) {
   try {
     shdr = String(shdr);
-    return shdr.match(/smime-type="?([A-z0-9'()+_,-.\/:=?]+)"?/)[1].toLowerCase();
+    return shdr.match(/smime-type="?([A-z0-9'()+_,-./:=?]+)"?/)[1].toLowerCase();
   }
   catch (e) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: getSMimeProtocol: " + e + "\n");

@@ -52,6 +52,7 @@ module.exports = {
     "no-unused-expressions": 2,
     "no-useless-call": 2,
     "no-useless-concat": 2,
+    "no-useless-escape": 1,
     "no-void": 2,
     "no-with": 2,
     "radix": 2,

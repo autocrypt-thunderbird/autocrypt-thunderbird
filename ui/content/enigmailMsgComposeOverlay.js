@@ -2385,7 +2385,7 @@ Enigmail.msg = {
 
   addRecipients: function(toAddrList, recList) {
     for (var i = 0; i < recList.length; i++) {
-      toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[\",]/g, "")));
+      toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
     }
   },
 

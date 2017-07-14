@@ -71,7 +71,7 @@ const EnigmailArmor = {
     if (beginIndex == -1) {
       var blockStart = text.indexOf("-----BEGIN PGP ");
       if (blockStart >= 0) {
-        var indentStart = text.search(/\n.*\-\-\-\-\-BEGIN PGP /) + 1;
+        var indentStart = text.search(/\n.*-----BEGIN PGP /) + 1;
         indentStrObj.value = text.substring(indentStart, blockStart);
         indentStr = indentStrObj.value;
         beginIndex = indexOfArmorDelimiter(text, indentStr + "-----BEGIN PGP ", offset);

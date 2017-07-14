@@ -50,9 +50,9 @@ function onLoad() {
 
   var keyserver = window.arguments[INPUT].keyserver.toLowerCase();
   var protocol = "";
-  if (keyserver.search(/^[a-zA-Z0-9\-\_\.]+:\/\//) === 0) {
-    protocol = keyserver.replace(/^([a-zA-Z0-9\-\_\.]+)(:\/\/.*)/, "$1");
-    keyserver = keyserver.replace(/^[a-zA-Z0-9\-\_\.]+:\/\//, "");
+  if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
+    protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
+    keyserver = keyserver.replace(/^[a-zA-Z0-9_.-]+:\/\//, "");
   }
   else {
     protocol = "hkp";
@@ -585,7 +585,7 @@ function enigScanHtmlKeys(txt) {
         gEnigRequest.keyList.push(key);
       }
       key = null;
-      var m = lines[i].match(/(\d+[a-zA-Z]?\/)([0-9a-fA-F]+)(\s+[\d\/\-\.]+\s+)(.*)/);
+      var m = lines[i].match(/(\d+[a-zA-Z]?\/)([0-9a-fA-F]+)(\s+[\d/\-.]+\s+)(.*)/);
       if (m && m.length > 0) {
         key = {
           keyId: m[2],

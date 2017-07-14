@@ -85,11 +85,11 @@ const EnigmailEncryption = {
     var encryptArgs = EnigmailGpg.getStandardArgs(true);
 
     if (!useDefaultComment)
-      encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/\%s/, EnigmailApp.getName())]);
+      encryptArgs = encryptArgs.concat(["--comment", GPG_COMMENT_OPT.replace(/%s/, EnigmailApp.getName())]);
 
     var angledFromMailAddr = ((fromMailAddr.search(/^0x/) === 0) || hushMailSupport) ?
       fromMailAddr : "<" + fromMailAddr + ">";
-    angledFromMailAddr = angledFromMailAddr.replace(/([\"\'\`])/g, "\\$1");
+    angledFromMailAddr = angledFromMailAddr.replace(/(["'`])/g, "\\$1");
 
     if (signMsg && hashAlgorithm) {
       encryptArgs = encryptArgs.concat(["--digest-algo", hashAlgorithm]);
@@ -118,7 +118,7 @@ const EnigmailEncryption = {
         encryptArgs = encryptArgs.concat(["--encrypt-to", angledFromMailAddr]);
 
       for (k = 0; k < toAddrList.length; k++) {
-        toAddrList[k] = toAddrList[k].replace(/\'/g, "\\'");
+        toAddrList[k] = toAddrList[k].replace(/'/g, "\\'");
         if (toAddrList[k].length > 0) {
           encryptArgs.push("-r");
           if (toAddrList[k].search(/^GROUP:/) === 0) {
@@ -132,7 +132,7 @@ const EnigmailEncryption = {
       }
 
       for (k = 0; k < bccAddrList.length; k++) {
-        bccAddrList[k] = bccAddrList[k].replace(/\'/g, "\\'");
+        bccAddrList[k] = bccAddrList[k].replace(/'/g, "\\'");
         if (bccAddrList[k].length > 0) {
           encryptArgs.push("--hidden-recipient");
           encryptArgs.push((hushMailSupport || (bccAddrList[k].search(/^0x/) === 0)) ? bccAddrList[k] : "<" + bccAddrList[k] + ">");

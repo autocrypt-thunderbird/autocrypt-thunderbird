@@ -59,7 +59,7 @@ const EnigmailData = {
   },
 
   decodeQuotedPrintable: function(str) {
-    return unescape(str.replace(/%/g, "=25").replace(/\=/g, '%'));
+    return unescape(str.replace(/%/g, "=25").replace(new RegExp('=','g'), '%'));
   },
 
   decodeBase64: function(str) {

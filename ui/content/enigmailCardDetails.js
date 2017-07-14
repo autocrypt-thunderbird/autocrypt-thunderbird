@@ -146,7 +146,7 @@ function doSaveChanges() {
   var forcepin = (getSelection("forcepin") == gCardData.forcepin ? 0 : 1);
   var dialogname = getValue("name");
   var dialogfirstname = getValue("firstname");
-  if ((dialogname.search(/^[A-Za-z0-9\.\-,\?_ ]*$/) !== 0) || (dialogfirstname.search(/^[A-Za-z0-9\.\-,\?_ ]*$/) !== 0)) {
+  if ((dialogname.search(/^[A-Za-z0-9.,?_ -]*$/) !== 0) || (dialogfirstname.search(/^[A-Za-z0-9.,?_ -]*$/) !== 0)) {
     EnigmailDialog.alert(window, EnigmailLocale.getString("Carddetails.NoASCII"));
     onLoad();
     doEditData();

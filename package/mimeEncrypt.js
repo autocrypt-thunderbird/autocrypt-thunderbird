@@ -499,7 +499,7 @@ PgpMimeEncrypt.prototype = {
             let ct = this.getHeader("content-type", true);
             let hdr = EnigmailFuncs.getHeaderData(ct);
             hdr.boundary = hdr.boundary || "";
-            hdr.boundary = hdr.boundary.replace(/[\'\"]/g, "");
+            hdr.boundary = hdr.boundary.replace(/['"]/g, "");
           }
 
           this.writeToPipe(this.headerData);

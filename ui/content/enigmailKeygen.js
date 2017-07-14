@@ -216,7 +216,7 @@ function genAndSaveRevCert(keyId, uid) {
  */
 function saveRevCert(inputKeyFile, keyId, uid, resolve, reject) {
 
-  let defaultFileName = uid.replace(/[\\\/<\>]/g, "");
+  let defaultFileName = uid.replace(/[\\/<>]/g, "");
   defaultFileName += " (0x" + keyId + ") rev.asc";
 
   let outFile = EnigFilePicker(EnigGetString("saveRevokeCertAs"),
