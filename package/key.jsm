@@ -126,6 +126,7 @@ var EnigmailKey = {
    *
    * @return Array of objects with the following structure:
    *          - id (key ID)
+   *          - fpr
    *          - name (the UID of the key)
    *          - state (one of "old" [existing key], "new" [new key], "invalid" [key cannot not be imported])
    */

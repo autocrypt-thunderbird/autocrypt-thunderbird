@@ -4380,7 +4380,7 @@ Enigmail.msg = {
       let k = key.getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        this.setAdditionalHeader('Autocrypt', 'to=' + this.identity.email + '; key=\r\n' + keyData);
+        this.setAdditionalHeader('Autocrypt', 'addr="' + this.identity.email + '"; type=1; keydata=\r\n' + keyData);
       }
     }
   },

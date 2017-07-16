@@ -2625,10 +2625,10 @@ Enigmail.msg = {
     let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
     if (keyObj && keyObj.getEncryptionValidity().keyValid) {
       if (securityInfo.statusFlags & nsIEnigmail.GOOD_SIGNATURE) {
-        let hdrData = "to=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
-          "; prefer-encrypted=" + ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
-            (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "yes" : "no") +
-          "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + "; key=LQ==";
+        let hdrData = "addr=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
+          ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
+            (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
+          "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + "; keydata=\"LQ==\"";
 
         EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, [hdrData],
           currentHeaderData.date.headerValue);

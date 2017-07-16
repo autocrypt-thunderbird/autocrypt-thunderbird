@@ -24,6 +24,7 @@ Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 
 var EnigmailAutocrypt = {
   /**
@@ -38,10 +39,10 @@ var EnigmailAutocrypt = {
 
     // critical parameters: {param: mandatory}
     const CRITICAL = {
-      to: true,
-      key: true,
+      addr: true,
+      keydata: true,
       type: false,
-      "prefer-encrypted": false
+      "prefer-encrypt": false
     };
 
     fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
@@ -49,13 +50,23 @@ var EnigmailAutocrypt = {
     let paramArr = [];
 
     for (let hdrNum = 0; hdrNum < headerDataArr.length; hdrNum++) {
-      paramArr = EnigmailMime.getAllParameters(headerDataArr[hdrNum]);
+
+      let hdr = headerDataArr[hdrNum].replace(/[\r\n \t]/g, "");
+      let k = hdr.search(/keydata=/);
+      if (k > 0) {
+        let d = hdr.substr(k);
+        if (d.search(/"/) < 0) {
+          hdr = hdr.replace(/keydata=/, 'keydata="') + '"';
+        }
+      }
+
+      paramArr = EnigmailMime.getAllParameters(hdr);
 
       for (let i in CRITICAL) {
         if (CRITICAL[i]) {
           // found mandatory parameter
           if (!(i in paramArr)) {
-            EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: cannot find param " + i + "\n");
+            EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: cannot find param '" + i + "'\n");
             return; // do nothing if not all mandatory parts are present
           }
         }
@@ -70,25 +81,25 @@ var EnigmailAutocrypt = {
         }
       }
 
-      if (fromAddr !== paramArr.to.toLowerCase()) {
-        EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: from Addr " + fromAddr + " != " + paramArr.to.toLowerCase() + "\n");
+      if (fromAddr !== paramArr.addr.toLowerCase()) {
+        EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: from Addr " + fromAddr + " != " + paramArr.addr.toLowerCase() + "\n");
 
         return;
       }
 
       if (!("type" in paramArr)) {
-        paramArr.type = "p";
+        paramArr.type = "1";
       }
       else {
         paramArr.type = paramArr.type.toLowerCase();
-        if (paramArr.type !== "p") {
+        if (paramArr.type !== "1") {
           EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: unknown type " + paramArr.type + "\n");
-          return; // we currently only support p (=OpenPGP)
+          return; // we currently only support 1 (=OpenPGP)
         }
       }
 
       try {
-        let keyData = atob(paramArr.key);
+        let keyData = atob(paramArr.keydata);
       }
       catch (ex) {
         EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: key is not base64-encoded\n");
@@ -103,13 +114,13 @@ var EnigmailAutocrypt = {
       foundTypes[paramArr.type] = 1;
     }
 
-    if (!("prefer-encrypted" in paramArr)) {
-      paramArr["prefer-encrypted"] = "?";
+    if (!("prefer-encrypt" in paramArr)) {
+      paramArr["prefer-encrypt"] = "?";
     }
 
-    if ("_enigmail_artificial" in paramArr && paramArr.paramArr === "yes" && "_enigmail_fpr" in paramArr) {
+    if (("_enigmail_artificial" in paramArr) && (paramArr._enigmail_artificial === "yes") && ("_enigmail_fpr" in paramArr)) {
       paramArr.fpr = paramArr._enigmail_fpr;
-      paramArr.key = "";
+      paramArr.keydata = "";
     }
 
     let lastDate = jsmime.headerparser.parseDateHeader(dateSent);
@@ -206,9 +217,12 @@ function createAutocryptTable(connection, deferred) {
       "email text not null, " + // email address of correspondent
       "encryption_pref text not null, " + // encryption prefrence (yes / no / ?)
       "keydata text not null, " + // base64-encoded key as received
-      "fpr text, " + // fingerprint of key (once key was imported in keyring)
-      "type text not null, " + // key type (currently only OpenPGP)
-      "last_changed text not null, " + // timestamp since when keydata and encryption_pref are unchanged
+      "fpr text, " + // fingerprint of key
+      "type text not null, " + // key type (currently only 1==OpenPGP)
+      "last_changed text not null, " +
+      /* spec "last_seen_autocrypt": timestamp of the most recent effective
+         date of all processed messages for this peer that contained a valid
+         Autocrypt header. */
       "last_seen text not null);"). // timestamp of last mail received for the email/type combination
   then(
     function _ok() {
@@ -275,12 +289,16 @@ function appendUser(connection, paramsArr) {
 
   let deferred = PromiseUtils.defer();
 
+  if (!("fpr" in paramsArr)) {
+    getFprForKey(paramsArr);
+  }
+
   connection.executeTransaction(function _trx() {
     connection.execute("insert into autocrypt_keys (email, encryption_pref, keydata, fpr, type, last_changed, last_seen) values " +
       "(:email, :pref, :keyData, :fpr, :type, :lastChange, :lastSeen)", {
-        email: paramsArr.to,
-        pref: paramsArr["prefer-encrypted"],
-        keyData: paramsArr.key,
+        email: paramsArr.addr,
+        pref: paramsArr["prefer-encrypt"],
+        keyData: paramsArr.keydata,
         fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
         lastChange: paramsArr.dateSent.toJSON(),
@@ -327,21 +345,25 @@ function updateUser(connection, paramsArr, currData) {
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser: updating latest message\n");
 
   let pref = currData.getResultByName("encryption_pref");
-  if (pref !== "?" && paramsArr["prefer-encrypted"] === "?") {
-    paramsArr["prefer-encrypted"] = pref;
+  if (pref !== "?" && paramsArr["prefer-encrypt"] === "?") {
+    paramsArr["prefer-encrypt"] = pref;
   }
 
-  if (paramsArr["prefer-encrypted"] !== pref ||
-    currData.getResultByName("keydata") !== paramsArr.key) {
+  if (paramsArr["prefer-encrypt"] !== pref ||
+    currData.getResultByName("keydata") !== paramsArr.keydata) {
     lastChanged = paramsArr.dateSent;
+  }
+
+  if (!("fpr" in paramsArr)) {
+    getFprForKey(paramsArr);
   }
 
   connection.executeTransaction(function _trx() {
     connection.execute("update autocrypt_keys set encryption_pref = :pref, keydata = :keyData, last_changed = :lastChanged, " +
       "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type", {
-        email: paramsArr.to,
-        pref: paramsArr["prefer-encrypted"],
-        keyData: paramsArr.key,
+        email: paramsArr.addr,
+        pref: paramsArr["prefer-encrypt"],
+        keyData: paramsArr.keydata,
         fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
         lastChanged: lastChanged.toJSON(),
@@ -356,4 +378,19 @@ function updateUser(connection, paramsArr, currData) {
   });
 
   return deferred.promise;
+}
+
+/**
+ * Set the fpr attribute for a given key parameter object
+ */
+function getFprForKey(paramsArr) {
+  try {
+    let keyData = atob(paramsArr.keydata);
+    let err = {};
+    let keyInfo = EnigmailKey.getKeyListFromKeyBlock(keyData, err, false);
+    if (keyInfo.length === 1) {
+      paramsArr.fpr = keyInfo[0].fpr;
+    }
+  }
+  catch (x) {}
 }
