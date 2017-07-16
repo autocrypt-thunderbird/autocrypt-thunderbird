@@ -284,7 +284,6 @@ function statusLoadedHttp(event) {
 function importKeys(connType, txt, errorTxt) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: importKeys\n");
 
-  // TODO: display correct "key imported dialog"
   gEnigRequest.keyNum++;
   gEnigRequest.progressMeter.mode = "determined";
   gEnigRequest.progressMeter.value = (100 * gEnigRequest.keyNum / gEnigRequest.dlKeyList.length).toFixed(0);

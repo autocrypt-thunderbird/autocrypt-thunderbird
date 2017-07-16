@@ -24,7 +24,6 @@ Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: fa
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("resource://enigmail/pEpMessageHist.jsm"); /*global EnigmailPEPMessageHist: false */
 Cu.import("resource://enigmail/addrbook.jsm"); /*global EnigmailAddrbook: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
@@ -601,14 +600,8 @@ var EnigmailPEPAdapter = {
    */
   processPGPMIME: function(headerData) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME\n");
-    if (!(("from" in headerData) && ("date" in headerData))) return;
 
-    EnigmailPEPMessageHist.isLatestMessage(headerData.from.headerValue, headerData.date.headerValue).
-    then(function _result(latestMessage) {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME: " + latestMessage + "\n");
-    }).catch(function _fail() {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME: error\n");
-    });
+    // placeholder for pEp-specific actions on PGP/MIME messages
   },
 
   /**
@@ -636,21 +629,13 @@ var EnigmailPEPAdapter = {
       }
     );
 
-    EnigmailPEPMessageHist.isLatestMessage(headerData.from.headerValue, headerData.date.headerValue).
-    then(function _result(latestMessage) {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: " + latestMessage + "\n");
-      try {
-        if (latestMessage) {
-          var channel = EnigmailStreams.createChannel(msgUri.spec);
-          channel.asyncOpen(stream, null);
-        }
-      }
-      catch (e) {
-        EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: exception " + e.toString() + "\n");
-      }
-    }).catch(function _fail() {
-      EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: error\n");
-    });
+    try {
+      var channel = EnigmailStreams.createChannel(msgUri.spec);
+      channel.asyncOpen(stream, null);
+    }
+    catch (e) {
+      EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: exception " + e.toString() + "\n");
+    }
   },
 
   /**

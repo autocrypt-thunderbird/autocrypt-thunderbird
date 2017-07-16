@@ -79,7 +79,6 @@ var EnigmailpEp = {
       return version;
     };
 
-    // TODO: switch back to "version" once fixed in adapter
     return this._callPepFunction(FT_CALL_FUNCTION, "version", [], onLoad);
 
   },

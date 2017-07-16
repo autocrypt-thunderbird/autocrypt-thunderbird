@@ -74,7 +74,6 @@ MODFILES = \
            pEpFilter.jsm \
            pEpListener.jsm \
            pEpKeySync.jsm \
-           pEpMessageHist.jsm \
            pipeConsole.jsm \
            prefs.jsm \
            protocolHandler.jsm \

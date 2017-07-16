@@ -223,7 +223,6 @@ const EnigmailEncryption = {
       }
     }
     else {
-      // TODO: use better algorithm
       ret.keyId = keyList[0].fpr;
     }
 
@@ -244,7 +243,6 @@ const EnigmailEncryption = {
 
       return null;
     }
-    // TODO: else - use the found key ID
 
     var pgpMime = uiFlags & nsIEnigmail.UI_PGP_MIME;
 

@@ -788,7 +788,7 @@ function EnigGetKeyDetails(sigListStr) {
         }
         break;
       case "uat":
-        // @TODO document what that means
+        // User Attributes with "1 " in field 9 determine JPEG pictures
         if (aLine[9].search("1 ") === 0) {
           showPhoto = true;
         }

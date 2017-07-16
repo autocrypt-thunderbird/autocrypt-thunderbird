@@ -483,7 +483,6 @@ function enigShowPhoto() {
 function enigShowSpecificPhoto(uatNumber) {
   var keyList = getSelectedKeys();
 
-  // TODO: fix displaing with uatNumber
   EnigShowPhoto(gKeyList[keyList[0]].keyId, gKeyList[keyList[0]].userId, uatNumber);
 }
 

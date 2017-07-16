@@ -554,13 +554,6 @@ PgpMimeEncrypt.prototype = {
   flushOutput: function() {
     LOCAL_DEBUG("mimeEncrypt.js: flushOutput: " + this.outQueue.length + "\n");
 
-    // check for output errors
-    // TODO: remove check
-    let i = this.outQueue.search(/[^\r]\n/);
-    if (i != -1) {
-      LOCAL_DEBUG("mimeEncrypt.js: flushOutput -- ERROR: found \\n without \\r at pos. " + i + "\n");
-      LOCAL_DEBUG("mimeEncrypt.js: flushOutput: data= '" + this.outQueue.substr(i - 10 < 0 ? 0 : i - 10, 20) + "'\n");
-    }
     this.outStringStream.setData(this.outQueue, this.outQueue.length);
     var writeCount = this.outStream.writeFrom(this.outStringStream, this.outQueue.length);
     if (writeCount < this.outQueue.length) {

@@ -123,7 +123,6 @@ zip --must-match\
     modules/pEpFilter.jsm \
     modules/pEpListener.jsm \
     modules/pEpKeySync.jsm \
-    modules/pEpMessageHist.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
     modules/rng.jsm \
