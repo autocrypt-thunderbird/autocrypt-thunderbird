@@ -115,12 +115,7 @@ var EnigmailAutocrypt = {
     }
 
     if (!("prefer-encrypt" in paramArr)) {
-      paramArr["prefer-encrypt"] = "?";
-    }
-
-    if (("_enigmail_artificial" in paramArr) && (paramArr._enigmail_artificial === "yes") && ("_enigmail_fpr" in paramArr)) {
-      paramArr.fpr = paramArr._enigmail_fpr;
-      paramArr.keydata = "";
+      paramArr["prefer-encrypt"] = "nopreference";
     }
 
     let lastDate = jsmime.headerparser.parseDateHeader(dateSent);
@@ -129,6 +124,19 @@ var EnigmailAutocrypt = {
       lastDate = now;
     }
     paramArr.dateSent = lastDate;
+
+    if (("_enigmail_artificial" in paramArr) && (paramArr._enigmail_artificial === "yes")) {
+      if ("_enigmail_fpr" in paramArr) {
+        paramArr.fpr = paramArr._enigmail_fpr;
+      }
+
+      paramArr.keydata = "";
+      paramArr.autocryptDate = 0;
+    }
+    else {
+      paramArr.autocryptDate = lastDate;
+    }
+
 
     let conn;
 
@@ -185,7 +193,7 @@ function checkDatabaseStructure(connection) {
 
   let deferred = PromiseUtils.defer();
 
-  connection.tableExists("autocrypt_keys").then(
+  connection.tableExists("autocrypt_keydata").then(
     function onSuccess(exists) {
       EnigmailLog.DEBUG("autocrypt.jsm: checkDatabaseStructure - success\n");
       if (!exists) {
@@ -205,7 +213,7 @@ function checkDatabaseStructure(connection) {
 }
 
 /**
- * Create the "autocrypt_keys" table and the corresponding index
+ * Create the "autocrypt_keydata" table and the corresponding index
  *
  * @param connection: Object - SQLite connection
  * @param deferred:   Promise
@@ -213,21 +221,18 @@ function checkDatabaseStructure(connection) {
 function createAutocryptTable(connection, deferred) {
   EnigmailLog.DEBUG("autocrypt.jsm: createAutocryptTable\n");
 
-  connection.execute("create table autocrypt_keys (" +
+  connection.execute("create table autocrypt_keydata (" +
       "email text not null, " + // email address of correspondent
-      "encryption_pref text not null, " + // encryption prefrence (yes / no / ?)
       "keydata text not null, " + // base64-encoded key as received
       "fpr text, " + // fingerprint of key
       "type text not null, " + // key type (currently only 1==OpenPGP)
-      "last_changed text not null, " +
-      /* spec "last_seen_autocrypt": timestamp of the most recent effective
-         date of all processed messages for this peer that contained a valid
-         Autocrypt header. */
-      "last_seen text not null);"). // timestamp of last mail received for the email/type combination
+      "last_seen_autocrypt text, " +
+      "last_seen text not null, " +
+      "state text not null);"). // timestamp of last mail received for the email/type combination
   then(
     function _ok() {
       EnigmailLog.DEBUG("autocrypt.jsm: createAutocryptTable - index\n");
-      connection.execute("create unique index autocrypt_keys_i1 on autocrypt_keys(email, type)").
+      connection.execute("create unique index autocrypt_keydata_i1 on autocrypt_keydata(email, type)").
       then(function _f() {
         deferred.resolve();
       });
@@ -252,7 +257,7 @@ function findUserRecord(connection, email, type) {
   let numRows = 0;
 
   connection.execute(
-    "select * from autocrypt_keys where email = :email and type = :type", {
+    "select * from autocrypt_keydata where email = :email and type = :type", {
       email: email,
       type: type
     },
@@ -293,16 +298,22 @@ function appendUser(connection, paramsArr) {
     getFprForKey(paramsArr);
   }
 
+  if (paramsArr.autocryptDate == 0) {
+    // do not insert record for non-autocrypt mail
+    deferred.resolve();
+    return deferred.promise;
+  }
+
   connection.executeTransaction(function _trx() {
-    connection.execute("insert into autocrypt_keys (email, encryption_pref, keydata, fpr, type, last_changed, last_seen) values " +
-      "(:email, :pref, :keyData, :fpr, :type, :lastChange, :lastSeen)", {
+    connection.execute("insert into autocrypt_keydata (email, keydata, fpr, type, last_seen_autocrypt, last_seen, state) values " +
+      "(:email, :keyData, :fpr, :type, :lastAutocrypt, :lastSeen, :state)", {
         email: paramsArr.addr,
-        pref: paramsArr["prefer-encrypt"],
         keyData: paramsArr.keydata,
         fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
-        lastChange: paramsArr.dateSent.toJSON(),
-        lastSeen: paramsArr.dateSent.toJSON()
+        lastAutocrypt: paramsArr.dateSent.toJSON(),
+        lastSeen: paramsArr.dateSent.toJSON(),
+        state: paramsArr["prefer-encrypt"]
       }).then(
       function _ok() {
         deferred.resolve();
@@ -331,7 +342,7 @@ function updateUser(connection, paramsArr, currData) {
   let deferred = PromiseUtils.defer();
 
   let lastSeen = new Date(currData.getResultByName("last_seen"));
-  let lastChanged = new Date(currData.getResultByName("last_changed"));
+  let lastAutocrypt = new Date(currData.getResultByName("last_seen_autocrypt"));
 
   if (lastSeen >= paramsArr.dateSent) {
     EnigmailLog.DEBUG("autocrypt.jsm: updateUser: not a new latest message\n");
@@ -344,14 +355,31 @@ function updateUser(connection, paramsArr, currData) {
 
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser: updating latest message\n");
 
-  let pref = currData.getResultByName("encryption_pref");
-  if (pref !== "?" && paramsArr["prefer-encrypt"] === "?") {
-    paramsArr["prefer-encrypt"] = pref;
-  }
+  let updateStr;
+  let updateObj;
 
-  if (paramsArr["prefer-encrypt"] !== pref ||
-    currData.getResultByName("keydata") !== paramsArr.keydata) {
-    lastChanged = paramsArr.dateSent;
+  if (paramsArr.autocryptDate > 0) {
+    lastAutocrypt = paramsArr.autocryptDate;
+    updateStr = "update autocrypt_keydata set state = :state, keydata = :keyData, last_seen_autocrypt = :lastAutocrypt, " +
+      "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type";
+    updateObj = {
+      email: paramsArr.addr,
+      state: paramsArr["prefer-encrypt"],
+      keyData: paramsArr.keydata,
+      fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
+      type: paramsArr.type,
+      lastAutocrypt: lastAutocrypt.toJSON(),
+      lastSeen: paramsArr.dateSent.toJSON()
+    };
+  }
+  else {
+    updateStr = "update autocrypt_keydata set state = :state, last_seen = :lastSeen where email = :email and type = :type";
+    updateObj = {
+      email: paramsArr.addr,
+      state: paramsArr["prefer-encrypt"],
+      type: paramsArr.type,
+      lastSeen: paramsArr.dateSent.toJSON()
+    };
   }
 
   if (!("fpr" in paramsArr)) {
@@ -359,16 +387,7 @@ function updateUser(connection, paramsArr, currData) {
   }
 
   connection.executeTransaction(function _trx() {
-    connection.execute("update autocrypt_keys set encryption_pref = :pref, keydata = :keyData, last_changed = :lastChanged, " +
-      "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type", {
-        email: paramsArr.addr,
-        pref: paramsArr["prefer-encrypt"],
-        keyData: paramsArr.keydata,
-        fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
-        type: paramsArr.type,
-        lastChanged: lastChanged.toJSON(),
-        lastSeen: paramsArr.dateSent.toJSON()
-      }).then(
+    connection.execute(updateStr, updateObj).then(
       function _ok() {
         deferred.resolve();
       }

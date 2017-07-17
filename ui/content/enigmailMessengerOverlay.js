@@ -2619,20 +2619,32 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: createArtificialAutocryptHeader\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
     if (Enigmail.msg.savedHeaders && ("autocrypt" in Enigmail.msg.savedHeaders) && Enigmail.msg.savedHeaders.autocrypt.length > 0) return;
-    if (!(Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags)) return;
 
-    let securityInfo = Enigmail.msg.securityInfo;
-    let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
-    if (keyObj && keyObj.getEncryptionValidity().keyValid) {
-      if (securityInfo.statusFlags & nsIEnigmail.GOOD_SIGNATURE) {
-        let hdrData = "addr=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
-          ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
-            (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
-          "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + "; keydata=\"LQ==\"";
+    let created = false;
 
-        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, [hdrData],
-          currentHeaderData.date.headerValue);
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags) {
+      let securityInfo = Enigmail.msg.securityInfo;
+      let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
+      if (keyObj && keyObj.getEncryptionValidity().keyValid) {
+        if (securityInfo.statusFlags & nsIEnigmail.GOOD_SIGNATURE) {
+          let hdrData = "addr=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
+            ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
+              (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
+            "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + '; keydata="LQ=="';
+
+          created = true;
+          EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, [hdrData],
+            currentHeaderData.date.headerValue);
+        }
       }
+    }
+
+    if (!created) {
+      let hdrData = "addr=" + EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue) +
+        '; prefer-encrypt=reset; _enigmail_artificial=yes; keydata="LQ=="';
+
+      EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, [hdrData],
+        currentHeaderData.date.headerValue);
     }
   },
 
