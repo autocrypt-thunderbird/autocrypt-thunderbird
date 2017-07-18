@@ -35,7 +35,7 @@ var EnigmailAutocrypt = {
    * @param dateSent:      String - Date: field of the message
    */
   processAutocryptHeader: function(fromAddr, headerDataArr, dateSent) {
-    EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: from=" + fromAddr + "\n");
+    EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + fromAddr + "\n");
 
     // critical parameters: {param: mandatory}
     const CRITICAL = {
@@ -153,12 +153,12 @@ var EnigmailAutocrypt = {
       }
     ).then(
       function _f() {
-        return findUserRecord(conn, fromAddr, paramArr.type);
+        return findUserRecord(conn, [fromAddr], paramArr.type);
       }
     ).then(
       function gotData(resultObj) {
         EnigmailLog.DEBUG("autocrypt.jsm: got " + resultObj.numRows + " rows\n");
-        if (resultObj.data === null) {
+        if (resultObj.data.length === 0) {
           return appendUser(conn, paramArr);
         }
         else {
@@ -176,6 +176,63 @@ var EnigmailAutocrypt = {
         conn.close();
       }
     );
+  },
+
+  /**
+   * Find an autocrypt OpenPGP key for a given list of email addresses
+   * @param emailAddr: Array of String - emai addresses
+   *
+   * @return Promise().resolve { fpr, keyData, lastAutocrypt}
+   */
+  getOpenPGPKeyForEmail: function(emailAddr) {
+    EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail(" + emailAddr + ")\n");
+
+    let conn;
+
+    return new Promise((resolve, reject) => {
+      Sqlite.openConnection({
+        path: "enigmail.sqlite",
+        sharedMemoryCache: false
+      }).then(
+        function onConnection(connection) {
+          conn = connection;
+          return checkDatabaseStructure(conn);
+        },
+        function onError(error) {
+          EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail: could not open database\n");
+          reject("error");
+        }
+      ).then(
+        function _f() {
+          return findUserRecord(conn, emailAddr, "1");
+        }
+      ).then(
+        function gotData(resultObj) {
+          EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail got " + resultObj.numRows + " rows\n");
+          if (resultObj.data.length === 0) {
+            resolve(null);
+          }
+          else {
+            let retArr = [];
+            for (let i in resultObj.data) {
+              let record = resultObj.data[i];
+              retArr.push({
+                fpr: record.getResultByName("fpr"),
+                keyData: record.getResultByName("keydata"),
+                lastAutocrypt: new Date(record.getResultByName("last_seen_autocrypt"))
+              });
+            }
+
+            resolve(retArr);
+          }
+          conn.close();
+        }
+      ).
+      catch((err) => {
+        conn.close();
+        reject("error");
+      });
+    });
   }
 };
 
@@ -244,31 +301,34 @@ function createAutocryptTable(connection, deferred) {
  * Find the database record for a given email address and type
  *
  * @param connection: Object - SQLite connection
- * @param email:      String - Email address to search (in lowercase)
+ * @param emails      Array of String - Email addresses to search
  * @param type:       String - type to search (in lowercase)
  *
  * @return Promise
  */
-function findUserRecord(connection, email, type) {
+function findUserRecord(connection, emails, type) {
   EnigmailLog.DEBUG("autocrypt.jsm: findUserRecord\n");
 
   let deferred = PromiseUtils.defer();
-  let data = null;
+  let data = [];
+  let queryParam = {
+    type: type,
+    e0: emails[0]
+  };
+
   let numRows = 0;
 
+  let search = ":e0";
+  for (let i = 1; i < emails.length; i++) {
+    search += ", :e" + i;
+    queryParam["e" + i] = emails[i].toLowerCase();
+  }
+
   connection.execute(
-    "select * from autocrypt_keydata where email = :email and type = :type", {
-      email: email,
-      type: type
-    },
+    "select * from autocrypt_keydata where email in (" + search + ") and type = :type", queryParam,
     function _onRow(row) {
       EnigmailLog.DEBUG("autocrypt.jsm: findUserRecord - got row\n");
-      if (numRows === 0) {
-        data = row;
-      }
-      else {
-        data = null;
-      }
+      data.push(row);
       ++numRows;
     }
   ).then(function _f() {
@@ -332,13 +392,14 @@ function appendUser(connection, paramsArr) {
  *
  * @param connection: Object - SQLite connection
  * @param paramsArr:  Object - the Autocrypt header parameters
- * @param currData:   Object (mozIStorageRow) - current data stored in the database
+ * @param resultRows: Array of mozIStorageRow - records stored in the database
  *
  * @return Promise
  */
-function updateUser(connection, paramsArr, currData) {
+function updateUser(connection, paramsArr, resultRows) {
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser\n");
 
+  let currData = resultRows[0];
   let deferred = PromiseUtils.defer();
 
   let lastSeen = new Date(currData.getResultByName("last_seen"));
