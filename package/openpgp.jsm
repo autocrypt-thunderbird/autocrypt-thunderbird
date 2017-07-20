@@ -108,8 +108,13 @@ EnigmailOpenPGP.enigmailFuncs = {
   },
 
   /**
-   * Create an ASCII armored string from binary data
+   * Create an ASCII armored string from binary data. The message data is NOT
+   * checked for correctness, only the CRC is added at the end.
    *
+   * @param msgType: Number - type of OpenPGP message to create (ARMOR Enum)
+   * @param str:     String - binary OpenPGP message
+   *
+   * @return String: ASCII armored OpenPGP message
    */
   bytesToArmor: function(msgType, str) {
 

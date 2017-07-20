@@ -25,6 +25,8 @@ Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
+Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 
 var EnigmailAutocrypt = {
   /**
@@ -179,13 +181,54 @@ var EnigmailAutocrypt = {
   },
 
   /**
+   * Import autocrypt OpenPGP keys for a given list of email addresses
+   * @param emailAddr: Array of String - emai addresses
+   *
+   * @return Promise().resolve { }
+   */
+  importAutocryptKeys: function(emailAddr) {
+
+    return new Promise((resolve, reject) => {
+      this.getOpenPGPKeyForEmail(emailAddr).
+      then(keyArr => {
+        let importedKeys = [];
+        let now = new Date();
+
+        for (let i in keyArr) {
+          if ((now - keyArr[i].lastAutocrypt) / (1000 * 60 * 60 * 24) < 366) {
+            // only import keys received less than 12 months ago
+            try {
+              let keyData = atob(keyArr[i].keyData);
+              if (keyData.length > 1) {
+                let keysObj = {};
+
+                let pubkey = EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.enums.armor.public_key, keyData);
+                EnigmailKeyRing.importKey(null, false, pubkey, keyArr[i].fpr, {}, keysObj);
+
+                if (keysObj.value) {
+                  importedKeys = importedKeys.concat(keysObj.value);
+                }
+              }
+            }
+            catch (ex) {
+              EnigmailLog.DEBUG("autocrypt.jsm importAutocryptKeys: exception " + ex.toString() + "\n");
+            }
+          }
+        }
+
+        resolve(importedKeys);
+      });
+    });
+  },
+
+  /**
    * Find an autocrypt OpenPGP key for a given list of email addresses
    * @param emailAddr: Array of String - emai addresses
    *
    * @return Promise().resolve { fpr, keyData, lastAutocrypt}
    */
   getOpenPGPKeyForEmail: function(emailAddr) {
-    EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail(" + emailAddr + ")\n");
+    EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail(" + emailAddr.join(",") + ")\n");
 
     let conn;
 

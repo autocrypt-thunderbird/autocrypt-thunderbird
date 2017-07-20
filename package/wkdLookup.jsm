@@ -31,21 +31,20 @@ var EnigmailWkdLookup = {
   /**
    * Try to import keys using WKD. Found keys are automatically imported
    *
-   * @param emailList: String - comma-separated list of email addresses
+   * @param emailList: Array - of email addresses (in lowercase)
    *
    * @return Promise()  (Boolean): true - new keys found
    */
-  findKeys: function(emailList) {
+  findKeys: function(emails) {
     return new Promise((resolve, reject) => {
-      EnigmailLog.DEBUG("wkdLookup.jsm: findKeys(" + emailList + ")\n");
+      EnigmailLog.DEBUG("wkdLookup.jsm: findKeys(" + emails.join(",") + ")\n");
 
-      if (emailList.trim() == "") {
+      if (emails.length === 0) {
         resolve(false);
         return;
       }
 
       let self = this;
-      let emails = emailList.split(",");
 
       // do a little sanity test such that we don't do the lookup for nothing too often
       for (let e of emails) {
