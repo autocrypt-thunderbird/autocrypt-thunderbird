@@ -13,4 +13,4 @@ fi
 PROVISIONING_DIR=`dirname "$CURRENT_FILE"`
 ENIGMAIL_ROOT=`dirname "$PROVISIONING_DIR"`
 
-docker run -v $ENIGMAIL_ROOT:/enigmail-src -i -t enigmail-unit ./test.sh "$@"
+docker run -v $ENIGMAIL_ROOT:/enigmail-src -i -u testuser -t enigmail-unit ./test.sh "$@"
