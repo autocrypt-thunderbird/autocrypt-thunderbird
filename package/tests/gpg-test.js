@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false, withTestGpgHome: false, osUtils: false */
 
 testing("gpg.jsm"); /*global EnigmailGpg: false, getGpgFeature: false, lazyEnv: true, usesDirmngr: false, dirmngrConfiguredWithTor: false */
-component("enigmail/execution.jsm"); /*global EnigmailExecution: false */
+component("enigmail/execution.jsm"); /*global EnigmailExecution: false, MINIMUM_GPG_VERSION: false */
 component("enigmail/subprocess.jsm"); /*global subprocess: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 component("enigmail/os.jsm"); /*global EnigmailOS: false */
@@ -64,11 +64,16 @@ test(withStubFormatCmdLine(function returnsTrueWhenConfiguredToUseTor() {
     }, function() {
       TestHelper.resetting(subprocess, "call", function(subprocObj) {
         subprocObj.stdout("OK - Tor mode is enabled\n OK closing connection\n");
-        subprocObj.done({
-          exitCode: 0
-        });
+
+        if (typeof subprocObj.done === "function") {
+          subprocObj.done({
+            exitCode: 0
+          });
+        }
         return {
-          wait: function() {}
+          wait: function() {
+            return 0;
+          }
         };
       }, function() {
 
@@ -89,11 +94,17 @@ test(withStubFormatCmdLine(function returnsFalseWhenNotConfiguredToUseTor() {
     }, function() {
       TestHelper.resetting(subprocess, "call", function(subprocObj) {
         subprocObj.stdout("OK - Tor mode is NOT enabled\n OK closing connection\n");
-        subprocObj.done({
-          exitCode: 0
-        });
+
+        if (typeof subprocObj.done === "function") {
+          subprocObj.done({
+            exitCode: 0
+          });
+        }
+
         return {
-          wait: function() {}
+          wait: function() {
+            return 0;
+          }
         };
       }, function() {
 
@@ -133,7 +144,7 @@ test(withStubFormatCmdLine(function returnsFalseWhenExitCodeIndicatesErrorInExec
 
 
 test(function testGetGpgFeatureForWhenVersionIsSupported() {
-  TestHelper.resetting(EnigmailGpg, "agentVersion", "2.0.7", function() {
+  TestHelper.resetting(EnigmailGpg, "agentVersion", MINIMUM_GPG_VERSION, function() {
     const output = EnigmailGpg.getGpgFeature("version-supported");
     Assert.equal(output, true);
   });

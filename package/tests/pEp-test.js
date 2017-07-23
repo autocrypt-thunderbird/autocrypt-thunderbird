@@ -24,7 +24,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
 
   do_test_pending();
   //EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", "Test message", 1).
-  EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", "Test message", 1).
+  EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", {"longmsg":"Test message"}, 1).
   then(function _encryptedMessage(a) {
     let txt = a.result[0].longmsg;
     Assert.equal("-----BEGIN PGP MESSAGE-----", txt.substr(0, 27));
@@ -62,7 +62,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
     do_test_finished();
   }).
   catch(function _f(t) {
-    Assert.equals("", "Error: " + t.code);
+    Assert.equal("", "Error: " + t.code);
     do_test_finished();
   });
 })));

@@ -372,33 +372,44 @@ var EnigmailKeyRing = {
 
     var keyList = [];
     let importedKeys = [];
+    let importSum = 0;
+    let importUnchanged = 0;
 
-    if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
-      // Normal
-      exitCodeObj.value = 0;
-      var statusLines = statusMsg.split(/\r?\n/);
+    // IMPORT_RES <count> <no_user_ids> <imported> 0 <unchanged>
+    if (statusMsg) {
+      let import_res = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+)/m);
 
-      for (let j = 0; j < statusLines.length; j++) {
-        var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
-        if (matches && (matches.length > 2)) {
-          if (typeof(keyList[matches[2]]) != "undefined") {
-            keyList[matches[2]] |= Number(matches[1]);
+      if (import_res !== null) {
+        // Normal
+        importSum = parseInt(import_res[1],10);
+        importUnchanged = parseInt(import_res[4],10);
+        exitCodeObj.value = 0;
+        var statusLines = statusMsg.split(/\r?\n/);
+
+        for (let j = 0; j < statusLines.length; j++) {
+          var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
+          if (matches && (matches.length > 2)) {
+            if (typeof(keyList[matches[2]]) != "undefined") {
+              keyList[matches[2]] |= Number(matches[1]);
+            }
+            else
+              keyList[matches[2]] = Number(matches[1]);
+
+            importedKeys.push(matches[2]);
+            EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
           }
-          else
-            keyList[matches[2]] = Number(matches[1]);
-
-          importedKeys.push(matches[2]);
-          EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
         }
-      }
 
-      for (let j in keyList) {
-        importedKeysObj.value += j + ":" + keyList[j] + ";";
+        for (let j in keyList) {
+          importedKeysObj.value += j + ":" + keyList[j] + ";";
+        }
       }
     }
 
     if (importedKeys.length > 0) {
       EnigmailKeyRing.updateKeys(importedKeys);
+    } else if (importSum > importUnchanged) {
+      EnigmailKeyRing.clearCache();
     }
 
     return exitCodeObj.value;

@@ -400,7 +400,7 @@ const EnigmailFiles = {
       fileOutStream.close();
     }
     catch (ex) {
-      EnigmailLog.ERROR("files.jsm: writeFileContents: Failed to write to " + filePath + "\n");
+      lazyLog().ERROR("files.jsm: writeFileContents: Failed to write to " + filePath + "\n");
       return false;
     }
 
