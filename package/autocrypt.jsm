@@ -276,6 +276,18 @@ var EnigmailAutocrypt = {
         reject("error");
       });
     });
+  },
+
+  /**
+   * Create Autocrypt Setup Message
+   *
+   * @param identity: Object - nsIMsgIdentity
+   *
+   * @return String - complete setup message
+   */
+  createSetupMessage: function(identity) {
+    //let keyData = EnigmailKeyRing.extractKey(true, keyId, null, {}, {});
+    // complete me
   }
 };
 

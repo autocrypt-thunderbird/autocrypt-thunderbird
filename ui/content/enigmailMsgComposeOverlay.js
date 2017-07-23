@@ -40,6 +40,7 @@ Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailC
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Components.utils.import("resource://enigmail/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
+Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -5065,28 +5066,50 @@ Enigmail.msg = {
     try {
       if (this.juniorMode) return;
 
-      if (EnigmailPrefs.getPref("autoWkdLookup") === 0) return;
-
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.findMissingKeys()\n");
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys()\n");
 
       let self = this;
       let missingKeys = this.determineSendFlags();
 
       if ("errArray" in missingKeys && missingKeys.errArray.length > 0) {
         let keyList = missingKeys.errArray.map(function(i) {
-          return i.addr;
-        }).join(",");
+          return i.addr.toLowerCase().trim();
+        });
 
         // TODO: optimize: only check keys that were not yet checked
 
         if (keyList.length > 0) {
-          // TODO: add Autocrypt
-          EnigmailWkdLookup.findKeys(keyList).
-          then((foundKeys) => {
-            if (foundKeys) {
-              self.processFinalState();
-              self.updateStatusBar();
+          new Promise((resolve, reject) => {
+            if (EnigmailPrefs.getPref("autocryptMode") === 0) {
+              resolve([]);
+              return;
             }
+
+            EnigmailAutocrypt.importAutocryptKeys(keyList).
+            then(foundKeys => {
+              EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: got " +
+                foundKeys.length + " autocrypt keys\n");
+              if (foundKeys.length > 0) {
+                self.determineSendFlags();
+              }
+              resolve(foundKeys);
+            });
+          }).
+          then((foundKeys) => {
+            if (EnigmailPrefs.getPref("autoWkdLookup") === 0) return;
+            if (foundKeys.length >= keyList.length) return;
+
+            EnigmailWkdLookup.findKeys(keyList).
+            then((foundKeys) => {
+              EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: wkd got " +
+                foundKeys + "\n");
+              if (foundKeys) {
+                self.determineSendFlags();
+              }
+            });
+          }).
+          catch(err => {
+            EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: error " + err + "\n");
           });
         }
       }
