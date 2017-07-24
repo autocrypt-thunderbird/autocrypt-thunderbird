@@ -118,6 +118,8 @@ Enigmail.msg = {
     attachedKey: null
   },
 
+  keyLookupDone: [],
+
   compFieldsEnig_CID: "@mozdev.org/enigmail/composefields;1",
 
   saveDraftError: 0,
@@ -768,6 +770,7 @@ Enigmail.msg = {
     this.trustAllKeys = false;
     this.mimePreferOpenPGP = 0;
     this.origPepRating = null;
+    this.keyLookupDone = [];
 
     if (!closing) {
       this.setIdentityDefaults();
@@ -5072,20 +5075,28 @@ Enigmail.msg = {
       let missingKeys = this.determineSendFlags();
 
       if ("errArray" in missingKeys && missingKeys.errArray.length > 0) {
-        let keyList = missingKeys.errArray.map(function(i) {
+        let missingEmails = missingKeys.errArray.map(function(i) {
           return i.addr.toLowerCase().trim();
         });
 
-        // TODO: optimize: only check keys that were not yet checked
+        let lookupList = [];
 
-        if (keyList.length > 0) {
+        // only search for keys not checked before
+        for (let k of missingEmails) {
+          if (this.keyLookupDone.indexOf(k) < 0) {
+            lookupList.push(k);
+            this.keyLookupDone.push(k);
+          }
+        }
+
+        if (lookupList.length > 0) {
           new Promise((resolve, reject) => {
             if (EnigmailPrefs.getPref("autocryptMode") === 0) {
               resolve([]);
               return;
             }
 
-            EnigmailAutocrypt.importAutocryptKeys(keyList).
+            EnigmailAutocrypt.importAutocryptKeys(lookupList).
             then(foundKeys => {
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: got " +
                 foundKeys.length + " autocrypt keys\n");
@@ -5097,9 +5108,9 @@ Enigmail.msg = {
           }).
           then((foundKeys) => {
             if (EnigmailPrefs.getPref("autoWkdLookup") === 0) return;
-            if (foundKeys.length >= keyList.length) return;
+            if (foundKeys.length >= lookupList.length) return;
 
-            EnigmailWkdLookup.findKeys(keyList).
+            EnigmailWkdLookup.findKeys(lookupList).
             then((foundKeys) => {
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: wkd got " +
                 foundKeys + "\n");
