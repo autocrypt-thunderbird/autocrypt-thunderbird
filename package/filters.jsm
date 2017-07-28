@@ -23,7 +23,7 @@ Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false */
 Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");

@@ -41,7 +41,7 @@ Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Components.utils.import("resource://enigmail/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
 Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */

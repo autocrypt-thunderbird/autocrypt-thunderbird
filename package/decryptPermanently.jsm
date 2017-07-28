@@ -31,7 +31,7 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */

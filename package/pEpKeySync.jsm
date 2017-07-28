@@ -13,7 +13,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */

@@ -23,7 +23,7 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];

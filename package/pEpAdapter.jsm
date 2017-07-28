@@ -30,7 +30,7 @@ Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/installPep.jsm"); /*global EnigmailInstallPep: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */

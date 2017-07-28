@@ -17,7 +17,7 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/funcs.jsm");
 Cu.import("resource://enigmail/dialog.jsm");
 Cu.import("resource://enigmail/log.jsm");

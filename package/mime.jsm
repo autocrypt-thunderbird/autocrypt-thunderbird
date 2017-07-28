@@ -13,7 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailMime"];
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-Components.utils.import("resource://gre/modules/jsmime.jsm"); /*global jsmime: false*/
+Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Components.utils.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 
