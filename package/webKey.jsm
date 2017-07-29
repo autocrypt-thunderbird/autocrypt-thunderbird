@@ -137,7 +137,7 @@ var EnigmailWks = {
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
       if (wks_client === null) {
         cb(false);
-        return;
+        return null;
       }
       let listener = EnigmailExecution.newSimpleListener(null, function(ret) {
         if (ret !== 0) {
@@ -174,8 +174,11 @@ var EnigmailWks = {
             cb(false);
           }
         }
+        else {
+          cb(false);
+        }
       });
-      EnigmailExecution.execStart(wks_client, ["--create", key.fpr, ident.email], false, window, listener, {
+      return EnigmailExecution.execStart(wks_client, ["--create", key.fpr, ident.email], false, window, listener, {
         value: null
       });
     });
@@ -266,6 +269,8 @@ var EnigmailWks = {
  */
 
 function checkIfExists(path, execFileName) {
+  EnigmailLog.DEBUG("webKey.jsm checkIfExists() path=" + path + " execFileName=" + execFileName + "\n");
+
   let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 
   execFileName = EnigmailFiles.potentialWindowsExecutable(execFileName);
