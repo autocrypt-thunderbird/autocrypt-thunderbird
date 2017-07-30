@@ -53,5 +53,6 @@ execTest("versioning-test.js");
 execTest("rng-test.js");
 execTest("filters-test.js");
 execTest("webKey-test.js");
+execTest("autocrypt-test.js");
 
 // execTest("pep-test.js"); // not yet enabled
