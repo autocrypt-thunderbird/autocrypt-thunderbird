@@ -263,6 +263,7 @@ var EnigmailKeyRing = {
    *
    * @param searchTerm   - String: a regular expression to match against all UIDs of the keys.
    *                               The search is always performed case-insensitively
+   *                               An empty string will return no result
    * @param onlyValidUid - Boolean: if true (default), invalid (e.g. revoked) UIDs are not matched
    *
    * @return Array of KeyObjects with the found keys (array length is 0 if no key found)
@@ -274,6 +275,8 @@ var EnigmailKeyRing = {
     let res = [];
 
     this.getAllKeys(); // ensure keylist is loaded;
+
+    if (searchTerm === "") return res;
 
     for (let i in gKeyListObj.keyList) {
       let k = gKeyListObj.keyList[i];
@@ -381,8 +384,8 @@ var EnigmailKeyRing = {
 
       if (import_res !== null) {
         // Normal
-        importSum = parseInt(import_res[1],10);
-        importUnchanged = parseInt(import_res[4],10);
+        importSum = parseInt(import_res[1], 10);
+        importUnchanged = parseInt(import_res[4], 10);
         exitCodeObj.value = 0;
         var statusLines = statusMsg.split(/\r?\n/);
 
@@ -408,7 +411,8 @@ var EnigmailKeyRing = {
 
     if (importedKeys.length > 0) {
       EnigmailKeyRing.updateKeys(importedKeys);
-    } else if (importSum > importUnchanged) {
+    }
+    else if (importSum > importUnchanged) {
       EnigmailKeyRing.clearCache();
     }
 
