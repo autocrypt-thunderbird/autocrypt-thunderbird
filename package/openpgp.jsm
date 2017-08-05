@@ -146,6 +146,10 @@ EnigmailOpenPGP.enigmailFuncs = {
       "-----END PGP " + hdr + "-----\n";
 
     return s;
+  },
+
+  getCrypto: function() {
+    return window.crypto;
   }
 
 };

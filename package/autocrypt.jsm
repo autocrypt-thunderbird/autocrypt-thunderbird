@@ -19,6 +19,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
@@ -27,6 +28,7 @@ Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
+Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 
 var EnigmailAutocrypt = {
   /**
@@ -200,6 +202,7 @@ var EnigmailAutocrypt = {
    * @return Promise().resolve { }
    */
   importAutocryptKeys: function(emailAddr) {
+    EnigmailLog.DEBUG("autocrypt.jsm importAutocryptKeys()\n");
 
     return new Promise((resolve, reject) => {
       this.getOpenPGPKeyForEmail(emailAddr).
@@ -296,14 +299,70 @@ var EnigmailAutocrypt = {
    *
    * @param identity: Object - nsIMsgIdentity
    *
-   * @return String - complete setup message
+   * @return Promise({str, passwd}):
+   *             msg:    String - complete setup message
+   *             passwd: String - backup password
    */
   createSetupMessage: function(identity) {
-    //let keyData = EnigmailKeyRing.extractKey(true, keyId, null, {}, {});
-    // complete me
+    EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage()\n");
+
+    return new Promise((resolve, reject) => {
+      let keyId = "";
+      let key;
+
+      if (!EnigmailCore.getService(null, false)) {
+        reject(0);
+        return;
+      }
+
+      if (identity.getIntAttribute("pgpKeyMode") === 1) {
+        keyId = identity.getCharAttribute("pgpkeyId");
+      }
+
+      if (keyId.length > 0) {
+        key = EnigmailKeyRing.getKeyById(keyId);
+      }
+      else {
+        key = EnigmailKeyRing.getSecretKeyByUserId(identity.email);
+      }
+
+      if (!key) {
+        EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: no key found for " + identity.email + "\n");
+        reject(1);
+        return;
+      }
+
+      let keyData = EnigmailKeyRing.extractSecretKey(true, "0x" + key.fpr, {}, {});
+      let boundary = EnigmailMime.createBoundary();
+
+      let innerMsg = 'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n' +
+        'Autocrypt-Prefer-Encrypt: mutual\r\n\r\n' + // TODO: replace mutual with Autcrypt-pref
+        '--' + boundary + '\r\n' +
+        'Content-type: application/autocrypt-key-backup\r\n\r\n' +
+        keyData +
+        '\r\n--' + boundary + '--\r\n';
+
+      let bkpCode = createBackupCode();
+      let enc = {
+        data: innerMsg,
+        passwords: bkpCode
+      };
+
+      // create symmetrically encrypted message
+      EnigmailOpenPGP.encrypt(enc).then(msg => {
+        let m = createBackupOuterMsg(identity.email, msg.data);
+        resolve({
+          msg: m,
+          passwd: bkpCode
+        });
+      }).
+      catch(e => {
+        EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + e + "\n");
+        reject(2);
+      });
+    });
   }
 };
-
 
 /**
  * Ensure that the database structure matches the latest version
@@ -545,4 +604,53 @@ function getFprForKey(paramsArr) {
     }
   }
   catch (x) {}
+}
+
+
+/**
+ * Create the 9x4 digits backup code as defined in the Autocrypt spec
+ *
+ * @return String: xxxx-xxxx-...
+ */
+
+function createBackupCode() {
+  let bkpCode = "";
+  let crypto = EnigmailOpenPGP.enigmailFuncs.getCrypto();
+
+  for (let i = 0; i < 9; i++) {
+    if (i > 0) bkpCode += "-";
+
+    let a = new Uint8Array(4);
+    crypto.getRandomValues(a);
+    for (let j = 0; j < 4; j++) {
+      bkpCode += String(a[j] % 10);
+    }
+  }
+  return bkpCode;
+}
+
+
+function createBackupOuterMsg(toEmail, encryptedMsg) {
+
+  let boundary = EnigmailMime.createBoundary();
+
+  let msgStr = 'To: ' + toEmail + '\r\n' +
+    'From: ' + toEmail + '\r\n' +
+    'Autocrypt-Setup-Message: v1\r\n' +
+    'Subject: Autocrypt Setup Message\r\n' + // TODO: replace by localized message
+    'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n' +
+    '--' + boundary + '\r\n' +
+    'Content-Type: text/plain\r\n\r\n' +
+    'This is the Autocrypt setup message.\r\n\r\n' + // TODO: replace by localized message
+    '--' + boundary + '\r\n' +
+    'Content-Type: application/autocrypt-key-backup\r\n' +
+    'Content-Disposition: attachment; filename="autocrypt-key-backup.html"\r\n\r\n' +
+    '<html><body>\r\n' +
+    '<p>This is the Autocrypt setup file used to transfer keys between clients.</p>\r\n' + // TODO: replace by localized message
+    '<pre>\r\n' +
+    encryptedMsg +
+    '</pre></body></html>\r\n' +
+    '--' + boundary + '--\r\n';
+
+  return msgStr;
 }
