@@ -557,28 +557,8 @@ var EnigmailKeyRing = {
     }
 
     if (includeSecretKey) {
-      let secretArgs = EnigmailGpg.getStandardArgs(true).concat(["-a", "--export-secret-keys"]);
 
-      if (userId) {
-        secretArgs = secretArgs.concat(userId.split(/[ ,\t]+/));
-      }
-      const secKeyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, secretArgs, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
-
-      if ((exitCodeObj.value === 0) && !secKeyBlock) {
-        exitCodeObj.value = -1;
-      }
-
-      if (exitCodeObj.value !== 0) {
-        errorMsgObj.value = EnigmailLocale.getString("failKeyExtract");
-
-        if (cmdErrorMsgObj.value) {
-          errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, secretArgs);
-          errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-        }
-
-        return "";
-      }
-
+      const secKeyBlock = this.extractSecretKey(false, userId, exitCodeObj, cmdErrorMsgObj);
       if (keyBlock.substr(-1, 1).search(/[\r\n]/) < 0) {
         keyBlock += "\n";
       }
@@ -593,6 +573,56 @@ var EnigmailKeyRing = {
       return "";
     }
     return keyBlock;
+  },
+
+  /**
+   * Export secret key(s) to a file
+   *
+   * @param minimalKey  Boolean  - if true, reduce key to minimum required
+   * @param userId            String   - space or comma separated list of keys to export. Specification by
+   *                                     key ID, fingerprint, or userId
+   * @param exitCodeObj       Object   - o.value will contain exit code
+   * @param errorMsgObj       Object   - o.value will contain error message from GnuPG
+   *
+   * @return String
+   */
+  extractSecretKey: function(minimalKey, userId, exitCodeObj, errorMsgObj) {
+    let args = EnigmailGpg.getStandardArgs(true);
+
+    if (minimalKey) {
+      args.push("--export-options");
+      args.push("export-minimal,no-export-attributes");
+    }
+
+    args.push("-a");
+    args.push("--export-secret-keys");
+
+    if (userId) {
+      args = args.concat(userId.split(/[ ,\t]+/));
+    }
+
+    let cmdErrorMsgObj = {};
+    const secKeyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
+
+    if (secKeyBlock) {
+      exitCodeObj.value = 0;
+    }
+    else {
+      exitCodeObj.value = -1;
+    }
+
+    if (exitCodeObj.value !== 0) {
+      errorMsgObj.value = EnigmailLocale.getString("failKeyExtract");
+
+      if (cmdErrorMsgObj.value) {
+        errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+        errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
+      }
+
+      return "";
+    }
+
+    return secKeyBlock;
   },
 
   /**
