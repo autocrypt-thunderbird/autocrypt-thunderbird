@@ -24,20 +24,31 @@ component("enigmail/log.jsm"); /*global EnigmailLog: false */
 test(function getWksPathInBinDir() {
   TestHelper.resetting(EnigmailGpgAgent, "gpgconfPath", "TEST_PATH", function() {
     TestHelper.resetting(EnigmailWks, "wksClientPath", null, function() {
-      TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+      TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
         Assert.equal(path, "TEST_PATH");
 
-        listener.stdout("bindir:" + do_get_cwd().path + "\nlibexecdir:/lib/exec/dir/test\n");
+        if (EnigmailOS.isDosLike) {
+          listener.stdout("bindir:" + do_get_cwd().path + "\r\nlibexecdir:C:\\GnuPG\\lib\\exec\\dir\\test\r\n");
+        }
+        else {
+          listener.stdout("bindir:" + do_get_cwd().path + "\nlibexecdir:/lib/exec/dir/test\n");
+        }
         listener.done(0);
 
-        return { 'wait': function() {} };
+        return {
+          'wait': function() {}
+        };
       }, function() {
         let win = JSUnit.createStubWindow();
-        let handle = EnigmailWks.getWksClientPathAsync(win,function(ret) {
-          Assert.equal(do_get_cwd().path + "/" + GPG_WKS_CLIENT,ret.path);
+        let handle = EnigmailWks.getWksClientPathAsync(win, function(ret) {
+          let p = do_get_cwd().clone();
+          p.append(GPG_WKS_CLIENT);
+          Assert.equal(p.path, ret.path);
         });
 
-        if (handle) { handle.wait(); }
+        if (handle) {
+          handle.wait();
+        }
       });
     });
   });
@@ -46,20 +57,31 @@ test(function getWksPathInBinDir() {
 test(function getWksPathInLibexecDir() {
   TestHelper.resetting(EnigmailGpgAgent, "gpgconfPath", "TEST_PATH", function() {
     TestHelper.resetting(EnigmailWks, "wksClientPath", null, function() {
-      TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+      TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
         Assert.equal(path, "TEST_PATH");
 
-        listener.stdout("libexecdir:" + do_get_cwd().path + "\nbindir:/bin/dir/test\n");
+        if (EnigmailOS.isDosLike) {
+          listener.stdout("libexecdir:" + do_get_cwd().path + "\r\nbindir:C:\\GnuPG\\bin\\dir\\test\r\n");
+        }
+        else {
+          listener.stdout("libexecdir:" + do_get_cwd().path + "\nbindir:/bin/dir/test\n");
+        }
         listener.done(0);
 
-        return { 'wait': function() {} };
+        return {
+          'wait': function() {}
+        };
       }, function() {
         let win = JSUnit.createStubWindow();
-        let handle = EnigmailWks.getWksClientPathAsync(win,function(ret) {
-          Assert.equal(do_get_cwd().path + "/" + GPG_WKS_CLIENT,ret.path);
+        let handle = EnigmailWks.getWksClientPathAsync(win, function(ret) {
+          let p = do_get_cwd().clone();
+          p.append(GPG_WKS_CLIENT);
+          Assert.equal(p.path, ret.path);
         });
 
-        if (handle) { handle.wait(); }
+        if (handle) {
+          handle.wait();
+        }
       });
     });
   });
@@ -67,10 +89,11 @@ test(function getWksPathInLibexecDir() {
 
 test(function wksSubmitKey() {
   TestHelper.resetting(EnigmailWks, "wksClientPath", "WKS_CLIENT_DUMMY", function() {
-    TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+    TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
       Assert.equal(path, "WKS_CLIENT_DUMMY");
 
-      listener.stdout(`
+      listener.stdout(
+        `
 From: test1@example.com
 To: key-submit@example.com
 Subject: Key publishing request
@@ -93,22 +116,31 @@ Content-Type: application/octet-stream
 lalala
 -----END PGP MESSAGE-----
 
---=-=01-uhb5j5etxykdj5cqrpky=-=--`);
+--=-=01-uhb5j5etxykdj5cqrpky=-=--`
+      );
       listener.done(0);
 
-      return { 'wait': function() {} };
+      return {
+        'wait': function() {}
+      };
     }, function() {
-      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1,op2,op3,op4,op5) {
+      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1, op2, op3, op4, op5) {
         Assert.equal(op1.identity.email, "test2@example.com");
         Assert.equal(op1.to, "key-submit@example.com");
         Assert.equal(op1.subject, "Key publishing request");
       }, function() {
         let win = JSUnit.createStubWindow();
-        let handle = EnigmailWks.submitKey({'email':'test2@example.com'}, {'fpr':'123'}, win, function(ret) {
+        let handle = EnigmailWks.submitKey({
+          'email': 'test2@example.com'
+        }, {
+          'fpr': '123'
+        }, win, function(ret) {
           Assert.equal(true, ret);
         });
 
-        if (handle) { handle.wait(); }
+        if (handle) {
+          handle.wait();
+        }
       });
     });
   });
@@ -116,19 +148,22 @@ lalala
 
 test(function wksConfirmKey() {
   TestHelper.resetting(EnigmailWks, "wksClientPath", "WKS_CLIENT_DUMMY", function() {
-    TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+    TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
       Assert.equal(path, "WKS_CLIENT_DUMMY");
       listener.done(0);
 
-      return { 'wait': function() {} };
+      return {
+        'wait': function() {}
+      };
     }, function() {
-      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1,op2,op3,op4,op5) {
+      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1, op2, op3, op4, op5) {
         Assert.equal(op1.identity.email, "test2@example.com");
         Assert.equal(op1.to, "key-submit@example.com");
         Assert.equal(op1.subject, "Key publishing confirmation");
       }, function() {
         let win = JSUnit.createStubWindow();
-        let mail = `
+        let mail =
+          `
 From: test1@example.com
 To: key-submit@example.com
 Subject: Key publishing confirmation
@@ -152,11 +187,15 @@ lalala
 -----END PGP MESSAGE-----
 
 --=-=01-uhb5j5etxykdj5cqrpky=-=--`;
-  let handle = EnigmailWks.confirmKey({'email':'test2@example.com'}, mail, win, function(ret) {
+        let handle = EnigmailWks.confirmKey({
+          'email': 'test2@example.com'
+        }, mail, win, function(ret) {
           Assert.equal(true, ret);
         });
 
-        if (handle) { handle.wait(); }
+        if (handle) {
+          handle.wait();
+        }
       });
     });
   });
@@ -164,38 +203,46 @@ lalala
 
 test(function positiveWksSupportCheck() {
   TestHelper.resetting(EnigmailWks, "wksClientPath", "WKS_CLIENT_DUMMY", function() {
-    TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+    TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
       Assert.equal(path, "WKS_CLIENT_DUMMY");
       Assert.equal(args[0], "--supported");
       Assert.equal(args[1], "test2@example.com");
       listener.done(0);
-      return { 'wait': function() {} };
+      return {
+        'wait': function() {}
+      };
     }, function() {
       let win = JSUnit.createStubWindow();
       let handle = EnigmailWks.isWksSupportedAsync('test2@example.com', win, function(ret) {
         Assert.equal(true, ret);
       });
 
-      if (handle) { handle.wait(); }
+      if (handle) {
+        handle.wait();
+      }
     });
   });
 });
 
 test(function negativeWksSupportCheck() {
   TestHelper.resetting(EnigmailWks, "wksClientPath", "WKS_CLIENT_DUMMY", function() {
-    TestHelper.resetting(EnigmailExecution, "execStart", function(path,args,wat,win,listener,ops) {
+    TestHelper.resetting(EnigmailExecution, "execStart", function(path, args, wat, win, listener, ops) {
       Assert.equal(path, "WKS_CLIENT_DUMMY");
       Assert.equal(args[0], "--supported");
       Assert.equal(args[1], "test2@example.com");
       listener.done(1);
-      return { 'wait': function() {} };
+      return {
+        'wait': function() {}
+      };
     }, function() {
       let win = JSUnit.createStubWindow();
       let handle = EnigmailWks.isWksSupportedAsync('test2@example.com', win, function(ret) {
         Assert.equal(false, ret);
       });
 
-      if (handle) { handle.wait(); }
+      if (handle) {
+        handle.wait();
+      }
     });
   });
 });

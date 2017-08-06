@@ -35,9 +35,10 @@ var EnigmailWks = {
   /**
    * Get WKS Client path (gpg-wks-client)
    *
-   * @param window: Object - parent window for dialog display
-   * @param cb    : Function(retValue) - callback function.
-   *                 retValue: nsIFile Object to gpg-wks-client executable or NULL
+   * @param window  : Object - parent window for dialog display
+   * @param cb      : Function(retValue) - callback function.
+   *                   retValue: nsIFile Object to gpg-wks-client executable or NULL
+   * @return        : Object - NULL or a process handle
    */
   getWksClientPathAsync: function(window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: getWksClientPathAsync\n");
@@ -103,6 +104,7 @@ var EnigmailWks = {
    * @param window: Object - parent window of dialog display
    * @param cb    : Function(retValue) - callback function.
    *                   retValue: Boolean: true if WKS is supported / false otherwise
+   * @return      : Object - process handle
    */
   isWksSupportedAsync: function(email, window, cb) {
     EnigmailLog.DEBUG("webKey.jsm: isWksSupportedAsync: email = " + email + "\n");
@@ -130,6 +132,7 @@ var EnigmailWks = {
    * @param window: Object - parent window of dialog display
    * @param cb    : Function(retValue) - callback function.
    *                   retValue: Boolean: true if submit was successful / false otherwise
+   * @return      : Object - process handle
    */
 
   submitKey: function(ident, key, window, cb) {
@@ -193,6 +196,7 @@ var EnigmailWks = {
    * @param window: Object - parent window of dialog display
    * @param cb    : Function(retValue) - callback function.
    *                   retValue: Boolean: true if submit was successful / false otherwise
+   * @return      : Object - process handle
    */
 
   confirmKey: function(ident, body, window, cb) {
