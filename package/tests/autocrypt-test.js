@@ -94,6 +94,7 @@ test(function prepareDb() {
   }).
   then(connection => {
     connection.execute("drop table autocrypt_keydata;").then(ok => {
+      connection.close();
       do_test_finished();
     }).catch(err => {
       do_test_finished();

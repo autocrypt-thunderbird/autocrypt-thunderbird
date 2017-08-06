@@ -268,6 +268,8 @@ var EnigmailAutocrypt = {
       ).then(
         function gotData(resultObj) {
           EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail got " + resultObj.numRows + " rows\n");
+          conn.close();
+
           if (resultObj.data.length === 0) {
             resolve(null);
           }
@@ -284,7 +286,6 @@ var EnigmailAutocrypt = {
 
             resolve(retArr);
           }
-          conn.close();
         }
       ).
       catch((err) => {
