@@ -204,6 +204,34 @@ const EnigmailArmor = {
     });
   },
 
+  /**
+   * Remove all headers from an OpenPGP Armored message and replace them
+   * with a set of new headers.
+   *
+   * @param msgStr:  String - ASCII armored message
+   * @param headers: Object - key/value pairs of new headers to insert
+   *
+   * @return String - new armored message
+   */
+  replaceArmorHeaders: function(msgStr, headers) {
+
+    msgStr = msgStr.replace(/\r\n/g, "\n");
+    let i = msgStr.search(/\n/);
+
+    if (i < 0) return msgStr;
+    let m = msgStr.substr(0, i + 1);
+
+    for (let j in headers) {
+      m += j + ": " + headers[j] + "\n";
+    }
+
+    i = msgStr.search(/\n\n/);
+    if (i < 0) return msgStr;
+    m += msgStr.substr(i + 1);
+
+    return m;
+  },
+
   registerOn: function(target) {
     target.locateArmoredBlock = EnigmailArmor.locateArmoredBlock;
     target.locateArmoredBlocks = EnigmailArmor.locateArmoredBlocks;
