@@ -742,6 +742,13 @@ Enigmail.msg = {
         msgSigned = resultObj.signed.length > 0;
         msgEncrypted = resultObj.encrypted.length > 0;
 
+        if (mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
+          if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
+            EnigmailAutocrypt.handleBackupMessage(window, currentAttachments[0].url);
+            return;
+          }
+        }
+
         // HACK for Zimbra OpenPGP Zimlet
         // Zimbra illegally changes attachment content-type to application/pgp-encrypted which interfers with below
         // see https://sourceforge.net/p/enigmail/bugs/600/

@@ -31,6 +31,8 @@ Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
+Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 
 var EnigmailAutocrypt = {
   /**
@@ -348,18 +350,24 @@ var EnigmailAutocrypt = {
       let bkpCode = createBackupCode();
       let enc = {
         data: innerMsg,
-        passwords: bkpCode
+        passwords: bkpCode,
+        armor: true
       };
 
       // create symmetrically encrypted message
       EnigmailOpenPGP.encrypt(enc).then(msg => {
-        let m = createBackupOuterMsg(identity.email, msg.data);
+        let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
+          'Version': 'Autocrypt v1',
+          'Passphrase-Format': 'numeric9x4',
+          'Passphrase-Begin': bkpCode.substr(0, 2)
+        }).replace(/\n/g, "\r\n");
+
+        let m = createBackupOuterMsg(identity.email, msgData);
         resolve({
           msg: m,
           passwd: bkpCode
         });
-      }).
-      catch(e => {
+      }).catch(e => {
         EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + e + "\n");
         reject(2);
       });
@@ -392,10 +400,27 @@ var EnigmailAutocrypt = {
         if (EnigmailSend.sendMessage(mimeStr, composeFields, null)) {
           resolve(res.passwd);
         }
-
-        reject(99);
+        else {
+          reject(99);
+        }
       });
     });
+  },
+
+  handleBackupMessage: function(win, msgUrl) {
+    let s = EnigmailStreams.newStringStreamListener(data => {
+      let start = {},
+        end = {};
+      let msgType = EnigmailArmor.locateArmoredBlock(data, 0, "", start, end, {});
+
+      if (msgType === "MESSAGE") {
+        // TODO: completeme
+      }
+    });
+
+
+    let channel = EnigmailStreams.createChannel(msgUrl);
+    channel.asyncOpen(s, null);
   }
 };
 
