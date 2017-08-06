@@ -29,6 +29,8 @@ Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 
 var EnigmailAutocrypt = {
   /**
@@ -360,6 +362,38 @@ var EnigmailAutocrypt = {
       catch(e => {
         EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + e + "\n");
         reject(2);
+      });
+    });
+  },
+
+  /**
+   * Create and send the Autocrypt Setup Message to yourself
+   * The message is sent asynchronously.
+   *
+   * @param identity: Object - nsIMsgIdentity
+   *
+   * @return Promise(passwd):
+   *   passwd: String - backup password
+   *
+   */
+  sendSetupMessage: function(identity) {
+    return new Promise((resolve, reject) => {
+      this.createSetupMessage(identity).then(res => {
+        let composeFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
+        composeFields.characterSet = "UTF-8";
+        composeFields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
+        composeFields.from = identity.email;
+        composeFields.to = identity.email;
+
+        let now = new Date();
+        let mimeStr = "Message-Id: " + composeFields.messageId + "\r\n" +
+          "Date: " + now.toUTCString() + "\r\n" + res.msg;
+
+        if (EnigmailSend.sendMessage(mimeStr, composeFields, null)) {
+          resolve(res.passwd);
+        }
+
+        reject(99);
       });
     });
   }
