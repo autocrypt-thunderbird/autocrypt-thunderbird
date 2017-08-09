@@ -17,11 +17,19 @@ const Ci = Components.interfaces;
 
 var enigStringBundle = null;
 
-const LOCALE_SVC_CONTRACTID = "@mozilla.org/intl/nslocaleservice;1";
-
 const EnigmailLocale = {
   get: function() {
-    return Cc[LOCALE_SVC_CONTRACTID].getService(Ci.nsILocaleService).getApplicationLocale();
+    try {
+      return Cc["@mozilla.org/intl/nslocaleservice;1"].getService(Ci.nsILocaleService).getApplicationLocale();
+    }
+    catch (ex) {
+      return {
+        getCategory: function(whatever) {
+          // always return the application locale
+          return Cc["@mozilla.org/intl/localeservice;1"].getService(Ci.mozILocaleService).getAppLocaleAsBCP47();
+        }
+      };
+    }
   },
 
   // retrieves a localized string from the enigmail.properties stringbundle

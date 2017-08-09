@@ -1326,23 +1326,25 @@ if (messageHeaderSink) {
         // mailbox:///...?number=4455522&part=1.1.2&filename=test.eml&type=application/x-message-display&filename=test.eml
         // imap://user@host:port>UID>some>path>10?header=filter&emitter=js&examineEncryptedParts=true
 
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: url.path=" + url.path + "\n");
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: url.pathQueryRef=" + ("path" in url ? url.path : url.pathQueryRef) + "\n");
 
         let msgNum = "";
         let msgFolder = "";
 
+        let pathQueryRef = ("path" in url ? url.path : url.pathQueryRef);
+
         if (url.schemeIs("mailbox")) {
-          msgNum = url.path.replace(/(.*[?&]number=)([0-9]+)([^0-9].*)?/, "$2");
-          msgFolder = url.path.replace(/\?.*/, "");
+          msgNum = pathQueryRef.replace(/(.*[?&]number=)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = pathQueryRef.replace(/\?.*/, "");
         }
         else if (url.schemeIs("imap")) {
-          let p = unescape(url.path);
+          let p = unescape(pathQueryRef);
           msgNum = p.replace(/(.*>)([0-9]+)([^0-9].*)?/, "$2");
           msgFolder = p.replace(/\?.*$/, "").replace(/>[^>]+$/, "");
         }
         else if (url.schemeIs("news")) {
-          msgNum = url.path.replace(/(.*[?&]key=)([0-9]+)([^0-9].*)?/, "$2");
-          msgFolder = url.path.replace(/(.*[?&]group=)([^&]+)(&.*)?/, "$2");
+          msgNum = pathQueryRef.replace(/(.*[?&]key=)([0-9]+)([^0-9].*)?/, "$2");
+          msgFolder = pathQueryRef.replace(/(.*[?&]group=)([^&]+)(&.*)?/, "$2");
         }
 
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgIdentificationFromUrl: msgNum=" + msgNum + " / folder=" + msgFolder + "\n");

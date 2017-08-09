@@ -123,11 +123,12 @@ var EnigmailpEp = {
         address: "127.0.0.1",
         port: 1234,
         path: "/none/",
+        pathQueryRef: "/none/",
         security_token: ""
       };
     }
 
-    return "http://" + o.address + ":" + o.port + o.path;
+    return "http://" + o.address + ":" + o.port + ("path" in o ? o.path : o.pathQueryRef);
   },
 
 
