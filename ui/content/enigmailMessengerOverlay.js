@@ -742,7 +742,7 @@ Enigmail.msg = {
         msgSigned = resultObj.signed.length > 0;
         msgEncrypted = resultObj.encrypted.length > 0;
 
-        if (mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
+        if ("autocrypt-setup-message" in mimeMsg.headers && mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
           if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
             EnigmailAutocrypt.handleBackupMessage(window, currentAttachments[0].url);
             return;
