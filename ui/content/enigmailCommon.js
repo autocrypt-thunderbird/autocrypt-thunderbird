@@ -612,7 +612,7 @@ function EnigOpenUrlExternally(uri) {
   let eps = ENIG_C["@mozilla.org/uriloader/external-protocol-service;1"].
   getService(ENIG_I.nsIExternalProtocolService);
 
-  eps.loadUrl(uri, null);
+  eps.loadURI(uri, null);
 }
 
 function EnigOpenURL(event, hrefObj) {

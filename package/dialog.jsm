@@ -397,11 +397,21 @@ const EnigmailDialog = {
 
     filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
 
-    if (filePicker.show() == Ci.nsIFilePicker.returnCancel) {
-      return null;
-    }
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+    let gotFile = null;
+    filePicker.open(res => {
+      if (res != Ci.nsIFilePicker.returnOK && res != Ci.nsIFilePicker.returnReplace) {
+        inspector.exitNestedEventLoop();
+        return;
+      }
 
-    return filePicker.file.QueryInterface(Ci.nsIFile);
+      gotFile = filePicker.file.QueryInterface(Ci.nsIFile);
+      inspector.exitNestedEventLoop();
+    });
+
+    inspector.enterNestedEventLoop(0); // wait for async process to terminate
+
+    return gotFile;
   },
 
   /**

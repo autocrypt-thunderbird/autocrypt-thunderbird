@@ -119,20 +119,14 @@ var EnigmailConfigBackup = {
       prefObj.rules = EnigmailFiles.readFile(rulesFile);
     }
 
+    let jsonStr = JSON.stringify(prefObj);
+
     // serialize everything to UTF-8 encoded JSON.
-    var strm = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
-    var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-
-    try {
-      strm.init(outputFile, -1, -1, 0);
-      nativeJSON.encodeToStream(strm, "UTF-8", false, prefObj);
-      strm.close();
-    }
-    catch (ex) {
-      return -1;
+    if (EnigmailFiles.writeFileContents(outputFile, jsonStr)) {
+      return 0;
     }
 
-    return 0;
+    return -1;
   },
 
   /**
@@ -180,13 +174,9 @@ var EnigmailConfigBackup = {
     }
 
     // Profile must be a single UTF-8 encoded JSON object.
-    var strm = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
-    var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-
     try {
-      strm.init(inputFile, -1, -1, 0);
-      prefObj = nativeJSON.decodeFromStream(strm, "UTF-8", false);
-      strm.close();
+      let jsonStr = EnigmailFiles.readFile(inputFile);
+      prefObj = JSON.parse(jsonStr);
 
       var nsIPB = Ci.nsIPrefBranch;
       var branch = EnigmailPrefs.getPrefBranch();

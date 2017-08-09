@@ -43,7 +43,7 @@ function getArchiveFolderUriFor(identity, msgDate) {
    * folder...
    */
   let msgYear = msgDate.getFullYear().toString();
-  let monthFolderName = msgDate.toLocaleFormat("%Y-%m");
+  let monthFolderName = msgYear + "-" + (msgDate.getMonth() + 1).toString().padStart(2, "0");
   let granularity = identity.archiveGranularity;
   let folderUri = identity.archiveFolder;
   if (granularity >= Ci.nsIMsgIdentity.perYearArchiveFolders)
