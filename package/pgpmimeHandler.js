@@ -65,7 +65,9 @@ function UnknownProtoHandler() {
 UnknownProtoHandler.prototype = {
   onStartRequest: function(request) {
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
-    this.mimeSvc.onStartRequest(null, null);
+    if (!("readDecryptedData" in this.mimeSvc)) {
+      this.mimeSvc.onStartRequest(null, null);
+    }
     this.bound = EnigmailMime.getBoundary(this.mimeSvc.contentType);
     /*
       readMode:
@@ -104,15 +106,23 @@ UnknownProtoHandler.prototype = {
 
         if (this.readMode >= 1 && startIndex < l.length) {
           let out = l.slice(startIndex, endIndex).join("\n") + "\n";
-          gConv.setData(out, out.length);
-          this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+
+          if ("readDecryptedData" in this.mimeSvc) {
+            this.mimeSvc.readDecryptedData(out, out.length);
+          }
+          else {
+            gConv.setData(out, out.length);
+            this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+          }
         }
       }
     }
   },
 
   onStopRequest: function() {
-    this.mimeSvc.onStopRequest(null, null, 0);
+    if (!("readDecryptedData" in this.mimeSvc)) {
+      this.mimeSvc.onStopRequest(null, null, 0);
+    }
   }
 };
 

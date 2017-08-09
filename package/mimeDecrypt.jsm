@@ -38,7 +38,6 @@ const ENCODING_QP = 2;
 
 var gDebugLogLevel = 0;
 
-var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 var gNumProc = 0;
 
 ////////////////////////////////////////////////////////////////////
@@ -506,8 +505,6 @@ EnigmailMimeDecrypt.prototype = {
   returnData: function(data) {
     EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: " + data.length + " bytes\n");
 
-    gConv.setData(data, data.length);
-
     let proto = null;
     let ct = this.extractContentType(data);
     if (ct && ct.search(/multipart\/signed/i) >= 0) {
@@ -523,13 +520,20 @@ EnigmailMimeDecrypt.prototype = {
         }
         let veri = EnigmailVerify.newVerifier(proto);
         veri.onStartRequest(this.mimeSvc, this.uri);
-        veri.onDataAvailable(null, null, gConv, 0, data.length + 1);
+        veri.onTextData(data);
         veri.onStopRequest(null, null, 0);
       }
       else {
-        this.mimeSvc.onStartRequest(null, null);
-        this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
-        this.mimeSvc.onStopRequest(null, null, 0);
+        if ("readDecryptedData" in this.mimeSvc) {
+          this.mimeSvc.readDecryptedData(data, data.length);
+        }
+        else {
+          let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+          gConv.setData(data, data.length);
+          this.mimeSvc.onStartRequest(null, null);
+          this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+          this.mimeSvc.onStopRequest(null, null, 0);
+        }
       }
     }
     catch (ex) {

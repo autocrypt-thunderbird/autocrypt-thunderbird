@@ -23,7 +23,6 @@ Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: fa
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
-var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 var gDebugLog = false;
 
 
@@ -163,14 +162,20 @@ PgpWkdHandler.prototype = {
       'Content-Transfer-Encoding: 8bit\r\n\r\n' +
       message + '\r\n';
 
-    gConv.setData(msg, msg.length);
-    try {
-      this.mimeSvc.onStartRequest(null, null);
-      this.mimeSvc.onDataAvailable(null, null, gConv, 0, msg.length);
-      this.mimeSvc.onStopRequest(null, null, 0);
+    if ("readDecryptedData" in this.mimeSvc) {
+      this.mimeSvc.readDecryptedData(msg, msg.length);
     }
-    catch (ex) {
-      EnigmailLog.ERROR("wksMimeHandler.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+    else {
+      let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+      gConv.setData(msg, msg.length);
+      try {
+        this.mimeSvc.onStartRequest(null, null);
+        this.mimeSvc.onDataAvailable(null, null, gConv, 0, msg.length);
+        this.mimeSvc.onStopRequest(null, null, 0);
+      }
+      catch (ex) {
+        EnigmailLog.ERROR("wksMimeHandler.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      }
     }
   },
 

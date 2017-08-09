@@ -29,7 +29,6 @@ Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
 
 var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
 var EnigmailPEPDecrypt = {
   /**
@@ -265,9 +264,15 @@ PEPDecryptor.prototype = {
       }
     }
 
-    gConv.setData(this.decryptedData, this.decryptedData.length);
-    this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
-    this.mimeSvc.onStopRequest(null, null, 0);
+    if ("readDecryptedData" in this.mimeSvc) {
+      this.mimeSvc.readDecryptedData(this.decryptedData, this.decryptedData.length);
+    }
+    else {
+      let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+      gConv.setData(this.decryptedData, this.decryptedData.length);
+      this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
+      this.mimeSvc.onStopRequest(null, null, 0);
+    }
   },
 
   displayStatus: function(rating, fpr, persons) {

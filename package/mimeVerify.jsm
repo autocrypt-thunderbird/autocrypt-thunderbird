@@ -35,7 +35,6 @@ const PGPMIME_PROTO = "application/pgp-signature";
 const maxBufferLen = 102400;
 
 var gDebugLog = false;
-var gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
 // MimeVerify Constructor
 function MimeVerify(protocol) {
@@ -499,14 +498,20 @@ MimeVerify.prototype = {
       }
     }
 
-    gConv.setData(data, data.length);
-    try {
-      this.mimeSvc.onStartRequest(null, null);
-      this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
-      this.mimeSvc.onStopRequest(null, null, 0);
+    if ("readDecryptedData" in this.mimeSvc) {
+      this.mimeSvc.readDecryptedData(data, data.length);
     }
-    catch (ex) {
-      EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+    else {
+      let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
+      gConv.setData(data, data.length);
+      try {
+        this.mimeSvc.onStartRequest(null, null);
+        this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
+        this.mimeSvc.onStopRequest(null, null, 0);
+      }
+      catch (ex) {
+        EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      }
     }
   },
 
