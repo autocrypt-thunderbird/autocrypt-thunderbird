@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="enigmailAutocryptSetupPasswd"
+        title="Enter Autocrypt Setup Password"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        buttons="accept,cancel"
+        onload="onLoad();">
+
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/autocryptSetupPasswd.js"/>
+
+
+  <vbox>
+    <label value="Please enter the setup code from the other device:"/>
+    <grid>
+      <columns>
+        <column flex="0"/>
+        <column flex="0"/>
+        <column flex="0"/>
+      </columns>
+      <rows>
+        <row>
+          <label value="&enigmail.keyDetails.userId.label;" control="userId"/>
+          <textbox id="userId" class="plain" style="white-space: pre;"
+            readonly="true" value="?" multiline="false" size="60"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.keyType.label;" control="keyType"/>
+          <textbox id="keyType" class="plain" style="white-space: pre;"
+            readonly="true" value="?" multiline="false" size="60"/>
+        </row>
+        <row>
+          <label value="&enigmail.keyDetails.fingerprint.label;" control="fingerprint"/>
+          <textbox id="fingerprint" class="plain" style="white-space: pre;"
+            readonly="true" value="?" multiline="false" size="60"/>
+        </row>
+      </rows>
+    </grid>
+  </vbox>
+
+</dialog>
