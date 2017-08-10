@@ -187,7 +187,7 @@ const EnigmailFiles = {
 
       let decoder = new TextDecoder();
       OS.File.read(fileObj.path).then(arr => {
-        fileContents = decoder.decode(arr); // Convert this array to a text
+        fileContents = EnigmailData.arrayBufferToString(arr); // Convert the array to a text
         inspector.exitNestedEventLoop();
       }).catch(err => {
         inspector.exitNestedEventLoop();
