@@ -849,3 +849,6 @@
 <!ENTITY enigmail.pepPref.thanksTo.label             "Thanks to">
 
 <!ENTITY enigmail.locateKeys.locating                "Locating Keys...">
+
+<!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Password">
+<!ENTITY enigmail.acSetupPasswd.password             "Password:">

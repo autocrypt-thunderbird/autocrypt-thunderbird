@@ -604,5 +604,34 @@ const EnigmailWindows = {
     window.openDialog("chrome://enigmail/content/pepHandshake.xul",
       "", "dialog,modal,centerscreen", inputObj);
 
+  },
+
+
+  /**
+   * Display Autocrypt Setup Passwd dialog.
+   *
+   * @param dlgMode:       String - dialog mode: "input" / "display"
+   * @param passwdType:    String - type of password ("9x4" / "generic")
+   * @param password:      String - password or initial two digits of password
+   *
+   * @return String entered password (in input mode) or NULL
+   */
+  autocryptSetupPasswd: function(window, dlgMode, passwdType = "9x4", password) {
+    if (!window) {
+      window = this.getBestParentWin();
+    }
+
+    let inputObj = {
+      password: null,
+      passwdType: passwdType,
+      dlgMode: dlgMode
+    };
+
+    if (password) inputObj.initialPasswd = password;
+
+    window.openDialog("chrome://enigmail/content/autocryptSetupPasswd.xul",
+      "", "dialog,modal,centerscreen", inputObj);
+
+    return inputObj.password;
   }
 };

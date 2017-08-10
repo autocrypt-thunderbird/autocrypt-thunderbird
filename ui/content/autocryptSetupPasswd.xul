@@ -16,42 +16,50 @@
 ]>
 
 <dialog id="enigmailAutocryptSetupPasswd"
-        title="Enter Autocrypt Setup Password"
+        title="&enigmail.acSetupPasswd.dlgTitle;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
         buttons="accept,cancel"
+        ondialogaccept="onAccept();"
         onload="onLoad();">
-
 
   <script type="application/x-javascript" src="chrome://enigmail/content/autocryptSetupPasswd.js"/>
 
+  <dialogheader id="dlgDesc"
+    title="&enigmail.acSetupPasswd.dlgTitle;"
+    description="..."/>
 
-  <vbox>
-    <label value="Please enter the setup code from the other device:"/>
-    <grid>
-      <columns>
-        <column flex="0"/>
-        <column flex="0"/>
-        <column flex="0"/>
-      </columns>
-      <rows>
-        <row>
-          <label value="&enigmail.keyDetails.userId.label;" control="userId"/>
-          <textbox id="userId" class="plain" style="white-space: pre;"
-            readonly="true" value="?" multiline="false" size="60"/>
-        </row>
-        <row>
-          <label value="&enigmail.keyDetails.keyType.label;" control="keyType"/>
-          <textbox id="keyType" class="plain" style="white-space: pre;"
-            readonly="true" value="?" multiline="false" size="60"/>
-        </row>
-        <row>
-          <label value="&enigmail.keyDetails.fingerprint.label;" control="fingerprint"/>
-          <textbox id="fingerprint" class="plain" style="white-space: pre;"
-            readonly="true" value="?" multiline="false" size="60"/>
-        </row>
-      </rows>
-    </grid>
+
+  <vbox id="dlg9x4" align="center">
+
+    <hbox align="center">
+      <textbox id="l1" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l2" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l3" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+    </hbox>
+    <hbox align="center">
+      <textbox id="l4" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l5" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l6" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+    </hbox>
+    <hbox align="center">
+      <textbox id="l7" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l8" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <label value="-"/>
+      <textbox id="l9" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+    </hbox>
+  </vbox>
+
+  <vbox id="dlgGeneric" align="center" collapsed="true">
+    <hbox align="center">
+      <label value="&enigmail.acSetupPasswd.password;"/>
+      <textbox id="genericPasswd" size="45"/>
+    </hbox>
   </vbox>
 
 </dialog>
