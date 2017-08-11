@@ -12,8 +12,7 @@ MODFILES = \
            misc.jsm \
            msgHdrUtils.jsm \
            openpgp-lib.js \
-           openpgp.worker.min.js \
-           send.jsm
+           openpgp.worker.min.js
 
 all: deploy
 

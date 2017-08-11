@@ -31,7 +31,6 @@ Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm");
  msgHdrGetUri: false, msgHdrFromNeckoUrl: false, msgHdrSetTags: false, msgHdrIsDraft: false, msgHdrIsSent: false, msgHdrIsArchive: false, msgHdrIsInbox: false,
  msgHdrIsRss: false, msgHdrIsNntp: false, msgHdrIsJunk: false, msgHdrsMarkAsRead: false, msgHdrsArchive: false, msgHdrsDelete,
  getMail3Pane: false, msgHdrGetHeaders: false, msgHdrsModifyRaw */
-Cu.import("resource://enigmail/stdlib/send.jsm"); /* global sendMessage: false */
 
 var EnigmailStdlib = {
   // compose.jsm
@@ -90,8 +89,5 @@ var EnigmailStdlib = {
   'msgHdrsDelete': msgHdrsDelete,
   'getMail3Pane': getMail3Pane,
   'msgHdrGetHeaders': msgHdrGetHeaders,
-  'msgHdrsModifyRaw': msgHdrsModifyRaw,
-
-  // send.jsm
-  'sendMessage': sendMessage
+  'msgHdrsModifyRaw': msgHdrsModifyRaw
 };

@@ -26,6 +26,7 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 
 const GPG_WKS_CLIENT = "gpg-wks-client";
 
@@ -155,25 +156,16 @@ var EnigmailWks = {
         if (subject !== null && to !== null) {
           si.sendFlags |= (Ci.nsIEnigmail.SEND_VERBATIM);
 
-          EnigmailStdlib.sendMessage({
-            urls: [],
-            identity: ident,
-            to: to[1],
-            subject: subject[1],
-            securityInfo: si
-          }, {
-            compType: Ci.nsIMsgCompType.New,
-            deliveryType: Ci.nsIMsgCompDeliverMode.Now
-          }, {
-            match: function(x) {
-              x.plainText(listener.stdoutData.replace(/\r\n/g, "\n"));
-            }
-          }, {}, {});
-
-          if (cb !== null) {
-            cb(true);
-          }
-          else {
+          if (!EnigmailSend.simpleSendMessage({
+                urls: [],
+                identity: ident,
+                to: to[1],
+                subject: subject[1],
+                securityInfo: si
+              },
+              listener.stdoutData,
+              cb
+            )) {
             cb(false);
           }
         }
@@ -229,23 +221,17 @@ var EnigmailWks = {
           if (subject !== null && to !== null) {
             si.sendFlags |= (Ci.nsIEnigmail.SEND_VERBATIM);
 
-            EnigmailStdlib.sendMessage({
-              urls: [],
-              identity: ident,
-              to: to[1],
-              subject: subject[1],
-              securityInfo: si
-            }, {
-              compType: Ci.nsIMsgCompType.New,
-              deliveryType: Ci.nsIMsgCompDeliverMode.Now
-            }, {
-              match: function(x) {
-                x.plainText(listener.stdoutData.replace(/\r\n/g, "\n"));
-              }
-            }, {}, {});
-
-            if (cb) {
-              cb(true);
+            if (!EnigmailSend.simpleSendMessage({
+                  urls: [],
+                  identity: ident,
+                  to: to[1],
+                  subject: subject[1],
+                  securityInfo: si
+                },
+                listener.stdoutData,
+                cb
+              )) {
+              cb(false);
             }
           }
         }

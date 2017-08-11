@@ -19,6 +19,8 @@ Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
+Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("resource:///modules/mailServices.js"); /*global MailServices: false */
 
 var EnigmailSend = {
   /**
@@ -32,6 +34,7 @@ var EnigmailSend = {
    */
 
   sendMessage: function(msgData, compFields, listener = null) {
+    EnigmailLog.DEBUG("EnigmailSend.sendMessage()\n");
     let tmpFile, msgIdentity;
     try {
       tmpFile = EnigmailFiles.getTempDirObj();
@@ -50,6 +53,10 @@ var EnigmailSend = {
     }
     catch (ex) {
       msgIdentity = EnigmailStdlib.getDefaultIdentity();
+    }
+
+    if (!msgIdentity) {
+      return false;
     }
 
     EnigmailLog.DEBUG("EnigmailSend.sendMessage: identity key: " + msgIdentity.identity.key + "\n");
@@ -72,5 +79,60 @@ var EnigmailSend = {
       ""); // password
 
     return true;
+  },
+
+  /**
+   * Send message (simplified API)
+   *
+   * @param aParams: Object -
+   *    - identity: Object - The identity the user picked to send the message
+   *    - to:       String - The recipients. This is a comma-separated list of
+   *                       valid email addresses that must be escaped already. You probably want to use
+   *                       nsIMsgHeaderParser.MakeFullAddress to deal with names that contain commas.
+   *    - cc (optional) Same remark.
+   *    - bcc (optional) Same remark.
+   *    - returnReceipt (optional) Boolean: ask for a receipt
+   *    - receiptType (optional) Number: default: take from identity
+   *    - requestDsn (optional) Boolean: request a Delivery Status Notification
+   *    - securityInfo (optional)
+   *
+   * @param body: complete message source
+   * @param callbackFunc: function(Boolean) - return true if message was sent successfully
+   *                                           false otherwise
+   *
+   * @return Boolean - true: everything was OK to send the message
+   */
+  simpleSendMessage: function(aParams, body, callbackFunc) {
+    EnigmailLog.DEBUG("EnigmailSend.simpleSendMessage()\n");
+    let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+      .createInstance(Ci.nsIMsgCompFields);
+    let identity = aParams.identity;
+
+    fields.from = identity.email;
+    fields.to = aParams.to;
+    if ("cc" in aParams) fields.cc = aParams.cc;
+    if ("bcc" in aParams) fields.bcc = aParams.bcc;
+    fields.returnReceipt = ("returnReceipt" in aParams) ? aParams.returnReceipt : identity.requestReturnReceipt;
+    fields.receiptHeaderType = ("receiptType" in aParams) ? aParams.receiptType : identity.receiptHeaderType;
+    fields.DSN = ("requestDsn" in aParams) ? aParams.requestDsn : identity.requestDSN;
+    if ("securityInfo" in aParams) fields.securityInfo = aParams.securityInfo;
+
+    fields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
+    body = "Message-Id: " + fields.messageId + "\r\n" + body;
+
+    let listener = {
+      onStartSending: function() {},
+      onProgress: function() {},
+      onStatus: function() {},
+      onGetDraftFolderURI: function() {},
+      onStopSending: function(aMsgID, aStatus, aMsg, aReturnFile) {
+        if (callbackFunc) callbackFunc(true);
+      },
+      onSendNotPerformed: function(aMsgID, aStatus) {
+        if (callbackFunc) callbackFunc(false);
+      }
+    };
+
+    return this.sendMessage(body, fields, listener);
   }
 };
