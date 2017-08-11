@@ -159,9 +159,14 @@
 	color: #888;
 }
 
+.enigmailKeyImportUserId {
+	font-weight: bold;
+}
+
 .enigmailKeyImportCaption {
-	font-size: 2.5em;
-	color: green;
+  list-style-image: url("chrome://enigmail/skin/importSuccess.png");
+  max-height: 2em;
+  max-width: 2em;
 }
 
 .enigmailKeyImportDetails {

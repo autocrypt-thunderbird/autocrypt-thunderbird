@@ -34,19 +34,6 @@ function onLoad() {
   }
 
   var keyList = window.arguments[0].keyList;
-  var button1 = window.arguments[0].button1;
-  var button2 = window.arguments[0].button2;
-  var button3 = window.arguments[0].button3;
-  var checkboxLabel = window.arguments[0].checkboxLabel;
-  if (button1) {
-    setButton(0, button1);
-  }
-
-  if (checkboxLabel) {
-    var prefCheck = document.getElementById("theCheckBox");
-    prefCheck.setAttribute("label", checkboxLabel);
-    prefCheck.removeAttribute("hidden");
-  }
 
   let onClickFunc = function(event) {
     let keyId = event.target.getAttribute("keyid");
@@ -105,7 +92,8 @@ function buildKeyGroupBox(keyObj) {
 
   let i,
     groupBox = document.createElement("groupbox"),
-    caption = document.createElement("caption"),
+    vbox = document.createElement("hbox"),
+    caption = document.createElement("image"),
     userid = document.createElement("label"),
     infoGrid = document.createElement("grid"),
     infoColumns = document.createElement("columns"),
@@ -129,7 +117,7 @@ function buildKeyGroupBox(keyObj) {
 
   userid.setAttribute("value", keyObj.userId);
   userid.setAttribute("class", "enigmailKeyImportUserId");
-  caption.setAttribute("label", EnigmailLocale.getString("importInfoSuccess"));
+  vbox.setAttribute("align", "start");
   caption.setAttribute("class", "enigmailKeyImportCaption");
   infoLabelH1.setAttribute("value", EnigmailLocale.getString("importInfoBits"));
   infoLabelH2.setAttribute("value", EnigmailLocale.getString("importInfoCreated"));
@@ -172,7 +160,8 @@ function buildKeyGroupBox(keyObj) {
   fprRows.appendChild(fprRow2);
   fprGrid.appendChild(fprColumns);
   fprGrid.appendChild(fprRows);
-  groupBox.appendChild(caption);
+  vbox.appendChild(caption);
+  groupBox.appendChild(vbox);
   groupBox.appendChild(userid);
   groupBox.appendChild(infoGrid);
   groupBox.appendChild(fprLabel);
@@ -201,7 +190,7 @@ function resizeDlg() {
   var boxHeight = box.clientHeight;
   var deltaHeight = window.outerHeight - boxHeight;
 
-  var newHeight = textHeight + deltaHeight + 20;
+  var newHeight = textHeight + deltaHeight + 25;
 
 
   if (newHeight > window.screen.height - 100) {
@@ -216,44 +205,8 @@ function centerDialog() {
     document.getElementById("enigmailKeyImportInfo").centerWindowOnScreen();
 }
 
-function setButton(buttonId, label) {
-  var labelType = "extra" + buttonId.toString();
-  if (labelType == "extra0") labelType = "accept";
-
-  var dlg = document.getElementById("enigmailKeyImportInfo");
-  var elem = dlg.getButton(labelType);
-
-  var i = label.indexOf(":");
-  if (i === 0) {
-    elem = dlg.getButton(label.substr(1));
-    elem.setAttribute("hidden", "false");
-    elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
-    return;
-  }
-  if (i > 0) {
-    labelType = label.substr(0, i);
-    label = label.substr(i + 1);
-    elem = dlg.getButton(labelType);
-  }
-  i = label.indexOf("&");
-  if (i >= 0) {
-    var c = label.substr(i + 1, 1);
-    if (c != "&") {
-      elem.setAttribute("accesskey", c);
-    }
-    label = label.substr(0, i) + label.substr(i + 1);
-  }
-  elem.setAttribute("label", label);
-  elem.setAttribute("oncommand", "dlgClose(" + buttonId.toString() + ")");
-  elem.removeAttribute("hidden");
-}
 
 function dlgClose(buttonNumber) {
   window.arguments[1].value = buttonNumber;
-  window.arguments[1].checked = (document.getElementById("theCheckBox").getAttribute("checked") == "true");
   window.close();
-}
-
-function checkboxCb() {
-  // do nothing
 }

@@ -35,8 +35,4 @@
     </hbox>
   </vbox>
 
-  <vbox align="left">
-    <checkbox id="theCheckBox" hidden="true" checked="false" oncommand="checkboxCb()"/>
-  </vbox>
-
 </dialog>
