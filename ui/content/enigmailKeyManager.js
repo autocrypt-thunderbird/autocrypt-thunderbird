@@ -1302,7 +1302,7 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
     keyList.push(gKeyList[selKeyList[i]]);
   }
 
-  EnigmailKeyServer.keyServerUpDownload(window, keyList, accessType, callbackFunc, resultObj);
+  EnigmailKeyServer.keyServerUpDownload(window, keyList, accessType, false, callbackFunc, resultObj);
 
   if (accessType != nsIEnigmail.UPLOAD_KEY && resultObj.result) {
     refreshKeys();

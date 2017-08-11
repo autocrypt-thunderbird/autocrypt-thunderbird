@@ -31,6 +31,7 @@ Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverUR
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
@@ -332,15 +333,16 @@ function getProxyModule() {
 /**
  * Upload/refresh keys to/from keyservers.
  *
- * @win          - |object| holding the parent window for the dialog
- * @keys         - |array| with key objects for the keys to upload/refresh
- * @access       - |nsIEnigmail| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
- * @callbackFunc - |function| called when the key server operation finishes
- * @resultObj    - |object| with member importedKeys (|number| containing the number of imporeted keys)
+ * @param win          - |object| holding the parent window for the dialog.
+ * @param keys         - |array| with key objects for the keys to upload/refresh
+ * @param access       - |nsIEnigmail| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
+ * @param hideProgess  - |boolean| do not display progress dialogs
+ * @param callbackFunc - |function| called when the key server operation finishes
+ * @param resultObj    - |object| with member importedKeys (|number| containing the number of imporeted keys)
  *
  * no return value
  */
-function keyServerUpDownload(win, keys, access, callbackFunc, resultObj) {
+function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resultObj) {
   let keyList = keys.map(function(x) {
     return "0x" + x.keyId.toString();
   }).join(", ");
@@ -380,7 +382,10 @@ function keyServerUpDownload(win, keys, access, callbackFunc, resultObj) {
           let uids = key.userIds.map(function(x) {
             return " - " + x.userId;
           }).join("\n");
-          EnigmailDialog.alert(win, EnigmailLocale.getString("noWksIdentity", [uids]));
+
+          if (!hideProgess) {
+            EnigmailDialog.alert(win, EnigmailLocale.getString("noWksIdentity", [uids]));
+          }
           return;
         }
       }
@@ -416,13 +421,104 @@ function keyServerUpDownload(win, keys, access, callbackFunc, resultObj) {
     }
   }
 
-  win.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
-    "", "dialog,modal,centerscreen", keyDlObj, resultObj);
-
+  if (!hideProgess) {
+    win.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
+      "", "dialog,modal,centerscreen", keyDlObj, resultObj);
+  }
+  else {
+    performWkdUpload(keyDlObj, function() {}, function() {}, null, null);
+  }
 }
+
+
+/**
+ * Do the WKD upload and interact with a progress receiver
+ *
+ * @param keyList:     Object:
+ *                        - fprList (String - fingerprint)
+ *                        - senderIdentities (nsIMsgIdentity)
+ * @param onProgress:  function(percentComplete [0 .. 100])
+ * @param onFinished:  function(completionStatus, errorMessage, displayError)
+ * @param win:         nsIWindow - parent window
+ * @param msgProgress: nsIMsgProgress - only used to determine if process is canceled
+
+ */
+function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
+  try {
+    let uploads = [];
+
+    let numKeys = keyList.senderIdentities.length;
+
+    // For each key fpr/sender identity pair, check whenever WKS is supported
+    // Result is an array of booleans
+    for (let i = 0; i < numKeys; i++) {
+      let keyFpr = keyList.fprList[i];
+      let senderIdent = keyList.senderIdentities[i];
+
+      let was_uploaded = new Promise(function(resolve, reject) {
+        EnigmailLog.DEBUG("keyserver.jsm: performWkdLoad: ident=" + senderIdent.email + ", key=" + keyFpr + "\n");
+        EnigmailWks.isWksSupportedAsync(senderIdent.email, win, function(is_supported) {
+          if (cancelObj && cancelObj.processCanceledByUser) {
+            EnigmailLog.DEBUG("keyserver.jsm: performWkdLoad: canceled by user\n");
+            reject("canceled");
+          }
+
+          EnigmailLog.DEBUG("keyserver.jsm: performWkdLoad: ident=" + senderIdent.email + ", supported=" + is_supported + "\n");
+          resolve(is_supported);
+        });
+      }).then(function(is_supported) {
+        let senderIdent = keyList.senderIdentities[i];
+        if (is_supported) {
+          let keyFpr = keyList.fprList[i];
+
+          return new Promise(function(resolve, reject) {
+            EnigmailWks.submitKey(senderIdent, {
+              'fpr': keyFpr
+            }, win, function(success) {
+              onProgress((i + 1) / numKeys * 100);
+              if (success) {
+                resolve(senderIdent);
+              }
+              else {
+                reject();
+              }
+            });
+          });
+        }
+        else {
+          onProgress((i + 1) / numKeys * 100);
+          return Promise.resolve(null);
+        }
+      });
+
+      uploads.push(was_uploaded);
+    }
+
+    Promise.all(uploads).catch(function(reason) {
+      let errorMsg = EnigmailLocale.getString("keyserverProgress.wksUploadFailed");
+      onFinished(-1, errorMsg, true);
+    }).then(function(senders) {
+      let uploaded_uids = [];
+      if (senders) {
+        senders.forEach(function(val) {
+          if (val !== null) {
+            uploaded_uids.push(val.email);
+          }
+        });
+      }
+      onProgress(100);
+      onFinished(0);
+    });
+  }
+  catch (ex) {
+    EnigmailLog.DEBUG(ex);
+  }
+}
+
 
 const EnigmailKeyServer = {
   access: access,
   refresh: refresh,
-  keyServerUpDownload: keyServerUpDownload
+  keyServerUpDownload: keyServerUpDownload,
+  performWkdUpload: performWkdUpload
 };

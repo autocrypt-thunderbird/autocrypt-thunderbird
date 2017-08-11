@@ -1514,5 +1514,5 @@ function keyServerAccess(key, useHkp) {
     accessType = nsIEnigmail.UPLOAD_WKD;
   }
 
-  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, function() {}, resultObj);
+  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, true, function() {}, resultObj);
 }
