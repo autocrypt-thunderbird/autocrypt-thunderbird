@@ -18,7 +18,7 @@ component("enigmail/subprocess.jsm"); /*global subprocess: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 component("enigmail/os.jsm"); /*global EnigmailOS: false */
 component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-component("enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+component("enigmail/send.jsm"); /*global EnigmailSend: false */
 component("enigmail/log.jsm"); /*global EnigmailLog: false */
 
 test(function getWksPathInBinDir() {
@@ -124,10 +124,11 @@ lalala
         'wait': function() {}
       };
     }, function() {
-      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1, op2, op3, op4, op5) {
+      TestHelper.resetting(EnigmailSend, "simpleSendMessage", function(op1, op2, op3, op4, op5) {
         Assert.equal(op1.identity.email, "test2@example.com");
         Assert.equal(op1.to, "key-submit@example.com");
         Assert.equal(op1.subject, "Key publishing request");
+        return true;
       }, function() {
         let win = JSUnit.createStubWindow();
         let handle = EnigmailWks.submitKey({
@@ -156,10 +157,11 @@ test(function wksConfirmKey() {
         'wait': function() {}
       };
     }, function() {
-      TestHelper.resetting(EnigmailStdlib, "sendMessage", function(op1, op2, op3, op4, op5) {
+      TestHelper.resetting(EnigmailSend, "simpleSendMessage", function(op1, op2, op3, op4, op5) {
         Assert.equal(op1.identity.email, "test2@example.com");
         Assert.equal(op1.to, "key-submit@example.com");
         Assert.equal(op1.subject, "Key publishing confirmation");
+        return true;
       }, function() {
         let win = JSUnit.createStubWindow();
         let mail =

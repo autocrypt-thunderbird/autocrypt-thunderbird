@@ -129,7 +129,6 @@ zip --must-match\
     modules/rules.jsm \
     modules/send.jsm \
     modules/socks5Proxy.jsm \
-    modules/stdlib/send.jsm \
     modules/stdlib/compose.jsm \
     modules/stdlib/misc.jsm \
     modules/stdlib/msgHdrUtils.jsm \
