@@ -135,12 +135,13 @@ function onLoadWkd(inArg) {
             reject("canceled");
           }
 
+          EnigmailLog.DEBUG("enigRetrieveProgress: onLoadWkd: ident=" + senderIdent.email + ", supported=" + is_supported + "\n");
           resolve(is_supported);
         });
       }).then(function(is_supported) {
+        let senderIdent = inArg.senderIdentities[i];
         if (is_supported) {
           let keyFpr = inArg.fprList[i];
-          let senderIdent = inArg.senderIdentities[i];
 
           return new Promise(function(resolve, reject) {
             EnigmailWks.submitKey(senderIdent, {
@@ -156,7 +157,7 @@ function onLoadWkd(inArg) {
           });
         }
         else {
-          return new Promise.resolve(null);
+          return Promise.resolve(null);
         }
       });
 
@@ -189,7 +190,7 @@ function onLoadGpg(inArg) {
   EnigmailLog.DEBUG("enigRetrieveProgress: onLoadGpg\n");
   var subject;
   var statTxt = document.getElementById("dialog.status2");
-  if (inArg.accessType == nsIEnigmail.UPLOAD_KEY) {
+  if (inArg.accessType == nsIEnigmail.UPLOAD_KEY || inArg.accessType == nsIEnigmail.UPLOAD_WKD) {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
     subject = EnigmailLocale.getString("keyserverTitle.uploading");
   }

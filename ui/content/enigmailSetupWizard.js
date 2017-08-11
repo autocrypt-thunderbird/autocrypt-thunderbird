@@ -26,6 +26,13 @@ Components.utils.import("resource://enigmail/configBackup.jsm"); /*global Enigma
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Components.utils.import("resource://enigmail/installGnuPG.jsm"); /*global InstallGnuPG: false */
 Components.utils.import("resource://enigmail/passwordCheck.jsm"); /*global EnigmailPasswordCheck: false */
+Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
+Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
+Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -171,6 +178,9 @@ function onNext() {
       case "pgKeygen":
         setNextPage(onAfterPgKeygen());
         break;
+      case "pgUpload":
+        setNextPage(onAfterPgUpload());
+        break;
     }
   }
   return enableNext;
@@ -262,7 +272,12 @@ function onAfterPgKeySel() {
     return "pgKeyCreate";
   }
   else {
-    return "pgComplete";
+    if (gWizardUserMode == "advanced") {
+      return "pgUpload";
+    }
+    else {
+      return "pgComplete";
+    }
   }
 }
 
@@ -288,6 +303,15 @@ function onAfterPgKeyCreate() {
 }
 
 function onAfterPgKeygen() {
+  if (gWizardUserMode == "advanced") {
+    return "pgUpload";
+  }
+  else {
+    return "pgComplete";
+  }
+}
+
+function onAfterPgUpload() {
   return "pgComplete";
 }
 
@@ -1152,6 +1176,8 @@ function applyWizardSettings() {
 
   EnigSetPref("configuredVersion", EnigGetVersion());
   EnigmailPrefs.savePrefs();
+
+  keyUploadDo();
 }
 
 function applyMozSetting(preference, newVal) {
@@ -1413,4 +1439,80 @@ function doImportSettings() {
 
 function displayUnmatchedIds(emailArr) {
   EnigAlert(EnigGetString("setupWizard.unmachtedIds", ["- " + emailArr.join("\n- ")]));
+}
+
+function wizardUpload() {
+  disableNext(true);
+  keyUploadCheckAvailability();
+}
+
+function keyUploadCheckAvailability() {
+  let keyId;
+
+  if (gGeneratedKey === null) {
+    let uidSel = document.getElementById("uidSelection");
+    let keyIdCol = uidSel.columns.getColumnAt(1);
+    keyId = uidSel.view.getCellText(uidSel.currentIndex, keyIdCol).toString();
+  }
+  else {
+    keyId = gGeneratedKey;
+  }
+  let key = EnigmailKeyRing.getKeyById(keyId);
+  let uid = key.userIds[0].userId;
+
+  document.getElementById("keyUploadWksDeck").selectedIndex = 0;
+  EnigmailWks.isWksSupportedAsync(uid, window, function(is_supported) {
+    document.getElementById("keyUploadWksDeck").selectedIndex = 1;
+    if (is_supported) {
+      document.getElementById("keyUploadWks").removeAttribute("disabled");
+      document.getElementById("keyUploadWks").setAttribute("checked", "true");
+      EnigmailLog.DEBUG("wks supported for " + uid + "\n");
+    }
+    else {
+      document.getElementById("keyUploadWks").setAttribute("checked", "false");
+      document.getElementById("keyUploadWks").setAttribute("disabled", "true");
+      EnigmailLog.DEBUG("wks NOT supported for " + uid + "\n");
+    }
+    disableNext(false);
+  });
+}
+
+function keyUploadDo() {
+  let keyId;
+
+  if (gGeneratedKey === null) {
+    let uidSel = document.getElementById("uidSelection");
+    let keyIdCol = uidSel.columns.getColumnAt(1);
+    keyId = uidSel.view.getCellText(uidSel.currentIndex, keyIdCol).toString();
+  }
+  else {
+    keyId = gGeneratedKey;
+  }
+  let key = EnigmailKeyRing.getKeyById(keyId);
+
+  if (key !== null) {
+    if (document.getElementById("keyUploadSks").getAttribute("checked") == "true") {
+      keyServerAccess(key, true);
+    }
+
+    if (document.getElementById("keyUploadWks").getAttribute("checked") == "true") {
+      keyServerAccess(key, false);
+    }
+  }
+}
+
+function keyServerAccess(key, useHkp) {
+  const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
+  let resultObj = {};
+  let accessType = 0;
+
+  if (useHkp) {
+    accessType = nsIEnigmail.UPLOAD_KEY;
+  }
+  else {
+    accessType = nsIEnigmail.UPLOAD_WKD;
+  }
+
+  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, function() {}, resultObj);
 }

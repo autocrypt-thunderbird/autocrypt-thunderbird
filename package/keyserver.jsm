@@ -26,12 +26,15 @@ Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
 Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
+Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 
 const nsIEnigmail = Ci.nsIEnigmail;
+const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
+
 
 function matchesKeyserverAction(action, flag) {
   return (action & flag) === flag;
@@ -325,7 +328,101 @@ function getProxyModule() {
   return currentProxyModule;
 }
 
+
+/**
+ * Upload/refresh keys to/from keyservers.
+ *
+ * @win          - |object| holding the parent window for the dialog
+ * @keys         - |array| with key objects for the keys to upload/refresh
+ * @access       - |nsIEnigmail| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
+ * @callbackFunc - |function| called when the key server operation finishes
+ * @resultObj    - |object| with member importedKeys (|number| containing the number of imporeted keys)
+ *
+ * no return value
+ */
+function keyServerUpDownload(win, keys, access, callbackFunc, resultObj) {
+  let keyList = keys.map(function(x) {
+    return "0x" + x.keyId.toString();
+  }).join(", ");
+
+  EnigmailLog.DEBUG("keyserver.jsm: keyServerUpDownload: keyId=" + keyList + "\n");
+
+  const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+  if (ioService && ioService.offline) {
+    EnigmailDialog.alert(win, EnigmailLocale.getString("needOnline"));
+    return;
+  }
+
+  let keyDlObj = {
+    accessType: access,
+    keyServer: resultObj.value,
+    keyList: keyList,
+    fprList: [],
+    senderIdentities: [],
+    cbFunc: callbackFunc
+  };
+
+  if (access === nsIEnigmail.UPLOAD_WKD) {
+    for (let key of keys) {
+      // UPLOAD_WKD needs a nsIMsgIdentity
+      try {
+        for (let uid of key.userIds) {
+          let email = EnigmailFuncs.stripEmail(uid.userId);
+          let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
+
+          if (maybeIdent && maybeIdent.identity) {
+            keyDlObj.senderIdentities.push(maybeIdent.identity);
+            keyDlObj.fprList.push(key.fpr);
+          }
+        }
+
+        if (keyDlObj.senderIdentities.length === 0) {
+          let uids = key.userIds.map(function(x) {
+            return " - " + x.userId;
+          }).join("\n");
+          EnigmailDialog.alert(win, EnigmailLocale.getString("noWksIdentity", [uids]));
+          return;
+        }
+      }
+      catch (ex) {
+        EnigmailLog.DEBUG(ex + "\n");
+      }
+    }
+  }
+  else {
+    let autoKeyServer = EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null;
+    if (autoKeyServer) {
+      keyDlObj.keyServer = autoKeyServer;
+    }
+    else {
+      let inputObj = {};
+      let resultObj = {};
+      if (access != nsIEnigmail.REFRESH_KEY) {
+        inputObj.upload = true;
+        inputObj.keyId = keyList;
+      }
+      else {
+        inputObj.upload = false;
+        inputObj.keyId = "";
+      }
+
+      win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+        "", "dialog,modal,centerscreen", inputObj, resultObj);
+      keyDlObj.keyServer = resultObj.value;
+    }
+
+    if (!keyDlObj.keyServer) {
+      return;
+    }
+  }
+
+  win.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
+    "", "dialog,modal,centerscreen", keyDlObj, resultObj);
+
+}
+
 const EnigmailKeyServer = {
   access: access,
-  refresh: refresh
+  refresh: refresh,
+  keyServerUpDownload: keyServerUpDownload
 };

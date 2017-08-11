@@ -32,6 +32,8 @@ Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: fals
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 
 
 const INPUT = 0;
@@ -1284,11 +1286,6 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
     return;
 
   var resultObj = {};
-  var inputObj = {};
-  if (accessType == nsIEnigmail.UPLOAD_KEY) {
-    inputObj.upload = true;
-  }
-
   var selKeyList = getSelectedKeys();
   if (accessType != nsIEnigmail.REFRESH_KEY && selKeyList.length === 0) {
     if (EnigConfirm(EnigGetString("refreshAllQuestion"), EnigGetString("keyMan.button.refreshAll"))) {
@@ -1301,69 +1298,11 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
   }
 
   var keyList = [];
-  var keyIds = [];
   for (var i = 0; i < selKeyList.length; i++) {
-    keyIds.push(gKeyList[selKeyList[i]].keyId);
-  }
-  if (accessType != nsIEnigmail.REFRESH_KEY) {
-    inputObj.keyId = keyIds.join(", ");
-  }
-  else {
-    inputObj.keyId = "";
+    keyList.push(gKeyList[selKeyList[i]]);
   }
 
-  let autoKeyServer = EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null;
-  if (autoKeyServer) {
-    resultObj.value = autoKeyServer;
-  }
-  else {
-    window.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
-      "", "dialog,modal,centerscreen", inputObj, resultObj);
-  }
-
-  if (!resultObj.value) {
-    return;
-  }
-
-  var keyDlObj = {
-    accessType: accessType,
-    keyServer: resultObj.value,
-    keyList: "0x" + keyIds.join(" 0x"),
-    fprList: [],
-    senderIdentities: [],
-    cbFunc: callbackFunc
-  };
-
-  // UPLOAD_WKD needs a nsIMsgIdentity
-  if (accessType == nsIEnigmail.UPLOAD_WKD) {
-    try {
-      let key = gKeyList[selKeyList[0]];
-
-      for (let uid of key.userIds) {
-        let email = EnigmailFuncs.stripEmail(uid.userId);
-        let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
-
-        if (maybeIdent && maybeIdent.identity) {
-          keyDlObj.senderIdentities.push(maybeIdent.identity);
-          keyDlObj.fprList.push(key.fpr);
-        }
-      }
-
-      if (keyDlObj.senderIdentities.length === 0) {
-        let uids = key.userIds.map(function(x) {
-          return " - " + x.userId;
-        }).join("\n");
-        EnigAlert(EnigmailLocale.getString("noWksIdentity", [uids]));
-        return;
-      }
-    }
-    catch (ex) {
-      EnigmailLog.DEBUG(ex + "\n");
-    }
-  }
-
-  window.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
-    "", "dialog,modal,centerscreen", keyDlObj, resultObj);
+  EnigmailKeyServer.keyServerUpDownload(window, keyList, accessType, callbackFunc, resultObj);
 
   if (accessType != nsIEnigmail.UPLOAD_KEY && resultObj.result) {
     refreshKeys();
