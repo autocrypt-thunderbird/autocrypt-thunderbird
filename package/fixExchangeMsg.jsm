@@ -229,8 +229,8 @@ const EnigmailFixExchangeMsg = {
 
     let versionIdent = match.index;
 
-    if (bodyData.substring(skipStart, versionIdent).search(/^content-type:[ \t]*text\/plain/mi) < 0) {
-      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: first MIME part is not content-type text/plain\n");
+    if (bodyData.substring(skipStart, versionIdent).search(/^content-type:[ \t]*text\/(plain|html)/mi) < 0) {
+      EnigmailLog.DEBUG("fixExchangeMsg.jsm: getCorrectedExchangeBodyData: first MIME part is not content-type text/plain or text/html\n");
       return null;
     }
 
