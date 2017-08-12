@@ -1514,5 +1514,13 @@ function keyServerAccess(key, useHkp) {
     accessType = nsIEnigmail.UPLOAD_WKD;
   }
 
-  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, true, function() {}, resultObj);
+  let resultFunc = function(resultCode) {
+    if (resultCode === 0 && resultObj.fprList.length > 0) {
+      document.getElementById("wkdKeysUploaded").removeAttribute("hidden");
+    }
+  };
+
+  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, true, resultFunc, resultObj);
+
+  let x = resultObj;
 }

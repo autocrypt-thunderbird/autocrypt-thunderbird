@@ -456,9 +456,18 @@
   <wizardpage id="pgComplete" pageid="pgComplete"
               onpageshow="applyWizardSettings()"
               label="&enigmail.setupWiz.pgComplete.title;">
+
+    <vbox id="wkdKeysUploaded" hidden="true">
+      <description>
+        &enigmail.setupWiz.pgComplete.wkdUploaded;
+      </description>
+      <spacer height="20px"/>
+    </vbox>
+
     <description>
       &enigmail.setupWiz.pgComplete.desc;
     </description>
+
   </wizardpage>
 
 

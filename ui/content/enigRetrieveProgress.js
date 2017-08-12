@@ -119,12 +119,16 @@ function onLoadWkd(inArg) {
   progressDlg.setAttribute("mode", "undetermined");
 
   msgProgress.processCanceledByUser = false;
-  EnigmailKeyServer.performWkdUpload(inArg,
-    function _progress(completionRate) {
+
+  let observer = {
+    get isCanceled() {
+      return msgProgress.processCanceledByUser;
+    },
+    onProgress: function(completionRate) {
       progressDlg.setAttribute("value", completionRate);
       progressDlg.setAttribute("mode", "normal");
     },
-    function _onComplete(completionStatus, errorMessage, displayError) {
+    onFinished: function(completionStatus, errorMessage, displayError) {
       if (completionStatus !== 0) {
         window.close();
         gEnigCallbackFunc(completionStatus, errorMessage, displayError);
@@ -133,9 +137,10 @@ function onLoadWkd(inArg) {
         EnigmailDialog.info(window, EnigmailLocale.getString("keyserverProgress.wksUploadCompleted"));
         window.close();
       }
-    },
-    window,
-    msgProgress);
+    }
+  };
+
+  EnigmailKeyServer.performWkdUpload(inArg, window, observer);
 }
 
 function onLoadGpg(inArg) {

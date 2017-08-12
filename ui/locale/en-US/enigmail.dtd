@@ -770,6 +770,8 @@
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail is now ready to use.<html:br/><html:br/>Thank you for using Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "We recommend that you upload your public key to the Web Key Directory of your email provider such that others can automatically find and use it.
+                                                        <html:br/>Please confirm the request that you will find in your inbox if you wish to do so.">
 
 <!-- wizard: manual setup page -->
 <!ENTITY enigmail.setupWiz.pgExpert.title            "Manual Configuration of Enigmail">

@@ -338,7 +338,8 @@ function getProxyModule() {
  * @param access       - |nsIEnigmail| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
  * @param hideProgess  - |boolean| do not display progress dialogs
  * @param callbackFunc - |function| called when the key server operation finishes
- * @param resultObj    - |object| with member importedKeys (|number| containing the number of imporeted keys)
+ *                            params: exitCode, errorMsg, displayErrorMsg
+ * @param resultObj    - |object| with member importedKeys (|number| containing the number of imported keys)
  *
  * no return value
  */
@@ -426,7 +427,20 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
       "", "dialog,modal,centerscreen", keyDlObj, resultObj);
   }
   else {
-    performWkdUpload(keyDlObj, function() {}, function() {}, null, null);
+    resultObj.fprList = [];
+    let observer = {
+      isCanceled: false,
+      onProgress: function() {},
+      onFinished: function(resultStatus, errorMsg, displayError) {
+        resultObj.result = (resultStatus === 0);
+        callbackFunc(resultStatus, errorMsg, displayError);
+      },
+      onUpload: function(fpr) {
+        resultObj.fprList.push(fpr);
+      }
+    };
+
+    performWkdUpload(keyDlObj, null, observer);
   }
 }
 
@@ -435,15 +449,18 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
  * Do the WKD upload and interact with a progress receiver
  *
  * @param keyList:     Object:
- *                        - fprList (String - fingerprint)
- *                        - senderIdentities (nsIMsgIdentity)
- * @param onProgress:  function(percentComplete [0 .. 100])
- * @param onFinished:  function(completionStatus, errorMessage, displayError)
+ *                       - fprList (String - fingerprint)
+ *                       - senderIdentities (nsIMsgIdentity)
  * @param win:         nsIWindow - parent window
- * @param msgProgress: nsIMsgProgress - only used to determine if process is canceled
-
+ * @param observer:    Object:
+ *                       - onProgress: function(percentComplete [0 .. 100])
+ *                             called after processing of every key (indpendent of status)
+ *                       - onUpload: function(fpr)
+ *                              called after successful uploading of a key
+ *                       - onFinished: function(completionStatus, errorMessage, displayError)
+ *                       - isCanceled: Boolean - used to determine if process is canceled
  */
-function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
+function performWkdUpload(keyList, win, observer) {
   try {
     let uploads = [];
 
@@ -458,7 +475,7 @@ function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
       let was_uploaded = new Promise(function(resolve, reject) {
         EnigmailLog.DEBUG("keyserver.jsm: performWkdLoad: ident=" + senderIdent.email + ", key=" + keyFpr + "\n");
         EnigmailWks.isWksSupportedAsync(senderIdent.email, win, function(is_supported) {
-          if (cancelObj && cancelObj.processCanceledByUser) {
+          if (observer.isCanceled) {
             EnigmailLog.DEBUG("keyserver.jsm: performWkdLoad: canceled by user\n");
             reject("canceled");
           }
@@ -475,8 +492,9 @@ function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
             EnigmailWks.submitKey(senderIdent, {
               'fpr': keyFpr
             }, win, function(success) {
-              onProgress((i + 1) / numKeys * 100);
+              observer.onProgress((i + 1) / numKeys * 100);
               if (success) {
+                observer.onUpload(keyFpr);
                 resolve(senderIdent);
               }
               else {
@@ -486,7 +504,7 @@ function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
           });
         }
         else {
-          onProgress((i + 1) / numKeys * 100);
+          observer.onProgress((i + 1) / numKeys * 100);
           return Promise.resolve(null);
         }
       });
@@ -496,7 +514,7 @@ function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
 
     Promise.all(uploads).catch(function(reason) {
       let errorMsg = EnigmailLocale.getString("keyserverProgress.wksUploadFailed");
-      onFinished(-1, errorMsg, true);
+      observer.onFinished(-1, errorMsg, true);
     }).then(function(senders) {
       let uploaded_uids = [];
       if (senders) {
@@ -506,8 +524,8 @@ function performWkdUpload(keyList, onProgress, onFinished, win, cancelObj) {
           }
         });
       }
-      onProgress(100);
-      onFinished(0);
+      observer.onProgress(100);
+      observer.onFinished(0);
     });
   }
   catch (ex) {
