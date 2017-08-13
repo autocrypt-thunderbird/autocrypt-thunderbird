@@ -429,6 +429,15 @@
       oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
   </popup>
 
+  <hbox id="messagepanewrapper">
+    <description id="enigmailMsgDisplay"
+        insertafter="messagepane"
+        minheight="1"
+        class="enigmailMessagePane"
+        flex="1"
+        collapsed="true"/>
+  </hbox>
+
   <hbox id="expandedHeadersBottomBox">
     <vbox id="enigmail-pEp-status" insertbefore="otherActionsBox">
       <spacer flex="1" maxheight="40"/>

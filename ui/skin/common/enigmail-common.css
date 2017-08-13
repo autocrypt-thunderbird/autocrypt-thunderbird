@@ -130,6 +130,14 @@
   color: red;
 }
 
+.enigmailMessagePane {
+  margin: 6px;
+  -moz-user-focus: normal;
+  -moz-user-select: text;
+  cursor: text !important;
+  white-space: pre-wrap;
+  unicode-bidi: -moz-plaintext;
+}
 
 /***************************************************
  *  Various other styles

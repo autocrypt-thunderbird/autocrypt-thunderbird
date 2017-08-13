@@ -95,6 +95,7 @@ Enigmail.hdrView = {
       this.statusBar.removeAttribute("encrypted");
       this.enigmailBox.setAttribute("collapsed", "true");
       this.pEpBox.setAttribute("collapsed", "true");
+
       resetPepColors(gExpandedHeaderView.from.textNode);
       resetPepColors(gExpandedHeaderView.to.textNode);
       resetPepColors(gExpandedHeaderView.cc.textNode);
@@ -106,6 +107,10 @@ Enigmail.hdrView = {
         Enigmail.msg.securityInfo.msgEncrypted = 0;
       }
 
+      let enigMsgPane = document.getElementById("enigmailMsgDisplay");
+      let bodyElement = document.getElementById("messagepane");
+      enigMsgPane.setAttribute("collapsed", true);
+      bodyElement.removeAttribute("collapsed");
     }
     catch (ex) {}
   },
@@ -472,11 +477,24 @@ Enigmail.hdrView = {
           Enigmail.msg.securityInfo = {};
         }
         Enigmail.msg.securityInfo.xtraStatus = "wks-request";
-
+        Enigmail.hdrView.displayWksMessage();
       });
     }
     else {
       EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: checkWksConfirmRequest failed condition\n");
+    }
+  },
+
+  displayWksMessage: function() {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayWksMessage()\n");
+
+    if (Enigmail.msg.securityInfo.xtraStatus === "wks-request") {
+
+      let enigMsgPane = document.getElementById("enigmailMsgDisplay");
+      let bodyElement = document.getElementById("messagepane");
+      bodyElement.setAttribute("collapsed", true);
+      enigMsgPane.removeAttribute("collapsed");
+      enigMsgPane.textContent = EnigmailLocale.getString("wksConfirmationReq.message");
     }
   },
 
