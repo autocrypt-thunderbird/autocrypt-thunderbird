@@ -4683,15 +4683,11 @@ Enigmail.msg = {
 
     if ((!this.getMailPref("mailnews.reply_in_default_charset")) && (blockType == "MESSAGE")) {
       // set charset according to PGP block, if available (encrypted messages only)
-      cipherText = cipherText.replace(/\r\n/g, "\n");
-      cipherText = cipherText.replace(/\r/g, "\n");
-      let cPos = cipherText.search(/\nCharset: .+\n/i);
-      if (cPos < cipherText.search(/\n\n/)) {
-        var charMatch = cipherText.match(/\n(Charset: )(.+)\n/i);
-        if (charMatch && charMatch.length > 2) {
-          charset = charMatch[2];
-          gMsgCompose.SetDocumentCharset(charset);
-        }
+      let armorHeaders = EnigmailArmor.getArmorHeaders(cipherText);
+
+      if ("charset" in armorHeaders) {
+        charset = armorHeaders.charset;
+        gMsgCompose.SetDocumentCharset(charset);
       }
     }
 

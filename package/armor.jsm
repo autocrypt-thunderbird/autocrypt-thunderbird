@@ -141,6 +141,7 @@ const EnigmailArmor = {
    * @return Array of objects with the following structure:
    *        obj.begin:     Number
    *        obj.end:       Number
+   *        obj.indent:    String
    *        obj.blocktype: String
    *
    *       if no block was found, an empty array is returned
@@ -148,14 +149,16 @@ const EnigmailArmor = {
   locateArmoredBlocks: function(text) {
     var beginObj = {};
     var endObj = {};
+    var indentStrObj = {};
     var blocks = [];
     var i = 0;
     var b;
 
-    while ((b = EnigmailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, {})) !== "") {
+    while ((b = EnigmailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, indentStrObj)) !== "") {
       blocks.push({
         begin: beginObj.value,
         end: endObj.value,
+        indent: indentStrObj.value ? indentStrObj.value : "",
         blocktype: b
       });
 
@@ -255,14 +258,17 @@ const EnigmailArmor = {
     }
 
     let msg = text.substr(b[0].begin);
-    let hdrEnd = msg.search(/\n\r?\n/);
+
+    let lx = new RegExp("\\n" + b[0].indent + "\\r?\\n");
+    let hdrEnd = msg.search(lx);
     if (hdrEnd < 0) return headers;
 
     let lines = msg.substr(0, hdrEnd).split(/\r?\n/);
 
+    let rx = new RegExp("^" + b[0].indent + "([^: ]+)(: )(.*)");
     // skip 1st line (ARMOR-line)
     for (let i = 1; i < lines.length; i++) {
-      let m = lines[i].match(/^([^: ]+)(: )(.*)/);
+      let m = lines[i].match(rx);
       if (m && m.length >= 4) {
         headers[m[1].toLowerCase()] = m[3];
       }
