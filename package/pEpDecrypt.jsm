@@ -264,8 +264,8 @@ PEPDecryptor.prototype = {
       }
     }
 
-    if ("readDecryptedData" in this.mimeSvc) {
-      this.mimeSvc.readDecryptedData(this.decryptedData, this.decryptedData.length);
+    if ("outputDecryptedData" in this.mimeSvc) {
+      this.mimeSvc.outputDecryptedData(this.decryptedData, this.decryptedData.length);
     }
     else {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);

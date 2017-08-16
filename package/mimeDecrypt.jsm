@@ -524,8 +524,8 @@ EnigmailMimeDecrypt.prototype = {
         veri.onStopRequest(null, null, 0);
       }
       else {
-        if ("readDecryptedData" in this.mimeSvc) {
-          this.mimeSvc.readDecryptedData(data, data.length);
+        if ("outputDecryptedData" in this.mimeSvc) {
+          this.mimeSvc.outputDecryptedData(data, data.length);
         }
         else {
           let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);

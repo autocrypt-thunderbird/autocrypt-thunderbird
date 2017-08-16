@@ -162,8 +162,8 @@ PgpWkdHandler.prototype = {
       'Content-Transfer-Encoding: 8bit\r\n\r\n' +
       message + '\r\n';
 
-    if ("readDecryptedData" in this.mimeSvc) {
-      this.mimeSvc.readDecryptedData(msg, msg.length);
+    if ("outputDecryptedData" in this.mimeSvc) {
+      this.mimeSvc.outputDecryptedData(msg, msg.length);
     }
     else {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
