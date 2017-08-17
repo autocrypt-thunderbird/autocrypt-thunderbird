@@ -25,6 +25,15 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/autocryptSetupPasswd.js"/>
 
+    <broadcasterset>
+      <broadcaster id="bc-input"
+            maxlength="4"
+            multiline="false"
+            placeholder="1234"
+            size="4"
+            oninput="onNumericInput(this)"/>
+    </broadcasterset>
+
   <dialogheader id="dlgDesc"
     title="&enigmail.acSetupPasswd.dlgTitle;"
     description="..."/>
@@ -33,25 +42,25 @@
   <vbox id="dlg9x4" align="center">
 
     <hbox align="center">
-      <textbox id="l1" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l1" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l2" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l2" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l3" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l3" observes="bc-input"/>
     </hbox>
     <hbox align="center">
-      <textbox id="l4" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l4" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l5" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l5" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l6" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l6" observes="bc-input"/>
     </hbox>
     <hbox align="center">
-      <textbox id="l7" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l7" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l8" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l8" observes="bc-input"/>
       <label value="-"/>
-      <textbox id="l9" maxlength="4" multiline="false" placeholder="1234" size="4"/>
+      <textbox id="l9" observes="bc-input"/>
     </hbox>
   </vbox>
 

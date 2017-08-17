@@ -29,17 +29,20 @@ function onLoad() {
     document.getElementById("dlgDesc").setAttribute("description", EnigmailLocale.getString("enigmail.acSetupPasswd.descEnterPasswd"));
   }
 
-  if (gInputArgs.passwdType == "9x4") {
+  if (gInputArgs.passwdType == "numeric9x4") {
     if ("initialPasswd" in gInputArgs) {
-      //document.getElementById("l1").setAttribute("value", gInputArgs.initialPasswd.substr(0, 2));
       document.getElementById("l1").value = gInputArgs.initialPasswd.substr(0, 2);
     }
-    if (gInputArgs.dlgMode !== "input") {
+    if (gInputArgs.dlgMode === "input") {
+      validate9x4Input();
+    }
+    else {
+      let bc = document.getElementById("bc-input");
+      bc.readOnly = true;
+      bc.setAttribute("class", "plain enigmailTitle");
       for (let i = 1; i < 10; i++) {
         let p = document.getElementById("l" + i);
         p.value = gInputArgs.initialPasswd.substr((i - 1) * 5, 4);
-        p.readOnly = true;
-        p.setAttribute("class", "plain enigmailTitle");
       }
     }
   }
@@ -59,7 +62,7 @@ function onLoad() {
 function onAccept() {
 
   if (gInputArgs.dlgMode === "input") {
-    if (gInputArgs.passwdType === "9x4") {
+    if (gInputArgs.passwdType === "numeric9x4") {
       let passwd = "";
 
       for (let i = 1; i < 10; i++) {
@@ -71,5 +74,34 @@ function onAccept() {
     else {
       gInputArgs.password = document.getElementById("genericPasswd").value;
     }
+  }
+}
+
+function onNumericInput(targetObj) {
+  if (targetObj.value.length === 4) {
+    document.commandDispatcher.advanceFocus();
+  }
+
+
+  let b = document.getElementById("enigmailAutocryptSetupPasswd").getButton("accept");
+  validate9x4Input();
+}
+
+
+function validate9x4Input() {
+  let isValid = true;
+
+  for (let i = 1; i < 10; i++) {
+    let p = document.getElementById("l" + i);
+    isValid = (p.value.search(/^[0-9]{4}$/) === 0);
+    if (!isValid) break;
+  }
+
+  let b = document.getElementById("enigmailAutocryptSetupPasswd").getButton("accept");
+  if (isValid) {
+    b.removeAttribute("disabled");
+  }
+  else {
+    b.setAttribute("disabled", "true");
   }
 }
