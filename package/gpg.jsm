@@ -133,7 +133,6 @@ const EnigmailGpg = {
    supports-ecc-keys    - are ECC (elliptic curve) keys supported (true for gpg >= 2.1)
    supports-sender      - does gnupg understand the --sender argument
    supports-wkd         - does gpg support wkd (web key directory) (true for gpg >= 2.1.19)
-   no-auto-key-retrieve - does gpg support the option "no-auto-key-retrieve" (true for gpg >= 2.1.23)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -182,8 +181,6 @@ const EnigmailGpg = {
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.15");
       case "supports-wkd":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.19");
-      case "no-auto-key-retrieve":
-        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.23");
     }
 
     return undefined;
@@ -200,14 +197,6 @@ const EnigmailGpg = {
   getStandardArgs: function(withBatchOpts) {
     // return the arguments to pass to every GnuPG subprocess
     let r = ["--charset", "utf-8", "--display-charset", "utf-8", "--use-agent"]; // mandatory parameter to add in all cases
-
-    // add --no-auto-key-retrieve if not enabled in Enigmail
-    if (this.getGpgFeature("no-auto-key-retrieve")) {
-      let autoServer = EnigmailPrefs.getPref("autoKeyRetrieve");
-      if (typeof(autoServer) === "string" && autoServer.length === 0) {
-        r.push("--no-auto-key-retrieve");
-      }
-    }
 
     try {
       let p = EnigmailPrefs.getPref("agentAdditionalParam").replace(/\\\\/g, "\\");
