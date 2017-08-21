@@ -311,10 +311,10 @@
         </vbox>
         <vbox flex="0" pack="center">
           <button id="enigmail_confirmKey" pack="center"
-                  label="&enigmail.confirmKey.label;"
+                  label="..."
                   hidden="true"
                   class="enigMsgHdrView-flat-button"
-                  oncommand="Enigmail.msg.confirmWksRequest();"/>
+                  oncommand="Enigmail.msg.confirmKeyRequest();"/>
         </vbox>
         <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
           <observes element="enigmailStatusText" attribute="class"/>

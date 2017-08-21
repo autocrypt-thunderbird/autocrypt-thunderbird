@@ -58,6 +58,7 @@ Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 Components.utils.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Components.utils.import("resource://enigmail/configure.jsm"); /*global EnigmailConfigure: false */
@@ -84,7 +85,7 @@ Enigmail.msg = {
   enableExperiments: false,
   headersList: ["content-type", "content-transfer-encoding",
     "x-enigmail-version", "x-pgp-encoding-format",
-    "autocrypt"
+    "autocrypt", "autocrypt-setup-message"
   ],
   buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
   buggyMailType: null,
@@ -743,8 +744,12 @@ Enigmail.msg = {
         msgEncrypted = resultObj.encrypted.length > 0;
 
         if ("autocrypt-setup-message" in mimeMsg.headers && mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
+          if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
+            Enigmail.hdrView.displayAutocryptMessage(false);
+            return;
+          }
           if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
-            EnigmailAutocrypt.handleBackupMessage(window, currentAttachments[0].url);
+            Enigmail.hdrView.displayAutoCryptSetupMsgHeader();
             return;
           }
         }
@@ -1060,28 +1065,10 @@ Enigmail.msg = {
     }
     else {
 
-      if (msgText.indexOf("\nCharset:") > 0) {
-        // Check if character set needs to be overridden
-        var startOffset = msgText.indexOf("-----BEGIN PGP ");
-
-        if (startOffset >= 0) {
-          var subText = msgText.substr(startOffset);
-
-          subText = subText.replace(/\r\n/g, "\n");
-          subText = subText.replace(/\r/g, "\n");
-
-          var endOffset = subText.search(/\n\n/);
-          if (endOffset > 0) {
-            subText = subText.substr(0, endOffset) + "\n";
-
-            let matches = subText.match(/\nCharset: *(.*) *\n/i);
-            if (matches && (matches.length > 1)) {
-              // Override character set
-              charset = matches[1];
-              EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: OVERRIDING charset=" + charset + "\n");
-            }
-          }
-        }
+      let armorHeaders = EnigmailArmor.getArmorHeaders(msgText);
+      if ("charset" in armorHeaders) {
+        charset = armorHeaders.charset;
+        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: OVERRIDING charset=" + charset + "\n");
       }
 
       var exitCodeObj = {};
@@ -2655,8 +2642,19 @@ Enigmail.msg = {
     }
   },
 
+  confirmKeyRequest: function() {
+    switch (Enigmail.msg.securityInfo.xtraStatus) {
+      case "wks-request":
+        this.confirmWksRequest();
+        break;
+      case "autocrypt-setup":
+        this.performAutocryptSetup();
+        break;
+    }
+  },
+
   confirmWksRequest: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: confirmWksRequest\n");
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: confirmWksRequest()\n");
     try {
       var msg = gFolderDisplay.selectedMessage;
       if (!(!msg || !msg.folder)) {
@@ -2686,6 +2684,43 @@ Enigmail.msg = {
     }
     catch (e) {
       EnigmailLog.DEBUG(e + "\n");
+    }
+  },
+
+  performAutocryptSetup: function() {
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: performAutocryptSetup()\n");
+    if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
+
+      EnigmailAutocrypt.getSetupMessageData(currentAttachments[0].url).then(res => {
+        let passwd = EnigmailWindows.autocryptSetupPasswd(window, "input", res.passphraseFormat, res.passphraseHint);
+
+        if ((!passwd) || passwd == "") {
+          throw "noPasswd";
+        }
+
+        return EnigmailAutocrypt.handleBackupMessage(passwd, res.attachmentData, currentHeaderData.from.headerValue);
+      }).
+      then(res => {
+        EnigmailDialog.info(window, EnigmailLocale.getString("autocrypt.importSetupKey.success", currentHeaderData.from.headerValue));
+      }).
+      catch(err => {
+        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: performAutocryptSetup got cancel status=" + err + "\n");
+
+        switch (err) {
+          case "getSetupMessageData":
+            EnigmailDialog.alert(window, EnigmailLocale.getString("autocrypt.importSetupKey.invalidMessage"));
+            break;
+          case "wrongPasswd":
+            if (EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("autocrypt.importSetupKey.wrongPasswd"), EnigmailLocale.getString("dlg.button.retry"),
+                EnigmailLocale.getString("dlg.button.cancel"))) {
+              Enigmail.msg.performAutocryptSetup();
+            }
+            break;
+          case "keyImportFailed":
+            EnigmailDialog.alert(window, EnigmailLocale.getString("autocrypt.importSetupKey.invalidKey"));
+            break;
+        }
+      });
     }
   }
 };

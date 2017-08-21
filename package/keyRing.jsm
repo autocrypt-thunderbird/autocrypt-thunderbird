@@ -695,7 +695,7 @@ var EnigmailKeyRing = {
       return 1;
     }
 
-    if (blockType != "PUBLIC KEY BLOCK") {
+    if (blockType.search(/^(PUBLIC|PRIVATE) KEY BLOCK$/) !== 0) {
       errorMsgObj.value = EnigmailLocale.getString("notFirstBlock");
       return 1;
     }

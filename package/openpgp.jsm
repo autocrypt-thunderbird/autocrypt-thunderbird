@@ -151,5 +151,4 @@ EnigmailOpenPGP.enigmailFuncs = {
   getCrypto: function() {
     return window.crypto;
   }
-
 };

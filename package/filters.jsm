@@ -23,6 +23,7 @@ Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false */
 Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
+Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 
@@ -198,7 +199,12 @@ JsmimeEmitter.prototype = {
   deliverPartData: function(partNum, data) {
     EnigmailLog.DEBUG("filters.jsm: JsmimeEmitter.deliverPartData: partNum=" + partNum + "\n");
     if (this.requireBody) {
-      this.currentPart.body += data;
+      if (typeof(data) === "string") {
+        this.currentPart.body += data;
+      }
+      else {
+        this.currentPart.body += EnigmailData.arrayBufferToString(data);
+      }
     }
   }
 };

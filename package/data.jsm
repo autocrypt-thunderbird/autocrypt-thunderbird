@@ -59,7 +59,7 @@ const EnigmailData = {
   },
 
   decodeQuotedPrintable: function(str) {
-    return unescape(str.replace(/%/g, "=25").replace(new RegExp('=','g'), '%'));
+    return unescape(str.replace(/%/g, "=25").replace(new RegExp('=', 'g'), '%'));
   },
 
   decodeBase64: function(str) {
@@ -155,7 +155,7 @@ const EnigmailData = {
   },
 
   /**
-   * Convert an ArrayBuffer object into a string
+   * Convert an ArrayBuffer (or Uint8Array) object into a string
    */
   arrayBufferToString: function(buffer) {
     const MAXLEN = 102400;

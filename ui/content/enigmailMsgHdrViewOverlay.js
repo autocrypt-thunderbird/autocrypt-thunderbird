@@ -470,7 +470,9 @@ Enigmail.hdrView = {
 
         view.setStatusText(EnigmailLocale.getString("wksConfirmationReq"));
         view.enigmailBox.removeAttribute("collapsed");
-        document.getElementById("enigmail_confirmKey").removeAttribute("hidden");
+        let confirm = document.getElementById("enigmail_confirmKey");
+        confirm.setAttribute("label", EnigmailLocale.getString("wksConfirmationReq.button.label"));
+        confirm.removeAttribute("hidden");
         document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
         view.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
         if (!Enigmail.msg.securityInfo) {
@@ -485,6 +487,9 @@ Enigmail.hdrView = {
     }
   },
 
+  /**
+   * Display a localized message in lieu of the original message text
+   */
   displayWksMessage: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayWksMessage()\n");
 
@@ -496,6 +501,49 @@ Enigmail.hdrView = {
       enigMsgPane.removeAttribute("collapsed");
       enigMsgPane.textContent = EnigmailLocale.getString("wksConfirmationReq.message");
     }
+  },
+
+  /**
+   * Display the Enigmail status bar and ask for handling the Setup Message
+   */
+  displayAutoCryptSetupMsgHeader: function() {
+    if (!Enigmail.msg.securityInfo) {
+      Enigmail.msg.securityInfo = {};
+    }
+    Enigmail.msg.securityInfo.xtraStatus = "autocrypt-setup";
+
+    let view = Enigmail.hdrView;
+
+    view.setStatusText(EnigmailLocale.getString("autocryptSetupReq"));
+    view.enigmailBox.removeAttribute("collapsed");
+    let confirm = document.getElementById("enigmail_confirmKey");
+    confirm.setAttribute("label", EnigmailLocale.getString("autocryptSetupReq.button.label"));
+    confirm.removeAttribute("hidden");
+
+    document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
+    view.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
+    this.displayAutocryptMessage(true);
+  },
+
+  displayAutocryptMessage: function(allowImport) {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayAutocryptMessage()\n");
+
+    let enigMsgPane = document.getElementById("enigmailMsgDisplay");
+    let bodyElement = document.getElementById("messagepane");
+    bodyElement.setAttribute("collapsed", true);
+
+    let txt = EnigmailLocale.getString("autocryptSetupReq.setupMsg.desc") + "\n\n";
+    if (allowImport) {
+      txt += EnigmailLocale.getString("autocryptSetupReq.message.import");
+    }
+    else {
+      txt += EnigmailLocale.getString("autocryptSetupReq.message.sent");
+    }
+    txt += "\n\n" + EnigmailLocale.getString("autocryptSetupReq.setupMsg.backup");
+
+    enigMsgPane.textContent = txt;
+    enigMsgPane.removeAttribute("collapsed");
+
   },
 
   displayStatusBar: function() {

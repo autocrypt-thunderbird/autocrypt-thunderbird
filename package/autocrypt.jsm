@@ -21,6 +21,7 @@ Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
+Cu.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
@@ -33,6 +34,10 @@ Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
+Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+
+var gCreatedSetupIds = [];
 
 var EnigmailAutocrypt = {
   /**
@@ -341,7 +346,7 @@ var EnigmailAutocrypt = {
       let boundary = EnigmailMime.createBoundary();
 
       let innerMsg = 'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n' +
-        'Autocrypt-Prefer-Encrypt: mutual\r\n\r\n' + // TODO: replace mutual with Autcrypt-pref
+        'Autocrypt-Prefer-Encrypt: mutual\r\n\r\n' + // TODO: replace mutual with Autocrypt-pref
         '--' + boundary + '\r\n' +
         'Content-type: application/autocrypt-key-backup\r\n\r\n' +
         keyData +
@@ -385,6 +390,7 @@ var EnigmailAutocrypt = {
    *
    */
   sendSetupMessage: function(identity) {
+    EnigmailLog.DEBUG("autocrypt.jsm: sendSetupMessage()\n");
     return new Promise((resolve, reject) => {
       this.createSetupMessage(identity).then(res => {
         let composeFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
@@ -392,6 +398,7 @@ var EnigmailAutocrypt = {
         composeFields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
         composeFields.from = identity.email;
         composeFields.to = identity.email;
+        gCreatedSetupIds.push(composeFields.messageId);
 
         let now = new Date();
         let mimeStr = "Message-Id: " + composeFields.messageId + "\r\n" +
@@ -407,20 +414,101 @@ var EnigmailAutocrypt = {
     });
   },
 
-  handleBackupMessage: function(win, msgUrl) {
-    let s = EnigmailStreams.newStringStreamListener(data => {
+
+  /**
+   * get the data of the attachment of a setup message
+   *
+   * @param attachmentUrl: String - URL of the attachment
+   *
+   * @return Promise(Object):
+   *            attachmentData:   String - complete attachment data
+   *            passphraseFormat: String - extracted format from the header (e.g. numeric9x4) [optional]
+   *            passphraseHint:   String - 1st two digits of the password [optional]
+   */
+  getSetupMessageData: function(attachmentUrl) {
+    EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData()\n");
+
+    return new Promise((resolve, reject) => {
+      let s = EnigmailStreams.newStringStreamListener(data => {
+        let start = {},
+          end = {};
+        let msgType = EnigmailArmor.locateArmoredBlock(data, 0, "", start, end, {});
+
+        if (msgType === "MESSAGE") {
+          EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData: got backup key\n");
+          let armorHdr = EnigmailArmor.getArmorHeaders(data);
+
+          let passphraseFormat = "generic";
+          if ("passphrase-format" in armorHdr) {
+            passphraseFormat = armorHdr["passphrase-format"];
+          }
+          let passphraseHint = "";
+          if ("passphrase-begin" in armorHdr) {
+            passphraseHint = armorHdr["passphrase-begin"];
+          }
+
+          resolve({
+            attachmentData: data,
+            passphraseFormat: passphraseFormat,
+            passphraseHint: passphraseHint
+          });
+        }
+        else {
+          reject("getSetupMessageData");
+        }
+      });
+
+      let channel = EnigmailStreams.createChannel(attachmentUrl);
+      channel.asyncOpen(s, null);
+    });
+  },
+
+  /**
+   * @return Promise(Object):
+   *          fpr:           String - FPR of the imported key
+   *          preferEncrypt: String - Autocrypt preferEncrypt value (e.g. mutual)
+   */
+  handleBackupMessage: function(passwd, attachmentData, fromAddr) {
+    EnigmailLog.DEBUG("autocrypt.jsm: handleBackupMessage()\n");
+
+    return new Promise((resolve, reject) => {
       let start = {},
         end = {};
-      let msgType = EnigmailArmor.locateArmoredBlock(data, 0, "", start, end, {});
+      let msgType = EnigmailArmor.locateArmoredBlock(attachmentData, 0, "", start, end, {});
 
-      if (msgType === "MESSAGE") {
-        // TODO: completeme
-      }
+      let encMessage = EnigmailOpenPGP.message.readArmored(attachmentData.substring(start.value, end.value));
+
+      let enc = {
+        message: encMessage,
+        password: passwd,
+        format: 'utf8'
+      };
+
+      EnigmailOpenPGP.decrypt(enc).then(msg => {
+        EnigmailLog.DEBUG("autocrypt.jsm: handleBackupMessage: data: " + msg.data.length + "\n");
+
+        let setupData = importSetupKey(msg.data);
+        if (setupData) {
+          let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
+          //TODO: set key selection mode etc.
+          id.identity.setCharAttribute("pgpkeyId", setupData.fpr);
+          resolve(setupData);
+        }
+        else {
+          reject("keyImportFailed");
+        }
+      }).
+      catch(err => {
+        reject("wrongPasswd");
+      });
     });
+  },
 
-
-    let channel = EnigmailStreams.createChannel(msgUrl);
-    channel.asyncOpen(s, null);
+  /**
+   * Determine if a message id was self-created (only during same TB session)
+   */
+  isSelfCreatedSetupMessage: function(messageId) {
+    return (gCreatedSetupIds.indexOf(messageId) >= 0);
   }
 };
 
@@ -697,20 +785,131 @@ function createBackupOuterMsg(toEmail, encryptedMsg) {
   let msgStr = 'To: ' + toEmail + '\r\n' +
     'From: ' + toEmail + '\r\n' +
     'Autocrypt-Setup-Message: v1\r\n' +
-    'Subject: Autocrypt Setup Message\r\n' + // TODO: replace by localized message
+    'Subject: ' + EnigmailLocale.getString("autocrypt.setupMsg.subject") + '\r\n' +
     'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n' +
     '--' + boundary + '\r\n' +
     'Content-Type: text/plain\r\n\r\n' +
-    'This is the Autocrypt setup message.\r\n\r\n' + // TODO: replace by localized message
+    EnigmailLocale.getString("autocryptSetupReq.setupMsg.desc") + '\r\n\r\n' +
+    EnigmailLocale.getString("autocrypt.setupMsg.msgBody") + '\r\n\r\n' +
+    EnigmailLocale.getString("autocryptSetupReq.setupMsg.backup") + '\r\n' +
     '--' + boundary + '\r\n' +
     'Content-Type: application/autocrypt-key-backup\r\n' +
     'Content-Disposition: attachment; filename="autocrypt-key-backup.html"\r\n\r\n' +
     '<html><body>\r\n' +
-    '<p>This is the Autocrypt setup file used to transfer keys between clients.</p>\r\n' + // TODO: replace by localized message
+    '<p>' + EnigmailLocale.getString("autocrypt.setupMsg.fileTxt") + '</p>\r\n' +
     '<pre>\r\n' +
     encryptedMsg +
     '</pre></body></html>\r\n' +
     '--' + boundary + '--\r\n';
 
   return msgStr;
+}
+
+
+/**
+ * @return Object:
+ *          fpr:           String - FPR of the imported key
+ *          preferEncrypt: String - Autocrypt preferEncrypt value (e.g. mutual)
+ */
+function importSetupKey(decryptedSetupMsg) {
+
+  EnigmailLog.DEBUG("autocrypt.jsm: importSetupKey()\n");
+  let mimeTree = {
+      partNum: "",
+      headers: null,
+      body: "",
+      parent: null,
+      subParts: []
+    },
+    stack = [],
+    currentPart = "",
+    currPartNum = "";
+
+  let jsmimeEmitter = {
+
+    createPartObj: function(partNum, headers, parent) {
+      return {
+        partNum: partNum,
+        headers: headers,
+        body: "",
+        parent: parent,
+        subParts: []
+      };
+    },
+
+    getMimeTree: function() {
+      return mimeTree.subParts[0];
+    },
+
+    /** JSMime API **/
+    startMessage: function() {
+      currentPart = mimeTree;
+    },
+
+    endMessage: function() {},
+
+    startPart: function(partNum, headers) {
+      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.startPart: partNum=" + partNum + "\n");
+      //this.stack.push(partNum);
+      let newPart = this.createPartObj(partNum, headers, currentPart);
+
+      if (partNum.indexOf(currPartNum) === 0) {
+        // found sub-part
+        currentPart.subParts.push(newPart);
+      }
+      else {
+        // found same or higher level
+        currentPart.subParts.push(newPart);
+      }
+      currPartNum = partNum;
+      currentPart = newPart;
+    },
+
+    endPart: function(partNum) {
+      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.startPart: partNum=" + partNum + "\n");
+      currentPart = currentPart.parent;
+    },
+
+    deliverPartData: function(partNum, data) {
+      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.deliverPartData: partNum=" + partNum +
+        " / " + typeof data + "\n");
+      if (typeof(data) === "string") {
+        currentPart.body += data;
+      }
+      else {
+        currentPart.body += EnigmailData.arrayBufferToString(data);
+      }
+    }
+  };
+
+
+  let opt = {
+    strformat: "unicode",
+    bodyformat: "decode"
+  };
+
+  //try {
+  let p = new jsmime.MimeParser(jsmimeEmitter, opt);
+  p.deliverData(decryptedSetupMsg);
+  let preferEncrypt = "mutual"; //Enigmail default
+  if (currentPart.headers.has("autocrypt-prefer-encrypt")) {
+    preferEncrypt = currentPart.headers.get("autocrypt-prefer-encrypt").join();
+  }
+
+  let ct = currentPart.subParts[0].headers.contentType;
+  let r = -1;
+  let keyObj = {};
+  if ("type" in ct && ct.type.search(/^application\/autocrypt-key-backup/i) === 0) {
+    let keyData = currentPart.subParts[0].body;
+    r = EnigmailKeyRing.importKey(null, false, keyData, "", {}, keyObj);
+  }
+
+  if (r === 0 && keyObj.value && keyObj.value.length > 0) {
+    return {
+      fpr: keyObj.value[0],
+      preferEncrypt: preferEncrypt
+    };
+  }
+
+  return null;
 }

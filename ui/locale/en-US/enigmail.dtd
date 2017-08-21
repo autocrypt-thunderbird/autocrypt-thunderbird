@@ -113,7 +113,6 @@
 <!ENTITY enigmail.decryptverify.label    "Decrypt/Verify">
 <!ENTITY enigmail.importpublickey.label  "Import Public Key">
 <!ENTITY enigmail.importKey.label        "Import Key">
-<!ENTITY enigmail.confirmKey.label       "Confirm Request">
 
 <!ENTITY enigmail.autoDecrypt.label      "Automatically Decrypt/Verify Messages">
 <!ENTITY enigmail.clearPassphrase.label  "Clear Saved Passphrase">
