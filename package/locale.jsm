@@ -32,7 +32,15 @@ const EnigmailLocale = {
     }
   },
 
-  // retrieves a localized string from the enigmail.properties stringbundle
+  /**
+   * Retrieve a localized string from the enigmail.properties stringbundle
+   *
+   * @param aStr:       String                     - properties key
+   * @param subPhrases: String or Array of Strings - [Optional] additional input to be embedded
+   *                                                  in the resulting localized text
+   *
+   * @return String: the localized string
+   */
   getString: function(aStr, subPhrases) {
     if (!enigStringBundle) {
       try {
