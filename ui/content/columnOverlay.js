@@ -68,9 +68,6 @@ Enigmail.columnHandler = {
     }
 
     if (newProp) {
-      let atomService = Components.classes["@mozilla.org/atom-service;1"].
-      getService(Components.interfaces.nsIAtomService);
-      var atom = atomService.getAtom(newProp);
       return newProp;
     }
 
