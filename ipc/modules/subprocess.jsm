@@ -125,6 +125,7 @@ var EXPORTED_SYMBOLS = ["subprocess"];
 const DEFAULT_ENVIRONMENT = [];
 
 var gDebugFunction = null;
+var gErrorFunction = null;
 
 function write(pipe, data) {
   let buffer = new Uint8Array(Array.from(data, c => c.charCodeAt(0)));
@@ -171,7 +172,9 @@ var readAllData = Task.async(function*(pipe, read, callback) {
 
 
 var subprocess = {
-  registerLogHandler: function() {},
+  registerLogHandler: function(func) {
+    gErrorFunction = func;
+  },
 
   registerDebugHandler: function(func) {
     gDebugFunction = func;
@@ -273,7 +276,18 @@ var subprocess = {
         })
         .catch(error => {
           resolved = -1;
-          throw ("subprocess.jsm: error: " + error);
+          let errStr = "";
+          if (typeof error === "string") {
+            errStr = error;
+          }
+          else if (error) {
+            for (let i in error) {
+              errStr += "\n" + i + ": " + error[i];
+            }
+          }
+
+          ERROR_LOG(errStr);
+          throw ("subprocess.jsm: caught error: " + errStr);
         });
 
     }
@@ -342,5 +356,11 @@ var subprocess = {
 function DEBUG_LOG(str) {
   if (gDebugFunction) {
     gDebugFunction("subprocess.jsm: " + str + "\n");
+  }
+}
+
+function ERROR_LOG(str) {
+  if (gErrorFunction) {
+    gErrorFunction("subprocess.jsm: " + str + "\n");
   }
 }
