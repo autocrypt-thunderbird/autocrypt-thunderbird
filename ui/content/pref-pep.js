@@ -14,6 +14,7 @@ Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 var gAccountList;
 var gAccountManager;
@@ -61,9 +62,17 @@ function onLoad() {
 function onAccept() {
   storeIdentitySettings();
 
-  gLookupKeys.checked = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
+  let origLookupKeys = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 
-  EnigmailPrefs.setPref("autoKeyRetrieve", gLookupKeys.checked ? "x" : "");
+  EnigmailPrefs.setPref("autoKeyRetrieve", gLookupKeys.checked ? "pool.sks-keyservers.net" : "");
+
+  if (gLookupKeys.checked && (!origLookupKeys)) {
+    EnigmailPEPAdapter.pep.startKeyserverLookup();
+  }
+  else if ((!gLookupKeys.checked) && origLookupKeys) {
+    EnigmailPEPAdapter.pep.stopKeyserverLookup();
+  }
+
   EnigmailPrefs.savePrefs();
 }
 

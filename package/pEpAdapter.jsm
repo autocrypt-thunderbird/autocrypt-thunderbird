@@ -308,6 +308,12 @@ var EnigmailPEPAdapter = {
         if (typeof(data) === "string") {
           gPepVersion = data;
           startListener();
+          if (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0) {
+            self.pep.startKeyserverLookup();
+          }
+          else {
+            self.pep.stopKeyserverLookup();
+          }
           self.setupIncomingFilter();
           self.handleJuniorModeChange();
         }

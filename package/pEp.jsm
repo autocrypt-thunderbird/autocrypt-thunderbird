@@ -775,6 +775,32 @@ var EnigmailpEp = {
     }
   },
 
+
+  startKeyserverLookup: function() {
+    DEBUG_LOG("startKeyserverLookup()");
+    try {
+      return this._callPepFunction(FT_CALL_FUNCTION, "startKeyserverLookup", []);
+    }
+    catch (ex) {
+      let deferred = PromiseUtils.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  stopKeyserverLookup: function() {
+    DEBUG_LOG("stopKeyserverLookup()");
+    try {
+      return this._callPepFunction(FT_CALL_FUNCTION, "stopKeyserverLookup", []);
+    }
+    catch (ex) {
+      let deferred = PromiseUtils.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+
   /**
    * Enable or disable the passive mode for pEp.
    * Passive mode means that no key is attached to a message
