@@ -1,7 +1,7 @@
 <!ENTITY enigmail.label                   "Enigmail">
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 
-<!ENTITY enigmail.about.license           "Enigmail is open source and licensed under the <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
+<!ENTITY enigmail.about.license           "Enigmail is open source and licensed under the <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Account / User ID">
 <!ENTITY enigmail.keygenTitle.label       "Generate OpenPGP Key">
