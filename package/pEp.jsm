@@ -41,8 +41,9 @@ var gRequestId = 1;
 var gConnectionInfo = null;
 var gRetryCount = 0;
 var gTbListener = null;
+var gRequestQueue = [];
+var gXmlReq;
 
-var gRequestArr = [];
 
 var EnigmailpEp = {
 
@@ -956,16 +957,23 @@ var EnigmailpEp = {
       "jsonrpc": "2.0"
     };
 
-    let oReq = getXmlRequest();
-
+    let loadListener = onLoadListener;
     if (!onLoadListener) {
-      onLoadListener = function(obj) {
+      loadListener = function(obj) {
         return obj;
       };
     }
 
-    oReq.addEventListener("load", function _f() {
+    let errorListener = onErrorListener;
+    if (!onErrorListener) {
+      errorListener = function(txt) {
+        return txt;
+      };
+    }
+
+    let onloadFunc = function _f() {
       try {
+        DEBUG_LOG("XMLHttpRequest: onload()\n");
         let parsedObj = self.parseJSON(this.responseText);
 
         if ((typeof(parsedObj) === "object") && ("error" in parsedObj)) {
@@ -979,7 +987,7 @@ var EnigmailpEp = {
             if (gRetryCount < 2) {
               self.registerListener()
                 .then(function _f() {
-                  self._callPepFunction(funcType, functionName, paramsArr, onLoadListener, onErrorListener, deferred);
+                  self._callPepFunction(funcType, functionName, paramsArr, loadListener, errorListener, deferred);
                 });
               return;
             }
@@ -989,41 +997,34 @@ var EnigmailpEp = {
           gRetryCount = 0;
         }
 
-        let r = onLoadListener(parsedObj);
+        let r = loadListener(parsedObj);
         deferred.resolve(r);
       }
       catch (ex) {
         deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
       }
-    });
+    };
 
-    if (!onErrorListener) {
-      onErrorListener = function(txt) {
-        return txt;
-      };
-    }
+    let onerrorFunc = function(e) {
+      DEBUG_LOG("XMLHttpRequest: got error: " + e);
 
-    oReq.addEventListener("error",
-      function(e) {
-        DEBUG_LOG("XMLHttpRequest: got error: " + e);
+      dropXmlRequest();
+      if (!gShuttingDown) {
+        self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
+          let r = errorListener(this.responseText);
+          deferred.resolve(r);
+        });
+      }
+      else {
+        deferred.resolve({
+          result: -1
+        });
+      }
+    };
 
-        dropXmlRequest(this);
-        if (!gShuttingDown) {
-          self._startPepServer(funcType, deferred, functionCall, onLoadListener, function _f() {
-            let r = onErrorListener(this.responseText);
-            deferred.resolve(r);
-          });
-        }
-        else {
-          deferred.resolve({
-            result: -1
-          });
-        }
-      },
-      false);
-
-    oReq.open("POST", conn + funcType);
-    oReq.send(JSON.stringify(functionCall));
+    let url = conn + funcType;
+    let data = JSON.stringify(functionCall);
+    executeXmlRequest(url, data, onloadFunc, onerrorFunc);
 
     return deferred.promise;
   },
@@ -1083,9 +1084,10 @@ var EnigmailpEp = {
         self.getConnectionInfo();
         functionCall.security_token = (gConnectionInfo ? gConnectionInfo.security_token : "");
 
-        let oReq = getXmlRequest();
+        let url = self.getConnectionInfo() + funcType;
 
-        oReq.addEventListener("load", function _onload() {
+        let onloadFunc = function _onload() {
+          DEBUG_LOG("XMLHttpRequest: onload()\n");
           try {
             let parsedObj = self.parseJSON(this.responseText);
             let r = onLoadListener(parsedObj);
@@ -1095,21 +1097,19 @@ var EnigmailpEp = {
           catch (ex) {
             deferred.reject(makeError("PEP-ERROR", ex, this.responseText));
           }
-        });
+        };
 
-        oReq.addEventListener("error",
-          function(e) {
-            DEBUG_LOG("XMLHttpRequest: got error: " + e);
+        let onerrorFunc = function(e) {
+          DEBUG_LOG("XMLHttpRequest: got error: " + e);
 
-            dropXmlRequest(this);
-            let status = oReq.channel.QueryInterface(Ci.nsIRequest).status;
+          dropXmlRequest();
 
-            deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
-          },
-          false);
+          deferred.reject(makeError("PEP-unavailable", null, "Cannot establish connection to PEP service"));
+        };
 
-        oReq.open("POST", self.getConnectionInfo() + funcType);
-        oReq.send(JSON.stringify(functionCall));
+        let data = JSON.stringify(functionCall);
+        executeXmlRequest(url, data, onloadFunc, onerrorFunc);
+
       }, 1000);
     }
     catch (ex) {
@@ -1133,17 +1133,58 @@ function makeError(str, ex, msg) {
   return o;
 }
 
-function getXmlRequest() {
-  return Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
-  // if (gRequestArr.length === 0) {
-  //   // create a XMLHttpRequest() in Mozilla priviledged environment
-  //
-  //   gRequestArr[0] = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
-  // }
-  //
-  // return gRequestArr[0];
+function dropXmlRequest() {
+  gXmlReq = null;
 }
 
-function dropXmlRequest(oReq) {
-  //gRequestArr = [];
+/**
+ * Establish connection to pEp JSON server and send request.
+ * The connection is kept open to allow for per-connection settings in pEp;
+ * All requests are queued and processed one after the other.
+ *
+ * @param url:        String - the URL to call, using POST
+ * @param data:       String - JSON object to send
+ * @param onloadFunc  Function - onload function of XMLHttpRequest
+ * @param onerrorFunc Function - onerror function of XMLHttpRequest
+ */
+function executeXmlRequest(url, data, onloadFunc, onerrorFunc) {
+  DEBUG_LOG("executeXmlRequest(" + url + ")\n");
+
+  let req = {
+    url: url,
+    data: data,
+    onloadFunc: onloadFunc,
+    onerrorFunc: onerrorFunc,
+    reqId: gRequestId
+  };
+
+  gRequestQueue.push(req);
+
+  if (!gXmlReq) {
+    gXmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+    gXmlReq.onloadend = function() {
+      DEBUG_LOG("executeXmlRequest: onloadEnd\n");
+      processNextXmlRequest();
+    };
+  }
+
+  processNextXmlRequest();
+}
+
+/**
+ * Process next request from request queue
+ */
+function processNextXmlRequest() {
+  DEBUG_LOG("processNextXmlRequest(): length = " + gRequestQueue.length + "\n");
+  if (gXmlReq && gRequestQueue.length > 0) {
+    DEBUG_LOG("processNextXmlRequest: readyState == " + gXmlReq.readyState + "\n");
+    if (gXmlReq.readyState === 0 || gXmlReq.readyState === 4) {
+      let r = gRequestQueue.shift();
+
+      gXmlReq.onload = r.onloadFunc.bind(gXmlReq);
+      gXmlReq.onerror = r.onerrorFunc.bind(gXmlReq);
+      gXmlReq.open("POST", r.url);
+      gXmlReq.send(r.data);
+    }
+  }
 }
