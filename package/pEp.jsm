@@ -801,6 +801,30 @@ var EnigmailpEp = {
     }
   },
 
+  startKeySync: function() {
+    DEBUG_LOG("startKeySync()");
+    try {
+      return this._callPepFunction(FT_CALL_FUNCTION, "startKeySync", []);
+    }
+    catch (ex) {
+      let deferred = PromiseUtils.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
+  stopKeySync: function() {
+    DEBUG_LOG("stopKeySync()");
+    try {
+      return this._callPepFunction(FT_CALL_FUNCTION, "stopKeySync", []);
+    }
+    catch (ex) {
+      let deferred = PromiseUtils.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
+  },
+
 
   /**
    * Enable or disable the passive mode for pEp.

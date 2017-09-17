@@ -262,6 +262,7 @@ var EnigmailPEPKeySync = {
           mimeStr += "--" + boundary + CRLF;
           mimeStr += "Content-Type: " + att.mime_type;
           if ("filename" in att) {
+            att.filename = att.filename.replace(/^file:\/\//i, "");
             mimeStr += '; name="' + att.filename + '"';
           }
           mimeStr += CRLF + "Content-Transfer-Encoding: base64" + CRLF + CRLF;

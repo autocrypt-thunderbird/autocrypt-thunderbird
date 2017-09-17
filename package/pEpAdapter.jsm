@@ -309,11 +309,12 @@ var EnigmailPEPAdapter = {
           gPepVersion = data;
           startListener();
           if (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0) {
-            self.pep.startKeyserverLookup();
+            EnigmailpEp.startKeyserverLookup();
           }
           else {
-            self.pep.stopKeyserverLookup();
+            EnigmailpEp.stopKeyserverLookup();
           }
+          EnigmailpEp.startKeySync();
           self.setupIncomingFilter();
           self.handleJuniorModeChange();
         }
