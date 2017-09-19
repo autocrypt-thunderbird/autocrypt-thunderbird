@@ -13,12 +13,14 @@ var EXPORTED_SYMBOLS = ["EnigmailAttachment"];
 
 const Cu = Components.utils;
 
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+
+const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 const EnigmailAttachment = {
   getFileName: function(parent, byteData) {
@@ -38,7 +40,7 @@ const EnigmailAttachment = {
 
     listener.stdout = function(data) {};
 
-    const proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent, listener, {});
+    const proc = EnigmailExecution.execStart(getGpgAgent().agentPath, args, false, parent, listener, {});
 
     if (!proc) {
       return null;
