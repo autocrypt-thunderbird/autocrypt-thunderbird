@@ -106,8 +106,8 @@ test(function prepareDb() {
 // testing: extractMessageId
 test(function processHeader() {
 
-  const hdr0 = "addr=dev-tiger@test.notreal; type=1; keydata=" + pubkey1;
-  const hdr1 = "addr=dev-tiger@test.notreal; type=1; keydata=" + pubkey2;
+  const hdr0 = "type=1; addr=dev-tiger@test.notreal; keydata=" + pubkey1;
+  const hdr1 = "type=1; addr=dev-tiger@test.notreal; keydata=" + pubkey2;
 
   let d0 = new Date();
   d0.setTime(Date.now() - 5 * 86400 * 1000); // 5 days ago
