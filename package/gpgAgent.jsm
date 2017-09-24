@@ -481,6 +481,7 @@ var EnigmailGpgAgent = {
       agentPath = agentPath.QueryInterface(Ci.nsIFile);
     }
 
+    agentPath.normalize(); // replace a/../b with b
     EnigmailLog.CONSOLE("EnigmailAgentPath=" + EnigmailFiles.getFilePathDesc(agentPath) + "\n\n");
 
     EnigmailGpgAgent.agentType = agentType;

@@ -120,7 +120,7 @@ const EnigmailGpg = {
   /***
    determine if a specific feature is available in the GnuPG version used
 
-   @featureName:  String; one of the following values:
+   @param featureName:  String; one of the following values:
    version-supported    - is the gpg version supported at all (true for gpg >= 2.0.10)
    supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
    autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
