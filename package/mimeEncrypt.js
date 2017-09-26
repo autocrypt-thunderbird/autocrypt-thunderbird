@@ -390,10 +390,6 @@ PgpMimeEncrypt.prototype = {
       this.processPepEncryption();
       return;
     }
-    else if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
-      this.flushOutput();
-      return;
-    }
 
     if (this.checkSMime && (!this.smimeCompose))
       throw Cr.NS_ERROR_NOT_INITIALIZED;
@@ -402,6 +398,12 @@ PgpMimeEncrypt.prototype = {
       this.smimeCompose.finishCryptoEncapsulation(abort, sendReport);
       return;
     }
+
+    if ((this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.SEND_VERBATIM) !== 0) {
+      this.flushOutput();
+      return;
+    }
+
 
     let statusFlagsObj = {};
     let errorMsgObj = {};
