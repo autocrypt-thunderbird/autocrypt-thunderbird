@@ -319,7 +319,7 @@ PgpMimeEncrypt.prototype = {
 
     if (this.cryptoMode == MIME_ENCRYPTED && this.enigSecurityInfo.sendFlags & Ci.nsIEnigmail.ENCRYPT_HEADERS) {
       w += 'Content-Type: text/rfc822-headers; protected-headers="v1"\r\n' +
-        'Content-Disposition: inline\r\n' +
+        'Content-Disposition: inline\r\n\r\n' +
         visibleHdr +
         "\r\n--" + this.encHeader + "\r\n";
     }
