@@ -861,3 +861,11 @@
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Password">
 <!ENTITY enigmail.acSetupPasswd.password             "Password:">
+
+<!ENTITY enigmail.acInitiateBackup.window.title      "Autocrypt Key Transfer">
+<!ENTITY enigmail.acInitiateBackup.acceptbutton      "Create Setup Message">
+<!ENTITY enigmail.acInitiateBackup.selectAccount.title "Select Account">
+<!ENTITY enigmail.acInitiateBackup.selectAccount.label "Create Setup Message for Account:">
+<!ENTITY enigmail.acInitiateBackup.displayPasswd.title "Password for Setup Message">
+<!ENTITY enigmail.acInitiateBackup.desc              "In order to easily transfer your key to a new device, you can creeate an Autocrypt setup message that will contain everything required for the new device
+                                                      to work just like this one here.">

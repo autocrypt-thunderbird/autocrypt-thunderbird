@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<wizard id="enigmailInitiateACBackup"
+        title="&enigmail.acInitiateBackup.window.title;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        onwizardcancel="return onCancel();"
+        onwizardnext="return onNext();"
+        style="min-height: 500px;"
+        onload="onLoad();">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/autocryptInitiateBackup.js"/>
+
+  <!-- Select Account Page -->
+  <wizardpage id="pgSelectId" pageid="pgSelectId"
+              next="pgDisplayPasswd"
+              label="&enigmail.acInitiateBackup.selectAccount.title;">
+    <description style="max-width: 500px;">
+        &enigmail.acInitiateBackup.desc;
+    </description>
+
+
+    <vbox>
+      <label value="&enigmail.acInitiateBackup.selectAccount.label;"/>
+      <menulist id="selectedAccount" editable="false" oncommand="onSelectAccount(this)"/>
+    </vbox>
+  </wizardpage>
+
+  <!-- Display Password Page -->
+
+  <wizardpage id="pgDisplayPasswd" pageid="pgDisplayPasswd"
+              label="&enigmail.acInitiateBackup.displayPasswd.title;">
+
+    <description style="max-width: 500px;">
+        The setup message has been created. Below is the password:
+    </description>
+
+    <separator style="min-height: 20px;"/>
+
+    <vbox>
+      <label id="line1" value=""/>
+      <label id="line2" value=""/>
+      <label id="line3" value=""/>
+    </vbox>
+
+    <separator style="min-height: 20px;"/>
+
+    <description style="max-width: 500px;">
+      Please switch to your device that you want to set up and open the message that was just sent.
+      Type in the password you see above.
+    </description>
+
+  </wizardpage>
+
+</wizard>

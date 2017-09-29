@@ -1,4 +1,6 @@
 enigmail.jar:
+	content/enigmail/autocryptInitiateBackup.xul   (content/autocryptInitiateBackup.xul)
+	content/enigmail/autocryptInitiateBackup.js    (content/autocryptInitiateBackup.js)
 	content/enigmail/autocryptSetupPasswd.xul      (content/autocryptSetupPasswd.xul)
 	content/enigmail/autocryptSetupPasswd.js       (content/autocryptSetupPasswd.js)
 	content/enigmail/columnOverlay.xul             (content/columnOverlay.xul)
