@@ -66,17 +66,15 @@ function onCancel() {
 }
 
 function createSetupMessage() {
-  let lbl1 = document.getElementById("line1");
-  let lbl2 = document.getElementById("line2");
-  let lbl3 = document.getElementById("line3");
 
   let id = gAccountManager.getIdentity(gCurrentIdentity);
 
   EnigmailAutocrypt.sendSetupMessage(id).then(passwd => {
     if (passwd) {
-      lbl1.value = passwd.substr(0, 14);
-      lbl2.value = passwd.substr(15, 14);
-      lbl3.value = passwd.substr(30, 14);
+      for (let i = 1; i < 10; i++) {
+        let e = document.getElementById("l" + i);
+        e.value = passwd.substr((i - 1) * 5, 4);
+      }
     }
   }).
   catch(err => {
