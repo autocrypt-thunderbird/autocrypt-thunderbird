@@ -21,7 +21,12 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBackup: false */
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBackup: false */
+Cu.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
@@ -566,4 +571,9 @@ function enigLocateGpg() {
     //     }
     document.getElementById("enigmail_agentPath").value = filePath.path;
   }
+}
+
+
+function initiateAcKeyTransfer() {
+  EnigmailWindows.inititateAcSetupMessage();
 }

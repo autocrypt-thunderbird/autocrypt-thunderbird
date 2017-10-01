@@ -1246,6 +1246,11 @@ function enigmailImportKeysFromUrl() {
   }
 }
 
+function initiateAcKeyTransfer() {
+  EnigmailWindows.inititateAcSetupMessage();
+}
+
+
 //
 // ----- key filtering functionality  -----
 //

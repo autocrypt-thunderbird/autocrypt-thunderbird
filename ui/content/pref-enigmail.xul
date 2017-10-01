@@ -15,9 +15,11 @@
 <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 %enigMailDTD;
 ]>
+
 <dialog id="enigmailPrefsAdv"
         title="&enigmail.preferences.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="prefOnLoad();"
         ondialogaccept="return prefOnAccept();">
 
@@ -144,7 +146,7 @@
       <tab id="keySelTab"     label="&enigmail.keySel.label;" advanced="true"/>
       <tab id="advancedTab"   label="&enigmail.advanced.label;" advanced="true"/>
       <tab id="keyserverTab"  label="&enigmail.keyserver.label;" advanced="true"/>
-      <tab id="backupRestore" label="&enigmail.backupRestore.label;"/>
+      <tab id="backupRestore" label="&enigmail.transferSettings.label;"/>
     </tabs>
 
     <tabpanels flex="1" id="enigPrefTabPanel">
@@ -470,6 +472,25 @@
       <vbox id="backupRestoreTab" flex="1">
 
         <vbox flex="1">
+
+          <description style="max-width: 500px;">
+            &enigmail.pref.backupRestore.overallDesc;
+          </description>
+
+          <separator style="height: 20px;"/>
+
+          <description>
+            &enigmail.pref.acSetupMessage.desc;
+          </description>
+
+          <hbox>
+            <button id="initiateAcSetupMsg"
+                label="&enigmail.pref.acSetupMessage.button;"
+                oncommand="initiateAcKeyTransfer();"/>
+          </hbox>
+
+          <separator style="height: 20px;"/>
+
           <description>
             &enigmail.backupRestore.desc;
           </description>

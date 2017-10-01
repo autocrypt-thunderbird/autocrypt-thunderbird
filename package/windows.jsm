@@ -633,5 +633,19 @@ const EnigmailWindows = {
       "", "dialog,modal,centerscreen", inputObj);
 
     return inputObj.password;
+  },
+
+  /**
+   * Display dialog to initiate the Autocrypt Setup Message.
+   *
+   */
+  inititateAcSetupMessage: function(window) {
+    if (!window) {
+      window = this.getBestParentWin();
+    }
+
+    window.openDialog("chrome://enigmail/content/autocryptInitiateBackup.xul",
+      "", "dialog,centerscreen");
   }
+
 };

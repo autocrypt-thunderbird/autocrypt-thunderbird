@@ -104,6 +104,13 @@
 
         <menuseparator/>
 
+        <menuitem label="&enigmail.keyMan.initiateAcBackup.label;"
+          id="initiateAcBackup"
+          accesskey="&enigmail.keyMan.initiateAcBackup.accesskey;"
+          oncommand="initiateAcKeyTransfer()"/>
+
+        <menuseparator/>
+
         <menuitem label="&enigmail.adminSmartCard.label;"
                 id="cardData"
                 accesskey="&enigmail.adminSmartCard.accesskey;"

@@ -71,6 +71,16 @@
 <!ENTITY enigmail.restorePrefsButton.label "Restore Settings and Keys">
 <!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 
+<!ENTITY enigmail.pref.acSetupMessage.desc   "Transfer your key to another Autocrpt-enabled device.">
+<!ENTITY enigmail.pref.acSetupMessage.button "Initiate Autocrypt Key Transfer">
+
+<!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supports two ways to transfer your keys and your settings to another device.<html:br/><html:br/>
+                                            The 'Autocrypt Key Transfer' requires that the mail client on the other device is Autocrypt-compliant.
+                                            While this is the easier solution, only a limited clients currently support this standard.<html:br/><html:br/>
+                                            The other way is to 'Backup &amp; restore' your settings.
+                                            This will create a ZIP file with all required information and keys, that you can copy to your new device.
+                                            Enigmail can directly import these settings; for other mail clients, the ZIP file can be unpacked and handled manually.">
+
 <!ENTITY enigmail.backupRestore.desc       "Export (backup) and Restore your Enigmail settings including your OpenPGP keys.">
 
 <!ENTITY enigmail.basic.label            "Basic">
@@ -78,7 +88,7 @@
 <!ENTITY enigmail.keySel.label           "Key Selection">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
 <!ENTITY enigmail.advanced.label         "Advanced">
-<!ENTITY enigmail.backupRestore.label    "Backup/Restore">
+<!ENTITY enigmail.transferSettings.label "Transfer Settings">
 
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
 
@@ -504,6 +514,7 @@
 <!ENTITY enigmail.keyMan.refreshAllKeys.label      "Refresh All Public Keys">
 <!ENTITY enigmail.keyMan.downloadContactKeys.label "Find keys for all contacts">
 <!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresh Public Keys From Keyserver">
+<!ENTITY enigmail.keyMan.initiateAcBackup.label    "Create Autocrypt Setup Message">
 
 <!ENTITY enigmail.keyMan.reload.label              "Reload Key Cache">
 <!ENTITY enigmail.keyMan.addPhoto.label            "Add Photo">
@@ -566,6 +577,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
