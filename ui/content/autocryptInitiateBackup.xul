@@ -47,7 +47,8 @@
   <!-- Display Password Page -->
 
   <wizardpage id="pgDisplayPasswd" pageid="pgDisplayPasswd"
-              label="&enigmail.acKeyTransfer.displayPasswd.title;">
+              label="&enigmail.acKeyTransfer.displayPasswd.title;"
+              onpageshow="disableChangePage(true);">
 
     <broadcasterset>
       <broadcaster id="bc-input"
@@ -73,6 +74,7 @@
         <textbox id="l2" observes="bc-input"/>
         <label value="-"/>
         <textbox id="l3" observes="bc-input"/>
+        <label value="-"/>
       </hbox>
       <hbox align="center">
         <textbox id="l4" observes="bc-input"/>
@@ -80,6 +82,7 @@
         <textbox id="l5" observes="bc-input"/>
         <label value="-"/>
         <textbox id="l6" observes="bc-input"/>
+        <label value="-"/>
       </hbox>
       <hbox align="center">
         <textbox id="l7" observes="bc-input"/>
@@ -87,6 +90,7 @@
         <textbox id="l8" observes="bc-input"/>
         <label value="-"/>
         <textbox id="l9" observes="bc-input"/>
+        <label value=" "/>
       </hbox>
     </vbox>
 

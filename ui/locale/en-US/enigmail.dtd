@@ -865,12 +865,12 @@
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
 <!ENTITY enigmail.acKeyTransfer.welcome.start        "Create Setup Message">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "Initiate Key Transfer">
-<!ENTITY enigmail.acKeyTransfer.welcome.desc         "If you have another device that is Autocrypt-enabled, you can transfer your key to that device via a so-called 'Autocrypt Setup Message'.
-                                                      This message will allow your new device to send and receive encrypted emails just like Enigmail right now.<html:br/><html:br/>
-                                                      Below you can select the account for which you want to transfer your key.
-                                                      We will display a password on the following screen that you will need to enter on your new device to import the key.">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "If you have another device that is Autocrypt-enabled, you can transfer your key to the other device via a so-called 'Autocrypt Setup Message'.
+                                                      Such a message will allow your other device to send and receive encrypted emails just like Enigmail with just a few clicks.<html:br/><html:br/>
+                                                      Please select below the account for which you want to transfer your key.
+                                                      We will display a password on the following screen that you will need to enter on the other device in order to import your key and related settings.">
 
 <!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Create Setup Message for Account:">
 <!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Password for Autocrypt Setup Message">
-<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "The setup message has been sent to yourself.<html:br/><html:br/>Please switch to your new device open the message. You should be prompted for a password. Please type the following digits into the password prompt:">
-<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "...">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "The setup message has been sent to yourself.<html:br/><html:br/>Please switch to the other device now and open the message. You should be prompted for a password. Please type the following digits into the password prompt:">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "Once you're done, your other device will be ready for Autocrypt.">

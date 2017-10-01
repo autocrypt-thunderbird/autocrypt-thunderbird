@@ -11,6 +11,8 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 
 var gAccountList;
@@ -55,6 +57,7 @@ function getWizard() {
 function onNext() {
   let wizard = getWizard();
   if (wizard.currentPage && wizard.currentPage.pageid == "pgSelectId") {
+    disableChangePage(true);
     createSetupMessage();
   }
 
@@ -71,13 +74,30 @@ function createSetupMessage() {
 
   EnigmailAutocrypt.sendSetupMessage(id).then(passwd => {
     if (passwd) {
+      EnigmailLog.DEBUG("acInitiateBackup.js: createSetupMessage: got passwd\n");
       for (let i = 1; i < 10; i++) {
         let e = document.getElementById("l" + i);
         e.value = passwd.substr((i - 1) * 5, 4);
       }
+
+      delayedEnableNext();
     }
   }).
   catch(err => {
     EnigmailDialog.alert(window, "Got error " + err);
   });
+}
+
+function disableChangePage(disable) {
+  var wizard = getWizard();
+  wizard.canAdvance = !disable;
+  wizard.canRewind = !disable;
+}
+
+function delayedEnableNext() {
+  EnigmailLog.DEBUG("acInitiateBackup.js: delayedEnableNext()\n");
+  EnigmailTimer.setTimeout(function _f() {
+    EnigmailLog.DEBUG("acInitiateBackup.js: delayedEnableNext: got called\n");
+    disableChangePage(false);
+  }, 30000);
 }
