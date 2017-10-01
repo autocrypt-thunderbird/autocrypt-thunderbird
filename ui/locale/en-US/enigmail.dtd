@@ -862,10 +862,15 @@
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Password">
 <!ENTITY enigmail.acSetupPasswd.password             "Password:">
 
-<!ENTITY enigmail.acInitiateBackup.window.title      "Autocrypt Key Transfer">
-<!ENTITY enigmail.acInitiateBackup.acceptbutton      "Create Setup Message">
-<!ENTITY enigmail.acInitiateBackup.selectAccount.title "Select Account">
-<!ENTITY enigmail.acInitiateBackup.selectAccount.label "Create Setup Message for Account:">
-<!ENTITY enigmail.acInitiateBackup.displayPasswd.title "Password for Setup Message">
-<!ENTITY enigmail.acInitiateBackup.desc              "In order to easily transfer your key to a new device, you can creeate an Autocrypt setup message that will contain everything required for the new device
-                                                      to work just like this one here.">
+<!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
+<!ENTITY enigmail.acKeyTransfer.welcome.start        "Create Setup Message">
+<!ENTITY enigmail.acKeyTransfer.welcome.title        "Initiate Key Transfer">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "If you have another device that is Autocrypt-enabled, you can transfer your key to that device via a so-called 'Autocrypt Setup Message'.
+                                                      This message will allow your new device to send and receive encrypted emails just like Enigmail right now.<html:br/><html:br/>
+                                                      Below you can select the account for which you want to transfer your key.
+                                                      We will display a password on the following screen that you will need to enter on your new device to import the key.">
+
+<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Create Setup Message for Account:">
+<!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Password for Autocrypt Setup Message">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "The setup message has been sent to yourself.<html:br/><html:br/>Please switch to your new device open the message. You should be prompted for a password. Please type the following digits into the password prompt:">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "...">

@@ -16,7 +16,7 @@
 ]>
 
 <wizard id="enigmailInitiateACBackup"
-        title="&enigmail.acInitiateBackup.window.title;"
+        title="&enigmail.acKeyTransfer.window.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
         onwizardcancel="return onCancel();"
@@ -29,22 +29,25 @@
   <!-- Select Account Page -->
   <wizardpage id="pgSelectId" pageid="pgSelectId"
               next="pgDisplayPasswd"
-              label="&enigmail.acInitiateBackup.selectAccount.title;">
+              label="&enigmail.acKeyTransfer.welcome.title;">
     <description style="max-width: 500px;">
-        &enigmail.acInitiateBackup.desc;
+        &enigmail.acKeyTransfer.welcome.desc;
     </description>
 
-
+    <separator style="min-height: 20px;"/>
     <vbox>
-      <label value="&enigmail.acInitiateBackup.selectAccount.label;"/>
-      <menulist id="selectedAccount" editable="false" oncommand="onSelectAccount(this)"/>
+      <label value="&enigmail.acKeyTransfer.selectAccount.label;" id="selectAccountLbl"/>
+      <menulist id="selectedAccount"
+        aria-labelledby="selectAccountLbl"
+        editable="false"
+        oncommand="onSelectAccount(this)"/>
     </vbox>
   </wizardpage>
 
   <!-- Display Password Page -->
 
   <wizardpage id="pgDisplayPasswd" pageid="pgDisplayPasswd"
-              label="&enigmail.acInitiateBackup.displayPasswd.title;">
+              label="&enigmail.acKeyTransfer.displayPasswd.title;">
 
     <broadcasterset>
       <broadcaster id="bc-input"
@@ -57,7 +60,7 @@
     </broadcasterset>
 
     <description style="max-width: 500px;">
-        The setup message has been created. Below is the password:
+        &enigmail.acKeyTransfer.msgCreated.desc;
     </description>
 
     <separator style="min-height: 20px;"/>
@@ -90,8 +93,7 @@
     <separator style="min-height: 20px;"/>
 
     <description style="max-width: 500px;">
-      Please switch to your device that you want to set up and open the message that was just sent.
-      Type in the password you see above.
+      &enigmail.acKeyTransfer.switchDevice.desc;
     </description>
 
   </wizardpage>
