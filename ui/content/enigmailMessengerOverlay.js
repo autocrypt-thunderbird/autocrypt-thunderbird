@@ -744,10 +744,10 @@ Enigmail.msg = {
         msgEncrypted = resultObj.encrypted.length > 0;
 
         if ("autocrypt-setup-message" in mimeMsg.headers && mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
-          if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
-            Enigmail.hdrView.displayAutocryptMessage(false);
-            return;
-          }
+          // if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
+          //   Enigmail.hdrView.displayAutocryptMessage(false);
+          //   return;
+          // }
           if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
             Enigmail.hdrView.displayAutoCryptSetupMsgHeader();
             return;
@@ -2689,6 +2689,12 @@ Enigmail.msg = {
 
   performAutocryptSetup: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: performAutocryptSetup()\n");
+
+    if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
+      EnigmailDialog.info(window, EnigmailLocale.getString("autocrypt.importSetupKey.selfCreated"));
+      return;
+    }
+
     if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
 
       EnigmailAutocrypt.getSetupMessageData(currentAttachments[0].url).then(res => {

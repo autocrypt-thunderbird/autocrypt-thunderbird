@@ -90,7 +90,7 @@
         <textbox id="l8" observes="bc-input"/>
         <label value="-"/>
         <textbox id="l9" observes="bc-input"/>
-        <label value=" "/>
+        <label value="  "/>
       </hbox>
     </vbox>
 

@@ -71,7 +71,7 @@
 <!ENTITY enigmail.restorePrefsButton.label "Restore Settings and Keys">
 <!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 
-<!ENTITY enigmail.pref.acSetupMessage.desc   "Transfer your key to another Autocrpt-enabled device.">
+<!ENTITY enigmail.pref.acSetupMessage.desc   "Transfer your key to another Autocrypt-enabled device.">
 <!ENTITY enigmail.pref.acSetupMessage.button "Initiate Autocrypt Key Transfer">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supports two ways to transfer your keys and your settings to another device.<html:br/><html:br/>
