@@ -105,10 +105,8 @@ function reloadData() {
       document.getElementById("signatures_tree").view = sigListViewObj;
     }
 
-    if (keyObj.subKeys.length > 0) {
-      let subkeyListViewObj = new SubkeyListView(keyObj);
-      document.getElementById("subkeyList").view = subkeyListViewObj;
-    }
+    let subkeyListViewObj = new SubkeyListView(keyObj);
+    document.getElementById("subkeyList").view = subkeyListViewObj;
 
     gUserId = keyObj.userId;
     let expiryDate = keyObj.expiry;
