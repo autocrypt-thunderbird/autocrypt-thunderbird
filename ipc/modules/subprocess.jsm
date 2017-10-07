@@ -189,6 +189,8 @@ var subprocess = {
     let stdoutData = "";
     let stderrData = "";
 
+    let formattedStack = Components.stack.formattedStack;
+
     function writePipe(pipe, value) {
       let p = write(pipe, value);
       promises.push(p);
@@ -331,7 +333,8 @@ var subprocess = {
     let subproc = SubprocessMain.call(opts).then(subProcessThen).catch(
       error => {
         resolved = -1;
-        throw ("subprocess.jsm: launch error: " + error);
+        let errStr = formattedStack;
+        throw ("subprocess.jsm: launch error: " + errStr + JSON.stringify(error));
       }
     );
 

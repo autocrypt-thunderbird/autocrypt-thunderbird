@@ -22,10 +22,12 @@ const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
 var gPepServerPath = null;
+var gGnupgHome = null;
+var gAgentPath = null;
 var gLogFunction = null;
 var gShuttingDown = false;
 
-const pepSecurityInfo = "/pEp-json-token-";
+const pepSecurityInfo = "pEp.mda.enigmail";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
@@ -36,6 +38,7 @@ Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: fa
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 
 var gRequestId = 1;
 var gConnectionInfo = null;
@@ -92,27 +95,22 @@ var EnigmailpEp = {
   getConnectionInfo: function() {
     DEBUG_LOG("getConnectionInfo()");
     if (!gConnectionInfo) {
-      let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+      if (gGnupgHome) {
+        let fileName = (gGnupgHome + (EnigmailOS.isDosLike ? "\\" : "/") + pepSecurityInfo);
+        let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+        EnigmailFiles.initPath(fileHandle, fileName);
+        let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
 
-      let tmpDir = env.get("TEMP");
-      let userName = env.get("USER");
-
-      let fileName = (tmpDir !== "" ? tmpDir : "/tmp") +
-        pepSecurityInfo + (userName !== "" ? userName : "XXX");
-
-      let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-      EnigmailFiles.initPath(fileHandle, fileName);
-      let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
-
-      if (jsonData.length > 0) {
-        try {
-          // we cannot use parseJSON here, it won't work before TB has finished initialization
-          gConnectionInfo = this.parseJSON(jsonData);
-          if (gConnectionInfo.address === "0.0.0.0") {
-            gConnectionInfo.address = "127.0.0.1";
+        if (jsonData.length > 0) {
+          try {
+            // we cannot use parseJSON here, it won't work before TB has finished initialization
+            gConnectionInfo = this.parseJSON(jsonData);
+            if (gConnectionInfo.address === "0.0.0.0") {
+              gConnectionInfo.address = "127.0.0.1";
+            }
           }
+          catch (ex) {}
         }
-        catch (ex) {}
       }
     }
 
@@ -944,10 +942,12 @@ var EnigmailpEp = {
 
   },
 
-  setServerPath: function(pathName) {
-    DEBUG_LOG("setServerPath()");
+  setServerPath: function(pathName, gnupgHomeDir, agentPath) {
+    DEBUG_LOG("setServerPath(" + gnupgHomeDir + ", " + agentPath + ")");
 
     gPepServerPath = pathName;
+    gGnupgHome = gnupgHomeDir;
+    gAgentPath = agentPath;
   },
 
   /******************* internal (private) methods *********************/
@@ -997,7 +997,7 @@ var EnigmailpEp = {
 
     let onloadFunc = function _f() {
       try {
-        DEBUG_LOG("XMLHttpRequest: onload()\n");
+        DEBUG_LOG("XMLHttpRequest: onload()");
         let parsedObj = self.parseJSON(this.responseText);
 
         if ((typeof(parsedObj) === "object") && ("error" in parsedObj)) {
@@ -1079,10 +1079,52 @@ var EnigmailpEp = {
 
       EnigmailCore.getService(null, true);
 
+      let resourcesDir = exec.parent.parent;
+      resourcesDir.append("share");
+      resourcesDir.append("pepmda-enigmail");
+
+      let resDirPath = undefined;
+
+      if (resourcesDir && resourcesDir.exists()) {
+        resDirPath = resourcesDir.path;
+      }
+
+      let pathSep = (EnigmailOS.isDosLike ? ";" : ":");
+      let path = [];
+      let env = [];
+      EnigmailCore.getEnvList().map(function(item) {
+        if (item.startsWith("PATH=")) {
+          path = item.substr(5).split(pathSep);
+        }
+        else if (item.startsWith("GNUPGHOME=")) {
+          /* nothing to be done */
+        }
+        else {
+          env.push(item);
+        }
+      });
+
+      let agentByEnv = gAgentPath.path;
+      agentByEnv = agentByEnv.substr(agentByEnv.lastIndexOf(
+        (EnigmailOS.isDosLike ? "\\" : "/")) + 1);
+      agentByEnv = EnigmailFiles.resolvePath(agentByEnv, path.join(pathSep),
+        EnigmailOS.isDosLike);
+      if (gAgentPath.path != agentByEnv.path) {
+        let forceAgentPath = gAgentPath.parent.path;
+        path = path.filter(function(item) {
+          return item != forceAgentPath;
+        });
+        path.unshift(forceAgentPath);
+        DEBUG_LOG("_startPepServer: PATH mangled to prefer " + forceAgentPath);
+      }
+      env.push("PATH=" + path.join(pathSep));
+      env.push("GNUPGHOME=" + gGnupgHome);
+
       let process = subprocess.call({
+        workdir: resDirPath,
         command: exec,
         charset: null,
-        environment: EnigmailCore.getEnvList(),
+        environment: env,
         mergeStderr: false,
         stdin: function(stdin) {
           // do nothing
@@ -1111,7 +1153,7 @@ var EnigmailpEp = {
         let url = self.getConnectionInfo() + funcType;
 
         let onloadFunc = function _onload() {
-          DEBUG_LOG("XMLHttpRequest: onload()\n");
+          DEBUG_LOG("XMLHttpRequest: onload()");
           try {
             let parsedObj = self.parseJSON(this.responseText);
             let r = onLoadListener(parsedObj);
@@ -1172,7 +1214,7 @@ function dropXmlRequest() {
  * @param onerrorFunc Function - onerror function of XMLHttpRequest
  */
 function executeXmlRequest(url, data, onloadFunc, onerrorFunc) {
-  DEBUG_LOG("executeXmlRequest(" + url + ")\n");
+  DEBUG_LOG("executeXmlRequest(" + url + ")");
 
   let req = {
     url: url,
@@ -1187,7 +1229,7 @@ function executeXmlRequest(url, data, onloadFunc, onerrorFunc) {
   if (!gXmlReq) {
     gXmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
     gXmlReq.onloadend = function() {
-      DEBUG_LOG("executeXmlRequest: onloadEnd\n");
+      DEBUG_LOG("executeXmlRequest: onloadEnd");
       processNextXmlRequest();
     };
   }
@@ -1199,9 +1241,9 @@ function executeXmlRequest(url, data, onloadFunc, onerrorFunc) {
  * Process next request from request queue
  */
 function processNextXmlRequest() {
-  DEBUG_LOG("processNextXmlRequest(): length = " + gRequestQueue.length + "\n");
+  DEBUG_LOG("processNextXmlRequest(): length = " + gRequestQueue.length);
   if (gXmlReq && gRequestQueue.length > 0) {
-    DEBUG_LOG("processNextXmlRequest: readyState == " + gXmlReq.readyState + "\n");
+    DEBUG_LOG("processNextXmlRequest: readyState == " + gXmlReq.readyState);
     if (gXmlReq.readyState === 0 || gXmlReq.readyState === 4) {
       let r = gRequestQueue.shift();
 

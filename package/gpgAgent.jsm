@@ -322,12 +322,11 @@ var EnigmailGpgAgent = {
 
   /**
    * Determine the "gpg home dir", i.e. the directory where gpg.conf and the keyring are
-   * stored
+   * stored using the "additional parameter" and gpgconf.
    *
    * @return String - directory name, or NULL (in case the command did not succeed)
    */
   getGpgHomeDir: function() {
-
 
     let param = EnigmailPrefs.getPref("agentAdditionalParam");
 
@@ -751,7 +750,21 @@ var EnigmailGpgAgent = {
     EnigmailLog.DEBUG("gpgAgent.jsm: detectGpgAgent: GPG_AGENT_INFO='" + EnigmailGpgAgent.gpgAgentInfo.envStr + "'\n");
   },
 
+  /**
+   * Determine the GnuPG home directory based on the same logic as GnuPG, but without involving
+   * any external tool.
+   *
+   * @return String - the path to the gpg home directory
+   */
   determineGpgHomeDir: function(esvc) {
+
+    let param = EnigmailPrefs.getPref("agentAdditionalParam");
+    if (param) {
+      let hd = getHomedirFromParam(param);
+
+      if (hd) return hd;
+    }
+
     let homeDir = esvc.environment.get("GNUPGHOME");
 
     if (!homeDir && EnigmailOS.isWin32) {

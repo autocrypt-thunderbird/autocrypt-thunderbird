@@ -34,13 +34,15 @@ Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
+Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 
-
-const getFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
+const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 
 // pEp JSON Server executable name
-const PEP_SERVER_EXECUTABLE = "pep-json-server";
+const PEP_SERVER_EXECUTABLE = "pepmda-enigmail";
+//const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 var gPepVersion = null;
 var gSecurityToken = null;
@@ -95,6 +97,24 @@ function startListener() {
 }
 
 
+function getGpgHomeDir() {
+  EnigmailLog.DEBUG("pEpAdapter.jsm: getGpgHomeDir()\n");
+
+  let enigmailGpgAgent = getGpgAgent();
+
+  if (!getGpgAgent().initialized) {
+    let envSvc = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    let esvc = {
+      environment: envSvc,
+      initializationError: null
+    };
+    return enigmailGpgAgent.determineGpgHomeDir(esvc);
+  }
+
+  let homedir = enigmailGpgAgent.getGpgHomeDir();
+  return homedir;
+}
+
 var EnigmailPEPAdapter = {
 
   pep: EnigmailpEp,
@@ -129,6 +149,24 @@ var EnigmailPEPAdapter = {
   },
 
   /**
+   * TODO DOCME
+   */
+  getPepMiniDesktopAdapterBinaryFile: function() {
+    let execFile = EnigmailFiles.resolvePathWithEnv(EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE));
+    if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
+      let pepmda = EnigmailApp.getInstallLocation();
+      pepmda.append("pepmda");
+      pepmda.append("bin");
+      execFile = EnigmailFiles.resolvePath(
+        EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE), pepmda.path, 0);
+      if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
+        execFile = null;
+      }
+    }
+    return execFile;
+  },
+
+  /**
    * Determine if the pEp JSON adapter is available at all
    *
    * @param attemptInstall: Boolean - try to install pEp if possible
@@ -140,12 +178,28 @@ var EnigmailPEPAdapter = {
 
     if (gPepAvailable === null) {
       gPepAvailable = false;
-      let execFile = getFiles().resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
-      if (execFile && execFile.exists() && execFile.isExecutable()) {
+      let execFile = this.getPepMiniDesktopAdapterBinaryFile();
+      if (execFile === null) {
+        return null;
+      }
+
+
+      let resourcesDir = execFile.parent.parent;
+      resourcesDir.append("share");
+      resourcesDir.append("pepmda-enigmail");
+
+      let resDirPath = undefined;
+
+      if (resourcesDir && resourcesDir.exists()) {
+        resDirPath = resourcesDir.path;
+      }
+
+      if (execFile.exists() && execFile.isExecutable()) {
         EnigmailCore.getService(null, true);
         let pepVersionStr = "";
 
         let process = subprocess.call({
+          workdir: resDirPath,
           command: execFile,
           arguments: ["--version"],
           charset: null,
@@ -173,6 +227,7 @@ var EnigmailPEPAdapter = {
       }
     }
 
+    EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable() = " + gPepAvailable + "\n");
     return gPepAvailable;
   },
 
@@ -299,8 +354,9 @@ var EnigmailPEPAdapter = {
     // automatic mode, with Crypto enabled (do not use pEp)
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
 
-    let execFile = getFiles().resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
-    if (execFile) EnigmailpEp.setServerPath(execFile.path);
+    let execFile = this.getPepMiniDesktopAdapterBinaryFile();
+    let homeDir = getGpgHomeDir();
+    if (execFile) EnigmailpEp.setServerPath(execFile.path, homeDir, getGpgAgent().agentPath);
 
     try {
       EnigmailpEp.getPepVersion().then(function _success(data) {

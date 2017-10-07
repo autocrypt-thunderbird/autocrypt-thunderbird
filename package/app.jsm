@@ -43,12 +43,18 @@ const EnigmailApp = {
     return Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo).ID == SEAMONKEY_ID;
   },
 
+  /**
+   * Get Enigmail version
+   */
   getVersion: function() {
     EnigmailLog.DEBUG("app.jsm: getVersion\n");
     EnigmailLog.DEBUG("app.jsm: installed version: " + EnigmailApp.version + "\n");
     return EnigmailApp.version;
   },
 
+  /**
+   * Get Enigmail installation directory
+   */
   getInstallLocation: function() {
     return EnigmailApp.installLocation;
   },
