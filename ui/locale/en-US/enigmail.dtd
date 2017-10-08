@@ -469,6 +469,7 @@
 <!ENTITY enigmail.keyTrust.title                   "Enigmail - Set Owner Trust">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Key To Trust:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "How much do you trust the owner of the key to sign other keys properly?">
+<!ENTITY enigmail.keyTrust.trustLevel.tooltip      "For further information about keytrust levels visit: https://gpgtools.tenderapp.com/kb/faq/what-is-ownertrust-trust-levels-explained">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "Unknown (Not yet specified)">
 <!ENTITY enigmail.keyTrust.noTrust.label           "Not Trusted (Not trusted to sign keys properly)">
 <!ENTITY enigmail.keyTrust.marginalTrust.label     "Marginal (Somewhat trusted to sign keys properly)">

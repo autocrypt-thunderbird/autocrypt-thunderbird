@@ -438,6 +438,7 @@
 <!ENTITY enigmail.keyTrust.title                   "Enigmail – Vertrauen zu Besitzer festlegen">
 <!ENTITY enigmail.keyTrust.trustKey.label          "Vertrauenswürdiger Schlüssel:">
 <!ENTITY enigmail.keyTrust.trustLevel.label        "Wie weit trauen Sie dem Besitzer zu, Identitäten anderer Benutzer vor Unterschrift zu prüfen?">
+<!ENTITY enigmail.keyTrust.trustLevel.tooltip      "Für genauere Informationen zum Thema Vertrauensniveaus, besuchen Sie: https://gpgtools.tenderapp.com/kb/faq/what-is-ownertrust-trust-levels-explained">
 <!ENTITY enigmail.keyTrust.dontKnow.label          "Unbekannt (Noch nicht zugewiesen)">
 <!ENTITY enigmail.keyTrust.noTrust.label           "Kein Vertrauen (Dieser Person wird explizit nicht vertraut)">
 <!ENTITY enigmail.keyTrust.marginalTrust.label     "Geringes Vertrauen (Dieser Person wird eingeschränkt vertraut)">

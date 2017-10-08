@@ -34,7 +34,7 @@
     <separator/>
     <vbox>
       <groupbox>
-        <caption label="&enigmail.keyTrust.trustLevel.label;"/>
+        <caption label="&enigmail.keyTrust.trustLevel.label;" tooltiptext="&enigmail.keyTrust.trustLevel.tooltip;"/>
           <radiogroup id="trustLevelGroup">
             <radio value="1" id="trustLevel1"
                    label="&enigmail.keyTrust.dontKnow.label;"/>
