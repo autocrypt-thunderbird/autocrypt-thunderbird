@@ -357,30 +357,39 @@
    <!-- Key Create Progress Page -->
   <wizardpage id="pgKeygen" pageid="pgKeygen"
               onpageshow="wizardGenKey()"
-              next="pgUpload"
+              next="pgRevocert"
               label="&enigmail.setupWiz.pgKeygen.title;"
               description="&enigmail.setupWiz.pgKeygen.subtitle;">
     <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
 
-      <caption label="&enigmail.keyGen.console.label;"/>
-
       <description>&enigmail.keygen.desc;</description>
-
       <groupbox>
         <progressmeter id="keygenProgress" mode="determined" value="0"/>
       </groupbox>
 
-      <vbox id="revCertBox" hidden="true">
-        <separator/>
+      <separator/>
+      <description id="keyGenCompleteMsg" hidden="true">
+        <html:b>&enigmail.setupWiz.pgKeygen.keyGenComplete;</html:b>
+      </description>
+      <separator/>
+    </groupbox>
+  </wizardpage>
+
+  <!-- Key Revocation certificate page -->
+  <wizardpage id="pgRevocert" pageid="pgRevocert"
+              onpageshow="wizardRevoCert()"
+              next="pgUpload"
+              label="&enigmail.setupWiz.pgRevocert.title;"
+              description="&enigmail.setupWiz.pgRevocert.subtitle;">
+    <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
+
+      <separator/>
+      <vbox id="revCertBox">
         <description>
-          <html:b>&enigmail.setupWiz.pgKeygen.keyGenComplete;</html:b>
-        </description>
-        <separator/>
-        <description>
-          &enigmail.setupWiz.pgKeygen.revokeCertDesc;
+          &enigmail.setupWiz.pgRevocert.desc;
         </description>
         <hbox>
-          <button label="&enigmail.setupWiz.pgKeygen.revCertButton;" oncommand="wizardCreateRevCert()"/>
+          <button label="&enigmail.setupWiz.pgRevocert.button;" oncommand="wizardCreateRevCert()"/>
         </hbox>
       </vbox>
 

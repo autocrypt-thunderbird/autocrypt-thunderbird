@@ -19,7 +19,7 @@
 <!ENTITY enigmail.keyGen.years.label      "years">
 <!ENTITY enigmail.keyGen.noExpiry.label   "Key does not expire">
 <!ENTITY enigmail.keyGen.keySize.label    "Key size">
-<!ENTITY enigmail.keyGen.console.label    "Key Generation Console">
+<!ENTITY enigmail.keyGen.console.label    "Key Generation">
 <!ENTITY enigmail.keyGen.keyType.label    "Key type">
 <!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
@@ -758,11 +758,13 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.title            "Key Creation">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Your key is now being generated">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Your Key is Generated">
-<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc    "In case your private key gets lost or compromised, you might need to revoke your public key
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "Revocation Certificate Creation">
+<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "You can now create your revocation certificate">
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "In case your private key gets lost or compromised, you might need to revoke your public key
                                                       such that others don't continue to use your old key.
                                                       For this purpose, you need a revocation certificate.
-                                                      <html:br/>You will be prompted to enter your password for this.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Create Revocation Certificate">
+                                                      <html:br/>You will be prompted to enter your password for this. Please transfer the certificate to a medium which can be stored away safely such as a CD or USB stick. If somebody gains access to this certificate they can use it to render your key unusable.">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "Create Revocation Certificate">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgAdvanced.title          "Additional Settings">

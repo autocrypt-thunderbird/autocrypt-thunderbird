@@ -16,7 +16,7 @@
 <!ENTITY enigmail.keyGen.years.label      "Jahren">
 <!ENTITY enigmail.keyGen.noExpiry.label   "Schlüssel wird nie ungültig">
 <!ENTITY enigmail.keyGen.keySize.label    "Schlüssellänge">
-<!ENTITY enigmail.keyGen.console.label    "Konsole zum Erzeugen eines Schlüssels">
+<!ENTITY enigmail.keyGen.console.label    "Erzeugen eines Schlüssels">
 <!ENTITY enigmail.keyGen.keyType.label    "Algorithmus">
 <!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
@@ -716,10 +716,12 @@ Um Ihren privaten Schlüssel zu schützen, fragen die folgenden zwei Dialoge Sie
 <!ENTITY enigmail.setupWiz.pgKeygen.title            "Schlüsselerzeugung">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Ihr Schlüsselpaar wird nun erzeugt">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Ihr Schlüssel ist angelegt.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revokeCertDesc    "Falls Ihr privater Schlüssel irgendwann verloren geht oder in falsche Hände gerät, sollten Sie diesen Schlüssel für ungültig erklären können, damit andere Ihren alten Schlüssel nicht weiter verwenden.<html:br />
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "Widerrufszertifikaterzeugung">
+<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "Sie können nun Ihr Widerrufszertifikat erstellen">
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "Falls Ihr privater Schlüssel irgendwann verloren geht oder in falsche Hände gerät, sollten Sie diesen Schlüssel für ungültig erklären können, damit andere Ihren alten Schlüssel nicht weiter verwenden.<html:br />
 <html:br />
-Zu diesem Zweck können Sie jetzt ein Widerrufszertifikat erzeugen, mit dem Sie im Fall der Fälle den Schlüssel widerrufen können. Dazu müssen Sie gleich Ihr Passwort eingeben.">
-<!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Widerrufszertifikat erzeugen">
+Zu diesem Zweck können Sie jetzt ein Widerrufszertifikat erzeugen, mit dem Sie im Fall der Fälle den Schlüssel widerrufen können. Dazu müssen Sie gleich Ihr Passwort eingeben. Bitte übertragen Sie das Widerrufszertifikat an einen sicheren Ort (wie  USB Stick oder CD). Wenn andere Personen Zugriff darauf erhalten, könnten diese Ihren Schlüssel unbrauchbar machen.">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "Widerrufszertifikat erzeugen">
 
 <!ENTITY enigmail.setupWiz.pgAdvanced.title          "Zusätzliche Einstellungen">
 <!ENTITY enigmail.setupWiz.pgAdvanced.subtitle       "Zusätzliche Einstellungen für Ihr Profil">

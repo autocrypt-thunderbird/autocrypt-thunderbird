@@ -178,6 +178,9 @@ function onNext() {
       case "pgKeygen":
         setNextPage(onAfterPgKeygen());
         break;
+      case "pgRevocert":
+        setNextPage(onAfterPgRevocert());
+        break;
       case "pgUpload":
         setNextPage(onAfterPgUpload());
         break;
@@ -303,6 +306,10 @@ function onAfterPgKeyCreate() {
 }
 
 function onAfterPgKeygen() {
+  return "pgRevocert";
+}
+
+function onAfterPgRevocert() {
   if (gWizardUserMode == "advanced") {
     return "pgUpload";
   }
@@ -921,6 +928,8 @@ function wizardGenKey() {
     onStartRequest: function() {},
     onStopRequest: function(status) {
       wizardKeygenTerminate(status);
+      disableNext(false);
+      EnigmailDialog.info(window, EnigGetString("createKeyOK"));
     },
     onDataAvailable: function(data) {
       EnigmailLog.DEBUG("enigmailSetupWizard.js: genKey - onDataAvailable() " + data + "\n");
@@ -982,8 +991,14 @@ function wizardKeygenTerminate(exitCode) {
 
   enigmailKeygenCloseRequest();
   EnigmailKeyRing.clearCache();
+}
 
-  document.getElementById("revCertBox").removeAttribute("hidden");
+// show revocation certificate page
+
+function wizardRevoCert() {
+  var wizard = getWizard();
+  wizard.getButton("back").disabled = true;
+
 }
 
 // create a revokation certificate
