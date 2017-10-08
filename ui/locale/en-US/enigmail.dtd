@@ -344,7 +344,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "Repair message">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Please wait ...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "OpenPGP Options">
+<!ENTITY enigmail.amPrefTitle.label                 "Signing/Encryption Options...">
 <!ENTITY enigmail.amPrefDesc.label                  "Support for OpenPGP encryption and signing messages is provided by Enigmail. You need to have GnuPG (gpg) installed in order to use this feature.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this identity">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
