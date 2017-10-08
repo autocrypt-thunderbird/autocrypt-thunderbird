@@ -739,6 +739,7 @@ Zu diesem Zweck können Sie jetzt ein Widerrufszertifikat erzeugen, mit dem Sie 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Danke">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail ist nun fertig eingerichtet.<html:br/><html:br/>Danke, dass Sie Enigmail verwenden.">
+<!ENTITY enigmail.pgComplete.help.title              "Für weiteren Informationen über die Nutzung von Enigmail besuchen Sie ">
 
 <!-- wizard: manual setup page -->
 <!ENTITY enigmail.setupWiz.pgExpert.title            "Manuelle Einrichtung von Enigmail">

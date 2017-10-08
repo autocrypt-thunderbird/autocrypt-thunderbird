@@ -471,11 +471,13 @@
       </description>
       <spacer height="20px"/>
     </vbox>
-
     <description>
       &enigmail.setupWiz.pgComplete.desc;
     </description>
-
+    <separator/>
+    <description>&enigmail.pgComplete.help.title;</description>
+    <description onclick="EnigmailWindows.openEnigmailDocu(window);"
+      class="enigmailLink">https://www.enigmail.net/</description>
   </wizardpage>
 
 

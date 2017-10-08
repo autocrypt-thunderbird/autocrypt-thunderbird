@@ -172,6 +172,19 @@ const EnigmailWindows = {
   },
 
   /**
+   * Open the Enigmail Documentation page in a new window
+   *
+   * no return value
+   */
+  openEnigmailDocu: function(parent) {
+    if (!parent) {
+      parent = this.getMostRecentWindow();
+    }
+
+    parent.open("https://enigmail.net/faq/docu.php", "", "chrome,width=600,height=500,resizable");
+  },
+
+  /**
    * Display the Per-Recipient Rules editor window
    *
    * no return value
@@ -647,5 +660,4 @@ const EnigmailWindows = {
     window.openDialog("chrome://enigmail/content/autocryptInitiateBackup.xul",
       "", "dialog,centerscreen");
   }
-
 };
