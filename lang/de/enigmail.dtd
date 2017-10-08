@@ -21,6 +21,8 @@
 <!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 
+<!ENTITY enigmail.keyAttachAuto.label     "Meinen öffentlichen Schlüssel immer anhängen">
+
 <!ENTITY enigmail.preferences.label       "Enigmail-Einstellungen">
 
 <!ENTITY enigmail.passwordSettings.label   "Passphrasen-Einstellungen">
@@ -717,6 +719,11 @@ Um Ihren privaten Schlüssel zu schützen, fragen die folgenden zwei Dialoge Sie
 <html:br />
 Zu diesem Zweck können Sie jetzt ein Widerrufszertifikat erzeugen, mit dem Sie im Fall der Fälle den Schlüssel widerrufen können. Dazu müssen Sie gleich Ihr Passwort eingeben.">
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Widerrufszertifikat erzeugen">
+
+<!ENTITY enigmail.setupWiz.pgAdvanced.title          "Zusätzliche Einstellungen">
+<!ENTITY enigmail.setupWiz.pgAdvanced.subtitle       "Zusätzliche Einstellungen für Ihr Profil">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Öffentlichen Schlüssel anhängen">
+<!ENTITY enigmail.attachAuto.desc                    "Bei Aktivierung wird Ihr öffentlicher Schlüssel automatisch an Ihre E-Mails angehängt">
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Einstellungen aus vorheriger Installation importieren">

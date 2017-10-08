@@ -30,6 +30,7 @@
 <!ENTITY enigmail.keyUpload.sks.label     "Upload the the global OpenPGP keyservers">
 <!ENTITY enigmail.keyUpload.sks.desc      "Uploading your key to the global OpenPGP key servers allows users of legacy mail apps to send you encrypted or signed messages. Keep in mind that everybody can read everything uploaded to these key servers (think of it like a phonebook). Do not upload your key if you want to keep the email address associated with it private.">
 <!ENTITY enigmail.keyUpload.wks.label     "Upload to the keyserver of your mail provider">
+<!ENTITY enigmail.keyAttachAuto.label     "Always attach my public key">
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
@@ -763,8 +764,12 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.revCertButton    "Create Revocation Certificate">
 
 <!-- wizard: key creation - key upload step -->
+<!ENTITY enigmail.setupWiz.pgAdvanced.title          "Additional Settings">
+<!ENTITY enigmail.setupWiz.pgAdvanced.subtitle       "Additional settings for your profile">
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the internet">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
+<!ENTITY enigmail.attachAuto.desc                    "By activation your public keys gets attached to your mails automatically">
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">

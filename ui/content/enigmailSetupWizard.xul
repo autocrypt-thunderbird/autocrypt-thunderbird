@@ -392,10 +392,11 @@
   <wizardpage id="pgUpload" pageid="pgUpload"
               onpageshow="wizardUpload()"
               next="pgComplete"
-              label="&enigmail.setupWiz.pgUpload.title;"
-              description="&enigmail.setupWiz.pgUpload.subtitle;">
+              label="&enigmail.setupWiz.pgAdvanced.title;"
+              description="&enigmail.setupWiz.pgAdvanced.subtitle;">
     <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
       <vbox>
+        <caption label="&enigmail.setupWiz.pgUpload.title;"/>
         <description>&enigmail.keyUpload.desc;</description>
         <separator/>
         <deck id="keyUploadWksDeck">
@@ -409,6 +410,13 @@
         <spacer height="5px"/>
         <checkbox label="&enigmail.keyUpload.sks.label;" checked="false" id="keyUploadSks"/>
         <description>&enigmail.keyUpload.sks.desc;</description>
+        <separator/>
+        <caption label="&enigmail.setupWiz.pgAttachAuto.title;"/>
+        <description>&enigmail.attachAuto.desc;</description>
+        <separator/>
+        <deck id="keyUploadAKsDeck">
+          <checkbox label="&enigmail.keyAttachAuto.label;" checked="false" id="keyAttachAuto" onchange="wizardSaveAutoAttach()"/>
+        </deck>
       </vbox>
     </groupbox>
 

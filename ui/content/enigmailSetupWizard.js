@@ -882,7 +882,6 @@ function wizardLocateGpg() {
 function checkPassphrase() {
 
   // gpg >= 2.1 queries passphrase using gpg-agent only
-
   if (EnigmailGpg.getGpgFeature("keygen-passphrase")) {
     var passphrase = enigmailCheckPassphrase();
     if (!passphrase) return false;
@@ -911,6 +910,8 @@ function wizardGenKey() {
   }
 
   var curId = wizardGetSelectedIdentity();
+  // set attachPgpKey default false
+  curId.setBoolAttribute("attachPgpKey", false);
 
   var userName = curId.fullName;
   var userEmail = curId.email;
@@ -1439,6 +1440,19 @@ function doImportSettings() {
 
 function displayUnmatchedIds(emailArr) {
   EnigAlert(EnigGetString("setupWizard.unmachtedIds", ["- " + emailArr.join("\n- ")]));
+}
+
+// set chosen value for attachPgpKey for current identity
+
+function wizardSaveAutoAttach() {
+  let attachKeyAuto = document.getElementById("keyAttachAuto");
+  var curId = wizardGetSelectedIdentity();
+  if(attachKeyAuto.checked) {
+    curId.setBoolAttribute("attachPgpKey", true);
+  }
+  else {
+    curId.setBoolAttribute("attachPgpKey", false);
+  }
 }
 
 function wizardUpload() {
