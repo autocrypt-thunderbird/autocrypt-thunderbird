@@ -1,0 +1,62 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/**
+ * Enigmail style for HTML pages, displayed in tabs
+ */
+
+
+
+
+body {
+  color: black;
+  padding: 0;
+  background-color: white;
+  border-style: solid none none none;
+  border-color: #0077bb;
+  border-width: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  max-width: 700px;
+  display: list-item;
+  list-style-type: disc;
+  list-style-position: inside;
+  list-style-image: url("chrome://enigmail/skin/enigmail-logo.png");
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.4em;
+  margin-top: 1.3em;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin-top: 1.3em;
+}
+
+ul {
+  list-style-image: none;
+}
+
+a {
+  text-decoration: underline;
+}
+
+a:link {
+    color: blue;
+}
+
+a:visited {
+    color: #9900cc;
+}
+
+a:hover {
+  color: red;
+}

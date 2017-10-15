@@ -29,57 +29,10 @@ Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: f
 Cu.import("resource://enigmail/installPep.jsm"); /* global EnigmailInstallPep: false */
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 
-function upgradeRecipientsSelection() {
-  // Upgrade perRecipientRules and recipientsSelectionOption to
-  // new recipientsSelection
-
-  var keySel = EnigmailPrefs.getPref("recipientsSelectionOption");
-  var perRecipientRules = EnigmailPrefs.getPref("perRecipientRules");
-
-  var setVal = 2;
-
-  /*
-   1: rules only
-   2: rules & email addresses (normal)
-   3: email address only (no rules)
-   4: manually (always prompt, no rules)
-   5: no rules, no key selection
-   */
-
-  switch (perRecipientRules) {
-    case 0:
-      switch (keySel) {
-        case 0:
-          setVal = 5;
-          break;
-        case 1:
-          setVal = 3;
-          break;
-        case 2:
-          setVal = 4;
-          break;
-        default:
-          setVal = 2;
-      }
-      break;
-    case 1:
-      setVal = 2;
-      break;
-    case 2:
-      setVal = 1;
-      break;
-    default:
-      setVal = 2;
-  }
-
-  // set new pref
-  EnigmailPrefs.setPref("recipientsSelection", setVal);
-
-  // clear old prefs
-  EnigmailPrefs.getPrefBranch().clearUserPref("perRecipientRules");
-  EnigmailPrefs.getPrefBranch().clearUserPref("recipientsSelectionOption");
-}
-
+/**
+ * Upgrade sending prefs
+ * (v1.6.x -> v1.7 )
+ */
 function upgradePrefsSending() {
   EnigmailLog.DEBUG("enigmailCommon.jsm: upgradePrefsSending()\n");
 
@@ -125,6 +78,7 @@ function upgradePrefsSending() {
 
 /**
  * Replace short key IDs with FPR in identity settings
+ * (v1.9 -> v2.0)
  */
 function replaceKeyIdWithFpr() {
   try {
@@ -159,6 +113,7 @@ function replaceKeyIdWithFpr() {
 
 /**
  * Change the default to PGP/MIME for all accounts, except nntp
+ * (v1.8.x -> v1.9)
  */
 function defaultPgpMime() {
   let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
@@ -258,7 +213,7 @@ const EnigmailConfigure = {
         defaultPgpMime();
       }
       if (vc.compare(oldVer, "2.0a1pre") < 0) {
-        replaceKeyIdWithFpr();
+        this.upgradeTo20();
       }
     }
 

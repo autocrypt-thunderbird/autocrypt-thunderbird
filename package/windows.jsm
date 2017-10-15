@@ -19,6 +19,7 @@ Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
@@ -166,9 +167,7 @@ const EnigmailWindows = {
    * no return value
    */
   openAboutWindow: function() {
-    EnigmailWindows.openWin("about:enigmail",
-      "chrome://enigmail/content/enigmailAbout.xul",
-      "resizable,centerscreen");
+    EnigmailWindows.openMailTab("chrome://enigmail/content/enigmailAbout.xul", "about:enigmail");
   },
 
   /**
@@ -665,12 +664,19 @@ const EnigmailWindows = {
    * Open a URL in a tab on the main window. The URL can either be a web page
    * (e.g. https://enigmail.net/ or a chrome document (e.g. chrome://enigmail/content/x.xul))
    *
-   * @param aURL: String - the URL to open
+   * @param aURL:    String - the URL to open
+   * @param winName: String - name of the window; used to identify if it is already open
    */
-  openMailTab: function(aURL) {
-    let t = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
-    t.openTab("chromeTab", {
-      chromePage: aURL
-    });
+  openMailTab: function(aURL, windowName) {
+    if (!EnigmailApp.isSuite()) {
+      let t = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
+      t.openTab("chromeTab", {
+        chromePage: aURL
+      });
+    }
+    else {
+      EnigmailWindows.openWin(windowName,
+        aURL, "resizable,centerscreen");
+    }
   }
 };
