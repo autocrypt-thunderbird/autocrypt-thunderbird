@@ -167,7 +167,7 @@ const EnigmailWindows = {
    * no return value
    */
   openAboutWindow: function() {
-    EnigmailWindows.openMailTab("chrome://enigmail/content/enigmailAbout.xul", "about:enigmail");
+    EnigmailWindows.openMailTab("chrome://enigmail/content/aboutEnigmail.html");
   },
 
   /**

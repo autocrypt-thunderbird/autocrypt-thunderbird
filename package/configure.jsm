@@ -140,7 +140,7 @@ function defaultPgpMime() {
 }
 
 /**
- * Determin if pEp is avaliable, and if it is not available,
+ * Determine if pEp is avaliable, and if it is not available,
  * whether it can be downaloaded and installed. This does not
  * trigger installation.
  */
@@ -153,9 +153,18 @@ function isPepInstallable() {
   return EnigmailInstallPep.isPepInstallerAvailable();
 }
 
+function displayUpgradeInfo() {
+  EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
+  try {
+    EnigmailWindows.openMailTab("chrome://enigmail/content/upgradeInfo.html");
+  }
+  catch (ex) {}
+}
+
+
 const EnigmailConfigure = {
   configureEnigmail: function(win, startingPreferences) {
-    EnigmailLog.DEBUG("configure.jsm: configureEnigmail\n");
+    EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
     let oldVer = EnigmailPrefs.getPref("configuredVersion");
 
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
@@ -223,5 +232,6 @@ const EnigmailConfigure = {
 
   upgradeTo20: function() {
     replaceKeyIdWithFpr();
+    displayUpgradeInfo();
   }
 };

@@ -13,6 +13,32 @@ var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
 const Cu = Components.utils;
 
 Cu.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
+Cu.import("resource://enigmail/buildDate.jsm"); /* global EnigmailBuildDate: false */
+Cu.import("resource://enigmail/app.jsm"); /* global EnigmailApp: false */
+Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
+Cu.import("resource://enigmail/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
+
+function getEnigmailVersion() {
+  let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate + ")";
+  return EnigmailLocale.getString("usingVersion", versionStr);
+}
+
+function getGpgWorking() {
+  var enigmailSvc = EnigmailCore.getService();
+
+  var agentStr;
+  if (enigmailSvc) {
+    agentStr = EnigmailLocale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
+  }
+  else {
+    agentStr = EnigmailLocale.getString("agentError");
+
+    if (enigmailSvc && enigmailSvc.initializationError)
+      agentStr += "\n" + enigmailSvc.initializationError;
+  }
+
+  return agentStr;
+}
 
 const EnigmailLocalizeHtml = {
   getAllElementsWithAttribute: function(doc, attribute) {
@@ -35,7 +61,17 @@ const EnigmailLocalizeHtml = {
       let txtId = node.getAttribute("txtId");
       let param = node.getAttribute("txtParam");
 
-      node.innerHTML = EnigmailLocale.getString(txtId, param);
+      switch (txtId) {
+        case "FNC_enigmailVersion":
+          node.innerHTML = getEnigmailVersion();
+          break;
+        case "FNC_isGpgWorking":
+          node.innerHTML = getGpgWorking();
+          break;
+        default:
+          node.innerHTML = EnigmailLocale.getString(txtId, param);
+      }
+
     }
   }
 };

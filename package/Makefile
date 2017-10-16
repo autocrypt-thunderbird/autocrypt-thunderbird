@@ -24,6 +24,7 @@ MODFILES = \
            armor.jsm \
            attachment.jsm \
            autocrypt.jsm \
+           buildDate.jsm \
            card.jsm \
            clipboard.jsm \
            commandLine.jsm \
@@ -98,7 +99,16 @@ MODFILES = \
            wksMimeHandler.jsm \
            zbase32.jsm
 
-all: deploy
+DATE_FMT = +%Y%m%d-%H%M
+SOURCE_DATE_EPOCH ?= $(shell date +%s)
+
+# first try GNU /bin/date syntax; if that doesn't work, try BSD
+# /bin/date syntax.  If that still fails, ignore SOURCE_DATE_EPOCH
+ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/dev/null || \
+                        TZ=UTC date -r "$(SOURCE_DATE_EPOCH)" $(DATE_FMT) || \
+                        TZ=UTC date $(DATE_FMT) )
+
+all: libs deploy
 
 deploy: $(PREFFILES) $(COMPFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/components $(COMPFILES)
@@ -110,3 +120,8 @@ clean:
 	$(DEPTH)/util/install -u $(DIST)/components $(COMPFILES)
 	$(DEPTH)/util/install -u $(DIST)/defaults/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/modules $(MODFILES)
+
+libs:
+	echo '"use strict";' > buildDate.jsm
+	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> buildDate.jsm
+	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> buildDate.jsm

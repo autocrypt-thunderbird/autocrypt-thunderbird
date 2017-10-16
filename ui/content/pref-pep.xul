@@ -26,7 +26,6 @@
         ondialogaccept="onAccept();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/pref-pep.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailBuildDate.js"/>
 
   <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">

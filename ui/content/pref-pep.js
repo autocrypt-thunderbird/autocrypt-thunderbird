@@ -14,6 +14,7 @@ Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Cu.import("resource://enigmail/buildDate.jsm"); /*global EnigmailBuildDate: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 var gAccountList;
@@ -25,9 +26,6 @@ var gPassiveMode;
 var gProtectedSubject;
 var gWarnReply;
 var gLookupKeys;
-
-/* From enigmailBuildDate.js: */
-/* global EnigBuildDate: false */
 
 function onLoad() {
 
@@ -41,7 +39,7 @@ function onLoad() {
 
   gLookupKeys.checked = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 
-  let versionNum = EnigmailApp.getVersion() + " (" + EnigBuildDate + ")";
+  let versionNum = EnigmailApp.getVersion() + " (" + EnigmailBuildDate + ")";
   let displayVersion = EnigmailLocale.getString("enigmailPepVersion", versionNum);
   document.getElementById("enigmailVersion").setAttribute("value", displayVersion);
 
