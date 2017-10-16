@@ -570,6 +570,8 @@ Enigmail.msg = {
       isAuto: isAuto
     };
 
+    this.mimeParts = null;
+
     if (!isAuto) {
       EnigmailVerify.setManualUri(this.getCurrentMsgUriSpec());
     }
@@ -680,6 +682,9 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb:\n");
 
     this.buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
+    if (mimeMsg && mimeMsg.parts) {
+      this.mimeParts = mimeMsg.parts;
+    }
 
     var enigmailSvc;
     try {

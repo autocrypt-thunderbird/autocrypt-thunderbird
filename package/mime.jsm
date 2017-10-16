@@ -333,5 +333,22 @@ const EnigmailMime = {
       endPos: endPos,
       securityLevel: 0
     };
+  },
+
+  /**
+   * Get the part number from a URI spec (e.g. mailbox:///folder/xyz?part=1.2.3.5)
+   *
+   * @param spec: String - the URI spec to inspect
+   *
+   * @return String: the mime part number (or "" if none found)
+   */
+  getMimePartNumber: function(spec) {
+    let m = spec.match(/([\?&]part=)(\d+(\.\d+)*)/);
+
+    if (m && m.length >= 3) {
+      return m[2];
+    }
+
+    return "";
   }
 };

@@ -33,6 +33,7 @@ Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailC
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
 Components.utils.import("resource://enigmail/webKey.jsm"); /* global EnigmailWks: false */
+Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -1471,29 +1472,54 @@ if (messageHeaderSink) {
       },
 
       /**
-       * Determine if a given mime part number should be displayed.
-       * Returns true if one of these conditions is true:
-       *  - this is the 1st crypto-mime part
-       *  - the mime part is earlier in the mime tree
-       *  - the mime part is the 1st child of an already displayed mime part
+       * Determine if a given MIME part number is a multipart/related message or a child thereof
+       *
+       * @param mimePart:      Object - The MIME Part object to evaluate from the MIME tree
+       * @param searchPartNum: String - The part number to determine
        */
-      displaySubPart: function(mimePartNumber) {
-        if (!mimePartNumber) return true;
+      isMultipartRelated: function(mimePart, searchPartNum) {
+        if (searchPartNum.indexOf(mimePart.partName) == 0 && mimePart.partName.length <= searchPartNum.length) {
+          if (mimePart.contentType == "multipart/related") return true;
 
-        let securityInfo = Enigmail.msg.securityInfo;
-        if (mimePartNumber.length > 0 && securityInfo && securityInfo.encryptedMimePart && securityInfo.encryptedMimePart.length > 0) {
-          let c = EnigmailFuncs.compareMimePartLevel(securityInfo.encryptedMimePart, mimePartNumber);
-
-          if (c === -1) {
-            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displaySubPart: MIME part after already processed part\n");
-            return false;
-          }
-          if (c === -2 && mimePartNumber !== securityInfo.encryptedMimePart + ".1") {
-            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displaySubPart: MIME part not 1st child of parent\n");
-            return false;
+          for (let i in mimePart.parts) {
+            if (this.isMultipartRelated(mimePart.parts[i], searchPartNum)) return true;
           }
         }
+        return false;
+      },
 
+      /**
+       * Determine if a given mime part number should be displayed.
+       * Returns true if one of these conditions is true:
+       *  - this is the 1st displayed block of the message
+       *  - the message part displayed corresonds to the decrypted part
+       *
+       * @param mimePartNumber: String - the MIME part number that was decrypted/verified
+       * @param uriSpec:        String - the URI spec that is being displayed
+       */
+      displaySubPart: function(mimePartNumber, uriSpec) {
+        if (!mimePartNumber) return true;
+        let part = EnigmailMime.getMimePartNumber(uriSpec);
+
+        if (part.length === 0) {
+          // only display header if 1st message part
+          if (mimePartNumber.search(/^1(\.1)*$/) < 0) return false;
+        }
+        else {
+          let r = EnigmailFuncs.compareMimePartLevel(mimePartNumber, part);
+
+          // analyzed mime part is contained in viewed message part
+          if (r === 2) {
+            if (mimePartNumber.substr(part.length).search(/^\.1(\.1)*$/) < 0) return false;
+          }
+          else if (r !== 0) return false;
+
+          if (Enigmail.msg.mimeParts) {
+            for (let i in Enigmail.msg.mimeParts) {
+              if (this.isMultipartRelated(Enigmail.msg.mimeParts[i], mimePartNumber)) return false;
+            }
+          }
+        }
         return true;
       },
 
@@ -1507,7 +1533,7 @@ if (messageHeaderSink) {
 
         if (this.isCurrentMessage(uri)) {
 
-          if (!this.displaySubPart(mimePartNumber)) return;
+          if (!this.displaySubPart(mimePartNumber, uriSpec)) return;
 
           let encToDetails = "";
           if (extraDetails && extraDetails.length > 0) {
@@ -1563,6 +1589,7 @@ if (messageHeaderSink) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
 
         let updateHdrBox = Enigmail.hdrView.updateHdrBox;
+        let uriSpec = (uri ? uri.spec : null);
         let hdr;
 
         try {
@@ -1574,7 +1601,7 @@ if (messageHeaderSink) {
         }
 
         if (typeof(hdr) !== "object") return;
-        if (!this.displaySubPart(mimePartNumber)) return;
+        if (!this.displaySubPart(mimePartNumber, uriSpec)) return;
 
         let msg = gFolderDisplay.selectedMessage;
 
