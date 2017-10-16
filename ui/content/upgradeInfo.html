@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<html>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="chrome://enigmail/skin/enigmail-html.css">
+  <head>
+    <title txtId="upgradeInfo.doctitle"></title>
+  </head>
+
+<script>
+Components.utils.import("resource://enigmail/localizeHtml.jsm");
+
+function onload() {
+  EnigmailLocalizeHtml.onPageLoad(document);
+}
+</script>
+
+<body onload="onload()">
+<header class="header">
+  <div class="header-bar">
+    <div class="header-icon">
+      <a href="https://enigmail.net/" title="The Enigmail Project">
+    	  <img class="logo-img" src="chrome://enigmail/skin/enigmail-logo.png" alt="The Enigmail Project">
+      </a>
+    </div>
+  </div>
+</header>
+<div class="spacer"/>
+<div class="body">
+  <h1 txtId="upgradeInfo.doctitle"></h1>
+  <p txtId="upgradeInfo.welcome1"></p>
+  <p txtId="upgradeInfo.welcome2"></p>
+
+  <h2 txtId="upgradeInfo.encSubject.title"></h2>
+  <p txtId="upgradeInfo.encSubject.desc"></p>
+
+  <h2 txtId="upgradeInfo.buttons.title">Changed behavior of Encrypt and Sign Buttons</h2>
+  <p txtId="upgradeInfo.buttons.desc"></p>
+
+  <h2 txtId="upgradeInfo.autocrypt.title"></h2>
+  <p txtId="upgradeInfo.autocrypt.desc"></p>
+
+  <h2 txtId="upgradeInfo.pEp.title"></h2>
+  <p txtId="upgradeInfo.pEp.desc"></p>
+
+  <p txtId="upgradeInfo.bottom.desc"></p>
+</div>
+
+</body>
+</html>

@@ -12,6 +12,8 @@
   </head>
 
   <script>
+Components.utils.import("resource://enigmail/localizeHtml.jsm");
+
 function EnigOpenURL(hrefObj) {
   const SEAMONKEY_ID="{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
   var xulAppinfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
@@ -25,49 +27,62 @@ function EnigOpenURL(hrefObj) {
 
   eps.loadURI(iUri, null);
 }
+
+function onload() {
+  EnigmailLocalizeHtml.onPageLoad(document);
+}
   </script>
 
-  <body>
+  <body onload="onload()">
+    <header class="header">
+      <div class="header-bar">
+        <div class="header-icon">
+          <a href="https://enigmail.net/" title="The Enigmail Project">
+            <img class="logo-img" src="chrome://enigmail/skin/enigmail-logo.png" alt="The Enigmail Project">
+          </a>
+        </div>
+      </div>
+    </header>
+    <div class="spacer"/>
+    <div class="body">
 
-    <h1>
-      OpenPGP support provided by <a href="https://www.enigmail.net/">Enigmail</a>
-    </h1>
+      <h1 txtId="aboutEnigmail.title"></h1>
 
+      <p>
+      <b><span id="version"> </span></b>
+      </p>
 
-    <p>
-    <b><span id="version"> </span></b>
-    </p>
+      <p>
+      <em><span id="enigmime"> </span></em>
+      </p>
 
-    <p>
-    <em><span id="enigmime"> </span></em>
-    </p>
+      <p>
+      <pre id="agent">
+      </pre>
+      </p>
+      <hr>
 
-    <p>
-    <pre id="agent">
-    </pre>
-    </p>
-  <hr>
+      <h3 txtId="aboutEnigmail.team"></h3>
+      <ul><li><span txtId="aboutEnigmail.projectLeader"></span> <em>Patrick Brunschwig</em></li>
+        <li><span txtId="aboutEnigmail.macOS"></span> <em>Ludwig H&uuml;gelsch&auml;fer</em></li>
+        <li><span txtId="aboutEnigmail.usability"></span> <em>Robert J. Hansen</em></li>
+        <li><span txtId="aboutEnigmail.documentation"></span> <em>Daniele Raffo</em></li>
+        <li><span txtId="aboutEnigmail.testing"></span> <em>Olav Seyfarth</em></li>
+        <li><span txtId="aboutEnigmail.userSupport"></span> <em>the team and the list/forum members</em></li>
+        <li txtId="aboutEnigmail.localization"></li>
+      </ul>
+      <h3 txtId="aboutEnigmail.Credits"></h3>
+      <ul>
+        <li>R. Saravanan: <em txtId="aboutEnigmail.origAuthor"></em></li>
+        <li><span txtId="aboutEnigmail.icons"></span> <em>Jochen Eisinger (Modern), Jan Gerber (Classic), Frank Gerhardt</em></li>
+        <li><span txtId="aboutEnigmail.formerMembers"></span> <em>Barry Porter, Shane M. Coughlan, Nicolai Josuttis, John Clizbe</em></li>
+        <li><span txtId="aboutEnigmail.projectHosting"></span> <em><a href="http://www.sourceforge.net/">Sourceforge.net</a></em></li>
+      </ul>
 
-  <h3>Enigmail is developed by the Enigmail Team:</h3>
-  <ul><li>Lead Developer: <em>Patrick Brunschwig</em></li>
-    <li>Development, Mac OS X Support &amp; Documentation: <em>Ludwig H&uuml;gelsch&auml;fer</em></li>
-    <li>Usability: <em>Robert J. Hansen</em></li>
-    <li>Documentation: <em>Daniele Raffo</em></li>
-    <li>Testing:<em>Olav Seyfarth</em></li>
-    <li>User Support: <em>the team and the list/forum members</em></li>
-    <li>Localization: <em>See the <a href="https://www.enigmail.net/download/langpack.php" target="_blank">Enigmail Language Packs page</a></em></li>
-  </ul>
-  <h3>Credits:</h3>
-  <ul>
-    <li>R. Saravanan: <em>Original author of the Enigmail extension</em></li>
-    <li>Icons: <em>Jochen Eisinger (Modern), Jan Gerber (Classic), Frank Gerhardt</em></li>
-    <li>Former team members: <em>Barry Porter, Shane M. Coughlan, Nicolai Josuttis, John Clizbe</em></li>
-    <li>Project hosting: <em><a href="http://www.sourceforge.net/">Sourceforge.net</a></em></li>
-  </ul>
-
-  <h3>License &amp; Support</h3>
-  <p>Enigmail OpenPGP is open source and licensed under the <a href="https://www.mozilla.org/MPL/2.0/" target="_blank">Mozilla Public License</a> 2.0</p>
-  <p>Support and download is available from <a href="https://www.enigmail.net/">www.enigmail.net</a>.</p>
+      <h3 txtId="aboutEnigmail.licenseSupportTitle"></h3>
+      <p txtId="aboutEnigmail.license" txtParam="<a href='https://www.mozilla.org/MPL/2.0/' target='_blank'>Mozilla Public License</a> 2.0"></p>
+      <p txtId="aboutEnigmail.support"></p>
+    </div>
   </body>
 
 </html>

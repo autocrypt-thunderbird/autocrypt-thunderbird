@@ -109,6 +109,7 @@ zip --must-match\
     modules/keyserverUris.jsm \
     modules/lazy.jsm \
     modules/locale.jsm \
+    modules/localizeHtml.jsm \
     modules/log.jsm \
     modules/mime.jsm \
     modules/mimeDecrypt.jsm \

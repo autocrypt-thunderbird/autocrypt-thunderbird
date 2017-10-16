@@ -60,6 +60,7 @@ MODFILES = \
            keyserverUris.jsm \
            lazy.jsm \
            locale.jsm \
+           localizeHtml.jsm \
            log.jsm \
            mime.jsm \
            mimeDecrypt.jsm \
