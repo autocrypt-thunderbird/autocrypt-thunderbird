@@ -26,7 +26,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 var gTxtConverter = null;
 
-const EnigmailFuncsRegexTwoAddr = new RegExp("<[^>,]*>[^,<]*<[^>,]*>");
+const EnigmailFuncsRegexTwoAddr = new RegExp("^(<[^<,>]+>)(,<[^<,>]+>)*$");
 const EnigmailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*", "g");
 
 const EnigmailFuncs = {
@@ -55,7 +55,7 @@ const EnigmailFuncs = {
     mailAddrs = mailAddrs.replace(/\s+/g, "");
 
     // having two <..> <..> in one email is an error
-    if (mailAddrs.match(EnigmailFuncsRegexTwoAddr)) {
+    if (mailAddrs.search(EnigmailFuncsRegexTwoAddr) < 0) {
       EnigmailLog.ERROR("funcs.jsm: stripEmail: Two <..> entries in mail address: " + mailAddrs + "\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
