@@ -1523,6 +1523,38 @@ if (messageHeaderSink) {
         return true;
       },
 
+      /**
+       * Determine if there are message parts that are not signed/encrypted
+       *
+       * @param mimePartNumber String - the MIME part number that was authenticated
+       *
+       * @return Boolean: true: there are siblings / false: no siblings
+       */
+      hasUnauthenticatedParts: function(mimePartNumber) {
+        function hasSiblings(mimePart, searchPartNum, parent) {
+          if (mimePart.partName.indexOf(parent) == 0 && mimePart.partName !== searchPartNum) return true;
+
+          for (let i in mimePart.parts) {
+            if (hasSiblings(mimePart.parts[i], searchPartNum, parent)) return true;
+          }
+
+          return false;
+        }
+
+        let parent = mimePartNumber.replace(/\.\d+$/, "");
+        if (mimePartNumber.search(/\./) < 0) {
+          parent = "";
+        }
+
+        if (mimePartNumber && Enigmail.msg.mimeParts) {
+          for (let i in Enigmail.msg.mimeParts) {
+            if (hasSiblings(Enigmail.msg.mimeParts[i], mimePartNumber, parent)) return true;
+          }
+        }
+
+        return false;
+      },
+
       updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, extraDetails, mimePartNumber) {
         // uriSpec is not used for Enigmail anymore. It is here becaue other addons and pEp rely on it
 
@@ -1534,6 +1566,10 @@ if (messageHeaderSink) {
         if (this.isCurrentMessage(uri)) {
 
           if (!this.displaySubPart(mimePartNumber, uriSpec)) return;
+          if (this.hasUnauthenticatedParts(mimePartNumber)) {
+            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: found unauthenticated part\n");
+            statusFlags |= Components.interfaces.nsIEnigmail.PARTIALLY_PGP;
+          }
 
           let encToDetails = "";
           if (extraDetails && extraDetails.length > 0) {
