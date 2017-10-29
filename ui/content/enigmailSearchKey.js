@@ -17,12 +17,12 @@
 // from enigmailCommon.js:
 /*global nsIEnigmail: false, EnigSetActive: false, GetEnigmailSvc: false */
 
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
 const INPUT = 0;
 const RESULT = 1;
-
-const ENIG_DEFAULT_HKP_PORT = "11371";
-const ENIG_DEFAULT_HKPS_PORT = "443";
-const ENIG_DEFAULT_LDAP_PORT = "389";
 
 const ENIG_CONN_TYPE_HTTP = 1;
 const ENIG_CONN_TYPE_GPGKEYS = 2;
@@ -48,34 +48,11 @@ function onLoad() {
 
   window.arguments[RESULT].importedKeys = 0;
 
-  var keyserver = window.arguments[INPUT].keyserver.toLowerCase();
-  var protocol = "";
-  if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
-    protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
-    keyserver = keyserver.replace(/^[a-zA-Z0-9_.-]+:\/\//, "");
-  }
-  else {
-    protocol = "hkp";
-  }
+  var keyServerObj = EnigmailKeyServer.parseKeyserverUrl(window.arguments[INPUT].keyserver);
 
-  var port = "";
-  switch (protocol) {
-    case "hkp":
-      port = ENIG_DEFAULT_HKP_PORT;
-      break;
-    case "hkps":
-      port = ENIG_DEFAULT_HKPS_PORT;
-      break;
-    case "ldap":
-      port = ENIG_DEFAULT_LDAP_PORT;
-      break;
-  }
-
-  var m = keyserver.match(/^(.+)(:)(\d+)$/);
-  if (m && m.length == 4) {
-    keyserver = m[1];
-    port = m[3];
-  }
+  var keyserver = keyServerObj.host;
+  var protocol = keyServerObj.protocol;
+  var port = keyServerObj.port;
 
   let reqType;
   if (protocol === "keybase" || keyserver === "keybase.io") {
@@ -86,8 +63,6 @@ function onLoad() {
     // as the mailvelope hkps keyserver is not properly supported by GnuPG/dirmngr, default
     // to the internal protocol
     reqType = ENIG_CONN_TYPE_HTTP;
-    port = ENIG_DEFAULT_HKPS_PORT;
-    protocol = "hkps";
   }
   else if (EnigmailPrefs.getPref("useGpgKeysTool")) {
     reqType = ENIG_CONN_TYPE_GPGKEYS;

@@ -9,7 +9,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
 
-testing("keyserver.jsm"); /*global validKeyserversExist: false, currentProxyModule: true, Ci, executeRefresh: false, gpgRequest: false, requestOverTorWithSocks: false, requestOverTorWithHelper: false, build: false, buildRequests: false */
+testing("keyserver.jsm"); /*global validKeyserversExist: false, currentProxyModule: true, Ci, executeRefresh: false, gpgRequest: false, requestOverTorWithSocks: false, requestOverTorWithHelper: false, build: false, buildRequests: false parseKeyserverUrl: false */
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
@@ -622,4 +622,26 @@ test(function testErrorSearchQueryWithNoID() {
 
   Assert.equal(result, null);
   Assert.equal(errormsgobj.value, EnigmailLocale.getString("failNoID"));
+});
+
+test(function testParseUrl() {
+  let srv = "abc.de.fg";
+  const HKP = "hkp";
+  const HKP_PORT = "11371";
+  let r = parseKeyserverUrl(srv);
+
+  Assert.equal(r.host, srv);
+  Assert.equal(r.protocol, HKP);
+  Assert.equal(r.port, HKP_PORT);
+
+  r = parseKeyserverUrl("hkps://" + srv);
+  Assert.equal(r.host, srv);
+  Assert.equal(r.protocol, "hkps");
+  Assert.equal(r.port, "443");
+
+  r = parseKeyserverUrl("ldap://" + srv + ":765");
+  Assert.equal(r.host, srv);
+  Assert.equal(r.protocol, "ldap");
+  Assert.equal(r.port, "765");
+
 });

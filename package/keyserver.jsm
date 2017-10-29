@@ -36,6 +36,9 @@ Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 const nsIEnigmail = Ci.nsIEnigmail;
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
+const ENIG_DEFAULT_HKP_PORT = "11371";
+const ENIG_DEFAULT_HKPS_PORT = "443";
+const ENIG_DEFAULT_LDAP_PORT = "389";
 
 function matchesKeyserverAction(action, flag) {
   return (action & flag) === flag;
@@ -286,9 +289,83 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  * @return:      Subprocess object, or null in case process could not be started
  */
 function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
+  if (keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
+    // special API for mailvelope.com
+    return accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
+  }
+
   const request = build(actionFlags, keyserver, searchTerms, errorMsgObj, EnigmailHttpProxy);
   if (request === null) return null;
   return execute(request, listener, subprocess);
+}
+
+function buildHkpPayload(actionFlags, searchTerms) {
+  let payLoad = null;
+
+  if (matchesKeyserverAction(actionFlags, nsIEnigmail.UPLOAD_KEY)) {
+    let keyData = EnigmailKeyRing.extractKey(false, searchTerms, null, {}, {});
+    if (keyData.length === 0) return null;
+
+    payLoad = "keytext=" + encodeURIComponent(keyData);
+    return payLoad;
+  }
+
+  // other actions are not yet implemented
+  return null;
+
+}
+
+/**
+ * Access a HKP server directly (without gpg involved)
+ * Same API as access()
+ * currently only key uploading is supported
+ */
+function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
+  EnigmailLog.DEBUG("keyserver.jsm: accessMailvelope()\n");
+
+  const ERROR_MSG = "[GNUPG:] ERROR X";
+  let keySrv = parseKeyserverUrl(keyserver);
+  let protocol = "https"; // protocol is always hkps (which equals to https in TB)
+
+  let payLoad = buildHkpPayload(actionFlags, searchTerms);
+  if (!payLoad) return null;
+
+  let errorCode = 0;
+
+  let xmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+
+  xmlReq.onload = function _onLoad() {
+    EnigmailLog.DEBUG("keyserver.jsm: onload(): status=" + xmlReq.status + "\n");
+    if (xmlReq.status >= 400) {
+      EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
+      listener.stderr(ERROR_MSG);
+      errorCode = 1;
+    }
+  };
+
+  xmlReq.onerror = function(e) {
+    EnigmailLog.DEBUG("keyserver.jsm: onerror: " + e + "\n");
+    listener.stderr(ERROR_MSG);
+    listener.done(1);
+  };
+
+  xmlReq.onloadend = function() {
+    EnigmailLog.DEBUG("keyserver.jsm: loadEnd:\n");
+    listener.done(errorCode);
+  };
+
+  xmlReq.open("POST", protocol + "://" + keySrv.host + ":" + keySrv.port + "/pks/add");
+  xmlReq.send(payLoad);
+
+  // return the same API as subprocess
+  return {
+    wait: function() {
+      throw Components.results.NS_ERROR_FAILURE;
+    },
+    kill: function() {
+      xmlReq.abort();
+    }
+  };
 }
 
 /**
@@ -533,10 +610,65 @@ function performWkdUpload(keyList, win, observer) {
   }
 }
 
+/**
+ * parse a keyserver specification and return host, protocol and port
+ *
+ * @param keyserver: String - name of keyserver with optional protocol and port.
+ *                       E.g. keys.gnupg.net, hkps://keys.gnupg.net:443
+ *
+ * @return Object: {port, host, protocol} (all Strings)
+ */
+function parseKeyserverUrl(keyserver) {
+  if (keyserver.length > 1024) {
+    // insane length of keyserver is forbidden
+    throw Components.results.NS_ERROR_FAILURE;
+  }
+
+  keyserver = keyserver.toLowerCase();
+  let protocol = "";
+  if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
+    protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
+    keyserver = keyserver.replace(/^[a-zA-Z0-9_.-]+:\/\//, "");
+  }
+  else {
+    protocol = "hkp";
+  }
+
+  let port = "";
+  switch (protocol) {
+    case "hkp":
+      port = ENIG_DEFAULT_HKP_PORT;
+      break;
+    case "hkps":
+      port = ENIG_DEFAULT_HKPS_PORT;
+      break;
+    case "ldap":
+      port = ENIG_DEFAULT_LDAP_PORT;
+      break;
+  }
+
+  var m = keyserver.match(/^(.+)(:)(\d+)$/);
+  if (m && m.length == 4) {
+    keyserver = m[1];
+    port = m[3];
+  }
+
+  if (keyserver === "keys.mailvelope.com") {
+    protocol = "hkps";
+    port = ENIG_DEFAULT_HKPS_PORT;
+  }
+
+  return {
+    protocol: protocol,
+    host: keyserver,
+    port: port
+  };
+}
 
 const EnigmailKeyServer = {
   access: access,
   refresh: refresh,
   keyServerUpDownload: keyServerUpDownload,
+  parseKeyserverUrl: parseKeyserverUrl,
   performWkdUpload: performWkdUpload
 };
