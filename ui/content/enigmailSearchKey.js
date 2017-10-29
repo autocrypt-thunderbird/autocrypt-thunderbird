@@ -82,6 +82,13 @@ function onLoad() {
     reqType = ENIG_CONN_TYPE_KEYBASE;
     protocol = "keybase";
   }
+  else if (keyserver === "keys.mailvelope.com") {
+    // as the mailvelope hkps keyserver is not properly supported by GnuPG/dirmngr, default
+    // to the internal protocol
+    reqType = ENIG_CONN_TYPE_HTTP;
+    port = ENIG_DEFAULT_HKPS_PORT;
+    protocol = "hkps";
+  }
   else if (EnigmailPrefs.getPref("useGpgKeysTool")) {
     reqType = ENIG_CONN_TYPE_GPGKEYS;
   }
