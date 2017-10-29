@@ -35,7 +35,7 @@ const EnigmailFuncs = {
    * @return |string|          - list of pure email addresses separated by ","
    */
   stripEmail: function(mailAddresses) {
-    EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddresses=" + mailAddresses + "\n");
+    // EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddresses=" + mailAddresses + "\n");
 
     const SIMPLE = "[^<>,]+"; // RegExp for a simple email address (e.g. a@b.c)
     const COMPLEX = "[^<>,]*<[^<>, ]+>"; // RegExp for an address containing <...> (e.g. Name <a@b.c>)
