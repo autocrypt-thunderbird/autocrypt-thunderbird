@@ -11,19 +11,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("rng.jsm"); /*global EnigmailRNG: false, testing: false, Assert: false, bytesToUInt: false */
 
-test(function testConversionFromByteObjectToUnsignedInteger(){
-  // 1100 1110 0000 1001 1100 0111 1101 1111
-  let expected = 3456747487;
-  let byteObject = {
-    0:206, // 1100 1110
-    1:9,   // 0000 1001
-    2:199, // 1100 0111
-    3:223  // 1101 1111
-  };
-
-  Assert.equal(bytesToUInt(byteObject), expected);
-});
-
-test(function getDifferentUint32(){
+test(function getDifferentUint32() {
   Assert.notEqual(EnigmailRNG.generateRandomUint32(), EnigmailRNG.generateRandomUint32());
+  Assert.notEqual(EnigmailRNG.generateRandomString(15), EnigmailRNG.generateRandomString(15));
+  Assert.equal(EnigmailRNG.generateRandomString(15).length, 15);
 });

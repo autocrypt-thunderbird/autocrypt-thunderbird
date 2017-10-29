@@ -11,39 +11,37 @@ const EXPORTED_SYMBOLS = ["EnigmailRNG"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 
 const SECURITY_RANDOM_GENERATOR = "@mozilla.org/security/random-generator;1";
 
-let rng = null;
+let crypto = null;
 
-function randomNumberGenerator() {
-  if (rng === null) {
-    rng = Cc[SECURITY_RANDOM_GENERATOR].createInstance(Ci.nsIRandomGenerator);
+function getCrypto() {
+  if (crypto === null) {
+    crypto = EnigmailOpenPGP.enigmailFuncs.getCrypto(); // get the browser crypto API
   }
-  return rng;
-}
-
-function bytesToUInt(byteObject) {
-  let randomNumber = new Uint32Array(1);
-  randomNumber[0] += byteObject[0] << (8 * 3);
-  randomNumber[0] += byteObject[1] << (8 * 2);
-  randomNumber[0] += byteObject[2] << 8;
-  randomNumber[0] += byteObject[3];
-  return randomNumber[0];
+  return crypto;
 }
 
 /**
- * Create a string of random characters with numChars length
+ * Create a string of random characters with numChars length, using the
+ * browser crypto API that gets cryptographically strong random values
  */
 function generateRandomString(numChars) {
-  let b = "";
-  let r = 0;
-  for (let i = 0; i < numChars; i++) {
-    r = Math.floor(Math.random() * 58);
-    b += String.fromCharCode((r < 10 ? 48 : (r < 34 ? 55 : 63)) + r);
-  }
-  return b;
+  let arr = new Uint8Array(numChars + 10); // add some more numbers such that we will have enough chars at the end
+  getCrypto().getRandomValues(arr);
 
+  let b = "";
+
+  for (let i = 0; i < numChars; i++) {
+    b += String.fromCharCode(arr[i]);
+  }
+
+  let s = btoa(b).replace(/[=+\/]/g, "");
+  return s.substr(0, numChars);
 }
 
 
@@ -53,10 +51,13 @@ function generateRandomString(numChars) {
  * @return random UInt32
  */
 function generateRandomUint32() {
-  return bytesToUInt(randomNumberGenerator().generateRandomBytes(4));
+  let randomNumber = new Uint32Array(1);
+  getCrypto().getRandomValues(randomNumber);
+  return randomNumber[0];
 }
 
 const EnigmailRNG = {
   generateRandomUint32: generateRandomUint32,
+  generateWeakRandomString: generateWeakRandomString,
   generateRandomString: generateRandomString
 };
