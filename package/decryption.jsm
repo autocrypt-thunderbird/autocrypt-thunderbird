@@ -713,7 +713,7 @@ const EnigmailDecryption = {
     EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptAttachment: parent=" + parent + ", outFileName=" + outFile.path + "\n");
 
     let attachmentHead = byteData.substr(0, 200);
-    if (attachmentHead.match(/-----BEGIN PGP \w+ KEY BLOCK-----/)) {
+    if (attachmentHead.match(/-----BEGIN PGP \w{5,10} KEY BLOCK-----/)) {
       // attachment appears to be a PGP key file
 
       if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),

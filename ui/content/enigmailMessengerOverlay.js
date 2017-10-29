@@ -1640,8 +1640,8 @@ Enigmail.msg = {
     if (!hyperlink)
       return text;
 
-    // Hyperlink email addresses
-    var addrs = text.match(/\b[A-Za-z0-9_+.-]+@[A-Za-z0-9.-]+\b/g);
+    // Hyperlink email addresses (we accept at most 1024 characters before and after the @)
+    var addrs = text.match(/\b[A-Za-z0-9_+.-]{1,1024}@[A-Za-z0-9.-]{1,1024}\b/g);
 
     var newText, offset, loc;
     if (addrs && addrs.length) {
@@ -1674,8 +1674,8 @@ Enigmail.msg = {
       text = newText;
     }
 
-    // Hyperlink URLs
-    var urls = text.match(/\b(http|https|ftp):\S+\s/g);
+    // Hyperlink URLs (we don't accept URLS or more than 1024 characters length)
+    var urls = text.match(/\b(http|https|ftp):\S{1,1024}\s/g);
 
     if (urls && urls.length) {
       newText = "";

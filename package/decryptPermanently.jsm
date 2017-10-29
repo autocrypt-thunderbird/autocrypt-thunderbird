@@ -385,7 +385,7 @@ DecryptMessageIntoFolder.prototype = {
         self.readAttachment(attachment, strippedName).then(
           function(o) {
             var attachmentHead = o.data.substr(0, 30);
-            if (attachmentHead.match(/-----BEGIN PGP \w+ KEY BLOCK-----/)) {
+            if (attachmentHead.match(/-----BEGIN PGP \w{5,10} KEY BLOCK-----/)) {
               // attachment appears to be a PGP key file, we just go-a-head
               resolve(o);
               return;
