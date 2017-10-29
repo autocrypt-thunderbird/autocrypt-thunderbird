@@ -22,7 +22,7 @@ var EnigmailFuncsTests = {
 };
 
 test(function stripEmail() {
-  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff",
+  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de>",
     "a@b.de");
 
   EnigmailFuncsTests.testStripEmail("\"some stuff\" a@b.de",
@@ -31,7 +31,7 @@ test(function stripEmail() {
   EnigmailFuncsTests.testStripEmail("\"some, stuff\" a@b.de",
     "a@b.de");
 
-  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de> some stuff, xyz<xy@a.xx>xyc",
+  EnigmailFuncsTests.testStripEmail("some stuff <a@b.de>, xyz<xy@a.xx>",
     "a@b.de,xy@a.xx");
 
   EnigmailFuncsTests.testStripEmail(" a@b.de , <aa@bb.de>",
@@ -62,6 +62,11 @@ test(function stripEmail() {
   Assert.throws(
     function() {
       EnigmailFuncs.stripEmail("\"some stuff a@b.de");
+    }
+  );
+  Assert.throws(
+    function() {
+      EnigmailFuncs.stripEmail("<evil@example.com,><good@example.com>");
     }
   );
 

@@ -26,45 +26,55 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 var gTxtConverter = null;
 
-const EnigmailFuncsRegexTwoAddr = new RegExp("^(<[^<,>]+>)(,<[^<,>]+>)*$");
-const EnigmailFuncsRegexExtractPureEmail = new RegExp("(^|,)[^,]*<([^>]+)>[^,]*", "g");
-
 const EnigmailFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
-   * @param mailAddrs |string| - address-list as specified in RFC 2822, 3.4
-   *                             separated by ",", but in encdoded in Unicode
+   * @param mailAddrs |string| - address-list encdoded in Unicode as specified in RFC 2822, 3.4
+   *                             separated by , or ;
    *
-   * @return |string|    - list of pure email addresses separated by ","
+   * @return |string|          - list of pure email addresses separated by ","
    */
-  stripEmail: function(mailAddrs) {
-    //EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddrs=" + mailAddrs + "\n");
+  stripEmail: function(mailAddresses) {
+    EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddresses=" + mailAddresses + "\n");
 
-    var qStart, qEnd;
-    while ((qStart = mailAddrs.indexOf('"')) != -1) {
+    const SIMPLE = "[^<>,]+"; // RegExp for a simple email address (e.g. a@b.c)
+    const COMPLEX = "[^<>,]*<[^<>, ]+>"; // RegExp for an address containing <...> (e.g. Name <a@b.c>)
+    const MatchAddr = new RegExp("^(" + SIMPLE + "|" + COMPLEX + ")(," + SIMPLE + "|," + COMPLEX + ")*$");
+
+    let mailAddrs = mailAddresses;
+
+    let qStart, qEnd;
+    while ((qStart = mailAddrs.indexOf('"')) >= 0) {
       qEnd = mailAddrs.indexOf('"', qStart + 1);
-      if (qEnd == -1) {
-        EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: " + mailAddrs + "\n");
+      if (qEnd < 0) {
+        EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: '" + mailAddresses + "'\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
 
       mailAddrs = mailAddrs.substring(0, qStart) + mailAddrs.substring(qEnd + 1);
     }
 
-    // Eliminate all whitespace, just to be safe
-    mailAddrs = mailAddrs.replace(/\s+/g, "");
+    // replace any ";" by ","; remove leading/trailing ","
+    mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/, "").replace(/,$/, "");
 
-    // having two <..> <..> in one email is an error
-    if (mailAddrs.search(EnigmailFuncsRegexTwoAddr) < 0) {
-      EnigmailLog.ERROR("funcs.jsm: stripEmail: Two <..> entries in mail address: " + mailAddrs + "\n");
+    if (mailAddrs.length === 0) return "";
+
+    // having two <..> <..> in one email, or things like <a@b.c,><d@e.f> is an error
+    if (mailAddrs.search(MatchAddr) < 0) {
+      EnigmailLog.ERROR("funcs.jsm: stripEmail: Invalid <..> brackets in mail address: '" + mailAddresses + "'\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
-    // Extract pure e-mail address list (stripping out angle brackets)
-    mailAddrs = mailAddrs.replace(EnigmailFuncsRegexExtractPureEmail, "$1$2");
+    // We know that the "," and the < > are at the right places, thus we can split by ","
+    let addrList = mailAddrs.split(/,/);
 
-    // remove empty email addresses (including removing all ';')
-    mailAddrs = mailAddrs.replace(/[,;]+/g, ",").replace(/^,/, "").replace(/,$/, "");
+    for (let i in addrList) {
+      // Extract pure e-mail address list (strip out anything before angle brackets and any whitespace)
+      addrList[i] = addrList[i].replace(/^([^<>]*<)([^<>]+)(>)$/, "$2").replace(/\s/g, "");
+    }
+
+    // remove repeated, trailing and leading "," (again, as there may be empty addresses)
+    mailAddrs = addrList.join(",").replace(/,,/g, ",").replace(/^,/, "").replace(/,$/, "");
 
     return mailAddrs;
   },
