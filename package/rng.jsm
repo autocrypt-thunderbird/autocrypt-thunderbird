@@ -27,8 +27,8 @@ function getCrypto() {
 }
 
 /**
- * Create a string of random characters with numChars length, using the
- * browser crypto API that gets cryptographically strong random values
+ * Create a string of random characters of the set A-Z a-z 0-9 with numChars length,
+ * using the browser crypto API that gets cryptographically strong random values
  */
 function generateRandomString(numChars) {
   let arr = new Uint8Array(numChars + 10); // add some more numbers such that we will have enough chars at the end
@@ -40,6 +40,7 @@ function generateRandomString(numChars) {
     b += String.fromCharCode(arr[i]);
   }
 
+  // convert to Base64(set of A–Z a–z 0–9 = + /) and afterwards remove = + /
   let s = btoa(b).replace(/[=+\/]/g, "");
   return s.substr(0, numChars);
 }
