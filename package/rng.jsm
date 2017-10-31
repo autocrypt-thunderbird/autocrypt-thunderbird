@@ -29,6 +29,10 @@ function getCrypto() {
 /**
  * Create a string of random characters of the set A-Z a-z 0-9 with numChars length,
  * using the browser crypto API that gets cryptographically strong random values
+ *
+ * @param numChar: Number - the length of the string to return
+ *
+ * @return String
  */
 function generateRandomString(numChars) {
 
@@ -71,6 +75,5 @@ function generateRandomUint32() {
 
 const EnigmailRNG = {
   generateRandomUint32: generateRandomUint32,
-  //generateWeakRandomString: generateWeakRandomString,
   generateRandomString: generateRandomString
 };
