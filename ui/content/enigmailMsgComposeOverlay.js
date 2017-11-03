@@ -4384,7 +4384,8 @@ Enigmail.msg = {
       let k = key.getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        this.setAdditionalHeader('Autocrypt', 'addr=' + this.identity.email + '; keydata=\r\n' + keyData);
+        // TODO: prefer-encrypt: change to an option.
+        this.setAdditionalHeader('Autocrypt', 'addr=' + this.identity.email + '; prefer-encrypt=mutual; keydata=\r\n' + keyData);
       }
     }
   },
