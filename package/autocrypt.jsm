@@ -343,14 +343,10 @@ var EnigmailAutocrypt = {
       }
 
       let keyData = EnigmailKeyRing.extractSecretKey(true, "0x" + key.fpr, {}, {});
-      let boundary = EnigmailMime.createBoundary();
 
-      let innerMsg = 'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n' +
-        'Autocrypt-Prefer-Encrypt: mutual\r\n\r\n' + // TODO: replace mutual with Autocrypt-pref
-        '--' + boundary + '\r\n' +
-        'Content-type: application/autocrypt-key-backup\r\n\r\n' +
-        keyData +
-        '\r\n--' + boundary + '--\r\n';
+      let innerMsg = EnigmailArmor.replaceArmorHeaders(keyData, {
+        'Autocrypt-Prefer-Encrypt': 'mutual' // TODO: replace mutual with Autocrypt-pref
+      }) + '\r\n';
 
       let bkpCode = createBackupCode();
       let enc = {
@@ -811,104 +807,31 @@ function createBackupOuterMsg(toEmail, encryptedMsg) {
  *          fpr:           String - FPR of the imported key
  *          preferEncrypt: String - Autocrypt preferEncrypt value (e.g. mutual)
  */
-function importSetupKey(decryptedSetupMsg) {
+function importSetupKey(keyData) {
 
   EnigmailLog.DEBUG("autocrypt.jsm: importSetupKey()\n");
-  let mimeTree = {
-      partNum: "",
-      headers: null,
-      body: "",
-      parent: null,
-      subParts: []
-    },
-    stack = [],
-    currentPart = "",
-    currPartNum = "";
 
-  let jsmimeEmitter = {
-
-    createPartObj: function(partNum, headers, parent) {
-      return {
-        partNum: partNum,
-        headers: headers,
-        body: "",
-        parent: parent,
-        subParts: []
-      };
-    },
-
-    getMimeTree: function() {
-      return mimeTree.subParts[0];
-    },
-
-    /** JSMime API **/
-    startMessage: function() {
-      currentPart = mimeTree;
-    },
-
-    endMessage: function() {},
-
-    startPart: function(partNum, headers) {
-      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.startPart: partNum=" + partNum + "\n");
-      //this.stack.push(partNum);
-      let newPart = this.createPartObj(partNum, headers, currentPart);
-
-      if (partNum.indexOf(currPartNum) === 0) {
-        // found sub-part
-        currentPart.subParts.push(newPart);
-      }
-      else {
-        // found same or higher level
-        currentPart.subParts.push(newPart);
-      }
-      currPartNum = partNum;
-      currentPart = newPart;
-    },
-
-    endPart: function(partNum) {
-      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.startPart: partNum=" + partNum + "\n");
-      currentPart = currentPart.parent;
-    },
-
-    deliverPartData: function(partNum, data) {
-      EnigmailLog.DEBUG("autocrypt.jsm: jsmimeEmitter.deliverPartData: partNum=" + partNum +
-        " / " + typeof data + "\n");
-      if (typeof(data) === "string") {
-        currentPart.body += data;
-      }
-      else {
-        currentPart.body += EnigmailData.arrayBufferToString(data);
-      }
-    }
-  };
-
-
-  let opt = {
-    strformat: "unicode",
-    bodyformat: "decode"
-  };
-
-  //try {
-  let p = new jsmime.MimeParser(jsmimeEmitter, opt);
-  p.deliverData(decryptedSetupMsg);
   let preferEncrypt = "mutual"; //Enigmail default
-  if (currentPart.headers.has("autocrypt-prefer-encrypt")) {
-    preferEncrypt = currentPart.headers.get("autocrypt-prefer-encrypt").join();
-  }
+  let start = {},
+    end = {},
+    keyObj = {};
 
-  let ct = currentPart.subParts[0].headers.contentType;
-  let r = -1;
-  let keyObj = {};
-  if ("type" in ct && ct.type.search(/^application\/autocrypt-key-backup/i) === 0) {
-    let keyData = currentPart.subParts[0].body;
-    r = EnigmailKeyRing.importKey(null, false, keyData, "", {}, keyObj);
-  }
+  let msgType = EnigmailArmor.locateArmoredBlock(keyData, 0, "", start, end, {});
+  if (msgType === "PRIVATE KEY BLOCK") {
 
-  if (r === 0 && keyObj.value && keyObj.value.length > 0) {
-    return {
-      fpr: keyObj.value[0],
-      preferEncrypt: preferEncrypt
-    };
+    let headers = EnigmailArmor.getArmorHeaders(keyData);
+    if ("autocrypt-prefer-encrypt" in headers) {
+      preferEncrypt = headers["autocrypt-prefer-encrypt"];
+    }
+
+    let r = EnigmailKeyRing.importKey(null, false, keyData, "", {}, keyObj);
+
+    if (r === 0 && keyObj.value && keyObj.value.length > 0) {
+      return {
+        fpr: keyObj.value[0],
+        preferEncrypt: preferEncrypt
+      };
+    }
   }
 
   return null;
