@@ -235,8 +235,8 @@
 <!ENTITY enigmail.SendingPrefs.label              "General Preferences for Sending">
 <!ENTITY enigmail.seeAccountSettings.label        "See also account specific Enigmail settings (see Account Settings -> OpenPGP Security)">
 
-<!ENTITY enigmail.encryptionModelConvenient.label "Convenient encryption settings">
-<!ENTITY enigmail.encryptionModelManually.label   "Manual encryption settings">
+<!ENTITY enigmail.encryptionModelConvenient.label "Use default encryption settings">
+<!ENTITY enigmail.encryptionModelManually.label   "Manually configure encryption settings">
 
 <!ENTITY enigmail.keepCryptoSettingsForReply.label   "Encrypt/sign replies to encrypted/signed messages">
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">

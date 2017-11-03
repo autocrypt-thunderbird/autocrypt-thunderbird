@@ -210,7 +210,7 @@
 <!ENTITY enigmail.SendingPrefs.label              "Allgemeine Versandeinstellungen">
 <!ENTITY enigmail.seeAccountSettings.label        "Siehe auch kontospezifische Enigmail-Einstellungen (Konten-Einstellungen -&gt; OpenPGP-Sicherheit)">
 
-<!ENTITY enigmail.encryptionModelConvenient.label "Bequeme Verschlüsselungs-Einstellungen">
+<!ENTITY enigmail.encryptionModelConvenient.label "Standard Verschlüsselungs-Einstellungen verwenden">
 <!ENTITY enigmail.encryptionModelManually.label   "Manuelle Verschlüsselungs-Einstellungen">
 
 <!ENTITY enigmail.keepCryptoSettingsForReply.label   "Verschlüsseln/Unterschreiben beim Antworten auf verschlüsselte/unterschriebene Nachrichten">
