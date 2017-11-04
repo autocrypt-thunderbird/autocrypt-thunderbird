@@ -112,7 +112,7 @@ const EnigmailArmor = {
     var blockHeader = text.substr(beginIndex, offset - beginIndex + 1);
 
     var blockRegex = new RegExp("^" + indentStr +
-      "-----BEGIN PGP (.*)-----\\s*\\r?\\n");
+      "-----BEGIN PGP (.{1,30})-----\\s*\\r?\\n");
 
     var matches = blockHeader.match(blockRegex);
 
