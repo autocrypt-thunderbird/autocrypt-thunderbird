@@ -600,6 +600,7 @@ Enigmail.msg = {
       if (EnigmailPEPAdapter.usingPep()) {
         EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
       }
+      // TODO: try to use mime.js parser
       this.messageDecryptCb(event, isAuto, null);
       this.movePEPsubject();
       return;
@@ -612,6 +613,7 @@ Enigmail.msg = {
 
     try {
       if (gFolderDisplay.selectedMessageIsNews) throw "dummy"; // workaround for broken NNTP support in Gloda
+      // TODO: try to replace with mime.js parser
       MsgHdrToMimeMessage(gFolderDisplay.selectedMessage, cbObj, Enigmail.msg.msgDecryptMimeCb, true, {
         examineEncryptedParts: true,
         partsOnDemand: false

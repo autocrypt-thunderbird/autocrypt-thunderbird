@@ -5052,7 +5052,7 @@ Enigmail.msg = {
           self.searchKeysTimeout = null;
           Enigmail.msg.findMissingKeys();
         },
-        20000); // 20 Seconds
+        5000); // 5 Seconds
     }
   },
 
