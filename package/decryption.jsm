@@ -379,31 +379,13 @@ const EnigmailDecryption = {
     retStatusObj.encToDetails = encToDetails;
 
     if (signed) {
-      var trustPrefix = "";
-
-      if (retStatusObj.statusFlags & nsIEnigmail.UNTRUSTED_IDENTITY) {
-        trustPrefix += EnigmailLocale.getString("prefUntrusted") + " ";
-      }
-
-      if (retStatusObj.statusFlags & nsIEnigmail.REVOKED_KEY) {
-        trustPrefix += EnigmailLocale.getString("prefRevoked") + " ";
-      }
-
-      if (retStatusObj.statusFlags & nsIEnigmail.EXPIRED_KEY_SIGNATURE) {
-        trustPrefix += EnigmailLocale.getString("prefExpiredKey") + " ";
-
-      }
-      else if (retStatusObj.statusFlags & nsIEnigmail.EXPIRED_SIGNATURE) {
-        trustPrefix += EnigmailLocale.getString("prefExpired") + " ";
-      }
-
       if (goodOrExpOrRevSignature) {
-        retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefGood", [sigUserId]);
+        retStatusObj.errorMsg = EnigmailLocale.getString("prefGood", [sigUserId]);
         /* + ", " + EnigmailLocale.getString("keyId") + " 0x" + sigKeyId.substring(8,16); */
       }
       else {
         if (sigUserId.length > 0) {
-          retStatusObj.errorMsg = trustPrefix + EnigmailLocale.getString("prefBad", [sigUserId]);
+          retStatusObj.errorMsg = EnigmailLocale.getString("prefBad", [sigUserId]);
         }
         if (!exitCode)
           exitCode = 1;
