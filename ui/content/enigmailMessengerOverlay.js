@@ -726,17 +726,14 @@ Enigmail.msg = {
       }
 
       // Copy selected headers
-      Enigmail.msg.savedHeaders = {};
+      Enigmail.msg.savedHeaders = {
+        autocrypt: []
+      };
 
-      if (("autocrypt" in currentHeaderData) && currentHeaderData.autocrypt.headerValue.length > 0) {
-        // currentHeaderData is always available, even if the message is not parsed,
-        // but it only contains the first occuring header
-        // we therefore pre-fill it here, but override it later
-        Enigmail.msg.savedHeaders.autocrypt = [currentHeaderData.autocrypt.headerValue];
-      }
-
-      if ("autocrypt" in mimeMsg.headers) {
-        Enigmail.msg.savedHeaders.autocrypt = mimeMsg.headers.autocrypt;
+      for (let h in currentHeaderData) {
+        if (h.search(/^autocrypt\d*$/) === 0) {
+          Enigmail.msg.savedHeaders.autocrypt.push(currentHeaderData[h].headerValue);
+        }
       }
 
       for (var index = 0; index < Enigmail.msg.headersList.length; index++) {
@@ -2645,7 +2642,7 @@ Enigmail.msg = {
   createArtificialAutocryptHeader: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: createArtificialAutocryptHeader\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
-    if (("autocrypt" in currentHeaderData) && currentHeaderData.autocrypt.headerValue.length > 0) return;
+    if ("autocrypt" in currentHeaderData) return;
 
     let created = false;
     let dateValue = "",
