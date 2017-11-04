@@ -26,10 +26,11 @@ catch (ex) {
 /* global ReloadMessage: false, gDBView: false, gSignatureStatus: false, gEncryptionStatus: false, showMessageReadSecurityInfo: false */
 /* global gFolderDisplay: false, messenger: false, currentAttachments: false, msgWindow: false, ChangeMailLayout: false, MsgToggleMessagePane: false */
 /* global currentHeaderData: false, gViewAllHeaders: false, gExpandedHeaderList: false, goDoCommand: false, HandleSelectedAttachments: false */
-/* global statusFeedback: false, global displayAttachmentsForExpandedView: false */
+/* global statusFeedback: false, global displayAttachmentsForExpandedView: false, global gMessageListeners: false, global gExpandedHeaderView */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("resource://enigmail/msgRead.jsm"); /* global EnigmailMsgRead: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /* global EnigmailVerify: false */
 Components.utils.import("resource://enigmail/fixExchangeMsg.jsm"); /* global EnigmailFixExchangeMsg: false */
 Components.utils.import("resource://enigmail/log.jsm");
@@ -85,7 +86,7 @@ Enigmail.msg = {
   enableExperiments: false,
   headersList: ["content-type", "content-transfer-encoding",
     "x-enigmail-version", "x-pgp-encoding-format",
-    "autocrypt", "autocrypt-setup-message"
+    "autocrypt-setup-message"
   ],
   buggyExchangeEmailContent: null, // for HACK for MS-EXCHANGE-Server Problem
   buggyMailType: null,
@@ -198,6 +199,19 @@ Enigmail.msg = {
     if (EnigmailPrefs.getPref("configuredVersion") === "") {
       EnigmailConfigure.configureEnigmail(window, false);
     }
+
+    EnigmailMsgRead.ensureExtraExpandedHeaders();
+    gMessageListeners.push(Enigmail.msg.messageListener);
+  },
+
+  messageListener: {
+    onStartHeaders: function() {
+      if ("autocrypt" in gExpandedHeaderView) {
+        delete gExpandedHeaderView.autocrypt;
+      }
+    },
+    onEndHeaders: function() {},
+    onEndAttachments: function() {}
   },
 
   viewSecurityInfo: function(event, displaySmimeMsg) {
@@ -712,12 +726,23 @@ Enigmail.msg = {
       // Copy selected headers
       Enigmail.msg.savedHeaders = {};
 
+      if (("autocrypt" in currentHeaderData) && currentHeaderData.autocrypt.headerValue.length > 0) {
+        // currentHeaderData is always available, even if the message is not parsed,
+        // but it only contains the first occuring header
+        // we therefore pre-fill it here, but override it later
+        Enigmail.msg.savedHeaders.autocrypt = [currentHeaderData.autocrypt.headerValue];
+      }
+
+      if ("autocrypt" in mimeMsg.headers) {
+        Enigmail.msg.savedHeaders.autocrypt = mimeMsg.headers.autocrypt;
+      }
+
       for (var index = 0; index < Enigmail.msg.headersList.length; index++) {
         var headerName = Enigmail.msg.headersList[index];
         var headerValue = "";
 
         if (mimeMsg.headers[headerName]) {
-          headerValue = (headerName === "autocrypt" ? mimeMsg.headers[headerName] : mimeMsg.headers[headerName].toString());
+          headerValue = mimeMsg.headers[headerName].toString();
         }
 
         Enigmail.msg.savedHeaders[headerName] = headerValue;
@@ -732,8 +757,7 @@ Enigmail.msg = {
           dateValue = currentHeaderData.date.headerValue;
         }
 
-        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue,
-          Enigmail.msg.savedHeaders.autocrypt,
+        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, Enigmail.msg.savedHeaders.autocrypt,
           dateValue);
       }
       else {
@@ -755,10 +779,6 @@ Enigmail.msg = {
         msgEncrypted = resultObj.encrypted.length > 0;
 
         if ("autocrypt-setup-message" in mimeMsg.headers && mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
-          // if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
-          //   Enigmail.hdrView.displayAutocryptMessage(false);
-          //   return;
-          // }
           if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
             Enigmail.hdrView.displayAutoCryptSetupMsgHeader();
             return;
@@ -2623,7 +2643,7 @@ Enigmail.msg = {
   createArtificialAutocryptHeader: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: createArtificialAutocryptHeader\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
-    if (Enigmail.msg.savedHeaders && ("autocrypt" in Enigmail.msg.savedHeaders) && Enigmail.msg.savedHeaders.autocrypt.length > 0) return;
+    if (("autocrypt" in currentHeaderData) && currentHeaderData.autocrypt.headerValue.length > 0) return;
 
     let created = false;
     let dateValue = "",

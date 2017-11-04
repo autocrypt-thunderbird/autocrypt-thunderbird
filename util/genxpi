@@ -115,6 +115,7 @@ zip --must-match\
     modules/mime.jsm \
     modules/mimeDecrypt.jsm \
     modules/mimeVerify.jsm \
+    modules/msgRead.jsm \
     modules/os.jsm \
     modules/openpgp.jsm \
     modules/passwordCheck.jsm \

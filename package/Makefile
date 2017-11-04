@@ -66,6 +66,7 @@ MODFILES = \
            mime.jsm \
            mimeDecrypt.jsm \
            mimeVerify.jsm \
+           msgRead.jsm \
            os.jsm \
            openpgp.jsm \
            passwordCheck.jsm \

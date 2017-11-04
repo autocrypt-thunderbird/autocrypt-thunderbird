@@ -622,7 +622,7 @@ function findUserRecord(connection, emails, type) {
  * @return Promise
  */
 function appendUser(connection, paramsArr) {
-  EnigmailLog.DEBUG("autocrypt.jsm: appendUser\n");
+  EnigmailLog.DEBUG("autocrypt.jsm: appendUser(" + paramsArr.addr + ")\n");
 
   let deferred = PromiseUtils.defer();
 
@@ -648,6 +648,7 @@ function appendUser(connection, paramsArr) {
         state: paramsArr["prefer-encrypt"]
       }).then(
       function _ok() {
+        EnigmailLog.DEBUG("autocrypt.jsm: appendUser - OK\n");
         deferred.resolve();
       }
     ).catch(function _err() {

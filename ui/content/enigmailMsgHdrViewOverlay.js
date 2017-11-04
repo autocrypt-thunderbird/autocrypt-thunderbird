@@ -180,7 +180,8 @@ Enigmail.hdrView = {
       replaceUid = userId;
     }
 
-    if (Enigmail.msg.savedHeaders && (Enigmail.msg.savedHeaders["x-pgp-encoding-format"].search(/partitioned/i) === 0)) {
+    if (Enigmail.msg.savedHeaders && "x-pgp-encoding-format" in Enigmail.msg.savedHeaders &&
+      (Enigmail.msg.savedHeaders["x-pgp-encoding-format"].search(/partitioned/i) === 0)) {
       if (currentAttachments && currentAttachments.length) {
         Enigmail.msg.setAttachmentReveal(currentAttachments);
       }
