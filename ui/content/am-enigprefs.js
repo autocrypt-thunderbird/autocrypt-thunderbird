@@ -18,10 +18,15 @@ var gUsingPep = null;
 function onInit() {
   gUsingPep = EnigmailPEPAdapter.usingPep();
   Enigmail.edit.onInit();
+
+  let ac = document.getElementById("enigmail_acPreferEncrypt");
+  ac.checked = (Enigmail.edit.account.incomingServer.getIntValue("acPreferEncrypt") > 0);
 }
 
 function onAcceptEditor() {
   Enigmail.edit.onSave();
+  saveChanges();
+  return true;
 }
 
 function onPreInit(account, accountValues) {
@@ -31,16 +36,8 @@ function onPreInit(account, accountValues) {
 
 function onSave() {
   Enigmail.edit.onSave();
-  /*
-    let usingPep = EnigmailPEPAdapter.usingPep();
-
-    if (usingPep !== gUsingPep) {
-      EnigmailPEPAdapter.handleJuniorModeChange();
-    }
-
-    if (usingPep) {
-      EnigmailPEPAdapter.setOwnIdentities(0);
-    } */
+  saveChanges();
+  return true;
 }
 
 function onLockPreference() {
@@ -58,4 +55,10 @@ function enigmailOnAcceptEditor() {
   Enigmail.edit.onSave();
 
   return true; // allow to close dialog in all cases
+}
+
+
+function saveChanges() {
+  let ac = document.getElementById("enigmail_acPreferEncrypt");
+  Enigmail.edit.account.incomingServer.setIntValue("acPreferEncrypt", ac.checked ? 1 : 0);
 }

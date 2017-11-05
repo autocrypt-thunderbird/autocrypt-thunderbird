@@ -880,6 +880,8 @@
 
 <!ENTITY enigmail.locateKeys.locating                "Locating Keys...">
 
+<!ENTITY enigmail.acPreferEncrypt.label              "Prefer encrypted emails from the people you mail with">
+
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Password">
 <!ENTITY enigmail.acSetupPasswd.password             "Password:">
 

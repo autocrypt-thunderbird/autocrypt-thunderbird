@@ -13,8 +13,8 @@
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false, UpdateAttachmentBucket: false, gContentChanged: true */
 /*global AddAttachments: false, AddAttachment: false, ChangeAttachmentBucketVisibility: false, GetResourceFromUri: false */
 /*global Recipients2CompFields: false, Attachments2CompFields: false, DetermineConvertibility: false, gWindowLocked: false */
-/*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false */
-/*global Sendlater3Composing: false */
+/*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false, getCurrentAccountKey: false */
+/*global Sendlater3Composing: false, MailServices: false */
 
 Components.utils.import("resource://enigmail/glodaMime.jsm");
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -4362,6 +4362,13 @@ Enigmail.msg = {
     }
   },
 
+  getCurrentIncomingServer: function() {
+    let currentAccountKey = getCurrentAccountKey();
+    let account = MailServices.accounts.getAccount(currentAccountKey);
+
+    return account.incomingServer; /* returns nsIMsgIncomingServer */
+  },
+
   setAutocryptHeader: function() {
     if (EnigmailPEPAdapter.usingPep() ||
       EnigmailPrefs.getPref("autocryptMode") === 0) {
@@ -4381,11 +4388,13 @@ Enigmail.msg = {
     }
 
     if (key) {
+      let srv = this.getCurrentIncomingServer();
+      let prefMutual = (srv.getIntValue("acPreferEncrypt") > 0 ? "; prefer-encrypt=mutual" : "");
+
       let k = key.getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        // TODO: prefer-encrypt: change to an option.
-        this.setAdditionalHeader('Autocrypt', 'addr=' + this.identity.email + '; prefer-encrypt=mutual; keydata=\r\n' + keyData);
+        this.setAdditionalHeader('Autocrypt', 'addr=' + this.identity.email + prefMutual + '; keydata=\r\n' + keyData);
       }
     }
   },

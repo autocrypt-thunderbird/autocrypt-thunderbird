@@ -27,10 +27,21 @@
     <broadcaster id="enigmail_bcUseUrl" disabled="true"/>
   </broadcasterset>
 
-  <dialogheader title="&enigmail.amPrefTitle.label;"/>
+  <vbox flex="1" style="overflow: auto;">
 
-  <description>&enigmail.amPrefDesc.label;</description>
+    <dialogheader title="&enigmail.amPrefTitle.label;"/>
 
-  <vbox flex="1" id="enigmail_IdentityEdit"/>
+    <description>&enigmail.amPrefDesc.label;</description>
 
+    <vbox flex="1" id="enigmail_IdentityEdit"/>
+
+    <vbox flex="1" align="start">
+      <checkbox id="enigmail_acPreferEncrypt"
+          prefstring="mail.server.%serverkey%.acPreferEncrypt"
+          preftype="bool" prefattribute="value"
+          observes="enigmail_bcEnablePgp"
+          label="&enigmail.acPreferEncrypt.label;"/>
+    </vbox>
+
+  </vbox>
 </page>

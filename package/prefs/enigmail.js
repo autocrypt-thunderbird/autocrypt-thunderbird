@@ -263,6 +263,7 @@ pref("mail.identity.default.autoEncryptDrafts", true);
 pref("mail.identity.default.protectSubject", true);
 pref("mail.identity.default.warnWeakReply", false);
 pref("mail.identity.default.enablePEP", true);
+pref("mail.server.default.acPreferEncrypt", 0);
 
 // prefer S/MIME or PGP/MIME (0: S/MIME, 1: PGP/MIME)
 pref("mail.identity.default.mimePreferOpenPGP", 1);
