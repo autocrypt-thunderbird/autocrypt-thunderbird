@@ -345,8 +345,11 @@ var EnigmailAutocrypt = {
 
       let keyData = EnigmailKeyRing.extractSecretKey(true, "0x" + key.fpr, {}, {});
 
+      let ac = EnigmailFuncs.getAccountForIdentity(identity);
+      let preferEncrypt = ac.incomingServer.getIntValue("acPreferEncrypt") > 0 ? "mutual" : "nopreference";
+
       let innerMsg = EnigmailArmor.replaceArmorHeaders(keyData, {
-        'Autocrypt-Prefer-Encrypt': 'mutual' // TODO: replace mutual with Autocrypt-pref
+        'Autocrypt-Prefer-Encrypt': preferEncrypt
       }) + '\r\n';
 
       let bkpCode = createBackupCode();
@@ -359,7 +362,6 @@ var EnigmailAutocrypt = {
       // create symmetrically encrypted message
       EnigmailOpenPGP.encrypt(enc).then(msg => {
         let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
-          'Version': 'Autocrypt v1',
           'Passphrase-Format': 'numeric9x4',
           'Passphrase-Begin': bkpCode.substr(0, 2)
         }).replace(/\n/g, "\r\n");
@@ -487,7 +489,8 @@ var EnigmailAutocrypt = {
         let setupData = importSetupKey(msg.data);
         if (setupData) {
           let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
-          //TODO: set key selection mode etc.
+          let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
+          ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
           id.identity.setCharAttribute("pgpkeyId", setupData.fpr);
           resolve(setupData);
         }
@@ -791,8 +794,8 @@ function createBackupOuterMsg(toEmail, encryptedMsg) {
     EnigmailLocale.getString("autocrypt.setupMsg.msgBody") + '\r\n\r\n' +
     EnigmailLocale.getString("autocryptSetupReq.setupMsg.backup") + '\r\n' +
     '--' + boundary + '\r\n' +
-    'Content-Type: application/autocrypt-key-backup\r\n' +
-    'Content-Disposition: attachment; filename="autocrypt-key-backup.html"\r\n\r\n' +
+    'Content-Type: application/autocrypt-setup\r\n' +
+    'Content-Disposition: attachment; filename="autocrypt-setup-message.html"\r\n\r\n' +
     '<html><body>\r\n' +
     '<p>' + EnigmailLocale.getString("autocrypt.setupMsg.fileTxt") + '</p>\r\n' +
     '<pre>\r\n' +
@@ -813,7 +816,7 @@ function importSetupKey(keyData) {
 
   EnigmailLog.DEBUG("autocrypt.jsm: importSetupKey()\n");
 
-  let preferEncrypt = "mutual"; //Enigmail default
+  let preferEncrypt = "nopreference"; // Autocrypt default according spec
   let start = {},
     end = {},
     keyObj = {};

@@ -778,7 +778,7 @@ Enigmail.msg = {
         msgEncrypted = resultObj.encrypted.length > 0;
 
         if ("autocrypt-setup-message" in mimeMsg.headers && mimeMsg.headers["autocrypt-setup-message"].join("").toLowerCase() === "v1") {
-          if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
+          if (currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) === 0) {
             Enigmail.hdrView.displayAutoCryptSetupMsgHeader();
             return;
           }
@@ -2733,7 +2733,7 @@ Enigmail.msg = {
       return;
     }
 
-    if (currentAttachments[0].contentType.search(/^application\/autocrypt-key-backup$/i) === 0) {
+    if (currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) === 0) {
 
       EnigmailAutocrypt.getSetupMessageData(currentAttachments[0].url).then(res => {
         let passwd = EnigmailWindows.autocryptSetupPasswd(window, "input", res.passphraseFormat, res.passphraseHint);
