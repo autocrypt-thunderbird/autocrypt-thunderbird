@@ -34,6 +34,7 @@ Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
 Components.utils.import("resource://enigmail/webKey.jsm"); /* global EnigmailWks: false */
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("resource://enigmail/msgRead.jsm"); /*global EnigmailMsgRead: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -986,7 +987,7 @@ Enigmail.hdrView = {
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.setAttribute('disabled', true);
       }
-      else if (Enigmail.msg.checkSignedAttachment(selectedAttachments[0], null)) {
+      else if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);

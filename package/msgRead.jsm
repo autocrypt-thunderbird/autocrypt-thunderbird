@@ -38,5 +38,92 @@ const EnigmailMsgRead = {
         r.setCharPref("mailnews.headers.extraExpandedHeaders", hdr);
       }
     }
+  },
+
+  /**
+   * Get a mail URL from a uriSpec
+   *
+   * @param uriSpec: String - URI of the desired message
+   *
+   * @return Object: nsIURL or nsIMsgMailNewsUrl object
+   */
+  getUrlFromUriSpec: function(uriSpec) {
+    try {
+      if (!uriSpec)
+        return null;
+
+      let messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+      let msgService = messenger.messageServiceFromURI(uriSpec);
+
+      let urlObj = {};
+      msgService.GetUrlForUri(uriSpec, urlObj, null);
+
+      let url = urlObj.value;
+
+      if (url.scheme == "file") {
+        return url;
+      }
+      else {
+        return url.QueryInterface(Ci.nsIMsgMailNewsUrl);
+      }
+
+    }
+    catch (ex) {
+      return null;
+    }
+  },
+
+  /**
+   * Determine if an attachment is possibly signed
+   */
+  checkSignedAttachment: function(attachmentObj, index, currentAttachments) {
+    var attachmentList;
+    if (index !== null) {
+      attachmentList = attachmentObj;
+    }
+    else {
+      attachmentList = currentAttachments;
+      for (let i = 0; i < attachmentList.length; i++) {
+        if (attachmentList[i].url == attachmentObj.url) {
+          index = i;
+          break;
+        }
+      }
+      if (index === null) return false;
+    }
+
+    var signed = false;
+    var findFile;
+
+    var attName = this.getAttachmentName(attachmentList[index]).toLowerCase().replace(/\+/g, "\\+");
+
+    // check if filename is a signature
+    if ((this.getAttachmentName(attachmentList[index]).search(/\.(sig|asc)$/i) > 0) ||
+      (attachmentList[index].contentType.match(/^application\/pgp-signature/i))) {
+      findFile = new RegExp(attName.replace(/\.(sig|asc)$/, ""));
+    }
+    else
+      findFile = new RegExp(attName + ".(sig|asc)$");
+
+    for (let i in attachmentList) {
+      if ((i != index) &&
+        (this.getAttachmentName(attachmentList[i]).toLowerCase().search(findFile) === 0))
+        signed = true;
+    }
+
+    return signed;
+  },
+
+  /**
+   * Get the name of an attachment from the attachment object
+   */
+  getAttachmentName: function(attachment) {
+    if ("name" in attachment) {
+      // Thunderbird
+      return attachment.name;
+    }
+    else
+    // SeaMonkey
+      return attachment.displayName;
   }
 };
