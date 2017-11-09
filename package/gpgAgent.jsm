@@ -461,7 +461,18 @@ var EnigmailGpgAgent = {
         catch (ex) {}
 
         if (!agentPath) {
-          let gpgPath = "C:\\Program Files\\GnuPG\\pub";
+          // try to determine the default PATH from the registry
+          // (that's how gpg4win sets up the path)
+          try {
+            let winPath = EnigmailOS.getWinRegistryString("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", "Path", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+            agentPath = EnigmailFiles.resolvePath(agentName, winPath, EnigmailOS.isDosLike);
+          }
+          catch (ex) {}
+        }
+
+        if (!agentPath) {
+          // default for gpg4win 3.0
+          let gpgPath = "C:\\Program Files\\GnuPG\\bin;C:\Program Files (x86)\\GnuPG\\bin";
           agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
         }
       }

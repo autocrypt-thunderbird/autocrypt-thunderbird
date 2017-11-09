@@ -50,8 +50,7 @@ const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.enigmail.net/service/getGnupdDownload.svc";
-
+const queryUrl = "https://www.enigmail.net/service/getGnupgDownload.svc";
 
 function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
@@ -382,7 +381,7 @@ Installer.prototype = {
 
     var ch = Components.classes["@mozilla.org/security/hash;1"]
       .createInstance(Components.interfaces.nsICryptoHash);
-    ch.init(ch.SHA1);
+    ch.init(ch.SHA256);
     const PR_UINT32_MAX = 0xffffffff; // read entire file
     ch.updateFromStream(istream, PR_UINT32_MAX);
     var gotHash = ch.finish(false);
@@ -411,18 +410,32 @@ Installer.prototype = {
       // "this" is set by the calling XMLHttpRequest
       if (typeof(this.responseXML) == "object") {
         EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + this.responseText + "\n");
-        if (!this.responseXML) {
+        if (!this.responseText) {
           onError({
             type: "Network"
           });
           return;
         }
-        let doc = this.responseXML.firstChild;
-        self.url = unescape(doc.getAttribute("url"));
-        self.hash = sanitizeHash(doc.getAttribute("hash"));
-        self.command = sanitizeFileName(doc.getAttribute("command"));
-        self.mount = sanitizeFileName(doc.getAttribute("mount"));
-        deferred.resolve();
+
+        if (typeof(this.responseText) == "string") {
+          EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl.reqListener: got: " + this.responseText + "\n");
+
+          try {
+            let doc = JSON.parse(this.responseText);
+            self.url = doc.url;
+            self.hash = sanitizeHash(doc.hash);
+            self.command = doc.command;
+            self.mount = sanitizeFileName(doc.mountPath);
+            deferred.resolve();
+          }
+          catch (ex) {
+            EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl.reqListener: exception: " + ex.toString() + "\n");
+
+            onError({
+              type: "Network"
+            });
+          }
+        }
       }
     }
 
