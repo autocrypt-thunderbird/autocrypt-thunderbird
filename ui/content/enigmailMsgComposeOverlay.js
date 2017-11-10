@@ -3972,7 +3972,7 @@ Enigmail.msg = {
   },
 
   encryptInline: function(sendInfo) {
-    // sign/encrpyt message using inline-PGP
+    // sign/encrypt message using inline-PGP
 
     const dce = Components.interfaces.nsIDocumentEncoder;
     const nsIEnigmail = Components.interfaces.nsIEnigmail;

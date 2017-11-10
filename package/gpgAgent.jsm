@@ -455,14 +455,15 @@ var EnigmailGpgAgent = {
       if ((!agentPath) && EnigmailOS.isWin32) {
         // Look up in Windows Registry
         try {
-          let gpgPath = EnigmailOS.getWinRegistryString("Software\\GNU\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+          let gpgPath = EnigmailOS.getWinRegistryString("Software\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+          gpgPath += "\\bin";
           agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
         }
         catch (ex) {}
 
         if (!agentPath) {
-          // try to determine the default PATH from the registry
-          // (that's how gpg4win sets up the path)
+          // try to determine the default PATH from the registry after the installation
+          // if we could not get any information from the registry
           try {
             let winPath = EnigmailOS.getWinRegistryString("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", "Path", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
             agentPath = EnigmailFiles.resolvePath(agentName, winPath, EnigmailOS.isDosLike);
@@ -472,7 +473,7 @@ var EnigmailGpgAgent = {
 
         if (!agentPath) {
           // default for gpg4win 3.0
-          let gpgPath = "C:\\Program Files\\GnuPG\\bin;C:\Program Files (x86)\\GnuPG\\bin";
+          let gpgPath = "C:\\Program Files\\GnuPG\\bin;C:\\Program Files (x86)\\GnuPG\\bin";
           agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
         }
       }
