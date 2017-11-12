@@ -1001,6 +1001,10 @@ var EnigmailPEPAdapter = {
   },
 
   registerJuniorModeObserver: function(observer) {
+    if (gJmObservers === null) {
+      gJmObservers = {};
+      EnigmailPrefs.registerPrefObserver("juniorMode", this.handleJuniorModeChange);
+    }
     let observerId = "O" + (gJmObserverId++);
     gJmObservers[observerId] = observer;
     return observerId;
