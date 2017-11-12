@@ -59,26 +59,13 @@ overlay chrome://messenger/content/am-smime.xul chrome://enigmail/content/enigma
 # Resource module registration
 resource enigmail modules/
 
-## Gecko 2.0 JavaScript component registration
+## JavaScript component registration
 
 # Register bootstrap.js as preparation for moving to bootstrapped extension
 component {c0816cf9-fd2d-4716-8629-68974f3559a8} components/bootstrap.js
 contract @enigmail.net/enigmail/bootstrap;1 {c0816cf9-fd2d-4716-8629-68974f3559a8}
 # hack to make sure that bootstrap is started during TB startup
-category command-line-handler cline-enigmail2 @enigmail.net/enigmail/bootstrap;1
-
-# Enigmail
-component {847b3a01-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozdev.org/enigmail/enigmail;1 {847b3a01-7ab1-11d4-8f02-006008948af5}
-
-# EnigmailProtocolHandler
-component {847b3a11-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozilla.org/network/protocol;1?name=enigmail {847b3a11-7ab1-11d4-8f02-006008948af5}
-
-# Command line service
-component {847b3ab1-7ab1-11d4-8f02-006008948af5} components/enigmail.js
-contract @mozilla.org/enigmail/cline-handler;1 {847b3ab1-7ab1-11d4-8f02-006008948af5}
-category command-line-handler cline-enigmail @mozilla.org/enigmail/cline-handler;1
+category command-line-handler cline-enigmail @enigmail.net/enigmail/bootstrap;1
 
 # EnigMsgCompFields
 component {847b3a30-7ab1-11d4-8f02-006008948af5} components/msgCompFields.js
@@ -87,13 +74,6 @@ contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948
 # registration of service to decrypt PGP/MIME messages
 component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/pgpmimeHandler.js
 contract @mozilla.org/mime/pgp-mime-js-decrypt;1 {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}
-
-# registration of service to create PGP/MIME enrypted messages
-component {1b040e64-e704-42b9-b05a-942e569afffc} components/mimeEncrypt.js
-contract @mozilla.org/messengercompose/composesecure;1 {1b040e64-e704-42b9-b05a-942e569afffc}
-
-
-
 
 ## interface specifiacations
 interfaces  components/enigmail.xpt

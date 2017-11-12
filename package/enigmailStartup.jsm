@@ -9,7 +9,17 @@
 
 "use strict";
 
-const Cu = Components.utils;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  manager: Cm,
+  results: Cr,
+  utils: Cu,
+  Constructor: CC
+} = Components;
+Cm.QueryInterface(Ci.nsIComponentRegistrar);
+
+var EXPORTED_SYMBOLS = ["EnigmailStartup"];
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
@@ -17,6 +27,7 @@ Cu.import("resource://enigmail/pipeConsole.jsm"); /*global EnigmailConsole: fals
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
+Cu.import("resource://enigmail/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("resource://enigmail/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
@@ -49,9 +60,6 @@ const NS_ENIGMAIL_CID =
 // Contract IDs and CIDs used by this module
 const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-
 // Interfaces
 const nsISupports = Ci.nsISupports;
 const nsIObserver = Ci.nsIObserver;
@@ -81,7 +89,7 @@ function initializeLogDirectory() {
   if (prefix) {
     EnigmailLog.setLogLevel(5);
     EnigmailLog.setLogDirectory(prefix);
-    EnigmailLog.DEBUG("enigmail.js: Logging debug output to " + prefix + "/enigdbug.txt\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Logging debug output to " + prefix + "/enigdbug.txt\n");
   }
 }
 
@@ -91,7 +99,7 @@ function initializeLogging(env) {
 
   if (matches && (matches.length > 1)) {
     EnigmailLog.setLogLevel(Number(matches[1]));
-    EnigmailLog.WARNING("enigmail.js: Enigmail: LogLevel=" + matches[1] + "\n");
+    EnigmailLog.WARNING("enigmailStartup.jsm: Enigmail: LogLevel=" + matches[1] + "\n");
   }
 }
 
@@ -118,8 +126,8 @@ function initializeAgentInfo() {
 
 function failureOn(ex, status) {
   status.initializationError = EnigmailLocale.getString("enigmailNotAvailable");
-  EnigmailLog.ERROR("enigmail.js: Enigmail.initialize: Error - " + status.initializationError + "\n");
-  EnigmailLog.DEBUG("enigmail.js: Enigmail.initialize: exception=" + ex.toString() + "\n");
+  EnigmailLog.ERROR("enigmailStartup.jsm: Enigmail.initialize: Error - " + status.initializationError + "\n");
+  EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: exception=" + ex.toString() + "\n");
   throw Components.results.NS_ERROR_FAILURE;
 }
 
@@ -187,7 +195,7 @@ function initializeEnvironment(env) {
     }
   }
 
-  EnigmailLog.DEBUG("enigmail.js: Enigmail.initialize: Ec.envList = " + EnigmailCore.getEnvList() + "\n");
+  EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: Ec.envList = " + EnigmailCore.getEnvList() + "\n");
 }
 
 function initializeObserver(on) {
@@ -222,7 +230,7 @@ Enigmail.prototype = {
   QueryInterface: XPCOMUtils.generateQI([nsIEnigmail, nsIObserver, nsISupports]),
 
   observe: function(aSubject, aTopic, aData) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.observe: topic='" + aTopic + "' \n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.observe: topic='" + aTopic + "' \n");
 
     if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
       // XPCOM shutdown
@@ -230,13 +238,13 @@ Enigmail.prototype = {
 
     }
     else {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.observe: no handler for '" + aTopic + "'\n");
+      EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.observe: no handler for '" + aTopic + "'\n");
     }
   },
 
 
   finalize: function() {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.finalize:\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.finalize:\n");
 
     EnigmailPEPAdapter.onShutdown();
 
@@ -255,7 +263,7 @@ Enigmail.prototype = {
   initialize: function(domWindow, version) {
     this.initializationAttempted = true;
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.initialize: START\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: START\n");
 
     if (this.initialized) return;
 
@@ -287,11 +295,11 @@ Enigmail.prototype = {
 
     this.initialized = true;
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.initialize: END\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: END\n");
   },
 
   reinitialize: function() {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.reinitialize:\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.reinitialize:\n");
     this.initialized = false;
     this.initializationAttempted = true;
 
@@ -302,7 +310,7 @@ Enigmail.prototype = {
   },
 
   perferGpgPath: function(gpgPath) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.perferGpgPath = " + gpgPath + "\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.perferGpgPath = " + gpgPath + "\n");
     gPreferredGpgPath = gpgPath;
   },
 
@@ -323,7 +331,7 @@ Enigmail.prototype = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    EnigmailLog.DEBUG("enigmail.js: svc = " + holder.svc + "\n");
+    EnigmailLog.DEBUG("enigmailStartup.jsm: svc = " + holder.svc + "\n");
 
     if (!holder.svc.initialized) {
       const firstInitialization = !holder.svc.initializationAttempted;
@@ -373,7 +381,7 @@ Enigmail.prototype = {
 
       const configuredVersion = EnigmailPrefs.getPref("configuredVersion");
 
-      EnigmailLog.DEBUG("enigmail.js: getService: last used version: " + configuredVersion + "\n");
+      EnigmailLog.DEBUG("enigmailStartup.jsm: getService: last used version: " + configuredVersion + "\n");
 
       if (firstInitialization && holder.svc.initialized &&
         EnigmailGpgAgent.agentType === "pgp") {
@@ -389,18 +397,64 @@ Enigmail.prototype = {
   }
 }; // Enigmail.prototype
 
+var EnigmailStartup = {
+  startup: function(reason) {
+    EnigmailArmor.registerOn(Enigmail.prototype);
+    EnigmailDecryption.registerOn(Enigmail.prototype);
+    EnigmailEncryption.registerOn(Enigmail.prototype);
+    EnigmailRules.registerOn(Enigmail.prototype);
+    EnigmailURIs.registerOn(Enigmail.prototype);
+    EnigmailVerifyAttachment.registerOn(Enigmail.prototype);
+    EnigmailVerify.registerContentTypeHandler();
+    EnigmailWksMimeHandler.registerContentTypeHandler();
+    EnigmailPEPAdapter.initialize();
+    EnigmailMimeEncrypt.startup(reason);
 
-EnigmailArmor.registerOn(Enigmail.prototype);
-EnigmailDecryption.registerOn(Enigmail.prototype);
-EnigmailEncryption.registerOn(Enigmail.prototype);
-EnigmailRules.registerOn(Enigmail.prototype);
-EnigmailURIs.registerOn(Enigmail.prototype);
-EnigmailVerifyAttachment.registerOn(Enigmail.prototype);
-EnigmailVerify.registerContentTypeHandler();
-EnigmailWksMimeHandler.registerContentTypeHandler();
-EnigmailPEPAdapter.initialize();
+    this.factories = [];
+    try {
+      let cLineReg = EnigmailCommandLine.categoryRegistry;
+      let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
+      catMan.addCategoryEntry(cLineReg.category,
+        cLineReg.entry,
+        cLineReg.serviceName,
+        false, true);
+      this.factories.push(new Factory(Enigmail));
+      this.factories.push(new Factory(EnigmailProtocolHandler));
+      this.factories.push(new Factory(EnigmailCommandLine.Handler));
+      this.factories.push(new Factory(EnigmailMimeEncrypt.Handler));
+    }
+    catch (ex) {}
 
-// This variable is exported implicitly and should not be refactored or removed
-const NSGetFactory = XPCOMUtils.generateNSGetFactory([Enigmail, EnigmailProtocolHandler, EnigmailCommandLine.Handler]);
+    EnigmailFilters.registerAll();
+  },
 
-EnigmailFilters.registerAll();
+  shutdown: function(reason) {
+
+  }
+};
+
+class Factory {
+  constructor(component) {
+    this.component = component;
+    this.register();
+    Object.freeze(this);
+  }
+
+  createInstance(outer, iid) {
+    if (outer) {
+      throw Cr.NS_ERROR_NO_AGGREGATION;
+    }
+    return new this.component();
+  }
+
+  register() {
+    Cm.registerFactory(this.component.prototype.classID,
+      this.component.prototype.classDescription,
+      this.component.prototype.contractID,
+      this);
+  }
+
+  unregister() {
+    Cm.unregisterFactory(this.component.prototype.classID, this);
+  }
+}

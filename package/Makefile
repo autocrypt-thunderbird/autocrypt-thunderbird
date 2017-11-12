@@ -11,9 +11,7 @@ PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
 
 COMPFILES = \
             bootstrap.js \
-            enigmail.js \
             pgpmimeHandler.js \
-            mimeEncrypt.js \
             msgCompFields.js
 
 PREFFILES = prefs/enigmail.js
@@ -38,6 +36,7 @@ MODFILES = \
            decryptPermanently.jsm \
            dialog.jsm \
            encryption.jsm \
+           enigmailStartup.jsm \
            errorHandling.jsm \
            events.jsm \
            execution.jsm \
@@ -66,6 +65,7 @@ MODFILES = \
            log.jsm \
            mime.jsm \
            mimeDecrypt.jsm \
+           mimeEncrypt.jsm \
            mimeVerify.jsm \
            msgRead.jsm \
            os.jsm \

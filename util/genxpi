@@ -61,11 +61,9 @@ echo "Creating ${xpiFile} file"
 zip --must-match\
     ../${xpiFile} \
     components/${xpiModule}.xpt \
-    components/${xpiModule}.js \
     components/bootstrap.js \
     components/msgCompFields.js \
     components/pgpmimeHandler.js \
-    components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
     modules/addrbook.jsm \
     modules/amPrefsService.jsm \
@@ -83,6 +81,7 @@ zip --must-match\
     modules/decryption.jsm \
     modules/decryptPermanently.jsm \
     modules/dialog.jsm \
+    modules/EnigmailStartup.jsm \
     modules/encryption.jsm \
     modules/core.jsm \
     modules/configBackup.jsm \
@@ -115,6 +114,7 @@ zip --must-match\
     modules/log.jsm \
     modules/mime.jsm \
     modules/mimeDecrypt.jsm \
+    modules/mimeEncrypt.jsm \
     modules/mimeVerify.jsm \
     modules/msgRead.jsm \
     modules/os.jsm \

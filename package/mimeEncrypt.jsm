@@ -11,6 +11,8 @@
  *  implemented as XPCOM component
  */
 
+var EXPORTED_SYMBOLS = ["EnigmailMimeEncrypt"];
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
@@ -27,7 +29,7 @@ Cu.import("resource://enigmail/hash.jsm"); /*global EnigmailHash: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
-const PGPMIME_JS_ENCRYPT_CONTRACTID = "@enigmail.net/enigmail/composesecure;1";
+const PGPMIME_JS_ENCRYPT_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
 const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
@@ -768,7 +770,6 @@ PgpMimeEncrypt.prototype = {
 };
 
 
-
 ////////////////////////////////////////////////////////////////////
 // General-purpose functions, not exported
 
@@ -788,6 +789,13 @@ function initModule() {
   }
 }
 
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeEncrypt]);
+var EnigmailMimeEncrypt = {
+  Handler: PgpMimeEncrypt,
 
-initModule();
+  startup: function(reason) {
+    initModule();
+  },
+  shutdown: function(reason) {
+
+  }
+};
