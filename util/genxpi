@@ -68,6 +68,7 @@ zip --must-match\
     components/mimeEncrypt.js \
     defaults/preferences/enigmail.js \
     modules/addrbook.jsm \
+    modules/amPrefsService.jsm \
     modules/app.jsm \
     modules/armor.jsm \
     modules/attachment.jsm \
@@ -128,7 +129,6 @@ zip --must-match\
     modules/pEpKeySync.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
-    modules/prefs-service.jsm \
     modules/rng.jsm \
     modules/rules.jsm \
     modules/send.jsm \

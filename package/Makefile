@@ -20,6 +20,7 @@ PREFFILES = prefs/enigmail.js
 
 MODFILES = \
            addrbook.jsm \
+           amPrefsService.jsm \
            app.jsm \
            armor.jsm \
            attachment.jsm \
@@ -79,7 +80,6 @@ MODFILES = \
            pEpKeySync.jsm \
            pipeConsole.jsm \
            prefs.jsm \
-           prefs-service.jsm \
            protocolHandler.jsm \
            rng.jsm \
            rules.jsm \
