@@ -6,21 +6,15 @@
 
 "use strict";
 
-/* global dump: false */
+function install() {}
 
-dump("## bootstrap start\n");
-
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-
-Cu.import("resource://enigmail/prefs-service.jsm"); /*global EnigmailAmPrefsService: false */
+function uninstall() {}
 
 function startup(data, reason) {
+  Components.utils.import("resource://enigmail/prefs-service.jsm"); /*global EnigmailAmPrefsService: false */
   EnigmailAmPrefsService.startup();
 }
 
+function shutdown(reason) {}
 
 startup();
-
-dump("## bootstrap end\n");
