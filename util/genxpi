@@ -62,7 +62,7 @@ zip --must-match\
     ../${xpiFile} \
     components/${xpiModule}.xpt \
     components/${xpiModule}.js \
-    components/prefs-service.js \
+    components/bootstrap.js \
     components/msgCompFields.js \
     components/pgpmimeHandler.js \
     components/mimeEncrypt.js \
@@ -128,6 +128,7 @@ zip --must-match\
     modules/pEpKeySync.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
+    modules/prefs-service.jsm \
     modules/rng.jsm \
     modules/rules.jsm \
     modules/send.jsm \
