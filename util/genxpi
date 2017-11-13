@@ -81,7 +81,7 @@ zip --must-match\
     modules/decryption.jsm \
     modules/decryptPermanently.jsm \
     modules/dialog.jsm \
-    modules/EnigmailStartup.jsm \
+    modules/enigmailStartup.jsm \
     modules/encryption.jsm \
     modules/core.jsm \
     modules/configBackup.jsm \
