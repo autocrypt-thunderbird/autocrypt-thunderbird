@@ -8,6 +8,8 @@
 
 'use strict';
 
+var EXPORTED_SYMBOLS = ["EnigmailMsgCompFields"];
+
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const Ci = Components.interfaces;
@@ -19,9 +21,16 @@ const ENIG_ENIGMSGCOMPFIELDS_CONTRACTID =
 const ENIG_ENIGMSGCOMPFIELDS_CID =
   Components.ID("{847b3a30-7ab1-11d4-8f02-006008948af5}");
 
-function EnigMsgCompFields() {}
+function MessageCompFields() {
+  this._parent = null;
+  this.UIFlags = 0;
+  this.endFlags = 0;
+  this.senderEmailAddr = "";
+  this.recipients = "";
+  this.msgSMIMECompFields = null;
+}
 
-EnigMsgCompFields.prototype = {
+MessageCompFields.prototype = {
 
   classDescription: "Enigmail Msg Compose Fields",
   classID: ENIG_ENIGMSGCOMPFIELDS_CID,
@@ -33,18 +42,6 @@ EnigMsgCompFields.prototype = {
     Ci.nsIMsgCompFields,
     Ci.nsISupports
   ]),
-
-  _parent: null,
-
-  UIFlags: 0,
-
-  endFlags: 0,
-
-  senderEmailAddr: "",
-
-  recipients: "",
-
-  msgSMIMECompFields: null,
 
   init: function(smimeCompFields) {
     var members = ["from",
@@ -102,4 +99,6 @@ EnigMsgCompFields.prototype = {
 };
 
 
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([EnigMsgCompFields]);
+var EnigmailMsgCompFields = {
+  CompFields: MessageCompFields
+};

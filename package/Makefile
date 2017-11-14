@@ -10,9 +10,7 @@ include $(DEPTH)/config/autoconf.mk
 PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
 
 COMPFILES = \
-            bootstrap.js \
-            pgpmimeHandler.js \
-            msgCompFields.js
+            bootstrap.js
 
 PREFFILES = prefs/enigmail.js
 
@@ -67,6 +65,7 @@ MODFILES = \
            mimeDecrypt.jsm \
            mimeEncrypt.jsm \
            mimeVerify.jsm \
+           msgCompFields.jsm \
            msgRead.jsm \
            os.jsm \
            openpgp.jsm \
@@ -78,6 +77,7 @@ MODFILES = \
            pEpFilter.jsm \
            pEpListener.jsm \
            pEpKeySync.jsm \
+           pgpmimeHandler.jsm \
            pipeConsole.jsm \
            prefs.jsm \
            protocolHandler.jsm \

@@ -10,9 +10,18 @@
  *  implemented as an XPCOM object
  */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  manager: Cm,
+  results: Cr,
+  utils: Cu,
+  Constructor: CC
+} = Components;
+Cm.QueryInterface(Ci.nsIComponentRegistrar);
+
+
+var EXPORTED_SYMBOLS = ["EnigmailPgpmimeHander"];
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -241,4 +250,44 @@ PgpMimeHandler.prototype = {
 };
 
 
-var NSGetFactory = XPCOMUtils.generateNSGetFactory([PgpMimeHandler]);
+class Factory {
+  constructor(component) {
+    this.component = component;
+    this.register();
+    Object.freeze(this);
+  }
+
+  createInstance(outer, iid) {
+    if (outer) {
+      throw Cr.NS_ERROR_NO_AGGREGATION;
+    }
+    return new this.component();
+  }
+
+  register() {
+    Cm.registerFactory(this.component.prototype.classID,
+      this.component.prototype.classDescription,
+      this.component.prototype.contractID,
+      this);
+  }
+
+  unregister() {
+    Cm.unregisterFactory(this.component.prototype.classID, this);
+  }
+}
+
+
+var EnigmailPgpmimeHander = {
+  startup: function(reason) {
+    try {
+      this.factory = new Factory(PgpMimeHandler);
+    }
+    catch (ex) {}
+  },
+
+  shutdown: function(reason) {
+    if (this.factory) {
+      this.factory.unregister();
+    }
+  }
+};

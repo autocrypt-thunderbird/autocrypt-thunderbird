@@ -49,6 +49,7 @@ Cu.import("resource://enigmail/keyRefreshService.jsm"); /*global EnigmailKeyRefr
 Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 Cu.import("resource://enigmail/wksMimeHandler.jsm"); /*global EnigmailWksMimeHandler: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("resource://enigmail/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
 
 
 /* Implementations supplied by this module */
@@ -422,6 +423,7 @@ var EnigmailStartup = {
       this.factories.push(new Factory(EnigmailProtocolHandler));
       this.factories.push(new Factory(EnigmailCommandLine.Handler));
       this.factories.push(new Factory(EnigmailMimeEncrypt.Handler));
+      this.factories.push(new Factory(EnigmailMsgCompFields.CompFields));
     }
     catch (ex) {}
 
@@ -429,7 +431,15 @@ var EnigmailStartup = {
   },
 
   shutdown: function(reason) {
+    let cLineReg = EnigmailCommandLine.categoryRegistry;
+    let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
+    catMan.deleteCategoryEntry(cLineReg.category, cLineReg.entry, false);
 
+    if (this.factories) {
+      for (let fct of this.factories) {
+        fct.unregister();
+      }
+    }
   }
 };
 

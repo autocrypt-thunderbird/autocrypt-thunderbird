@@ -62,8 +62,6 @@ zip --must-match\
     ../${xpiFile} \
     components/${xpiModule}.xpt \
     components/bootstrap.js \
-    components/msgCompFields.js \
-    components/pgpmimeHandler.js \
     defaults/preferences/enigmail.js \
     modules/addrbook.jsm \
     modules/amPrefsService.jsm \
@@ -116,6 +114,7 @@ zip --must-match\
     modules/mimeDecrypt.jsm \
     modules/mimeEncrypt.jsm \
     modules/mimeVerify.jsm \
+    modules/msgCompFields.jsm \
     modules/msgRead.jsm \
     modules/os.jsm \
     modules/openpgp.jsm \
@@ -127,6 +126,7 @@ zip --must-match\
     modules/pEpFilter.jsm \
     modules/pEpListener.jsm \
     modules/pEpKeySync.jsm \
+    modules/pgpmimeHandler.jsm \
     modules/pipeConsole.jsm \
     modules/prefs.jsm \
     modules/rng.jsm \

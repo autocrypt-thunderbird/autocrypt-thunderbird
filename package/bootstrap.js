@@ -5,6 +5,17 @@
 
 "use strict";
 
+
+// TODO: remove when changing to bootstrapped addon
+const APP_STARTUP = 1; // 	The application is starting up.
+const APP_SHUTDOWN = 2; // 	The application is shutting down.
+const ADDON_ENABLE = 3; // 	The add-on is being enabled.
+const ADDON_DISABLE = 4; // 	The add-on is being disabled. (Also sent during uninstallation)
+const ADDON_INSTALL = 5; // 	The add-on is being installed.
+const ADDON_UNINSTALL = 6; // 	The add-on is being uninstalled.
+const ADDON_UPGRADE = 7; // 	The add-on is being upgraded.
+const ADDON_DOWNGRADE = 8; // 	The add-on is being downgraded.
+
 function install() {}
 
 function uninstall() {}
@@ -13,20 +24,24 @@ function startup(data, reason) {
   const Cu = Components.utils;
   Cu.import("resource://enigmail/amPrefsService.jsm"); /*global EnigmailAmPrefsService: false */
   Cu.import("resource://enigmail/enigmailStartup.jsm"); /*global EnigmailStartup: false */
+  Cu.import("resource://enigmail/pgpmimeHandler.jsm"); /*global EnigmailPgpmimeHander: false */
 
   EnigmailAmPrefsService.startup(reason);
   EnigmailStartup.startup(reason);
-  /* global dump: false */
-  dump("Enigmail boostrap completed\n");
+  EnigmailPgpmimeHander.startup(reason);
 }
 
 function shutdown(reason) {
+  if (reason === APP_SHUTDOWN) return;
+
   const Cu = Components.utils;
   Cu.import("resource://enigmail/amPrefsService.jsm"); /*global EnigmailAmPrefsService: false */
   Cu.import("resource://enigmail/enigmailStartup.jsm"); /*global EnigmailStartup: false */
+  Cu.import("resource://enigmail/pgpmimeHandler.jsm"); /*global EnigmailPgpmimeHander: false */
 
   EnigmailAmPrefsService.shutdown(reason);
   EnigmailStartup.shutdown(reason);
+  EnigmailPgpmimeHander.shutdown(reason);
 }
 
-startup();
+startup({}, APP_STARTUP);

@@ -67,13 +67,9 @@ contract @enigmail.net/enigmail/bootstrap;1 {c0816cf9-fd2d-4716-8629-68974f3559a
 # hack to make sure that bootstrap is started during TB startup
 category command-line-handler cline-enigmail @enigmail.net/enigmail/bootstrap;1
 
-# EnigMsgCompFields
-component {847b3a30-7ab1-11d4-8f02-006008948af5} components/msgCompFields.js
-contract @mozdev.org/enigmail/composefields;1 {847b3a30-7ab1-11d4-8f02-006008948af5}
-
 # registration of service to decrypt PGP/MIME messages
-component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/pgpmimeHandler.js
-contract @mozilla.org/mime/pgp-mime-js-decrypt;1 {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}
+#component {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8} components/pgpmimeHandler.js
+#contract @mozilla.org/mime/pgp-mime-js-decrypt;1 {7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}
 
 ## interface specifiacations
 interfaces  components/enigmail.xpt
