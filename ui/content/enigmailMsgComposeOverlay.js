@@ -4611,6 +4611,7 @@ Enigmail.msg = {
   decryptQuote: function(interactive) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.decryptQuote: " + interactive + "\n");
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
+    const CT = Components.interfaces.nsIMsgCompType;
 
     if (gWindowLocked || this.processed)
       return;
@@ -4828,6 +4829,35 @@ Enigmail.msg = {
     if (tail)
       this.editorInsertText(tail);
 
+    if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) {
+      let hLines = (head.search(/[^\s>]/) < 0 ? 0 : 1);
+
+      if (hLines > 0) {
+        switch (gMsgCompose.type) {
+          case CT.Reply:
+          case CT.ReplyAll:
+          case CT.ReplyToSender:
+          case CT.ReplyToGroup:
+          case CT.ReplyToSenderAndGroup:
+          case CT.ReplyToList:
+            {
+              // if head contains at most 1 line of text, we assume it's the
+              // header above the quote (e.g. XYZ wrote:)
+
+              let h = head.split(/\r?\n/);
+              hLines = -1;
+
+              for (let i = 0; i < h.length; i++) {
+                if (h[i].search(/[^\s>]/) >= 0) hLines++;
+              }
+            }
+        }
+      }
+      if (hLines > 0 || tail.search(/[^\s>]/) >= 0) {
+        this.displayPartialEncryptedWarning();
+      }
+    }
+
     if (clipBoard.supportsSelectionClipboard()) {
       // restore the clipboard contents for selected text (X11)
       EnigmailClipboard.setClipboardContent(data, clipBoard.kSelectionClipboard);
@@ -4969,6 +4999,15 @@ Enigmail.msg = {
       });
     }
     notif.appendNotification(msgText, messageId, null, prio, buttonArr);
+  },
+
+  /**
+   * Display a warning message if we are replying to or forwarding
+   * a partially decrypted email
+   */
+  displayPartialEncryptedWarning: function() {
+
+    this.notifyUser(2, EnigmailLocale.getString("msgCompose.partiallyEncrypted.short"), "notifyPartialDecrypt", EnigmailLocale.getString("msgCompose.partiallyEncrypted.long"));
   },
 
   editorSelectAll: function() {
