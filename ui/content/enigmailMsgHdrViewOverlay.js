@@ -1480,11 +1480,11 @@ if (messageHeaderSink) {
        * @param searchPartNum: String - The part number to determine
        */
       isMultipartRelated: function(mimePart, searchPartNum) {
-        if (searchPartNum.indexOf(mimePart.partName) == 0 && mimePart.partName.length <= searchPartNum.length) {
-          if (mimePart.contentType == "multipart/related") return true;
+        if (searchPartNum.indexOf(mimePart.partNum) == 0 && mimePart.partNum.length <= searchPartNum.length) {
+          if (mimePart.fullContentType.search(/^multipart\/related/i) === 0) return true;
 
-          for (let i in mimePart.parts) {
-            if (this.isMultipartRelated(mimePart.parts[i], searchPartNum)) return true;
+          for (let i in mimePart.subParts) {
+            if (this.isMultipartRelated(mimePart.subParts[i], searchPartNum)) return true;
           }
         }
         return false;
@@ -1517,9 +1517,7 @@ if (messageHeaderSink) {
           else if (r !== 0) return false;
 
           if (Enigmail.msg.mimeParts) {
-            for (let i in Enigmail.msg.mimeParts) {
-              if (this.isMultipartRelated(Enigmail.msg.mimeParts[i], mimePartNumber)) return false;
-            }
+            if (this.isMultipartRelated(Enigmail.msg.mimeParts, mimePartNumber)) return false;
           }
         }
         return true;
@@ -1534,10 +1532,10 @@ if (messageHeaderSink) {
        */
       hasUnauthenticatedParts: function(mimePartNumber) {
         function hasSiblings(mimePart, searchPartNum, parent) {
-          if (mimePart.partName.indexOf(parent) == 0 && mimePart.partName !== searchPartNum) return true;
+          if (mimePart.partNum.indexOf(parent) == 0 && mimePart.partNum !== searchPartNum) return true;
 
-          for (let i in mimePart.parts) {
-            if (hasSiblings(mimePart.parts[i], searchPartNum, parent)) return true;
+          for (let i in mimePart.subParts) {
+            if (hasSiblings(mimePart.subParts[i], searchPartNum, parent)) return true;
           }
 
           return false;
@@ -1549,9 +1547,7 @@ if (messageHeaderSink) {
         }
 
         if (mimePartNumber && Enigmail.msg.mimeParts) {
-          for (let i in Enigmail.msg.mimeParts) {
-            if (hasSiblings(Enigmail.msg.mimeParts[i], mimePartNumber, parent)) return true;
-          }
+          if (hasSiblings(Enigmail.msg.mimeParts, mimePartNumber, parent)) return true;
         }
 
         return false;

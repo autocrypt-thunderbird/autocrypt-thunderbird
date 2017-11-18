@@ -313,8 +313,18 @@ EnigmailMimeDecrypt.prototype = {
 
           if (this.uri && url && url.value) {
 
-            if (url.value.spec != this.uri.spec)
-              return;
+            if ("path" in url) {
+              // TB < 57
+              if (url.value.host !== this.uri.host ||
+                url.value.path !== this.uri.path)
+                return;
+            }
+            else {
+              // TB >= 57
+              if (url.value.host !== this.uri.host ||
+                url.value.pathQueryRef !== this.uri.pathQueryRef)
+                return;
+            }
           }
         }
       }
