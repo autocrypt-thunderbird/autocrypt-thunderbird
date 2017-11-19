@@ -41,6 +41,8 @@ Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global Enigmail
 Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Components.utils.import("resource://enigmail/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
 Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("resource://enigmail/msgRead.jsm"); /*global EnigmailMsgRead: false */
 Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -384,21 +386,26 @@ Enigmail.msg = {
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     let msgUri = this.getOriginalMsgUri();
+    let self = this;
     let properties = 0;
     try {
       let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
+        let msgUrl = EnigmailMsgRead.getUrlFromUriSpec(msgUri);
         this.setOriginalSubject(msgHdr.subject);
         properties = msgHdr.getUint32Property("enigmail");
-        if (draft) {
-          try {
-            msgHdrToMimeMessage(msgHdr, null, this.getMsgPropertiesCb, true, {
-              examineEncryptedParts: true
-            });
-          }
-          catch (ex) {
-            EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: cannot use msgHdrToMimeMessage\n");
-          }
+        try {
+          EnigmailMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
+            if (draft) {
+              self.setDraftOptions(mimeMsg);
+            }
+            else {
+              self.checkMimeStructure(mimeMsg);
+            }
+          });
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: excetion in getMimeTreeFromUrl\n");
         }
       }
     }
@@ -413,14 +420,38 @@ Enigmail.msg = {
     return properties;
   },
 
-  getMsgPropertiesCb: function(msg, mimeMsg) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getMsgPropertiesCb\n");
+  checkMimeStructure: function(mimeMsg) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.checkMimeStructure\n");
+
+    if (mimeMsg.fullContentType.search(/^multipart\/encrypted.*protocol="?application\/pgp-encrypted?"/i) === 0) return;
+
+    function getEncryptedSubPart(mimeMsg) {
+      if (mimeMsg.fullContentType.search(/^multipart\/encrypted.*protocol="?application\/pgp-encrypted?"/i) === 0) return true;
+      if (mimeMsg.fullContentType.search(/^message\/rfc822/i) === 0) return false;
+
+      for (let i in mimeMsg.subParts) {
+        if (getEncryptedSubPart(mimeMsg.subParts[i])) return true;
+      }
+
+      return false;
+    }
+
+    for (let i in mimeMsg.subParts) {
+      if (getEncryptedSubPart(mimeMsg.subParts[i])) {
+        this.displayPartialEncryptedWarning();
+        return;
+      }
+    }
+  },
+
+  setDraftOptions: function(mimeMsg) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftOptions\n");
 
     const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     var stat = "";
-    if (mimeMsg && mimeMsg.headers["x-enigmail-draft-status"]) {
-      stat = String(mimeMsg.headers["x-enigmail-draft-status"]);
+    if (mimeMsg && mimeMsg.headers.has("x-enigmail-draft-status")) {
+      stat = String(mimeMsg.headers.get("x-enigmail-draft-status").join(""));
     }
     else {
       return;
