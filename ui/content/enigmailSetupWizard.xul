@@ -486,7 +486,7 @@
     <separator/>
     <description>&enigmail.pgComplete.help.title;</description>
     <description onclick="EnigmailWindows.openEnigmailDocu(window);"
-      class="enigmailLink">https://www.enigmail.net/</description>
+      class="enigmailLink">https://www.enigmail.net/documentation/</description>
   </wizardpage>
 
 
