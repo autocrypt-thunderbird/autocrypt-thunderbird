@@ -131,11 +131,14 @@ Enigmail.msg = {
 
     Enigmail.msg.juniorModeObserver = EnigmailPEPAdapter.registerJuniorModeObserver(Enigmail.msg.setMainMenuLabel);
 
-    if (EnigmailPEPAdapter.usingPep()) {
-      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
-    }
-    else {
-      document.getElementById("enigmailStatusCol").setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
+    let statusCol = document.getElementById("enigmailStatusCol");
+    if (statusCol) {
+      if (EnigmailPEPAdapter.usingPep()) {
+        statusCol.setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
+      }
+      else {
+        statusCol.setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
+      }
     }
 
     Enigmail.msg.savedHeaders = null;
@@ -196,6 +199,7 @@ Enigmail.msg = {
 
   messageListener: {
     onStartHeaders: function() {
+      Enigmail.msg.mimeParts = null;
       if ("autocrypt" in gExpandedHeaderView) {
         delete gExpandedHeaderView.autocrypt;
       }
@@ -566,12 +570,10 @@ Enigmail.msg = {
         EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
       }
 
-      this.messageDecryptCb(event, isAuto, null);
       this.movePEPsubject();
       return;
     }
-
-    if (EnigmailPEPAdapter.usingPep()) {
+    else if (EnigmailPEPAdapter.usingPep()) {
       this.hidePgpKeys();
       EnigmailPEPAdapter.processInlinePGP(this.getCurrentMsgUrl(), currentHeaderData);
     }
@@ -602,18 +604,6 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("                    " + mimePart.subParts.length + " subparts\n");
 
     try {
-      // if (typeof(mimePart.contentType) == "string" &&
-      //   mimePart.contentType == "multipart/fake-container") {
-      //   // workaround for wrong content type of signed message
-      //   let signedPart = mimePart.parts[1];
-      //   if (typeof(signedPart.headers["content-type"][0]) == "string") {
-      //     if (signedPart.headers["content-type"][0].search(/application\/pgp-signature/i) >= 0) {
-      //       resultObj.signed.push(signedPart.partName.replace(/\.[0-9]+$/, ""));
-      //       EnigmailLog.DEBUG("enumerateMimeParts: found signed subpart " + resultObj.signed + "\n");
-      //     }
-      //   }
-      // }
-
       var ct = mimePart.fullContentType;
       if (typeof(ct) == "string") {
         ct = ct.replace(/[\r\n]/g, " ");
