@@ -353,8 +353,17 @@ const EnigmailMime = {
     return "";
   },
 
-  // url: string
-  // callBackFunc(mimeTree)
+  /**
+   * Parse a MIME message and return a tree structur of TreeObject
+   *
+   * @param url:         String   - the URL to load and parse
+   * @param getBody:     Boolean  - if true, delivers the body text of each MIME part
+   * @param callbackFunc Function - the callback function that is called asynchronously
+   *                                when parsing is complete.
+   *                                Function signature: callBackFunc(TreeObject)
+   *
+   * @return undefined
+   */
   getMimeTreeFromUrl: function(url, getBody, callbackFunc) {
     function onData(data) {
       let tree = getMimeTree(data);
@@ -371,7 +380,7 @@ const EnigmailMime = {
 };
 
 /**
- * Parse a MIME message and return a tree structur of TreeObject.
+ * Parse a MIME message and return a tree structure of TreeObject.
  *
  * TreeObject contains the following main parts:
  *     - partNum: String
