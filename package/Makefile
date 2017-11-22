@@ -84,6 +84,7 @@ MODFILES = \
            rng.jsm \
            rules.jsm \
            send.jsm \
+           singletons.jsm \
            socks5Proxy.jsm \
            stdlib.jsm \
            streams.jsm \

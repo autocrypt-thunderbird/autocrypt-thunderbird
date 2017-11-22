@@ -24,6 +24,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
@@ -285,7 +286,7 @@ PEPDecryptor.prototype = {
 
     try {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus for uri " + uriSpec + "\n");
-      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      let headerSink = EnigmailSingletons.messageReader;
 
       if (headerSink && this.uri) {
 

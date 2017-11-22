@@ -132,6 +132,7 @@ zip --must-match\
     modules/rng.jsm \
     modules/rules.jsm \
     modules/send.jsm \
+    modules/singletons.jsm \
     modules/socks5Proxy.jsm \
     modules/stdlib/compose.jsm \
     modules/stdlib/misc.jsm \

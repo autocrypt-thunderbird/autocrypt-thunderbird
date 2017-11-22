@@ -20,6 +20,7 @@ Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false 
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
@@ -186,7 +187,7 @@ PgpWkdHandler.prototype = {
 
     try {
       LOCAL_DEBUG("wksMimeHandler.jsm: displayStatus displaying result\n");
-      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      let headerSink = EnigmailSingletons.messageReader;
 
       if (headerSink) {
         headerSink.processDecryptionResult(this.uri, "wksConfirmRequest", jsonStr, this.mimePartNumber);

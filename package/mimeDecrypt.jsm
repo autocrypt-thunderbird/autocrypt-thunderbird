@@ -27,6 +27,7 @@ Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -402,7 +403,7 @@ EnigmailMimeDecrypt.prototype = {
 
     try {
       EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus for uri " + uriSpec + "\n");
-      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      let headerSink = EnigmailSingletons.messageReader;
 
       if (headerSink && this.uri && !this.backgroundJob) {
 
@@ -554,7 +555,7 @@ EnigmailMimeDecrypt.prototype = {
   handleManualDecrypt: function() {
 
     try {
-      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      let headerSink = EnigmailSingletons.messageReader;
 
       if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.updateSecurityStatus(

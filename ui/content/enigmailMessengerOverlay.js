@@ -733,12 +733,11 @@ Enigmail.msg = {
 
         try {
 
-          if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
-            mimeMsg.headers["x-mailer"][0].indexOf("ZimbraWebClient") >= 0 &&
-            mimeMsg.parts[0].parts[0].headers["content-type"][0].indexOf("text/plain") >= 0 &&
-            mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
-            mimeMsg.parts[0].parts[0].body.indexOf("Version: OpenPGP.js") >= 0 &&
-            mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0) {
+          if (mimeMsg.subParts.length > 1 &&
+            mimeMsg.headers.has("x-mailer") && mimeMsg.headers.get("x-mailer")[0].indexOf("ZimbraWebClient") >= 0 &&
+            mimeMsg.subParts[0].fullContentType.indexOf("text/plain") >= 0 &&
+            mimeMsg.fullContentType.indexOf("multipart/mixed") >= 0 &&
+            mimeMsg.subParts[1].fullContentType.indexOf("application/pgp-encrypted") >= 0) {
             this.messageParse(event, false, Enigmail.msg.savedHeaders["content-transfer-encoding"], this.getCurrentMsgUriSpec());
             return;
           }
@@ -758,16 +757,15 @@ Enigmail.msg = {
         // iPGMail produces a similar broken structure, see here:
         //   - https://sourceforge.net/p/enigmail/forum/support/thread/afc9c246/#5de7
 
-        if (mimeMsg.parts && mimeMsg.parts.length && mimeMsg.parts.length == 1 &&
-          mimeMsg.parts[0].parts && mimeMsg.parts[0].parts.length && mimeMsg.parts[0].parts.length == 3 &&
-          mimeMsg.parts[0].headers["content-type"][0].indexOf("multipart/mixed") >= 0 &&
-          mimeMsg.parts[0].parts[0].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
-          mimeMsg.parts[0].parts[0].headers["content-type"][0].search(/text\/(plain|html)/i) >= 0 &&
-          mimeMsg.parts[0].parts[1].headers["content-type"][0].indexOf("application/pgp-encrypted") >= 0) {
-          if (mimeMsg.parts[0].parts[1].headers["content-type"][0].search(/multipart\/encrypted/i) < 0 &&
-            mimeMsg.parts[0].parts[1].headers["content-type"][0].search(/PGP\/?MIME Versions? Identification/i) >= 0 &&
-            mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("application/octet-stream") >= 0 &&
-            mimeMsg.parts[0].parts[2].headers["content-type"][0].indexOf("encrypted.asc") >= 0) {
+        if (mimeMsg.subParts.length == 3 &&
+          mimeMsg.fullContentType.search(/multipart\/mixed/i) >= 0 &&
+          mimeMsg.subParts[0].fullContentType.search(/multipart\/encrypted/i) < 0 &&
+          mimeMsg.subParts[0].fullContentType.search(/text\/(plain|html)/i) >= 0 &&
+          mimeMsg.subParts[1].fullContentType.search(/application\/pgp-encrypted/i) >= 0) {
+          if (mimeMsg.subParts[1].fullContentType.search(/multipart\/encrypted/i) < 0 &&
+            mimeMsg.subParts[1].fullContentType.search(/PGP\/?MIME Versions? Identification/i) >= 0 &&
+            mimeMsg.subParts[2].fullContentType.search(/application\/octet-stream/i) >= 0 &&
+            mimeMsg.subParts[2].fullContentType.search(/encrypted.asc/i) >= 0) {
             this.buggyMailType = "exchange";
           }
           else {
@@ -834,9 +832,6 @@ Enigmail.msg = {
 
   // display header about reparing buggy MS-Exchange messages
   buggyMailHeader: function() {
-    let headerSink = msgWindow.msgHeaderSink.securityInfo.QueryInterface(Components.interfaces.nsIEnigMimeHeaderSink);
-
-
     let uriStr = EnigmailURIs.createMessageURI(this.getCurrentMsgUrl(),
       "message/rfc822",
       "",
@@ -845,7 +840,7 @@ Enigmail.msg = {
 
     let ph = new EnigmailProtocolHandler();
     let uri = ph.newURI(uriStr, "", "");
-    headerSink.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1");
+    Enigmail.hdrView.headerPane.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1");
   },
 
   messageParse: function(interactive, importOnly, contentEncoding, msgUriSpec) {

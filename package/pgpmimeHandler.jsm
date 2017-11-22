@@ -32,6 +32,7 @@ Cu.import("resource://enigmail/wksMimeHandler.jsm"); /*global EnigmailWksMimeHan
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
@@ -229,7 +230,7 @@ PgpMimeHandler.prototype = {
       uri = uri.QueryInterface(Ci.nsIURI).clone();
     }
 
-    let headerSink = EnigmailVerify.lastMsgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+    let headerSink = EnigmailSingletons.messageReader;
     headerSink.handleSMimeMessage(uri);
   },
 

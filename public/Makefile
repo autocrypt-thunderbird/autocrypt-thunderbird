@@ -11,7 +11,6 @@ XPIDLSRCS     = \
                 nsIEnigmail.idl  \
                 nsIEnigMsgCompFields.idl  \
                 nsIEnigMimeService.idl    \
-                nsIEnigMimeHeaderSink.idl \
                 nsIEnigMimeReadCallback.idl
 
 all:

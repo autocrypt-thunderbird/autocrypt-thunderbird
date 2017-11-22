@@ -28,6 +28,7 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_PROTO = "application/pgp-signature";
@@ -592,7 +593,7 @@ MimeVerify.prototype = {
 
     try {
       LOCAL_DEBUG("mimeVerify.jsm: displayStatus displaying result\n");
-      let headerSink = this.msgWindow.msgHeaderSink.securityInfo.QueryInterface(Ci.nsIEnigMimeHeaderSink);
+      let headerSink = EnigmailSingletons.messageReader;
 
       if (this.protectedHeaders) {
         headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.protectedHeaders.newHeaders), this.mimePartNumber);
