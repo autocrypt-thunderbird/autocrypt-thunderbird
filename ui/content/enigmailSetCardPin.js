@@ -111,14 +111,6 @@ changePinObserver.prototype = {
   _data: "",
   result: "",
 
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
-      iid.equals(Ci.nsISupports))
-      return this;
-
-    throw Components.results.NS_NOINTERFACE;
-  },
-
   onDataAvailable: function(data) {
     var ret = "";
     EnigmailLog.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data=" + data + "\n");

@@ -1314,14 +1314,6 @@ EnigCardAdminObserver.prototype = {
   _guiObserver: null,
   _failureCode: 0,
 
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
-      iid.equals(Ci.nsISupports))
-      return this;
-
-    throw Components.results.NS_NOINTERFACE;
-  },
-
   onDataAvailable: function(data) {
     var ret = "";
     EnigmailLog.DEBUG("keyEdit.jsm: enigCardAdminObserver.onDataAvailable: data=" + data + "\n");
@@ -1352,14 +1344,6 @@ function ChangePasswdObserver() {}
 ChangePasswdObserver.prototype = {
   _failureCode: 0,
   passphraseStatus: 0,
-
-  QueryInterface: function(iid) {
-    if (iid.equals(Ci.nsIEnigMimeReadCallback) ||
-      iid.equals(Ci.nsISupports))
-      return this;
-
-    throw Components.results.NS_NOINTERFACE;
-  },
 
   onDataAvailable: function(data) {
     var ret = "";

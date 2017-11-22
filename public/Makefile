@@ -10,8 +10,7 @@ include $(DEPTH)/config/autoconf.mk
 XPIDLSRCS     = \
                 nsIEnigmail.idl  \
                 nsIEnigMsgCompFields.idl  \
-                nsIEnigMimeService.idl    \
-                nsIEnigMimeReadCallback.idl
+                nsIEnigMimeService.idl
 
 all:
 	../util/xptgen $(PYTHON) ./external $(DEPTH)/util $(DIST) $(XPIDLSRCS) 

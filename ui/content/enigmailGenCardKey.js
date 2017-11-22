@@ -62,15 +62,6 @@ enigGenKeyObserver.prototype = {
   backupLocation: null,
   _state: 0,
 
-  QueryInterface: function(iid) {
-    //EnigmailLog.DEBUG("enigmailGenCardKey: EnigMimeReadCallback.QI: "+iid+"\n");
-    if (iid.equals(Components.interfaces.nsIEnigMimeReadCallback) ||
-      iid.equals(Components.interfaces.nsISupports))
-      return this;
-
-    throw Components.results.NS_NOINTERFACE;
-  },
-
   onDataAvailable: function(data) {
 
     var txt = "";
