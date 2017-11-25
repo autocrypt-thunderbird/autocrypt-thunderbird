@@ -39,7 +39,7 @@ const EnigmailStreams = {
     if ("newChannel2" in ioServ) {
       // TB >= 48
       let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-      channel = ioServ.newChannel2(url, null, null, null, loadingPrincipal, null, 0, Ci.nsIContentPolicyBase.TYPE_DOCUMENT);
+      channel = ioServ.newChannel2(url, null, null, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
     }
     else {
       channel = ioServ.newChannel(url, null, null);
@@ -62,7 +62,7 @@ const EnigmailStreams = {
     if ("newChannelFromURI2" in ioServ) {
       // TB >= 48
       let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-      channel = ioServ.newChannelFromURI2(uri, null, loadingPrincipal, null, 0, Ci.nsIContentPolicyBase.TYPE_DOCUMENT);
+      channel = ioServ.newChannelFromURI2(uri, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
     }
     else {
       channel = ioServ.newChannelFromURI(uri);
