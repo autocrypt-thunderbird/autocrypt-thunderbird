@@ -507,7 +507,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
 <!ENTITY enigmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
-<!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your providers Webkey Directory">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your provider's Webkey Directory">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
