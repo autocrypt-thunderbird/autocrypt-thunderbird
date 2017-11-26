@@ -27,6 +27,7 @@ Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: fals
 Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
+Cu.import("resource://enigmail/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
 
 const GPG_WKS_CLIENT = "gpg-wks-client";
 
@@ -149,12 +150,12 @@ var EnigmailWks = {
           return;
         }
         EnigmailLog.DEBUG("webKey.jsm: submitKey: send " + listener.stdoutData + "\n");
-        let si = Components.classes["@mozdev.org/enigmail/composefields;1"].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+        let si = EnigmailMsgCompFields.createObject(null);
         let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
         let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
         if (subject !== null && to !== null) {
-          si.sendFlags |= (Ci.nsIEnigmail.SEND_VERBATIM);
+          EnigmailMsgCompFields.setValue(si, "sendFlags", Ci.nsIEnigmail.SEND_VERBATIM);
 
           if (!EnigmailSend.simpleSendMessage({
                 urls: [],
@@ -214,12 +215,12 @@ var EnigmailWks = {
         }
       }, function(ret) {
         try {
-          let si = Components.classes["@mozdev.org/enigmail/composefields;1"].createInstance(Components.interfaces.nsIEnigMsgCompFields);
+          let si = EnigmailMsgCompFields.createObject(null);
           let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
           let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
           if (subject !== null && to !== null) {
-            si.sendFlags |= (Ci.nsIEnigmail.SEND_VERBATIM);
+            EnigmailMsgCompFields.setValue(si, "sendFlags", Ci.nsIEnigmail.SEND_VERBATIM);
 
             if (!EnigmailSend.simpleSendMessage({
                   urls: [],

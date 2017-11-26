@@ -7,10 +7,7 @@ DEPTH = ..
 
 include $(DEPTH)/config/autoconf.mk
 
-XPIDLSRCS     = \
-                nsIEnigmail.idl  \
-                nsIEnigMsgCompFields.idl  \
-                nsIEnigMimeService.idl
+XPIDLSRCS     = nsIEnigmail.idl
 
 all:
 	../util/xptgen $(PYTHON) ./external $(DEPTH)/util $(DIST) $(XPIDLSRCS) 

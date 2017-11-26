@@ -13,31 +13,5 @@ with the 7th and 8th hex digits varying from 00 to ff.
 Of these, the following UUIDs are being used as IIDs and CIDs:
 
 nsIEnigMail               IID    "847b3a00-7ab1-11d4-8f02-006008948af5"
-nsEnigMail                CID    "847b3a01-7ab1-11d4-8f02-006008948af5"
-
-EnigMailProtocolHandler   CID    "847b3a11-7ab1-11d4-8f02-006008948af5"
-
-nsEnigMsgCompose          CID    "847b3a21-7ab1-11d4-8f02-006008948af5"
-nsEnigMsgComposeFactory   CID    "847b3a22-7ab1-11d4-8f02-006008948af5"
-
 nsIEnigMsgCompFields      IID    "847b3a30-7ab1-11d4-8f02-006008948af5"
-nsEnigMsgCompFields       CID    "847b3a31-7ab1-11d4-8f02-006008948af5"
-
-nsIEnigMimeService        IID    "847b3a40-7ab1-11d4-8f02-006008948af5"
-nsEnigMimeService         CID    "847b3a41-7ab1-11d4-8f02-006008948af5"
-
-nsEnigContentHandler      CID    "847b3a51-7ab1-11d4-8f02-006008948af5"
-nsEnigContentHandlerFactory CID  "847b3a52-7ab1-11d4-8f02-006008948af5"
-
-nsIEnigMimeListener       IID    "847b3a60-7ab1-11d4-8f02-006008948af5"
-nsEnigMimeListener        CID    "847b3a61-7ab1-11d4-8f02-006008948af5"
-
-nsIEnigMimeDecrypt        IID    "847b3a70-7ab1-11d4-8f02-006008948af5"
-nsEnigMimeDecrypt         CID    "847b3a71-7ab1-11d4-8f02-006008948af5"
-
-nsIEnigMimeWriter         IID    "847b3aa0-7ab1-11d4-8f02-006008948af5"
-nsEnigMimeWriter          CID    "847b3aa1-7ab1-11d4-8f02-006008948af5"
-
-EnigmailPrefsService      CID    "847b3ab0-7ab1-11d4-8f02-006008948af5"
-EnigmailCmdLineService    CID    "847b3ab1-7ab1-11d4-8f02-006008948af5"
 

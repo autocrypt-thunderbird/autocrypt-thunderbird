@@ -628,10 +628,8 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb:\n");
 
     this.buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
-    this.mimeParts = mimeMsg;
 
     let enigmailSvc;
-    let showHeaders = 0;
     let contentType = "";
     try {
 
@@ -673,7 +671,12 @@ Enigmail.msg = {
         }
       }
 
+      if (!mimeMsg.fullContentType) {
+        mimeMsg.fullContentType = "text/plain";
+      }
+
       Enigmail.msg.savedHeaders["content-type"] = mimeMsg.fullContentType;
+      this.mimeParts = mimeMsg;
 
       for (var index = 0; index < Enigmail.msg.headersList.length; index++) {
         var headerName = Enigmail.msg.headersList[index];

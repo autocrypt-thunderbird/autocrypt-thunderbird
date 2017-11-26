@@ -128,6 +128,9 @@ function onLoadWkd(inArg) {
       progressDlg.setAttribute("value", completionRate);
       progressDlg.setAttribute("mode", "normal");
     },
+    onUpload: function(fpr) {
+      // do nothing
+    },
     onFinished: function(completionStatus, errorMessage, displayError) {
       if (completionStatus !== 0) {
         window.close();
