@@ -58,8 +58,11 @@ const EnigmailCore = {
     }
 
     try {
-      enigmailHolder.svc = Cc["@mozdev.org/enigmail/enigmail;1"].createInstance(Ci.nsIEnigmail);
-      return enigmailHolder.svc.wrappedJSObject.getService(enigmailHolder, win, startingPreferences);
+      let getCoreSvc = lazy("coreService.jsm", "EnigmailCoreService");
+      let EnigmailCoreService = getCoreSvc();
+
+      enigmailHolder.svc = EnigmailCoreService.createInstance();
+      return enigmailHolder.svc.getService(enigmailHolder, win, startingPreferences);
     }
     catch (ex) {
       return null;

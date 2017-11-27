@@ -19,7 +19,7 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-var EXPORTED_SYMBOLS = ["EnigmailStartup"];
+var EXPORTED_SYMBOLS = ["EnigmailCoreService"];
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
@@ -52,25 +52,14 @@ Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: fa
 Cu.import("resource://enigmail/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
 
 
-/* Implementations supplied by this module */
-const NS_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
-
-const NS_ENIGMAIL_CID =
-  Components.ID("{847b3a01-7ab1-11d4-8f02-006008948af5}");
-
-// Contract IDs and CIDs used by this module
-const NS_OBSERVERSERVICE_CONTRACTID = "@mozilla.org/observer-service;1";
 
 // Interfaces
 const nsISupports = Ci.nsISupports;
-const nsIObserver = Ci.nsIObserver;
 const nsIEnvironment = Ci.nsIEnvironment;
-const nsIEnigmail = Ci.nsIEnigmail;
-
-const NS_XPCOM_SHUTDOWN_OBSERVER_ID = "quit-application";
 
 var gPreferredGpgPath = null;
 var gOverwriteEnvVar = [];
+var gEnigmailService = null;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Enigmail encryption/decryption service
@@ -90,7 +79,7 @@ function initializeLogDirectory() {
   if (prefix) {
     EnigmailLog.setLogLevel(5);
     EnigmailLog.setLogDirectory(prefix);
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Logging debug output to " + prefix + "/enigdbug.txt\n");
+    EnigmailLog.DEBUG("coreService.jsm: Logging debug output to " + prefix + "/enigdbug.txt\n");
   }
 }
 
@@ -100,7 +89,7 @@ function initializeLogging(env) {
 
   if (matches && (matches.length > 1)) {
     EnigmailLog.setLogLevel(Number(matches[1]));
-    EnigmailLog.WARNING("enigmailStartup.jsm: Enigmail: LogLevel=" + matches[1] + "\n");
+    EnigmailLog.WARNING("coreService.jsm: Enigmail: LogLevel=" + matches[1] + "\n");
   }
 }
 
@@ -127,8 +116,8 @@ function initializeAgentInfo() {
 
 function failureOn(ex, status) {
   status.initializationError = EnigmailLocale.getString("enigmailNotAvailable");
-  EnigmailLog.ERROR("enigmailStartup.jsm: Enigmail.initialize: Error - " + status.initializationError + "\n");
-  EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: exception=" + ex.toString() + "\n");
+  EnigmailLog.ERROR("coreService.jsm: Enigmail.initialize: Error - " + status.initializationError + "\n");
+  EnigmailLog.DEBUG("coreService.jsm: Enigmail.initialize: exception=" + ex.toString() + "\n");
   throw Components.results.NS_ERROR_FAILURE;
 }
 
@@ -196,75 +185,23 @@ function initializeEnvironment(env) {
     }
   }
 
-  EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: Ec.envList = " + EnigmailCore.getEnvList() + "\n");
+  EnigmailLog.DEBUG("coreService.jsm: Enigmail.initialize: Ec.envList = " + EnigmailCore.getEnvList() + "\n");
 }
 
-function initializeObserver(on) {
-  // Register to observe XPCOM shutdown
-  const obsServ = Cc[NS_OBSERVERSERVICE_CONTRACTID].getService().
-  QueryInterface(Ci.nsIObserverService);
-  obsServ.addObserver(on, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
-}
 
 function Enigmail() {
   this.wrappedJSObject = this;
 }
 
 Enigmail.prototype = {
-  classDescription: "Enigmail",
-  classID: NS_ENIGMAIL_CID,
-  contractID: NS_ENIGMAIL_CONTRACTID,
-
   initialized: false,
   initializationAttempted: false,
   initializationError: "",
 
-  _xpcom_factory: {
-    createInstance: function(aOuter, iid) {
-      // Enigmail is a service -> only instanciate once
-      return EnigmailCore.ensuredEnigmailService(function() {
-        return new Enigmail();
-      });
-    },
-    lockFactory: function(lock) {}
-  },
-  QueryInterface: XPCOMUtils.generateQI([nsIEnigmail, nsIObserver, nsISupports]),
-
-  observe: function(aSubject, aTopic, aData) {
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.observe: topic='" + aTopic + "' \n");
-
-    if (aTopic == NS_XPCOM_SHUTDOWN_OBSERVER_ID) {
-      // XPCOM shutdown
-      this.finalize();
-
-    }
-    else {
-      EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.observe: no handler for '" + aTopic + "'\n");
-    }
-  },
-
-
-  finalize: function() {
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.finalize:\n");
-
-    EnigmailPEPAdapter.onShutdown();
-
-    if (!this.initialized) return;
-
-    EnigmailGpgAgent.finalize();
-    EnigmailLog.onShutdown();
-
-    EnigmailLog.setLogLevel(3);
-    this.initializationError = "";
-    this.initializationAttempted = false;
-    this.initialized = false;
-  },
-
-
   initialize: function(domWindow, version) {
     this.initializationAttempted = true;
 
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: START\n");
+    EnigmailLog.DEBUG("coreService.jsm: Enigmail.initialize: START\n");
 
     if (this.initialized) return;
 
@@ -290,17 +227,15 @@ Enigmail.prototype = {
 
     initializeAgentInfo();
 
-    initializeObserver(this);
-
     EnigmailKeyRefreshService.start(EnigmailKeyServer);
 
     this.initialized = true;
 
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.initialize: END\n");
+    EnigmailLog.DEBUG("coreService.jsm: Enigmail.initialize: END\n");
   },
 
   reinitialize: function() {
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.reinitialize:\n");
+    EnigmailLog.DEBUG("coreService.jsm: Enigmail.reinitialize:\n");
     this.initialized = false;
     this.initializationAttempted = true;
 
@@ -311,7 +246,7 @@ Enigmail.prototype = {
   },
 
   perferGpgPath: function(gpgPath) {
-    EnigmailLog.DEBUG("enigmailStartup.jsm: Enigmail.perferGpgPath = " + gpgPath + "\n");
+    EnigmailLog.DEBUG("coreService.jsm: Enigmail.perferGpgPath = " + gpgPath + "\n");
     gPreferredGpgPath = gpgPath;
   },
 
@@ -332,7 +267,7 @@ Enigmail.prototype = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    EnigmailLog.DEBUG("enigmailStartup.jsm: svc = " + holder.svc + "\n");
+    EnigmailLog.DEBUG("coreService.jsm: svc = " + holder.svc + "\n");
 
     if (!holder.svc.initialized) {
       const firstInitialization = !holder.svc.initializationAttempted;
@@ -382,7 +317,7 @@ Enigmail.prototype = {
 
       const configuredVersion = EnigmailPrefs.getPref("configuredVersion");
 
-      EnigmailLog.DEBUG("enigmailStartup.jsm: getService: last used version: " + configuredVersion + "\n");
+      EnigmailLog.DEBUG("coreService.jsm: getService: last used version: " + configuredVersion + "\n");
 
       if (firstInitialization && holder.svc.initialized &&
         EnigmailGpgAgent.agentType === "pgp") {
@@ -398,7 +333,18 @@ Enigmail.prototype = {
   }
 }; // Enigmail.prototype
 
-var EnigmailStartup = {
+var EnigmailCoreService = {
+  /**
+   * Create a new instance of Enigmail, or return the already existing one
+   */
+  createInstance: function() {
+    if (!gEnigmailService) {
+      gEnigmailService = new Enigmail();
+    }
+
+    return gEnigmailService;
+  },
+
   startup: function(reason) {
     EnigmailArmor.registerOn(Enigmail.prototype);
     EnigmailDecryption.registerOn(Enigmail.prototype);
@@ -431,6 +377,8 @@ var EnigmailStartup = {
   },
 
   shutdown: function(reason) {
+    EnigmailLog.DEBUG("coreService.jsm: shutdown():\n");
+
     let cLineReg = EnigmailCommandLine.categoryRegistry;
     let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
     catMan.deleteCategoryEntry(cLineReg.category, cLineReg.entry, false);
@@ -440,6 +388,14 @@ var EnigmailStartup = {
         fct.unregister();
       }
     }
+
+    EnigmailPEPAdapter.onShutdown();
+
+    EnigmailGpgAgent.finalize();
+    EnigmailLog.onShutdown();
+
+    EnigmailLog.setLogLevel(3);
+    gEnigmailService = null;
   }
 };
 

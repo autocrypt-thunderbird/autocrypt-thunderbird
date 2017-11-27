@@ -23,11 +23,11 @@ function uninstall() {}
 function startup(data, reason) {
   const Cu = Components.utils;
   Cu.import("resource://enigmail/amPrefsService.jsm"); /*global EnigmailAmPrefsService: false */
-  Cu.import("resource://enigmail/enigmailStartup.jsm"); /*global EnigmailStartup: false */
+  Cu.import("resource://enigmail/coreService.jsm"); /*global EnigmailCoreService: false */
   Cu.import("resource://enigmail/pgpmimeHandler.jsm"); /*global EnigmailPgpmimeHander: false */
 
   EnigmailAmPrefsService.startup(reason);
-  EnigmailStartup.startup(reason);
+  EnigmailCoreService.startup(reason);
   EnigmailPgpmimeHander.startup(reason);
 }
 
@@ -36,11 +36,11 @@ function shutdown(reason) {
 
   const Cu = Components.utils;
   Cu.import("resource://enigmail/amPrefsService.jsm"); /*global EnigmailAmPrefsService: false */
-  Cu.import("resource://enigmail/enigmailStartup.jsm"); /*global EnigmailStartup: false */
+  Cu.import("resource://enigmail/coreService.jsm"); /*global EnigmailCoreService: false */
   Cu.import("resource://enigmail/pgpmimeHandler.jsm"); /*global EnigmailPgpmimeHander: false */
 
   EnigmailAmPrefsService.shutdown(reason);
-  EnigmailStartup.shutdown(reason);
+  EnigmailCoreService.shutdown(reason);
   EnigmailPgpmimeHander.shutdown(reason);
 }
 

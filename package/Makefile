@@ -34,7 +34,7 @@ MODFILES = \
            decryptPermanently.jsm \
            dialog.jsm \
            encryption.jsm \
-           enigmailStartup.jsm \
+           coreService.jsm \
            errorHandling.jsm \
            events.jsm \
            execution.jsm \

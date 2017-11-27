@@ -249,11 +249,12 @@ function setupTestAccounts() {
 }
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/coreService.jsm"); /*global EnigmailCoreService: false */
+
 function withEnigmail(f) {
   return function() {
     try {
-      const enigmail = Components.classes["@mozdev.org/enigmail/enigmail;1"].
-      createInstance(Components.interfaces.nsIEnigmail);
+      const enigmail = EnigmailCoreService.createInstance();
       const window = JSUnit.createStubWindow();
       enigmail.initialize(window, "");
       return f(EnigmailCore.getEnigmailService(), window);

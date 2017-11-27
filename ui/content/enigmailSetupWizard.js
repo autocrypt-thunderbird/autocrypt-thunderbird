@@ -34,6 +34,9 @@ Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks:
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+
+const getCoreService = EnigmailLazy.loader("enigmail/coreService.jsm", "EnigmailCoreService");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -822,8 +825,7 @@ function enigGetSvc(resetCheck) {
   }
 
   try {
-    gEnigmailSvc = ENIG_C[ENIG_ENIGMAIL_CONTRACTID].createInstance(ENIG_I.nsIEnigmail);
-
+    gEnigmailSvc = getCoreService().createInstance();
   }
   catch (ex) {
     EnigmailLog.ERROR("enigmailWizard.js: Error in instantiating EnigmailService\n");

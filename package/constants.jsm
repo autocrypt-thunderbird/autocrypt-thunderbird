@@ -48,7 +48,7 @@ const EnigmailConstants = {
   FILTER_MOVE_DECRYPT: "enigmail@enigmail.net#filterActionMoveDecrypt",
   FILTER_COPY_DECRYPT: "enigmail@enigmail.net#filterActionCopyDecrypt",
 
-  /* taken over from nsIEnigmail (deprecated) */
+  /* taken over from old nsIEnigmail */
 
   /* Cleartext signature parts */
   SIGNATURE_TEXT: 1,
@@ -130,8 +130,5 @@ const EnigmailConstants = {
 
   CARD_PIN_CHANGE: 1,
   CARD_PIN_UNBLOCK: 2,
-  CARD_ADMIN_PIN_CHANGE: 3,
-
-  // TODO: to be removed when transition is complete
-  nsIEnigmail: Components.interfaces.nsIEnigmail
+  CARD_ADMIN_PIN_CHANGE: 3
 };

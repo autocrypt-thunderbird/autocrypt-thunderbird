@@ -38,6 +38,7 @@ Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
+const getCoreService = EnigmailLazy.loader("enigmail/coreService.jsm", "EnigmailCoreService");
 
 
 // pEp JSON Server executable name
@@ -392,7 +393,7 @@ var EnigmailPEPAdapter = {
             envStr += "GNUPGHOME=" + gpgEnv.gnupg_home + "\n";
           }
 
-          let enigmailSvc = Cc["@mozdev.org/enigmail/enigmail;1"].getService(Ci.nsIEnigmail);
+          let enigmailSvc = getCoreService().createInstance();
           enigmailSvc.perferGpgPath(gpgEnv.gnupg_path);
           enigmailSvc.overwriteEnvVar(envStr);
 
