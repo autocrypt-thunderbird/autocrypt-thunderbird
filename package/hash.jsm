@@ -19,10 +19,9 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const Ci = Components.interfaces;
-
-const nsIEnigmail = Ci.nsIEnigmail;
 
 const keyAlgorithms = [];
 const mimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];
@@ -35,13 +34,13 @@ const EnigmailHash = {
       win = EnigmailWindows.getMostRecentWindow();
     }
 
-    const sendFlags = nsIEnigmail.SEND_TEST | nsIEnigmail.SEND_SIGNED;
+    const sendFlags = EnigmailConstants.SEND_TEST | EnigmailConstants.SEND_SIGNED;
     const hashAlgo = mimeHashAlgorithms[EnigmailPrefs.getPref("mimeHashAlgorithm")];
 
     if (typeof(keyAlgorithms[fromMailAddr]) != "string") {
       // hash algorithm not yet known
 
-      const testUiFlags = nsIEnigmail.UI_TEST;
+      const testUiFlags = EnigmailConstants.UI_TEST;
       const listener = {
         stdoutData: "",
         stderrData: "",
@@ -84,7 +83,7 @@ const EnigmailHash = {
 
       if (exitCode2 !== 0) {
         // Abormal return
-        if (retStatusObj.statusFlags & nsIEnigmail.BAD_PASSPHRASE) {
+        if (retStatusObj.statusFlags & EnigmailConstants.BAD_PASSPHRASE) {
           // "Unremember" passphrase on error return
           retStatusObj.errorMsg = EnigmailLocale.getString("badPhrase");
         }

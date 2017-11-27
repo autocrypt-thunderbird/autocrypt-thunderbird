@@ -11,6 +11,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("armor.jsm"); /*global EnigmailArmor: false */
+component("enigmail/constants.jsm"); /*global EnigmailConstants: fales */
 
 test(function shouldLocateEnigmailArmoredBlock() {
   const text = "    -----BEGIN PGP SIGNATURE-----\n" +
@@ -69,9 +70,9 @@ test(function shouldExtractSignaturePart() {
     "\n" +
     "-----END PGP SIGNATURE-----";
 
-  const signature_text = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_TEXT);
-  const signature_headers = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_HEADERS);
-  const signature_armor = EnigmailArmor.extractSignaturePart(signature_block, Ci.nsIEnigmail.SIGNATURE_ARMOR);
+  const signature_text = EnigmailArmor.extractSignaturePart(signature_block, EnigmailConstants.SIGNATURE_TEXT);
+  const signature_headers = EnigmailArmor.extractSignaturePart(signature_block, EnigmailConstants.SIGNATURE_HEADERS);
+  const signature_armor = EnigmailArmor.extractSignaturePart(signature_block, EnigmailConstants.SIGNATURE_ARMOR);
   Assert.equal(signature.text, signature_text);
   Assert.equal(signature.header, signature_headers);
   Assert.equal(signature.armor.replace(/\s*/g, ""), signature_armor);

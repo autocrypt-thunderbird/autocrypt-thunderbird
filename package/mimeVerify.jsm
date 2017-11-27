@@ -566,11 +566,11 @@ MimeVerify.prototype = {
       this.dataLength,
       true, // verifyOnly
       true,
-      Ci.nsIEnigmail.UI_PGP_MIME,
+      EnigmailConstants.UI_PGP_MIME,
       this.returnStatus);
 
     if (this.partiallySigned)
-      this.returnStatus.statusFlags |= Ci.nsIEnigmail.PARTIALLY_PGP;
+      this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
 
     this.displayStatus();
 

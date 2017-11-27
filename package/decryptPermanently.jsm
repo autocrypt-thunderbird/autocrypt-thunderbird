@@ -31,6 +31,7 @@ Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
@@ -43,7 +44,6 @@ var EC = EnigmailCore;
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
 const STATUS_OK = 0;
 const STATUS_FAILURE = 1;
@@ -428,11 +428,11 @@ DecryptMessageIntoFolder.prototype = {
               EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
 
               if ((listener.stdoutData && listener.stdoutData.length > 0) ||
-                (statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY)) {
+                (statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY)) {
                 EnigmailLog.DEBUG("decryptPermanently.jsm: decryptAttachment: decryption OK\n");
                 exitCode = 0;
               }
-              else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
+              else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
                 EnigmailLog.DEBUG("decryptPermanently.jsm: decryptAttachment: decryption failed\n");
                 // since we cannot find out if the user wants to cancel
                 // we should ask
@@ -445,7 +445,7 @@ DecryptMessageIntoFolder.prototype = {
                   return;
                 }
               }
-              else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+              else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_INCOMPLETE) {
                 // failure; message not complete
                 EnigmailLog.DEBUG("decryptPermanently.jsm: decryptAttachment: decryption incomplete\n");
                 o.status = STATUS_FAILURE;
@@ -739,7 +739,7 @@ DecryptMessageIntoFolder.prototype = {
       var signatureObj = {};
       signatureObj.value = "";
 
-      var uiFlags = nsIEnigmail.UI_INTERACTIVE | nsIEnigmail.UI_UNVERIFIED_ENC_OK;
+      var uiFlags = EnigmailConstants.UI_INTERACTIVE | EnigmailConstants.UI_UNVERIFIED_ENC_OK;
 
       var plaintexts = [];
       var blocks = EnigmailArmor.locateArmoredBlocks(mime.body);
@@ -779,13 +779,13 @@ DecryptMessageIntoFolder.prototype = {
           plaintext = enigmailSvc.decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
             keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj);
           if (!plaintext || plaintext.length === 0) {
-            if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
+            if (statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) {
               EnigmailDialog.alert(null, errorMsgObj.value);
               this.foundPGP = -1;
               return -1;
             }
 
-            if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_FAILED) {
+            if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
               // since we cannot find out if the user wants to cancel
               // we should ask
               let msg = EnigmailLocale.getString("converter.decryptBody.failed", this.subject);
@@ -796,7 +796,7 @@ DecryptMessageIntoFolder.prototype = {
                 return -1;
               }
             }
-            else if (statusFlagsObj.value & nsIEnigmail.DECRYPTION_INCOMPLETE) {
+            else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_INCOMPLETE) {
               this.foundPGP = -1;
               return -1;
             }

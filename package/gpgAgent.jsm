@@ -33,8 +33,6 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const nsIEnigmail = Ci.nsIEnigmail;
-
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";

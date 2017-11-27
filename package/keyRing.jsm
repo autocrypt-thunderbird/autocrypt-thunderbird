@@ -30,13 +30,12 @@ Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
 
-
-const nsIEnigmail = Ci.nsIEnigmail;
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
@@ -1229,7 +1228,7 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
   const cmdErrorMsgObj = {};
   let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
 
-  if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
+  if (!(statusFlagsObj.value & EnigmailConstants.BAD_SIGNATURE)) {
     // ignore exit code as recommended by GnuPG authors
     exitCodeObj.value = 0;
   }
@@ -1489,7 +1488,7 @@ function getKeySig(keyId, exitCodeObj, errorMsgObj) {
   const cmdErrorMsgObj = {};
   const listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
 
-  if (!(statusFlagsObj.value & nsIEnigmail.BAD_SIGNATURE)) {
+  if (!(statusFlagsObj.value & EnigmailConstants.BAD_SIGNATURE)) {
     // ignore exit code as recommended by GnuPG authors
     exitCodeObj.value = 0;
   }

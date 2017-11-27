@@ -20,10 +20,9 @@ Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: fals
 Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const Ci = Components.interfaces;
-
-const nsIEnigmail = Ci.nsIEnigmail;
 
 const EnigmailVerifyAttachment = {
   attachment: function(parent, verifyFile, sigFile, statusFlagsObj, errorMsgObj) {
@@ -46,7 +45,7 @@ const EnigmailVerifyAttachment = {
     proc.wait();
 
     const retObj = {};
-    EnigmailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, nsIEnigmail.UI_INTERACTIVE, retObj);
+    EnigmailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, retObj);
 
     if (listener.exitCode === 0) {
       const detailArr = retObj.sigDetails.split(/ /);

@@ -28,6 +28,7 @@ Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false 
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const GPG_WKS_CLIENT = "gpg-wks-client";
 
@@ -155,7 +156,7 @@ var EnigmailWks = {
         let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
         if (subject !== null && to !== null) {
-          EnigmailMsgCompFields.setValue(si, "sendFlags", Ci.nsIEnigmail.SEND_VERBATIM);
+          EnigmailMsgCompFields.setValue(si, "sendFlags", EnigmailConstants.SEND_VERBATIM);
 
           if (!EnigmailSend.simpleSendMessage({
                 urls: [],
@@ -220,7 +221,7 @@ var EnigmailWks = {
           let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
           if (subject !== null && to !== null) {
-            EnigmailMsgCompFields.setValue(si, "sendFlags", Ci.nsIEnigmail.SEND_VERBATIM);
+            EnigmailMsgCompFields.setValue(si, "sendFlags", EnigmailConstants.SEND_VERBATIM);
 
             if (!EnigmailSend.simpleSendMessage({
                   urls: [],

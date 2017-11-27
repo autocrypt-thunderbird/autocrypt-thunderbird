@@ -32,8 +32,8 @@ Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
-const nsIEnigmail = Ci.nsIEnigmail;
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 const ENIG_DEFAULT_HKP_PORT = "11371";
@@ -45,23 +45,23 @@ function matchesKeyserverAction(action, flag) {
 }
 
 function getRequestAction(actionFlags, keys) {
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.DOWNLOAD_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
     return ["--recv-keys"].concat(keys);
   }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.SEARCH_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.SEARCH_KEY)) {
     return ["--search-keys"].concat(keys);
   }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.UPLOAD_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY)) {
     return ["--send-keys"].concat(keys);
   }
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.REFRESH_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.REFRESH_KEY)) {
     return ["--refresh-keys"];
   }
   return null;
 }
 
 function getInputData(actionFlags) {
-  if (matchesKeyserverAction(actionFlags, Ci.nsIEnigmail.SEARCH_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.SEARCH_KEY)) {
     return "quit\n";
   }
   return null;
@@ -75,7 +75,7 @@ function buildProxyInfo(uri, proxyHost) {
 }
 
 function buildStandardArgs(action) {
-  if (matchesKeyserverAction(action, Ci.nsIEnigmail.SEARCH_KEY)) {
+  if (matchesKeyserverAction(action, EnigmailConstants.SEARCH_KEY)) {
     return EnigmailGpg.getStandardArgs(false).concat(["--command-fd", "0", "--fixed-list", "--with-colons"]);
   }
   return EnigmailGpg.getStandardArgs(true);
@@ -88,7 +88,7 @@ function flatten(arrOfArr) {
 }
 
 function isDownload(action) {
-  return matchesKeyserverAction(action, Ci.nsIEnigmail.REFRESH_KEY) || matchesKeyserverAction(action, Ci.nsIEnigmail.DOWNLOAD_KEY);
+  return matchesKeyserverAction(action, EnigmailConstants.REFRESH_KEY) || matchesKeyserverAction(action, EnigmailConstants.DOWNLOAD_KEY);
 }
 
 function gpgRequest(keyId, uri, action, usingTor) {
@@ -259,7 +259,7 @@ function invalidArgumentsExist(actionFlags, keyserver, searchTerms, errorMsgObj)
     return true;
   }
 
-  if (!searchTerms && !matchesKeyserverAction(actionFlags, Ci.nsIEnigmail.REFRESH_KEY)) {
+  if (!searchTerms && !matchesKeyserverAction(actionFlags, EnigmailConstants.REFRESH_KEY)) {
     errorMsgObj.value = EnigmailLocale.getString("failNoID");
     return true;
   }
@@ -280,7 +280,7 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  * search, download or upload key on, from or to a keyserver
  *
  * @actionFlags: Integer - flags (bitmap) to determine the required action
- *                         (see nsIEnigmail - Keyserver action flags for details)
+ *                         (see EnigmailConstants - Keyserver action flags for details)
  * @keyserver:   String  - keyserver URL (optionally incl. protocol)
  * @searchTerms: String  - space-separated list of search terms or key IDs
  * @listener:    Object  - execStart Listener Object. See execStart for details.
@@ -302,7 +302,7 @@ function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 function buildHkpPayload(actionFlags, searchTerms) {
   let payLoad = null;
 
-  if (matchesKeyserverAction(actionFlags, nsIEnigmail.UPLOAD_KEY)) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY)) {
     let keyData = EnigmailKeyRing.extractKey(false, searchTerms, null, {}, {});
     if (keyData.length === 0) return null;
 
@@ -376,7 +376,7 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
  */
 function refresh(keyId) {
   EnigmailLog.WRITE("[KEYSERVER]: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString() + "\n");
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, EnigmailTor, EnigmailHttpProxy);
 
   for (let i = 0; i < requests.length; i++) {
@@ -412,7 +412,7 @@ function getProxyModule() {
  *
  * @param win          - |object| holding the parent window for the dialog.
  * @param keys         - |array| with key objects for the keys to upload/refresh
- * @param access       - |nsIEnigmail| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
+ * @param access       - |EnigmailConstants| UPLOAD_WKS, UPLOAD_KEY or REFRESH_KEY
  * @param hideProgess  - |boolean| do not display progress dialogs
  * @param callbackFunc - |function| called when the key server operation finishes
  *                            params: exitCode, errorMsg, displayErrorMsg
@@ -442,7 +442,7 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
     cbFunc: callbackFunc
   };
 
-  if (access === nsIEnigmail.UPLOAD_WKD) {
+  if (access === EnigmailConstants.UPLOAD_WKD) {
     for (let key of keys) {
       // UPLOAD_WKD needs a nsIMsgIdentity
       try {
@@ -480,7 +480,7 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
     else {
       let inputObj = {};
       let resultObj = {};
-      if (access != nsIEnigmail.REFRESH_KEY) {
+      if (access != EnigmailConstants.REFRESH_KEY) {
         inputObj.upload = true;
         inputObj.keyId = keyList;
       }

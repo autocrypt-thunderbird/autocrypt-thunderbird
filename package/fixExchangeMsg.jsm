@@ -23,7 +23,6 @@ const EC = EnigmailCore;
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 

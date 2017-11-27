@@ -14,6 +14,7 @@ component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 function setupKeyserverPrefs(keyservers, autoOn) {
   EnigmailPrefs.setPref("keyserver", keyservers);
@@ -38,7 +39,7 @@ test(function setupRequestWithTorHelper() {
     .concat(EnigmailGpg.getStandardArgs(true))
     .concat(["--keyserver", "hkps://keyserver.1:443"])
     .concat(["--recv-keys", "1234"]);
-  const action = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const action = EnigmailConstants.DOWNLOAD_KEY;
 
   const request = requestOverTorWithHelper("1234", "hkps://keyserver.1:443", torProperties, action);
 
@@ -61,7 +62,7 @@ test(function setupRequestWithTorHelperWithEnvVariables() {
     .concat(EnigmailGpg.getStandardArgs(true))
     .concat(["--keyserver", "hkps://keyserver.1:443"])
     .concat(["--recv-keys", "1234"]);
-  const action = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const action = EnigmailConstants.DOWNLOAD_KEY;
 
   const request = requestOverTorWithHelper("1234", "hkps://keyserver.1:443", torProperties, action);
 
@@ -82,7 +83,7 @@ test(withTestGpgHome(withEnigmail(function setupRequestWithTorGpgProxyArguments(
     .concat(["--keyserver", "hkps://keyserver.1:443"])
     .concat(expectedGpgProxyArgs)
     .concat(["--recv-keys", "1234"]);
-  const action = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const action = EnigmailConstants.DOWNLOAD_KEY;
 
   const request = requestOverTorWithSocks("1234", "hkps://keyserver.1:443", torProperties, action);
 
@@ -93,7 +94,7 @@ test(withTestGpgHome(withEnigmail(function setupRequestWithTorGpgProxyArguments(
 test(function testBuildNormalRequestWithStandardArgs() {
   const refreshKeyArgs = EnigmailGpg.getStandardArgs(true).concat(["--keyserver", "hkps://keyserver.1:443", "--recv-keys", "1234"]);
   const protocol = "hkps://keyserver.1:443";
-  const action = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const action = EnigmailConstants.DOWNLOAD_KEY;
   const useTor = false;
 
   const request = gpgRequest("1234", protocol, action, useTor);
@@ -107,7 +108,7 @@ test(function testBuildNormalRequestWithStandardArgs() {
 test(function testBuildNormalRequestOverTorWithStandardArgs() {
   const refreshKeyArgs = EnigmailGpg.getStandardArgs(true).concat(["--keyserver", "hkps://keyserver.1:443", "--recv-keys", "1234"]);
   const protocol = "hkps://keyserver.1:443";
-  const action = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const action = EnigmailConstants.DOWNLOAD_KEY;
   const useTor = true;
 
   const request = gpgRequest("1234", protocol, action, useTor);
@@ -138,7 +139,7 @@ test(withEnigmail(function createsRegularRequests_whenUserDoesNotWantTor() {
   };
   const expectedKeyId = "1234";
 
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(expectedKeyId, refreshAction, tor);
 
   Assert.equal(requests[0].command, EnigmailGpgAgent.agentPath);
@@ -182,7 +183,7 @@ test(withEnigmail(function createsRequestsWithTorAndWithoutTor_whenTorExistsOver
     }
   };
 
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
 
   Assert.equal(requests.length, 4);
@@ -237,7 +238,7 @@ test(withEnigmail(function createsRequestsWithTorAndWithoutTor_whenTorExistsOver
     }
   };
 
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
 
   Assert.equal(requests.length, 6);
@@ -282,7 +283,7 @@ test(withEnigmail(function createsNormalRequests_whenTorDoesntExist() {
       return true;
     }
   };
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
 
   Assert.equal(requests.length, 2);
@@ -315,7 +316,7 @@ test(withEnigmail(function createsNormalRequests_whenTorUsesNormal() {
       return true;
     }
   };
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
 
   Assert.equal(requests.length, 2);
@@ -366,7 +367,7 @@ test(withEnigmail(function createsRequestsWithOnlyTor_whenTorIsRequired(enigmail
     }
   };
 
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
 
   Assert.equal(requests.length, 4);
@@ -404,7 +405,7 @@ test(withEnigmail(function returnNoRequests_whenTorIsRequiredButNotAvailable() {
     }
   };
 
-  const refreshAction = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests("1234", refreshAction, tor);
   Assert.equal(requests.length, 0);
 }));
@@ -465,7 +466,7 @@ test(withEnigmail(function executeReportsSuccess_whenReceivingImportSuccessful(e
 }));
 
 test(function testBasicNormalQuery() {
-  const actionflags = Ci.nsIEnigmail.REFRESH_KEY;
+  const actionflags = EnigmailConstants.REFRESH_KEY;
   const keyserver = "keyserver0005";
   const searchterms = "";
   const errormsgobj = {};
@@ -489,7 +490,7 @@ test(function testBasicNormalQuery() {
 });
 
 test(function testBasicNormalQueryWithHTTPPRoxy() {
-  const actionflags = Ci.nsIEnigmail.REFRESH_KEY;
+  const actionflags = EnigmailConstants.REFRESH_KEY;
   const keyserver = "keyserver0005";
   const searchterms = "1";
   const errormsgobj = {};
@@ -515,7 +516,7 @@ test(function testBasicNormalQueryWithHTTPPRoxy() {
 });
 
 test(function testBasicNormalQueryWithInputData() {
-  const actionflags = Ci.nsIEnigmail.SEARCH_KEY;
+  const actionflags = EnigmailConstants.SEARCH_KEY;
   const keyserver = "keyserver0005";
   const searchterms = "1";
   const errormsgobj = {};
@@ -541,7 +542,7 @@ test(function testBasicNormalQueryWithInputData() {
 });
 
 test(function testNormalReceiveKeyQuery() {
-  const actionflags = Ci.nsIEnigmail.DOWNLOAD_KEY;
+  const actionflags = EnigmailConstants.DOWNLOAD_KEY;
   const keyserver = "keyserver0005";
   const searchterms = "0001";
   const errormsgobj = {};
@@ -566,7 +567,7 @@ test(function testNormalReceiveKeyQuery() {
 });
 
 test(function testNormalUploadKeyRequest() {
-  const actionflags = Ci.nsIEnigmail.UPLOAD_KEY;
+  const actionflags = EnigmailConstants.UPLOAD_KEY;
   const keyserver = "keyserver0005";
   const searchterms = "0001";
   const errormsgobj = {};
@@ -591,7 +592,7 @@ test(function testNormalUploadKeyRequest() {
 });
 
 test(function testErrorQueryWithNoKeyserver() {
-  const actionflags = Ci.nsIEnigmail.UPLOAD_KEY;
+  const actionflags = EnigmailConstants.UPLOAD_KEY;
   const keyserver = null;
   const searchterms = "0001";
   const errormsgobj = {};
@@ -608,7 +609,7 @@ test(function testErrorQueryWithNoKeyserver() {
 });
 
 test(function testErrorSearchQueryWithNoID() {
-  const actionflags = Ci.nsIEnigmail.SEARCH_KEY;
+  const actionflags = EnigmailConstants.SEARCH_KEY;
   const keyserver = "keyserver0005";
   const searchterms = null;
   const errormsgobj = {};

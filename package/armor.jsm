@@ -11,11 +11,10 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailArmor"];
 
+Components.utils.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
 
 const Ci = Components.interfaces;
-
-const nsIEnigmail = Ci.nsIEnigmail;
 
 // Locates STRing in TEXT occurring only at the beginning of a line
 function indexOfArmorDelimiter(text, str, offset) {
@@ -179,7 +178,7 @@ const EnigmailArmor = {
           return "";
         }
 
-        if (part === nsIEnigmail.SIGNATURE_TEXT) {
+        if (part === EnigmailConstants.SIGNATURE_TEXT) {
           return signatureBlock.substr(offset + 1, beginIndex - offset - 1).
           replace(/^- -/, "-").
           replace(/\n- -/g, "\n-").
@@ -195,12 +194,12 @@ const EnigmailArmor = {
           var signBlock = signatureBlock.substr(offset, endIndex - offset);
 
           return searchBlankLine(signBlock, function(armorIndex) {
-            if (part == nsIEnigmail.SIGNATURE_HEADERS) {
+            if (part == EnigmailConstants.SIGNATURE_HEADERS) {
               return signBlock.substr(1, armorIndex);
             }
 
             return indexOfNewline(signBlock, armorIndex + 1, function(armorIndex) {
-              if (part == nsIEnigmail.SIGNATURE_ARMOR) {
+              if (part == EnigmailConstants.SIGNATURE_ARMOR) {
                 return signBlock.substr(armorIndex, endIndex - armorIndex).
                 replace(/\s*/g, "");
               }

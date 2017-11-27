@@ -19,6 +19,7 @@ Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/socks5Proxy.jsm"); /*global EnigmailSocks5Proxy: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const EXPORTED_SYMBOLS = ["EnigmailTor"];
 
@@ -39,22 +40,22 @@ const TOR_USER_PREFERENCES = {
   DOWNLOAD: {
     requires: "downloadKeyRequireTor",
     uses: "downloadKeyWithTor",
-    constant: Ci.nsIEnigmail.DOWNLOAD_KEY
+    constant: EnigmailConstants.DOWNLOAD_KEY
   },
   SEARCH: {
     requires: "searchKeyRequireTor",
     uses: "searchKeyWithTor",
-    constant: Ci.nsIEnigmail.SEARCH_KEY
+    constant: EnigmailConstants.SEARCH_KEY
   },
   UPLOAD: {
     requires: "uploadKeyRequireTor",
     uses: "uploadKeyWithTor",
-    constant: Ci.nsIEnigmail.UPLOAD_KEY
+    constant: EnigmailConstants.UPLOAD_KEY
   },
   REFRESH: {
     requires: "refreshAllKeysRequireTor",
     uses: "refreshAllKeysWithTor",
-    constant: Ci.nsIEnigmail.REFRESH_KEY
+    constant: EnigmailConstants.REFRESH_KEY
   }
 };
 

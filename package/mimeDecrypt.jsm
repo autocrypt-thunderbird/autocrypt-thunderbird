@@ -377,7 +377,7 @@ EnigmailMimeDecrypt.prototype = {
       this.dataLength,
       false,
       false,
-      Ci.nsIEnigmail.UI_PGP_MIME,
+      EnigmailConstants.UI_PGP_MIME,
       this.returnStatus);
 
     this.displayStatus();

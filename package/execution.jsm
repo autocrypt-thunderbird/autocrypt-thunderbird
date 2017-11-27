@@ -22,10 +22,9 @@ Cu.import("resource://enigmail/subprocess.jsm");
 Cu.import("resource://enigmail/errorHandling.jsm");
 Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
 
 const loadOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
-
-const nsIEnigmail = Ci.nsIEnigmail;
 
 const EnigmailExecution = {
   agentType: "",
@@ -134,7 +133,7 @@ const EnigmailExecution = {
     blockSeparationObj.value = retObj.blockSeparation;
 
     if (errOutput.search(/jpeg image of size \d+/) > -1) {
-      statusFlagsObj.value |= nsIEnigmail.PHOTO_AVAILABLE;
+      statusFlagsObj.value |= EnigmailConstants.PHOTO_AVAILABLE;
     }
     if (blockSeparationObj && blockSeparationObj.value.indexOf(" ") > 0) {
       exitCode = 2;
@@ -298,14 +297,14 @@ const EnigmailExecution = {
     const statusFlags = statusFlagsObj.statusFlags;
 
     if (exitCode !== 0) {
-      if ((statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) &&
-        (statusFlags & nsIEnigmail.DECRYPTION_OKAY)) {
+      if ((statusFlags & (EnigmailConstants.BAD_PASSPHRASE | EnigmailConstants.UNVERIFIED_SIGNATURE)) &&
+        (statusFlags & EnigmailConstants.DECRYPTION_OKAY)) {
         EnigmailLog.DEBUG("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode for decrypted msg " + exitCode + "->0\n");
         exitCode = 0;
       }
       if ((EnigmailExecution.agentType === "gpg") && (exitCode == 256) && (loadOS().getOS() == "WINNT")) {
         EnigmailLog.WARNING("enigmailCommon.jsm: Enigmail.fixExitCode: Using gpg and exit code is 256. You seem to use cygwin-gpg, activating countermeasures.\n");
-        if (statusFlags & (nsIEnigmail.BAD_PASSPHRASE | nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+        if (statusFlags & (EnigmailConstants.BAD_PASSPHRASE | EnigmailConstants.UNVERIFIED_SIGNATURE)) {
           EnigmailLog.WARNING("enigmailCommon.jsm: Enigmail.fixExitCode: Changing exitCode 256->2\n");
           exitCode = 2;
         }
@@ -316,8 +315,8 @@ const EnigmailExecution = {
       }
     }
     else {
-      if (statusFlags & (nsIEnigmail.INVALID_RECIPIENT | nsIEnigmail.DECRYPTION_FAILED | nsIEnigmail.BAD_ARMOR |
-          nsIEnigmail.MISSING_PASSPHRASE | nsIEnigmail.BAD_PASSPHRASE)) {
+      if (statusFlags & (EnigmailConstants.INVALID_RECIPIENT | EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.BAD_ARMOR |
+          EnigmailConstants.MISSING_PASSPHRASE | EnigmailConstants.BAD_PASSPHRASE)) {
         exitCode = 1;
       }
       else if (typeof(statusFlagsObj.extendedStatus) === "string" && statusFlagsObj.extendedStatus.search(/\bdisp:/) >= 0) {

@@ -14,6 +14,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withT
 
 testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Ci: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 test(function decryptionFailedWillSetDecryptionFailedFlag() {
   var context = {};
@@ -201,6 +202,6 @@ test(function shouldHandleFailures() {
   const retStatusObj = {};
   EnigmailErrorHandling.parseErrorOutput(errorOutput, retStatusObj);
 
-  Assert.ok((retStatusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) !== 0);
+  Assert.ok((retStatusObj.statusFlags & EnigmailConstants.DISPLAY_MESSAGE) !== 0);
   Assert.assertContains(retStatusObj.statusMsg, EnigmailLocale.getString("errorHandling.pinentryError"));
 });

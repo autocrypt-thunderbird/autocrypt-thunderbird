@@ -21,6 +21,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
@@ -131,7 +132,7 @@ PgpWkdHandler.prototype = {
       0,
       this.data, {}, {}, statusFlagsObj, {}, {}, {}, {}, {}, {});
 
-    if (statusFlagsObj.value & Ci.nsIEnigmail.DECRYPTION_OKAY) {
+    if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY) {
       this.data = res;
     }
     EnigmailLog.DEBUG("wksMimeHandler.jsm: decryptChallengeData: decryption result: " + res + "\n");

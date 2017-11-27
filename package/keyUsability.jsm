@@ -26,7 +26,6 @@ const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 
-const nsIEnigmail = Ci.nsIEnigmail;
 const DAY = 86400; // number of seconds of 1 day
 
 var EnigmailKeyUsability = {

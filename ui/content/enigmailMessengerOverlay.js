@@ -1261,7 +1261,7 @@ Enigmail.msg = {
 
     Enigmail.msg.noShowReload = true;
     var node;
-    var bodyElement = this.getBodyElement();
+    var bodyElement = Enigmail.msg.getBodyElement();
 
     if (bodyElement.firstChild) {
       node = bodyElement.firstChild;
@@ -1278,7 +1278,7 @@ Enigmail.msg = {
           }
           if (foundIndex >= 0) {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
-            this.movePEPsubject();
+            Enigmail.msg.movePEPsubject();
             return;
           }
         }
@@ -1298,7 +1298,7 @@ Enigmail.msg = {
           }
           if (foundIndex >= 0) {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
-            this.movePEPsubject();
+            Enigmail.msg.movePEPsubject();
             return;
           }
         }
@@ -2252,7 +2252,7 @@ Enigmail.msg = {
     var enigmailSvc = Enigmail.getEnigmailSvc();
     var outFile;
     var origFilename;
-    var rawFileName = Enigmail.msg.getAttachmentName(callbackArg.attachment).replace(/\.(asc|pgp|gpg)$/i, "");
+    var rawFileName = EnigmailMsgRead.getAttachmentName(callbackArg.attachment).replace(/\.(asc|pgp|gpg)$/i, "");
 
     if (callbackArg.actionType != "importKey") {
       origFilename = EnigmailAttachment.getFileName(window, callbackArg.data);
@@ -2338,7 +2338,7 @@ Enigmail.msg = {
     }
 
     exitStatus = enigmailSvc.decryptAttachment(window, outFile,
-      Enigmail.msg.getAttachmentName(callbackArg.attachment),
+      EnigmailMsgRead.getAttachmentName(callbackArg.attachment),
       callbackArg.data,
       exitCodeObj, statusFlagsObj,
       errorMsgObj);

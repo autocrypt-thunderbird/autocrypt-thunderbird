@@ -26,6 +26,7 @@ Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false 
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const GET_BOOL = "GET_BOOL";
 const GET_LINE = "GET_LINE";
@@ -152,7 +153,7 @@ GpgEditorInterface.prototype = {
       else if (txt.indexOf("[GNUPG:] ERROR ") >= 0 || txt.indexOf("[GNUPG:] FAILURE ") >= 0) {
         EnigmailLog.DEBUG("keyEdit.jsm: GpgEditorInterface.processLine: detected GnuPG ERROR message\n");
         let statusObj = this.handleGpgError(txt);
-        if (statusObj.statusFlags & Ci.nsIEnigmail.DISPLAY_MESSAGE) {
+        if (statusObj.statusFlags & EnigmailConstants.DISPLAY_MESSAGE) {
           this.errorMsg = statusObj.statusMsg;
           r.exitCode = -3;
           r.quitNow = true;

@@ -192,8 +192,6 @@ var EnigmailRules = {
     matchedKeysObj, flagsObj) {
     EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): emailAddrsStr=\"" + emailAddrsStr + "\" startDialogForMissingKeys=" + startDialogForMissingKeys + "\n");
 
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
-
     let enigmailSvc = EnigmailCore.getService();
     if (!enigmailSvc) {
       EnigmailLog.DEBUG("EnigmailCore Service is down\n");
