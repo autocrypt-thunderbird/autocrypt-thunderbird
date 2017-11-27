@@ -9,7 +9,7 @@
 "use strict";
 
 // Uses: chrome://enigmail/content/enigmailCommon.js:
-/* global EnigGetPref: false, EnigGetString: false, EnigFormatFpr: false, EnigGetTrustLabel: false, nsIEnigmail: false */
+/* global EnigGetPref: false, EnigGetString: false, EnigFormatFpr: false, EnigGetTrustLabel: false */
 /* global GetEnigmailSvc: false, EnigConfirm: false, EnigAlert: false, EnigShowPhoto: false, EnigFilePicker: false */
 /* global enigGetService: false, EnigGetTempDir: false, EnigReadFileContents: false, EnigGetLocalFileApi: false, EnigAlertPref: false */
 /* global EnigEditKeyTrust: false, EnigEditKeyExpiry: false, EnigSignKey: false, EnigRevokeKey: false, EnigCreateRevokeCert: false */
@@ -978,7 +978,7 @@ function enigmailSearchKey() {
 
 
 function enigmailUploadKeys() {
-  enigmailKeyServerAccess(nsIEnigmail.UPLOAD_KEY, enigmailUploadKeysCb);
+  enigmailKeyServerAccess(EnigmailConstants.UPLOAD_KEY, enigmailUploadKeysCb);
 }
 
 function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
@@ -994,7 +994,7 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
 }
 
 function enigmailUploadToWkd() {
-  enigmailKeyServerAccess(nsIEnigmail.UPLOAD_WKD, enigmailUploadToWkdCb);
+  enigmailKeyServerAccess(EnigmailConstants.UPLOAD_WKD, enigmailUploadToWkdCb);
 }
 
 function enigmailUploadToWkdCb(exitCode, errorMsg, msgBox) {
@@ -1010,7 +1010,7 @@ function enigmailUploadToWkdCb(exitCode, errorMsg, msgBox) {
 }
 
 function enigmailReceiveKey() {
-  enigmailKeyServerAccess(nsIEnigmail.DOWNLOAD_KEY, enigmailReceiveKeyCb);
+  enigmailKeyServerAccess(EnigmailConstants.DOWNLOAD_KEY, enigmailReceiveKeyCb);
 }
 
 function userAcceptsWarning(warningMessage) {
@@ -1044,7 +1044,7 @@ function userAcceptsRefreshWarning() {
 
 function enigmailRefreshAllKeys() {
   if (userAcceptsRefreshWarning() === true) {
-    enigmailKeyServerAccess(nsIEnigmail.REFRESH_KEY, enigmailReceiveKeyCb);
+    enigmailKeyServerAccess(EnigmailConstants.REFRESH_KEY, enigmailReceiveKeyCb);
   }
 }
 
@@ -1292,9 +1292,9 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
 
   var resultObj = {};
   var selKeyList = getSelectedKeys();
-  if (accessType != nsIEnigmail.REFRESH_KEY && selKeyList.length === 0) {
+  if (accessType != EnigmailConstants.REFRESH_KEY && selKeyList.length === 0) {
     if (EnigConfirm(EnigGetString("refreshAllQuestion"), EnigGetString("keyMan.button.refreshAll"))) {
-      accessType = nsIEnigmail.REFRESH_KEY;
+      accessType = EnigmailConstants.REFRESH_KEY;
       EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
     }
     else {
@@ -1309,7 +1309,7 @@ function enigmailKeyServerAccess(accessType, callbackFunc) {
 
   EnigmailKeyServer.keyServerUpDownload(window, keyList, accessType, false, callbackFunc, resultObj);
 
-  if (accessType != nsIEnigmail.UPLOAD_KEY && resultObj.result) {
+  if (accessType != EnigmailConstants.UPLOAD_KEY && resultObj.result) {
     refreshKeys();
   }
 }

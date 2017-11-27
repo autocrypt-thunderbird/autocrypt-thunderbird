@@ -33,6 +33,7 @@ Components.utils.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdl
 Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -1462,7 +1463,7 @@ function displayUnmatchedIds(emailArr) {
 function wizardSaveAutoAttach() {
   let attachKeyAuto = document.getElementById("keyAttachAuto");
   var curId = wizardGetSelectedIdentity();
-  if(attachKeyAuto.checked) {
+  if (attachKeyAuto.checked) {
     curId.setBoolAttribute("attachPgpKey", true);
   }
   else {
@@ -1531,16 +1532,14 @@ function keyUploadDo() {
 }
 
 function keyServerAccess(key, useHkp) {
-  const nsIEnigmail = Components.interfaces.nsIEnigmail;
-
   let resultObj = {};
   let accessType = 0;
 
   if (useHkp) {
-    accessType = nsIEnigmail.UPLOAD_KEY;
+    accessType = EnigmailConstants.UPLOAD_KEY;
   }
   else {
-    accessType = nsIEnigmail.UPLOAD_WKD;
+    accessType = EnigmailConstants.UPLOAD_WKD;
   }
 
   let resultFunc = function(resultCode) {

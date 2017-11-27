@@ -9,7 +9,7 @@
 /* global EnigmailLog: false, EnigmailLocale: false, EnigmailKey: false, EnigmailKeyRing: false */
 
 // from enigmailCommon.js:
-/* global GetEnigmailSvc: false, nsIEnigmail: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
+/* global GetEnigmailSvc: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
 /* global EnigCleanGuiList: false, EnigGetTrustLabel: false, EnigShowPhoto: false, EnigSignKey: false */
 /* global EnigEditKeyExpiry: false, EnigEditKeyTrust: false, EnigChangeKeyPwd: false, EnigRevokeKey: false */
 /* global EnigCreateRevokeCert: false */

@@ -12,7 +12,6 @@
 const Cu = Components.utils;
 const Ci = Components.interfaces;
 const Cc = Components.classes;
-const nsIEnigmail = Ci.nsIEnigmail;
 
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -21,6 +20,7 @@ Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: fals
 Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 // dialog is just an array we'll use to store various properties from the dialog document...
 var dialog;
@@ -101,7 +101,7 @@ function onLoad() {
   gEnigCallbackFunc = inArg.cbFunc;
   msgProgress = Cc["@mozilla.org/messenger/progress;1"].createInstance(Ci.nsIMsgProgress);
 
-  if (inArg.accessType == nsIEnigmail.UPLOAD_WKD) {
+  if (inArg.accessType == EnigmailConstants.UPLOAD_WKD) {
     onLoadWkd(inArg);
   }
   else {
@@ -150,7 +150,7 @@ function onLoadGpg(inArg) {
   EnigmailLog.DEBUG("enigRetrieveProgress: onLoadGpg\n");
   var subject;
   var statTxt = document.getElementById("dialog.status2");
-  if (inArg.accessType == nsIEnigmail.UPLOAD_KEY || inArg.accessType == nsIEnigmail.UPLOAD_WKD) {
+  if (inArg.accessType == EnigmailConstants.UPLOAD_KEY || inArg.accessType == EnigmailConstants.UPLOAD_WKD) {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
     subject = EnigmailLocale.getString("keyserverTitle.uploading");
   }

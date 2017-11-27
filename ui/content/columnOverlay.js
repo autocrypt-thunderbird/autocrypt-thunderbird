@@ -10,12 +10,11 @@
 /* global Components: false, gDBView: false */
 
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-
+Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 if (!Enigmail) var Enigmail = {};
 
 Enigmail.columnHandler = {
-  nsIEnigmail: Components.interfaces.nsIEnigmail,
   _usingPep: null,
   resetUsingPep: function() {
     this._usingPep = null;
@@ -58,12 +57,12 @@ Enigmail.columnHandler = {
     }
     else {
       let statusFlags = hdr.getUint32Property("enigmail");
-      if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
-        (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
+      if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
+        (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
         newProp = "enigSignedEncrypted";
-      else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
+      else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
         newProp = "enigSigned";
-      else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
+      else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
         newProp = "enigEncrypted";
     }
 
@@ -82,12 +81,12 @@ Enigmail.columnHandler = {
     }
 
     var statusFlags = hdr.getUint32Property("enigmail");
-    if ((statusFlags & this.nsIEnigmail.GOOD_SIGNATURE) &&
-      (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY))
+    if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
+      (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
       return 3;
-    else if (statusFlags & this.nsIEnigmail.GOOD_SIGNATURE)
+    else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
       return 2;
-    else if (statusFlags & this.nsIEnigmail.DECRYPTION_OKAY)
+    else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
       return 1;
 
     return 0;

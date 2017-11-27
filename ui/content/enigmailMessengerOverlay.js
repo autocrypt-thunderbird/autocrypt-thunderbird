@@ -1001,8 +1001,6 @@ Enigmail.msg = {
       messageUrl +
       ", retry=" + retry + ", signature='" + signature + "'\n");
 
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
-
     if (!msgText)
       return;
 
@@ -1047,9 +1045,9 @@ Enigmail.msg = {
       var signatureObj = {};
       signatureObj.value = signature;
 
-      var uiFlags = interactive ? (nsIEnigmail.UI_INTERACTIVE |
-        nsIEnigmail.UI_ALLOW_KEY_IMPORT |
-        nsIEnigmail.UI_UNVERIFIED_ENC_OK) : 0;
+      var uiFlags = interactive ? (EnigmailConstants.UI_INTERACTIVE |
+        EnigmailConstants.UI_ALLOW_KEY_IMPORT |
+        EnigmailConstants.UI_UNVERIFIED_ENC_OK) : 0;
 
       if (EnigmailPEPAdapter.usingPep()) {
         let addresses = {
@@ -1119,19 +1117,19 @@ Enigmail.msg = {
       }
     }
 
-    var noSecondTry = nsIEnigmail.GOOD_SIGNATURE |
-      nsIEnigmail.EXPIRED_SIGNATURE |
-      nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-      nsIEnigmail.EXPIRED_KEY |
-      nsIEnigmail.REVOKED_KEY |
-      nsIEnigmail.NO_PUBKEY |
-      nsIEnigmail.NO_SECKEY |
-      nsIEnigmail.IMPORTED_KEY |
-      nsIEnigmail.MISSING_PASSPHRASE |
-      nsIEnigmail.BAD_PASSPHRASE |
-      nsIEnigmail.UNKNOWN_ALGO |
-      nsIEnigmail.DECRYPTION_OKAY |
-      nsIEnigmail.OVERFLOWED;
+    var noSecondTry = EnigmailConstants.GOOD_SIGNATURE |
+      EnigmailConstants.EXPIRED_SIGNATURE |
+      EnigmailConstants.EXPIRED_KEY_SIGNATURE |
+      EnigmailConstants.EXPIRED_KEY |
+      EnigmailConstants.REVOKED_KEY |
+      EnigmailConstants.NO_PUBKEY |
+      EnigmailConstants.NO_SECKEY |
+      EnigmailConstants.IMPORTED_KEY |
+      EnigmailConstants.MISSING_PASSPHRASE |
+      EnigmailConstants.BAD_PASSPHRASE |
+      EnigmailConstants.UNKNOWN_ALGO |
+      EnigmailConstants.DECRYPTION_OKAY |
+      EnigmailConstants.OVERFLOWED;
 
     if ((exitCode !== 0) && (!(statusFlags & noSecondTry))) {
       // Bad signature/armor
@@ -2242,7 +2240,6 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: decryptAttachmentCallback:\n");
 
     var callbackArg = cbArray[0];
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     var exitCodeObj = {};
     var statusFlagsObj = {};
@@ -2345,8 +2342,8 @@ Enigmail.msg = {
 
     if ((!exitStatus) || exitCodeObj.value !== 0) {
       exitStatus = false;
-      if ((statusFlagsObj.value & nsIEnigmail.DECRYPTION_OKAY) &&
-        (statusFlagsObj.value & nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+      if ((statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY) &&
+        (statusFlagsObj.value & EnigmailConstants.UNVERIFIED_SIGNATURE)) {
 
         if (callbackArg.actionType == "openAttachment") {
           exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("decryptOkNoSig"), EnigmailLocale.getString("msgOvl.button.contAnyway"));
@@ -2361,7 +2358,7 @@ Enigmail.msg = {
       }
     }
     if (exitStatus) {
-      if (statusFlagsObj.value & nsIEnigmail.IMPORTED_KEY) {
+      if (statusFlagsObj.value & EnigmailConstants.IMPORTED_KEY) {
 
         if (exitCodeObj.keyList) {
           let importKeyList = exitCodeObj.keyList.map(function(a) {
@@ -2370,10 +2367,10 @@ Enigmail.msg = {
           EnigmailDialog.keyImportDlg(window, importKeyList);
         }
       }
-      else if (statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) {
+      else if (statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) {
         HandleSelectedAttachments('open');
       }
-      else if ((statusFlagsObj.value & nsIEnigmail.DISPLAY_MESSAGE) ||
+      else if ((statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) ||
         (callbackArg.actionType == "openAttachment")) {
         var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
         var outFileUri = ioServ.newFileURI(outFile);
@@ -2478,7 +2475,6 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: importAttachedKeys\n");
 
     let keyFound = false;
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
 
     for (let i in currentAttachments) {
       if (currentAttachments[i].contentType.search(/application\/pgp-keys/i) >= 0) {
@@ -2510,12 +2506,10 @@ Enigmail.msg = {
 
   // download or import keys
   handleUnknownKey: function() {
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
-
     let imported = false;
     // handline keys embedded in message body
 
-    if (Enigmail.msg.securityInfo.statusFlags & nsIEnigmail.INLINE_KEY) {
+    if (Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.INLINE_KEY) {
       return Enigmail.msg.messageDecrypt(true, false);
     }
 
@@ -2533,7 +2527,7 @@ Enigmail.msg = {
    */
   createArtificialAutocryptHeader: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: createArtificialAutocryptHeader\n");
-    const nsIEnigmail = Components.interfaces.nsIEnigmail;
+
     if ("autocrypt" in currentHeaderData) return;
 
     let created = false;
@@ -2551,10 +2545,10 @@ Enigmail.msg = {
       let securityInfo = Enigmail.msg.securityInfo;
       let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
       if (keyObj && keyObj.getEncryptionValidity().keyValid) {
-        if (securityInfo.statusFlags & nsIEnigmail.GOOD_SIGNATURE) {
+        if (securityInfo.statusFlags & EnigmailConstants.GOOD_SIGNATURE) {
           let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
-            ((securityInfo.statusFlags & nsIEnigmail.DECRYPTION_OKAY) ||
-              (securityInfo.statusFlags & nsIEnigmail.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
+            ((securityInfo.statusFlags & EnigmailConstants.DECRYPTION_OKAY) ||
+              (securityInfo.statusFlags & EnigmailConstants.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
             "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + '; keydata="LQ=="';
 
           created = true;

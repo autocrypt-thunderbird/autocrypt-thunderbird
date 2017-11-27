@@ -14,8 +14,8 @@ Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLoc
 Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
 Components.utils.import("resource://enigmail/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
-const nsIEnigmail = Components.interfaces.nsIEnigmail;
 const Ci = Components.interfaces;
 
 const CHANGE_PIN = 'P';
@@ -43,19 +43,19 @@ function onAccept() {
       pinItem1 = "pinTxt";
       pinItem2 = "pinRepeatTxt";
       minLen = 6;
-      action = nsIEnigmail.CARD_PIN_CHANGE;
+      action = EnigmailConstants.CARD_PIN_CHANGE;
       break;
     case UNBLOCK_PIN:
       pinItem1 = "pinTxt";
       pinItem2 = "pinRepeatTxt";
       minLen = 6;
-      action = nsIEnigmail.CARD_PIN_UNBLOCK;
+      action = EnigmailConstants.CARD_PIN_UNBLOCK;
       break;
     case ADMIN_PIN:
       pinItem1 = "adminPinTxt";
       pinItem2 = "adminPinRepeatTxt";
       minLen = 8;
-      action = nsIEnigmail.CARD_ADMIN_PIN_CHANGE;
+      action = EnigmailConstants.CARD_ADMIN_PIN_CHANGE;
       break;
   }
   var adminPin = "";

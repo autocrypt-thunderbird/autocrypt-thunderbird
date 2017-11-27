@@ -15,7 +15,7 @@
 /*global EnigmailKeyRing: false, EnigmailErrorHandling: false, EnigmailEvents: false, EnigmailKeyServer: false */
 
 // from enigmailCommon.js:
-/*global nsIEnigmail: false, EnigSetActive: false, GetEnigmailSvc: false */
+/*global EnigSetActive: false, GetEnigmailSvc: false, EnigmailConstants: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -101,10 +101,10 @@ function onLoad() {
     switch (gEnigRequest.requestType) {
       case ENIG_CONN_TYPE_HTTP:
       case ENIG_CONN_TYPE_KEYBASE:
-        newHttpRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
+        newHttpRequest(EnigmailConstants.SEARCH_KEY, scanKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newGpgKeysRequest(nsIEnigmail.SEARCH_KEY, scanKeys);
+        newGpgKeysRequest(EnigmailConstants.SEARCH_KEY, scanKeys);
         break;
     }
   }
@@ -169,13 +169,13 @@ function startDownload() {
     gEnigRequest.errorTxt = "";
     switch (gEnigRequest.requestType) {
       case ENIG_CONN_TYPE_HTTP:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
+        newHttpRequest(EnigmailConstants.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
+        newGpgKeysRequest(EnigmailConstants.DOWNLOAD_KEY, importKeys);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, importKeys);
+        newHttpRequest(EnigmailConstants.DOWNLOAD_KEY, importKeys);
         break;
     }
 
@@ -291,13 +291,13 @@ function importKeys(connType, txt, errorTxt) {
   if (gEnigRequest.dlKeyList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(EnigmailConstants.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newGpgKeysRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
+        newGpgKeysRequest(EnigmailConstants.DOWNLOAD_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        newHttpRequest(nsIEnigmail.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(EnigmailConstants.DOWNLOAD_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return;
   }
@@ -409,7 +409,7 @@ function newHttpRequest(requestType, requestCallbackFunc) {
   var httpReq = new XMLHttpRequest();
   var reqCommand;
   switch (requestType) {
-    case nsIEnigmail.SEARCH_KEY:
+    case EnigmailConstants.SEARCH_KEY:
       var pubKey = trim(gEnigRequest.searchList[gEnigRequest.keyNum]);
 
       if (gEnigRequest.protocol == "keybase") {
@@ -420,7 +420,7 @@ function newHttpRequest(requestType, requestCallbackFunc) {
         reqCommand = gEnigRequest.protocol + "://" + gEnigRequest.keyserver + ":" + gEnigRequest.port + "/pks/lookup?search=" + pubKey + "&op=index";
       }
       break;
-    case nsIEnigmail.DOWNLOAD_KEY:
+    case EnigmailConstants.DOWNLOAD_KEY:
       var keyId = escape(trim(gEnigRequest.dlKeyList[gEnigRequest.keyNum]));
 
       EnigmailLog.DEBUG("enigmailSearchKey.js: keyId: " + keyId + "\n");
@@ -506,13 +506,13 @@ function scanKeys(connType, htmlTxt) {
   if (gEnigRequest.searchList.length > gEnigRequest.keyNum) {
     switch (connType) {
       case ENIG_CONN_TYPE_HTTP:
-        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(EnigmailConstants.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
         break;
       case ENIG_CONN_TYPE_GPGKEYS:
-        newGpgKeysRequest(nsIEnigmail.SEARCH_KEY, gEnigRequest.callbackFunction);
+        newGpgKeysRequest(EnigmailConstants.SEARCH_KEY, gEnigRequest.callbackFunction);
         break;
       case ENIG_CONN_TYPE_KEYBASE:
-        newHttpRequest(nsIEnigmail.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
+        newHttpRequest(EnigmailConstants.SEARCH_KEY, gEnigHttpReq.requestCallbackFunc);
     }
     return true;
   }
@@ -699,7 +699,7 @@ function newGpgKeysRequest(requestType, callbackFunction) {
   };
 
   var keyValue;
-  if (requestType == nsIEnigmail.SEARCH_KEY) {
+  if (requestType == EnigmailConstants.SEARCH_KEY) {
     keyValue = gEnigRequest.searchList[gEnigRequest.keyNum];
   }
   else {

@@ -110,13 +110,10 @@ const ENIG_IMG_SELECTED = "chrome://enigmail/content/check1.png";
 const ENIG_IMG_DISABLED = "chrome://enigmail/content/check2.png";
 
 
-// Interfaces
-const nsIEnigmail = ENIG_I.nsIEnigmail;
-
 // Encryption flags
-if (nsIEnigmail) {
-  const ENIG_SIGN = nsIEnigmail.SEND_SIGNED;
-  const ENIG_ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+if (EnigmailConstants) {
+  const ENIG_SIGN = EnigmailConstants.SEND_SIGNED;
+  const ENIG_ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
   const ENIG_ENCRYPT_OR_SIGN = ENIG_ENCRYPT | ENIG_SIGN;
 }
 
