@@ -34,6 +34,8 @@ Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKey
 Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
+Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
+Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
 Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
@@ -2828,7 +2830,7 @@ Enigmail.msg = {
     var testSendFlags = EnigmailConstants.SEND_TEST | ENCRYPT | optSendFlags;
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptTestMessage(): call encryptMessage() for fromAddr=\"" + fromAddr + "\" toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" +
       bccAddrStr + "\"\n");
-    testCipher = enigmailSvc.encryptMessage(window, testUiFlags, testPlain,
+    testCipher = EnigmailEncryption.encryptMessage(window, testUiFlags, testPlain,
       fromAddr, toAddrStr, bccAddrStr,
       testSendFlags,
       testExitCodeObj,
@@ -3124,7 +3126,7 @@ Enigmail.msg = {
     var testPlain = "Test Message";
     var testUiFlags = EnigmailConstants.UI_TEST;
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraft(): call encryptMessage() for fromAddr=\"" + fromAddr + "\"\n");
-    testCipher = enigmailSvc.encryptMessage(null, testUiFlags, testPlain,
+    testCipher = EnigmailEncryption.encryptMessage(null, testUiFlags, testPlain,
       fromAddr, fromAddr, "",
       sendFlags | EnigmailConstants.SEND_TEST,
       testExitCodeObj,
@@ -4109,7 +4111,7 @@ Enigmail.msg = {
         EnigmailData.convertFromUnicode(origText, charset) :
         EnigmailData.convertFromUnicode(escText, charset);
 
-      var cipherText = enigmailSvc.encryptMessage(window, sendInfo.uiFlags, plainText,
+      var cipherText = EnigmailEncryption.encryptMessage(window, sendInfo.uiFlags, plainText,
         sendInfo.fromAddr, sendInfo.toAddr, sendInfo.bccAddr,
         sendInfo.sendFlags,
         exitCodeObj, statusFlagsObj,
@@ -4535,7 +4537,7 @@ Enigmail.msg = {
       var txtMessage;
       try {
         newFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180);
-        txtMessage = enigmailSvc.encryptAttachment(window, fromAddr, toAddr, bccAddr, sendFlags,
+        txtMessage = EnigmailEncryption.encryptAttachment(window, fromAddr, toAddr, bccAddr, sendFlags,
           origFile.file, newFile,
           exitCodeObj, statusFlagsObj,
           errorMsgObj);
@@ -4744,7 +4746,7 @@ Enigmail.msg = {
       }
     }
     else {
-      plainText = enigmailSvc.decryptMessage(window, uiFlags, cipherText,
+      plainText = EnigmailDecryption.decryptMessage(window, uiFlags, cipherText,
         signatureObj, exitCodeObj, statusFlagsObj,
         keyIdObj, userIdObj, sigDetailsObj,
         errorMsgObj, blockSeparationObj, encToDetailsObj);

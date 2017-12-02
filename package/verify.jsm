@@ -59,9 +59,5 @@ const EnigmailVerifyAttachment = {
     }
 
     return listener.exitCode;
-  },
-
-  registerOn: function(target) {
-    target.verifyAttachment = EnigmailVerifyAttachment.attachment;
   }
 };

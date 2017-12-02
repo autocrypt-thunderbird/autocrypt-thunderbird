@@ -34,8 +34,6 @@ Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 
-const EC = EnigmailCore;
-
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;
 const STATUS_GOODSIG = EnigmailConstants.GOOD_SIGNATURE;
@@ -775,10 +773,5 @@ const EnigmailDecryption = {
     }
 
     return false;
-  },
-
-  registerOn: function(target) {
-    target.decryptMessage = EnigmailDecryption.decryptMessage;
-    target.decryptAttachment = EnigmailDecryption.decryptAttachment;
   }
 };

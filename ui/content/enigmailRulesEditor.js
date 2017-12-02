@@ -74,11 +74,11 @@ function enigmailDlgOnAccept() {
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return false;
-  enigmailSvc.clearRules();
+  EnigmailRules.clearRules();
 
   var node = getFirstNode();
   while (node) {
-    enigmailSvc.addRule(true,
+    EnigmailRules.addRule(true,
       node.getAttribute("email"),
       node.getAttribute("keyId"),
       node.getAttribute("sign"),
@@ -88,7 +88,7 @@ function enigmailDlgOnAccept() {
     );
     node = node.nextSibling;
   }
-  enigmailSvc.saveRulesFile();
+  EnigmailRules.saveRulesFile();
 
   return true;
 }

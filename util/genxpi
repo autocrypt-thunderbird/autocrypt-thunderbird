@@ -78,7 +78,6 @@ zip --must-match\
     modules/decryption.jsm \
     modules/decryptPermanently.jsm \
     modules/dialog.jsm \
-    modules/coreService.jsm \
     modules/encryption.jsm \
     modules/core.jsm \
     modules/configBackup.jsm \

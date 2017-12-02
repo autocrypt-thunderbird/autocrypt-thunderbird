@@ -32,7 +32,6 @@ Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
-var EC = EnigmailCore;
 
 const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];
 
@@ -481,10 +480,5 @@ const EnigmailEncryption = {
     }
 
     return msg;
-  },
-
-  registerOn: function(target) {
-    target.encryptMessage = EnigmailEncryption.encryptMessage;
-    target.encryptAttachment = EnigmailEncryption.encryptAttachment;
   }
 };

@@ -144,16 +144,6 @@ var EnigmailRules = {
     rulesListHolder.rulesList = null;
   },
 
-  registerOn: function(target) {
-    target.getRulesFile = EnigmailRules.getRulesFile;
-    target.loadRulesFile = EnigmailRules.loadRulesFile;
-    target.loadRulesFromString = EnigmailRules.loadRulesFromString;
-    target.saveRulesFile = EnigmailRules.saveRulesFile;
-    target.getRulesData = EnigmailRules.getRulesData;
-    target.addRule = EnigmailRules.addRule;
-    target.clearRules = EnigmailRules.clearRules;
-  },
-
   DEBUG_EmailList: function(name, list) {
     EnigmailLog.DEBUG("           " + name + ":\n");
     for (let i = 0; i < list.length; i++) {

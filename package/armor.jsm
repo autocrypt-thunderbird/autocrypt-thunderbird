@@ -274,11 +274,5 @@ const EnigmailArmor = {
     }
 
     return headers;
-  },
-
-  registerOn: function(target) {
-    target.locateArmoredBlock = EnigmailArmor.locateArmoredBlock;
-    target.locateArmoredBlocks = EnigmailArmor.locateArmoredBlocks;
-    target.extractSignaturePart = EnigmailArmor.extractSignaturePart;
   }
 };

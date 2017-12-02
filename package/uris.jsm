@@ -92,10 +92,5 @@ const EnigmailURIs = {
   isEncryptedUri: function(uri) {
     EnigmailLog.DEBUG("uris.jsm: isEncryptedUri: uri=" + uri + "\n");
     return encryptedUris.indexOf(uri) >= 0;
-  },
-
-  registerOn: function(target) {
-    target.createMessageURI = EnigmailURIs.createMessageURI;
-    target.deleteMessageURI = EnigmailURIs.deleteMessageURI;
   }
 };

@@ -29,7 +29,7 @@ Cu.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBacku
 Cu.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 
-const getCoreService = EnigmailLazy.loader("enigmail/coreService.jsm", "EnigmailCoreService");
+const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
@@ -230,7 +230,7 @@ function prefOnLoad() {
 function enigDetermineGpgPath() {
   if (!gEnigmailSvc) {
     try {
-      gEnigmailSvc = getCoreService().createInstance();
+      gEnigmailSvc = getCore().createInstance();
       if (!gEnigmailSvc.initialized) {
         // attempt to initialize Enigmail
         gEnigmailSvc.initialize(window, EnigGetVersion());
@@ -455,7 +455,7 @@ function prefOnAccept() {
   if (oldAgentPath != newAgentPath) {
     if (!gEnigmailSvc) {
       try {
-        gEnigmailSvc = getCoreService().createInstance();
+        gEnigmailSvc = getCore().createInstance();
       }
       catch (ex) {}
     }

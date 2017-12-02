@@ -40,8 +40,6 @@ Cu.import("resource://enigmail/glodaMime.jsm");
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
-var EC = EnigmailCore;
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 

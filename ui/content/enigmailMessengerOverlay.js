@@ -22,6 +22,7 @@ Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: 
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("resource://enigmail/msgRead.jsm"); /* global EnigmailMsgRead: false */
 Components.utils.import("resource://enigmail/mimeVerify.jsm"); /* global EnigmailVerify: false */
+Components.utils.import("resource://enigmail/verify.jsm"); /* global EnigmailVerifyAttachment: false */
 Components.utils.import("resource://enigmail/fixExchangeMsg.jsm"); /* global EnigmailFixExchangeMsg: false */
 Components.utils.import("resource://enigmail/log.jsm");
 Components.utils.import("resource://enigmail/prefs.jsm");
@@ -39,6 +40,7 @@ Components.utils.import("resource://enigmail/decryptPermanently.jsm"); /* global
 Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Components.utils.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: false */
 Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
@@ -290,7 +292,7 @@ Enigmail.msg = {
       if (enigmailSvc) {
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Cleanup: Deleting messages\n");
         for (var index = 0; index < Enigmail.msg.createdURIs.length; index++) {
-          enigmailSvc.deleteMessageURI(Enigmail.msg.createdURIs[index]);
+          EnigmailURIs.deleteMessageURI(Enigmail.msg.createdURIs[index]);
         }
         Enigmail.msg.createdURIs = [];
       }
@@ -1074,7 +1076,7 @@ Enigmail.msg = {
         }
       }
       else {
-        plainText = enigmailSvc.decryptMessage(window, uiFlags, msgText,
+        plainText = EnigmailDecryption.decryptMessage(window, uiFlags, msgText,
           signatureObj, exitCodeObj, statusFlagsObj,
           keyIdObj, userIdObj, sigDetailsObj,
           errorMsgObj, blockSeparationObj, encToDetailsObj);
@@ -1498,7 +1500,7 @@ Enigmail.msg = {
       let enigmailSvc = Enigmail.getEnigmailSvc();
       if (!enigmailSvc) return false;
 
-      let uri = enigmailSvc.createMessageURI(this.getCurrentMsgUrl(),
+      let uri = EnigmailURIs.createMessageURI(this.getCurrentMsgUrl(),
         "message/rfc822",
         "",
         msgText,
@@ -1789,7 +1791,7 @@ Enigmail.msg = {
     //       non-ASCII chars
     var msgContent = this.getDecryptedMessage("message/rfc822", true);
 
-    var uri = enigmailSvc.createMessageURI(Enigmail.msg.decryptedMessage.url,
+    var uri = EnigmailURIs.createMessageURI(Enigmail.msg.decryptedMessage.url,
       "message/rfc822",
       "",
       msgContent,
@@ -2139,7 +2141,7 @@ Enigmail.msg = {
 
     var statusFlagsObj = {};
     var errorMsgObj = {};
-    var r = enigmailSvc.verifyAttachment(window, outFile1, outFile2, statusFlagsObj, errorMsgObj);
+    var r = EnigmailVerifyAttachment.attachment(window, outFile1, outFile2, statusFlagsObj, errorMsgObj);
 
     if (r === 0)
       EnigmailDialog.info(window, EnigmailLocale.getString("signature.verifiedOK", [EnigmailMsgRead.getAttachmentName(origAtt)]) + "\n\n" + errorMsgObj.value);
@@ -2334,7 +2336,7 @@ Enigmail.msg = {
       return;
     }
 
-    exitStatus = enigmailSvc.decryptAttachment(window, outFile,
+    exitStatus = EnigmailDecryption.decryptAttachment(window, outFile,
       EnigmailMsgRead.getAttachmentName(callbackArg.attachment),
       callbackArg.data,
       exitCodeObj, statusFlagsObj,

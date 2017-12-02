@@ -1,4 +1,3 @@
-/*global EnigInitCommon */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,10 +5,13 @@
  */
 
 // Uses: chrome://enigmail/content/enigmailCommon.js
+/* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 
 "use strict";
+
+Components.utils.import("resource://enigmail/rules.jsm"); /* global EnigmailRules: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailSingleRcptSettings");
@@ -175,14 +177,14 @@ function enigmailDlgOnAccept() {
 
   window.arguments[RESULT].cancelled = false;
   if (window.arguments[INPUT].options.indexOf("nosave") < 0) {
-    enigmailSvc.addRule(false,
+    EnigmailRules.addRule(false,
       window.arguments[RESULT].email,
       window.arguments[RESULT].keyId,
       window.arguments[RESULT].sign,
       window.arguments[RESULT].encrypt,
       window.arguments[RESULT].pgpMime,
       window.arguments[RESULT].negate);
-    enigmailSvc.saveRulesFile();
+    EnigmailRules.saveRulesFile();
   }
   return true;
 }
