@@ -129,6 +129,8 @@ Enigmail.msg = {
   composeStartup: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
+    let self = this;
+
     function delayedProcessFinalState() {
       EnigmailTimer.setTimeout(function _f() {
           Enigmail.msg.processFinalState();
@@ -147,6 +149,33 @@ Enigmail.msg = {
       }
     }
 
+    function toggleSMimeEncrypt() {
+      if (gSMFields && gSMFields.requireEncryptMessage) {
+        self.encryptForced = EnigmailConstants.ENIG_ALWAYS;
+        self.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
+      }
+      else {
+        self.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+
+        if (!gSMFields.signMessage) self.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+      }
+      delayedProcessFinalState();
+    }
+
+    function toggleSMimeSign() {
+      if (gSMFields && gSMFields.signMessage) {
+        self.signForced = EnigmailConstants.ENIG_ALWAYS;
+        self.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
+      }
+      else {
+        self.signForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+
+        if (!gSMFields.requireEncryptMessage) self.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+      }
+      delayedProcessFinalState();
+    }
+
+
     // Relabel SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
 
@@ -163,10 +192,10 @@ Enigmail.msg = {
     subj.addEventListener('focus', Enigmail.msg.fireSendFlags);
 
     // listen to S/MIME changes to potentially display "conflict" message
-    addSecurityListener("menu_securitySign1", delayedProcessFinalState);
-    addSecurityListener("menu_securitySign2", delayedProcessFinalState);
-    addSecurityListener("menu_securityEncryptRequire1", delayedProcessFinalState);
-    addSecurityListener("menu_securityEncryptRequire2", delayedProcessFinalState);
+    addSecurityListener("menu_securitySign1", toggleSMimeSign.bind(Enigmail.msg));
+    addSecurityListener("menu_securitySign2", toggleSMimeSign.bind(Enigmail.msg));
+    addSecurityListener("menu_securityEncryptRequire1", toggleSMimeEncrypt.bind(Enigmail.msg));
+    addSecurityListener("menu_securityEncryptRequire2", toggleSMimeEncrypt.bind(Enigmail.msg));
 
     this.msgComposeReset(false); // false => not closing => call setIdentityDefaults()
     this.composeOpen();
