@@ -33,6 +33,7 @@ Cu.import("resource://enigmail/attachment.jsm"); /*global EnigmailAttachment: fa
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm"); /*global msgHdrUtils: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
@@ -1240,8 +1241,7 @@ function deleteOriginalMail(msgHdr) {
   let delMsg = function() {
     try {
       EnigmailLog.DEBUG("decryptPermanently.jsm: deleting original message " + msgHdr.messageKey + "\n");
-      let folderInfoObj = {};
-      msgHdr.folder.getDBFolderInfoAndDB(folderInfoObj).DeleteMessage(msgHdr.messageKey, null, true);
+      msgHdrsDelete([msgHdr]);
     }
     catch (e) {
       EnigmailLog.DEBUG("decryptPermanently.jsm: deletion failed. Error: " + e.toString() + "\n");
