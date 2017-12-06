@@ -672,8 +672,8 @@ DecryptMessageIntoFolder.prototype = {
             // append relevant headers
             mime.headers['content-type'] = "multipart/mixed; boundary=\"" + boundary + "\"";
 
-            o.data = "--" + boundary + "\n";
-            o.data += "Content-Type: " + ct + "\n";
+            o.data = "--" + boundary + "\r\n";
+            o.data += "Content-Type: " + ct + "\r\n";
 
             let h = m.headerNames;
             while (h.hasMore()) {
@@ -682,7 +682,7 @@ DecryptMessageIntoFolder.prototype = {
                 try {
                   EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: hdr=" + hdr + "\n");
                   let hdrVal = m.getUnstructuredHeader(hdr.toLowerCase());
-                  o.data += hdr + ": " + hdrVal + "\n";
+                  o.data += hdr + ": " + hdrVal + "\r\n";
                 }
                 catch (ex) {
                   EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: exception " + ex.toString() + "\n");
