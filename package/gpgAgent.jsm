@@ -452,10 +452,18 @@ var EnigmailGpgAgent = {
 
       if ((!agentPath) && EnigmailOS.isWin32) {
         // Look up in Windows Registry
+        const installDir = ["Software\\GNU\\GNUPG", "Software\\GNUPG"];
+
         try {
-          let gpgPath = EnigmailOS.getWinRegistryString("Software\\GNUPG", "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-          gpgPath += "\\bin";
-          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
+          for (let i = 0; i < installDir.length && !agentPath; i++) {
+            let gpgPath = EnigmailOS.getWinRegistryString(installDir[i], "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+
+            agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+            if (!agentPath) {
+              gpgPath += "\\bin";
+              agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+            }
+          }
         }
         catch (ex) {}
 
