@@ -41,7 +41,7 @@ const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAge
 
 
 // pEp JSON Server executable name
-const PEP_SERVER_EXECUTABLE = "pepmda-enigmail";
+const PEP_SERVER_EXECUTABLE = "pep-json-server";
 //const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 var gPepVersion = null;
@@ -154,7 +154,7 @@ var EnigmailPEPAdapter = {
   getPepMiniDesktopAdapterBinaryFile: function() {
     let execFile = EnigmailFiles.resolvePathWithEnv(EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE));
     if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
-      let pepmda = EnigmailApp.getInstallLocation();
+      let pepmda = EnigmailApp.getProfileDirectory();
       pepmda.append("pepmda");
       pepmda.append("bin");
       execFile = EnigmailFiles.resolvePath(
@@ -356,7 +356,13 @@ var EnigmailPEPAdapter = {
 
     let execFile = this.getPepMiniDesktopAdapterBinaryFile();
     let homeDir = getGpgHomeDir();
-    if (execFile) EnigmailpEp.setServerPath(execFile.path, homeDir, getGpgAgent().agentPath);
+    if (execFile) {
+      EnigmailpEp.setServerPath(execFile.path, homeDir, getGpgAgent().agentPath);
+    }
+    else if (pEpMode === 2) {
+      // if force pEp mode, and pEp not found, try to install it
+      this.installPep();
+    }
 
     try {
       EnigmailpEp.getPepVersion().then(function _success(data) {

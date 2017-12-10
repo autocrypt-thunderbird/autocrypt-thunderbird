@@ -39,11 +39,6 @@ function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
 }
 
-function sanitizeFileName(str) {
-  // remove shell escape, #, ! and / from string
-  return str.replace(/[`/#!]/g, "");
-}
-
 function sanitizeHash(str) {
   return str.replace(/[^a-hA-H0-9]/g, "");
 }
@@ -169,108 +164,9 @@ function Installer(progressListener) {
 
 Installer.prototype = {
 
-  installOnOs: function(deferred) {
-    EnigmailLog.DEBUG("installPep.jsm: installOnOs\n");
-
-    let exitCode = -1;
-    let execFile = this.installerFile.path;
-
-    if (this.mount && this.mount.length > 0) {
-      // mount image if needed (macOS)
-      let mountPath = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-      mountPath.initWithPath("/Volumes/" + this.mount);
-      if (mountPath.exists()) {
-        let p = mountPath.path + " ";
-        let i = 1;
-        mountPath.initWithPath(p + i);
-        while (mountPath.exists() && i < 10) {
-          ++i;
-          mountPath.initWithPath(p + i);
-        }
-        if (mountPath.exists()) {
-          throw "Error - cannot mount package";
-        }
-      }
-
-      this.mountPath = mountPath;
-      EnigmailLog.DEBUG("installPep.jsm: installOnOs - mount Package\n");
-
-      let cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-      cmd.initWithPath("/usr/bin/open");
-
-      let args = ["-W", this.installerFile.path];
-      let proc = {
-        command: cmd,
-        arguments: args,
-        charset: null,
-        done: function(result) {
-          exitCode = result.exitCode;
-        }
-      };
-
-      try {
-        subprocess.call(proc).wait();
-        if (exitCode) throw "Installer failed with exit code " + exitCode;
-      }
-      catch (ex) {
-        EnigmailLog.ERROR("installPep.jsm: installOnOs: subprocess.call failed with '" + ex.toString() + "'\n");
-        throw ex;
-      }
-
-      execFile = this.mountPath.path + "/" + this.command;
-    }
-
-
-    EnigmailLog.DEBUG("installPep.jsm: installOnOs - run installer\n");
-
-    let proc = {
-      command: execFile,
-      arguments: [],
-      charset: null,
-      done: function(result) {
-        if (result.exitCode !== 0) {
-          deferred.reject("Installer failed with exit code " + result.exitCode);
-        }
-        else
-          deferred.resolve();
-      }
-    };
-
-    try {
-      subprocess.call(proc);
-    }
-    catch (ex) {
-      EnigmailLog.ERROR("installPep.jsm: installOnOs: subprocess.call failed with '" + ex.toString() + "'\n");
-      throw ex;
-    }
-  },
-
   cleanupOnOs: function() {
     EnigmailLog.DEBUG("installPep.jsm.cleanupOnOs():\n");
 
-    if (this.mountPath && this.mountPath.lenth > 0) {
-      EnigmailLog.DEBUG("installPep.jsm.cleanupOnOs: unmounting\n");
-      var cmd = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-      cmd.initWithPath("/usr/sbin/diskutil");
-      var args = ["eject", this.mountPath.path];
-      var proc = {
-        command: cmd,
-        arguments: args,
-        charset: null,
-        done: function(result) {
-          if (result.exitCode) EnigmailLog.ERROR("Installer failed with exit code " + result.exitCode);
-        }
-      };
-
-      try {
-        subprocess.call(proc).wait();
-      }
-      catch (ex) {
-        EnigmailLog.ERROR("installPep.jsm.cleanupOnOs: subprocess.call failed with '" + ex.toString() + "'\n");
-      }
-    }
-
-    EnigmailLog.DEBUG("installPep.jsm: cleanupOnOs - remove package\n");
     this.installerFile.remove(false);
 
     if (this.progressListener) {
@@ -338,8 +234,6 @@ Installer.prototype = {
           let doc = JSON.parse(this.responseText);
           self.url = doc.url;
           self.hash = sanitizeHash(doc.hash);
-          self.command = doc.command;
-          self.mount = sanitizeFileName(doc.mountPath);
           deferred.resolve();
         }
         catch (ex) {
@@ -450,15 +344,7 @@ Installer.prototype = {
         var fileOutStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
         self.installerFile = EnigmailFiles.getTempDirObj().clone();
         self.performCleanup = self.cleanupOnOs;
-
-        switch (EnigmailOS.getOS()) {
-          case "WINNT":
-            self.installerFile.append("installPep.exe");
-            break;
-          default:
-            self.installerFile.append("installPep");
-            break;
-        }
+        self.installerFile.append("pepmda.zip");
 
         self.installerFile.createUnique(self.installerFile.NORMAL_FILE_TYPE, EXEC_FILE_PERMS);
 
@@ -482,8 +368,13 @@ Installer.prototype = {
           return null;
         }
 
-        self.installOnOs(deferred);
-
+        let profD = EnigmailApp.getProfileDirectory();
+        if (EnigmailFiles.extractZipFile(self.installerFile, profD)) {
+          deferred.resolve();
+        }
+        else {
+          deferred.reject("Could not unzip " + self.installerFile.path + " to " + profD.path + "\n");
+        }
       }
       catch (ex) {
         deferred.reject(ex);

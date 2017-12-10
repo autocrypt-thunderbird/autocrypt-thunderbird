@@ -439,5 +439,44 @@ const EnigmailFiles = {
     zipR.open(nsFileObj);
 
     return zipR;
+  },
+
+
+  /**
+   * Unpack a ZIP file to a directory
+   *
+   * @param zipFile   - nsIZipReader object: file to be extracted
+   * @param targetDir - nsIFile object:      target directory
+   *
+   * @return Boolean: true if extraction successfull, false otherwise
+   */
+  extractZipFile: function(zipFile, targetDir) {
+    try {
+      let zipReader = EnigmailFiles.openZipFile(zipFile);
+      let f = zipReader.findEntries("*");
+
+      while (f.hasMore()) {
+        let t = targetDir.clone();
+        let i = f.getNext();
+        let entry = zipReader.getEntry(i);
+
+        t.initWithPath(t.path + "/" + i); // TODO: how does this work on Windows?
+
+        if (!t.parent.exists()) {
+          t.parent.create(t.DIRECTORY_TYPE, 493); // equals 0755
+        }
+
+        if (!entry.isDirectory) {
+          zipReader.extract(i, t);
+        }
+      }
+
+      zipReader.close();
+
+      return true;
+    }
+    catch (ex) {
+      return false;
+    }
   }
 };
