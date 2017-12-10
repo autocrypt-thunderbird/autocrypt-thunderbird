@@ -116,6 +116,7 @@ zip --must-match\
     modules/msgRead.jsm \
     modules/os.jsm \
     modules/openpgp.jsm \
+    modules/overlays.jsm \
     modules/passwordCheck.jsm \
     modules/passwords.jsm \
     modules/pEp.jsm \
