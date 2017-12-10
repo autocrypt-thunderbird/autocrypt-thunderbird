@@ -68,6 +68,7 @@ MODFILES = \
            msgRead.jsm \
            os.jsm \
            openpgp.jsm \
+           overlays.jsm \
            passwordCheck.jsm \
            passwords.jsm \
            pEp.jsm \
