@@ -149,6 +149,21 @@ Enigmail.msg = {
       }
     }
 
+    function toggleSmimeToolbar(event) {
+      /* global toggleSignMessage: false, toggleEncryptMessage: false */
+      switch (event.target.id) {
+        case "menu_securitySign2":
+          toggleSignMessage();
+          event.stopPropagation();
+          toggleSMimeSign();
+          break;
+        case "menu_securityEncryptRequire2":
+          toggleEncryptMessage();
+          event.stopPropagation();
+          toggleSMimeEncrypt();
+      }
+    }
+
     function toggleSMimeEncrypt() {
       if (gSMFields && gSMFields.requireEncryptMessage) {
         self.encryptForced = EnigmailConstants.ENIG_ALWAYS;
@@ -193,9 +208,9 @@ Enigmail.msg = {
 
     // listen to S/MIME changes to potentially display "conflict" message
     addSecurityListener("menu_securitySign1", toggleSMimeSign.bind(Enigmail.msg));
-    addSecurityListener("menu_securitySign2", toggleSMimeSign.bind(Enigmail.msg));
+    addSecurityListener("menu_securitySign2", toggleSmimeToolbar.bind(Enigmail.msg));
     addSecurityListener("menu_securityEncryptRequire1", toggleSMimeEncrypt.bind(Enigmail.msg));
-    addSecurityListener("menu_securityEncryptRequire2", toggleSMimeEncrypt.bind(Enigmail.msg));
+    addSecurityListener("menu_securityEncryptRequire2", toggleSmimeToolbar.bind(Enigmail.msg));
 
     this.msgComposeReset(false); // false => not closing => call setIdentityDefaults()
     this.composeOpen();
