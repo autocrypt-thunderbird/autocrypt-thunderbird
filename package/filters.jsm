@@ -25,6 +25,8 @@ Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false *
 Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
 Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
+Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false */
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
@@ -109,6 +111,86 @@ const filterActionCopyDecrypt = {
   needsBody: true
 };
 
+
+function isPGPEncrypted(data) {
+  // We only check the first mime subpart for application/pgp-encrypted.
+  // If it is text/plain or text/html we look into that for the
+  // message marker.
+  // If there are no subparts we just look in the body.
+  //
+  // This intentionally does not match more complex cases
+  // with sub parts beeing encrypted etc. as auto processing
+  // these kinds of mails will be error prone and better not
+  // done through a filter
+
+  var mimeTree = EnigmailMime.getMimeTree(data, true);
+  if (!(mimeTree.subParts.length)) {
+    // No subParts. Check for PGP Marker in Body
+    return mimeTree.body.indexOf('-----BEGIN PGP MESSAGE-----') >= 0;
+  }
+
+  // Check the type of the first subpart.
+  var firstPart = mimeTree.subParts[0];
+  var ct = firstPart.fullContentType;
+  if (typeof(ct) == "string") {
+    ct = ct.replace(/[\r\n]/g, " ");
+    // Proper PGP/MIME ?
+    if (ct.search(/application\/pgp-encrypted/i) >= 0) {
+      return true;
+    }
+    // Look into text/plain pgp messages and text/html messages.
+    if (ct.search(/text\/plain/i) >= 0 ||
+        ct.search(/text\/html/i) >= 0) {
+      return firstPart.body.indexOf('-----BEGIN PGP MESSAGE-----') >= 0;
+    }
+  }
+  return false;
+}
+
+/**
+ * filter term for OpenPGP Encrypted mail
+ */
+const filterTermPGPEncrypted = {
+  id: EnigmailConstants.FILTER_TERM_PGP_ENCRYPTED,
+  name: EnigmailLocale.getString("filter.term.pgpencrypted.label"),
+  needsBody: true,
+  match: function(aMsgHdr, searchValue, searchOp) {
+    var folder = aMsgHdr.folder;
+    var stream = folder.getMsgInputStream(aMsgHdr, {});
+
+    var messageSize = folder.hasMsgOffline(aMsgHdr.messageKey) ? aMsgHdr.offlineMessageSize : aMsgHdr.messageSize;
+    var scriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
+    var data;
+    try {
+      data = NetUtil.readInputStreamToString(stream, messageSize);
+    } catch (ex) {
+      EnigmailLog.DEBUG("filters.jsm: filterTermPGPEncrypted: failed to get data.\n");
+      // If we don't know better to return false.
+      stream.close();
+      return false;
+    }
+
+    var isPGP = isPGPEncrypted(data);
+
+    stream.close();
+
+    return ((searchOp == Ci.nsMsgSearchOp.Is && isPGP) ||
+            (searchOp == Ci.nsMsgSearchOp.Isnt && !isPGP));
+  },
+
+  getEnabled: function(scope, op) {
+    return true;
+  },
+
+  getAvailable: function(scope, op) {
+    return true;
+  },
+
+  getAvailableOperators: function(scope, length) {
+    length.value = 2;
+    return [Ci.nsMsgSearchOp.Is, Ci.nsMsgSearchOp.Isnt];
+  }
+};
 
 function initNewMailListener() {
   EnigmailLog.DEBUG("filters.jsm: initNewMailListener()\n");
@@ -322,6 +404,7 @@ const EnigmailFilters = {
     var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomAction(filterActionMoveDecrypt);
     filterService.addCustomAction(filterActionCopyDecrypt);
+    filterService.addCustomTerm(filterTermPGPEncrypted);
     initNewMailListener();
   },
 
