@@ -40,6 +40,7 @@ Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false*/
 Cu.import("resource://enigmail/glodaMime.jsm");
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
+const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -724,7 +725,6 @@ DecryptMessageIntoFolder.prototype = {
         mime.body = this.stripHTMLFromArmoredBlocks(mime.body);
       }
 
-      var enigmailSvc = EnigmailCore.getService();
       var exitCodeObj = {};
       var statusFlagsObj = {};
       var userIdObj = {};
@@ -774,8 +774,7 @@ DecryptMessageIntoFolder.prototype = {
               charset = chset[2].trim();
             }
           }
-
-          plaintext = enigmailSvc.decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
+          plaintext = getDecryption().decryptMessage(null, uiFlags, ciphertext, signatureObj, exitCodeObj, statusFlagsObj,
             keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj);
           if (!plaintext || plaintext.length === 0) {
             if (statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) {
