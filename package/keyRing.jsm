@@ -673,7 +673,7 @@ var EnigmailKeyRing = {
    *
    * @param parent          nsIWindow
    * @param isInteractive   Boolean  - if true, display confirmation dialog
-   * @param keyBLock        String   - data containing key
+   * @param keyBlock        String   - data containing key
    * @param keyId           String   - key ID expected to import (no meaning)
    * @param errorMsgObj     Object   - o.value will contain error message from GnuPG
    * @param importedKeysObj Object   - [OPTIONAL] o.value will contain an array of the key IDs imported
@@ -898,6 +898,7 @@ var EnigmailKeyRing = {
     }
     else {
       if (EnigmailGpg.getGpgFeature("genkey-no-protection")) {
+        inputData += "%echo no-protection\n";
         inputData += "%no-protection\n";
       }
     }
@@ -1201,7 +1202,13 @@ var EnigmailKeyRing = {
 
     deleteKeysFromCache(uniqueKeys);
 
-    loadKeyList(null, null, 1, uniqueKeys);
+    if (gKeyListObj.keyList.length > 0) {
+      loadKeyList(null, null, 1, uniqueKeys);
+    }
+    else {
+      loadKeyList(null, null, 1);
+    }
+
     getWindows().keyManReloadKeys();
   }
 }; //  EnigmailKeyRing
