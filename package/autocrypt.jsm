@@ -35,6 +35,7 @@ Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 
 var gCreatedSetupIds = [];
@@ -492,7 +493,18 @@ var EnigmailAutocrypt = {
           let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
           ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
           id.identity.setCharAttribute("pgpkeyId", setupData.fpr);
-          resolve(setupData);
+          id.identity.setBoolAttribute("enablePgp", true);
+          id.identity.setBoolAttribute("pgpSignEncrypted", true);
+          id.identity.setBoolAttribute("pgpMimeMode", true);
+          id.identity.setIntAttribute("pgpKeyMode", 1);
+          EnigmailKeyEditor.setKeyTrust(null, setupData.fpr, "5", function(returnCode) {
+            if (returnCode === 0) {
+              resolve(setupData);
+            }
+            else {
+              reject("keyImportFailed");
+            }
+          });
         }
         else {
           reject("keyImportFailed");
