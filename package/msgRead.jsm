@@ -24,19 +24,22 @@ const EnigmailMsgRead = {
   /**
    * Ensure that Thunderbird prepares certain headers during message reading
    */
-  ensureExtraExpandedHeaders: function() {
+  ensureExtraAddonHeaders: function() {
     let r = EnigmailPrefs.getPrefRoot();
-    let hdr = r.getCharPref("mailnews.headers.extraExpandedHeaders");
+    let hdr = r.getCharPref("mailnews.headers.extraAddonHeaders");
 
-    const ExtraHeaders = ["autocrypt"];
+    const ExtraHeaders = ["autocrypt", "openpgp"];
 
-    for (let h of ExtraHeaders) {
-      let sr = new RegExp("\\b" + h + "\\b", "i");
-      if (hdr.search(h) < 0) {
-        if (hdr.length > 0) hdr += " ";
-        hdr += h;
-        r.setCharPref("mailnews.headers.extraExpandedHeaders", hdr);
+    if (hdr !== "*") { // do nothing if extraAddonHeaders is "*" (all headers)
+      for (let h of ExtraHeaders) {
+        let sr = new RegExp("\\b" + h + "\\b", "i");
+        if (hdr.search(h) < 0) {
+          if (hdr.length > 0) hdr += " ";
+          hdr += h;
+        }
       }
+
+      r.setCharPref("mailnews.headers.extraAddonHeaders", hdr);
     }
   },
 
