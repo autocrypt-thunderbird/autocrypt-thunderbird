@@ -19,6 +19,10 @@ const Cu = Components.utils;
  */
 
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Cu.import("resource://enigmail/versioning.jsm"); /*global EnigmailVersioning: false */
+
+const ExtraHeaders = ["autocrypt", "openpgp"];
 
 const EnigmailMsgRead = {
   /**
@@ -26,9 +30,13 @@ const EnigmailMsgRead = {
    */
   ensureExtraAddonHeaders: function() {
     let r = EnigmailPrefs.getPrefRoot();
-    let hdr = r.getCharPref("mailnews.headers.extraAddonHeaders");
 
-    const ExtraHeaders = ["autocrypt", "openpgp"];
+    // is the Mozilla Platform number >= 59?
+    let isPlatform59 = EnigmailVersioning.greaterThanOrEqual(EnigmailApp.getPlatformVersion(), "59.0a1");
+
+    let prefName = (isPlatform59 ? "mailnews.headers.extraAddonHeaders" : "mailnews.headers.extraExpandedHeaders");
+
+    let hdr = r.getCharPref(prefName);
 
     if (hdr !== "*") { // do nothing if extraAddonHeaders is "*" (all headers)
       for (let h of ExtraHeaders) {
@@ -39,8 +47,29 @@ const EnigmailMsgRead = {
         }
       }
 
-      r.setCharPref("mailnews.headers.extraAddonHeaders", hdr);
+      r.setCharPref(prefName, hdr);
     }
+
+    if (isPlatform59) {
+      this.cleanupOldPref();
+    }
+  },
+
+  /**
+   * Clean up extraExpandedHeaders after upgrading to TB 59.
+   */
+  cleanupOldPref: function() {
+    let r = EnigmailPrefs.getPrefRoot();
+
+    let hdr = r.getCharPref("mailnews.headers.extraExpandedHeaders");
+    for (let h of ExtraHeaders) {
+      let sr = new RegExp("\\b" + h + "\\b", "i");
+      if (hdr.search(h) >= 0) {
+        hdr = hdr.replace(sr, " ");
+      }
+    }
+
+    r.setCharPref("mailnews.headers.extraExpandedHeaders", hdr.trim());
   },
 
   /**

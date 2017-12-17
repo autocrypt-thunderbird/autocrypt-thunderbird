@@ -31,6 +31,15 @@ const EnigmailApp = {
   },
 
   /**
+   * Platform (Gecko) version number (e.g. 42.0)
+   * The platform version for SeaMonkey and for Thunderbird are identical
+   * (unlike the application version numbers)
+   */
+  getPlatformVersion: function() {
+    return Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo).platformVersion;
+  },
+
+  /**
    * Return the directory holding the current profile as nsIFile object
    */
   getProfileDirectory: function() {
