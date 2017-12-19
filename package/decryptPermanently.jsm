@@ -1,5 +1,4 @@
 /*global Components: false*/
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +33,8 @@ Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false*/
+Cu.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false*/
+Cu.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
@@ -69,28 +70,34 @@ const EnigmailDecryptPermanently = {
    *  of the message processing. Because there is only a negligible performance gain when dispatching
    *  several message at once we serialize to not overwhelm low power devices.
    *
+   *  If targetFolder is null the message will be copied / moved in the same folder as the original
+   *  message.
+   *
+   *  If targetKey is not null the message will be encrypted again to the targetKey.
+   *
    *  The function is implemented asynchronously.
    *
    *  Parameters
    *   aMsgHdrs:     Array of nsIMsgDBHdr
-   *   targetFolder: String; target folder URI
+   *   targetFolder: String; target folder URI or null
    *   copyListener: listener for async request (nsIMsgCopyServiceListener)
    *   move:         Boolean: type of action; true = "move" / false = "copy"
+   *   targetKey:    KeyObject of target key if encryption is requested
    *
    **/
 
-  dispatchMessages: function(aMsgHdrs, targetFolder, copyListener, move) {
+  dispatchMessages: function(aMsgHdrs, targetFolder, copyListener, move, targetKey) {
     EnigmailLog.DEBUG("decryptPermanently.jsm: dispatchMessages()\n");
 
     if (copyListener) {
       copyListener.OnStartCopy();
     }
-    let promise = EnigmailDecryptPermanently.decryptMessage(aMsgHdrs[0], targetFolder, move);
+    let promise = EnigmailDecryptPermanently.cryptMessage(aMsgHdrs[0], targetFolder, move, targetKey);
 
     var processNext = function(data) {
       aMsgHdrs.splice(0, 1);
       if (aMsgHdrs.length > 0) {
-        EnigmailDecryptPermanently.dispatchMessages(aMsgHdrs, targetFolder, move);
+        EnigmailDecryptPermanently.dispatchMessages(aMsgHdrs, targetFolder, move, targetKey);
       }
       else {
         // last message was finished processing
@@ -108,17 +115,29 @@ const EnigmailDecryptPermanently = {
     });
   },
 
-  decryptMessage: function(hdr, destFolder, move) {
+  /***
+   *  cryptMessage
+   *
+   *  Decrypts a message. If targetKey is not null it
+   *  encrypts a message to the target key afterwards.
+   *
+   *  Parameters
+   *   hdr:        nsIMsgDBHdr of the message to encrypt
+   *   destFolder: String; target folder URI
+   *   move:       Boolean: type of action; true = "move" / false = "copy"
+   *   targetKey:  KeyObject of target key if encryption is requested
+   **/
+  cryptMessage: function(hdr, destFolder, move, targetKey) {
     return new Promise(
       function(resolve, reject) {
         let msgUriSpec = hdr.folder.getUriForMsg(hdr);
 
         const msgSvc = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(msgUriSpec);
 
-        const decrypt = new DecryptMessageIntoFolder(destFolder, move, resolve);
+        const crypt = new CryptMessageIntoFolder(destFolder, move, resolve, targetKey);
 
         try {
-          msgHdrToMimeMessage(hdr, decrypt, decrypt.messageParseCallback, true, {
+          msgHdrToMimeMessage(hdr, crypt, crypt.messageParseCallback, true, {
             examineEncryptedParts: false,
             partsOnDemand: false
           });
@@ -132,10 +151,11 @@ const EnigmailDecryptPermanently = {
   }
 };
 
-function DecryptMessageIntoFolder(destFolder, move, resolve) {
+function CryptMessageIntoFolder(destFolder, move, resolve, targetKey) {
   this.destFolder = destFolder;
   this.move = move;
   this.resolve = resolve;
+  this.targetKey = targetKey;
 
   this.foundPGP = 0;
   this.mime = null;
@@ -144,7 +164,7 @@ function DecryptMessageIntoFolder(destFolder, move, resolve) {
   this.subject = "";
 }
 
-DecryptMessageIntoFolder.prototype = {
+CryptMessageIntoFolder.prototype = {
   messageParseCallback: function(hdr, mime) {
     this.hdr = hdr;
     this.mime = mime;
@@ -222,17 +242,75 @@ DecryptMessageIntoFolder.prototype = {
             }
           }
 
-          if (self.foundPGP === 0) {
+          if (self.foundPGP === 0 && !self.targetKey) {
             self.resolve(true);
             return;
           }
 
-          var msg = self.mimeToString(self.mime, true);
+          // No dest folder. Let's use the same folder.
+          if (!self.destFolder) {
+            // We need to use the URI and not the folderURL folderURL
+            // would work for IMAP but fail for Local Folders.
+            self.destFolder = hdr.folder.URI;
+          }
+
+          let rfc822Headers;
+          if (self.targetKey) {
+            // If we encrypt we don't want to include all headers
+            // int the encrypted message. So we only pass
+            // content headers and store the rest.
+            rfc822Headers = mime.headers;
+            var contentHeaders = [];
+
+            contentHeaders["content-type"] = getHeaderValue(self.mime, 'content-type');
+            contentHeaders["content-transfer-encoding"] = getHeaderValue(self.mime, 'content-transfer-encoding');
+            contentHeaders["content-disposition"] = getHeaderValue(self.mime, 'content-disposition');
+            self.mime.headers = contentHeaders;
+          }
+
+          // Build the new message
+          let msg = "";
+          if (self.foundPGP) {
+            // A decrypted message
+            msg = self.mimeToString(self.mime, true);
+          }
+          else {
+            // Not found pgp. Copy the msg for encryption
+            // we avoid mimeToString as mimeToString is not
+            // really a direct conversion but has awareness of
+            // crypto tasks and will not work properly for messages
+            // that are not encrypted.
+            EnigmailLog.DEBUG("decryptPermanently.jsm: did not find encryption. Using original.\n");
+            var folder = hdr.folder;
+            var stream = folder.getMsgInputStream(hdr, {});
+
+            var messageSize = folder.hasMsgOffline(hdr.messageKey) ? hdr.offlineMessageSize : hdr.messageSize;
+            var scriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
+            try {
+              msg = NetUtil.readInputStreamToString(stream, messageSize);
+            }
+            catch (ex) {
+              EnigmailLog.DEBUG("decryptPermanently.jsm: failed to get plain data: " + ex + "\n");
+              // Uhm,.. What to do? Ok let's give mimeToString a chance.
+              msg = self.mimeToString(self.mime, true);
+            }
+            stream.close();
+          }
 
           if (!msg || msg === "") {
             // no message data found
             self.resolve(true);
             return;
+          }
+
+          // Encrypt the message if a target key is given.
+          if (self.targetKey) {
+            msg = self.encryptToKey(rfc822Headers, msg);
+            if (!msg) {
+              // do nothing (still better than destroying the message)
+              self.resolve(true);
+              return;
+            }
           }
 
           //XXX Do we wanna use the tmp for this?
@@ -341,6 +419,73 @@ DecryptMessageIntoFolder.prototype = {
       EnigmailLog.DEBUG("decryptPermanently.jsm: messageParseCallback: caught error " + ex.toString() + "\n");
       self.resolve(false);
     }
+  },
+
+  encryptToKey: function(rfc822Headers, inputMsg) {
+    let exitCodeObj = {};
+    let statusFlagsObj = {};
+    let errorMsgObj = {};
+    EnigmailLog.DEBUG("decryptPermanently.jsm: Encrypting message.\n");
+
+    let encmsg = "";
+    try {
+      encmsg = EnigmailEncryption.encryptMessage(null,
+        0,
+        inputMsg,
+        "0x" + this.targetKey.fpr,
+        "0x" + this.targetKey.fpr,
+        "",
+        EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_ALWAYS_TRUST,
+        exitCodeObj,
+        statusFlagsObj,
+        errorMsgObj
+      );
+    }
+    catch (ex) {
+      EnigmailLog.DEBUG("decryptPermanently.jsm: Encryption failed: " + ex + "\n");
+      return null;
+    }
+
+    // Build the pgp-encrypted mime structure
+    let msg = "";
+
+    // First the original headers
+    for (let header in rfc822Headers) {
+      if (header != "content-type" &&
+        header != "content-transfer-encoding" &&
+        header != "content-disposition") {
+        msg += prettyPrintHeader(header, rfc822Headers[header]) + "\n";
+      }
+    }
+    // Then multipart/encrypted ct
+    let boundary = EnigmailMime.createBoundary();
+    msg += "Content-Transfer-Encoding: 7Bit\n";
+    msg += "Content-Type: multipart/encrypted; ";
+    msg += "boundary=\"" + boundary + "\"; protocol=\"application/pgp-encrypted\"\n\n";
+    msg += "This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)\n";
+
+    // pgp-encrypted part
+    msg += "--" + boundary + "\n";
+    msg += "Content-Type: application/pgp-encrypted\n";
+    msg += "Content-Disposition: attachment\n";
+    msg += "Content-Transfer-Encoding: 7Bit\n\n";
+    msg += "Version: 1\n\n";
+
+    // the octet stream
+    msg += "--" + boundary + "\n";
+    msg += "Content-Type: application/octet-stream; name=\"encrypted.asc\"\n";
+    msg += "Content-Description: OpenPGP encrypted message\n";
+    msg += "Content-Disposition: inline; filename=\"encrypted.asc\"\n";
+    msg += "Content-Transfer-Encoding: 7Bit\n\n";
+    msg += encmsg;
+
+    // Bottom boundary
+    msg += "\n--" + boundary + "--\n";
+
+    // Fix up the line endings to be a proper dosish mail
+    msg = msg.replace(/\r/ig, "").replace(/\n/ig, "\r\n");
+
+    return msg;
   },
 
   readAttachment: function(attachment, strippedName) {
@@ -687,7 +832,13 @@ DecryptMessageIntoFolder.prototype = {
                   o.data += hdr + ": " + hdrVal + "\r\n";
                 }
                 catch (ex) {
-                  EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: exception " + ex.toString() + "\n");
+                  try {
+                    let hdrVal = m.getRawHeader(hdr.toLowerCase());
+                    o.data += hdr + ": " + hdrVal + "\r\n";
+                  }
+                  catch (ex) {
+                    EnigmailLog.DEBUG("decryptPermanently.jsm: getUnstructuredHeader: exception " + ex.toString() + "\n");
+                  }
                 }
               }
             }
