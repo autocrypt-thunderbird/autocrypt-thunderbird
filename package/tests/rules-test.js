@@ -224,7 +224,7 @@ test(withEnigmail(function mapAddrsToKeys_signAndEncrypt() {
       }, {
         orig: "encrypt@some.domain",
         addr: "encrypt@some.domain"
-      } ]
+      }]
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -263,7 +263,7 @@ test(withEnigmail(function mapAddrsToKeys_conflict() {
       }, {
         orig: "encrypt@some.domain",
         addr: "encrypt@some.domain"
-      } ]
+      }]
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -293,7 +293,7 @@ test(withEnigmail(function mapAddrsToKeys_twoKeysAndNoKey() {
         orig: "two@some.domain",
         addr: "two@some.domain",
         keys: "0x2222aaaa, 0x2222bbbb"
-      } ],
+      }],
       addrNoKeyList: [{
         orig: "nokey@qqq.domain",
         addr: "nokey@qqq.domain"
@@ -331,7 +331,7 @@ test(withEnigmail(function mapAddrsToKeys_noKeyAndSomeKeysReverse() { // importa
         orig: "two@some.domain",
         addr: "two@some.domain",
         keys: "0x2222aaaa, 0x2222bbbb"
-      } ],
+      }],
       addrNoKeyList: [{
         orig: "nokey@qqq.domain",
         addr: "nokey@qqq.domain"
@@ -399,7 +399,7 @@ test(withEnigmail(function mapAddrsToKeys_manyKeys() {
         orig: "two@some.domain",
         addr: "two@some.domain",
         keys: "0x2222aaaa, 0x2222bbbb"
-      } ],
+      }],
       addrNoKeyList: [{
         orig: "nofurtherrules@some.domain",
         addr: "nofurtherrules@some.domain"
@@ -412,7 +412,7 @@ test(withEnigmail(function mapAddrsToKeys_manyKeys() {
       }, {
         orig: "nosign@some.domain",
         addr: "nosign@some.domain"
-      } ]
+      }]
     };
     Assert.ok(ret);
     Assert.deepEqual(expectedFlags, flagsRet);
@@ -457,7 +457,7 @@ test(withEnigmail(function mapAddrsToKeys_multipleMatches() {
         orig: "patrick@xx.com",
         addr: "patrick@xx.com",
         keys: "0xDOTCOMORDOTDE"
-      } ],
+      }],
       addrNoKeyList: []
     };
     Assert.ok(ret);
@@ -503,9 +503,15 @@ test(withEnigmail(function mapAddrsToKeys_infix() {
     EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.BB",
       "xx@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
-      "info@qqq.bb",
-      "0xAAAAAAAA, 0xBBBBBBBB");
+    try {
+      EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
+        "info@qqq.bb",
+        "0xAAAAAAAA, 0xBBBBBBBB");
+      Assert.ok(false, "should get exception:");
+    }
+    catch (ex) {
+      Assert.ok(true, "got exception:");
+    }
   });
 }));
 

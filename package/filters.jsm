@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailDecryptPermanently: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailLazy: false */
+/*global Components: false, EnigmailPersistentCrypto: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailLazy: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,7 +18,7 @@ const Cu = Components.utils;
 Cu.import("resource://enigmail/lazy.jsm");
 Cu.import("resource://enigmail/locale.jsm");
 Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/decryptPermanently.jsm");
+Cu.import("resource://enigmail/persistentCrypto.jsm");
 Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
@@ -53,7 +53,7 @@ const filterActionMoveDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, aListener, true);
+    EnigmailPersistentCrypto.dispatchMessages(msgHdrs, aActionValue, aListener, true);
   },
 
   isValidForType: function(type, scope) {
@@ -92,7 +92,7 @@ const filterActionCopyDecrypt = {
       msgHdrs.push(aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr));
     }
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, aActionValue, aListener, false);
+    EnigmailPersistentCrypto.dispatchMessages(msgHdrs, aActionValue, aListener, false);
   },
 
   isValidForType: function(type, scope) {
@@ -164,7 +164,7 @@ const filterActionEncrypt = {
     }
 
     if (msgHdrs.length) {
-      EnigmailDecryptPermanently.dispatchMessages(msgHdrs, null /* same folder */ , aListener,
+      EnigmailPersistentCrypto.dispatchMessages(msgHdrs, null /* same folder */ , aListener,
         true /* move */ , keyObj /* target key */ );
     }
   },

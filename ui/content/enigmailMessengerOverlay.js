@@ -36,7 +36,7 @@ Components.utils.import("resource://enigmail/dialog.jsm");
 Components.utils.import("resource://enigmail/timer.jsm");
 Components.utils.import("resource://enigmail/windows.jsm");
 Components.utils.import("resource://enigmail/time.jsm");
-Components.utils.import("resource://enigmail/decryptPermanently.jsm"); /* global EnigmailDecryptPermanently: false */
+Components.utils.import("resource://enigmail/persistentCrypto.jsm"); /* global EnigmailPersistentCrypto: false */
 Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
 Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
@@ -2470,7 +2470,7 @@ Enigmail.msg = {
     let msgHdrs = gFolderDisplay ? gFolderDisplay.selectedMessages : null;
     if (!msgHdrs || msgHdrs.length === 0) return;
 
-    EnigmailDecryptPermanently.dispatchMessages(msgHdrs, destFolder.URI, false, false);
+    EnigmailPersistentCrypto.dispatchMessages(msgHdrs, destFolder.URI, false, false);
   },
 
   importAttachedKeys: function() {

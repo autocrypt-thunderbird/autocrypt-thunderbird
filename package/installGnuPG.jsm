@@ -372,6 +372,9 @@ Installer.prototype = {
 
   installUnix: function() {},
 
+  /**
+   * Chech the SHA256 hash sum of this.installerFile
+   */
   checkHashSum: function() {
     EnigmailLog.DEBUG("installGnuPG.jsm: checkHashSum\n");
     var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]

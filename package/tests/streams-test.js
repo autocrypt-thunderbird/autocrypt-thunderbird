@@ -48,12 +48,12 @@ test(function readFileChannel() {
   EnigmailFiles.writeFileContents(md, testString, null);
 
   let uri = makeURI("dummy:none");
-  var ch = EnigmailStreams.newFileChannel(uri, md, "applicatio/octet-stream", true);
+  var ch = EnigmailStreams.newFileChannel(uri, md, "application/octet-stream", true);
   do_test_pending();
   var stringListener = EnigmailStreams.newStringStreamListener(
     function compareResults(gotData) {
       Assert.equal(testString, gotData);
-      Assert.equal(md.exists(), false, "file was deleted:");
+      Assert.equal(md.exists(), true, "file was deleted:");
       do_test_finished();
     }
   );

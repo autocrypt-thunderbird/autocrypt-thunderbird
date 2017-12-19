@@ -12,7 +12,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, component: false, withTestGpgHome: false, withEnigmail: false */
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
-testing("decryptPermanently.jsm"); /*global EnigmailDecryptPermanently: false, Promise: false */
+testing("persistentCrypto.jsm"); /*global EnigmailPersistentCrypto: false, Promise: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
 component("enigmail/glodaMime.jsm");
@@ -49,7 +49,7 @@ test(withTestGpgHome(withEnigmail(function messageIsCopiedToNewDir() {
     Assert.equal(sourceFolder.getTotalMessages(false), 1);
     inspector.exitNestedEventLoop();
   };
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  EnigmailPersistentCrypto.dispatchMessages([header], targetFolder.URI, copyListener, move);
   inspector.enterNestedEventLoop(0);
 
 })));
@@ -63,7 +63,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedToNewDir() {
   const header = MailHelper.fetchFirstMessageHeaderIn(sourceFolder);
   const targetFolder = MailHelper.createMailFolder("target-box");
   const move = true;
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  EnigmailPersistentCrypto.dispatchMessages([header], targetFolder.URI, copyListener, move);
   inspector.enterNestedEventLoop(0);
 
 })));
@@ -82,7 +82,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
     inspector.exitNestedEventLoop();
   };
 
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  EnigmailPersistentCrypto.dispatchMessages([header], targetFolder.URI, copyListener, move);
   inspector.enterNestedEventLoop(0);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
@@ -113,7 +113,7 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
   copyListener.OnStopCopy = function(statusCode) {
     inspector.exitNestedEventLoop();
   };
-  EnigmailDecryptPermanently.dispatchMessages([header], targetFolder.URI, copyListener, move);
+  EnigmailPersistentCrypto.dispatchMessages([header], targetFolder.URI, copyListener, move);
   inspector.enterNestedEventLoop(0);
 
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);

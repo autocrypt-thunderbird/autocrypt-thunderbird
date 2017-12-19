@@ -76,7 +76,7 @@ zip --must-match\
     modules/constants.jsm \
     modules/data.jsm \
     modules/decryption.jsm \
-    modules/decryptPermanently.jsm \
+    modules/persistentCrypto.jsm \
     modules/dialog.jsm \
     modules/encryption.jsm \
     modules/core.jsm \
