@@ -267,6 +267,10 @@ treechildren::-moz-tree-cell-text(STYLE) {}
   -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
 }
 
+.ruleactiontarget[type="enigmail@enigmail.net#filterActionEncrypt"] {
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-forwardto");
+}
+
 .enigmailPassphraseQuality {
   margin: 2px 4px;
   min-width: 128px;

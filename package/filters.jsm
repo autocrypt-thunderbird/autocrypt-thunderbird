@@ -21,6 +21,7 @@ Cu.import("resource://enigmail/core.jsm");
 Cu.import("resource://enigmail/decryptPermanently.jsm");
 Cu.import("resource://enigmail/log.jsm");
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
+Cu.import("resource://enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false */
 Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
 Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
@@ -111,6 +112,107 @@ const filterActionCopyDecrypt = {
   needsBody: true
 };
 
+/**
+ * filter action for to encrypt a mail to a specific key
+ */
+const filterActionEncrypt = {
+  id: EnigmailConstants.FILTER_ENCRYPT,
+  name: EnigmailLocale.getString("filter.encrypt.label"),
+  value: "encryptto",
+  apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
+    // Ensure KeyRing is loaded.
+    if (aMsgWindow) {
+      EnigmailCore.getService(aMsgWindow.domWindow);
+    }
+    else {
+      EnigmailCore.getService();
+    }
+    EnigmailKeyRing.getAllKeys();
+
+    EnigmailLog.DEBUG("filters.jsm: filterActionEncrypt: Encrypt to: " + aActionValue + "\n");
+    let keyObj = EnigmailKeyRing.getKeyById(aActionValue);
+
+    if (keyObj === null) {
+      EnigmailLog.DEBUG("filters.jsm: failed to find key by id: " + aActionValue + "\n");
+      let keyId = EnigmailKeyRing.getValidKeyForRecipient(aActionValue);
+      if (keyId) {
+        keyObj = EnigmailKeyRing.getKeyById(keyId);
+      }
+    }
+
+    if (keyObj === null && aListener) {
+      EnigmailLog.DEBUG("filters.jsm: no valid key - aborting\n");
+
+      aListener.OnStartCopy();
+      aListener.OnStopCopy(1);
+
+      return;
+    }
+
+    EnigmailLog.DEBUG("filters.jsm: key to encrypt to: " + JSON.stringify(keyObj) + ", userId: " + keyObj.userId + "\n");
+
+    var msgHdrs = [];
+    for (let i = 0; i < aMsgHdrs.length; i++) {
+      let msg = aMsgHdrs.queryElementAt(i, Ci.nsIMsgDBHdr);
+      // Maybe skip messages here if they are already encrypted to
+      // the target key? There might be some use case for unconditionally
+      // encrypting here. E.g. to use the local preferences and remove all
+      // other recipients.
+      // Also not encrypting to already encrypted messages would make the
+      // behavior less transparent as it's not obvious.
+      msgHdrs.push(msg);
+    }
+
+    if (msgHdrs.length) {
+      EnigmailDecryptPermanently.dispatchMessages(msgHdrs, null /* same folder */ , aListener,
+        true /* move */ , keyObj /* target key */ );
+    }
+  },
+
+  isValidForType: function(type, scope) {
+    return true;
+  },
+
+  validateActionValue: function(value, folder, type) {
+    // Initialize KeyRing. Ugly as it blocks the GUI but
+    // we need it.
+    EnigmailCore.getService();
+    EnigmailKeyRing.getAllKeys();
+
+    EnigmailLog.DEBUG("filters.jsm: validateActionValue: Encrypt to: " + value + "\n");
+    if (value === "") {
+      return EnigmailLocale.getString("filter.keyRequired");
+    }
+
+    let keyObj = EnigmailKeyRing.getKeyById(value);
+
+    if (keyObj === null) {
+      EnigmailLog.DEBUG("filters.jsm: failed to find key by id. Looking for uid.\n");
+      let keyId = EnigmailKeyRing.getValidKeyForRecipient(value);
+      if (keyId) {
+        keyObj = EnigmailKeyRing.getKeyById(keyId);
+      }
+    }
+
+    if (keyObj === null) {
+      return EnigmailLocale.getString("filter.keyNotFound", [value]);
+    }
+
+    if (!keyObj.secretAvailable) {
+      // We warn but we allow it. There might be use cases where
+      // thunderbird + enigmail is used as a gateway filter with
+      // the secret not available on one machine and the decryption
+      // is intended to happen on different systems.
+      getDialog().alert(null, EnigmailLocale.getString("filter.warn.keyNotSecret", [value]));
+    }
+
+    return null;
+  },
+
+  allowDuplicates: false,
+  isAsync: true,
+  needsBody: true
+};
 
 function isPGPEncrypted(data) {
   // We only check the first mime subpart for application/pgp-encrypted.
@@ -140,7 +242,7 @@ function isPGPEncrypted(data) {
     }
     // Look into text/plain pgp messages and text/html messages.
     if (ct.search(/text\/plain/i) >= 0 ||
-        ct.search(/text\/html/i) >= 0) {
+      ct.search(/text\/html/i) >= 0) {
       return firstPart.body.indexOf('-----BEGIN PGP MESSAGE-----') >= 0;
     }
   }
@@ -163,7 +265,8 @@ const filterTermPGPEncrypted = {
     var data;
     try {
       data = NetUtil.readInputStreamToString(stream, messageSize);
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.DEBUG("filters.jsm: filterTermPGPEncrypted: failed to get data.\n");
       // If we don't know better to return false.
       stream.close();
@@ -175,7 +278,7 @@ const filterTermPGPEncrypted = {
     stream.close();
 
     return ((searchOp == Ci.nsMsgSearchOp.Is && isPGP) ||
-            (searchOp == Ci.nsMsgSearchOp.Isnt && !isPGP));
+      (searchOp == Ci.nsMsgSearchOp.Isnt && !isPGP));
   },
 
   getEnabled: function(scope, op) {
@@ -404,6 +507,7 @@ const EnigmailFilters = {
     var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomAction(filterActionMoveDecrypt);
     filterService.addCustomAction(filterActionCopyDecrypt);
+    filterService.addCustomAction(filterActionEncrypt);
     filterService.addCustomTerm(filterTermPGPEncrypted);
     initNewMailListener();
   },

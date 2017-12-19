@@ -47,6 +47,7 @@ const EnigmailConstants = {
 
   FILTER_MOVE_DECRYPT: "enigmail@enigmail.net#filterActionMoveDecrypt",
   FILTER_COPY_DECRYPT: "enigmail@enigmail.net#filterActionCopyDecrypt",
+  FILTER_ENCRYPT: "enigmail@enigmail.net#filterActionEncrypt",
   FILTER_TERM_PGP_ENCRYPTED: "enigmail@enigmail.net#filterTermPGPEncrypted",
 
   /* taken over from old nsIEnigmail */
