@@ -35,6 +35,7 @@ Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Cu.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
 
@@ -234,6 +235,17 @@ var EnigmailAutocrypt = {
 
                 if (keysObj.value) {
                   importedKeys = importedKeys.concat(keysObj.value);
+
+                  let ruleObj = {
+                    email: "{" + keyArr[i].email + "}",
+                    keyList: "0x" + keyArr[i].fpr,
+                    sign: 1,
+                    encrypt: 1,
+                    pgpMime: 2,
+                    flags: 0
+                  };
+
+                  EnigmailRules.insertOrUpdateRule(ruleObj);
                 }
               }
             }
@@ -289,6 +301,7 @@ var EnigmailAutocrypt = {
             for (let i in resultObj.data) {
               let record = resultObj.data[i];
               retArr.push({
+                email: record.getResultByName("email"),
                 fpr: record.getResultByName("fpr"),
                 keyData: record.getResultByName("keydata"),
                 lastAutocrypt: new Date(record.getResultByName("last_seen_autocrypt"))
@@ -492,12 +505,12 @@ var EnigmailAutocrypt = {
           let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
           let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
           ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
-          id.identity.setCharAttribute("pgpkeyId", setupData.fpr);
+          id.identity.setCharAttribute("pgpkeyId", "0x" + setupData.fpr);
           id.identity.setBoolAttribute("enablePgp", true);
           id.identity.setBoolAttribute("pgpSignEncrypted", true);
           id.identity.setBoolAttribute("pgpMimeMode", true);
           id.identity.setIntAttribute("pgpKeyMode", 1);
-          EnigmailKeyEditor.setKeyTrust(null, setupData.fpr, "5", function(returnCode) {
+          EnigmailKeyEditor.setKeyTrust(null, "0x" + setupData.fpr, "5", function(returnCode) {
             if (returnCode === 0) {
               resolve(setupData);
             }

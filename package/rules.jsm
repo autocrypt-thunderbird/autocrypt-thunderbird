@@ -114,6 +114,27 @@ var EnigmailRules = {
     return false;
   },
 
+  /**
+   * Create new rule
+   *
+   * @param appendToEnd: Boolean - true:  append rule at the end of the rules list
+   *                               false: insert rule at the start of the rules list
+   * @param toAddress:   String  - Adress(es) to match. Multiple email addresses are separated by spaces.
+   *            The matching is done on substrings, with curly brackets ({}) defining substring boundaries:
+   *             "{" is equivalent to ^ in regexp
+   *             "}" is equivalent to $ in regexp
+   * @param keyList:     String  - space separated list of key IDs (starting with 0x)
+   *                                If keyList === ".", use the email address
+   * @param sign:        Number  - 0/1/2 as defined below
+   * @param encrypt:     Number  - 0/1/2 as defined below
+   * @param pgpMime:     Number  - 0/1/2 as defined below
+   * @param flags:       Number  - 0: no flags / 1: negate rule
+   *
+   * sign/encrypt/pgpMime values:
+   *  0: Disable the action (= "Never")
+   *  1: Use the setting in Message Composition
+   *  2: Enable the action (= "Always")
+   */
   addRule: function(appendToEnd, toAddress, keyList, sign, encrypt, pgpMime, flags) {
     EnigmailLog.DEBUG("rules.jsm: addRule()\n");
     if (!rulesListHolder.rulesList) {
@@ -122,7 +143,7 @@ var EnigmailRules = {
     }
     var negate = (flags & 1);
     var rule = rulesListHolder.rulesList.createElement("pgpRule");
-    rule.setAttribute("email", toAddress);
+    rule.setAttribute("email", toAddress.toLowerCase());
     rule.setAttribute("keyId", keyList);
     rule.setAttribute("sign", sign);
     rule.setAttribute("encrypt", encrypt);
@@ -138,6 +159,52 @@ var EnigmailRules = {
       rulesListHolder.rulesList.firstChild.appendChild(rule);
       rulesListHolder.rulesList.firstChild.appendChild(rulesListHolder.rulesList.createTextNode(EnigmailOS.isDosLike ? "\r\n" : "\n"));
     }
+  },
+
+  /**
+   * ...
+   * @return: Number: 0 - no update / 1 - rule updated / 2 - new rule created
+   */
+  insertOrUpdateRule: function(ruleObj) {
+    if ((!("email" in ruleObj)) || ruleObj.email.length === 0) return 0;
+
+    ruleObj.email = ruleObj.email.toLowerCase();
+
+    let rulesListObj = {};
+    this.getRulesData(rulesListObj);
+    let rulesList = rulesListObj.value;
+
+    if (rulesList) {
+      for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
+        if (node.tagName == "pgpRule") {
+          try {
+            let email = node.getAttribute("email");
+            if (!email) {
+              continue;
+            }
+            if (email.toLowerCase() === ruleObj.email) {
+              node.setAttribute("keyId", ruleObj.keyList);
+              node.setAttribute("sign", ruleObj.sign);
+              node.setAttribute("encrypt", ruleObj.encrypt);
+              node.setAttribute("pgpMime", ruleObj.pgpMime);
+              node.setAttribute("negateRule", ruleObj.flags);
+              this.saveRulesFile();
+
+              return 1;
+            }
+          }
+          catch (ex) {
+            EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
+          }
+        }
+      }
+    }
+
+    // no rule matched, let's add the rule at the start of the list
+    this.addRule(false, ruleObj.email, ruleObj.keyList, ruleObj.sign, ruleObj.encrypt, ruleObj.pgpMime, ruleObj.flags);
+    this.saveRulesFile();
+
+    return 2;
   },
 
   clearRules: function() {
@@ -350,8 +417,7 @@ var EnigmailRules = {
     return true;
   },
 
-  mapRuleToKeys: function(rule,
-    openList, flags, addrKeysList, addrNoKeyList) {
+  mapRuleToKeys: function(rule, openList, flags, addrKeysList, addrNoKeyList) {
     //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let ruleIndex = 0; ruleIndex < ruleList.length; ++ruleIndex) {
