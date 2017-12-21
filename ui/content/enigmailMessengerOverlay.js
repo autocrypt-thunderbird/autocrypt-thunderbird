@@ -2621,6 +2621,18 @@ Enigmail.msg = {
       return;
     }
 
+    if (EnigmailAutocrypt.isAccountSetupForPgp(currentHeaderData.from.headerValue)) {
+      // Ask user what to do if the account is already correctly configured
+
+      if (!EnigmailDialog.confirmDlg(window,
+          EnigmailLocale.getString("autocrypt.importSetupKey.accountPreconfigured"),
+          EnigmailLocale.getString("dlg.button.overwrite"),
+          EnigmailLocale.getString("dlg.button.cancel")
+        )) {
+        return;
+      }
+    }
+
     if (currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) === 0) {
 
       EnigmailAutocrypt.getSetupMessageData(currentAttachments[0].url).then(res => {
