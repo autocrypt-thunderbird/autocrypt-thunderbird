@@ -97,7 +97,7 @@ const EnigmailPersistentCrypto = {
     var processNext = function(data) {
       aMsgHdrs.splice(0, 1);
       if (aMsgHdrs.length > 0) {
-        EnigmailPersistentCrypto.dispatchMessages(aMsgHdrs, targetFolder, move, targetKey);
+        EnigmailPersistentCrypto.dispatchMessages(aMsgHdrs, targetFolder, copyListener, move, targetKey);
       }
       else {
         // last message was finished processing
