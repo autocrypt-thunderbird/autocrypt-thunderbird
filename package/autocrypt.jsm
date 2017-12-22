@@ -48,10 +48,11 @@ var EnigmailAutocrypt = {
    * @param fromAddr:      String - Address of sender (From: header)
    * @param headerDataArr: Array of String: all instances of the Autocrypt: header found in the message
    * @param dateSent:      String - Date: field of the message
+   * @param autoCryptEnabled: Boolean - if true, autocrypt is enabled for the context of the message
    *
    * @return Promise (success) - success: Number (0 = success, 1+ = failure)
    */
-  processAutocryptHeader: function(fromAddr, headerDataArr, dateSent) {
+  processAutocryptHeader: function(fromAddr, headerDataArr, dateSent, autoCryptEnabled = false) {
     EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + fromAddr + "\n");
 
     return new Promise((resolve, reject) => {
@@ -188,7 +189,7 @@ var EnigmailAutocrypt = {
             return appendUser(conn, paramArr);
           }
           else {
-            return updateUser(conn, paramArr, resultObj.data);
+            return updateUser(conn, paramArr, resultObj.data, autoCryptEnabled);
           }
         }
       ).then(
@@ -731,10 +732,11 @@ function appendUser(connection, paramsArr) {
  * @param connection: Object - SQLite connection
  * @param paramsArr:  Object - the Autocrypt header parameters
  * @param resultRows: Array of mozIStorageRow - records stored in the database
+ * @param autoCryptEnabled: Boolean: is autocrypt enabled for this transaction
  *
  * @return Promise
  */
-function updateUser(connection, paramsArr, resultRows) {
+function updateUser(connection, paramsArr, resultRows, autoCryptEnabled) {
   EnigmailLog.DEBUG("autocrypt.jsm: updateUser\n");
 
   let currData = resultRows[0];
@@ -763,7 +765,9 @@ function updateUser(connection, paramsArr, resultRows) {
       getFprForKey(paramsArr);
     }
 
-    updateRuleForEmail(paramsArr.addr, paramsArr["prefer-encrypt"]);
+    if (autoCryptEnabled) {
+      updateRuleForEmail(paramsArr.addr, paramsArr["prefer-encrypt"]);
+    }
 
     updateStr = "update autocrypt_keydata set state = :state, keydata = :keyData, last_seen_autocrypt = :lastAutocrypt, " +
       "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type";

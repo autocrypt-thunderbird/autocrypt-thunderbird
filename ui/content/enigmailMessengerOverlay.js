@@ -707,7 +707,7 @@ Enigmail.msg = {
         }
 
         EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, Enigmail.msg.savedHeaders.autocrypt,
-          dateValue);
+          dateValue, EnigmailPrefs.getPref("autocryptMode") !== 0);
       }
       else {
         Enigmail.msg.createArtificialAutocryptHeader();
@@ -2557,7 +2557,8 @@ Enigmail.msg = {
 
           created = true;
 
-          EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue);
+          EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
+            EnigmailPrefs.getPref("autocryptMode") !== 0);
         }
       }
     }
@@ -2566,7 +2567,8 @@ Enigmail.msg = {
       let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
         '; prefer-encrypt=reset; _enigmail_artificial=yes; keydata="LQ=="';
 
-      EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue);
+      EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
+        EnigmailPrefs.getPref("autocryptMode") !== 0);
     }
   },
 
