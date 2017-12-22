@@ -676,7 +676,12 @@ Enigmail.msg = {
           if (msgFlags & EnigmailConstants.DECRYPTION_OKAY) {
             EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen: has encrypted originalMsgUri\n");
             EnigmailLog.DEBUG("originalMsgURI=" + gMsgCompose.originalMsgURI + "\n");
-            this.setSendMode('encrypt');
+            this.setFinalSendMode('final-encryptYes');
+
+            this.identity = getCurrentIdentity();
+            if (this.identity.getBoolAttribute("pgpSignEncrypted")) {
+              this.setFinalSendMode('final-signYes');
+            }
 
             this.disableSmime = true;
           }

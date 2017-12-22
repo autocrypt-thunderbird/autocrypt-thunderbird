@@ -36,6 +36,7 @@ Components.utils.import("resource://enigmail/webKey.jsm"); /* global EnigmailWks
 Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("resource://enigmail/msgRead.jsm"); /*global EnigmailMsgRead: false */
 Components.utils.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -447,6 +448,10 @@ Enigmail.hdrView = {
 
     Enigmail.msg.createArtificialAutocryptHeader();
 
+    if (statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE) {
+      this.tryImportAutocryptHeader();
+    }
+
     this.displayStatusBar();
     this.updateMsgDb();
 
@@ -503,6 +508,32 @@ Enigmail.hdrView = {
       enigMsgPane.removeAttribute("collapsed");
       enigMsgPane.textContent = EnigmailLocale.getString("wksConfirmationReq.message");
     }
+  },
+
+  /**
+   * Try to import an autocrypt header from an unverified signature
+   * (i.e. the sender's key is not available)
+   */
+  tryImportAutocryptHeader: function() {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: tryImportAutocryptHeader()\n");
+
+    if (!("autocrypt" in currentHeaderData)) return;
+    if (EnigmailPrefs.getPref("autocryptMode") === 0) return;
+    if (!("from" in currentHeaderData)) return;
+
+    let fromEmail = EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue).toLowerCase();
+
+    let keys = EnigmailKeyRing.getKeysByUserId(fromEmail, true);
+    if (keys.length > 0) return;
+
+    EnigmailAutocrypt.importAutocryptKeys([fromEmail]).
+    then(foundKeys => {
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: tryImportAutocryptHeader: got " +
+        foundKeys.length + " autocrypt keys\n");
+      if (foundKeys.length > 0) {
+        gDBView.reloadMessageWithAllParts();
+      }
+    });
   },
 
   /**

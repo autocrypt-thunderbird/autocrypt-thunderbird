@@ -236,11 +236,15 @@ var EnigmailAutocrypt = {
                 if (keysObj.value) {
                   importedKeys = importedKeys.concat(keysObj.value);
 
+                  // enable encryption if state (prefer-encrypt) is "mutual";
+                  // otherwise, disable it explicitely
+                  let signEncrypt = (keyArr[i].state === "mutual" ? 1 : 0);
+
                   let ruleObj = {
                     email: "{" + keyArr[i].email + "}",
                     keyList: "0x" + keyArr[i].fpr,
-                    sign: 1,
-                    encrypt: 1,
+                    sign: signEncrypt,
+                    encrypt: signEncrypt,
                     pgpMime: 2,
                     flags: 0
                   };
@@ -267,7 +271,7 @@ var EnigmailAutocrypt = {
    * @return Promise().resolve { fpr, keyData, lastAutocrypt}
    */
   getOpenPGPKeyForEmail: function(emailAddr) {
-    EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail(" + emailAddr.join(",") + ")\n");
+    EnigmailLog.DEBUG("autocrypt.jsm: getOpenPGPKeyForEmail(" + emailAddr.join(",") + ")\n");
 
     let conn;
 
@@ -281,7 +285,7 @@ var EnigmailAutocrypt = {
           return checkDatabaseStructure(conn);
         },
         function onError(error) {
-          EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail: could not open database\n");
+          EnigmailLog.DEBUG("autocrypt.jsm: getOpenPGPKeyForEmail: could not open database\n");
           reject("error");
         }
       ).then(
@@ -290,7 +294,7 @@ var EnigmailAutocrypt = {
         }
       ).then(
         function gotData(resultObj) {
-          EnigmailLog.DEBUG("autocrypt.jsm: getKeyForEmail got " + resultObj.numRows + " rows\n");
+          EnigmailLog.DEBUG("autocrypt.jsm: getOpenPGPKeyForEmail got " + resultObj.numRows + " rows\n");
           conn.close();
 
           if (resultObj.data.length === 0) {
@@ -304,6 +308,7 @@ var EnigmailAutocrypt = {
                 email: record.getResultByName("email"),
                 fpr: record.getResultByName("fpr"),
                 keyData: record.getResultByName("keydata"),
+                state: record.getResultByName("state"),
                 lastAutocrypt: new Date(record.getResultByName("last_seen_autocrypt"))
               });
             }
@@ -758,6 +763,8 @@ function updateUser(connection, paramsArr, resultRows) {
       getFprForKey(paramsArr);
     }
 
+    updateRuleForEmail(paramsArr.addr, paramsArr["prefer-encrypt"]);
+
     updateStr = "update autocrypt_keydata set state = :state, keydata = :keyData, last_seen_autocrypt = :lastAutocrypt, " +
       "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type";
     updateObj = {
@@ -897,4 +904,21 @@ function importSetupKey(keyData) {
   }
 
   return null;
+}
+
+
+function updateRuleForEmail(email, preferEncrypt) {
+  let node = EnigmailRules.getRuleByEmail(email);
+
+  if (node) {
+    let signEncrypt = (preferEncrypt === "mutual" ? "1" : "0");
+
+    if (node.getAttribute("sign") !== signEncrypt ||
+      node.getAttribute("encrypt") !== signEncrypt) {
+
+      node.setAttribute("sign", signEncrypt);
+      node.setAttribute("encrypt", signEncrypt);
+      EnigmailRules.saveRulesFile();
+    }
+  }
 }

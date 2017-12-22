@@ -573,6 +573,8 @@ Enigmail.msg = {
       }
 
       this.movePEPsubject();
+      this.messageDecryptCb(event, isAuto, null);
+
       return;
     }
     else if (EnigmailPEPAdapter.usingPep()) {

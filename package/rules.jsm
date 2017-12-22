@@ -168,7 +168,40 @@ var EnigmailRules = {
   insertOrUpdateRule: function(ruleObj) {
     if ((!("email" in ruleObj)) || ruleObj.email.length === 0) return 0;
 
-    ruleObj.email = ruleObj.email.toLowerCase();
+    let node = this.getRuleByEmail(ruleObj.email);
+
+    if (node) {
+      node.setAttribute("keyId", ruleObj.keyList);
+      node.setAttribute("sign", ruleObj.sign);
+      node.setAttribute("encrypt", ruleObj.encrypt);
+      node.setAttribute("pgpMime", ruleObj.pgpMime);
+      node.setAttribute("negateRule", ruleObj.flags);
+      this.saveRulesFile();
+
+      return 1;
+    }
+
+    // no rule matched, let's add the rule at the start of the list
+    this.addRule(false, ruleObj.email, ruleObj.keyList, ruleObj.sign, ruleObj.encrypt, ruleObj.pgpMime, ruleObj.flags);
+    this.saveRulesFile();
+
+    return 2;
+  },
+
+
+  /**
+   * Get a rule if it matches exactly one email address
+   *
+   * @param emailAddr: String - emailAddress to search
+   *
+   * @return Object: node object (DOM object)
+   */
+  getRuleByEmail: function(emailAddr) {
+    emailAddr = emailAddr.toLowerCase();
+
+    if (emailAddr.search(/^\{.*\}$/) < 0) {
+      emailAddr = "{" + emailAddr + "}";
+    }
 
     let rulesListObj = {};
     this.getRulesData(rulesListObj);
@@ -178,33 +211,22 @@ var EnigmailRules = {
       for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
         if (node.tagName == "pgpRule") {
           try {
-            let email = node.getAttribute("email");
-            if (!email) {
+            let nodeEmail = node.getAttribute("email");
+            if (!nodeEmail) {
               continue;
             }
-            if (email.toLowerCase() === ruleObj.email) {
-              node.setAttribute("keyId", ruleObj.keyList);
-              node.setAttribute("sign", ruleObj.sign);
-              node.setAttribute("encrypt", ruleObj.encrypt);
-              node.setAttribute("pgpMime", ruleObj.pgpMime);
-              node.setAttribute("negateRule", ruleObj.flags);
-              this.saveRulesFile();
-
-              return 1;
+            if (nodeEmail.toLowerCase() === emailAddr) {
+              return node;
             }
           }
           catch (ex) {
-            EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
+            EnigmailLog.DEBUG("rules.jsm: getRuleByEmail(): ignore exception: " + ex.description + "\n");
           }
         }
       }
     }
 
-    // no rule matched, let's add the rule at the start of the list
-    this.addRule(false, ruleObj.email, ruleObj.keyList, ruleObj.sign, ruleObj.encrypt, ruleObj.pgpMime, ruleObj.flags);
-    this.saveRulesFile();
-
-    return 2;
+    return null;
   },
 
   clearRules: function() {
