@@ -19,9 +19,10 @@ Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
 Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
 Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.importGlobalProperties(["TextDecoder"]);
 
 const {
-  TextDecoder, TextEncoder, OS
+  OS
 } = Cu.import("resource://gre/modules/osfile.jsm", {});
 
 const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams");

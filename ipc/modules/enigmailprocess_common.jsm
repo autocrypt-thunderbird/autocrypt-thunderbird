@@ -19,7 +19,7 @@ var {
 
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-Cu.importGlobalProperties(["TextDecoder"]);
+Cu.importGlobalProperties(["TextDecoder", "TextEncoder"]);
 
 XPCOMUtils.defineLazyModuleGetter(this, "AsyncShutdown",
   "resource://gre/modules/AsyncShutdown.jsm"); /* global AsyncShutdown: false */
