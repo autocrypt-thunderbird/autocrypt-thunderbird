@@ -461,7 +461,12 @@ const EnigmailFiles = {
         let i = f.getNext();
         let entry = zipReader.getEntry(i);
 
-        t.initWithPath(t.path + "/" + i); // TODO: how does this work on Windows?
+        if (!EnigmailOS.isDosLike) {
+          t.initWithPath(t.path + "/" + i);
+        } else {
+          let w = i.split('/').join("\\");
+          t.initWithPath(t.path + "\\" + w);
+        }
 
         if (!t.parent.exists()) {
           t.parent.create(t.DIRECTORY_TYPE, 493); // equals 0755
@@ -477,6 +482,7 @@ const EnigmailFiles = {
       return true;
     }
     catch (ex) {
+      lazyLog().ERROR("files.jsm: extractZipFile: Failed to create ZIP: " + ex + "\n");
       return false;
     }
   }

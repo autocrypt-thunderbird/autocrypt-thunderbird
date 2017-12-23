@@ -242,7 +242,7 @@ function getEnvironment(status) {
 function initializeEnvironment(env) {
   // Initialize global environment variables list
   let passEnv = ["GNUPGHOME", "GPGDIR", "ETC",
-    "ALLUSERSPROFILE", "APPDATA", "BEGINLIBPATH",
+    "ALLUSERSPROFILE", "APPDATA", "LOCALAPPDATA", "BEGINLIBPATH",
     "COMMONPROGRAMFILES", "COMSPEC", "DBUS_SESSION_BUS_ADDRESS", "DISPLAY",
     "ENIGMAIL_PASS_ENV", "ENDLIBPATH",
     "GTK_IM_MODULE",

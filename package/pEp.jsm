@@ -21,13 +21,11 @@ var EXPORTED_SYMBOLS = ["EnigmailpEp"];
 const FT_CALL_FUNCTION = "callFunction";
 const FT_CREATE_SESSION = "createSession";
 
+var gPepHome = null;
+
 var gPepServerPath = null;
-var gGnupgHome = null;
-var gAgentPath = null;
 var gLogFunction = null;
 var gShuttingDown = false;
-
-const pepSecurityInfo = "pEp.mda.enigmail";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
@@ -87,6 +85,23 @@ var EnigmailpEp = {
 
   },
 
+  _getPepHomeDir: function() {
+    if (gPepHome) return gPepHome;
+    let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    let pepHomeDir = env.get("PEPHOME");
+    if (pepHomeDir === "") {
+      if (EnigmailOS.isDosLike) {
+        pepHomeDir = (env.get("LocalAppData") + "\\pEp");
+      }
+      else {
+        pepHomeDir = (env.get("HOME") + "/.pEp");
+      }
+    }
+    DEBUG_LOG("pEpAdapter.jsm: getPepHomeDir() = '" + pepHomeDir + "'");
+    gPepHome = pepHomeDir;
+    return pepHomeDir;
+  },
+
   /**
    * Provide the pEp Connection info. If necessary, load the data from file
    *
@@ -95,22 +110,32 @@ var EnigmailpEp = {
   getConnectionInfo: function() {
     DEBUG_LOG("getConnectionInfo()");
     if (!gConnectionInfo) {
-      if (gGnupgHome) {
-        let fileName = (gGnupgHome + (EnigmailOS.isDosLike ? "\\" : "/") + pepSecurityInfo);
-        let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-        EnigmailFiles.initPath(fileHandle, fileName);
-        let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
+      let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+      EnigmailFiles.initPath(fileHandle, this._getPepHomeDir());
+      fileHandle.append("json-token");
 
-        if (jsonData.length > 0) {
-          try {
-            // we cannot use parseJSON here, it won't work before TB has finished initialization
-            gConnectionInfo = this.parseJSON(jsonData);
-            if (gConnectionInfo.address === "0.0.0.0") {
-              gConnectionInfo.address = "127.0.0.1";
-            }
+      if (!fileHandle.exists()) {
+        /* try legacy place for up to (30) Krombach */
+        let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+        let tmpDir = env.get("TEMP");
+        let userName = env.get("USER");
+
+        fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+        EnigmailFiles.initPath(fileHandle, (tmpDir !== "" ? tmpDir : "/tmp"));
+        fileHandle.append("pEp-json-token-" + (userName !== "" ? userName : "XXX"));
+      }
+
+      let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
+
+      if (jsonData.length > 0) {
+        try {
+          // we cannot use parseJSON here, it won't work before TB has finished initialization
+          gConnectionInfo = this.parseJSON(jsonData);
+          if (gConnectionInfo.address === "0.0.0.0") {
+            gConnectionInfo.address = "127.0.0.1";
           }
-          catch (ex) {}
         }
+        catch (ex) {}
       }
     }
 
@@ -120,7 +145,7 @@ var EnigmailpEp = {
       o = {
         // provide a default (that should fail)
         address: "127.0.0.1",
-        port: 1234,
+        port: 0,
         path: "/none/",
         pathQueryRef: "/none/",
         security_token: ""
@@ -942,12 +967,10 @@ var EnigmailpEp = {
 
   },
 
-  setServerPath: function(pathName, gnupgHomeDir, agentPath) {
-    DEBUG_LOG("setServerPath(" + gnupgHomeDir + ", " + agentPath + ")");
+  setServerPath: function(pathName) {
+    DEBUG_LOG("setServerPath() = " + pathName);
 
     gPepServerPath = pathName;
-    gGnupgHome = gnupgHomeDir;
-    gAgentPath = agentPath;
   },
 
   /******************* internal (private) methods *********************/
@@ -1081,7 +1104,7 @@ var EnigmailpEp = {
 
       let resourcesDir = exec.parent.parent;
       resourcesDir.append("share");
-      resourcesDir.append("pepmda-enigmail");
+      resourcesDir.append("pEp");
 
       let resDirPath = undefined;
 
@@ -1089,36 +1112,35 @@ var EnigmailpEp = {
         resDirPath = resourcesDir.path;
       }
 
-      let pathSep = (EnigmailOS.isDosLike ? ";" : ":");
-      let path = [];
       let env = [];
-      EnigmailCore.getEnvList().map(function(item) {
-        if (item.startsWith("PATH=")) {
-          path = item.substr(5).split(pathSep);
-        }
-        else if (item.startsWith("GNUPGHOME=")) {
-          /* nothing to be done */
-        }
-        else {
-          env.push(item);
-        }
-      });
+      let envAppData = null,
+        envUserProfile = null;
+      let envHome = null,
+        envGnuPgHome = null;
 
-      let agentByEnv = gAgentPath.path;
-      agentByEnv = agentByEnv.substr(agentByEnv.lastIndexOf(
-        (EnigmailOS.isDosLike ? "\\" : "/")) + 1);
-      agentByEnv = EnigmailFiles.resolvePath(agentByEnv, path.join(pathSep),
-        EnigmailOS.isDosLike);
-      if (gAgentPath.path != agentByEnv.path) {
-        let forceAgentPath = gAgentPath.parent.path;
-        path = path.filter(function(item) {
-          return item != forceAgentPath;
-        });
-        path.unshift(forceAgentPath);
-        DEBUG_LOG("_startPepServer: PATH mangled to prefer " + forceAgentPath);
+      EnigmailCore.getEnvList().map(function(item) {
+
+        if (item.startsWith("APPDATA="))
+          envAppData = item.substr(8);
+        else if (item.startsWith("USERPROFILE="))
+          envUserProfile = item.substr(12);
+        else if (item.startsWith("HOME="))
+          envHome = item.substr(5);
+        else if (item.startsWith("GNUPGHOME="))
+          envGnuPgHome = item.substr(10);
+
+        env.push(item);
+      });
+      if (EnigmailOS.isDosLike) {
+        if (envHome === null) {
+          envHome = (envUserProfile === null ? "\\" : envUserProfile);
+          env.push("HOME=" + envHome);
+        }
+        if (envGnuPgHome === null) {
+          envGnuPgHome = (envAppData === null ? "" : envAppData) + "\\gnupg";
+          env.push("GNUPGHOME=" + envGnuPgHome);
+        }
       }
-      env.push("PATH=" + path.join(pathSep));
-      env.push("GNUPGHOME=" + gGnupgHome);
 
       let process = subprocess.call({
         workdir: resDirPath,
@@ -1137,7 +1159,7 @@ var EnigmailpEp = {
         }
       });
 
-      process.wait();
+      if (!EnigmailOS.isDosLike) process.wait();
 
       DEBUG_LOG("_startPepServer: JSON server started");
 

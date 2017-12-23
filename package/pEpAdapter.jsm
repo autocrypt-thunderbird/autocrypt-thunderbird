@@ -19,6 +19,7 @@ Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
 Cu.import("resource://enigmail/pEpListener.jsm"); /*global EnigmailpEpListener: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
@@ -37,12 +38,10 @@ Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 
-const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 
 // pEp JSON Server executable name
 const PEP_SERVER_EXECUTABLE = "pep-json-server";
-//const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 
 var gPepVersion = null;
 var gSecurityToken = null;
@@ -97,24 +96,6 @@ function startListener() {
 }
 
 
-function getGpgHomeDir() {
-  EnigmailLog.DEBUG("pEpAdapter.jsm: getGpgHomeDir()\n");
-
-  let enigmailGpgAgent = getGpgAgent();
-
-  if (!getGpgAgent().initialized) {
-    let envSvc = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-    let esvc = {
-      environment: envSvc,
-      initializationError: null
-    };
-    return enigmailGpgAgent.determineGpgHomeDir(esvc);
-  }
-
-  let homedir = enigmailGpgAgent.getGpgHomeDir();
-  return homedir;
-}
-
 var EnigmailPEPAdapter = {
 
   pep: EnigmailpEp,
@@ -152,13 +133,13 @@ var EnigmailPEPAdapter = {
    * TODO DOCME
    */
   getPepMiniDesktopAdapterBinaryFile: function() {
-    let execFile = EnigmailFiles.resolvePathWithEnv(EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE));
+    let execFile = EnigmailFiles.resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
     if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
       let pepmda = EnigmailApp.getProfileDirectory();
       pepmda.append("pepmda");
       pepmda.append("bin");
       execFile = EnigmailFiles.resolvePath(
-        EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE), pepmda.path, 0);
+        EnigmailFiles.potentialWindowsExecutable(PEP_SERVER_EXECUTABLE), pepmda.path, EnigmailOS.isDosLike);
       if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
         execFile = null;
       }
@@ -174,29 +155,23 @@ var EnigmailPEPAdapter = {
    * @return Boolean - true if pEp is available / false otherwise
    */
   isPepAvailable: function(attemptInstall = true) {
-    EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable()\n");
 
     if (gPepAvailable === null) {
       gPepAvailable = false;
       let execFile = this.getPepMiniDesktopAdapterBinaryFile();
-      if (execFile === null) {
-        return null;
-      }
-
-
-      let resourcesDir = execFile.parent.parent;
-      resourcesDir.append("share");
-      resourcesDir.append("pepmda-enigmail");
-
-      let resDirPath = undefined;
-
-      if (resourcesDir && resourcesDir.exists()) {
-        resDirPath = resourcesDir.path;
-      }
-
-      if (execFile.exists() && execFile.isExecutable()) {
+      if (execFile && execFile.exists() && execFile.isExecutable()) {
         EnigmailCore.getService(null, true);
         let pepVersionStr = "";
+
+        let resourcesDir = execFile.parent.parent;
+        resourcesDir.append("share");
+        resourcesDir.append("pEp");
+
+        let resDirPath = undefined;
+
+        if (resourcesDir && resourcesDir.exists()) {
+          resDirPath = resourcesDir.path;
+        }
 
         let process = subprocess.call({
           workdir: resDirPath,
@@ -355,9 +330,8 @@ var EnigmailPEPAdapter = {
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
 
     let execFile = this.getPepMiniDesktopAdapterBinaryFile();
-    let homeDir = getGpgHomeDir();
     if (execFile) {
-      EnigmailpEp.setServerPath(execFile.path, homeDir, getGpgAgent().agentPath);
+      EnigmailpEp.setServerPath(execFile.path);
     }
     else if (pEpMode === 2) {
       // if force pEp mode, and pEp not found, try to install it
