@@ -419,8 +419,11 @@ Enigmail.msg = {
     if (!msgUri) {
       msgUri = this.getOriginalMsgUri();
     }
-    let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
-    return messenger.messageServiceFromURI(msgUri).messageURIToMsgHdr(msgUri);
+    if (msgUri) {
+      let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
+      return messenger.messageServiceFromURI(msgUri).messageURIToMsgHdr(msgUri);
+    }
+    else return null;
   },
 
   getMsgProperties: function(draft) {
@@ -3461,18 +3464,18 @@ Enigmail.msg = {
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
 
-    if (rating >= 6) {
-      if (!EnigmailMsgCompFields.isEnigmailCompField(compFields.securityInfo)) {
-        this.createEnigmailSecurityFields(compFields.securityInfo);
-      }
+    if (!EnigmailMsgCompFields.isEnigmailCompField(compFields.securityInfo)) {
+      this.createEnigmailSecurityFields(compFields.securityInfo);
+    }
 
-      let si = compFields.securityInfo;
+    let si = compFields.securityInfo;
+    EnigmailMsgCompFields.setValue(si, 'sendFlags', 0);
+    EnigmailMsgCompFields.setValue(si, "originalSubject", null);
+
+    if (rating >= 6) {
       if (this.identity.getBoolAttribute("protectSubject")) {
         EnigmailMsgCompFields.setValue(si, "originalSubject", compFields.subject);
         compFields.subject = "";
-      }
-      else {
-        EnigmailMsgCompFields.setValue(si, "originalSubject", null);
       }
 
       let encrypt = document.getElementById("enigmail-bc-pepEncrypt").getAttribute("encrypt");

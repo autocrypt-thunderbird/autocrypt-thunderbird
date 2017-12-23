@@ -591,13 +591,13 @@ const EnigmailWindows = {
     catch(function _err(errorMsg) {
       switch (errorMsg) {
         case "cannotVerifyOwnId":
-          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.cannotVerifyOwnId"));
+          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.cannotVerifyOwnId"));
           break;
         case "cannotFindKey":
-          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.cannotFindKey", emailAddress));
+          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.cannotFindKey", emailAddress));
           break;
         default:
-          EnigmailWindows.alert(window, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
+          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
           break;
       }
       deferred.reject();
