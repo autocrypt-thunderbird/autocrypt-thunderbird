@@ -121,6 +121,35 @@ var EnigmailPEPAdapter = {
 
   filter: EnigmailPEPFilter,
 
+  /** locate pEp JSON server executable
+   * @return Ci.nsIfile
+   *    - null if not found
+   */
+  getPepJsonServerExecutable() {
+    let pepmdaPath = getFiles().resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
+    if (!pepmdaPath || !pepmdaPath.exists() || !pepmdaPath.isExecutable()) {
+      // pepmdaPath = EnigmailApp.getProfileDirectory();
+      // ^ not reliable at startup, ask mozilla directly
+      pepmdaPath = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Ci.nsIFile);
+      pepmdaPath.append("extensions");
+      pepmdaPath.append("{847b3a00-7ab1-11d4-8f02-006008948af5}");
+      pepmdaPath.append("pepmda");
+      pepmdaPath.append("bin");
+      pepmdaPath.append(PEP_SERVER_EXECUTABLE);
+    }
+    if (!pepmdaPath || !pepmdaPath.exists() || !pepmdaPath.isExecutable()) {
+      pepmdaPath = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Ci.nsIFile);
+      pepmdaPath.append("pepmda");
+      pepmdaPath.append("bin");
+      pepmdaPath.append(PEP_SERVER_EXECUTABLE);
+    }
+    if (!pepmdaPath || !pepmdaPath.exists() || !pepmdaPath.isExecutable()) {
+      pepmdaPath = null;
+    }
+    EnigmailLog.DEBUG("pEpAdapter.jsm: getPepJsonServerExecutable() -> " + pepmdaPath.path + "\n");
+    return pepmdaPath;
+  },
+
   /**
    * Get the pEp JSON server version number.
    *
@@ -178,23 +207,8 @@ var EnigmailPEPAdapter = {
 
     if (gPepAvailable === null) {
       gPepAvailable = false;
-      let execFile = this.getPepMiniDesktopAdapterBinaryFile();
-      if (execFile === null) {
-        return null;
-      }
-
-
-      let resourcesDir = execFile.parent.parent;
-      resourcesDir.append("share");
-      resourcesDir.append("pepmda-enigmail");
-
-      let resDirPath = undefined;
-
-      if (resourcesDir && resourcesDir.exists()) {
-        resDirPath = resourcesDir.path;
-      }
-
-      if (execFile.exists() && execFile.isExecutable()) {
+      let execFile = this.getPepJsonServerExecutable();
+      if (execFile !== null) {
         EnigmailCore.getService(null, true);
         let pepVersionStr = "";
 
@@ -220,6 +234,7 @@ var EnigmailPEPAdapter = {
         EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable: got version '" + pepVersionStr + "'\n");
         if (pepVersionStr.search(/pEp JSON/i) >= 0) {
           gPepAvailable = true;
+          EnigmailLog.DEBUG("pEpAdapter.jsm: gPepAvailable=True\n");
         }
       }
       else if (attemptInstall) {
@@ -354,15 +369,16 @@ var EnigmailPEPAdapter = {
     // automatic mode, with Crypto enabled (do not use pEp)
     if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
 
-    let execFile = this.getPepMiniDesktopAdapterBinaryFile();
-    let homeDir = getGpgHomeDir();
+    // find pEpJSONAdapter or do not use pEp
+    let execFile = this.getPepJsonServerExecutable();
     if (execFile) {
-      EnigmailpEp.setServerPath(execFile.path, homeDir, getGpgAgent().agentPath);
+      EnigmailpEp.setServerPath(execFile);
     }
     else if (pEpMode === 2) {
       // if force pEp mode, and pEp not found, try to install it
       this.installPep();
     }
+    else return;
 
     try {
       EnigmailpEp.getPepVersion().then(function _success(data) {
