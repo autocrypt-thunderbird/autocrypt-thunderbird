@@ -25,7 +25,7 @@ var gPepServerPath = null;
 var gLogFunction = null;
 var gShuttingDown = false;
 
-const pepSecurityInfo = "/pEp-json-token-";
+const pepSecurityInfo = "json-token";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
@@ -36,6 +36,7 @@ Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: fa
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 
 var gRequestId = 1;
 var gConnectionInfo = null;
@@ -94,14 +95,16 @@ var EnigmailpEp = {
     if (!gConnectionInfo) {
       let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
-      let tmpDir = env.get("TEMP");
-      let userName = env.get("USER");
-
-      let fileName = (tmpDir !== "" ? tmpDir : "/tmp") +
-        pepSecurityInfo + (userName !== "" ? userName : "XXX");
-
       let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-      EnigmailFiles.initPath(fileHandle, fileName);
+      if (!EnigmailOS.isDosLike) {
+        fileHandle.initWithPath(env.get("HOME"));
+        fileHandle.append(".pEp");
+      } else {
+        fileHandle.initWithPath(env.get("LocalAppData"));
+        fileHandle.append("pEp");
+      }
+      fileHandle.append(pepSecurityInfo)
+      DEBUG_LOG("getConnectionInfo() try token at"+fileHandle.path);
       let jsonData = EnigmailFiles.readBinaryFile(fileHandle);
 
       if (jsonData.length > 0) {
@@ -111,8 +114,9 @@ var EnigmailpEp = {
           if (gConnectionInfo.address === "0.0.0.0") {
             gConnectionInfo.address = "127.0.0.1";
           }
+          DEBUG_LOG("getConnectionInfo(): success");
         }
-        catch (ex) {}
+        catch (ex) {DEBUG_LOG("getConnectionInfo(): exception");}
       }
     }
 
@@ -944,10 +948,9 @@ var EnigmailpEp = {
 
   },
 
-  setServerPath: function(pathName) {
+  setServerPath: function(NSIpath) {
     DEBUG_LOG("setServerPath()");
-
-    gPepServerPath = pathName;
+    gPepServerPath = NSIpath.clone();
   },
 
   /******************* internal (private) methods *********************/
@@ -1067,23 +1070,26 @@ var EnigmailpEp = {
       deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
     }
 
-    let exec = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+    let exec = gPepServerPath;
 
     try {
-      exec.initWithPath(gPepServerPath);
       if ((!exec.exists()) || (!exec.isExecutable())) {
         DEBUG_LOG("_startPepServer: executable not available");
         deferred.reject(makeError("PEP-unavailable", null, "Cannot find JSON-PEP executable"));
         return;
       }
 
-      EnigmailCore.getService(null, true);
-
+      let workdir = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+      workdir.initWithPath(exec.parent.parent.path);
+      workdir.append("share");
+      workdir.append("pEp");
+      DEBUG_LOG("_startPepServer: workdir: "+workdir.path);
       let process = subprocess.call({
         command: exec,
         charset: null,
         environment: EnigmailCore.getEnvList(),
         mergeStderr: false,
+        workdir: workdir.path,
         stdin: function(stdin) {
           // do nothing
         },
