@@ -492,8 +492,16 @@ var EnigmailPEPAdapter = {
 
     while (n.hasMore()) {
       let hdr = n.getNext();
-      if (hdr.search(/^(from|to|mime-version)$/i) < 0) {
+      if (hdr.search(/^(from|to|mime-version|subject)$/i) < 0) {
         printHdr += hdr + ": " + EnigmailMime.formatHeaderData(headers.extractHeader(hdr, true)) + "\r\n";
+      }
+      else if (hdr.search(/^subject$/i) === 0) {
+        // workaround for encoding bug in jsmime
+        let s = headers.extractHeader(hdr, true);
+        if (s === "pap") {
+          s = "p≡p";
+        }
+        printHdr += "Subject: " + EnigmailMime.formatHeaderData(s) + "\r\n";
       }
     }
 

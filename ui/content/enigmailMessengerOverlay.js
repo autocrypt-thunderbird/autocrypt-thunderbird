@@ -205,6 +205,9 @@ Enigmail.msg = {
       if ("autocrypt" in gExpandedHeaderView) {
         delete gExpandedHeaderView.autocrypt;
       }
+      if ("openpgp" in gExpandedHeaderView) {
+        delete gExpandedHeaderView.openpgp;
+      }
     },
     onEndHeaders: function() {},
     onEndAttachments: function() {}
