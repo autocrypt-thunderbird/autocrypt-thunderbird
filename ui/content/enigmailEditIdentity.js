@@ -12,6 +12,7 @@
 Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
+Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 
 if (!Enigmail) var Enigmail = {};
@@ -178,7 +179,14 @@ Enigmail.edit = {
   },
 
   toggleEnable: function() {
-    this.cryptoChoicesEnabled = (!this.cryptoChoicesEnabled);
+    let newCryptoEnabled = (!this.cryptoChoicesEnabled);
+
+    if (this.usingPep && newCryptoEnabled) {
+      if (!EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("switchPepMode"), EnigmailLocale.getString("enableEnigmail")))
+        return;
+    }
+
+    this.cryptoChoicesEnabled = newCryptoEnabled;
     this.enableAllPrefs();
   },
 
@@ -189,7 +197,7 @@ Enigmail.edit = {
     }
     else {
       if (elem) {
-        if (EnigmailPEPAdapter.usingPep()) {
+        if (!EnigmailPEPAdapter.usingPep()) {
           elem.removeAttribute("disabled");
         }
         else {
