@@ -26,6 +26,7 @@ var gPassiveMode;
 var gProtectedSubject;
 var gWarnReply;
 var gLookupKeys;
+var gJuniorMode;
 
 function onLoad() {
 
@@ -36,6 +37,8 @@ function onLoad() {
   gProtectedSubject = document.getElementById("protectedSubject");
   gWarnReply = document.getElementById("warnReply");
   gLookupKeys = document.getElementById("lookupKeys");
+  gJuniorMode = EnigmailPrefs.getPref("juniorMode");
+  document.getElementById("juniorMode").value = gJuniorMode;
 
   gLookupKeys.checked = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 
@@ -63,6 +66,7 @@ function onAccept() {
   let origLookupKeys = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 
   EnigmailPrefs.setPref("autoKeyRetrieve", gLookupKeys.checked ? "pool.sks-keyservers.net" : "");
+  EnigmailPrefs.setPref("juniorMode", gJuniorMode);
 
   if (gLookupKeys.checked && (!origLookupKeys)) {
     EnigmailPEPAdapter.pep.startKeyserverLookup();
@@ -138,4 +142,8 @@ function openURL(hrefObj) {
   eps.loadURI(iUri, null);
 
   return false;
+}
+
+function juniorModeCallback(item) {
+  gJuniorMode = Number(item.value);
 }

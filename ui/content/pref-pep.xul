@@ -58,10 +58,29 @@
 
       <!-- "Compatibility" Tab -->
       <vbox id="compatTabPanel" flex="1">
+        <description class="enigmailTitle">&enigmail.privacyPprefPane.juniorMode;</description>
+
+        <groupbox id="juniorModeGroup">
+          <radiogroup id="juniorMode" flex="1">
+            <radio id="juniorModeAuto"
+                   value="1"
+                   label="&enigmail.privacyPprefPane.juniorModeAuto;"
+                   oncommand="juniorModeCallback(this);"/>
+            <radio id="juniorModeForceOff"
+                   value="0"
+                   label="&enigmail.privacyPprefPane.juniorModeForceOff;"
+                   oncommand="juniorModeCallback(this);"/>
+            <radio id="juniorModeForceOn"
+                   value="2"
+                   label="&enigmail.privacyPprefPane.juniorModeForceOn;"
+                   oncommand="juniorModeCallback(this);"/>
+          </radiogroup>
+        </groupbox>
+
+        <spacer style="min-height: 5px;" flex="0"/>
+
         <description class="enigmailTitle">&enigmail.pepPref.openpgpCompatibility.label;</description>
-
         <checkbox id="lookupKeys" label="&enigmail.pepPref.autoKeyLookup.label;"/>
-
 
         <spacer style="min-height: 20px;" flex="1"/>
 
@@ -131,12 +150,12 @@
               <label href=">value" value="https://www.gpg4win.org" class="enigmailLink"/>
             </row>
             <row>
-              <label value="GPGTools"/>
-              <label href=">value" value="https://www.gpgtools.org" class="enigmailLink"/>
+              <label value="GpgOSX"/>
+              <label href=">value" value="https://sourceforge.net/projects/gpgosx" class="enigmailLink"/>
             </row>
             <row>
               <label value="Sourceforge"/>
-              <label href=">value" value="https://sf.net" class="enigmailLink"/>
+              <label href=">value" value="https://sourceforge.net" class="enigmailLink"/>
             </row>
           </rows>
         </grid>
