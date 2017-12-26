@@ -12,9 +12,6 @@ var EXPORTED_SYMBOLS = ["EnigmailVerify"];
  *  implemented as JS module
  */
 
-// TODO: Missing features
-//   - don't attempt to validate forwarded messages unless message is being viewed
-
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;

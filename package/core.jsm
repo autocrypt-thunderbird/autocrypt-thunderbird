@@ -80,6 +80,7 @@ var EnigmailCore = {
 
     function continueStartup() {
       getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
+      let mimeEncrypt = getEnigmailMimeEncrypt();
       mimeEncrypt.startup(reason);
 
       self.factories = [];
@@ -99,7 +100,6 @@ var EnigmailCore = {
       getEnigmailFilters().registerAll();
     }
 
-    let mimeEncrypt = getEnigmailMimeEncrypt();
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailWksMimeHandler().registerContentTypeHandler();
     getEnigmailPEPAdapter().initialize().then(continueStartup).catch(continueStartup);
