@@ -77,13 +77,13 @@ var EnigmailCore = {
     getEnigmailLog().DEBUG("core.jsm: startup()\n");
 
     let self = this;
+    this.factories = [];
 
     function continueStartup() {
       getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
       let mimeEncrypt = getEnigmailMimeEncrypt();
       mimeEncrypt.startup(reason);
 
-      self.factories = [];
       try {
         let cLineReg = getEnigmailCommandLine().categoryRegistry;
         let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
