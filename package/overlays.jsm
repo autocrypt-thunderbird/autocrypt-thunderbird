@@ -297,8 +297,9 @@ function insertXul(srcUrl, window, document, callback) {
     // load scripts into window
     let sc = document.getElementsByTagName("script");
     for (let i = 0; i < sc.length; i++) {
-      if (sc[i].src) {
-        loadScript(sc[i].src, window);
+      let src = sc[i].getAttribute("src");
+      if (src) {
+        loadScript(src, window);
       }
     }
     callback(1);
