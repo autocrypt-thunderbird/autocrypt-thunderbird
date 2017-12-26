@@ -17,8 +17,8 @@ var EXPORTED_SYMBOLS = ["InstallGnuPG"];
   void    onError    (errorMessage)
   boolean onWarning  (message)
   void    onProgress (event)
-  void    onLoaded   (event)
-  void    onDownloaded ()
+  void    onLoaded   (event)   // fired when instllation complete
+  void    onDownloaded ()      // fired when download complete, before installation
   void    onStart    (requestObj)
 
   requestObj:
