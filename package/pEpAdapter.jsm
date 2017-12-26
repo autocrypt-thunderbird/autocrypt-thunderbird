@@ -38,7 +38,8 @@ Cu.import("resource://enigmail/filters.jsm"); /*global EnigmailFilters: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 
-
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const getInstallGnuPG = EnigmailLazy.loader("enigmail/installGnuPG.jsm", "InstallGnuPG");
 
 // pEp JSON Server executable name
 const PEP_SERVER_EXECUTABLE = "pep-json-server";
@@ -130,9 +131,12 @@ var EnigmailPEPAdapter = {
   },
 
   /**
-   * TODO DOCME
+   * Determine the location of the pep-json-server
+   *
+   * @return Object: nsIFile if found, null otherwise
    */
   getPepMiniDesktopAdapterBinaryFile: function() {
+    EnigmailLog.DEBUG("pEpAdapter: getPepMiniDesktopAdapterBinaryFile()\n");
     let execFile = EnigmailFiles.resolvePathWithEnv(PEP_SERVER_EXECUTABLE);
     if (!execFile || !execFile.exists() || !execFile.isExecutable()) {
       let pepmda = EnigmailApp.getProfileDirectory();
@@ -155,8 +159,9 @@ var EnigmailPEPAdapter = {
    * @return Boolean - true if pEp is available / false otherwise
    */
   isPepAvailable: function(attemptInstall = true) {
-
     if (gPepAvailable === null) {
+      EnigmailLog.DEBUG("pEpAdapter: isPepAvailable()\n");
+
       gPepAvailable = false;
       let execFile = this.getPepMiniDesktopAdapterBinaryFile();
       if (execFile && execFile.exists() && execFile.isExecutable()) {
@@ -309,10 +314,12 @@ var EnigmailPEPAdapter = {
   /**
    * Initialize the pEpAdapter (should be called during startup of application)
    *
-   * no input and no retrun values
+   * @return Promise
    */
   initialize: function() {
     EnigmailLog.DEBUG("pEpAdapter.jsm: initialize:\n");
+
+    let deferred = PromiseUtils.defer();
     let self = this;
 
     if (gJmObservers === null) {
@@ -324,10 +331,16 @@ var EnigmailPEPAdapter = {
 
     let pEpMode = EnigmailPrefs.getPref("juniorMode");
     // force using Enigmail (do not use pEp)
-    if (pEpMode === 0) return;
+    if (pEpMode === 0) {
+      deferred.resolve();
+      return deferred.promise;
+    }
 
     // automatic mode, with Crypto enabled (do not use pEp)
-    if (this.isAccountCryptEnabled() && pEpMode !== 2) return;
+    if (this.isAccountCryptEnabled() && pEpMode !== 2) {
+      deferred.resolve();
+      return deferred.promise;
+    }
 
     let execFile = this.getPepMiniDesktopAdapterBinaryFile();
     if (execFile) {
@@ -336,6 +349,8 @@ var EnigmailPEPAdapter = {
     else if (pEpMode === 2) {
       // if force pEp mode, and pEp not found, try to install it
       this.installPep();
+      deferred.resolve();
+      return deferred.promise;
     }
 
     try {
@@ -372,6 +387,17 @@ var EnigmailPEPAdapter = {
             envStr += "GNUPGHOME=" + gpgEnv.gnupg_home + "\n";
           }
 
+          let gpgFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+          gpgFile.initWithPath(gpgEnv.gnupg_path);
+
+          if (!gpgFile.exists()) {
+            // GnuPG not found, try to install it
+            //installMissingGnuPG();
+
+            deferred.resolve();
+            return;
+          }
+
           let enigmailSvc = EnigmailCore.createInstance();
           enigmailSvc.perferGpgPath(gpgEnv.gnupg_path);
           enigmailSvc.overwriteEnvVar(envStr);
@@ -385,15 +411,21 @@ var EnigmailPEPAdapter = {
         }
 
         self.setOwnIdentities(0);
+        deferred.resolve();
       }).
       catch(function failed(err) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: error during pEp init:\n");
         EnigmailLog.DEBUG("   " + err.code + ": " + ("exception" in err && err.exception ? err.exception.toString() : err.message) + "\n");
 
         gPepVersion = "";
+        deferred.resolve();
       });
     }
-    catch (ex) {}
+    catch (ex) {
+      deferred.resolve();
+    }
+
+    return deferred.promise;
   },
 
   setOwnIdentities: function(accountNum) {
@@ -1014,4 +1046,25 @@ var EnigmailPEPAdapter = {
   }
 };
 
-// Enigmail.msg.juniorModeObserver = EnigmailPrefs.registerPrefObserver("juniorMode", Enigmail.msg.setMainMenuLabel);
+function installMissingGnuPG() {
+  if (!(EnigmailOS.isMac || EnigmailOS.isWin32)) return;
+
+  if (getDialog().confirmDlg(null, "Install GnuPG?")) { //TODO: localize
+    let listener = {
+      onStart: function(oReq) {
+        this.oReq = oReq;
+      },
+      onError: function() {},
+      onProgress: function() {},
+      onDownloaded: function() {},
+      onLoaded: function() {
+        EnigmailPEPAdapter.initialize();
+      },
+      onWarning: function() {
+        return false;
+      }
+    };
+
+    getInstallGnuPG().startInstaller(listener);
+  }
+}

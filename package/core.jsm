@@ -70,27 +70,39 @@ var EnigmailCore = {
   },
 
   startup: function(reason) {
+    let env = getEnvironment();
+    initializeLogDirectory();
+    initializeLogging(env);
+
+    getEnigmailLog().DEBUG("core.jsm: startup()\n");
+
+    let self = this;
+
+    function continueStartup() {
+      getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
+      mimeEncrypt.startup(reason);
+
+      self.factories = [];
+      try {
+        let cLineReg = getEnigmailCommandLine().categoryRegistry;
+        let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
+        catMan.addCategoryEntry(cLineReg.category,
+          cLineReg.entry,
+          cLineReg.serviceName,
+          false, true);
+        self.factories.push(new Factory(getEnigmailProtocolHandler()));
+        self.factories.push(new Factory(getEnigmailCommandLine().Handler));
+        self.factories.push(new Factory(mimeEncrypt.Handler));
+      }
+      catch (ex) {}
+
+      getEnigmailFilters().registerAll();
+    }
+
     let mimeEncrypt = getEnigmailMimeEncrypt();
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailWksMimeHandler().registerContentTypeHandler();
-    getEnigmailPEPAdapter().initialize();
-    mimeEncrypt.startup(reason);
-
-    this.factories = [];
-    try {
-      let cLineReg = getEnigmailCommandLine().categoryRegistry;
-      let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
-      catMan.addCategoryEntry(cLineReg.category,
-        cLineReg.entry,
-        cLineReg.serviceName,
-        false, true);
-      this.factories.push(new Factory(getEnigmailProtocolHandler()));
-      this.factories.push(new Factory(getEnigmailCommandLine().Handler));
-      this.factories.push(new Factory(mimeEncrypt.Handler));
-    }
-    catch (ex) {}
-
-    getEnigmailFilters().registerAll();
+    getEnigmailPEPAdapter().initialize().then(continueStartup).catch(continueStartup);
   },
 
   shutdown: function(reason) {
@@ -313,11 +325,8 @@ Enigmail.prototype = {
 
     if (this.initialized) return;
 
-    initializeLogDirectory();
-
     this.environment = getEnvironment(this);
 
-    initializeLogging(this.environment);
     initializeSubprocessLogging(this.environment);
     initializeEnvironment(this.environment);
 
