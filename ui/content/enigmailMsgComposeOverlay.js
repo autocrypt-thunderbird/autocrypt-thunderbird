@@ -4437,9 +4437,7 @@ Enigmail.msg = {
       return;
     }
 
-    if (!this.identity) {
-      this.identity = getCurrentIdentity();
-    }
+    this.identity = getCurrentIdentity();
 
     let key;
     if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
