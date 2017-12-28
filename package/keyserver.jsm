@@ -469,6 +469,7 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
       }
       catch (ex) {
         EnigmailLog.DEBUG(ex + "\n");
+        return;
       }
     }
   }

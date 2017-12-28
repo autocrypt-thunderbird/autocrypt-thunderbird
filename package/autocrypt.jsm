@@ -65,7 +65,12 @@ var EnigmailAutocrypt = {
         "prefer-encrypt": false
       };
 
-      fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
+      try {
+        fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
+      }
+      catch (ex) {
+        reject("error");
+      }
       let foundTypes = {};
       let paramArr = [];
 

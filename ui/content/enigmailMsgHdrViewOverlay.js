@@ -521,7 +521,11 @@ Enigmail.hdrView = {
     if (EnigmailPrefs.getPref("autocryptMode") === 0) return;
     if (!("from" in currentHeaderData)) return;
 
-    let fromEmail = EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue).toLowerCase();
+    let fromEmail = "";
+    try {
+      fromEmail = EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue).toLowerCase();
+    }
+    catch (ex) {}
 
     let keys = EnigmailKeyRing.getKeysByUserId(fromEmail, true);
     if (keys.length > 0) return;
@@ -1234,7 +1238,11 @@ Enigmail.hdrView = {
       addrs += "," + currentHeaderData.bcc.headerValue;
     }
 
-    let emailsInMessage = EnigmailFuncs.stripEmail(addrs).toLowerCase().split(/,/);
+    let emailsInMessage = [];
+    try {
+      emailsInMessage = EnigmailFuncs.stripEmail(addrs).toLowerCase().split(/,/);
+    }
+    catch (ex) {}
 
     if (emailsInMessage.length === 0) {
       EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));

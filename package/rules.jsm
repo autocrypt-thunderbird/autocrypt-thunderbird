@@ -300,7 +300,11 @@ var EnigmailRules = {
     for (let i = 0; i < emailAddrList.length; ++i) {
       let orig = emailAddrList[i];
       if (orig) {
-        let addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
+        let addr = null;
+        try {
+          addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
+        }
+        catch (ex) {}
         if (addr) {
           let elem = {
             orig: orig,

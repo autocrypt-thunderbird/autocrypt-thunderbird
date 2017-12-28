@@ -760,7 +760,14 @@ var EnigmailPEPAdapter = {
       }
     }
 
-    let emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
+    let emailsInMessage = "";
+    try {
+      emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
+    }
+    catch (ex) {
+      deferred.reject("pepTrustWords.generalFailure");
+      return deferred.promise;
+    }
 
     EnigmailPEPAdapter.pep.getOwnIdentities().then(function _gotOwnIds(data) {
       if (("result" in data) && typeof data.result.outParams[0] === "object" && Array.isArray(data.result.outParams[0])) {

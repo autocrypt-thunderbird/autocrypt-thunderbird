@@ -2326,7 +2326,11 @@ Enigmail.msg = {
     }
 
     let o = this.compileFromAndTo();
-    let toAddr = EnigmailFuncs.stripEmail(o.toAddrList.join(",")).split(/,/);
+    let toAddr = [];
+    try {
+      toAddr = EnigmailFuncs.stripEmail(o.toAddrList.join(",")).split(/,/);
+    }
+    catch (ex) {}
 
     if (o.toAddrList.length === 0) {
       EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));
@@ -2430,12 +2434,15 @@ Enigmail.msg = {
 
     // create message
     var msgConfirm = "";
-    if (isOffline || sendFlags & EnigmailConstants.SEND_LATER) {
-      msgConfirm = EnigmailLocale.getString("offlineSave", [msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ")]);
+    try {
+      if (isOffline || sendFlags & EnigmailConstants.SEND_LATER) {
+        msgConfirm = EnigmailLocale.getString("offlineSave", [msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ")]);
+      }
+      else {
+        msgConfirm = EnigmailLocale.getString("onlineSend", [msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ")]);
+      }
     }
-    else {
-      msgConfirm = EnigmailLocale.getString("onlineSend", [msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ")]);
-    }
+    catch (ex) {}
 
     // add list of keys
     if (sendFlags & ENCRYPT) {
@@ -2461,7 +2468,10 @@ Enigmail.msg = {
 
   addRecipients: function(toAddrList, recList) {
     for (var i = 0; i < recList.length; i++) {
-      toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
+      try {
+        toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
+      }
+      catch (ex) {}
     }
   },
 
@@ -3711,7 +3721,11 @@ Enigmail.msg = {
       if (msgCompFields.bcc.length > 0) {
         recList = splitRecipients(msgCompFields.bcc, true, arrLen);
 
-        var bccLC = EnigmailFuncs.stripEmail(msgCompFields.bcc).toLowerCase();
+        var bccLC = "";
+        try {
+          bccLC = EnigmailFuncs.stripEmail(msgCompFields.bcc).toLowerCase();
+        }
+        catch (ex) {}
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: BCC: " + bccLC + "\n");
 
         var selfBCC = this.identity.email && (this.identity.email.toLowerCase() == bccLC);

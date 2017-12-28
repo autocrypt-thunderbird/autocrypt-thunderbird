@@ -685,7 +685,6 @@ PgpMimeEncrypt.prototype = {
       }
       catch (ex) {}
 
-      let toAddrList = EnigmailFuncs.stripEmail(this.recipientList).split(/,/);
       let fromAddr = jsmime.headerparser.parseAddressingHeader(self.msgIdentity.email);
 
       let toAddr;
