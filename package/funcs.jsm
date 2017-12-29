@@ -120,20 +120,22 @@ const EnigmailFuncs = {
 
     obj = obj.firstChild;
     while (obj) {
-      if (obj.getAttribute("advanced") == "true") {
-        if (advancedUser) {
-          obj.removeAttribute(attribute);
+      if ("getAttribute" in obj) {
+        if (obj.getAttribute("advanced") == "true") {
+          if (advancedUser) {
+            obj.removeAttribute(attribute);
+          }
+          else {
+            obj.setAttribute(attribute, "true");
+          }
         }
-        else {
-          obj.setAttribute(attribute, "true");
-        }
-      }
-      else if (obj.getAttribute("advanced") == "reverse") {
-        if (advancedUser) {
-          obj.setAttribute(attribute, "true");
-        }
-        else {
-          obj.removeAttribute(attribute);
+        else if (obj.getAttribute("advanced") == "reverse") {
+          if (advancedUser) {
+            obj.setAttribute(attribute, "true");
+          }
+          else {
+            obj.removeAttribute(attribute);
+          }
         }
       }
 
