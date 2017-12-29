@@ -503,15 +503,6 @@ test(withEnigmail(function mapAddrsToKeys_infix() {
     EnigmailRulesTests.testSingleEmailToKeys("xx@qqq.BB",
       "xx@qqq.bb",
       "0xAAAAAAAA, 0xBBBBBBBB");
-    try {
-      EnigmailRulesTests.testSingleEmailToKeys("company@computer.com <info@qqq.bb> company@computer.com",
-        "info@qqq.bb",
-        "0xAAAAAAAA, 0xBBBBBBBB");
-      Assert.ok(false, "should get exception:");
-    }
-    catch (ex) {
-      Assert.ok(true, "got exception:");
-    }
   });
 }));
 
