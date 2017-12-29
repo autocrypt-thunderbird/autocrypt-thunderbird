@@ -11,7 +11,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailConstants"];
 
-const EnigmailConstants = {
+var EnigmailConstants = {
   POSSIBLE_PGPMIME: -2081,
 
   // possible values for

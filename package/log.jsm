@@ -22,7 +22,7 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 
-const EnigmailLog = {
+var EnigmailLog = {
   level: 3,
   data: null,
   directory: null,

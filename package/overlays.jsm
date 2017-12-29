@@ -10,7 +10,8 @@
  *
  * Prepare the XUL files:
  *
- * 1. make sure that all overlayed elements have IDs. Elements without ID can't be loaded.
+ * 1. make sure that all overlayed elements reference IDs that exust in the target window.
+ *    Elements without target ID can't be loaded.
  * 2. define external CSS the same way as you would in HTML, i.e.:
  *      <link rel="stylesheet" type="text/css" href="chrome://some/cssFile.css"/>
  * 3. if you add buttons to a toolbar using <toolbarpalette/> in your XUL:
