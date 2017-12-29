@@ -10,8 +10,8 @@
   messenger compose window
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
-                 type="text/css"?>
+<!--?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
+                 type="text/css"? -->
 
 <!DOCTYPE window [
 <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
@@ -26,6 +26,8 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeHelper.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
+
+  <link rel="stylesheet" type="text/css" href="chrome://enigmail/skin/enigmail.css"/>
 
  <commandset id="msgComposeCommandUpdate"
               commandupdater="true"
@@ -219,26 +221,31 @@
   </menubar>
 
   <!-- Enigmail toolbar button -->
-  <toolbarpalette id="MsgComposeToolbarPalette">
-    <!-- encryption button -->
+  <toolbarpalette id="MsgComposeToolbarPalette"
+    targetToolbar="composeToolbar2"
+    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-pepEncrypt,button-save,spring"
+    targetToolbox="compose-toolbox">
+
+    <!-- 'Encrypt message' button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-encrypt"
+            label="&enigmail.encryptedsend.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-encrypt"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"
-            label="&enigmail.encryptedsend.label;"/>
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
-    <!-- signing button -->
+
+    <!-- 'Sign message' button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-sign"
+            label="&enigmail.signedsend.label;"
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-sign"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"
-            label="&enigmail.signedsend.label;"/>
+            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
 
-    <!-- 'attach key' button -->
+    <!-- 'Attach my key' button -->
     <toolbarbutton class="toolbarbutton-1"
             id="button-enigmail-attach"
             label="&enigmail.attachmykey.label;"
@@ -292,25 +299,6 @@
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
-
-  <!-- Enigmail bar above text editor field -->
-
-  <toolbox id="compose-toolbox">
-    <toolbar id="composeToolbar2"
-            defaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-pepEncrypt,button-save,spring">
-    </toolbar>
-    <toolbar id="enigmail-toolbar"
-            insertafter="composeToolbar2"
-            defaultset="enigmail-toolbar-header-button,button-enigmail-attach,enigmail-toolbar-text-button"
-            toolbarname="&enigmail.composetoolbar.label;"
-            customizable="true"
-            class="enigmailToolbar"
-            fullscreentoolbar="true"
-            collapsed="true"
-            mode="full"
-            context="toolbar-context-menu">
-    </toolbar>
-  </toolbox>
 
   <statusbar id="status-bar">
     <statusbarpanel insertbefore="statusText" id="enigmail-pep-statusbar">

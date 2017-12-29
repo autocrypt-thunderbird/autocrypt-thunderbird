@@ -129,88 +129,46 @@ Enigmail.msg = {
   composeStartup: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
-    let self = this;
-
-    function delayedProcessFinalState() {
-      EnigmailTimer.setTimeout(function _f() {
-          Enigmail.msg.processFinalState();
-          Enigmail.msg.updateStatusBar();
-        },
-        50);
-    }
 
     function addSecurityListener(itemId, func) {
       let s = document.getElementById(itemId);
       if (s) {
-        s.addEventListener("command", func);
+        s.addEventListener("command", func.bind(Enigmail.msg), false);
       }
       else {
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: addSecurityListener - cannot find element " + itemId + "\n");
       }
     }
 
-    function toggleSmimeToolbar(event) {
-      /* global toggleSignMessage: false, toggleEncryptMessage: false */
-      switch (event.target.id) {
-        case "menu_securitySign2":
-          toggleSignMessage();
-          event.stopPropagation();
-          toggleSMimeSign();
-          break;
-        case "menu_securityEncryptRequire2":
-          toggleEncryptMessage();
-          event.stopPropagation();
-          toggleSMimeEncrypt();
-      }
-    }
 
-    function toggleSMimeEncrypt() {
-      if (gSMFields && gSMFields.requireEncryptMessage) {
-        self.encryptForced = EnigmailConstants.ENIG_ALWAYS;
-        self.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
-      }
-      else {
-        self.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
-
-        if (!gSMFields.signMessage) self.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
-      }
-      delayedProcessFinalState();
-    }
-
-    function toggleSMimeSign() {
-      if (gSMFields && gSMFields.signMessage) {
-        self.signForced = EnigmailConstants.ENIG_ALWAYS;
-        self.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
-      }
-      else {
-        self.signForced = EnigmailConstants.ENIG_FINAL_FORCENO;
-
-        if (!gSMFields.requireEncryptMessage) self.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
-      }
-      delayedProcessFinalState();
-    }
-
+    gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
+    Enigmail.msg.composeBodyReady = false;
 
     // Relabel SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
 
     if (smimeButton) {
       smimeButton.setAttribute("label", "S/MIME");
+      let toolbar = document.getElementById("composeToolbar2");
+      if (toolbar.getAttribute("currentset").length === 0) {
+        // remove S/MIME button if the toolbar is displaying the default set
+        toolbar.removeChild(smimeButton);
+      }
     }
 
     var msgId = document.getElementById("msgIdentityPopup");
     if (msgId) {
-      msgId.addEventListener("command", Enigmail.msg.setIdentityCallback);
+      msgId.addEventListener("command", Enigmail.msg.setIdentityCallback, false);
     }
 
     var subj = document.getElementById("msgSubject");
-    subj.addEventListener('focus', Enigmail.msg.fireSendFlags);
+    subj.addEventListener('focus', Enigmail.msg.fireSendFlags, false);
 
     // listen to S/MIME changes to potentially display "conflict" message
-    addSecurityListener("menu_securitySign1", toggleSMimeSign.bind(Enigmail.msg));
-    addSecurityListener("menu_securitySign2", toggleSmimeToolbar.bind(Enigmail.msg));
-    addSecurityListener("menu_securityEncryptRequire1", toggleSMimeEncrypt.bind(Enigmail.msg));
-    addSecurityListener("menu_securityEncryptRequire2", toggleSmimeToolbar.bind(Enigmail.msg));
+    addSecurityListener("menu_securitySign1", this.toggleSMimeSign);
+    addSecurityListener("menu_securitySign2", this.toggleSmimeToolbar);
+    addSecurityListener("menu_securityEncryptRequire1", this.toggleSMimeEncrypt);
+    addSecurityListener("menu_securityEncryptRequire2", this.toggleSmimeToolbar);
 
     this.msgComposeReset(false); // false => not closing => call setIdentityDefaults()
     this.composeOpen();
@@ -218,13 +176,54 @@ Enigmail.msg = {
     this.updateStatusBar();
   },
 
-
-  composeUnload: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeUnload\n");
-    //if (gMsgCompose)
-    //  gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
+  delayedProcessFinalState: function() {
+    EnigmailTimer.setTimeout(function _f() {
+        Enigmail.msg.processFinalState();
+        Enigmail.msg.updateStatusBar();
+      },
+      50);
   },
 
+  toggleSmimeToolbar: function(event) {
+    /* global toggleSignMessage: false, toggleEncryptMessage: false */
+    switch (event.target.id) {
+      case "menu_securitySign2":
+        this.toggleSignMessage();
+        event.stopPropagation();
+        this.toggleSMimeSign();
+        break;
+      case "menu_securityEncryptRequire2":
+        this.toggleEncryptMessage();
+        event.stopPropagation();
+        this.toggleSMimeEncrypt();
+    }
+  },
+
+  toggleSMimeEncrypt: function() {
+    if (gSMFields && gSMFields.requireEncryptMessage) {
+      this.encryptForced = EnigmailConstants.ENIG_ALWAYS;
+      this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
+    }
+    else {
+      this.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+
+      if (!gSMFields.signMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+    }
+    this.delayedProcessFinalState();
+  },
+
+  toggleSMimeSign: function() {
+    if (gSMFields && gSMFields.signMessage) {
+      this.signForced = EnigmailConstants.ENIG_ALWAYS;
+      this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
+    }
+    else {
+      this.signForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+
+      if (!gSMFields.requireEncryptMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+    }
+    this.delayedProcessFinalState();
+  },
 
   handleClick: function(event, modifyType) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleClick\n");
@@ -646,6 +645,11 @@ Enigmail.msg = {
     if (toobarElem && (EnigmailOS.getOS() == "Darwin")) {
       toobarElem.setAttribute("platform", "macos");
     }
+
+    // remove overlay_source from enigmail-bc-sendprocess, which will be inherited to
+    // addressCol2 and addressCol1 (those would be removed if Enigmail is uninstalled)
+    let bc = document.getElementById("enigmail-bc-sendprocess");
+    bc.removeAttribute("overlay_source");
 
     // check rules for status bar icons on each change of the recipients
     var adrCol = document.getElementById("addressCol2#1"); // recipients field
@@ -5351,53 +5355,55 @@ Enigmail.composeStateListener = {
 };
 
 
-window.addEventListener("load",
-  function _enigmail_composeStartup(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: got load event\n");
+/**
+ * Unload Enigmail for update or uninstallation
+ */
+Enigmail.composeUnload = function _unload_Enigmail() {
+  window.removeEventListener("unload-enigmail", Enigmail.composeUnload, false);
+  window.removeEventListener("load-enigmail", Enigmail.msg.composeStartup, false);
+  window.removeEventListener("compose-window-unload", Enigmail.msg.msgComposeClose, true);
+  gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
 
-    Enigmail.msg.composeStartup(event);
-  },
+  let msgId = document.getElementById("msgIdentityPopup");
+  if (msgId) {
+    msgId.removeEventListener("command", Enigmail.msg.setIdentityCallback, false);
+  }
+
+  let subj = document.getElementById("msgSubject");
+  subj.removeEventListener('focus', Enigmail.msg.fireSendFlags, false);
+
+  // check rules for status bar icons on each change of the recipients
+  let rep = new RegExp("; Enigmail.msg.addressOnChange\\(this\\);");
+  var adrCol = document.getElementById("addressCol2#1"); // recipients field
+  if (adrCol) {
+    let attr = adrCol.getAttribute("oninput");
+    adrCol.setAttribute("oninput", attr.replace(rep, ""));
+    attr = adrCol.getAttribute("onchange");
+    adrCol.setAttribute("onchange", attr.replace(rep, ""));
+  }
+  adrCol = document.getElementById("addressCol1#1"); // to/cc/bcc/... field
+  if (adrCol) {
+    let attr = adrCol.getAttribute("oncommand");
+    adrCol.setAttribute("oncommand", attr.replace(rep, ""));
+  }
+
+  // finally unload Enigmail entirely
+  Enigmail = undefined;
+};
+
+window.addEventListener("load-enigmail",
+  Enigmail.msg.composeStartup.bind(Enigmail.msg),
   false);
 
-window.addEventListener("unload",
-  function _enigmail_composeUnload(event) {
-    Enigmail.msg.composeUnload(event);
-  },
+window.addEventListener("unload-enigmail",
+  Enigmail.composeUnload.bind(Enigmail.msg),
   false);
 
-// Handle recycled windows
-// TB < 47
-window.addEventListener('compose-window-close',
-  function _enigmail_msgComposeClose(event) {
-    Enigmail.msg.msgComposeClose(event);
-  },
-  true);
-
-// TB >= 48
 window.addEventListener('compose-window-unload',
-  function _enigmail_msgComposeDestory(event) {
-    Enigmail.msg.msgComposeClose(event);
-  },
-  true);
-
-// TB < 47 only
-window.addEventListener('compose-window-reopen',
-  function _enigmail_msgComposeReopen(event) {
-    Enigmail.msg.msgComposeReopen(event);
-  },
+  Enigmail.msg.msgComposeClose.bind(Enigmail.msg),
   true);
 
 // Listen to message sending event
 window.addEventListener('compose-send-message',
-  function _enigmail_sendMessageListener(event) {
-    Enigmail.msg.sendMessageListener(event);
-  },
-  true);
-
-window.addEventListener('compose-window-init',
-  function _enigmail_composeWindowInit(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: _enigmail_composeWindowInit\n");
-    gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
-    Enigmail.msg.composeBodyReady = false;
-  },
+  Enigmail.msg.sendMessageListener.bind(Enigmail.msg),
   true);
