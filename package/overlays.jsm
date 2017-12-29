@@ -48,44 +48,43 @@ const BASE_PATH = "chrome://enigmail/content/";
 const MY_ADDON_ID = "enigmail";
 
 const overlays = {
-  // "chrome://messenger/content/messenger.xul": [
-  //   "chrome://enigmail/content/enigmailCheckLanguage.xul",
-  //   "chrome://enigmail/content/columnOverlay.xul", {
-  //     // Overlay for mailWindowOverlay on Thunderbird
-  //     url: "chrome://enigmail/content/messengerOverlay-tbird.xul",
-  //     application: "!{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
-  //   }, {
-  //     // Overlay for mailWindowOverlay on SeaMonkey
-  //     url: "chrome://enigmail/content/messengerOverlay-sm.xul",
-  //     application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
-  //   },
-  //   "chrome://enigmail/content/enigmailMessengerOverlay.xul",
-  //   "chrome://enigmail/content/enigmailMsgHdrViewOverlay.xul"
-  // ],
+  "chrome://messenger/content/messenger.xul": [
+    "columnOverlay.xul", {
+      // Overlay for Thunderbird (and other non-SeaMonkey apps)
+      url: "messengerOverlay-tbird.xul",
+      application: "!{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+    }, {
+      // Overlay for SeaMonkey
+      url: "messengerOverlay-sm.xul",
+      application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+    },
+    "enigmailMessengerOverlay.xul",
+    "enigmailMsgHdrViewOverlay.xul"
+  ],
 
   "chrome://messenger/content/messengercompose/messengercompose.xul": [
     "enigmailMsgComposeOverlay.xul"
   ]
 
-  // "chrome://messenger/content/FilterEditor.xul": ["chrome://enigmail/content/enigmailFilterEditorOverlay.xul"],
-  // "chrome://messenger/content/FilterListDialog.xul": ["chrome://enigmail/content/enigmailFilterListOverlay.xul"],
-  // "chrome://messenger/content/msgPrintEngine.xul": ["chrome://enigmail/content/enigmailMsgPrintOverlay.xul"],
+  // "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
+  // "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
+  // "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"],
   // "chrome://messenger/content/am-identity-edit.xul": [
-  //   "chrome://enigmail/content/enigmailAmIdEditOverlay.xul",
-  //   "chrome://enigmail/content/enigmailEditIdentity.xul"
+  //   "enigmailAmIdEditOverlay.xul",
+  //   "enigmailEditIdentity.xul"
   // ],
-  // "chrome://messenger/content/addressbook/addressbook.xul": ["chrome://enigmail/content/enigmailAbCardViewOverlay.xul"],
-  // "chrome://messenger/content/addressbook/csContactsOverlay.xul": ["chrome://enigmail/content/enigmailAbCardViewOverlay.xul"],
-  // "chrome://messenger/content/addressbook/abContactsPanel.xul": ["chrome://enigmail/content/enigmailAbContactsPanel.xul"],
-  // "chrome://global/content/customizeToolbar.xul": ["chrome://enigmail/content/enigmailCustToolOverlay.xul"],
-  // "chrome://enigmail/content/am-enigprefs.xul": ["chrome://enigmail/content/enigmailEditIdentity.xul"],
-  // "chrome://enigmail/content/am-enigprefs-edit.xul": ["chrome://enigmail/content/enigmailEditIdentity.xul"],
+  // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
+  // "chrome://messenger/content/addressbook/csContactsOverlay.xul": ["enigmailAbCardViewOverlay.xul"],
+  // "chrome://messenger/content/addressbook/abContactsPanel.xul": ["enigmailAbContactsPanel.xul"],
+  // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"],
+  // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
+  // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
   //
   // // Overlay for privacy preferences in Thunderbird
-  // "chrome://messenger/content/preferences/privacy.xul": ["chrome://enigmail/content/enigmailPrivacyOverlay.xul"],
+  // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
   //
   // // Overlay for S/Mime preferences
-  // "chrome://messenger/content/am-smime.xul": ["chrome://enigmail/content/enigmail-am-smime.xul"]
+  // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"]
 };
 
 
@@ -300,7 +299,7 @@ function insertXul(srcUrl, window, document, callback) {
     // loadOverlay for the poor
     function addNode(target, node) {
       // helper: insert according to position
-      function insertX(nn, attr, callback) {
+      function insertX(nn, attr, callbackFunc) {
         if (!nn.hasAttribute(attr)) {
           return false;
         }
@@ -313,7 +312,7 @@ function insertXul(srcUrl, window, document, callback) {
           if (!pn) {
             continue;
           }
-          if (callback) callback(pn);
+          if (callbackFunc) callbackFunc(pn);
           return true;
         }
         return false;
@@ -335,7 +334,8 @@ function insertXul(srcUrl, window, document, callback) {
       }
       return nn;
     }
-    EnigmailLog.DEBUG("overlays.jsm: registerOverlay: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
+
+    EnigmailLog.DEBUG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
 
     try {
       // store unloaders for all elements inserted
@@ -350,11 +350,11 @@ function insertXul(srcUrl, window, document, callback) {
             let toolbarId = xul[id].getAttribute("targetToolbar");
             let defaultSet = xul[id].getAttribute("targetToolbarDefaultset");
             if (!toolboxId) {
-              EnigmailLog.DEBUG("overlays.jsm: registerOverlay: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
+              EnigmailLog.DEBUG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
               continue;
             }
             if (!toolbarId) {
-              EnigmailLog.DEBUG("overlays.jsm: registerOverlay: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
+              EnigmailLog.DEBUG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
               continue;
             }
 
@@ -377,7 +377,7 @@ function insertXul(srcUrl, window, document, callback) {
             }
           }
           else {
-            EnigmailLog.DEBUG("overlays.jsm: registerOverlay: no target for " + id + ", not inserting\n");
+            EnigmailLog.DEBUG("overlays.jsm: injectDOM: no target for " + id + ", not inserting\n");
           }
           continue;
         }
@@ -391,15 +391,13 @@ function insertXul(srcUrl, window, document, callback) {
           unloaders.push(() => nn.parentNode.removeChild(nn));
         }
       }
-
-      if (callback) {
-        callback(window, document);
-      }
     }
     catch (ex) {
-      EnigmailLog.ERROR("overlays.jsm: registerOverlay: failed to inject xul " + ex.toString());
+      EnigmailLog.ERROR("overlays.jsm: injectDOM: failed to inject xul " + ex.toString());
     }
   }
+
+  EnigmailLog.DEBUG("overlays.jsm: insertXul(" + srcUrl + ")\n");
 
   let xmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
@@ -448,7 +446,10 @@ function insertXul(srcUrl, window, document, callback) {
         loadScript(src, window);
       }
     }
-    callback(1);
+
+    if (callback) {
+      callback(0);
+    }
   };
 
 
@@ -489,11 +490,13 @@ function loadOverlay(window, overlayDefs, index) {
         url = overlayDef.url;
         if (overlayDef.application.substr(0, 1) === "!") {
           if (overlayDef.application.indexOf(getAppId()) > 0) {
+            EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping" + url + "\n");
             loadOverlay(window, overlayDefs, index + 1);
             return;
           }
         }
         else if (overlayDef.application.indexOf(getAppId()) < 0) {
+          EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping" + url + "\n");
           loadOverlay(window, overlayDefs, index + 1);
           return;
         }
@@ -501,17 +504,17 @@ function loadOverlay(window, overlayDefs, index) {
 
       let observer = function(result) {
         loadOverlay(window, overlayDefs, index + 1);
-        if (typeof result === "number") {
-          let e = new Event("load-" + MY_ADDON_ID);
-          window.dispatchEvent(e);
-        }
       };
 
       insertXul(url, window, document, observer);
     }
-    // else {
-    // ...
-    // }
+    else {
+      EnigmailLog.DEBUG("overlays.jsm: loadOverlay: completed\n");
+
+      let e = new Event("load-" + MY_ADDON_ID);
+      window.dispatchEvent(e);
+      EnigmailLog.DEBUG("overlays.jsm: loadOverlay: event completed\n");
+    }
   }
   catch (ex) {
     EnigmailLog.ERROR("overlays.jsm: could not overlay for " + window.document.location.href + ":\n" + ex.toString() + "\n");
