@@ -48,7 +48,7 @@ function potentialWindowsExecutable(file) {
   return file;
 }
 
-const EnigmailFiles = {
+var EnigmailFiles = {
   /**
    * potentialWindowsExecutable appends .exe to a file
    *
@@ -463,7 +463,8 @@ const EnigmailFiles = {
 
         if (!EnigmailOS.isDosLike) {
           t.initWithPath(t.path + "/" + i);
-        } else {
+        }
+        else {
           let w = i.split('/').join("\\");
           t.initWithPath(t.path + "\\" + w);
         }

@@ -40,7 +40,7 @@ function isWin32() {
   return getOS() === "WINNT";
 }
 
-const EnigmailOS = {
+var EnigmailOS = {
   /*
    * getOS uses the Mozilla nsIXULRuntime Component to retrieve the OS Target
    *

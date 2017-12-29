@@ -60,7 +60,7 @@ function newStatusObject() {
   }, {}, {}, {}, {}, {}, {}, {}, {});
 }
 
-const EnigmailDecryption = {
+var EnigmailDecryption = {
   decryptMessageStart: function(win, verifyOnly, noOutput, listener,
     statusFlagsObj, errorMsgObj, mimeSignatureFile,
     maxOutputLength) {

@@ -26,7 +26,7 @@ Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: fal
 
 const loadOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
 
-const EnigmailExecution = {
+var EnigmailExecution = {
   agentType: "",
 
   /**

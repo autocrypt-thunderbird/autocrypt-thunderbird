@@ -41,7 +41,7 @@ function getPasswdForHost(hostname, userObj, passwdObj) {
   return false;
 }
 
-const EnigmailHttpProxy = {
+var EnigmailHttpProxy = {
   /**
    *  get Proxy for a given hostname as configured in Mozilla
    *

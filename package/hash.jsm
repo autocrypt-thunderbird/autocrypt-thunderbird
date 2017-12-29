@@ -26,7 +26,7 @@ const Ci = Components.interfaces;
 const keyAlgorithms = [];
 const mimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];
 
-const EnigmailHash = {
+var EnigmailHash = {
   determineAlgorithm: function(win, uiFlags, fromMailAddr, hashAlgoObj) {
     EnigmailLog.DEBUG("hash.jsm: determineAlgorithm\n");
 

@@ -17,7 +17,7 @@ const Ci = Components.interfaces;
 
 var enigStringBundle = null;
 
-const EnigmailLocale = {
+var EnigmailLocale = {
   get: function() {
     try {
       return Cc["@mozilla.org/intl/nslocaleservice;1"].getService(Ci.nsILocaleService).getApplicationLocale();

@@ -7,6 +7,6 @@
 var EXPORTED_SYMBOLS = ["EnigmailSingletons"];
 
 
-const EnigmailSingletons = {
+var EnigmailSingletons = {
   messageReader: null // handle to most recent message reader window
 };

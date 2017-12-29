@@ -53,7 +53,7 @@ function indexOfNewline(str, off, then) {
   }
 }
 
-const EnigmailArmor = {
+var EnigmailArmor = {
   /**
    * Locates offsets bracketing PGP armored block in text,
    * starting from given offset, and returns block type string.

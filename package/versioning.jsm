@@ -84,7 +84,7 @@ function lessThan(versionWeHave, versionWeAreComparingWith) {
   return getVersionComparator().compare(versionWeHave, versionWeAreComparingWith) < 0;
 }
 
-const EnigmailVersioning = {
+var EnigmailVersioning = {
   /**
    * Uses Mozilla's Version Comparator Component to identify whether the version
    * we have is greater than or equal to the version we are comparing with

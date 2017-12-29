@@ -61,7 +61,7 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
  *
  * @return a Promise that we do that
  */
-const EnigmailPersistentCrypto = {
+var EnigmailPersistentCrypto = {
 
   /***
    *  dispatchMessages

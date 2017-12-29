@@ -666,7 +666,7 @@ function parseKeyserverUrl(keyserver) {
   };
 }
 
-const EnigmailKeyServer = {
+var EnigmailKeyServer = {
   access: access,
   refresh: refresh,
   keyServerUpDownload: keyServerUpDownload,

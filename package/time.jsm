@@ -19,7 +19,7 @@ Cu.import("resource://enigmail/locale.jsm");
 const DATE_2DIGIT = "2-digit";
 const DATE_4DIGIT = "numeric";
 
-const EnigmailTime = {
+var EnigmailTime = {
   /**
    * Transform a Unix-Timestamp to a human-readable date/time string
    *

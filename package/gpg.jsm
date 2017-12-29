@@ -98,7 +98,7 @@ function dirmngrConfiguredWithTor() {
   return output.match(/Tor mode is enabled/) !== null;
 }
 
-const EnigmailGpg = {
+var EnigmailGpg = {
   agentVersion: "",
   _agentPath: null,
 

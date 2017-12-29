@@ -28,7 +28,7 @@ const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 var gDebugLog = false;
 
 
-const EnigmailWksMimeHandler = {
+var EnigmailWksMimeHandler = {
 
   /***
    * register a PGP/MIME verify object the same way PGP/MIME encrypted mail is handled

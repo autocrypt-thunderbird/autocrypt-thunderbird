@@ -18,7 +18,7 @@ Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: 
 Components.utils.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
 Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
-const EnigmailMime = {
+var EnigmailMime = {
   /***
    * create a string of random characters suitable to use for a boundary in a
    * MIME message following RFC 2045

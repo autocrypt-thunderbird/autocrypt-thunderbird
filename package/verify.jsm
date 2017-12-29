@@ -24,7 +24,7 @@ Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: fals
 
 const Ci = Components.interfaces;
 
-const EnigmailVerifyAttachment = {
+var EnigmailVerifyAttachment = {
   attachment: function(parent, verifyFile, sigFile, statusFlagsObj, errorMsgObj) {
     EnigmailLog.DEBUG("verify.jsm: EnigmailVerifyAttachment.attachment:\n");
 

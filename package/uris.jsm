@@ -18,7 +18,7 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 const messageIdList = {};
 const encryptedUris = [];
 
-const EnigmailURIs = {
+var EnigmailURIs = {
   createMessageURI: function(originalUrl, contentType, contentCharset, contentData, persist) {
     EnigmailLog.DEBUG("enigmail.js: Enigmail.createMessageURI: " + originalUrl +
       ", " + contentType + ", " + contentCharset + "\n");

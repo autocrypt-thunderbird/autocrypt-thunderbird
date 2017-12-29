@@ -22,7 +22,7 @@ const gpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent"
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getLocale = EnigmailLazy.loader("enigmail/locale.jsm", "EnigmailLocale");
 
-const EnigmailPassword = {
+var EnigmailPassword = {
   /*
    * Get GnuPG command line options for receiving the password depending
    * on the various user and system settings (gpg-agent/no passphrase)

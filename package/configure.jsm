@@ -162,7 +162,7 @@ function displayUpgradeInfo() {
 }
 
 
-const EnigmailConfigure = {
+var EnigmailConfigure = {
   configureEnigmail: function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
     let oldVer = EnigmailPrefs.getPref("configuredVersion");

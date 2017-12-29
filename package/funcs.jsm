@@ -26,7 +26,7 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 var gTxtConverter = null;
 
-const EnigmailFuncs = {
+var EnigmailFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
    * @param mailAddrs |string| - address-list encdoded in Unicode as specified in RFC 2822, 3.4

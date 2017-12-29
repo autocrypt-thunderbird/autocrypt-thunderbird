@@ -7,7 +7,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailPasswordCheck"];
 
-const EnigmailPasswordCheck = {
+var EnigmailPasswordCheck = {
   /**
    *  Check password quality
    *

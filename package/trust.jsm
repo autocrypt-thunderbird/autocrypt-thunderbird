@@ -40,7 +40,7 @@ Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLoca
 const TRUSTLEVELS_SORTED = "indDreg?o-qmfu";
 const TRUSTLEVELS_SORTED_IDX_UNKNOWN = 7; // index of '?'
 
-const EnigmailTrust = {
+var EnigmailTrust = {
   /**
    * @return - |string| containing the order of trust/validity values
    */

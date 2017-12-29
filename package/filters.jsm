@@ -502,7 +502,7 @@ const newMailListener = {
     - subParts: Array of Object(messageStructure) - array of the sub-parts
  */
 
-const EnigmailFilters = {
+var EnigmailFilters = {
   registerAll: function() {
     var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomAction(filterActionMoveDecrypt);

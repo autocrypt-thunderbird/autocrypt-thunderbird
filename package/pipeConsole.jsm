@@ -13,7 +13,7 @@ const MAX_SIZE = 32768;
 var dataCache = "";
 var gotNewData = false;
 
-const EnigmailConsole = {
+var EnigmailConsole = {
   write: function(data) {
     dataCache += data;
     if (dataCache.length > MAX_SIZE) {

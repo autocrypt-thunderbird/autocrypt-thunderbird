@@ -22,7 +22,7 @@ const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
 const SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const EnigmailApp = {
+var EnigmailApp = {
   /**
    * Platform application name (e.g. Thunderbird)
    */

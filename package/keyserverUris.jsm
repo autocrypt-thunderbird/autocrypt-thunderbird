@@ -109,10 +109,10 @@ function buildKeyserverUris() {
 }
 
 /**
- * Checks if the keyservers specified are valid. 
+ * Checks if the keyservers specified are valid.
  * Key refreshes will not be attempted without valid keyservers.
- * A valid keyserver is one that is non-empty and consists of 
- * - the keyserverDomain  
+ * A valid keyserver is one that is non-empty and consists of
+ * - the keyserverDomain
  * - may include a protocol from hkps, hkp or ldap
  * - may include the port
  *
@@ -122,7 +122,7 @@ function validKeyserversExist() {
   return EnigmailPrefs.getPref(KEYSERVER_PREF).trim() !== "" && validProtocolsExist();
 }
 
-const EnigmailKeyserverURIs = {
+var EnigmailKeyserverURIs = {
   buildKeyserverUris: buildKeyserverUris,
   validKeyserversExist: validKeyserversExist
 };

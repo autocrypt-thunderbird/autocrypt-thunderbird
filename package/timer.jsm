@@ -15,7 +15,7 @@ Components.utils.import("resource://gre/modules/Timer.jsm"); /* global setTimeou
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const EnigmailTimer = {
+var EnigmailTimer = {
   /**
    * wait a defined number of miliseconds, then call a callback function
    * asynchronously

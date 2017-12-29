@@ -23,7 +23,7 @@ const NS_STRING_INPUT_STREAM_CONTRACTID = "@mozilla.org/io/string-input-stream;1
 const NS_INPUT_STREAM_CHNL_CONTRACTID = "@mozilla.org/network/input-stream-channel;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const EnigmailStreams = {
+var EnigmailStreams = {
 
   /**
    * Create a new channel from a URL.

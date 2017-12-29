@@ -20,7 +20,7 @@ Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 /**** DEPRECATED - use EnigmailTimer instead *****/
 
-const EnigmailEvents = {
+var EnigmailEvents = {
   /**
    * dispatch event aynchronously to the main thread
    *

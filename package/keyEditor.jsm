@@ -307,7 +307,7 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
  * returnCode = 0 in case of success
  * returnCode != 0 and errorMsg set in case of failure
  */
-const EnigmailKeyEditor = {
+var EnigmailKeyEditor = {
   setKeyTrust: function(parent, keyId, trustLevel, callbackFunc) {
     EnigmailLog.DEBUG("keyEdit.jsm: Enigmail.setKeyTrust: trustLevel=" + trustLevel + ", keyId=" + keyId + "\n");
 

@@ -17,7 +17,7 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 
-const EnigmailCard = {
+var EnigmailCard = {
   getCardStatus: function(exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("card.jsm: EnigmailCard.getCardStatus\n");
     const args = EnigmailGpg.getStandardArgs(false).

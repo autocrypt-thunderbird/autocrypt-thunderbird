@@ -47,7 +47,7 @@ Handler.prototype = {
   lockFactory: function(lock) {}
 };
 
-const EnigmailCommandLine = {
+var EnigmailCommandLine = {
   Handler: Handler,
   categoryRegistry: {
     category: "command-line-handler",

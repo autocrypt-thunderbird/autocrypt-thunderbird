@@ -24,7 +24,7 @@ Cu.import("resource://enigmail/versioning.jsm"); /*global EnigmailVersioning: fa
 
 const ExtraHeaders = ["autocrypt", "openpgp"];
 
-const EnigmailMsgRead = {
+var EnigmailMsgRead = {
   /**
    * Ensure that Thunderbird prepares certain headers during message reading
    */

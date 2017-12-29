@@ -29,7 +29,7 @@ const gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.n
 
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
-const EnigmailDialog = {
+var EnigmailDialog = {
 
   /***
    * Confirmation dialog with OK / Cancel buttons (both customizable)

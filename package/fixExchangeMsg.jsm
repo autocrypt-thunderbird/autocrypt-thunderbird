@@ -36,7 +36,7 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
  *
  * @return Promise; upon success, the promise returns the messageKey
  */
-const EnigmailFixExchangeMsg = {
+var EnigmailFixExchangeMsg = {
   fixExchangeMessage: function(hdr, brokenByApp, destFolderUri) {
     var self = this;
     return new Promise(

@@ -262,7 +262,7 @@ function torProperties(system) {
   };
 }
 
-const EnigmailTor = {
+var EnigmailTor = {
   torProperties: function() {
     return torProperties(systemCaller);
   },

@@ -42,7 +42,7 @@ const ENC_TYPE_ATTACH_ASCII = 2;
 const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
 
 
-const EnigmailEncryption = {
+var EnigmailEncryption = {
   getEncryptCommand: function(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
     EnigmailLog.DEBUG("encryption.jsm: getEncryptCommand: hashAlgorithm=" + hashAlgorithm + "\n");
 

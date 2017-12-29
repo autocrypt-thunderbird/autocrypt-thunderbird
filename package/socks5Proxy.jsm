@@ -102,7 +102,7 @@ function checkTorExists(portPref) {
   return foundTor;
 }
 
-const EnigmailSocks5Proxy = {
+var EnigmailSocks5Proxy = {
   checkTorExists: checkTorExists,
   torIpAddr: function() {
     return EnigmailPrefs.getPref(TOR_IP_ADDR_PREF);

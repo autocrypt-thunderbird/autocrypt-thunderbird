@@ -40,7 +40,7 @@ function getGpgWorking() {
   return agentStr;
 }
 
-const EnigmailLocalizeHtml = {
+var EnigmailLocalizeHtml = {
   getAllElementsWithAttribute: function(doc, attribute) {
     let matchingElements = [];
     let allElements = doc.getElementsByTagName('*');

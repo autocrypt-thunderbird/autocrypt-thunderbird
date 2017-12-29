@@ -22,7 +22,7 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
-const EnigmailAttachment = {
+var EnigmailAttachment = {
   getFileName: function(parent, byteData) {
     EnigmailLog.DEBUG("attachment.jsm: getFileName\n");
 

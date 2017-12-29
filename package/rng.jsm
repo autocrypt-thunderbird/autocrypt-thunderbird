@@ -73,7 +73,7 @@ function generateRandomUint32() {
   return randomNumber[0];
 }
 
-const EnigmailRNG = {
+var EnigmailRNG = {
   generateRandomUint32: generateRandomUint32,
   generateRandomString: generateRandomString
 };

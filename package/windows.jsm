@@ -30,7 +30,7 @@ const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-const EnigmailWindows = {
+var EnigmailWindows = {
   /**
    * Display the OpenPGP setup wizard window
    *
