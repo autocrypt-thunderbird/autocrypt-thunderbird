@@ -14,12 +14,10 @@
  *    Elements without target ID can't be loaded.
  * 2. define external CSS the same way as you would in HTML, i.e.:
  *      <link rel="stylesheet" type="text/css" href="chrome://some/cssFile.css"/>
- * 3. if you add buttons to a toolbar using <toolbarpalette/> in your XUL:
- *     a) add the following attributes:
- *            targetToolbox="some_id"   --> the ID of the *toolbox* where the buttons are added
- *            targetToolbar="some_id"   --> the ID of the *toolbar* where the buttons are added
- *     b) if you want a button to be displayed by default, add the following to the <toolbarbutton/>:
- *            defaultBefore="button-id" --> the ID of a button before which to insert your button
+ * 3. if you add buttons to a toolbar using <toolbarpalette/> in your XUL, add the
+ *    following attributes to the toolbarpalette:
+ *      targetToolbox="some_id"   --> the ID of the *toolbox* where the buttons are added
+ *      targetToolbar="some_id"   --> the ID of the *toolbar* where the buttons are added
  *
  * Prepare the JavaScript:
  * 1. Event listeners registering for "load" now need to listen to "load-"+MY_ADDON_ID
@@ -66,7 +64,6 @@ const overlays = {
   // ],
 
   "chrome://messenger/content/messengercompose/messengercompose.xul": [
-    //"chrome://enigmail/content/enigmailCheckLanguage.xul",
     "enigmailMsgComposeOverlay.xul"
   ]
 
@@ -103,6 +100,7 @@ var WindowListener = {
   tearDownUI: function(window) {
     let document = window.document;
 
+    // unload UI elements
     let s = document.querySelectorAll("[overlay_source='" + MY_ADDON_ID + "']");
 
     for (let i = 0; i < s.length; i++) {
@@ -112,6 +110,15 @@ var WindowListener = {
 
     let e = new Event("unload-" + MY_ADDON_ID);
     window.dispatchEvent(e);
+
+    // unload CSS
+    s = document.querySelectorAll("overlayed_css[source='" + MY_ADDON_ID + "']");
+    for (let i = 0; i < s.length; i++) {
+      unloadCSS(s[i].getAttribute("href"), window);
+
+      let p = s[i].parentNode;
+      p.removeChild(s[i]);
+    }
   },
 
   // nsIWindowMediatorListener functions
@@ -262,56 +269,30 @@ function insertXul(srcUrl, window, document, callback) {
       let buttonId = toolbarButton.id;
       let firstRun = false;
 
-      if (!toolbar.getAttribute(buttonId + "-installed")) {
-        toolbar.setAttribute(buttonId + "-installed", "1");
-        document.persist(toolbarId, buttonId + "-installed");
-        firstRun = true;
-      }
-
-      // make sure there is a currentset
-      if (toolbar.getAttribute("currentset").length === 0) {
-        let s = toolbar.getAttribute("defaultset");
-        toolbar.setAttribute("currentset", s);
-        document.persist(toolbar.id, "currentset");
-      }
-
       let currentset = toolbar.getAttribute("currentset").split(/,/);
+      if (toolbar.getAttribute("currentset").length === 0) {
+        currentset = toolbar.getAttribute("defaultset").split(/,/);
+      }
+
+      toolbarButton.setAttribute("overlay_source", MY_ADDON_ID);
       palette.appendChild(toolbarButton);
 
-      if (firstRun) {
-        // Button was never defined before, so add it to the toolbar if it should be visible by default
-        let insertBefore = toolbarButton.getAttribute("defaultBefore");
-        if (insertBefore) {
-          let beforeNode = $(insertBefore);
-          toolbar.insertItem(buttonId, beforeNode);
-          let i = currentset.indexOf(insertBefore);
-          if (i >= 0) {
-            currentset.splice(i, 0, buttonId);
-          }
+      let index = currentset.indexOf(buttonId);
+      if (index >= 0) {
+        // button was added before
+        let before = null;
 
-          toolbar.setAttribute("currentset", currentset.join(","));
-          document.persist(toolbar.id, "currentset");
+        for (let i = index + 1; i < currentset.length; i++) {
+          if (currentset[i].search(/^(separator|spacer|spring)$/) < 0) {
+            before = $(currentset[i]);
+          }
+          else {
+            before = getToolbarElem(toolbar, currentset, i);
+          }
+          if (before) break;
         }
 
-      }
-      else {
-        let index = currentset.indexOf(buttonId);
-        if (index >= 0) {
-          // button was added before
-          let before = null;
-
-          for (let i = index + 1; i < currentset.length; i++) {
-            if (currentset[i].search(/^(separator|spacer|spring)$/) < 0) {
-              before = $(currentset[i]);
-            }
-            else {
-              before = getToolbarElem(toolbar, currentset, i);
-            }
-            if (before) break;
-          }
-
-          toolbar.insertItem(buttonId, before);
-        }
+        toolbar.insertItem(buttonId, before);
       }
     }
 
@@ -367,10 +348,23 @@ function insertXul(srcUrl, window, document, callback) {
           if (xul[id].tagName === "toolbarpalette") {
             let toolboxId = xul[id].getAttribute("targetToolbox");
             let toolbarId = xul[id].getAttribute("targetToolbar");
+            let defaultSet = xul[id].getAttribute("targetToolbarDefaultset");
             if (!toolboxId) {
-              EnigmailLog.DEBUG("overlays.jsm: registerOverlay: cannot overlay toolbarpalette " + id + ": no target tollbox defined\n");
+              EnigmailLog.DEBUG("overlays.jsm: registerOverlay: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
               continue;
             }
+            if (!toolbarId) {
+              EnigmailLog.DEBUG("overlays.jsm: registerOverlay: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
+              continue;
+            }
+
+            if (defaultSet) {
+              let toolbar = $(toolbarId);
+              if (toolbar) {
+                toolbar.setAttribute("defaultset", defaultSet);
+              }
+            }
+
             let toolbox = $(toolboxId);
             let palette = toolbox.palette;
             let c = xul[id].children;
@@ -524,10 +518,26 @@ function loadOverlay(window, overlayDefs, index) {
   }
 }
 
+
+function unloadCSS(url, targetWindow) {
+  let domWindowUtils = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.removeSheetUsingURIString(url, 1);
+}
+
 function loadCss(url, targetWindow) {
   try {
     let domWindowUtils = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
     domWindowUtils.loadSheetUsingURIString(url, 1);
+    let document = targetWindow.document;
+    let e = document.createElement("overlayed_css");
+    e.setAttribute("href", url);
+    e.setAttribute("source", MY_ADDON_ID);
+
+    let node = document.firstChild;
+    while (node && (!node.tagName)) {
+      node = node.nextSibling;
+    }
+    if (node) node.appendChild(e);
   }
   catch (ex) {
     EnigmailLog.ERROR("Error while loading CSS " + url + ":\n" + ex.message + "\n");
