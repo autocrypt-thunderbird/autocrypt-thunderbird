@@ -197,6 +197,7 @@ Enigmail.msg = {
 
     EnigmailMsgRead.ensureExtraAddonHeaders();
     gMessageListeners.push(Enigmail.msg.messageListener);
+    Enigmail.msg.messageListener.onEndHeaders();
   },
 
   messageListener: {
@@ -2676,5 +2677,5 @@ Enigmail.msg = {
   }
 };
 
-window.addEventListener("load", Enigmail.msg.messengerStartup.bind(Enigmail.msg), false);
+window.addEventListener("load-enigmail", Enigmail.msg.messengerStartup.bind(Enigmail.msg), false);
 window.addEventListener("unload", Enigmail.msg.messengerClose.bind(Enigmail.msg), false);

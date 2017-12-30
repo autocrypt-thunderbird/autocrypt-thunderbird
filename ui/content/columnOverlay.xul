@@ -6,8 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
-                 type="text/css"?>
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
@@ -15,14 +13,14 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <tree id="threadTree">
+  <!--tree id="threadTree" -->
    <treecols id="threadCols">
     <splitter class="tree-splitter" />
     <treecol id="enigmailStatusCol" persist="hidden ordinal width"
              currentView="unthreaded" flex="2"
              label="" tooltiptext="&enigmail.msgViewColumn.tooltip;" />
    </treecols>
-  </tree>
+  <!--/tree -->
 
   <script type="text/javascript" src="chrome://enigmail/content/columnOverlay.js"/>
 </overlay>

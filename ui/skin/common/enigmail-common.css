@@ -33,16 +33,15 @@
   min-width: 50px;
   white-space: normal;
   color: black;
-  line-height: 1.4em;
+  line-height: 1.4em !important;
 
   -moz-appearance: none !important;
-  -moz-appearance: none;
 
   padding: 0px !important;
   margin: 0px !important;
   -moz-margin-start: 3px !important;
   border: none !important;
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 .enigmailHeaderSpacer {
@@ -97,15 +96,15 @@
 
 .enigMsgHdrView-flat-button {
   min-width: 1px !important;
-  -moz-appearance: none;
+  -moz-appearance: none !important;
   color: black;
   background-color: #DDDDDD;
 
   border: 2px solid transparent;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
   padding: 0 2px;
-  border-radius: 2px;
+  border-radius: 4px;
   -moz-border-top-colors: transparent threedhighlight threedlightshadow;
   -moz-border-right-colors: transparent threeddarkshadow threedshadow;
   -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
@@ -128,6 +127,10 @@
 
 #messagepanebox[enigSigned="ok"] #messagepane {
   color: red;
+}
+
+#expandedautocryptRow {
+  visibility: collapse;
 }
 
 .enigmailMessagePane {
@@ -163,12 +166,12 @@
 }
 
 .enigmailKeyImportHeader {
-	font-weight: bold;
-	color: #888;
+  font-weight: bold;
+  color: #888;
 }
 
 .enigmailKeyImportUserId {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .enigmailKeyImportCaption {
@@ -178,11 +181,11 @@
 }
 
 .enigmailKeyImportDetails {
-	color: blue;
+  color: blue;
 }
 
 .enigmailKeyImportDetails:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 treechildren::-moz-tree-cell-text(enigmailSubkeyTitle) {

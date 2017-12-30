@@ -48,8 +48,23 @@ const BASE_PATH = "chrome://enigmail/content/";
 const MY_ADDON_ID = "enigmail";
 
 const overlays = {
+  // main mail reading window
   "chrome://messenger/content/messenger.xul": [
     "columnOverlay.xul", {
+      // Overlay for Thunderbird (and other non-SeaMonkey apps)
+      url: "messengerOverlay-tbird.xul",
+      application: "!{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+    }, {
+      // Overlay for SeaMonkey
+      url: "messengerOverlay-sm.xul",
+      application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+    },
+    "enigmailMessengerOverlay.xul",
+    "enigmailMsgHdrViewOverlay.xul"
+  ],
+
+  // single message reader window
+  "chrome://messenger/content/messageWindow.xul": [{
       // Overlay for Thunderbird (and other non-SeaMonkey apps)
       url: "messengerOverlay-tbird.xul",
       application: "!{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
@@ -416,14 +431,26 @@ function insertXul(srcUrl, window, document, callback) {
     // prepare all elements to be inserted
     let xul = {};
     for (let n = document.documentElement.firstChild; n; n = n.nextSibling) {
-      if (n.nodeType != n.ELEMENT_NODE || !n.hasAttribute("id")) {
+      if (n.nodeType != n.ELEMENT_NODE) {
         continue;
       }
+      if (n.tagName === "script" || n.tagName === "link") {
+        continue;
+      }
+      if (!n.hasAttribute("id")) {
+        EnigmailLog.DEBUG("overlays.jsm: insertXul: no ID for " + n.tagName + "\n");
+        continue;
+      }
+
       let id = n.getAttribute("id");
+      if (id in xul) {
+        EnigmailLog.DEBUG("overlays.jsm: insertXul: duplicate ID: " + id + "\n");
+        continue;
+      }
       xul[id] = n;
     }
     if (!Object.keys(xul).length) {
-      EnigmailLog.DEBUG("There is only XUL ... but there wasn't\n");
+      EnigmailLog.ERROR("No element to overlay found. Maybe a parsing error?\n");
       return;
     }
 
@@ -490,13 +517,13 @@ function loadOverlay(window, overlayDefs, index) {
         url = overlayDef.url;
         if (overlayDef.application.substr(0, 1) === "!") {
           if (overlayDef.application.indexOf(getAppId()) > 0) {
-            EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping" + url + "\n");
+            EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping " + url + "\n");
             loadOverlay(window, overlayDefs, index + 1);
             return;
           }
         }
         else if (overlayDef.application.indexOf(getAppId()) < 0) {
-          EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping" + url + "\n");
+          EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping " + url + "\n");
           loadOverlay(window, overlayDefs, index + 1);
           return;
         }

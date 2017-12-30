@@ -100,19 +100,16 @@ Enigmail.columnHandler = {
       }
       catch (ex) {}
     }
-  }
-};
+  },
 
-window.addEventListener("load",
-  function() {
+  onLoadEnigmail: function() {
     var ObserverService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);
     ObserverService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
 
     let folderTree = document.getElementById("folderTree");
-    folderTree.addEventListener("select", function _f() {
-      Enigmail.columnHandler.resetUsingPep();
-    });
-  },
-  false
-);
+    folderTree.addEventListener("select", Enigmail.columnHandler.resetUsingPep.bind(Enigmail.columnHandler));
+  }
+};
+
+window.addEventListener("load-enigmail", Enigmail.columnHandler.onLoadEnigmail, false);
