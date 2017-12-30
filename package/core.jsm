@@ -119,6 +119,7 @@ var EnigmailCore = {
     }
 
     getEnigmailPEPAdapter().onShutdown();
+    getEnigmailVerify().unregisterContentTypeHandler();
 
     getEnigmailGpgAgent().finalize();
     getEnigmailLog().onShutdown();

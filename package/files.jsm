@@ -408,6 +408,46 @@ var EnigmailFiles = {
     return true;
   },
 
+  /**
+   * Create a text file from the contents of a given URL
+   *
+   * @param srcUrl:  String         - the URL to download
+   * @param outFile: nsIFile object - the file to create
+   *
+   * no return value
+   */
+  writeUrlToFile: function(srcUrl, outFile) {
+    lazyLog().DEBUG("files.jsm: writeUrlToFile(" + outFile.path + ")\n");
+
+    var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+    var msgUri = ioServ.newURI(srcUrl, null, null);
+    var channel = lazyStream().createChannelFromURI(msgUri);
+    var istream = channel.open();
+
+    var fstream = Cc["@mozilla.org/network/safe-file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
+    var buffer = Cc["@mozilla.org/network/buffered-output-stream;1"].createInstance(Ci.nsIBufferedOutputStream);
+    fstream.init(outFile, 0x04 | 0x08 | 0x20, 0x180, 0); // write, create, truncate
+    buffer.init(fstream, 8192);
+
+    while (istream.available() > 0) {
+      buffer.writeFrom(istream, istream.available());
+    }
+
+    // Close the output streams
+    if (buffer instanceof Ci.nsISafeOutputStream)
+      buffer.finish();
+    else
+      buffer.close();
+
+    if (fstream instanceof Ci.nsISafeOutputStream)
+      fstream.finish();
+    else
+      fstream.close();
+
+    // Close the input stream
+    istream.close();
+  },
+
   // return the useable path (for gpg) of a file object
   getFilePathReadonly: function(nsFileObj, creationMode) {
     if (creationMode === null) creationMode = NS_RDONLY;
