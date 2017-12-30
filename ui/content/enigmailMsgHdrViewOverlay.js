@@ -11,7 +11,7 @@
 /* globals from Thunderbird: */
 /* global gFolderDisplay: false, currentAttachments: false, gSMIMEContainer: false, gSignedUINode: false, gEncryptedUINode: false */
 /* global gDBView: false, msgWindow: false, messageHeaderSink: false, gMessageListeners: false, findEmailNodeFromPopupNode: true */
-/* global gExpandedHeaderView: false */
+/* global gExpandedHeaderView: false, CanDetachAttachments: true */
 /* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
 
 Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
@@ -53,15 +53,23 @@ Enigmail.hdrView = {
   hdrViewLoad: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.hdrViewLoad\n");
 
+    // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
+    // which wouldn't work otherwise
+
+    this.origCanDetachAttachments = CanDetachAttachments;
+    CanDetachAttachments = function() {
+      return Enigmail.hdrView.origCanDetachAttachments() && Enigmail.hdrView.enigCanDetachAttachments();
+    };
+
     this.msgHdrViewLoad();
 
     // Override SMIME ui
-    var signedHdrElement = document.getElementById("signedHdrIcon");
+    let signedHdrElement = document.getElementById("signedHdrIcon");
     if (signedHdrElement) {
       signedHdrElement.setAttribute("onclick", "Enigmail.msg.viewSecurityInfo(event, true);");
     }
 
-    var encryptedHdrElement = document.getElementById("encryptedHdrIcon");
+    let encryptedHdrElement = document.getElementById("encryptedHdrIcon");
     if (encryptedHdrElement) {
       encryptedHdrElement.setAttribute("onclick", "Enigmail.msg.viewSecurityInfo(event, true);");
     }
@@ -70,12 +78,9 @@ Enigmail.hdrView = {
     this.enigmailBox = document.getElementById("enigmailBox");
     this.pEpBox = document.getElementById("enigmail-pEp-bc");
 
-    var addrPopup = document.getElementById("emailAddressPopup");
+    let addrPopup = document.getElementById("emailAddressPopup");
     if (addrPopup) {
       addrPopup.addEventListener("popupshowing", Enigmail.hdrView.displayAddressPopup.bind(addrPopup), false);
-      // var attr = addrPopup.getAttribute("onpopupshowing");
-      // attr = "Enigmail.hdrView.displayAddressPopup(this); " + attr;
-      // addrPopup.setAttribute("onpopupshowing", attr);
     }
 
     let attCtx = document.getElementById("attachmentItemContext");
@@ -816,7 +821,7 @@ Enigmail.hdrView = {
   msgHdrViewLoad: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewLoad\n");
 
-    var listener = {
+    this.messageListener = {
       enigmailBox: document.getElementById("enigmailBox"),
       onStartHeaders: function _listener_onStartHeaders() {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onStartHeaders\n");
@@ -824,24 +829,14 @@ Enigmail.hdrView = {
         try {
 
           Enigmail.hdrView.statusBarHide();
-
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
-
           Enigmail.hdrView.setStatusText("");
-
           this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
 
-          var msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-
+          let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
           if (msgFrame) {
-            EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: msgFrame=" + msgFrame + "\n");
-
             msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView), true);
-            msgFrame.addEventListener("load", function _f() {
-              Enigmail.hdrView.enablePepMenus();
-              Enigmail.msg.messageAutoDecrypt();
-              Enigmail.msg.handleAttchmentEvent();
-            }, false);
+            msgFrame.addEventListener("load", Enigmail.hdrView.messageLoad.bind(Enigmail.hdrView), false);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -866,11 +861,11 @@ Enigmail.hdrView = {
       }
     };
 
-    gMessageListeners.push(listener);
+    gMessageListeners.push(this.messageListener);
 
     // fire the handlers since some windows open directly with a visible message
-    listener.onStartHeaders();
-    listener.onEndHeaders();
+    this.messageListener.onStartHeaders();
+    this.messageListener.onEndHeaders();
   },
 
   messageUnload: function() {
@@ -879,6 +874,13 @@ Enigmail.hdrView = {
       Enigmail.msg.securityInfo.xtraStatus = "";
     }
     this.forgetEncryptedMsgKey();
+  },
+
+  messageLoad: function() {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
+    Enigmail.hdrView.enablePepMenus();
+    Enigmail.msg.messageAutoDecrypt();
+    Enigmail.msg.handleAttchmentEvent();
   },
 
   copyStatusInfo: function() {
@@ -1645,27 +1647,45 @@ Enigmail.hdrView = {
       EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
       return this._smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
     }
-  }
+  },
 
+  onUnloadEnigmail: function() {
+    window.removeEventListener("load-enigmail", Enigmail.hdrView.hdrViewLoad, false);
+    for (let i = 0; i < gMessageListeners.length; i++) {
+      if (gMessageListeners[i] === Enigmail.hdrView.messageListener) {
+        gMessageListeners.splice(i, 1);
+        break;
+      }
+    }
+
+    let signedHdrElement = document.getElementById("signedHdrIcon");
+    if (signedHdrElement) {
+      signedHdrElement.setAttribute("onclick", "showMessageReadSecurityInfo();");
+    }
+
+    let encryptedHdrElement = document.getElementById("encryptedHdrIcon");
+    if (encryptedHdrElement) {
+      encryptedHdrElement.setAttribute("onclick", "showMessageReadSecurityInfo();");
+    }
+
+    let addrPopup = document.getElementById("emailAddressPopup");
+    if (addrPopup) {
+      addrPopup.removeEventListener("popupshowing", Enigmail.hdrView.displayAddressPopup, false);
+    }
+
+    let attCtx = document.getElementById("attachmentItemContext");
+    if (attCtx) {
+      attCtx.removeEventListener("popupshowing", this.onShowAttachmentContextMenu, false);
+    }
+
+    let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+    if (msgFrame) {
+      msgFrame.removeEventListener("unload", Enigmail.hdrView.messageUnload, true);
+      msgFrame.removeEventListener("load", Enigmail.hdrView.messageLoad, false);
+    }
+
+    CanDetachAttachments = Enigmail.hdrView.origCanDetachAttachments;
+  }
 };
 
 window.addEventListener("load-enigmail", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);
-
-
-////////////////////////////////////////////////////////////////////////////////
-// THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
-////////////////////////////////////////////////////////////////////////////////
-
-// there is unfortunately no other way to add Enigmail to the validator than this
-
-function CanDetachAttachments() {
-  var canDetach = !gFolderDisplay.selectedMessageIsNews &&
-    (!gFolderDisplay.selectedMessageIsImap || MailOfflineMgr.isOnline());
-
-  if (canDetach && ("content-type" in currentHeaderData)) {
-    var contentType = currentHeaderData["content-type"].headerValue;
-
-    canDetach = !ContentTypeIsSMIME(currentHeaderData["content-type"].headerValue);
-  }
-  return canDetach && Enigmail.hdrView.enigCanDetachAttachments();
-}

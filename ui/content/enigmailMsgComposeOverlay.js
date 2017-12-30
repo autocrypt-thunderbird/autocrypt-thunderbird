@@ -5362,6 +5362,8 @@ Enigmail.composeUnload = function _unload_Enigmail() {
   window.removeEventListener("unload-enigmail", Enigmail.composeUnload, false);
   window.removeEventListener("load-enigmail", Enigmail.msg.composeStartup, false);
   window.removeEventListener("compose-window-unload", Enigmail.msg.msgComposeClose, true);
+  window.removeEventListener('compose-send-message', Enigmail.msg.sendMessageListener, true);
+
   gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
 
   let msgId = document.getElementById("msgIdentityPopup");
