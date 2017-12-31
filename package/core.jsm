@@ -97,7 +97,7 @@ var EnigmailCore = {
       }
       catch (ex) {}
 
-      getEnigmailFilters().registerAll();
+      getEnigmailFilters().onStartup();
     }
 
     getEnigmailVerify().registerContentTypeHandler();

@@ -295,6 +295,27 @@ const filterTermPGPEncrypted = {
   }
 };
 
+/**
+ * Add a custom filter action. If the filter already exists, do nothing
+ * (for example, if addon is disabled and re-enabled)
+ *
+ * @param filterObj - nsIMsgFilterCustomAction
+ */
+function addFilterIfNotExists(filterObj) {
+  let filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
+
+  let foundFilter = null;
+  try {
+    foundFilter = filterService.getCustomAction(filterObj.id);
+  }
+  catch (ex) {}
+
+  if (!foundFilter) {
+    EnigmailLog.DEBUG("filters.jsm: addFilterIfNotExists: " + filterObj.id + "\n");
+    filterService.addCustomAction(filterObj);
+  }
+}
+
 function initNewMailListener() {
   EnigmailLog.DEBUG("filters.jsm: initNewMailListener()\n");
 
@@ -304,6 +325,17 @@ function initNewMailListener() {
     notificationService.addListener(newMailListener, notificationService.msgAdded);
   }
   gNewMailListenerInitiated = true;
+}
+
+function shutdownNewMailListener() {
+  EnigmailLog.DEBUG("filters.jsm: shutdownNewMailListener()\n");
+
+  if (gNewMailListenerInitiated) {
+    let notificationService = Cc["@mozilla.org/messenger/msgnotificationservice;1"]
+      .getService(Ci.nsIMsgFolderNotificationService);
+    notificationService.removeListener(newMailListener);
+    gNewMailListenerInitiated = false;
+  }
 }
 
 function getIdentityForSender(senderEmail, msgServer) {
@@ -503,13 +535,16 @@ const newMailListener = {
  */
 
 var EnigmailFilters = {
-  registerAll: function() {
-    var filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
-    filterService.addCustomAction(filterActionMoveDecrypt);
-    filterService.addCustomAction(filterActionCopyDecrypt);
-    filterService.addCustomAction(filterActionEncrypt);
-    filterService.addCustomTerm(filterTermPGPEncrypted);
+  onStartup: function() {
+    addFilterIfNotExists(filterActionMoveDecrypt);
+    addFilterIfNotExists(filterActionCopyDecrypt);
+    addFilterIfNotExists(filterActionEncrypt);
+    addFilterIfNotExists(filterTermPGPEncrypted);
     initNewMailListener();
+  },
+
+  onShutdown: function() {
+    shutdownNewMailListener();
   },
 
   /**
