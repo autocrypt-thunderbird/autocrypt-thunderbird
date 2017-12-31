@@ -146,11 +146,11 @@ Enigmail.msg = {
 
     // Relabel SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
+    let toolbar = document.getElementById("composeToolbar2");
 
     if (smimeButton) {
       smimeButton.setAttribute("label", "S/MIME");
-      let toolbar = document.getElementById("composeToolbar2");
-      if (toolbar.getAttribute("currentset").length === 0) {
+      if (toolbar && toolbar.getAttribute("currentset").length === 0) {
         // remove S/MIME button if the toolbar is displaying the default set
         toolbar.removeChild(smimeButton);
       }
