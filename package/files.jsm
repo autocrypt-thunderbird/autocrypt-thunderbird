@@ -29,7 +29,6 @@ const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams"
 const lazyLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const NS_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const NS_SCRIPTABLEINPUTSTREAM_CONTRACTID = "@mozilla.org/scriptableinputstream;1";
@@ -128,7 +127,7 @@ var EnigmailFiles = {
     try {
       let localFile;
       if (typeof filePath == "string") {
-        localFile = Cc[NS_LOCAL_FILE_CONTRACTID].createInstance(Ci.nsIFile);
+        localFile = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
         EnigmailFiles.initPath(localFile, filePath);
       }
       else {
