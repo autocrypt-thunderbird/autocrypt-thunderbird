@@ -33,17 +33,13 @@ const {
   utils: Cu
 } = Components;
 
-const {
-  EnigmailConstants
-} = Cu.import("resource://enigmail/constants.jsm", {});
-const {
-  EnigmailLog
-} = Cu.import("resource://enigmail/log.jsm", {});
+const APP_SHUTDOWN = 2;
 
 const {
   Services, Promise
 } = Cu.import("resource://gre/modules/Services.jsm", {});
 
+// the following constants need to be customized for each addon
 const BASE_PATH = "chrome://enigmail/content/";
 const MY_ADDON_ID = "enigmail";
 
@@ -103,10 +99,25 @@ const overlays = {
 };
 
 
+///////// Enigmail-specific part start
+const {
+  EnigmailLog
+} = Cu.import("resource://enigmail/log.jsm", {});
+
+function DEBUG_LOG(str) {
+  EnigmailLog.DEBUG(str);
+}
+
+function ERROR_LOG(str) {
+  EnigmailLog.ERROR(str);
+}
+
+///////// Enigmail-specific part end
+
 
 var WindowListener = {
   setupUI: function(window, overlayDefs) {
-    EnigmailLog.DEBUG("overlays.jsm: setupUI(" + window.document.location.href + ")\n");
+    DEBUG_LOG("overlays.jsm: setupUI(" + window.document.location.href + ")\n");
 
     loadOverlay(window, overlayDefs, 0);
   },
@@ -182,7 +193,7 @@ var EnigmailOverlays = {
   shutdown: function(reason) {
     // When the application is shutting down we normally don't have to clean
     // up any UI changes made
-    if (reason == EnigmailConstants.APP_SHUTDOWN)
+    if (reason == APP_SHUTDOWN)
       return;
 
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
@@ -193,6 +204,10 @@ var EnigmailOverlays = {
       let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 
       WindowListener.tearDownUI(domWindow);
+
+      // If this is a window opened by the addon, then close it
+      if (domWindow.document.location.href.startsWith(BASE_PATH))
+        domWindow.close();
     }
 
     // Stop listening for any new browser windows to open
@@ -277,7 +292,7 @@ function insertXul(srcUrl, window, document, callback) {
      *
      */
     function addToolbarButton(palette, toolbarButton, toolbarId) {
-      EnigmailLog.DEBUG("overlays.jsm: adding button '" + toolbarButton.id + " to " + toolbarId + "'\n");
+      DEBUG_LOG("overlays.jsm: adding button '" + toolbarButton.id + " to " + toolbarId + "'\n");
 
       let toolbar = $(toolbarId);
       let buttonId = toolbarButton.id;
@@ -350,7 +365,7 @@ function insertXul(srcUrl, window, document, callback) {
       return nn;
     }
 
-    EnigmailLog.DEBUG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
+    DEBUG_LOG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
 
     try {
       // store unloaders for all elements inserted
@@ -365,11 +380,11 @@ function insertXul(srcUrl, window, document, callback) {
             let toolbarId = xul[id].getAttribute("targetToolbar");
             let defaultSet = xul[id].getAttribute("targetToolbarDefaultset");
             if (!toolboxId) {
-              EnigmailLog.DEBUG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
+              DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
               continue;
             }
             if (!toolbarId) {
-              EnigmailLog.DEBUG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
+              DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
               continue;
             }
 
@@ -392,7 +407,7 @@ function insertXul(srcUrl, window, document, callback) {
             }
           }
           else {
-            EnigmailLog.DEBUG("overlays.jsm: injectDOM: no target for " + id + ", not inserting\n");
+            DEBUG_LOG("overlays.jsm: injectDOM: no target for " + id + ", not inserting\n");
           }
           continue;
         }
@@ -408,16 +423,16 @@ function insertXul(srcUrl, window, document, callback) {
       }
     }
     catch (ex) {
-      EnigmailLog.ERROR("overlays.jsm: injectDOM: failed to inject xul " + ex.toString());
+      ERROR_LOG("overlays.jsm: injectDOM: failed to inject xul " + ex.toString());
     }
   }
 
-  EnigmailLog.DEBUG("overlays.jsm: insertXul(" + srcUrl + ")\n");
+  DEBUG_LOG("overlays.jsm: insertXul(" + srcUrl + ")\n");
 
   let xmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
 
   xmlReq.onload = function() {
-    EnigmailLog.DEBUG("loaded: " + srcUrl + "\n");
+    DEBUG_LOG("loaded: " + srcUrl + "\n");
     let document = xmlReq.responseXML;
 
     // clean the document a bit
@@ -438,19 +453,19 @@ function insertXul(srcUrl, window, document, callback) {
         continue;
       }
       if (!n.hasAttribute("id")) {
-        EnigmailLog.DEBUG("overlays.jsm: insertXul: no ID for " + n.tagName + "\n");
+        DEBUG_LOG("overlays.jsm: insertXul: no ID for " + n.tagName + "\n");
         continue;
       }
 
       let id = n.getAttribute("id");
       if (id in xul) {
-        EnigmailLog.DEBUG("overlays.jsm: insertXul: duplicate ID: " + id + "\n");
+        DEBUG_LOG("overlays.jsm: insertXul: duplicate ID: " + id + "\n");
         continue;
       }
       xul[id] = n;
     }
     if (!Object.keys(xul).length) {
-      EnigmailLog.ERROR("No element to overlay found. Maybe a parsing error?\n");
+      ERROR_LOG("No element to overlay found. Maybe a parsing error?\n");
       return;
     }
 
@@ -481,7 +496,7 @@ function insertXul(srcUrl, window, document, callback) {
 
 
   xmlReq.onerror = xmlReq.onabort = function() {
-    EnigmailLog.ERROR("Failed to load " + srcUrl + "\n");
+    ERROR_LOG("Failed to load " + srcUrl + "\n");
     callback(0);
   };
 
@@ -497,7 +512,7 @@ function insertXul(srcUrl, window, document, callback) {
     xmlReq.channel.owner = sec.getSystemPrincipal();
   }
   catch (ex) {
-    EnigmailLog.ERROR("Failed to set system principal\n");
+    ERROR_LOG("Failed to set system principal\n");
   }
 
   xmlReq.send();
@@ -505,7 +520,7 @@ function insertXul(srcUrl, window, document, callback) {
 }
 
 function loadOverlay(window, overlayDefs, index) {
-  EnigmailLog.DEBUG("overlays.jsm: loadOverlay(" + index + ")\n");
+  DEBUG_LOG("overlays.jsm: loadOverlay(" + index + ")\n");
 
   try {
     if (index < overlayDefs.length) {
@@ -517,13 +532,13 @@ function loadOverlay(window, overlayDefs, index) {
         url = overlayDef.url;
         if (overlayDef.application.substr(0, 1) === "!") {
           if (overlayDef.application.indexOf(getAppId()) > 0) {
-            EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping " + url + "\n");
+            DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
             loadOverlay(window, overlayDefs, index + 1);
             return;
           }
         }
         else if (overlayDef.application.indexOf(getAppId()) < 0) {
-          EnigmailLog.DEBUG("overlays.jsm: loadOverlay: skipping " + url + "\n");
+          DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
           loadOverlay(window, overlayDefs, index + 1);
           return;
         }
@@ -536,15 +551,15 @@ function loadOverlay(window, overlayDefs, index) {
       insertXul(url, window, document, observer);
     }
     else {
-      EnigmailLog.DEBUG("overlays.jsm: loadOverlay: completed\n");
+      DEBUG_LOG("overlays.jsm: loadOverlay: completed\n");
 
       let e = new Event("load-" + MY_ADDON_ID);
       window.dispatchEvent(e);
-      EnigmailLog.DEBUG("overlays.jsm: loadOverlay: event completed\n");
+      DEBUG_LOG("overlays.jsm: loadOverlay: event completed\n");
     }
   }
   catch (ex) {
-    EnigmailLog.ERROR("overlays.jsm: could not overlay for " + window.document.location.href + ":\n" + ex.toString() + "\n");
+    ERROR_LOG("overlays.jsm: could not overlay for " + window.document.location.href + ":\n" + ex.toString() + "\n");
   }
 }
 
@@ -570,7 +585,7 @@ function loadCss(url, targetWindow) {
     if (node) node.appendChild(e);
   }
   catch (ex) {
-    EnigmailLog.ERROR("Error while loading CSS " + url + ":\n" + ex.message + "\n");
+    ERROR_LOG("Error while loading CSS " + url + ":\n" + ex.message + "\n");
   }
 }
 
@@ -581,6 +596,6 @@ function loadScript(url, targetWindow) {
     loader.loadSubScript(url, targetWindow);
   }
   catch (ex) {
-    EnigmailLog.ERROR("Error while loading script " + url + ":\n" + ex.message + "\n");
+    ERROR_LOG("Error while loading script " + url + ":\n" + ex.message + "\n");
   }
 }
