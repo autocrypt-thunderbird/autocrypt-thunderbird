@@ -40,8 +40,6 @@ Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailA
 
 if (!Enigmail) var Enigmail = {};
 
-const EC = EnigmailCore;
-
 Enigmail.hdrView = {
 
   statusBar: null,

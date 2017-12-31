@@ -111,7 +111,7 @@ Enigmail.columnHandler = {
     folderTree.addEventListener("select", Enigmail.columnHandler.resetUsingPep.bind(Enigmail.columnHandler), false);
   },
 
-  onUnoadEnigmail: function() {
+  onUnloadEnigmail: function() {
     // triggered from enigmailMessengerOverlay.js
     let observerService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);

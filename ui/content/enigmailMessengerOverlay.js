@@ -62,9 +62,6 @@ Enigmail.getEnigmailSvc = function() {
   return EnigmailCore.getService(window);
 };
 
-const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
-const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
-
 Enigmail.msg = {
   createdURIs: [],
   decryptedMessage: null,
@@ -285,12 +282,11 @@ Enigmail.msg = {
       enigmailBox.setAttribute("collapsed", "true");
 
       var statusText = document.getElementById("expandedEnigmailStatusText");
-
-      if (statusText)
-        statusText.value = "";
+      if (statusText) statusText.value = "";
     }
 
-    document.getElementById("enigmailBrokenExchangeBox").setAttribute("collapsed", "true");
+    let exchBox = document.getElementById("enigmailBrokenExchangeBox");
+    if (exchBox) exchBox.setAttribute("collapsed", "true");
 
     this.setAttachmentReveal(null);
 
@@ -1893,7 +1889,7 @@ Enigmail.msg = {
     // open
     var tmpDir = EnigmailFiles.getTempDir();
     var outFile1, outFile2;
-    outFile1 = Components.classes[LOCAL_FILE_CONTRACTID].
+    outFile1 = Components.classes["@mozilla.org/file/local;1"].
     createInstance(Components.interfaces.nsIFile);
     outFile1.initWithPath(tmpDir);
     if (!(outFile1.isDirectory() && outFile1.isWritable())) {
@@ -1904,7 +1900,7 @@ Enigmail.msg = {
     outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     EnigmailFiles.writeUrlToFile(origAtt.url, outFile1);
 
-    outFile2 = Components.classes[LOCAL_FILE_CONTRACTID].
+    outFile2 = Components.classes["@mozilla.org/file/local;1"].
     createInstance(Components.interfaces.nsIFile);
     outFile2.initWithPath(tmpDir);
     outFile2.append(EnigmailMsgRead.getAttachmentName(signatureAtt));
@@ -1941,7 +1937,7 @@ Enigmail.msg = {
     };
 
     var bufferListener = EnigmailStreams.newStringStreamListener(f);
-    var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+    var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
     var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
     var channel = EnigmailStreams.createChannelFromURI(msgUri);
@@ -2009,7 +2005,7 @@ Enigmail.msg = {
       // open
       var tmpDir = EnigmailFiles.getTempDir();
       try {
-        outFile = Components.classes[LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsIFile);
+        outFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
         outFile.initWithPath(tmpDir);
         if (!(outFile.isDirectory() && outFile.isWritable())) {
           errorMsgObj.value = EnigmailLocale.getString("noTempDir");
@@ -2108,7 +2104,7 @@ Enigmail.msg = {
       }
       else if ((statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) ||
         (callbackArg.actionType == "openAttachment")) {
-        var ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
+        var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
         var outFileUri = ioServ.newFileURI(outFile);
         var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2");
         if (fileExt && !callbackArg.forceBrowser) {
