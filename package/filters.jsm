@@ -96,10 +96,14 @@ const filterActionCopyDecrypt = {
   },
 
   isValidForType: function(type, scope) {
+    EnigmailLog.DEBUG("filters.jsm: filterActionCopyDecrypt.isValidForType(" + type + ")\n");
+
     return true;
   },
 
   validateActionValue: function(value, folder, type) {
+    EnigmailLog.DEBUG("filters.jsm: filterActionCopyDecrypt.validateActionValue(" + value + ")\n");
+
     if (value === "") {
       return EnigmailLocale.getString("filter.folderRequired");
     }
@@ -539,7 +543,9 @@ var EnigmailFilters = {
     addFilterIfNotExists(filterActionMoveDecrypt);
     addFilterIfNotExists(filterActionCopyDecrypt);
     addFilterIfNotExists(filterActionEncrypt);
-    addFilterIfNotExists(filterTermPGPEncrypted);
+
+    let filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
+    filterService.addCustomTerm(filterTermPGPEncrypted);
     initNewMailListener();
   },
 

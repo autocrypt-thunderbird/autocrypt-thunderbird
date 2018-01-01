@@ -48,4 +48,4 @@ var EnigmailListEditor = {
   }
 };
 
-window.addEventListener("load", EnigmailListEditor.onLoad.bind(EnigmailListEditor), false);
+window.addEventListener("load-enigmail", EnigmailListEditor.onLoad.bind(EnigmailListEditor), false);

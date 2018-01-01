@@ -6,15 +6,23 @@
  */
 
 /**
- * Load overlays in quite the same way as XUL did for non-bootstrapped addons
+ * Load overlays in a similar way as XUL did for non-bootstrapped addons
+ * Unlike "real" XUL, overlays are only loaded over window URLs, and no longer
+ * over any xul file that is loaded somewhere.
+ *
  *
  * Prepare the XUL files:
  *
- * 1. make sure that all overlayed elements reference IDs that exust in the target window.
- *    Elements without target ID can't be loaded.
- * 2. define external CSS the same way as you would in HTML, i.e.:
+ * 1. Elements can be referenced by ID, or by CSS selector (document.querySelector()).
+ *    To use the a CSS Selector query, define the attribute "overlay_target"
+ *    e.g. <vbox overlay_target=".test>...</vbox>
+ *
+ * 2. define CSS the same way as you would in HTML, i.e.:
  *      <link rel="stylesheet" type="text/css" href="chrome://some/cssFile.css"/>
- * 3. if you add buttons to a toolbar using <toolbarpalette/> in your XUL, add the
+ *
+ * 3. inline scripts are not supported
+ *
+ * 4. if you add buttons to a toolbar using <toolbarpalette/> in your XUL, add the
  *    following attributes to the toolbarpalette:
  *      targetToolbox="some_id"   --> the ID of the *toolbox* where the buttons are added
  *      targetToolbar="some_id"   --> the ID of the *toolbar* where the buttons are added
@@ -75,27 +83,27 @@ const overlays = {
 
   "chrome://messenger/content/messengercompose/messengercompose.xul": [
     "enigmailMsgComposeOverlay.xul"
-  ]
+  ],
 
-  // "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
-  // "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
-  // "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"],
-  // "chrome://messenger/content/am-identity-edit.xul": [
-  //   "enigmailAmIdEditOverlay.xul",
-  //   "enigmailEditIdentity.xul"
-  // ],
-  // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  // "chrome://messenger/content/addressbook/csContactsOverlay.xul": ["enigmailAbCardViewOverlay.xul"],
-  // "chrome://messenger/content/addressbook/abContactsPanel.xul": ["enigmailAbContactsPanel.xul"],
-  // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"],
-  // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
-  // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
-  //
-  // // Overlay for privacy preferences in Thunderbird
-  // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
-  //
-  // // Overlay for S/Mime preferences
-  // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"]
+  "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
+  "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"]
+    // "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"],
+    // "chrome://messenger/content/am-identity-edit.xul": [
+    //   "enigmailAmIdEditOverlay.xul",
+    //   "enigmailEditIdentity.xul"
+    // ],
+    // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
+    // "chrome://messenger/content/addressbook/csContactsOverlay.xul": ["enigmailAbCardViewOverlay.xul"],
+    // "chrome://messenger/content/addressbook/abContactsPanel.xul": ["enigmailAbContactsPanel.xul"],
+    // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"],
+    // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
+    // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
+    //
+    // // Overlay for privacy preferences in Thunderbird
+    // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
+    //
+    // // Overlay for S/Mime preferences
+    // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"]
 };
 
 
@@ -368,62 +376,82 @@ function insertXul(srcUrl, window, document, callback) {
     DEBUG_LOG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
 
     try {
-      // store unloaders for all elements inserted
-      let unloaders = [];
+      let rootNode = null;
+
+      for (let n = document.documentElement.firstChild; n; n = n.nextSibling) {
+        if (n.nodeType == n.ELEMENT_NODE) {
+          rootNode = n;
+          break;
+        }
+      }
+      if (!rootNode) {
+        ERROR_LOG("overlays.jsm: injectDOM: no root node found\n");
+      }
 
       // Add all overlays
-      for (let id in xul) {
-        let target = $(id);
-        if (!target) {
-          if (xul[id].tagName === "toolbarpalette") {
-            let toolboxId = xul[id].getAttribute("targetToolbox");
-            let toolbarId = xul[id].getAttribute("targetToolbar");
-            let defaultSet = xul[id].getAttribute("targetToolbarDefaultset");
-            if (!toolboxId) {
-              DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbox defined\n");
-              continue;
-            }
-            if (!toolbarId) {
-              DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette " + id + ": no target toolbar defined\n");
-              continue;
-            }
+      for (let i in xul) {
+        let target;
 
-            if (defaultSet) {
-              let toolbar = $(toolbarId);
-              if (toolbar) {
-                toolbar.setAttribute("defaultset", defaultSet);
-              }
-            }
+        if (xul[i].hasAttribute("id")) {
+          target = $(xul[i].id);
+        }
+        else if (xul[i].hasAttribute("overlay_target")) {
+          target = $$(xul[i].getAttribute("overlay_target"));
+          if (target && !target.hasAttribute("id")) {
+            target.id = MY_ADDON_ID + "_overlay_" + i;
+          }
+        }
+        else {
+          target = rootNode;
+        }
 
-            let toolbox = $(toolboxId);
-            let palette = toolbox.palette;
-            let c = xul[id].children;
+        if (xul[i].tagName === "toolbarpalette") {
+          let toolboxId = xul[i].getAttribute("targetToolbox");
+          let toolbarId = xul[i].getAttribute("targetToolbar");
+          let defaultSet = xul[i].getAttribute("targetToolbarDefaultset");
+          if (!toolboxId) {
+            DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette: no target toolbox defined\n");
+            continue;
+          }
+          if (!toolbarId) {
+            DEBUG_LOG("overlays.jsm: injectDOM: cannot overlay toolbarpalette: no target toolbar defined\n");
+            continue;
+          }
 
-            while (c.length > 0) {
-              // added toolbar buttons are removed from the palette's children
-              if (c[0].tagName && c[0].tagName === "toolbarbutton") {
-                addToolbarButton(palette, c[0], toolbarId);
-              }
+          if (defaultSet) {
+            let toolbar = $(toolbarId);
+            if (toolbar) {
+              toolbar.setAttribute("defaultset", defaultSet);
             }
           }
-          else {
-            DEBUG_LOG("overlays.jsm: injectDOM: no target for " + id + ", not inserting\n");
+
+          let toolbox = $(toolboxId);
+          let palette = toolbox.palette;
+          let c = xul[i].children;
+
+          while (c.length > 0) {
+            // added toolbar buttons are removed from the palette's children
+            if (c[0].tagName && c[0].tagName === "toolbarbutton") {
+              addToolbarButton(palette, c[0], toolbarId);
+            }
           }
+        }
+        else if (!target) {
+          DEBUG_LOG("overlays.jsm: injectDOM: no target for " + xul[i].tagName + ", not inserting\n");
           continue;
         }
 
         // insert all children
-        for (let n of xul[id].children) {
+        for (let n of xul[i].children) {
           if (n.nodeType != n.ELEMENT_NODE) {
             continue;
           }
           let nn = addNode(target, n);
-          unloaders.push(() => nn.parentNode.removeChild(nn));
         }
       }
     }
     catch (ex) {
-      ERROR_LOG("overlays.jsm: injectDOM: failed to inject xul " + ex.toString());
+      ERROR_LOG("overlays.jsm: injectDOM: failed to inject xul " + ex.message + "\n");
     }
   }
 
@@ -444,27 +472,21 @@ function insertXul(srcUrl, window, document, callback) {
     }
 
     // prepare all elements to be inserted
-    let xul = {};
+    let xul = [];
+    let foundElement = false;
     for (let n = document.documentElement.firstChild; n; n = n.nextSibling) {
       if (n.nodeType != n.ELEMENT_NODE) {
         continue;
       }
       if (n.tagName === "script" || n.tagName === "link") {
-        continue;
-      }
-      if (!n.hasAttribute("id")) {
-        DEBUG_LOG("overlays.jsm: insertXul: no ID for " + n.tagName + "\n");
+        foundElement = true;
         continue;
       }
 
-      let id = n.getAttribute("id");
-      if (id in xul) {
-        DEBUG_LOG("overlays.jsm: insertXul: duplicate ID: " + id + "\n");
-        continue;
-      }
-      xul[id] = n;
+      foundElement = true;
+      xul.push(n);
     }
-    if (!Object.keys(xul).length) {
+    if (!foundElement) {
       ERROR_LOG("No element to overlay found. Maybe a parsing error?\n");
       return;
     }
@@ -570,6 +592,8 @@ function unloadCSS(url, targetWindow) {
 }
 
 function loadCss(url, targetWindow) {
+  DEBUG_LOG("overlays.jsm: loadCss(" + url + ")\n");
+
   try {
     let domWindowUtils = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
     domWindowUtils.loadSheetUsingURIString(url, 1);

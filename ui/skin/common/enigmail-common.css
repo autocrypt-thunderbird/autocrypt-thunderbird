@@ -263,15 +263,15 @@ treechildren::-moz-tree-cell-text(STYLE) {}
  ******************************/
 
 .ruleactiontarget[type="enigmail@enigmail.net#filterActionMoveDecrypt"] {
-  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder") !important;
 }
 
 .ruleactiontarget[type="enigmail@enigmail.net#filterActionCopyDecrypt"] {
-  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder");
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-folder") !important;
 }
 
 .ruleactiontarget[type="enigmail@enigmail.net#filterActionEncrypt"] {
-  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-forwardto");
+  -moz-binding: url("chrome://messenger/content/searchWidgets.xml#ruleactiontarget-forwardto") !important;
 }
 
 .enigmailPassphraseQuality {

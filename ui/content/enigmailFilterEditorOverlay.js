@@ -12,16 +12,20 @@
 
 Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
-// Overwrite the original checkActionsReorder function
-
-var enigmail_origCheckActionsReorder = checkActionsReorder;
-
-checkActionsReorder = function() {
-  enigmail_origCheckActionsReorder();
-  EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
-};
 
 var EnigmailFilterEditor = {
+  onLoad: function() {
+    let self = this;
+    // Overwrite the original checkActionsReorder function
+    this.enigmail_origCheckActionsReorder = checkActionsReorder;
+
+    checkActionsReorder = function() {
+      let r = self.enigmail_origCheckActionsReorder();
+      EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 0);
+      return r;
+    };
+  },
+
   checkMoveAction: function() {
     let dlg = document.getElementById("FilterEditor");
     let acceptButton = dlg.getButton("accept");
@@ -54,12 +58,14 @@ var EnigmailFilterEditor = {
     }
 
     if (forbidden >= 0 || (hasMoveAction >= 0 && hasCopyAction > hasMoveAction)) {
-      document.getElementById("enigmailInfobar").setAttribute("style", "visibility: visible");
+      document.getElementById("enigmailInfobar").removeAttribute("hidden");
       acceptButton.setAttribute("disabled", "true");
     }
     else {
-      document.getElementById("enigmailInfobar").setAttribute("style", "visibility: hidden");
+      document.getElementById("enigmailInfobar").setAttribute("hidden", "true");
       acceptButton.setAttribute("disabled", "false");
     }
   }
 };
+
+window.addEventListener("load-enigmail", EnigmailFilterEditor.onLoad.bind(EnigmailFilterEditor), false);
