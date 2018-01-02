@@ -140,6 +140,22 @@ Enigmail.msg = {
       }
     }
 
+    // manually load overlay for contacts sidebar
+    // wait 2 seconds because loading of the sidebar is slightly delayed
+    let sb = document.getElementById("sidebar");
+    if (sb) {
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
+      EnigmailTimer.setTimeout(function _f() {
+        if ("loadOverlay" in sb.contentDocument) {
+          sb.contentDocument.loadOverlay("chrome://enigmail/content/enigmailAbContactsPanel.xul", null);
+        }
+      }, 2000);
+    }
+
+    let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
+    customizeToolbar.addEventListener("pageshow", function(event) {
+      event.target.loadOverlay("chrome://enigmail/content/enigmailCustToolOverlay.xul", null);
+    }, false);
 
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
     Enigmail.msg.composeBodyReady = false;

@@ -11,7 +11,7 @@
 Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
 
 
-window.addEventListener("load", function _enigmail_msgPrintLoad() {
+window.addEventListener("load-enigmail", function _enigmail_msgPrintLoad() {
     EnigmailLog.DEBUG("enigmailMsgPrintOverlay.js: enigMsgPrintLoad\n");
 
     // functionality to be added ...

@@ -86,24 +86,21 @@ const overlays = {
   ],
 
   "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
-  "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"]
-    // "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"],
-    // "chrome://messenger/content/am-identity-edit.xul": [
-    //   "enigmailAmIdEditOverlay.xul",
-    //   "enigmailEditIdentity.xul"
-    // ],
-    // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-    // "chrome://messenger/content/addressbook/csContactsOverlay.xul": ["enigmailAbCardViewOverlay.xul"],
-    // "chrome://messenger/content/addressbook/abContactsPanel.xul": ["enigmailAbContactsPanel.xul"],
-    // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"],
-    // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
-    // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
-    //
-    // // Overlay for privacy preferences in Thunderbird
-    // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
-    //
-    // // Overlay for S/Mime preferences
-    // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"]
+  "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
+  // "chrome://messenger/content/am-identity-edit.xul": [
+  //   "enigmailAmIdEditOverlay.xul",
+  //   "enigmailEditIdentity.xul"
+  // ],
+  "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
+  // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
+  // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
+  //
+  // // Overlay for privacy preferences in Thunderbird
+  // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
+  //
+  // // Overlay for S/Mime preferences
+  // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"],
+  "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"]
 };
 
 
@@ -179,8 +176,7 @@ var WindowListener = {
 
 var EnigmailOverlays = {
   startup: function(reason) {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-    getService(Ci.nsIWindowMediator);
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
     // Get the list of browser windows already open
     let windows = wm.getEnumerator(null);

@@ -15,11 +15,11 @@
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
 
-  <popup id="cardProperties">
+  <menupopup id="cardProperties">
     <menuseparator/>
     <menuitem id="enigmail_createContactsRule"
               label="&enigmail.createRuleFromAddr.label;"
-              oncommand="Enigmail.createRuleFromCard();"/>
-  </popup>
+              oncommand="EnigmailAbOverlay.createRuleFromCard();"/>
+  </menupopup>
 
 </overlay>

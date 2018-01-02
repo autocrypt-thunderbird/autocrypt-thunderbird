@@ -27,6 +27,9 @@ var EnigmailListEditor = {
   },
 
   onUnload: function() {
+    window.removeEventListener("load-enigmail", EnigmailListEditor.onLoad, false);
+    window.removeEventListener("unload-enigmail", EnigmailListEditor.onUnload, false);
+
     let fl = document.getElementById("filterList");
     fl.removeEventListener("select", EnigmailListEditor.onSelect, false);
     fl.removeEventListener("click", EnigmailListEditor.onClick, true);

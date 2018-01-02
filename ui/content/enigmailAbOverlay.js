@@ -12,7 +12,7 @@
 Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 
-var Enigmail = {
+var EnigmailAbOverlay = {
   createRuleFromAddress: function(emailAddressNode) {
     if (emailAddressNode) {
       var r = new RegExp("^" + emailAddressNode.protocol);
@@ -32,3 +32,9 @@ var Enigmail = {
       EnigmailWindows.createNewRule(window, EnigmailFuncs.stripEmail(emailAddress).replace(/,/g, " "));
   }
 };
+
+window.addEventListener("unload-enigmail", function _unload() {
+    window.removeEventListener("unload-enigmail", _unload, false);
+    EnigmailAbOverlay = undefined;
+  },
+  false);

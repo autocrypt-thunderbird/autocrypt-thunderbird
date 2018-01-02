@@ -112,9 +112,12 @@ Enigmail.msg = {
       }
     }
 
-    Enigmail.msg.messagePane = document.getElementById("messagepane");
+    let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
+    customizeToolbar.addEventListener("pageshow", function(event) {
+      event.target.loadOverlay("chrome://enigmail/content/enigmailCustToolOverlay.xul", null);
+    }, false);
 
-    if (!Enigmail.msg.messagePane) return; // TB on Mac OS X calls this twice -- once far too early
+    Enigmail.msg.messagePane = document.getElementById("messagepane");
 
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Startup\n");
 

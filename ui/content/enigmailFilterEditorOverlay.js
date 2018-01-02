@@ -27,6 +27,8 @@ var EnigmailFilterEditor = {
   },
 
   onUnload: function() {
+    window.removeEventListener("load-enigmail", EnigmailFilterEditor.onLoad, false);
+    window.removeEventListener("unload-enigmail", EnigmailFilterEditor.onUnload, false);
     checkActionsReorder = this.enigmail_origCheckActionsReorder;
     EnigmailFilterEditor = undefined;
   },
