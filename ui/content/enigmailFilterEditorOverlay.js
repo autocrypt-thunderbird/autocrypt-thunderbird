@@ -26,6 +26,11 @@ var EnigmailFilterEditor = {
     };
   },
 
+  onUnload: function() {
+    checkActionsReorder = this.enigmail_origCheckActionsReorder;
+    EnigmailFilterEditor = undefined;
+  },
+
   checkMoveAction: function() {
     let dlg = document.getElementById("FilterEditor");
     let acceptButton = dlg.getButton("accept");
@@ -69,3 +74,4 @@ var EnigmailFilterEditor = {
 };
 
 window.addEventListener("load-enigmail", EnigmailFilterEditor.onLoad.bind(EnigmailFilterEditor), false);
+window.addEventListener("unload-enigmail", EnigmailFilterEditor.onUnload.bind(EnigmailFilterEditor), false);

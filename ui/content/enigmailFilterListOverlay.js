@@ -22,8 +22,14 @@ var EnigmailListEditor = {
     this.onSelect();
 
     let fl = document.getElementById("filterList");
-    fl.addEventListener("select", EnigmailListEditor.onSelect.bind(EnigmailListEditor));
+    fl.addEventListener("select", EnigmailListEditor.onSelect.bind(EnigmailListEditor), false);
     fl.addEventListener("click", EnigmailListEditor.onClick.bind(EnigmailListEditor), true);
+  },
+
+  onUnload: function() {
+    let fl = document.getElementById("filterList");
+    fl.removeEventListener("select", EnigmailListEditor.onSelect, false);
+    fl.removeEventListener("click", EnigmailListEditor.onClick, true);
   },
 
   onSelect: function() {
@@ -49,3 +55,4 @@ var EnigmailListEditor = {
 };
 
 window.addEventListener("load-enigmail", EnigmailListEditor.onLoad.bind(EnigmailListEditor), false);
+window.addEventListener("unload-enigmail", EnigmailListEditor.onUnload.bind(EnigmailListEditor), false);
