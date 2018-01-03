@@ -1256,20 +1256,13 @@ Enigmail.msg = {
       currentId = getCurrentIdentity();
       var amService = Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
       var servers, folderURI;
-      try {
-        // Gecko >= 20
-        servers = amService.getServersForIdentity(currentId);
-        folderURI = servers.queryElementAt(0, Components.interfaces.nsIMsgIncomingServer).serverURI;
-      }
-      catch (ex) {
-        servers = amService.GetServersForIdentity(currentId);
-        folderURI = servers.GetElementAt(0).QueryInterface(Components.interfaces.nsIMsgIncomingServer).serverURI;
-      }
+      servers = amService.getServersForIdentity(currentId);
+      folderURI = servers.queryElementAt(0, Components.interfaces.nsIMsgIncomingServer).serverURI;
 
       server = this.getMsgFolderFromUri(folderURI, true).server;
     }
     catch (ex) {}
-    window.openDialog("chrome://enigmail/content/am-enigprefs-edit.xul", "", "dialog,modal,centerscreen", {
+    window.openDialog("chrome://enigmail/content/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
       account: server
     });

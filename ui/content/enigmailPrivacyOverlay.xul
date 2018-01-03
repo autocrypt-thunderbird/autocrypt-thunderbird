@@ -6,8 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
-                 type="text/css"?>
 
 <!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 
@@ -16,6 +14,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="text/javascript" src="chrome://enigmail/content/enigmailPrivacyOverlay.js"/>
+  <link rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
 
   <prefpane id="panePrivacy" insertafter="mailContentGroup">
 

@@ -11,8 +11,7 @@
   settings to the identity editor of the account manager
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css"
-                 type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
 <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
@@ -23,8 +22,7 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAmIdEditOverlay.js"/>
+  <linke rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
 
   <tabs id="identitySettings">
     <tab label="&enigmail.openPgpSecurity.label;" id="enigmailSecurity"/>

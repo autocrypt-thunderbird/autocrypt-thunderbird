@@ -9,6 +9,8 @@
 "use strict";
 
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -16,6 +18,15 @@ var gPref = null;
 var gUsingPep = null;
 
 function onInit() {
+  EnigmailLog.DEBUG("am-enigprefs.js: onInit()\n");
+  Enigmail.overlayInitialized = true;
+
+  if (Enigmail.overlayLoaded) performInit();
+}
+
+function performInit() {
+  EnigmailLog.DEBUG("am-enigprefs.js: performInit()\n");
+
   gUsingPep = EnigmailPEPAdapter.usingPep();
   Enigmail.edit.onInit();
 
@@ -24,17 +35,56 @@ function onInit() {
 }
 
 function onAcceptEditor() {
+  EnigmailLog.DEBUG("am-enigprefs.js: onAcceptEditor()\n");
   Enigmail.edit.onSave();
   saveChanges();
   return true;
 }
 
 function onPreInit(account, accountValues) {
-  Enigmail.edit.identity = account.defaultIdentity;
-  Enigmail.edit.account = account;
+  EnigmailLog.DEBUG("am-enigprefs.js: onPreInit()\n");
+
+  Enigmail.overlayLoaded = false;
+  Enigmail.overlayInitialized = false;
+
+  if (!EnigmailCore.getService()) {
+    return;
+  }
+
+  let foundEnigmail = document.getElementById("enigmail_enablePgp");
+
+  if (!foundEnigmail) {
+    // Enigmail Overlay not yet loaded
+    document.loadOverlay("chrome://enigmail/content/enigmailEditIdentity.xul", {
+      observe: function(subject, topic, data) {
+        EnigmailLog.DEBUG("am-enigprefs.js: onPreInit: topic=" + topic + "\n");
+        // let e = new Event("load-enigmail");
+        // window.dispatchEvent(e);
+
+        Enigmail.edit.identity = account.defaultIdentity;
+        Enigmail.edit.account = account;
+        Enigmail.edit.overlayLoaded = true;
+
+        try {
+          if (Enigmail.overlayInitialized) performInit();
+        }
+        catch (ex) {
+          EnigmailLog.DEBUG("am-enigprefs.js: onPreInit: error: " + ex.message + "\n");
+        }
+      }
+    });
+  }
+  else {
+    // Enigmail Overlay already loaded
+    Enigmail.edit.identity = account.defaultIdentity;
+    Enigmail.edit.account = account;
+    Enigmail.overlayLoaded = true;
+  }
 }
 
 function onSave() {
+  EnigmailLog.DEBUG("am-enigprefs.js: onSave()\n");
+
   Enigmail.edit.onSave();
   saveChanges();
   return true;
@@ -52,6 +102,8 @@ function disableIfLocked(prefstrArray) {
 }
 
 function enigmailOnAcceptEditor() {
+  EnigmailLog.DEBUG("am-enigprefs.js: enigmailOnAcceptEditor()\n");
+
   Enigmail.edit.onSave();
 
   return true; // allow to close dialog in all cases

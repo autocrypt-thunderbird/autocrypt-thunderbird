@@ -22,13 +22,13 @@ skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/classic-seam
 skin          enigmail    modern/1.0 jar:chrome/enigmail.jar!/skin/modern/enigmail/
 
 
-overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailAmIdEditOverlay.xul
-overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
-overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
-overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
+#overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailAmIdEditOverlay.xul
+#overlay chrome://messenger/content/am-identity-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
+#overlay chrome://enigmail/content/am-enigprefs.xul chrome://enigmail/content/enigmailEditIdentity.xul
+#overlay chrome://enigmail/content/am-enigprefs-edit.xul chrome://enigmail/content/enigmailEditIdentity.xul
 
 # Overlay for privacy preferences in Thunderbird
-overlay chrome://messenger/content/preferences/privacy.xul chrome://enigmail/content/enigmailPrivacyOverlay.xul
+#overlay chrome://messenger/content/preferences/privacy.xul chrome://enigmail/content/enigmailPrivacyOverlay.xul
 
 # Overlay for S/Mime preferences
 overlay chrome://messenger/content/am-smime.xul chrome://enigmail/content/enigmail-am-smime.xul

@@ -19,9 +19,10 @@
         title="&enigmail.amPrefTitle.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="Enigmail.edit.onLoadEditor();"
-        ondialogaccept="Enigmail.edit.onAcceptEditor();">
+        ondialogaccept="Enigmail.edit.onAcceptEditor();"
+        style="min-width: 45em; min-height: 47em;">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
+  <!--script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/-->
 
   <broadcasterset>
     <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>

@@ -87,16 +87,15 @@ const overlays = {
 
   "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
   "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
-  // "chrome://messenger/content/am-identity-edit.xul": [
-  //   "enigmailAmIdEditOverlay.xul",
-  //   "enigmailEditIdentity.xul"
-  // ],
+  "chrome://messenger/content/am-identity-edit.xul": [
+    "enigmailAmIdEditOverlay.xul",
+    "enigmailEditIdentity.xul"
+  ],
   "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  // "am-enigprefs.xul": ["enigmailEditIdentity.xul"],
-  // "am-enigprefs-edit.xul": ["enigmailEditIdentity.xul"],
+  "chrome://enigmail/content/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
   //
   // // Overlay for privacy preferences in Thunderbird
-  // "chrome://messenger/content/preferences/privacy.xul": ["enigmailPrivacyOverlay.xul"],
+  "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
   //
   // // Overlay for S/Mime preferences
   // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"],

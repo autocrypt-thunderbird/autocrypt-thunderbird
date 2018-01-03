@@ -14,6 +14,8 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
+
   <vbox id="enigmail_IdentityEdit">
     <checkbox id="enigmail_enablePgp"
               prefstring="mail.identity.%identitykey%.enablePgp"
@@ -76,7 +78,7 @@
                       observes="enigmail_bcEnablePgp"
                       label="&enigmail.finallySignEncrypted.label;"/>
           </hbox>
-          
+
           <separator/>
 
           <checkbox id="enigmail_autoEncryptDrafts" checked="false"
