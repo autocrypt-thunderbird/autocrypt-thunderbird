@@ -124,7 +124,7 @@ var WindowListener = {
   setupUI: function(window, overlayDefs) {
     DEBUG_LOG("overlays.jsm: setupUI(" + window.document.location.href + ")\n");
 
-    loadOverlay(window, overlayDefs, 0);
+    loadOverlays(window, overlayDefs).then(ignore => {}).catch(ignore => {});
   },
 
   tearDownUI: function(window) {
@@ -175,6 +175,12 @@ var WindowListener = {
 
 
 var EnigmailOverlays = {
+  /**
+   * Called by bootstrap.js upon startup of the addon
+   * (e.g. enabling, instalation, update, application startup)
+   *
+   * @param reason: Number - bootstrap "reason" constant
+   */
   startup: function(reason) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
@@ -194,6 +200,12 @@ var EnigmailOverlays = {
     wm.addListener(WindowListener);
   },
 
+  /**
+   * Called by bootstrap.js upon shutdown of the addon
+   * (e.g. disabling, uninstalling, update, application shutdown)
+   *
+   * @param reason: Number - bootstrap "reason" constant
+   */
   shutdown: function(reason) {
     // When the application is shutting down we normally don't have to clean
     // up any UI changes made
@@ -216,20 +228,17 @@ var EnigmailOverlays = {
 
     // Stop listening for any new browser windows to open
     wm.removeListener(WindowListener);
-  }
+  },
+
+  /**
+   * Load overlays (See below)
+   */
+  loadOverlays: loadOverlays
 };
 
 function getAppId() {
   return Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo).ID;
 }
-
-
-/**
- * Register a new overlay (XUL)
- * @param xul:      DOM-tre  - source XUL to register
- * @param window:   Object   - target window
- * @param document: Object   - document in target window
- */
 
 
 /**
@@ -487,7 +496,7 @@ function insertXul(srcUrl, window, document, callback) {
       return;
     }
 
-    injectDOM(xul, window, document);
+    injectDOM(xul);
 
     // load css into window
     let css = document.getElementsByTagName("link");
@@ -537,48 +546,72 @@ function insertXul(srcUrl, window, document, callback) {
 
 }
 
-function loadOverlay(window, overlayDefs, index) {
-  DEBUG_LOG("overlays.jsm: loadOverlay(" + index + ")\n");
+/**
+ * Load one or more overlays into a window.
+ *
+ * @param window:         nsIDOMWindow - the target window
+ * @param overlayDefsArr: Array - the list of overlays to load
+ *                          either: String - the XUL filename
+ *                          or    : Object:
+ *                                    url: String         - the XUL filename,
+ *                                    application: String - the target application ID (use ! to exclude an application)
+ *
+ * @return Promise (numOverlays - the number of overlays loaded)
+ */
+function loadOverlays(window, overlayDefsArr) {
 
-  try {
-    if (index < overlayDefs.length) {
-      let overlayDef = overlayDefs[index];
-      let document = window.document;
-      let url = overlayDef;
+  let p = new Promise((resolve, reject) => {
+    function loadOverlay(window, overlayDefs, index) {
+      DEBUG_LOG("overlays.jsm: loadOverlay(" + index + ")\n");
 
-      if (typeof(overlayDef) !== "string") {
-        url = overlayDef.url;
-        if (overlayDef.application.substr(0, 1) === "!") {
-          if (overlayDef.application.indexOf(getAppId()) > 0) {
-            DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
-            loadOverlay(window, overlayDefs, index + 1);
-            return;
+      try {
+        if (index < overlayDefs.length) {
+          let overlayDef = overlayDefs[index];
+          let document = window.document;
+          let url = overlayDef;
+
+          if (typeof(overlayDef) !== "string") {
+            url = overlayDef.url;
+            if (overlayDef.application.substr(0, 1) === "!") {
+              if (overlayDef.application.indexOf(getAppId()) > 0) {
+                DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
+                loadOverlay(window, overlayDefs, index + 1);
+                return;
+              }
+            }
+            else if (overlayDef.application.indexOf(getAppId()) < 0) {
+              DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
+              loadOverlay(window, overlayDefs, index + 1);
+              return;
+            }
           }
+
+          let observer = function(result) {
+            loadOverlay(window, overlayDefs, index + 1);
+          };
+
+          insertXul(url, window, document, observer);
         }
-        else if (overlayDef.application.indexOf(getAppId()) < 0) {
-          DEBUG_LOG("overlays.jsm: loadOverlay: skipping " + url + "\n");
-          loadOverlay(window, overlayDefs, index + 1);
-          return;
+        else {
+          DEBUG_LOG("overlays.jsm: loadOverlay: completed\n");
+
+          let e = new Event("load-" + MY_ADDON_ID);
+          window.dispatchEvent(e);
+          DEBUG_LOG("overlays.jsm: loadOverlay: event completed\n");
+
+          resolve(index);
         }
       }
-
-      let observer = function(result) {
-        loadOverlay(window, overlayDefs, index + 1);
-      };
-
-      insertXul(url, window, document, observer);
+      catch (ex) {
+        ERROR_LOG("overlays.jsm: could not overlay for " + window.document.location.href + ":\n" + ex.message + "\n");
+        reject(index);
+      }
     }
-    else {
-      DEBUG_LOG("overlays.jsm: loadOverlay: completed\n");
 
-      let e = new Event("load-" + MY_ADDON_ID);
-      window.dispatchEvent(e);
-      DEBUG_LOG("overlays.jsm: loadOverlay: event completed\n");
-    }
-  }
-  catch (ex) {
-    ERROR_LOG("overlays.jsm: could not overlay for " + window.document.location.href + ":\n" + ex.toString() + "\n");
-  }
+    loadOverlay(window, overlayDefsArr, 0);
+  });
+
+  return p;
 }
 
 
