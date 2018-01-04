@@ -17,7 +17,7 @@ var Enigmail = {
     this.usingPep = EnigmailPEPAdapter.usingPep();
   },
 
-  onUnload: function(event) {
+  onClose: function(event) {
     let usingPep = EnigmailPEPAdapter.usingPep();
 
     if (usingPep !== this.usingPep) {
@@ -27,8 +27,17 @@ var Enigmail = {
     if (usingPep) {
       EnigmailPEPAdapter.setOwnIdentities(0);
     }
+  },
+
+  onUnloadEnigmail: function() {
+    window.removeEventListener("load-enigmail", Enigmail.onLoad, true);
+    window.removeEventListener("unload-enigmail", Enigmail.onUnload, true);
+    window.removeEventListener("dialogaccept", Enigmail.onClose, false);
+    window.removeEventListener("dialogcancel", Enigmail.onClose, false);
   }
 };
 
-window.addEventListener("load", Enigmail.onLoad.bind(Enigmail), true);
-window.addEventListener("unload", Enigmail.onUnload.bind(Enigmail), true);
+window.addEventListener("load-enigmail", Enigmail.onLoad.bind(Enigmail), true);
+window.addEventListener("unload-enigmail", Enigmail.onUnloadEnigmail.bind(Enigmail), true);
+window.addEventListener("dialogaccept", Enigmail.onClose.bind(Enigmail), false);
+window.addEventListener("dialogcancel", Enigmail.onClose.bind(Enigmail), false);

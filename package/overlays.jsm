@@ -97,8 +97,8 @@ const overlays = {
   // // Overlay for privacy preferences in Thunderbird
   "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
   //
-  // // Overlay for S/Mime preferences
-  // "chrome://messenger/content/am-smime.xul": ["enigmail-am-smime.xul"],
+  // // Overlay for Account Manager
+  "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"],
   "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"]
 };
 
