@@ -52,10 +52,6 @@ fi
 cd "$targetDir"
 
 
-mkdir -p "${targetDir}/wrappers"
-
-cp ${cwd}/util/gpg-agent-wrapper wrappers
-
 echo "Creating ${xpiFile} file"
 
 zip --must-match\
@@ -164,7 +160,6 @@ zip --must-match\
     modules/windows.jsm \
     modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
-    wrappers/gpg-agent-wrapper \
     chrome/${xpiModule}.jar \
     chrome.manifest \
     install.rdf

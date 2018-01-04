@@ -28,7 +28,7 @@ Cu.import("resource://enigmail/versioning.jsm"); /*global EnigmailVersioning: fa
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
-const MINIMUM_GPG_VERSION = "2.0.10";
+const MINIMUM_GPG_VERSION = "2.0.16";
 const GPG_BATCH_OPT_LIST = ["--batch", "--no-tty", "--status-fd", "2"];
 
 function pushTrimmedStr(arr, str, splitStr) {
@@ -123,7 +123,6 @@ var EnigmailGpg = {
    @param featureName:  String; one of the following values:
    version-supported    - is the gpg version supported at all (true for gpg >= 2.0.10)
    supports-gpg-agent   - is gpg-agent is usually provided (true for gpg >= 2.0)
-   autostart-gpg-agent  - is gpg-agent started automatically by gpg (true for gpg >= 2.0.16)
    keygen-passphrase    - can the passphrase be specified when generating keys (false for gpg 2.1 and 2.1.1)
    windows-photoid-bug  - is there a bug in gpg with the output of photoid on Windows (true for gpg < 2.0.16)
    genkey-no-protection - is "%no-protection" supported for generting keys (true for gpg >= 2.1)
@@ -156,8 +155,6 @@ var EnigmailGpg = {
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, MINIMUM_GPG_VERSION);
       case "supports-gpg-agent":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0");
-      case "autostart-gpg-agent":
-        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.16");
       case "keygen-passphrase":
         return EnigmailVersioning.lessThan(gpgVersion, "2.1") || EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.2");
       case "genkey-no-protection":

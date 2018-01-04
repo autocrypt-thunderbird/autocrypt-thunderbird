@@ -202,18 +202,10 @@ test(withEnigmail(function detectGpgAgentWithNoAgentInfoInEnvironment(enigmail) 
 
     Assert.ok(!EnigmailGpgAgent.gpgAgentInfo.preStarted);
     Assert.ok(!EnigmailGpgAgent.gpgAgentIsOptional);
+    Assert.equal("none", EnigmailGpgAgent.gpgAgentInfo.envStr);
   });
 }));
 
-test(withEnigmail(function detectGpgAgentWithAutostartFeatureWillDoNothing(enigmail) {
-  withEnvironment({}, function(e) {
-    withGpgFeatures(["autostart-gpg-agent"], function() {
-      enigmail.environment = e;
-      EnigmailGpgAgent.detectGpgAgent(JSUnit.createStubWindow(), enigmail);
-      Assert.equal("none", EnigmailGpgAgent.gpgAgentInfo.envStr);
-    });
-  });
-}));
 
 //getGpgHomeDir
 test(withTestGpgHome(withEnigmail(function shouldGetGpgHomeDir() {

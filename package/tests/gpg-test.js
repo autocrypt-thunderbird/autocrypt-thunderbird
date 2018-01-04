@@ -171,19 +171,6 @@ test(function testGetGpgFeatureForWhenVersionDoesNotSupportGpgAgent() {
   });
 });
 
-test(function testGetGpgFeatureForWhenVersionSupportsAutostartGpgAgent() {
-  TestHelper.resetting(EnigmailGpg, "agentVersion", "2.0.16", function() {
-    const output = EnigmailGpg.getGpgFeature("autostart-gpg-agent");
-    Assert.equal(output, true);
-  });
-});
-
-test(function testGetGpgFeatureForWhenVersionDoesNotSupportAutostartGpgAgent() {
-  TestHelper.resetting(EnigmailGpg, "agentVersion", "2.0.0", function() {
-    const output = EnigmailGpg.getGpgFeature("autostart-gpg-agent");
-    Assert.equal(output, false);
-  });
-});
 
 test(function testGetGpgFeatureForWhenVersionDoesNotSupportKeygenPassPhrase() {
   TestHelper.resetting(EnigmailGpg, "agentVersion", "2.1", function() {
