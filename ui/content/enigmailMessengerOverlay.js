@@ -2404,11 +2404,11 @@ Enigmail.msg = {
   },
 
   onUnloadEnigmail: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: onUnloadEnigmail()\n");
+    //EnigmailLog.DEBUG("enigmailMessengerOverlay.js: onUnloadEnigmail()\n");
 
-    window.removeEventListener("load-enigmail", Enigmail.msg.messengerStartup, false);
     window.removeEventListener("unload", Enigmail.msg.messengerClose, false);
     window.removeEventListener("unload-enigmail", Enigmail.msg.onUnloadEnigmail, false);
+    window.removeEventListener("load-enigmail", Enigmail.msg.messengerStartup, false);
 
     this.messageCleanup();
 

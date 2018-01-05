@@ -123,6 +123,7 @@ var EnigmailCore = {
     getEnigmailVerify().unregisterContentTypeHandler();
 
     getEnigmailGpgAgent().finalize();
+    getEnigmailLocale().shutdown();
     getEnigmailLog().onShutdown();
 
     getEnigmailLog().setLogLevel(3);

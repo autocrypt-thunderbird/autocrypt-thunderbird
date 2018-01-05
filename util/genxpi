@@ -49,9 +49,9 @@ if [ "$enableLang" = "yes" ]; then
 fi
 
 
-# cd ${srcDir}/package
 cd "$targetDir"
 
+find modules -name "*.js*" > modules/all-modules.txt
 
 echo "Creating ${xpiFile} file"
 
@@ -160,6 +160,7 @@ zip --must-match\
     modules/windows.jsm \
     modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
+    modules/all-modules.txt \
     chrome/${xpiModule}.jar \
     bootstrap.js \
     chrome.manifest \

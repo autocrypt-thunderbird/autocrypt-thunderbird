@@ -32,7 +32,10 @@ var EnigmailTimer = {
 
     function callbackWrapper() {
       callbackFunction();
-      clearTimeout(timeoutID);
+      try {
+        clearTimeout(timeoutID);
+      }
+      catch (ex) {}
     }
 
     timeoutID = setTimeout(callbackWrapper, sleepTimeMs);

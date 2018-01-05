@@ -7,6 +7,7 @@
 
 
 /* global APP_SHUTDOWN: false */
+const Cu = Components.utils;
 
 
 function install() {}
@@ -14,7 +15,6 @@ function install() {}
 function uninstall() {}
 
 function startup(data, reason) {
-  const Cu = Components.utils;
   const {
     EnigmailCore
   } = Cu.import("resource://enigmail/core.jsm", {});
@@ -39,10 +39,8 @@ function startup(data, reason) {
 }
 
 
-function shutdown(reason) {
+function shutdown(data, reason) {
   if (reason === APP_SHUTDOWN) return;
-
-  const Cu = Components.utils;
 
   const {
     EnigmailCore
@@ -56,11 +54,39 @@ function shutdown(reason) {
   const {
     EnigmailOverlays
   } = Cu.import("resource://enigmail/overlays.jsm", {});
+  const {
+    EnigmailWindows
+  } = Cu.import("resource://enigmail/windows.jsm", {});
 
-  EnigmailOverlays.startup(reason);
+  EnigmailWindows.shutdown(reason);
+  EnigmailOverlays.shutdown(reason);
   EnigmailAmPrefsService.shutdown(reason);
   EnigmailCore.shutdown(reason);
   EnigmailPgpmimeHander.shutdown(reason);
+
+  unloadModules();
 }
 
-//startup({}, APP_STARTUP);
+/**
+ * Unload all Enigmail modules that were potentially loaded
+ */
+function unloadModules() {
+  //const Cu = Components.utils;
+
+  const {
+    EnigmailStreams
+  } = Cu.import("resource://enigmail/streams.jsm", {});
+  let channel = EnigmailStreams.createChannel("resource://enigmail/all-modules.txt");
+
+  let buffer = EnigmailStreams.newStringStreamListener(data => {
+    let modules = data.split(/[\r\n]/);
+    for (let mod of modules) {
+      mod = mod.replace(/^modules/, "");
+      try {
+        Cu.unload("resource://enigmail" + mod);
+      }
+      catch (ex) {}
+    }
+  });
+  channel.asyncOpen(buffer, null);
+}

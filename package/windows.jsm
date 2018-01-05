@@ -30,6 +30,8 @@ const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
+var gOpenTabs = [];
+
 var EnigmailWindows = {
   /**
    * Display the OpenPGP setup wizard window
@@ -668,15 +670,38 @@ var EnigmailWindows = {
    * @param winName: String - name of the window; used to identify if it is already open
    */
   openMailTab: function(aURL, windowName) {
+
     if (!EnigmailApp.isSuite()) {
+      let self = this;
+
       let t = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
-      t.openTab("chromeTab", {
+      let gotTab = t.openTab("chromeTab", {
         chromePage: aURL
       });
+
+      gOpenTabs.push(gotTab);
+      gotTab.browser.contentWindow.addEventListener("unload", function f(event) {
+        if (event.target.location.href !== aURL) return;
+
+        let index = gOpenTabs.indexOf(gotTab);
+        if (index >= 0) {
+          gOpenTabs.splice(index, 1);
+        }
+      }, false);
     }
     else {
       EnigmailWindows.openWin(windowName,
         aURL, "resizable,centerscreen");
+    }
+  },
+
+  shutdown: function(reason) {
+    EnigmailLog.DEBUG("windows.jsm: shutdown()\n");
+
+    let t = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
+
+    for (let i = gOpenTabs.length - 1; i >= 0; i--) {
+      t.closeTab(gOpenTabs[i]);
     }
   }
 };

@@ -15,7 +15,7 @@ Components.utils.import("resource://enigmail/log.jsm");
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-var enigStringBundle = null;
+var gEnigStringBundle = null;
 
 var EnigmailLocale = {
   get: function() {
@@ -42,29 +42,28 @@ var EnigmailLocale = {
    * @return String: the localized string
    */
   getString: function(aStr, subPhrases) {
-    if (!enigStringBundle) {
+    if (!gEnigStringBundle) {
       try {
-        var strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService();
-        strBundleService = strBundleService.QueryInterface(Ci.nsIStringBundleService);
-        enigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
+        let strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService);
+        gEnigStringBundle = strBundleService.createBundle("chrome://enigmail/locale/enigmail.properties");
       }
       catch (ex) {
         EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
       }
     }
 
-    if (enigStringBundle) {
+    if (gEnigStringBundle) {
       try {
         if (subPhrases) {
           if (typeof(subPhrases) == "string") {
-            return enigStringBundle.formatStringFromName(aStr, [subPhrases], 1);
+            return gEnigStringBundle.formatStringFromName(aStr, [subPhrases], 1);
           }
           else {
-            return enigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
+            return gEnigStringBundle.formatStringFromName(aStr, subPhrases, subPhrases.length);
           }
         }
         else {
-          return enigStringBundle.GetStringFromName(aStr);
+          return gEnigStringBundle.GetStringFromName(aStr);
         }
       }
       catch (ex) {
@@ -88,5 +87,15 @@ var EnigmailLocale = {
     }
     catch (e) {}
     return uaPref.getCharPref("locale");
+  },
+
+  shutdown: function(reason) {
+    // flush string bundles on shutdown of the addon, such that it's no longer cached
+    try {
+      gEnigStringBundle = undefined;
+      let strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService);
+      strBundleService.flushBundles();
+    }
+    catch (e) {}
   }
 };

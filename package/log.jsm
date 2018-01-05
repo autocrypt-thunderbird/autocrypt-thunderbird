@@ -124,7 +124,10 @@ var EnigmailLog = {
   },
 
   DEBUG: function(str) {
-    EnigmailLog.WRITE("[DEBUG] " + str);
+    try {
+      EnigmailLog.WRITE("[DEBUG] " + str);
+    }
+    catch (ex) {}
   },
 
   WARNING: function(str) {
