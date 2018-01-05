@@ -21,15 +21,12 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+var window;
+var document;
 
-var appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
-
-var window = appShellSvc.hiddenDOMWindow;
-var document = window.document;
-
-Components.utils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-
-Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js", this, "UTF-8"); /* global openpgp: false */
+const {
+  Services
+} = Cu.import("resource://gre/modules/Services.jsm");
 
 var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0315aa1a, 0x021933ec, 0x029f7f17, 0x07a18139, 0x0727cdc2, 0x062b5434, 0x06ad18cf, 0x043267d8, 0x04b42b23,
   0x05b8b2d5, 0x053efe2e, 0x0fc54e89, 0x0f430272, 0x0e4f9b84, 0x0ec9d77f, 0x0c56a868, 0x0cd0e493, 0x0ddc7d65, 0x0d5a319e, 0x0864cfb0, 0x08e2834b, 0x09ee1abd, 0x09685646, 0x0bf72951,
@@ -51,104 +48,150 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
   0x575bc9c3, 0x57dd8538
 ];
 
-var EnigmailOpenPGP = window.openpgp;
+var EnigmailOpenPGP = {
+  startup: function(reason) {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
+    let self = this;
 
-EnigmailOpenPGP.enigmailFuncs = {
-
-  /**
-   * Convert a string to an Uint8Array
-   *
-   * @param  str: String with binary data
-   * @return Uint8Array
-   */
-  str2Uint8Array: function(str) {
-    var buf = new ArrayBuffer(str.length);
-    var bufView = new Uint8Array(buf);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
+    // Get the list of already open window(s)
+    let windows = wm.getEnumerator(null);
+    if (windows.hasMoreElements()) {
+      self.initialize();
     }
-    return bufView;
+    else {
+      // Wait for any new window to open
+
+      let windowListener = {
+        onOpenWindow: function(xulWindow) {
+          self.initialize();
+          wm.removeListener(windowListener);
+        },
+        onCloseWindow: function(xulWindow) {},
+        onWindowTitleChange: function(xulWindow, newTitle) {}
+      };
+
+      wm.addListener(windowListener);
+    }
   },
 
-  /**
-   * Create CRC24 checksum
-   *
-   * @param input: Uint8Array of input data
-   *
-   * @return Number
-   */
-  createcrc24: function(input) {
-    var crc = 0xB704CE;
-    var index = 0;
+  initialize: function() {
+    const {
+      EnigmailLog
+    } = Cu.import("resource://enigmail/log.jsm", {});
+    EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
 
-    while (input.length - index > 16) {
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 1]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 2]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 3]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 4]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 5]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 6]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 7]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 8]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 9]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 10]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 11]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 12]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 13]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 14]) & 0xff];
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 15]) & 0xff];
-      index += 16;
-    }
+    try {
+      let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
 
-    for (var j = index; j < input.length; j++) {
-      crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index++]) & 0xff];
+      window = appShellSvc.hiddenDOMWindow;
+      document = window.document;
+
+      Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js", {}, "UTF-8");
+
+      this.openpgp = window.openpgp;
     }
-    return crc & 0xffffff;
+    catch (ex) {
+      EnigmailLog.ERROR("openpgp.jsm: initialize: error: " + ex.message + "\n");
+    }
   },
 
-  /**
-   * Create an ASCII armored string from binary data. The message data is NOT
-   * checked for correctness, only the CRC is added at the end.
-   *
-   * @param msgType: Number - type of OpenPGP message to create (ARMOR Enum)
-   * @param str:     String - binary OpenPGP message
-   *
-   * @return String: ASCII armored OpenPGP message
-   */
-  bytesToArmor: function(msgType, str) {
+  enigmailFuncs: {
 
-    const ARMOR_TYPE = EnigmailOpenPGP.enums.armor;
+    /**
+     * Convert a string to an Uint8Array
+     *
+     * @param  str: String with binary data
+     * @return Uint8Array
+     */
+    str2Uint8Array: function(str) {
+      var buf = new ArrayBuffer(str.length);
+      var bufView = new Uint8Array(buf);
+      for (var i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+      }
+      return bufView;
+    },
 
-    let hdr = "";
-    switch (msgType) {
-      case ARMOR_TYPE.signed:
-      case ARMOR_TYPE.message:
-        hdr = "MESSAGE";
-        break;
-      case ARMOR_TYPE.public_key:
-        hdr = "PUBLIC KEY BLOCK";
-        break;
-      case ARMOR_TYPE.private_key:
-        hdr = "PRIVATE KEY BLOCK";
-        break;
-      case ARMOR_TYPE.signature:
-        hdr = "SIGNATURE";
-        break;
+    /**
+     * Create CRC24 checksum
+     *
+     * @param input: Uint8Array of input data
+     *
+     * @return Number
+     */
+    createcrc24: function(input) {
+      var crc = 0xB704CE;
+      var index = 0;
+
+      while (input.length - index > 16) {
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 1]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 2]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 3]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 4]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 5]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 6]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 7]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 8]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 9]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 10]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 11]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 12]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 13]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 14]) & 0xff];
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index + 15]) & 0xff];
+        index += 16;
+      }
+
+      for (var j = index; j < input.length; j++) {
+        crc = crc << 8 ^ crc_table[(crc >> 16 ^ input[index++]) & 0xff];
+      }
+      return crc & 0xffffff;
+    },
+
+    /**
+     * Create an ASCII armored string from binary data. The message data is NOT
+     * checked for correctness, only the CRC is added at the end.
+     *
+     * @param msgType: Number - type of OpenPGP message to create (ARMOR Enum)
+     * @param str:     String - binary OpenPGP message
+     *
+     * @return String: ASCII armored OpenPGP message
+     */
+    bytesToArmor: function(msgType, str) {
+
+      const ARMOR_TYPE = EnigmailOpenPGP.openpgp.enums.armor;
+
+      let hdr = "";
+      switch (msgType) {
+        case ARMOR_TYPE.signed:
+        case ARMOR_TYPE.message:
+          hdr = "MESSAGE";
+          break;
+        case ARMOR_TYPE.public_key:
+          hdr = "PUBLIC KEY BLOCK";
+          break;
+        case ARMOR_TYPE.private_key:
+          hdr = "PRIVATE KEY BLOCK";
+          break;
+        case ARMOR_TYPE.signature:
+          hdr = "SIGNATURE";
+          break;
+      }
+
+      let crc = EnigmailOpenPGP.enigmailFuncs.createcrc24(EnigmailOpenPGP.enigmailFuncs.str2Uint8Array(str));
+      let crcAsc = String.fromCharCode(crc >> 16) + String.fromCharCode(crc >> 8 & 0xFF) + String.fromCharCode(crc & 0xFF);
+
+      let s = "-----BEGIN PGP " + hdr + "-----\n\n" +
+        btoa(str) + "\n" +
+        "=" + btoa(crcAsc) + "\n" +
+        "-----END PGP " + hdr + "-----\n";
+
+      return s;
+    },
+
+    getCrypto: function() {
+      return window.crypto;
     }
-
-    let crc = EnigmailOpenPGP.enigmailFuncs.createcrc24(EnigmailOpenPGP.enigmailFuncs.str2Uint8Array(str));
-    let crcAsc = String.fromCharCode(crc >> 16) + String.fromCharCode(crc >> 8 & 0xFF) + String.fromCharCode(crc & 0xFF);
-
-    let s = "-----BEGIN PGP " + hdr + "-----\n\n" +
-      btoa(str) + "\n" +
-      "=" + btoa(crcAsc) + "\n" +
-      "-----END PGP " + hdr + "-----\n";
-
-    return s;
-  },
-
-  getCrypto: function() {
-    return window.crypto;
   }
 };

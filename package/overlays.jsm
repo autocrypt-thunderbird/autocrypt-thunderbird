@@ -44,7 +44,7 @@ const {
 const APP_SHUTDOWN = 2;
 
 const {
-  Services, Promise
+  Services
 } = Cu.import("resource://gre/modules/Services.jsm", {});
 
 // the following constants need to be customized for each addon
@@ -377,7 +377,8 @@ function insertXul(srcUrl, window, document, callback) {
       return nn;
     }
 
-    DEBUG_LOG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
+    if (document.location)
+      DEBUG_LOG("overlays.jsm: injectDOM: gonna stuff: " + srcUrl + " into: " + document.location.href + "\n");
 
     try {
       let rootNode = null;

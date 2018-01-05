@@ -236,7 +236,7 @@ var EnigmailAutocrypt = {
               if (keyData.length > 1) {
                 let keysObj = {};
 
-                let pubkey = EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.enums.armor.public_key, keyData);
+                let pubkey = EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keyData);
                 EnigmailKeyRing.importKey(null, false, pubkey, keyArr[i].fpr, {}, keysObj);
 
                 if (keysObj.value) {
@@ -385,7 +385,7 @@ var EnigmailAutocrypt = {
       };
 
       // create symmetrically encrypted message
-      EnigmailOpenPGP.encrypt(enc).then(msg => {
+      EnigmailOpenPGP.openpgp.encrypt(enc).then(msg => {
         let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
           'Passphrase-Format': 'numeric9x4',
           'Passphrase-Begin': bkpCode.substr(0, 2)
@@ -500,7 +500,7 @@ var EnigmailAutocrypt = {
         end = {};
       let msgType = EnigmailArmor.locateArmoredBlock(attachmentData, 0, "", start, end, {});
 
-      let encMessage = EnigmailOpenPGP.message.readArmored(attachmentData.substring(start.value, end.value));
+      let encMessage = EnigmailOpenPGP.openpgp.message.readArmored(attachmentData.substring(start.value, end.value));
 
       let enc = {
         message: encMessage,
@@ -508,7 +508,7 @@ var EnigmailAutocrypt = {
         format: 'utf8'
       };
 
-      EnigmailOpenPGP.decrypt(enc).then(msg => {
+      EnigmailOpenPGP.openpgp.decrypt(enc).then(msg => {
         EnigmailLog.DEBUG("autocrypt.jsm: handleBackupMessage: data: " + msg.data.length + "\n");
 
         let setupData = importSetupKey(msg.data);

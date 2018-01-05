@@ -75,6 +75,7 @@ var EnigmailCore = {
     initializeLogging(env);
 
     getEnigmailLog().DEBUG("core.jsm: startup()\n");
+    getEnigmailPrefs().startup(reason);
 
     let self = this;
     this.factories = [];

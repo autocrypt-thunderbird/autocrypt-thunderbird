@@ -7,12 +7,7 @@ DEPTH		= ..
 
 include $(DEPTH)/config/autoconf.mk
 
-PREF_JS_EXPORTS = $(srcdir)/prefs/enigmail.js
-
-COMPFILES = \
-            bootstrap.js
-
-PREFFILES = prefs/enigmail.js
+PREFFILES = prefs/defaultPrefs.js
 
 MODFILES = \
            addrbook.jsm \
@@ -113,15 +108,13 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
 
 all: libs deploy
 
-deploy: $(PREFFILES) $(COMPFILES) $(MODFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/components $(COMPFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/defaults/preferences $(PREFFILES)
+deploy: $(PREFFILES) $(MODFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/modules/preferences $(PREFFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules $(MODFILES)
 
 
 clean:
-	$(DEPTH)/util/install -u $(DIST)/components $(COMPFILES)
-	$(DEPTH)/util/install -u $(DIST)/defaults/preferences $(PREFFILES)
+	$(DEPTH)/util/install -u $(DIST)/modules/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/modules $(MODFILES)
 
 libs:

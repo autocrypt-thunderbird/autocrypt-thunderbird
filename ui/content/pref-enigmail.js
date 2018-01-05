@@ -16,7 +16,7 @@
 /* global EnigGetFilePath: false, EnigAlertPref: false, EnigFilePicker: false */
 /* global EnigDisplayRadioPref: false, EnigSavePrefs: false, EnigConvertFromUnicode: false */
 /* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false */
-/* global gEnigEncryptionModel: true, gEnigAcceptedKeys: true, gEnigAutoSendEncrypted: true, gEnigConfirmBeforeSending: true */
+/* global gEnigAcceptedKeys: false, gEnigAutoSendEncrypted: true, gEnigConfirmBeforeSending: false */
 
 
 "use strict";
@@ -34,7 +34,8 @@ const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
 
-var gMimePartsElement, gMimePartsValue, gAdvancedMode;
+var gMimePartsElement, gMimePartsValue, gAdvancedMode, gAcceptedKeyTypes, gAutoSendEncrypted,
+  gConfirmBeforeSending, gEncryptionModel;
 
 // saved old manual preferences to switch back
 // to them if we temporarily enabled convenient encryption
@@ -184,8 +185,8 @@ function prefOnLoad() {
   gSavedManualPrefAcceptedKeys = EnigGetPref("acceptedKeys");
   gSavedManualPrefAutoSendEncrypted = EnigGetPref("autoSendEncrypted");
   gSavedManualPrefConfirmBeforeSending = EnigGetPref("confirmBeforeSending");
-  gEnigEncryptionModel = EnigGetPref("encryptionModel");
-  if (gEnigEncryptionModel === 0) { // convenient encryption
+  gEncryptionModel = EnigGetPref("encryptionModel");
+  if (gEncryptionModel === 0) { // convenient encryption
     resetSendingPrefsConvenient();
   }
   else {
@@ -282,8 +283,8 @@ function resetPrefs() {
   gSavedManualPrefAutoSendEncrypted = EnigGetPref("autoSendEncrypted");
   gSavedManualPrefConfirmBeforeSending = EnigGetPref("confirmBeforeSending");
   // and process encryption model:
-  gEnigEncryptionModel = EnigGetPref("encryptionModel");
-  if (gEnigEncryptionModel === 0) { // convenient encryption
+  gEncryptionModel = EnigGetPref("encryptionModel");
+  if (gEncryptionModel === 0) { // convenient encryption
     resetSendingPrefsConvenient();
   }
   else {
@@ -337,8 +338,8 @@ function updateSendingPrefs() {
     gEnigAutoSendEncrypted);
   EnigDisplayRadioPref("confirmBeforeSending", EnigGetPref("confirmBeforeSending"),
     gEnigConfirmBeforeSending);
-  gEnigEncryptionModel = EnigGetPref("encryptionModel");
-  disableManually(gEnigEncryptionModel === 0);
+  gEncryptionModel = EnigGetPref("encryptionModel");
+  disableManually(gEncryptionModel === 0);
   displayPrefs(false, true, false);
 }
 
@@ -352,18 +353,18 @@ function resetSendingPrefsConvenient() {
   gSavedManualPrefConfirmBeforeSending = document.getElementById("enigmail_confirmBeforeSending").value;
 
   // switch encryption model:
-  gEnigEncryptionModel = 0; // convenient encryption settings
-  EnigSetPref("encryptionModel", gEnigEncryptionModel);
+  gEncryptionModel = 0; // convenient encryption settings
+  EnigSetPref("encryptionModel", gEncryptionModel);
 
   // update GUI elements and corresponding setting variables:
   var keepSettingsForReply = true; // reply encrypted on encrypted emails
-  gEnigAcceptedKeys = 1; // all keys accepted
-  gEnigAutoSendEncrypted = 1; // auto.send-encrypted if accepted keys exist
-  gEnigConfirmBeforeSending = 0; // never confirm before sending
+  gAcceptedKeyTypes = 1; // all keys accepted
+  gAutoSendEncrypted = 1; // auto.send-encrypted if accepted keys exist
+  gConfirmBeforeSending = 0; // never confirm before sending
   EnigSetPref("keepSettingsForReply", keepSettingsForReply);
-  EnigSetPref("acceptedKeys", gEnigAcceptedKeys);
-  EnigSetPref("autoSendEncrypted", gEnigAutoSendEncrypted);
-  EnigSetPref("confirmBeforeSending", gEnigConfirmBeforeSending);
+  EnigSetPref("acceptedKeys", gAcceptedKeyTypes);
+  EnigSetPref("autoSendEncrypted", gAutoSendEncrypted);
+  EnigSetPref("confirmBeforeSending", gConfirmBeforeSending);
 
   updateSendingPrefs();
 }
@@ -372,19 +373,19 @@ function resetSendingPrefsManually() {
   EnigmailLog.DEBUG("pref-enigmail.js: resetSendingPrefsManually()\n");
 
   // switch encryption model:
-  gEnigEncryptionModel = 1; // manual encryption settings
-  EnigSetPref("encryptionModel", gEnigEncryptionModel);
+  gEncryptionModel = 1; // manual encryption settings
+  EnigSetPref("encryptionModel", gEncryptionModel);
 
   // update GUI elements and corresponding setting variables
   // with saved old manual preferences:
   var keepSettingsForReply = gSavedManualPrefKeepSettingsForReply;
-  gEnigAcceptedKeys = gSavedManualPrefAcceptedKeys;
-  gEnigAutoSendEncrypted = gSavedManualPrefAutoSendEncrypted;
-  gEnigConfirmBeforeSending = gSavedManualPrefConfirmBeforeSending;
+  gAcceptedKeyTypes = gSavedManualPrefAcceptedKeys;
+  gAutoSendEncrypted = gSavedManualPrefAutoSendEncrypted;
+  gConfirmBeforeSending = gSavedManualPrefConfirmBeforeSending;
   EnigSetPref("keepSettingsForReply", keepSettingsForReply);
-  EnigSetPref("acceptedKeys", gEnigAcceptedKeys);
-  EnigSetPref("autoSendEncrypted", gEnigAutoSendEncrypted);
-  EnigSetPref("confirmBeforeSending", gEnigConfirmBeforeSending);
+  EnigSetPref("acceptedKeys", gAcceptedKeyTypes);
+  EnigSetPref("autoSendEncrypted", gAutoSendEncrypted);
+  EnigSetPref("confirmBeforeSending", gConfirmBeforeSending);
 
   updateSendingPrefs();
 }

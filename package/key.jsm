@@ -143,16 +143,16 @@ var EnigmailKey = {
     }
     else {
       isBinary = true;
-      blocks = [EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.enums.armor.public_key, keyBlockStr)];
+      blocks = [EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keyBlockStr)];
     }
 
     let keyList = [];
     let key = {};
     for (let b of blocks) {
-      let m = EnigmailOpenPGP.message.readArmored(b);
+      let m = EnigmailOpenPGP.openpgp.message.readArmored(b);
 
       for (let i = 0; i < m.packets.length; i++) {
-        let packetType = EnigmailOpenPGP.enums.read(EnigmailOpenPGP.enums.packet, m.packets[i].tag);
+        let packetType = EnigmailOpenPGP.openpgp.enums.read(EnigmailOpenPGP.openpgp.enums.packet, m.packets[i].tag);
         switch (packetType) {
           case "publicKey":
           case "secretKey":

@@ -16,13 +16,17 @@ const Cu = Components.utils;
 
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+const {
+  Services
+} = Cu.import("resource://gre/modules/Services.jsm");
 
 const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 
 const p = {
   service: null,
   branch: null,
-  root: null
+  root: null,
+  defaultBranch: null
 };
 
 function initPrefService() {
@@ -31,6 +35,7 @@ function initPrefService() {
 
     p.root = p.service.getBranch(null);
     p.branch = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
+    p.defaultBranch = p.service.getDefaultBranch(null);
 
     if (p.branch.getCharPref("logDirectory")) {
       EnigmailLog.setLogLevel(5);
@@ -42,7 +47,54 @@ function initPrefService() {
   }
 }
 
+
+var gPrefs = {};
+
+/**
+ * Load a preference default value
+ * This function is called while loading defaultPrefs.js
+ */
+function pref(key, val) {
+  gPrefs[key] = val;
+}
+
+/**
+ * Load default preferences for bootstrapped addon
+ */
+function setDefaultPrefs() {
+  EnigmailLog.DEBUG("prefs.jsm: setDefaultPrefs()\n");
+
+  Services.scriptloader.loadSubScript("resource://enigmail/preferences/defaultPrefs.js", {}, "UTF-8");
+
+  let branch = p.defaultBranch;
+  for (let key in gPrefs) {
+    let val = gPrefs[key];
+    switch (typeof val) {
+      case "boolean":
+        branch.setBoolPref(key, val);
+        break;
+      case "number":
+        branch.setIntPref(key, val);
+        break;
+      case "string":
+        branch.setCharPref(key, val);
+        break;
+    }
+  }
+}
+
+
 var EnigmailPrefs = {
+  startup: function(reason) {
+    try {
+      initPrefService();
+      setDefaultPrefs();
+    }
+    catch (ex) {
+      EnigmailLog.ERROR("prefs.jsm: Error while loading default prefs: " + ex.message + "\n");
+    }
+  },
+
   getPrefRoot: function() {
     if (!p.branch) {
       initPrefService();

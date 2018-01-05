@@ -29,6 +29,7 @@ targetDir=`pwd`
 cd "$cwd"
 
 cp ${srcDir}/package/install.rdf ${targetDir}/install.rdf
+cp ${srcDir}/package/bootstrap.js ${targetDir}/bootstrap.js
 
 # Prepare chrome.manifest
 cat  ${srcDir}/package/chrome.manifest \
@@ -56,8 +57,7 @@ echo "Creating ${xpiFile} file"
 
 zip --must-match\
     ../${xpiFile} \
-    components/bootstrap.js \
-    defaults/preferences/enigmail.js \
+    modules/preferences/defaultPrefs.js \
     modules/addrbook.jsm \
     modules/amPrefsService.jsm \
     modules/app.jsm \
@@ -161,5 +161,6 @@ zip --must-match\
     modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
     chrome/${xpiModule}.jar \
+    bootstrap.js \
     chrome.manifest \
     install.rdf
