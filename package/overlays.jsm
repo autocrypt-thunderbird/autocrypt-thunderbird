@@ -206,6 +206,7 @@ var EnigmailOverlays = {
    * @param reason: Number - bootstrap "reason" constant
    */
   shutdown: function(reason) {
+    DEBUG_LOG("overlay.jsm: initiating shutdown\n");
     // When the application is shutting down we normally don't have to clean
     // up any UI changes made
     if (reason == APP_SHUTDOWN)
@@ -227,6 +228,7 @@ var EnigmailOverlays = {
 
     // Stop listening for any new browser windows to open
     wm.removeListener(WindowListener);
+    DEBUG_LOG("overlay.jsm: shutdown complete\n");
   },
 
   /**
@@ -248,7 +250,6 @@ function getAppId() {
  */
 
 function insertXul(srcUrl, window, document, callback) {
-
 
   function injectDOM(xul) {
     function $(id) {

@@ -8,7 +8,10 @@
 
 /* global APP_SHUTDOWN: false */
 const Cu = Components.utils;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 
+var gAllModules = [];
 
 function install() {}
 
@@ -31,13 +34,14 @@ function startup(data, reason) {
     EnigmailOpenPGP
   } = Cu.import("resource://enigmail/openpgp.jsm", {});
 
+  loadListOfModules();
+
   EnigmailAmPrefsService.startup(reason);
   EnigmailOpenPGP.startup(reason);
   EnigmailCore.startup(reason);
   EnigmailPgpmimeHander.startup(reason);
   EnigmailOverlays.startup(reason);
 }
-
 
 function shutdown(data, reason) {
   if (reason === APP_SHUTDOWN) return;
@@ -58,35 +62,54 @@ function shutdown(data, reason) {
     EnigmailWindows
   } = Cu.import("resource://enigmail/windows.jsm", {});
 
-  EnigmailWindows.shutdown(reason);
-  EnigmailOverlays.shutdown(reason);
-  EnigmailAmPrefsService.shutdown(reason);
-  EnigmailCore.shutdown(reason);
-  EnigmailPgpmimeHander.shutdown(reason);
+  shutdownModule(EnigmailWindows, reason);
+  shutdownModule(EnigmailOverlays, reason);
+  shutdownModule(EnigmailAmPrefsService, reason);
+  shutdownModule(EnigmailCore, reason);
+  shutdownModule(EnigmailPgpmimeHander, reason);
 
   unloadModules();
 }
 
 /**
- * Unload all Enigmail modules that were potentially loaded
+ * Perform shutdown of a module
  */
-function unloadModules() {
-  //const Cu = Components.utils;
+function shutdownModule(module, reason) {
+  try {
+    module.shutdown(reason);
+  }
+  catch (ex) {}
+}
 
+/**
+ * Load list of all Enigmail modules that can be potentially loaded
+ */
+function loadListOfModules() {
   const {
     EnigmailStreams
   } = Cu.import("resource://enigmail/streams.jsm", {});
   let channel = EnigmailStreams.createChannel("resource://enigmail/all-modules.txt");
 
   let buffer = EnigmailStreams.newStringStreamListener(data => {
+    gAllModules = [];
     let modules = data.split(/[\r\n]/);
     for (let mod of modules) {
       mod = mod.replace(/^modules/, "");
-      try {
-        Cu.unload("resource://enigmail" + mod);
-      }
-      catch (ex) {}
+      gAllModules.push(mod);
     }
   });
   channel.asyncOpen(buffer, null);
+}
+
+
+/**
+ * Unload all Enigmail modules that were potentially loaded
+ */
+function unloadModules() {
+  for (let mod of gAllModules) {
+    try {
+      Cu.unload("resource://enigmail" + mod);
+    }
+    catch (ex) {}
+  }
 }
