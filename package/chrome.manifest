@@ -24,11 +24,3 @@ skin          enigmail    modern/1.0 jar:chrome/enigmail.jar!/skin/modern/enigma
 
 # Resource module registration
 resource enigmail modules/
-
-## JavaScript component registration
-
-# Register bootstrap.js as preparation for moving to bootstrapped extension
-component {c0816cf9-fd2d-4716-8629-68974f3559a8} components/bootstrap.js
-contract @enigmail.net/enigmail/bootstrap;1 {c0816cf9-fd2d-4716-8629-68974f3559a8}
-# hack to make sure that bootstrap is started during TB startup
-category command-line-handler cline-enigmail @enigmail.net/enigmail/bootstrap;1
