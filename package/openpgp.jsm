@@ -191,6 +191,9 @@ var EnigmailOpenPGP = {
     },
 
     getCrypto: function() {
+      if (!window) {
+        EnigmailOpenPGP.initialize();
+      }
       return window.crypto;
     }
   }

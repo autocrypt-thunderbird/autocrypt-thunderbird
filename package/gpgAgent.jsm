@@ -24,11 +24,14 @@ Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+//Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");
+
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -503,7 +506,7 @@ var EnigmailGpgAgent = {
 
     EnigmailGpgAgent.agentType = agentType;
     EnigmailGpgAgent.agentPath = agentPath;
-    EnigmailGpg.setAgentPath(agentPath);
+    getEnigmailGpg().setAgentPath(agentPath);
     EnigmailExecution.agentType = agentType;
 
     const command = agentPath;
@@ -567,13 +570,13 @@ var EnigmailGpgAgent = {
     const gpgVersion = versionParts[versionParts.length - 1];
 
     EnigmailLog.DEBUG("gpgAgent.jsm: detected GnuPG version '" + gpgVersion + "'\n");
-    EnigmailGpg.agentVersion = gpgVersion;
+    getEnigmailGpg().agentVersion = gpgVersion;
 
-    if (!EnigmailGpg.getGpgFeature("version-supported")) {
+    if (!getEnigmailGpg().getGpgFeature("version-supported")) {
       if (!domWindow) {
         domWindow = EnigmailWindows.getBestParentWin();
       }
-      EnigmailDialog.alert(domWindow, EnigmailLocale.getString("oldGpgVersion20", [gpgVersion, EnigmailGpg.getMinimumGpgVersion()]));
+      EnigmailDialog.alert(domWindow, EnigmailLocale.getString("oldGpgVersion20", [gpgVersion, getEnigmailGpg().getMinimumGpgVersion()]));
       throw Components.results.NS_ERROR_FAILURE;
     }
 

@@ -19,11 +19,5 @@ dirs: $(DIRS)
 $(DIRS):
 	$(MAKE) -C $@
 
-MYJARFILE = enigmail.jar
-
-
-jar: dirs
-	$(PYTHON) ../util/JarMaker.py -j $(DIST)/chrome -t . -f jar jar.mn
-
 clean:
-	rm -f $(DIST)/chrome/enigmail.jar
+	rm -fr $(DIST)/chrome
