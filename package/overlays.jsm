@@ -47,6 +47,11 @@ const {
   Services
 } = Cu.import("resource://gre/modules/Services.jsm", {});
 
+const {
+  EnigmailTimer
+} = Cu.import("resource://enigmail/timer.jsm", {});
+
+
 // the following constants need to be customized for each addon
 const BASE_PATH = "chrome://enigmail/content/";
 const MY_ADDON_ID = "enigmail";
@@ -172,6 +177,19 @@ var WindowListener = {
   onWindowTitleChange: function(xulWindow, newTitle) {}
 };
 
+/**
+ * Determine if an overlay exists for a window, and if so
+ * load it
+ */
+
+function loadUiForWindow(domWindow) {
+  for (let w in overlays) {
+    // If this is a relevant window then setup its UI
+    if (domWindow.document.location.href.startsWith(w))
+      WindowListener.setupUI(domWindow, overlays[w]);
+  }
+}
+
 
 var EnigmailOverlays = {
   /**
@@ -181,22 +199,38 @@ var EnigmailOverlays = {
    * @param reason: Number - bootstrap "reason" constant
    */
   startup: function(reason) {
+    DEBUG_LOG("overlays.jsm: startup()\n");
+
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
-    // Get the list of browser windows already open
+    // Wait for any new windows to open
+    wm.addListener(WindowListener);
+
+    // Get the list of windows already open
     let windows = wm.getEnumerator(null);
     while (windows.hasMoreElements()) {
-      let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+      try {
+        let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 
-      for (let w in overlays) {
-        // If this is a relevant window then setup its UI
-        if (domWindow.document.location.href.startsWith(w))
-          WindowListener.setupUI(domWindow, overlays[w]);
+        DEBUG_LOG("overlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
+
+        if (domWindow.document.location.href === "about:blank") {
+          // a window is available, but it's not yet fully loaded
+          // ==> add an event listener to fire when the window is completely loaded
+
+          domWindow.addEventListener("load", function loadUi() {
+            domWindow.removeEventListener("load", loadUi, false);
+            loadUiForWindow(domWindow);
+          }, false);
+        }
+        else {
+          loadUiForWindow(domWindow);
+        }
+      }
+      catch (ex) {
+        DEBUG_LOG("overlays.jsm: startup: error " + ex.message + "\n");
       }
     }
-
-    // Wait for any new browser windows to open
-    wm.addListener(WindowListener);
   },
 
   /**
@@ -214,7 +248,10 @@ var EnigmailOverlays = {
 
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
-    // Get the list of browser windows already open
+    // Stop listening for any new windows to open
+    wm.removeListener(WindowListener);
+
+    // Get the list of windows already open
     let windows = wm.getEnumerator(null);
     while (windows.hasMoreElements()) {
       let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
@@ -226,8 +263,6 @@ var EnigmailOverlays = {
         domWindow.close();
     }
 
-    // Stop listening for any new browser windows to open
-    wm.removeListener(WindowListener);
     DEBUG_LOG("overlay.jsm: shutdown complete\n");
   },
 
