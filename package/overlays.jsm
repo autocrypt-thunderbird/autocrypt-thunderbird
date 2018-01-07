@@ -47,10 +47,6 @@ const {
   Services
 } = Cu.import("resource://gre/modules/Services.jsm", {});
 
-const {
-  EnigmailTimer
-} = Cu.import("resource://enigmail/timer.jsm", {});
-
 
 // the following constants need to be customized for each addon
 const BASE_PATH = "chrome://enigmail/content/";
