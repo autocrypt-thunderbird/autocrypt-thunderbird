@@ -2,8 +2,129 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+DEPTH  = ../..
 
-all: libs
+include $(DEPTH)/config/autoconf.mk
 
-libs:
-	echo "nothing to do"
+UIFILES = \
+	autocryptInitiateBackup.xul \
+	autocryptInitiateBackup.js \
+	autocryptSetupPasswd.xul \
+	autocryptSetupPasswd.js \
+	columnOverlay.xul \
+	columnOverlay.js \
+	enigmailCommon.js \
+	enigmailAbCardViewOverlay.xul \
+	enigmailAbContactsPanel.xul \
+	enigmailAbOverlay.js \
+	aboutEnigmail.html \
+	enigmailAddUidDlg.js \
+	enigmailAddUidDlg.xul \
+	enigmailAdvancedIdentityDlg.js \
+	enigmailAdvancedIdentityDlg.xul \
+	enigmailMsgBox.js \
+	enigmailMsgBox.xul \
+	enigmailAttachmentsDialog.xul \
+	enigmailAttachmentsDialog.js \
+	enigmailAmIdEditOverlay.xul \
+	enigmailCheckLanguage.xul \
+	enigmailCardDetails.js \
+	enigmailCardDetails.xul \
+	enigmailConsole.xul \
+	enigmailConsole.js \
+	enigmailConsole.htm \
+	enigmailCustToolOverlay.xul \
+	enigmailDispPhoto.js \
+	enigmailDispPhoto.xul \
+	enigmailEditIdentity.js \
+	enigmailEditIdentity.xul \
+	enigmailEditKeyExpiryDlg.js \
+	enigmailEditKeyExpiryDlg.xul \
+	enigmailEditKeyTrustDlg.js \
+	enigmailEditKeyTrustDlg.xul \
+	enigmailEncryptionDlg.xul \
+	enigmailEncryptionDlg.js \
+	enigmailGenCardKey.js \
+	enigmailGenCardKey.xul \
+	enigmailGenericDisplay.js \
+	enigmailGenericDisplay.xul \
+	enigmailGenericDisplay.htm \
+	enigmailHelp.xul \
+	enigmailHelp.js \
+	enigmailImportPhoto.js \
+	enigmailImportPhoto.xul \
+	keyDetailsDlg.js \
+	keyDetailsDlg.xul \
+	enigmailKeyManager.xul \
+	enigmailKeyManager.js \
+	enigmailManageUidDlg.js \
+	enigmailManageUidDlg.xul \
+	enigmailRulesEditor.xul \
+	enigmailRulesEditor.js \
+	enigmailSearchKey.js \
+	enigmailSearchKey.xul \
+	enigmailKeyImportInfo.js \
+	enigmailKeyImportInfo.xul \
+	enigmailSingleRcptSettings.js \
+	enigmailSingleRcptSettings.xul \
+	enigmailSelectRule.js \
+	enigmailSelectRule.xul \
+	enigmailSetCardPin.js \
+	enigmailSetCardPin.xul \
+	enigmailSignKeyDlg.js \
+	enigmailSignKeyDlg.xul \
+	accountManagerOverlay.js \
+	accountManagerOverlay.xul \
+	pref-enigmail.xul \
+	pref-enigmail.js \
+	pref-pep.xul \
+	pref-pep.js \
+	am-enigprefs.xul \
+	am-enigprefs.js \
+	editSingleAccount.xul \
+	enigmailKeygen.xul \
+	enigmailKeygen.js \
+	enigmailKeygenConsole.htm \
+	enigmailKeyserverDlg.xul \
+	enigmailKeyserverDlg.js \
+	enigmailKeySelection.xul \
+	enigmailKeySelection.js \
+	enigmailMsgComposeOverlay.xul \
+	enigmailMsgComposeOverlay.js \
+	enigmailMsgComposeHelper.js \
+	messengerOverlay-tbird.xul \
+	messengerOverlay-sm.xul \
+	enigmailMessengerOverlay.xul \
+	enigmailMessengerOverlay.js \
+	enigmailMsgHdrViewOverlay.xul \
+	enigmailMsgHdrViewOverlay.js \
+	enigmailFilterEditorOverlay.xul \
+	enigmailFilterEditorOverlay.js \
+	enigmailFilterListOverlay.xul \
+	enigmailFilterListOverlay.js \
+	enigmailMsgPrintOverlay.xul \
+	enigmailMsgPrintOverlay.js \
+	enigmailPrivacyOverlay.js \
+	enigmailPrivacyOverlay.xul \
+	enigmailSetupWizard.js \
+	enigmailSetupWizard.xul \
+	enigmailWrapSelection.xul \
+	enigmailWrapSelection.js \
+	enigmailViewFile.js \
+	enigmailViewFile.xul \
+	enigRetrieveProgress.xul \
+	enigRetrieveProgress.js \
+	exportSettingsWizard.js \
+	exportSettingsWizard.xul \
+	upgradeInfo.html \
+	pepHandshake.xul \
+	pepHandshake.js \
+	pepPrepHandshake.xul \
+	pepPrepHandshake.js \
+	pepTrustWords.xul \
+	pepTrustWords.js
+	
+all: deploy
+
+deploy: $(UIFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content $(UIFILES)

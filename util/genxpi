@@ -43,7 +43,7 @@ if [ "$enableLang" = "yes" ]; then
     echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
     for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-      echo 'locale        enigmail    '$lang'       jar:chrome/enigmail.jar!/locale/'$lang'/' >> ${targetDir}/chrome.manifest
+      echo 'locale        enigmail    '$lang'       chrome/locale/'$lang'/' >> ${targetDir}/chrome.manifest
     done
   fi
 fi
@@ -161,7 +161,15 @@ zip --must-match\
     modules/wksMimeHandler.jsm \
     modules/zbase32.jsm \
     modules/all-modules.txt \
-    chrome/${xpiModule}.jar \
+    chrome/content/*.* \
+    chrome/skin/aero/*.* \
+    chrome/skin/modern/*.* \
+    chrome/skin/tb-mac/*.* \
+    chrome/skin/classic-seamonkey/*.* \
+    chrome/skin/tb-linux/*.* \
+    chrome/skin/tb-win-xp/*.* \
+    chrome/locale/*/*.* \
+    chrome/locale/*/help/*.* \
     bootstrap.js \
     chrome.manifest \
     install.rdf

@@ -28,9 +28,6 @@ function startup(data, reason) {
     EnigmailPgpmimeHander
   } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
   const {
-    EnigmailOverlays
-  } = Cu.import("resource://enigmail/overlays.jsm", {});
-  const {
     EnigmailOpenPGP
   } = Cu.import("resource://enigmail/openpgp.jsm", {});
 
@@ -40,7 +37,6 @@ function startup(data, reason) {
   EnigmailOpenPGP.startup(reason);
   EnigmailCore.startup(reason);
   EnigmailPgpmimeHander.startup(reason);
-  EnigmailOverlays.startup(reason);
 }
 
 function shutdown(data, reason) {

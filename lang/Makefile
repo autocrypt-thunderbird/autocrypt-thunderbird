@@ -40,7 +40,7 @@ export: $(DO_FIX_LANG)
 	$(EXPORT_CMD)
 
 jar: export
-	$(PYTHON) ../util/JarMaker.py -j $(DIST)/chrome -t . -f jar $(BUILD)/lang/jar.mn
+	$(PYTHON) ../util/JarMaker.py -j $(DIST) -t . -f flat $(BUILD)/lang/jar.mn
 
 clean:
 	for l in $(languages); do \

@@ -1,25 +1,25 @@
-content       enigmail                jar:chrome/enigmail.jar!/content/enigmail/
-locale        enigmail    en-US       jar:chrome/enigmail.jar!/locale/en-US/
+content       enigmail                chrome/content/
+locale        enigmail    en-US       chrome/locale/en-US/
 
 
 # Skin for TBird Mac OS X
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-mac/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
+skin          enigmail    classic/1.0 chrome/skin/tb-mac/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
 # Skin for TBird Windows
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-win-xp/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/aero/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-win-xp/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
+skin          enigmail    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
+skin          enigmail    classic/1.0 chrome/skin/aero/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
+skin          enigmail    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
 # Skin for TBird other OS (e.g. Linux)
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/tb-linux/enigmail/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
+skin          enigmail    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
 # Skin for SeaMonkey
-skin          enigmail    classic/1.0 jar:chrome/enigmail.jar!/skin/classic-seamonkey/enigmail/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-skin          enigmail    modern/1.0 jar:chrome/enigmail.jar!/skin/modern/enigmail/
+skin          enigmail    classic/1.0 chrome/skin/classic-seamonkey/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+skin          enigmail    modern/1.0 chrome/skin/modern/
 
 
 # Resource module registration

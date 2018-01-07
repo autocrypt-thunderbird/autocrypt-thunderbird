@@ -8,11 +8,11 @@ DEPTH = ..
 
 include ../config/autoconf.mk
 
-DIRS = content
+DIRS = content skin locale/en-US
 
 .PHONY: dirs $(DIRS)
 
-all: dirs jar
+all: dirs
 
 dirs: $(DIRS)
 

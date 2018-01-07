@@ -31,7 +31,7 @@ else {
 open INFILE, "$inputfile";
 open OUTFILE, ">$outdir/jar.mn";
 
-print OUTFILE "enigmail.jar:\n";
+print OUTFILE "chrome.jar:\n";
 
 my @genFiles = (
   "enigmail.properties",

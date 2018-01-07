@@ -41,6 +41,7 @@ const getEnigmailKeyRefreshService = EnigmailLazy.loader("enigmail/keyRefreshSer
 const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "EnigmailKeyServer");
 const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.jsm", "EnigmailWksMimeHandler");
 const getEnigmailPEPAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPEPAdapter");
+const getEnigmailOverlays = EnigmailLazy.loader("enigmail/overlays.jsm", "EnigmailOverlays");
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
@@ -84,6 +85,7 @@ var EnigmailCore = {
       getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
       let mimeEncrypt = getEnigmailMimeEncrypt();
       mimeEncrypt.startup(reason);
+      getEnigmailOverlays().startup(reason);
 
       try {
         let cLineReg = getEnigmailCommandLine().categoryRegistry;
