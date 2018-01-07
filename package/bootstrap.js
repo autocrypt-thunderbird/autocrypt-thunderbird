@@ -62,13 +62,20 @@ function shutdown(data, reason) {
     EnigmailWindows
   } = Cu.import("resource://enigmail/windows.jsm", {});
 
+  const {
+    Services
+  } = Components.utils.import("resource://gre/modules/Services.jsm", {});
+
   shutdownModule(EnigmailWindows, reason);
   shutdownModule(EnigmailOverlays, reason);
   shutdownModule(EnigmailAmPrefsService, reason);
   shutdownModule(EnigmailCore, reason);
   shutdownModule(EnigmailPgpmimeHander, reason);
-
   unloadModules();
+
+  // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
+  //               in order to fully update images and locales, their caches need clearing here
+  Services.obs.notifyObservers(null, "chrome-flush-caches", null);
 }
 
 /**
@@ -85,20 +92,23 @@ function shutdownModule(module, reason) {
  * Load list of all Enigmail modules that can be potentially loaded
  */
 function loadListOfModules() {
-  const {
-    EnigmailStreams
-  } = Cu.import("resource://enigmail/streams.jsm", {});
-  let channel = EnigmailStreams.createChannel("resource://enigmail/all-modules.txt");
-
-  let buffer = EnigmailStreams.newStringStreamListener(data => {
-    gAllModules = [];
-    let modules = data.split(/[\r\n]/);
-    for (let mod of modules) {
-      mod = mod.replace(/^modules/, "");
-      gAllModules.push(mod);
+  let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+  request.open("GET", "resource://enigmail/all-modules.txt", true); // async=true
+  request.responseType = "text";
+  request.onerror = function(event) {};
+  request.onload = function(event) {
+    if (request.response) {
+      gAllModules = [];
+      let modules = request.response.split(/[\r\n]/);
+      for (let mod of modules) {
+        mod = mod.replace(/^modules/, "");
+        gAllModules.push(mod);
+      }
     }
-  });
-  channel.asyncOpen(buffer, null);
+    else
+      request.onerror(event);
+  };
+  request.send();
 }
 
 

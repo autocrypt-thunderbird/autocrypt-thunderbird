@@ -190,6 +190,7 @@ Enigmail.msg = {
     this.composeOpen();
     this.processFinalState();
     this.updateStatusBar();
+    this.fireSendFlags();
   },
 
   delayedProcessFinalState: function() {
@@ -5327,10 +5328,10 @@ Enigmail.composeStateListener = {
     isEditable = Enigmail.msg.editor.isDocumentEditable;
     Enigmail.msg.composeBodyReady = true;
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
 
     //FIXME
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: disableSmime=" + Enigmail.msg.disableSmime + "\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: disableSmime=" + Enigmail.msg.disableSmime + "\n");
 
     if (Enigmail.msg.disableSmime) {
       if (gMsgCompose && gMsgCompose.compFields && gMsgCompose.compFields.securityInfo) {
@@ -5339,7 +5340,7 @@ Enigmail.composeStateListener = {
         si.requireEncryptMessage = false;
       }
       else {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.ComposeBodyReady: could not disable S/MIME\n");
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: could not disable S/MIME\n");
       }
     }
 
