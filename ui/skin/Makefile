@@ -89,16 +89,16 @@ SKIN_TB_WIN_XP = \
 	images/pEpLogo.svg
 
 SKIN_AERO = \
-	tb-windows/enigmail-aero.css \
+	tb-aero/enigmail.css \
 	common/enigmail-common.css \
 	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	tb-windows/images/enigmail-toolbar-aero.png \
-	tb-windows/images/enigmail-toolbar-small-aero.png \
-	tb-windows/images/enigmail-settings-aero.png \
-	tb-windows/images/enigmail-settings-small-aero.png \
+	tb-aero/images/enigmail-toolbar.png \
+	tb-aero/images/enigmail-toolbar-small.png \
+	tb-aero/images/enigmail-settings.png \
+	tb-aero/images/enigmail-settings-small.png \
 	tb-windows/images/enigEncInactive.png \
 	tb-windows/images/enigEncNotOk.png \
 	tb-windows/images/enigEncOk.png \
