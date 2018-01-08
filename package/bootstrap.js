@@ -27,14 +27,10 @@ function startup(data, reason) {
   const {
     EnigmailPgpmimeHander
   } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
-  const {
-    EnigmailOpenPGP
-  } = Cu.import("resource://enigmail/openpgp.jsm", {});
 
   loadListOfModules();
 
   EnigmailAmPrefsService.startup(reason);
-  EnigmailOpenPGP.startup(reason);
   EnigmailCore.startup(reason);
   EnigmailPgpmimeHander.startup(reason);
 }

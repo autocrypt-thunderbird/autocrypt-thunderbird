@@ -48,51 +48,35 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
   0x575bc9c3, 0x57dd8538
 ];
 
+
+function initialize() {
+  const {
+    EnigmailLog
+  } = Cu.import("resource://enigmail/log.jsm", {});
+  EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
+
+  try {
+    let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
+
+    window = appShellSvc.hiddenDOMWindow;
+    document = window.document;
+
+    Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js", {}, "UTF-8");
+
+    //this.openpgp = window.openpgp;
+  }
+  catch (ex) {
+    EnigmailLog.ERROR("openpgp.jsm: initialize: error: " + ex.message + "\n");
+  }
+}
+
 var EnigmailOpenPGP = {
-  startup: function(reason) {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
-    let self = this;
-
-    // Get the list of already open window(s)
-    let windows = wm.getEnumerator(null);
-    if (windows.hasMoreElements()) {
-      self.initialize();
+  get openpgp() {
+    if (!window) {
+      initialize();
     }
-    else {
-      // Wait for any new window to open
 
-      let windowListener = {
-        onOpenWindow: function(xulWindow) {
-          self.initialize();
-          wm.removeListener(windowListener);
-        },
-        onCloseWindow: function(xulWindow) {},
-        onWindowTitleChange: function(xulWindow, newTitle) {}
-      };
-
-      wm.addListener(windowListener);
-    }
-  },
-
-  initialize: function() {
-    const {
-      EnigmailLog
-    } = Cu.import("resource://enigmail/log.jsm", {});
-    EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
-
-    try {
-      let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
-
-      window = appShellSvc.hiddenDOMWindow;
-      document = window.document;
-
-      Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js", {}, "UTF-8");
-
-      this.openpgp = window.openpgp;
-    }
-    catch (ex) {
-      EnigmailLog.ERROR("openpgp.jsm: initialize: error: " + ex.message + "\n");
-    }
+    return window.openpgp;
   },
 
   enigmailFuncs: {
@@ -192,7 +176,7 @@ var EnigmailOpenPGP = {
 
     getCrypto: function() {
       if (!window) {
-        EnigmailOpenPGP.initialize();
+        initialize();
       }
       return window.crypto;
     }
