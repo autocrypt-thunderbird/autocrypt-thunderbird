@@ -31,6 +31,7 @@ SKIN_TB_WIN_XP = \
 	tb-windows/images/enigSignUnkown.png \
 	images/twisty-open.png \
 	images/twisty-clsd.png \
+	images/spinning-wheel.png \
 	tb-windows/images/col-encrypted-signed.png \
 	tb-windows/images/enigSignActiveNone.png \
 	tb-windows/images/enigSignActivePlus.png \
@@ -82,6 +83,7 @@ SKIN_TB_WIN_XP = \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
 	images/pEpGreen.svg \
+	images/pEpGrey.svg \
 	images/pEpYellow.svg \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
@@ -160,6 +162,7 @@ SKIN_AERO = \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
 	images/pEpGreen.svg \
+	images/pEpGrey.svg \
 	images/pEpYellow.svg \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
@@ -220,6 +223,9 @@ SKIN_TB_MAC = \
 	images/encrypt-disabled-30.png \
 	images/encrypt-inactive-30.png \
 	images/encrypt-inactive-force-30.png \
+	images/attach-active-18.png \
+	images/attach-inactive-18.png \
+	images/attach-disabled-18.png \
 	images/attach-active-24.png \
 	images/attach-inactive-24.png \
 	images/attach-disabled-24.png \
@@ -324,6 +330,7 @@ SKIN_TB_LINUX = \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
 	images/pEpGreen.svg \
+	images/pEpGrey.svg \
 	images/pEpYellow.svg \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
@@ -405,12 +412,14 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
 	images/pEpGreen.svg \
+	images/pEpGrey.svg \
 	images/pEpYellow.svg \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
 	images/pEpLogo.svg
 
+# missing: modern-encrypt-disabled.png, modern-sign-disabled.png
 SKIN_MODERN = \
 	modern/enigmail.css \
 	common/enigmail-common.css \
@@ -472,6 +481,7 @@ SKIN_MODERN = \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
 	images/pEpGreen.svg \
+	images/pEpGrey.svg \
 	images/pEpYellow.svg \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
