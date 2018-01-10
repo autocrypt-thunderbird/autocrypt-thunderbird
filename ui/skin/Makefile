@@ -88,7 +88,9 @@ SKIN_TB_WIN_XP = \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/pEpLogo.svg \
+	images/headerProtected-18.svg \
+	images/headerUnprotected-18.svg
 
 SKIN_AERO = \
 	tb-aero/enigmail.css \
@@ -167,7 +169,9 @@ SKIN_AERO = \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/pEpLogo.svg \
+	images/headerProtected-18.svg \
+	images/headerUnprotected-18.svg
 
 
 SKIN_TB_MAC = \
@@ -253,7 +257,9 @@ SKIN_TB_MAC = \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/pEpLogo.svg \
+	images/headerProtected-18.svg \
+	images/headerUnprotected-18.svg
 
 SKIN_TB_LINUX = \
 	tb-linux/enigmail.css \
@@ -335,7 +341,9 @@ SKIN_TB_LINUX = \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/pEpLogo.svg \
+	images/headerProtected-18.svg \
+	images/headerUnprotected-18.svg
 
 SKIN_CLASSIC_SEAMONKEY = \
 	classic-seamonkey/enigmail.css \
@@ -417,7 +425,11 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/pEpRed.svg \
 	images/pEpEncryptActive.svg \
 	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/pEpLogo.svg \
+	images/headerProtected-24.svg \
+	images/headerUnprotected-24.svg \
+	images/headerProtected-30.svg \
+	images/headerUnprotected-30.svg
 
 # missing: modern-encrypt-disabled.png, modern-sign-disabled.png
 SKIN_MODERN = \

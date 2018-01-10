@@ -194,6 +194,37 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
   list-style-image : url("chrome://enigmail/skin/attach-active-24.png");
 }
 
+/***************************************************
+ *  Icons for compose toolbar: Protect header
+ ***************************************************/
+
+#enigmail-toolbar-encryptHdr-button
+{
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-30.svg");
+}
+
+#enigmail-toolbar-encryptHdr-button[disabled] {
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-30.svg");
+}
+
+#enigmail-toolbar-encryptHdr-button[checked="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/headerProtected-30.svg");
+}
+
+toolbar[iconsize="small"] #enigmail-toolbar-encryptHdr-button
+{
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-24.svg");
+}
+
+toolbar[iconsize="small"] #enigmail-toolbar-encryptHdr-button[disabled] {
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-24.svg");
+}
+
+toolbar[iconsize="small"] #enigmail-toolbar-encryptHdr-button[checked="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/headerProtected-24.svg");
+}
 
 /***************************************************
  *  Icons for messenger status bar

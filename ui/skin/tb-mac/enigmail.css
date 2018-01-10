@@ -170,18 +170,24 @@ toolbar[iconsize="small"] #button-enigmail-sign[signed="forceNo"]
   list-style-image : url("chrome://enigmail/skin/attach-active-18.png");
 }
 
-toolbar[iconsize="small"] #button-enigmail-attach
+
+/***************************************************
+ *  Icons for compose toolbar: Protect header
+ ***************************************************/
+
+#enigmail-toolbar-encryptHdr-button
 {
-  list-style-image : url("chrome://enigmail/skin/attach-inactive-24.png");
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-18.svg");
 }
 
-toolbar[iconsize="small"] #button-enigmail-attach[disabled] {
-  list-style-image : url("chrome://enigmail/skin/attach-disabled-24.png");
+
+#enigmail-toolbar-encryptHdr-button[disabled] {
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-18.svg");
 }
 
-toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
+#enigmail-toolbar-encryptHdr-button[checked="true"]
 {
-  list-style-image : url("chrome://enigmail/skin/attach-active-24.png");
+  list-style-image : url("chrome://enigmail/skin/headerProtected-18.svg");
 }
 
 

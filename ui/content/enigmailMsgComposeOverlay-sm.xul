@@ -222,7 +222,7 @@
 
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
-    targetToolbar="composeToolbar2"
+    targetToolbar="composeToolbar"
     targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-pepEncrypt,button-save,spring"
     targetToolbox="compose-toolbox">
 

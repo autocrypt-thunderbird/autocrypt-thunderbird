@@ -182,6 +182,24 @@ toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
 
 
 /***************************************************
+ *  Icons for compose toolbar: Protect header
+ ***************************************************/
+
+#enigmail-toolbar-encryptHdr-button
+{
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-18.svg");
+}
+
+#enigmail-toolbar-encryptHdr-button[disabled] {
+  list-style-image : url("chrome://enigmail/skin/headerUnprotected-18.svg");
+}
+
+#enigmail-toolbar-encryptHdr-button[checked="true"]
+{
+  list-style-image : url("chrome://enigmail/skin/headerProtected-18.svg");
+}
+
+/***************************************************
  *  Icons for compose status bar: signed states
  ***************************************************/
 

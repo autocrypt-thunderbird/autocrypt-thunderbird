@@ -90,6 +90,7 @@ UIFILES = \
 	enigmailKeySelection.xul \
 	enigmailKeySelection.js \
 	enigmailMsgComposeOverlay.xul \
+	enigmailMsgComposeOverlay-sm.xul \
 	enigmailMsgComposeOverlay.js \
 	enigmailMsgComposeHelper.js \
 	messengerOverlay-tbird.xul \

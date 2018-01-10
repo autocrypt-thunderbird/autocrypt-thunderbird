@@ -82,9 +82,15 @@ const overlays = {
     "enigmailMsgHdrViewOverlay.xul"
   ],
 
-  "chrome://messenger/content/messengercompose/messengercompose.xul": [
-    "enigmailMsgComposeOverlay.xul"
-  ],
+  "chrome://messenger/content/messengercompose/messengercompose.xul": [{
+    // Overlay for Thunderbird (and other non-SeaMonkey apps)
+    url: "enigmailMsgComposeOverlay.xul",
+    application: "!{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+  }, {
+    // Overlay for SeaMonkey
+    url: "enigmailMsgComposeOverlay-sm.xul",
+    application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+  }],
 
   "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
   "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
