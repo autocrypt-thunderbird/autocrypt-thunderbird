@@ -159,30 +159,30 @@ toolbar[iconsize="small"] #button-enigmail-sign[signed="forceNo"]
 
 #button-enigmail-attach
 {
-  list-style-image : url("chrome://enigmail/skin/attach-inactive-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-30.svg");
 }
 
 #button-enigmail-attach[disabled] {
-  list-style-image : url("chrome://enigmail/skin/attach-disabled-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-30.svg");
 }
 
 #button-enigmail-attach[addPubkey="true"]
 {
-  list-style-image : url("chrome://enigmail/skin/attach-active-30.png");
+  list-style-image : url("chrome://enigmail/skin/attach-active-30.svg");
 }
 
 toolbar[iconsize="small"] #button-enigmail-attach
 {
-  list-style-image : url("chrome://enigmail/skin/attach-inactive-24.png");
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-24.svg");
 }
 
 toolbar[iconsize="small"] #button-enigmail-attach[disabled] {
-  list-style-image : url("chrome://enigmail/skin/attach-disabled-24.png");
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-24.svg");
 }
 
 toolbar[iconsize="small"] #button-enigmail-attach[addPubkey="true"]
 {
-  list-style-image : url("chrome://enigmail/skin/attach-active-24.png");
+  list-style-image : url("chrome://enigmail/skin/attach-active-24.svg");
 }
 
 /***************************************************

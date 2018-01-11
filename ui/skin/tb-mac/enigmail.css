@@ -109,16 +109,16 @@ toolbar:not([mode="text"]) #button-enigmail-sign .toolbarbutton-text {
 
 #button-enigmail-attach
 {
-  list-style-image : url("chrome://enigmail/skin/attach-inactive-18.png");
+  list-style-image : url("chrome://enigmail/skin/attach-inactive-18.svg");
 }
 
 #button-enigmail-attach[disabled] {
-  list-style-image : url("chrome://enigmail/skin/attach-disabled-18.png");
+  list-style-image : url("chrome://enigmail/skin/attach-disabled-18.svg");
 }
 
 #button-enigmail-attach[addPubkey="true"]
 {
-  list-style-image : url("chrome://enigmail/skin/attach-active-18.png");
+  list-style-image : url("chrome://enigmail/skin/attach-active-18.svg");
 }
 
 

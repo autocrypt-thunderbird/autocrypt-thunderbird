@@ -60,9 +60,9 @@ SKIN_TB_WIN_XP = \
 	images/sign-disabled-18.svg \
 	images/sign-inactive-18.svg \
 	images/importSuccess.png \
-	images/attach-active-16.png \
-	images/attach-disabled-16.png \
-	images/attach-inactive-16.png \
+	images/attach-active-18.svg \
+	images/attach-disabled-18.svg \
+	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.png \
 	images/col-pEpGreen.svg \
@@ -127,9 +127,9 @@ SKIN_AERO = \
 	images/sign-active-18.svg \
 	images/sign-disabled-18.svg \
 	images/sign-inactive-18.svg \
-	images/attach-active-16.png \
-	images/attach-disabled-16.png \
-	images/attach-inactive-16.png \
+	images/attach-active-18.svg \
+	images/attach-disabled-18.svg \
+	images/attach-inactive-18.svg \
 	images/password-error.png \
 	images/warning-16.png \
 	images/col-pEpGreen.svg \
@@ -195,9 +195,9 @@ SKIN_TB_MAC = \
 	images/sign-active-18.svg \
 	images/sign-disabled-18.svg \
 	images/sign-inactive-18.svg \
-	images/attach-active-18.png \
-	images/attach-inactive-18.png \
-	images/attach-disabled-18.png \
+	images/attach-active-18.svg \
+	images/attach-disabled-18.svg \
+	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.png \
 	images/col-pEpGreen.svg \
@@ -262,12 +262,9 @@ SKIN_TB_LINUX = \
 	images/sign-active-18.svg \
 	images/sign-disabled-18.svg \
 	images/sign-inactive-18.svg \
-	images/attach-active-24.png \
-	images/attach-inactive-24.png \
-	images/attach-disabled-24.png \
-	images/attach-active-30.png \
-	images/attach-inactive-30.png \
-	images/attach-disabled-30.png \
+	images/attach-active-18.svg \
+	images/attach-disabled-18.svg \
+	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.png \
 	images/col-pEpGreen.svg \
@@ -338,11 +335,12 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/sign-active-30.svg \
 	images/sign-disabled-30.svg \
 	images/sign-inactive-30.svg \
-	images/attach-inactive-24.png \
-	images/attach-disabled-24.png \
-	images/attach-active-30.png \
-	images/attach-inactive-30.png \
-	images/attach-disabled-30.png \
+	images/attach-inactive-24.svg \
+	images/attach-inactive-30.svg \
+	images/attach-disabled-24.svg \
+	images/attach-disabled-30.svg \
+	images/attach-active-24.svg \
+	images/attach-active-30.svg \
 	images/warning-16.png \
 	images/password-error.png \
 	images/col-pEpGreen.svg \
