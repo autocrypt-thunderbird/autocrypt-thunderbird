@@ -53,27 +53,13 @@ SKIN_TB_WIN_XP = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
-	images/encrypt-active-16.png \
-	images/encrypt-active-force-16.png \
-	images/encrypt-disabled-16.png \
-	images/encrypt-inactive-16.png \
-	images/encrypt-inactive-force-16.png \
-	images/encrypt-active-30.png \
-	images/encrypt-active-force-30.png \
-	images/encrypt-disabled-30.png \
-	images/encrypt-inactive-30.png \
-	images/encrypt-inactive-force-30.png \
+	images/encrypt-inactive-18.svg \
+	images/encrypt-active-18.svg \
+	images/encrypt-disabled-18.svg \
+	images/sign-active-18.svg \
+	images/sign-disabled-18.svg \
+	images/sign-inactive-18.svg \
 	images/importSuccess.png \
-	images/sign-active-16.png \
-	images/sign-active-force-16.png \
-	images/sign-disabled-16.png \
-	images/sign-inactive-16.png \
-	images/sign-inactive-force-16.png \
-	images/sign-active-30.png \
-	images/sign-active-force-30.png \
-	images/sign-disabled-30.png \
-	images/sign-inactive-30.png \
-	images/sign-inactive-force-30.png \
 	images/attach-active-16.png \
 	images/attach-disabled-16.png \
 	images/attach-inactive-16.png \
@@ -135,26 +121,12 @@ SKIN_AERO = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
-	images/encrypt-active-16.png \
-	images/encrypt-active-force-16.png \
-	images/encrypt-disabled-16.png \
-	images/encrypt-inactive-16.png \
-	images/encrypt-inactive-force-16.png \
-	images/encrypt-active-30.png \
-	images/encrypt-active-force-30.png \
-	images/encrypt-disabled-30.png \
-	images/encrypt-inactive-30.png \
-	images/encrypt-inactive-force-30.png \
-	images/sign-active-16.png \
-	images/sign-active-force-16.png \
-	images/sign-disabled-16.png \
-	images/sign-inactive-16.png \
-	images/sign-inactive-force-16.png \
-	images/sign-active-30.png \
-	images/sign-active-force-30.png \
-	images/sign-disabled-30.png \
-	images/sign-inactive-30.png \
-	images/sign-inactive-force-30.png \
+	images/encrypt-inactive-18.svg \
+	images/encrypt-active-18.svg \
+	images/encrypt-disabled-18.svg \
+	images/sign-active-18.svg \
+	images/sign-disabled-18.svg \
+	images/sign-inactive-18.svg \
 	images/attach-active-16.png \
 	images/attach-disabled-16.png \
 	images/attach-inactive-16.png \
@@ -217,35 +189,15 @@ SKIN_TB_MAC = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
-	images/encrypt-active-18.png \
-	images/encrypt-active-force-18.png \
-	images/encrypt-disabled-18.png \
-	images/encrypt-inactive-18.png \
-	images/encrypt-inactive-force-18.png \
-	images/encrypt-active-30.png \
-	images/encrypt-active-force-30.png \
-	images/encrypt-disabled-30.png \
-	images/encrypt-inactive-30.png \
-	images/encrypt-inactive-force-30.png \
+	images/encrypt-inactive-18.svg \
+	images/encrypt-active-18.svg \
+	images/encrypt-disabled-18.svg \
+	images/sign-active-18.svg \
+	images/sign-disabled-18.svg \
+	images/sign-inactive-18.svg \
 	images/attach-active-18.png \
 	images/attach-inactive-18.png \
 	images/attach-disabled-18.png \
-	images/attach-active-24.png \
-	images/attach-inactive-24.png \
-	images/attach-disabled-24.png \
-	images/attach-active-30.png \
-	images/attach-inactive-30.png \
-	images/attach-disabled-30.png \
-	images/sign-active-18.png \
-	images/sign-active-force-18.png \
-	images/sign-disabled-18.png \
-	images/sign-inactive-18.png \
-	images/sign-inactive-force-18.png \
-	images/sign-active-30.png \
-	images/sign-active-force-30.png \
-	images/sign-disabled-30.png \
-	images/sign-inactive-30.png \
-	images/sign-inactive-force-30.png \
 	images/warning-16.png \
 	images/password-error.png \
 	images/col-pEpGreen.svg \
@@ -304,26 +256,12 @@ SKIN_TB_LINUX = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceNo.png \
 	tb-windows/images/enigEncForceYes.png \
-	images/encrypt-active-24.png \
-	images/encrypt-active-force-24.png \
-	images/encrypt-disabled-24.png \
-	images/encrypt-inactive-24.png \
-	images/encrypt-inactive-force-24.png \
-	images/encrypt-active-30.png \
-	images/encrypt-active-force-30.png \
-	images/encrypt-disabled-30.png \
-	images/encrypt-inactive-30.png \
-	images/encrypt-inactive-force-30.png \
-	images/sign-active-24.png \
-	images/sign-active-force-24.png \
-	images/sign-disabled-24.png \
-	images/sign-inactive-24.png \
-	images/sign-inactive-force-24.png \
-	images/sign-active-30.png \
-	images/sign-active-force-30.png \
-	images/sign-disabled-30.png \
-	images/sign-inactive-30.png \
-	images/sign-inactive-force-30.png \
+	images/encrypt-inactive-18.svg \
+	images/encrypt-active-18.svg \
+	images/encrypt-disabled-18.svg \
+	images/sign-active-18.svg \
+	images/sign-disabled-18.svg \
+	images/sign-inactive-18.svg \
 	images/attach-active-24.png \
 	images/attach-inactive-24.png \
 	images/attach-disabled-24.png \
@@ -388,27 +326,18 @@ SKIN_CLASSIC_SEAMONKEY = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
-	images/encrypt-active-24.png \
-	images/encrypt-active-force-24.png \
-	images/encrypt-disabled-24.png \
-	images/encrypt-inactive-24.png \
-	images/encrypt-inactive-force-24.png \
-	images/encrypt-active-30.png \
-	images/encrypt-active-force-30.png \
-	images/encrypt-disabled-30.png \
-	images/encrypt-inactive-30.png \
-	images/encrypt-inactive-force-30.png \
-	images/sign-active-24.png \
-	images/sign-active-force-24.png \
-	images/sign-disabled-24.png \
-	images/sign-inactive-24.png \
-	images/sign-inactive-force-24.png \
-	images/sign-active-30.png \
-	images/sign-active-force-30.png \
-	images/sign-disabled-30.png \
-	images/sign-inactive-30.png \
-	images/sign-inactive-force-30.png \
-	images/attach-active-24.png \
+	images/encrypt-inactive-24.svg \
+	images/encrypt-active-24.svg \
+	images/encrypt-disabled-24.svg \
+	images/sign-active-24.svg \
+	images/sign-disabled-24.svg \
+	images/sign-inactive-24.svg \
+	images/encrypt-inactive-30.svg \
+	images/encrypt-active-30.svg \
+	images/encrypt-disabled-30.svg \
+	images/sign-active-30.svg \
+	images/sign-disabled-30.svg \
+	images/sign-inactive-30.svg \
 	images/attach-inactive-24.png \
 	images/attach-disabled-24.png \
 	images/attach-active-30.png \

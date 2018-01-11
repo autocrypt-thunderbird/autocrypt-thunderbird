@@ -103,6 +103,11 @@ const overlays = {
   //
   // // Overlay for privacy preferences in Thunderbird
   "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
+
+  //
+  // Overlay for Customize Toolbar (Windows, Linux)
+  "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"],
+
   //
   // // Overlay for Account Manager
   "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"],
