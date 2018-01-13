@@ -35,16 +35,17 @@ shift
 while [ $# -gt 0 ]; do
 
   SRCFILE=$1
-  BASEFILE=`basename $1`
+  BASEFILE=$(basename $1)
 
   if [ $INSTALLMODE = "i" ]; then
-    # install files
-    cp ${SRCFILE} ${TARGETDIR}/${BASEFILE} || exit 1
+    if [ ${SRCFILE} -nt ${TARGETDIR}/${BASEFILE} ]; then
+      # install file if newer than existing file
+      cp ${SRCFILE} ${TARGETDIR}/${BASEFILE} || exit 1
 
-    if [ "$TARGETMODE" != "" ]; then
-      chmod $TARGETMODE ${TARGETDIR}/${BASEFILE} || exit 1
+      if [ "$TARGETMODE" != "" ]; then
+        chmod $TARGETMODE ${TARGETDIR}/${BASEFILE} || exit 1
+      fi
     fi
-
   else
     # uninstall files
     rm -f ${TARGETDIR}/${BASEFILE}

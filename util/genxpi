@@ -55,7 +55,7 @@ find modules -name "*.js*" > modules/all-modules.txt
 
 echo "Creating ${xpiFile} file"
 
-zip --must-match\
+zip -9 --must-match\
     ../${xpiFile} \
     modules/preferences/defaultPrefs.js \
     modules/addrbook.jsm \
