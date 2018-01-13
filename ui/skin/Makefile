@@ -18,10 +18,6 @@ SKIN_TB_WIN_XP = \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	tb-windows/images/enigmail-toolbar.png \
-	tb-windows/images/enigmail-toolbar-small.png \
-	tb-windows/images/enigmail-settings.png \
-	tb-windows/images/enigmail-settings-small.png \
 	tb-windows/images/enigEncInactive.png \
 	tb-windows/images/enigEncNotOk.png \
 	tb-windows/images/enigEncOk.png \
@@ -53,6 +49,8 @@ SKIN_TB_WIN_XP = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
+	images/decrypt-inactive-18.svg \
+	images/decrypt-active-18.svg \
 	images/encrypt-inactive-18.svg \
 	images/encrypt-active-18.svg \
 	images/encrypt-disabled-18.svg \
@@ -85,10 +83,6 @@ SKIN_AERO = \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	tb-aero/images/enigmail-toolbar.png \
-	tb-aero/images/enigmail-toolbar-small.png \
-	tb-aero/images/enigmail-settings.png \
-	tb-aero/images/enigmail-settings-small.png \
 	tb-windows/images/enigEncInactive.png \
 	tb-windows/images/enigEncNotOk.png \
 	tb-windows/images/enigEncOk.png \
@@ -121,6 +115,8 @@ SKIN_AERO = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
+	images/decrypt-inactive-18.svg \
+	images/decrypt-active-18.svg \
 	images/encrypt-inactive-18.svg \
 	images/encrypt-active-18.svg \
 	images/encrypt-disabled-18.svg \
@@ -153,10 +149,6 @@ SKIN_TB_MAC = \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	tb-mac/images/enigmail-decrypt.png \
-	tb-mac/images/enigmail-decrypt-inactive.png \
-	tb-mac/images/enigmail-decrypt-small.png \
-	tb-mac/images/enigmail-decrypt-small-inactive.png \
 	tb-mac/images/enigEncInactive.png \
 	tb-mac/images/enigEncNotOk.png \
 	tb-mac/images/enigEncOk.png \
@@ -189,6 +181,8 @@ SKIN_TB_MAC = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
+	images/decrypt-active-18.svg \
+	images/decrypt-inactive-18.svg \
 	images/encrypt-inactive-18.svg \
 	images/encrypt-active-18.svg \
 	images/encrypt-disabled-18.svg \
@@ -220,10 +214,6 @@ SKIN_TB_LINUX = \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	tb-linux/images/enigmail-toolbar.png \
-	tb-linux/images/enigmail-toolbar-small.png \
-	tb-linux/images/enigmail-settings.png \
-	tb-linux/images/enigmail-settings-small.png \
 	tb-linux/images/enigEncInactive.png \
 	tb-linux/images/enigEncNotOk.png \
 	tb-linux/images/enigEncOk.png \
@@ -256,6 +246,8 @@ SKIN_TB_LINUX = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceNo.png \
 	tb-windows/images/enigEncForceYes.png \
+	images/decrypt-inactive-18.svg \
+	images/decrypt-active-18.svg \
 	images/encrypt-inactive-18.svg \
 	images/encrypt-active-18.svg \
 	images/encrypt-disabled-18.svg \
@@ -287,10 +279,6 @@ SKIN_CLASSIC_SEAMONKEY = \
 	common/enigmail-html.css \
 	images/enigmail-about.png \
 	images/enigmail-logo.png \
-	classic-seamonkey/images/enigmail-toolbar.png \
-	classic-seamonkey/images/enigmail-toolbar-small.png \
-	classic-seamonkey/images/enigmail-send.png \
-	classic-seamonkey/images/enigmail-send-small.png \
 	classic-seamonkey/images/enigEncInactive.png \
 	classic-seamonkey/images/enigEncNotOk.png \
 	classic-seamonkey/images/enigEncOk.png \
@@ -323,6 +311,10 @@ SKIN_CLASSIC_SEAMONKEY = \
 	tb-windows/images/enigEncInactiveConflict.png \
 	tb-windows/images/enigEncForceYes.png \
 	tb-windows/images/enigEncForceNo.png \
+	images/decrypt-inactive-24.svg \
+	images/decrypt-active-24.svg \
+	images/decrypt-inactive-30.svg \
+	images/decrypt-active-30.svg \
 	images/encrypt-inactive-24.svg \
 	images/encrypt-active-24.svg \
 	images/encrypt-disabled-24.svg \

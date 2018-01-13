@@ -10,40 +10,26 @@
 @import url("chrome://enigmail/skin/enigmail-pEp.css");    /* styles related to pEp for all platforms */
 
 
-#button-enigmail-decrypt,
-[typeid="button-enigmail-decrypt"]
+#button-enigmail-decrypt
   {
-    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
-    -moz-image-region: rect(0px 30px 30px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-active-30.svg");
   }
 
-#button-enigmail-decrypt:hover,
-[typeid="button-enigmail-decrypt"]
+#button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(30px 30px 60px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-inactive-30.svg");
   }
 
-#button-enigmail-decrypt[disabled],
-[typeid="button-enigmail-decrypt"]
+toolbar[iconsize="small"] #button-enigmail-decrypt
   {
-    -moz-image-region: rect(60px 30px 90px 0px);
-  }
-
-toolbar[iconsize="small"]  #button-enigmail-decrypt
-  {
-    -moz-image-region: rect(0px 20px 20px 0px);
-    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
-  }
-
-toolbar[iconsize="small"] #button-enigmail-decrypt:hover
-  {
-    -moz-image-region: rect(20px 20px 40px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-active-24.svg");
   }
 
 toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(40px 20px 60px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-inactive-24.svg");
   }
+
 
 /***************************************************
  *  Icons for compose toolbar: encryption

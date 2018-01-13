@@ -21,10 +21,6 @@
 
   <link href="chrome://enigmail/skin/enigmail.css" rel="stylesheet" type="text/css"/>
 
-  <commandset id="mailToolbarItems">
-    <command id="button_enigmail_decrypt"/>
-  </commandset>
-
   <broadcasterset id="otherActionsButtonBroadcasters">
     <broadcaster id="enigmailBcDisplayClass" class="headerValue"/>
     <broadcaster id="enigmail-pEp-bc" collapsed="true"/>
@@ -231,22 +227,6 @@
                  recentAccessKey="&enigmail.recent.accesskey;"/>
     </menu>
   </menupopup>
-
-<!-- Thunderbird & SeaMonkey 2.x -->
-   <toolbarpalette id="MailToolbarPalette"
-           targetToolbox="mail-toolbox"
-           targetToolbar="mail-bar3">
-      <toolbarbutton class="toolbarbutton-1"
-              id="button-enigmail-decrypt"
-              label="&enigmail.decryptbutton.label;"
-              tooltiptext="&enigmail.decryptbutton.tip;"
-              oncommand="Enigmail.msg.messageDecrypt(null, false);"
-              buttontype="thunderbird"
-              observes="button_enigmail_decrypt"
-              insertafter="button-newmsg"
-              />
-  </toolbarpalette>
-
 
   <!-- the default set does not include the Enigmail decryption icon anymore -->
 

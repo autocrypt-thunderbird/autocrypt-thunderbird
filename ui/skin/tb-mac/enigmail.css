@@ -16,23 +16,14 @@
 
 #button-enigmail-decrypt
   {
-    list-style-image : url("chrome://enigmail/skin/enigmail-decrypt.png");
+    list-style-image : url("chrome://enigmail/skin/decrypt-active-18.svg");
   }
 
 #button-enigmail-decrypt[disabled]
   {
-    list-style-image : url("chrome://enigmail/skin/enigmail-decrypt-inactive.png");
+    list-style-image : url("chrome://enigmail/skin/decrypt-inactive-18.svg");
   }
 
-toolbar[iconsize="small"]  #button-enigmail-decrypt
-  {
-    list-style-image : url("chrome://enigmail/skin/enigmail-decrypt-small.png");
-  }
-
-toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
-  {
-    list-style-image : url("chrome://enigmail/skin/enigmail-decrypt-small-inactive.png");
-  }
 
 /***************************************************
  *  Icons for compose toolbar: encryption

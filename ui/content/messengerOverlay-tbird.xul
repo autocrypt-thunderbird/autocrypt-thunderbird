@@ -12,6 +12,8 @@
   enigmailMessengerOverlay.xul properly
 -->
 
+<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+
 <overlay id="messengerOverlay-tbird"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -20,5 +22,21 @@
     <vbox id="enigmailHdrBox"/>
   </notificationbox>
 
+  <commandset id="mailToolbarItems">
+    <command id="button_enigmail_decrypt"/>
+  </commandset>
+
+  <toolbarpalette id="MailToolbarPalette"
+           targetToolbox="mail-toolbox"
+           targetToolbar="mail-bar3">
+    <toolbarbutton class="toolbarbutton-1"
+            id="button-enigmail-decrypt"
+            label="&enigmail.decryptbutton.label;"
+            tooltiptext="&enigmail.decryptbutton.tip;"
+            oncommand="Enigmail.msg.messageDecrypt(null, false);"
+            buttontype="thunderbird"
+            observes="button_enigmail_decrypt"
+            insertafter="button-newmsg"/>
+  </toolbarpalette>
 
 </overlay>

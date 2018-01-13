@@ -15,40 +15,16 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 
-#button-enigmail-decrypt,
-[typeid="button-enigmail-decrypt"]
+#button-enigmail-decrypt
   {
-    list-style-image : url("chrome://enigmail/skin/enigmail-toolbar.png");
-    -moz-image-region: rect(0px 24px 24px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-active-18.svg");
   }
 
-#button-enigmail-decrypt:hover,
-[typeid="button-enigmail-decrypt"]
+#button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(24px 24px 48px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-inactive-18.svg");
   }
 
-#button-enigmail-decrypt[disabled],
-[typeid="button-enigmail-decrypt"]
-  {
-    -moz-image-region: rect(48px 24px 72px 0px);
-  }
-
-toolbar[iconsize="small"]  #button-enigmail-decrypt
-  {
-    -moz-image-region: rect(0px 16px 16px 0px);
-    list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
-  }
-
-toolbar[iconsize="small"] #button-enigmail-decrypt:hover
-  {
-    -moz-image-region: rect(16px 16px 32px 0px);
-  }
-
-toolbar[iconsize="small"] #button-enigmail-decrypt[disabled]
-  {
-    -moz-image-region: rect(32px 16px 48px 0px);
-  }
 
 /***************************************************
  *  Icons for compose toolbar: encryption

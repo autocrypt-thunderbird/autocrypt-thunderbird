@@ -17,19 +17,15 @@
 
 #button-enigmail-decrypt
   {
-    -moz-image-region: rect(0px 16px 16px 0px);
-    list-style-image      : url("chrome://enigmail/skin/enigmail-toolbar-small.png");
-  }
-
-#button-enigmail-decrypt:hover
-  {
-    -moz-image-region: rect(16px 16px 32px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-active-18.svg");
   }
 
 #button-enigmail-decrypt[disabled]
   {
-    -moz-image-region: rect(32px 16px 48px 0px);
+    list-style-image : url("chrome://enigmail/skin/decrypt-inactive-18.svg");
   }
+
+
 
 /***************************************************
  *  Icons for compose toolbar: encryption
