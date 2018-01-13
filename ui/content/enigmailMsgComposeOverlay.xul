@@ -259,6 +259,7 @@
             id="enigmail-toolbar-encryptHdr-button"
             label="&enigmail.protectHeaders.label;"
             buttontype="thunderbird"
+            tooltip="aTooltipSet"
             observes="enigmail-bc-protectHdr"
             oncommand="Enigmail.msg.toggleProtectHeaders()">
     </toolbarbutton>

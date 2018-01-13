@@ -928,9 +928,11 @@ Enigmail.msg = {
 
     if (this.protectHeaders) {
       bc.setAttribute("checked", "true");
+      bc.setAttribute("tooltiptext", EnigmailLocale.getString("msgCompose.protectSubject.tooltip"));
     }
     else {
       bc.removeAttribute("checked");
+      bc.setAttribute("tooltiptext", EnigmailLocale.getString("msgCompose.noSubjectProtection.tooltip"));
     }
   },
 
