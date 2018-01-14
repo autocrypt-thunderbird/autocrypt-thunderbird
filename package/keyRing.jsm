@@ -35,6 +35,7 @@ Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: fals
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
+const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
 
 
 const NS_RDONLY = 0x01;
@@ -2102,7 +2103,7 @@ KeyObject.prototype = {
           revoked = 0,
           unusable = 0,
           found = 0;
-        // public key is valid; check for signing subkeys
+        // public key is valid; check for encryption subkeys
 
         for (let sk in this.subKeys) {
           if (this.subKeys[sk].keyUseFor.search(/[eE]/) >= 0) {
@@ -2180,13 +2181,16 @@ KeyObject.prototype = {
   },
 
   /**
-   * Export the minimum size public key for the key
+   * Export the minimum key for the public key object:
+   * public key, primary user ID, newest encryption subkey
    *
-   * @return String - if outputFile is NULL, the key block data; "" if a file is written
+   * @return Object:
+   *    - exitCode (0 = success)
+   *    - errorMsg (if exitCode != 0)
+   *    - keyData: BASE64-encded string of key data
    */
 
   getMinimalPubKey: function() {
-
     EnigmailLog.DEBUG("keyRing.jsm: KeyObject.getMinimalPubKey: " + this.keyId + "\n");
 
     let retObj = {
@@ -2196,7 +2200,7 @@ KeyObject.prototype = {
     };
 
     if (!this.minimalKeyBlock) {
-      let args = EnigmailGpg.getStandardArgs(true).concat(["--export-options", "export-minimal,no-export-attributes", "--export", this.fpr]);
+      let args = EnigmailGpg.getStandardArgs(true).concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
 
       const statusObj = {};
       const exitCodeObj = {};
@@ -2208,7 +2212,15 @@ KeyObject.prototype = {
         retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
       }
       else {
-        this.minimalKeyBlock = btoa(keyBlock);
+        let minKey = getStrippedKey(keyBlock);
+
+        if (minKey) {
+          this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
+        }
+        else {
+          retObj.exitCode = 1;
+          retObj.errorMsg = "No valid (sub-)key";
+        }
       }
     }
 
@@ -2238,5 +2250,57 @@ KeyObject.prototype = {
     }
   }
 };
+
+/**
+ * Get a minimal stripped key containing only:
+ * - The public key
+ * - the primary UID + its self-signature
+ * - the newest valild encryption key + its signature packet
+ *
+ * @param armoredKey - String: Key data (in OpenPGP armored format)
+ *
+ * @return Uint8Array, or null
+ */
+
+function getStrippedKey(armoredKey) {
+  EnigmailLog.DEBUG("keyRing.jsm: KeyObject.getStrippedKey()\n");
+
+  try {
+    let openpgp = getOpenPGP().openpgp;
+    let msg = openpgp.key.readArmored(armoredKey);
+
+    if (!msg || msg.keys.length === 0) return null;
+
+    let key = msg.keys[0];
+    let uid = key.getPrimaryUser();
+    if (!uid || !uid.user) return null;
+
+    let foundSubKey = null;
+    let foundCreationDate = new Date(0);
+
+    // go backwards through the subkeys as the newest key is usually
+    // later in the list
+    for (let i = key.subKeys.length - 1; i >= 0; i--) {
+      if (key.subKeys[i].subKey.created > foundCreationDate &&
+        key.subKeys[i].isValidEncryptionKey(key.primaryKey)) {
+        foundCreationDate = key.subKeys[i].subKey.created;
+        foundSubKey = key.subKeys[i];
+      }
+    }
+
+    if (!foundSubKey) return null;
+
+    let p = new openpgp.packet.List();
+    p.push(key.primaryKey);
+    p.concat(uid.user.toPacketlist());
+    p.concat(foundSubKey.toPacketlist());
+
+    return p.write();
+  }
+  catch (ex) {
+    EnigmailLog.DEBUG("keyRing.jsm: KeyObject.getStrippedKey: ERROR " + ex.message + "\n");
+  }
+  return null;
+}
 
 EnigmailKeyRing.clearCache();
