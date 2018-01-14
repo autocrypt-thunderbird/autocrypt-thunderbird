@@ -38,7 +38,7 @@ while [ $# -gt 0 ]; do
   BASEFILE=$(basename $1)
 
   if [ $INSTALLMODE = "i" ]; then
-    if [ ${SRCFILE} -nt ${TARGETDIR}/${BASEFILE} ]; then
+    if [ ! -f ${TARGETDIR}/${BASEFILE} ] || [ ${SRCFILE} -nt ${TARGETDIR}/${BASEFILE} ]; then
       # install file if newer than existing file
       cp ${SRCFILE} ${TARGETDIR}/${BASEFILE} || exit 1
 
