@@ -196,14 +196,7 @@ Enigmail.edit = {
       if (elem) elem.removeAttribute("disabled");
     }
     else {
-      if (elem) {
-        if (!EnigmailPEPAdapter.usingPep()) {
-          elem.removeAttribute("disabled");
-        }
-        else {
-          elem.setAttribute("disabled", "true");
-        }
-      }
+      if (elem) elem.setAttribute("disabled", "true");
     }
 
     this.enableKeySel(this.cryptoChoicesEnabled && (this.pgpKeyMode.value == 1));
