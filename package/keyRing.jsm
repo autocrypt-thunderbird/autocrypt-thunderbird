@@ -2199,8 +2199,19 @@ KeyObject.prototype = {
       keyData: ""
     };
 
+
+    // TODO: remove ECC special case once OpenPGP.js supports it
+    let isECC = (this.algoSym.search(/(ECDH|ECDSA|EDDSA)/) >= 0);
+
     if (!this.minimalKeyBlock) {
-      let args = EnigmailGpg.getStandardArgs(true).concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
+      let args = EnigmailGpg.getStandardArgs(true);
+
+      if (!isECC) {
+        args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
+      }
+      else {
+        args = args.concat(["--export-options", "export-minimal,no-export-attributes", "--export", this.fpr]);
+      }
 
       const statusObj = {};
       const exitCodeObj = {};
@@ -2212,12 +2223,19 @@ KeyObject.prototype = {
         retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
       }
       else {
-        let minKey = getStrippedKey(keyBlock);
+        this.minimalKeyBlock = null;
 
-        if (minKey) {
-          this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
+        if (isECC) {
+          this.minimalKeyBlock = btoa(keyBlock);
         }
         else {
+          let minKey = getStrippedKey(keyBlock);
+          if (minKey) {
+            this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
+          }
+        }
+
+        if (!this.minimalKeyBlock) {
           retObj.exitCode = 1;
           retObj.errorMsg = "No valid (sub-)key";
         }
