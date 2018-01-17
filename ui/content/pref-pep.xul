@@ -135,11 +135,11 @@
             </row>
             <row>
               <label value="p≡p Engine"/>
-              <label href=">value" value="https://cacert.pep.foundation/dev/repos/pEpEngine" class="enigmailLink"/>
+              <label href=">value" value="https://pep.foundation/dev/repos/pEpEngine" class="enigmailLink"/>
             </row>
             <row>
               <label value="p≡p JSON Server"/>
-              <label href=">value" value="https://cacert.pep.foundation/dev/repos/pEpJSONServerAdapter" class="enigmailLink"/>
+              <label href=">value" value="https://pep.foundation/dev/repos/pEpJSONServerAdapter" class="enigmailLink"/>
             </row>
             <row>
               <label value="GnuPG"/>
