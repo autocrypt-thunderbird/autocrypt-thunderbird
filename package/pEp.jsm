@@ -443,6 +443,7 @@ var EnigmailpEp = {
   setMyself: function(idObject) {
     DEBUG_LOG("setMyself()");
     try {
+      idObject.user_id = "pEp_own_userId";
       let params = [idObject];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "myself", params);
