@@ -2059,6 +2059,8 @@ Enigmail.msg = {
       this.statusSMimeStr = EnigmailLocale.getString("smimeNormal");
     }
 
+    this.displaySMimeToolbar();
+
     if (this.allowAttachOwnKey() === 1) {
       attachBroadcaster.removeAttribute("disabled");
     }
@@ -2066,6 +2068,23 @@ Enigmail.msg = {
       attachBroadcaster.setAttribute("disabled", "true");
     }
 
+  },
+
+
+  displaySMimeToolbar: function() {
+    let s = document.getElementById("signing-status");
+    let e = document.getElementById("encryption-status");
+
+    switch (this.statusPGPMime) {
+      case EnigmailConstants.ENIG_FINAL_SMIME:
+      case EnigmailConstants.ENIG_FINAL_FORCESMIME:
+        if (s) s.removeAttribute("collapsed");
+        if (e) e.removeAttribute("collapsed");
+        break;
+      default:
+        if (s) s.setAttribute("collapsed", "true");
+        if (e) e.setAttribute("collapsed", "true");
+    }
   },
 
   /**
