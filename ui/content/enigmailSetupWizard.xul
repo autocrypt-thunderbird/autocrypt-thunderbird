@@ -294,18 +294,35 @@
       <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
       <hbox>
         <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)" onblur="checkPassphraseOnChange(this)"/>
-  <image id="passphraseErrorImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+        <image id="passphraseErrorImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
       </hbox>
       <label id="passphraseError" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passError;" class="passphraseError"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
       <hbox>
-  <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
-  <image id="passphraseErrorRepImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+        <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
+        <image id="passphraseErrorRepImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
       </hbox>
       <label id="passphraseErrorRepeat" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passErrorRepeat;" class="passphraseError"/>
       <description>&enigmail.setupWiz.pgKeyCreate.passQuality;</description>
       <progressmeter id="passphraseQuality" mode="determined" value="0"/>
     </vbox>
+
+    <separator/>
+
+    <hbox autostretch="never" align="center">
+      <label tooltip="maxIdleMinutes.tooltip" id="maxIdleMinutesHeadLabel" value="&enigmail.maxIdleMinutesHead.label;"/>
+      <textbox id="maxIdleMinutes"
+               aria-labelledby="maxIdleMinutesHeadLabel maxIdleMinutes maxIdleMinutesTailLabel"
+               type="number"
+               min="0" max="1440"
+               size="4"
+               maxlength="4"
+               pref="true"
+               preftype="int"
+               tooltip="maxIdleMinutes.tooltip"
+               prefstring="extensions.enigmail.maxIdleMinutes"/>
+      <description tooltip="maxIdleMinutes.tooltip" id="maxIdleMinutesTailLabel">&enigmail.maxIdleMinutesTail.label;</description>
+    </hbox>
   </wizardpage>
 
 
@@ -401,8 +418,8 @@
   <wizardpage id="pgUpload" pageid="pgUpload"
               onpageshow="wizardUpload()"
               next="pgComplete"
-              label="&enigmail.setupWiz.pgAdvanced.title;"
-              description="&enigmail.setupWiz.pgAdvanced.subtitle;">
+              label="&enigmail.setupWiz.pgUpload.title;"
+              description="&enigmail.setupWiz.pgUpload.subtitle;">
     <groupbox id="keygenConsoleBox" orient="vertical" flex="1">
       <vbox>
         <caption label="&enigmail.setupWiz.pgUpload.title;"/>

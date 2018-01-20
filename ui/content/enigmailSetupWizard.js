@@ -303,6 +303,7 @@ function onAfterPgKeyImport() {
 
 function onAfterPgKeyCreate() {
   if (checkPassphrase()) {
+    wizardAdjustPref();
     return "pgKeygen";
   }
 
@@ -595,6 +596,16 @@ function displayKeyCreate() {
   if (gLastDirection == 1) {
     fillIdentities('menulist');
   }
+
+  var svc = enigGetSvc(true);
+  var maxIdle = 10;
+  if (!svc) {
+    maxIdle = EnigmailPrefs.getPref("maxIdleMinutes");
+  }
+  else {
+    maxIdle = EnigmailGpgAgent.getMaxIdlePref(window);
+  }
+  document.getElementById("maxIdleMinutes").value = maxIdle;
 
   gPassPhraseQuality = document.getElementById("passphraseQuality");
 
@@ -1001,6 +1012,7 @@ function wizardKeygenTerminate(exitCode) {
 function wizardRevoCert() {
   var wizard = getWizard();
   wizard.getButton("back").disabled = true;
+  disableNext(true);
 
 }
 
@@ -1158,6 +1170,14 @@ function wizardGetSelectedIdentity() {
 
   return gEnigAccountMgr.getIdentity(identityKey);
 }
+
+function wizardAdjustPref(){
+  let maxIdle = document.getElementById("maxIdleMinutes").value;
+  EnigmailGpgAgent.setMaxIdlePref(maxIdle);
+
+  EnigmailPrefs.savePrefs();
+}
+
 
 function applyWizardSettings() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: applyWizardSettings\n");

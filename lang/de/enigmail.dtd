@@ -25,7 +25,7 @@
 
 <!ENTITY enigmail.preferences.label       "Enigmail-Einstellungen">
 
-<!ENTITY enigmail.passwordSettings.label   "Passphrasen-Einstellungen">
+<!ENTITY enigmail.passwordSettings.label   "Passwort Timeout">
 <!ENTITY enigmail.userNoPassphrase.label   "Nie nach einer Passphrase fragen">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Aktivieren, wenn Ihr OpenPGP-Schlüssel nicht durch eine Passphrase geschützt ist.">
 <!ENTITY enigmail.expertUserMenus.label    "Experten-Optionen und -Menüpunkte anzeigen">
@@ -45,7 +45,7 @@
 
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Passphrase">
-<!ENTITY enigmail.maxIdleMinutesTail.label "Minuten lang merken">
+<!ENTITY enigmail.maxIdleMinutesTail.label "Minuten lang merken (vor erneuter Eingabeaufforderung).">
 <!ENTITY enigmail.maxIdleMinutes.tooltip   "Während dieser Zeit wird OpenPGP Sie nicht mehr nach der Passphrase fragen.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Zurücksetzen">
@@ -738,6 +738,10 @@ Zu diesem Zweck können Sie jetzt ein Widerrufszertifikat erzeugen, mit dem Sie 
 <!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Bitte wählen Sie die Datei aus, die Ihre gesicherten Einstellungen enthält:">
 <!ENTITY enigmail.setupWiz.pgImportSettings.importing "Schlüssel werden importiert und Einstellungen werden übernommen">
 <!ENTITY enigmail.setupWiz.pgImportSettings.error    "Beim Importieren der Einstellungen ist ein Fehler aufgetreten. Ihre Einstellungen konnten nicht übernommen werden.">
+
+<!-- wizard: adjust settings page -->
+<!ENTITY enigmail.setupWiz.pgAdjustPref.title        "Bevorzugte Einstellungen">
+<!ENTITY enigmail.setupWiz.pgAdjustPref.subtitle     "">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Danke">
