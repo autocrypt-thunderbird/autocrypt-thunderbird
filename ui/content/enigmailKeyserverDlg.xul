@@ -27,7 +27,6 @@
 
   <vbox orient="vertical">
     <description id="keyIdText" width="300px">...</description>
-    <separator/>
     <grid>
       <columns>
         <column/>
@@ -48,6 +47,20 @@
         </row>
       </rows>
     </grid>
+    <separator/>
+    <vbox orient="vertical" class="enigmailDialogInfoBox">
+      <caption id="searchForKeyExample" label="&enigmail.searchForKey.example;"/>
+      <separator/>
+      <description>
+        &enigmail.searchForKey.desc1;
+      </description>
+      <description>
+        &enigmail.searchForKey.desc2;
+      </description>
+      <description>
+        &enigmail.searchForKey.desc3;
+      </description>
+    </vbox>
     <separator/>
   </vbox>
 </dialog>

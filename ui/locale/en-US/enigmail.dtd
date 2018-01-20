@@ -102,8 +102,11 @@
 <!ENTITY enigmail.keyservers.label        "Specify your keyserver(s)">
 <!ENTITY enigmail.keyservers.sample2      "Example: pool.sks-keyservers.net, pgp.mit.edu">
 
+<!ENTITY enigmail.searchForKey.example    "Example 'Forename Surname &lt;user@example.com&gt;'">
+<!ENTITY enigmail.searchForKey.desc1	    "'Forename Surname' finds all keys that contain 'Forename' OR 'Surname'">
+<!ENTITY enigmail.searchForKey.desc2      "'Forename+Surname' finds all keys that contain both 'Forename' AND 'Surname'">
+<!ENTITY enigmail.searchForKey.desc3      "'example.com' finds all keys that contain 'example.com', such as 'example@example.com'">
 <!ENTITY enigmail.searchForKey.label      "Search for key">
-
 
 <!ENTITY enigmail.doubleDashSeparator.label "'--' is a signature separator">
 <!ENTITY enigmail.noHushMailSupport.label   "Use '&lt;' and '&gt;' to specify email addresses">

@@ -80,8 +80,11 @@
 <!ENTITY enigmail.keyservers.label        "Schlüsselserver">
 <!ENTITY enigmail.keyservers.sample       "Beispiel: sks.dnsalias.net, pool.sks-keyservers.net, ldap://certserver.pgp.com">
 
+<!ENTITY enigmail.searchForKey.example    "Suchbeispiel 'Vorname Nachname &lt;name@beispiel.com&gt;'">
+<!ENTITY enigmail.searchForKey.desc1	    "'Vorname Nachname' liefert alle Ergebnisse welche 'Vorname' ODER 'Nachname' beinhalten">
+<!ENTITY enigmail.searchForKey.desc2      "'Vorname+Nachname' liefert nur Ergebnisse welche 'Vorname' UND 'Nachname' beinhalten">
+<!ENTITY enigmail.searchForKey.desc3      "'beispiel.com' liefert alle Ergebnisse welche 'beispiel.com' beinhalten, z.B. 'beispiel@beispiel.com'">
 <!ENTITY enigmail.searchForKey.label      "Suche nach Schlüssel">
-
 
 <!ENTITY enigmail.doubleDashSeparator.label "&quot;--&quot; als Unterschriften-Trenner behandeln">
 <!ENTITY enigmail.useGpgAgent.label         "Zur Passphrasen-Verwaltung die Anwendung gpg-agent verwenden">

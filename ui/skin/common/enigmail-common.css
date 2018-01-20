@@ -160,6 +160,13 @@
   unicode-bidi: -moz-plaintext;
 }
 
+.enigmailDialogInfoBox {
+  border: 1px solid #afafaf;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 0px 10px 0px 10px;
+}
+
 .enigmailPrefsTitle {
   font-weight: bold;
   height: 25px;
