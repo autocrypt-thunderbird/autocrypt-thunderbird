@@ -1253,21 +1253,16 @@ Enigmail.msg = {
   goAccountManager: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.goAccountManager:\n");
     EnigmailCore.getService(window);
-    var currentId = null;
-    var server = null;
+    let currentId = null;
+    let account = null;
     try {
       currentId = getCurrentIdentity();
-      var amService = Components.classes["@mozilla.org/messenger/account-manager;1"].getService();
-      var servers, folderURI;
-      servers = amService.getServersForIdentity(currentId);
-      folderURI = servers.queryElementAt(0, Components.interfaces.nsIMsgIncomingServer).serverURI;
-
-      server = this.getMsgFolderFromUri(folderURI, true).server;
+      account = EnigmailFuncs.getAccountForIdentity(currentId);
     }
     catch (ex) {}
     window.openDialog("chrome://enigmail/content/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
-      account: server
+      account: account
     });
     this.setIdentityDefaults();
   },

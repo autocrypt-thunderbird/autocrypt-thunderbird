@@ -49,57 +49,88 @@
           </vbox>
         </radiogroup>
 
-        <groupbox>
-          <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
+        <tabbox flex="1" id="enigmail_tabs">
+          <tabs id="enigmail_tabBox">
+            <tab id="enigmail_msgCompTab"   label="&enigmail.amPrefMsgComp.label;"/>
+            <tab id="enigmail_autocryptTab" label="&enigmail.autocrypt.label;"/>
+          </tabs>
 
-          <checkbox id="enigmail_encrypt_ifPossible"
-                    checked="false"
-                    observes="enigmail_bcEnablePgp"
-                    label="&enigmail.defaultEncryption.label;"/>
-          <checkbox id="enigmail_sign_ifPossible"
-                    checked="false"
-                    observes="enigmail_bcEnablePgp"
-                    label="&enigmail.defaultSigning.label;"/>
-          <checkbox id="enigmail_pgpMimeMode"
-                    checked="false"
-                    observes="enigmail_bcEnablePgp"
-                    label="&enigmail.usePGPMimeAlways.label;"/>
+          <tabpanels flex="1" id="enigmail_tabPanels">
+            <!-- Message Composition -->
+            <vbox flex="1">
+              <caption label="&enigmail.amPrefDefaultEncrypt.label;"/>
 
-          <separator/>
+              <checkbox id="enigmail_encrypt_ifPossible"
+                        checked="false"
+                        observes="enigmail_bcEnablePgp"
+                        label="&enigmail.defaultEncryption.label;"/>
+              <checkbox id="enigmail_sign_ifPossible"
+                        checked="false"
+                        observes="enigmail_bcEnablePgp"
+                        label="&enigmail.defaultSigning.label;"/>
+              <checkbox id="enigmail_pgpMimeMode"
+                        checked="false"
+                        observes="enigmail_bcEnablePgp"
+                        label="&enigmail.usePGPMimeAlways.label;"/>
 
-          <label value="&enigmail.afterDefaultsAndRules.label;"/>
-          <hbox flex="1">
-            <checkbox id="enigmail_sign_notEncrypted"
-                      checked="false"
-                      observes="enigmail_bcEnablePgp"
-                      label="&enigmail.finallySignNotEncrypted.label;"/>
-            <checkbox id="enigmail_sign_encrypted"
-                      checked="false"
-                      observes="enigmail_bcEnablePgp"
-                      label="&enigmail.finallySignEncrypted.label;"/>
-          </hbox>
+              <separator/>
 
-          <separator/>
+              <label value="&enigmail.afterDefaultsAndRules.label;"/>
+              <hbox flex="1">
+                <checkbox id="enigmail_sign_notEncrypted"
+                          checked="false"
+                          observes="enigmail_bcEnablePgp"
+                          label="&enigmail.finallySignNotEncrypted.label;"/>
+                <checkbox id="enigmail_sign_encrypted"
+                          checked="false"
+                          observes="enigmail_bcEnablePgp"
+                          label="&enigmail.finallySignEncrypted.label;"/>
+              </hbox>
 
-          <checkbox id="enigmail_autoEncryptDrafts" checked="false"
-                    label="&enigmail.autoEncryptDrafts.label;"/>
+              <separator/>
 
-          <separator/>
+              <checkbox id="enigmail_autoEncryptDrafts" checked="false"
+                        label="&enigmail.autoEncryptDrafts.label;"/>
 
-          <label id="mimePreferOpenPGP" value="&enigmail.amPrefMimePreferProto.label;"/>
-          <radiogroup id="enigmail_mimePreferOpenPGP" aria-labelledby="mimePreferOpenPGP">
-            <hbox flex="1">
-              <radio id="enigmail_mime_preferSMime"
-                     label="&enigmail.amPrefMimePreferSMime.label;"
-                     value="0"
-                     observes="enigmail_bcEnablePgp"/>
-              <radio id="enigmail_mime_preferEnigmail"
-                     label="&enigmail.amPrefMimePreferEnigmail.label;"
-                     value="1"
-                     observes="enigmail_bcEnablePgp"/>
-            </hbox>
-          </radiogroup>
-        </groupbox>
+              <separator/>
+
+              <label id="mimePreferOpenPGP" value="&enigmail.amPrefMimePreferProto.label;"/>
+              <radiogroup id="enigmail_mimePreferOpenPGP" aria-labelledby="mimePreferOpenPGP">
+                <hbox flex="1">
+                  <radio id="enigmail_mime_preferSMime"
+                         label="&enigmail.amPrefMimePreferSMime.label;"
+                         value="0"
+                         observes="enigmail_bcEnablePgp"/>
+                  <radio id="enigmail_mime_preferEnigmail"
+                         label="&enigmail.amPrefMimePreferEnigmail.label;"
+                         value="1"
+                         observes="enigmail_bcEnablePgp"/>
+                </hbox>
+              </radiogroup>
+            </vbox>
+
+            <!-- Autocrypt tab -->
+            <vbox flex="1" align="start">
+              <description onclick="Enigmail.edit.handleClick(event)">
+                <enigmailLink href="https://autocrypt.org">Autocrypt</enigmailLink> is a standard that defines
+                how to achieve convenient end-to-end-encryption of e-mails.
+                It specifies how e-mail programs negotiate encryption capabilities using regular e-mails.
+              </description>
+
+              <checkbox id="enigmail_enableAutocrypt"
+                  prefstring="mail.server.%serverkey%.enableAutocrypt"
+                  preftype="bool" prefattribute="value"
+                  observes="enigmail_bcEnablePgp"
+                  oncommand="Enigmail.edit.enableAcSettings()"
+                  label="&enigmail.enableAutocrypt.label;"/>
+
+              <checkbox id="enigmail_acPreferEncrypt"
+                  prefstring="mail.server.%serverkey%.acPreferEncrypt"
+                  preftype="bool" prefattribute="value"
+                  label="&enigmail.acPreferEncrypt.label;"/>
+            </vbox>
+          </tabpanels>
+        </tabbox>
 
         <hbox autostretch="never" id="enigmail_PrefsBox">
           <spacer flex="1"/>

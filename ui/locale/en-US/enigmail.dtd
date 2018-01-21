@@ -1,5 +1,6 @@
 <!ENTITY enigmail.label                   "Enigmail">
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
+<!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
 <!ENTITY enigmail.about.license           "Enigmail is open source and licensed under the <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
@@ -353,6 +354,7 @@
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID:">
 <!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
+<!ENTITY enigmail.amPrefMsgComp.label               "Message Composition">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">
 <!ENTITY enigmail.encDlgProtocol.label              "Encryption/Signing Standard">
@@ -888,6 +890,7 @@
 <!ENTITY enigmail.locateKeys.locating                "Locating Keys...">
 
 <!ENTITY enigmail.acPreferEncrypt.label              "Prefer encrypted emails from the people you mail with">
+<!ENTITY enigmail.enableAutocrypt.label              "Enable Autocrypt">
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Code">
 <!ENTITY enigmail.acSetupPasswd.password             "Setup Code:">

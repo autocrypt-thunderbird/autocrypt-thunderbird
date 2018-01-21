@@ -84,6 +84,12 @@
   cursor: pointer;
 }
 
+enigmailLink {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
 .enigmailStrong {
   font-weight: bold;
   color: red;

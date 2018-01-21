@@ -29,9 +29,6 @@ function performInit() {
 
   gUsingPep = EnigmailPEPAdapter.usingPep();
   Enigmail.edit.onInit();
-
-  let ac = document.getElementById("enigmail_acPreferEncrypt");
-  ac.checked = (Enigmail.edit.account.incomingServer.getIntValue("acPreferEncrypt") > 0);
 }
 
 function onAcceptEditor() {
@@ -110,7 +107,4 @@ function enigmailOnAcceptEditor() {
 }
 
 
-function saveChanges() {
-  let ac = document.getElementById("enigmail_acPreferEncrypt");
-  Enigmail.edit.account.incomingServer.setIntValue("acPreferEncrypt", ac.checked ? 1 : 0);
-}
+function saveChanges() {}

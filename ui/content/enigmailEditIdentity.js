@@ -47,6 +47,15 @@ Enigmail.edit = {
     this.pgpSignPlainPolicy = document.getElementById("enigmail_sign_notEncrypted");
     this.autoEncryptDrafts = document.getElementById("enigmail_autoEncryptDrafts");
     this.mimePreferOpenPGP = document.getElementById("enigmail_mimePreferOpenPGP");
+    this.enableAc = document.getElementById("enigmail_enableAutocrypt");
+    this.acPreferEncrypt = document.getElementById("enigmail_acPreferEncrypt");
+    this.isSingleIdEditor = document.getElementById("enigmail_singleId") ? true : false;
+
+    if (this.isSingleIdEditor) {
+      let acTab = document.getElementById("enigmail_autocryptTab");
+      acTab.setAttribute("collapsed", "true");
+    }
+
     this.usingPep = EnigmailPEPAdapter.usingPep();
 
     if (this.identity) {
@@ -101,6 +110,12 @@ Enigmail.edit = {
         attachPgpKey: false
       };
     }
+
+    if (this.account) {
+      this.enableAc.checked = this.account.incomingServer.getBoolValue("enableAutocrypt");
+      this.acPreferEncrypt.checked = (this.account.incomingServer.getIntValue("acPreferEncrypt") > 0);
+    }
+
 
     // Disable all locked elements on the panel
     //onLockPreference();
@@ -176,6 +191,10 @@ Enigmail.edit = {
       EnigmailPEPAdapter.setOwnIdentities(0);
     }
 
+    if (!this.isSingleIdEditor) {
+      this.account.incomingServer.setBoolValue("enableAutocrypt", this.enableAc.checked);
+      this.account.incomingServer.setIntValue("acPreferEncrypt", this.acPreferEncrypt.checked ? 1 : 0);
+    }
   },
 
   toggleEnable: function() {
@@ -200,7 +219,7 @@ Enigmail.edit = {
     }
 
     this.enableKeySel(this.cryptoChoicesEnabled && (this.pgpKeyMode.value == 1));
-
+    this.enableAcSettings();
   },
 
   enableKeySel: function(enable) {
@@ -209,6 +228,21 @@ Enigmail.edit = {
     }
     else {
       document.getElementById("enigmail_bcUseKeyId").setAttribute("disabled", "true");
+    }
+  },
+
+  enableAcSettings: function() {
+    if (this.cryptoChoicesEnabled && this.enableAc.checked) {
+      this.acPreferEncrypt.removeAttribute("disabled");
+    }
+    else {
+      this.acPreferEncrypt.setAttribute("disabled", "true");
+    }
+  },
+
+  handleClick: function(event) {
+    if (event.target.hasAttribute("href")) {
+      EnigmailWindows.openMailTab(event.target.getAttribute("href"));
     }
   },
 

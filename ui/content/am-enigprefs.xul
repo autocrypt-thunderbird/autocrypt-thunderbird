@@ -35,13 +35,5 @@
 
     <vbox flex="1" id="enigmail_IdentityEdit"/>
 
-    <vbox flex="1" align="start">
-      <checkbox id="enigmail_acPreferEncrypt"
-          prefstring="mail.server.%serverkey%.acPreferEncrypt"
-          preftype="bool" prefattribute="value"
-          observes="enigmail_bcEnablePgp"
-          label="&enigmail.acPreferEncrypt.label;"/>
-    </vbox>
-
   </vbox>
 </page>

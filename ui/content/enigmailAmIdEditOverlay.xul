@@ -40,6 +40,8 @@
 
       <separator/>
 
+      <!-- placeholder to indicate that this is a single identity editor window -->
+      <vbox id="enigmail_singleId" hidden="true"/>
       <vbox id="enigmail_IdentityEdit"/>
 
     </vbox>
