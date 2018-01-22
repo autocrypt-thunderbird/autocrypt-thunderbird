@@ -148,11 +148,6 @@ pref("extensions.enigmail.acceptedKeys", 1);
 // 1: if all keys found and accepted DEFAULT
 pref("extensions.enigmail.autoSendEncrypted", 1);
 
-// enable Autocrypt (see www.autocrypt.org)
-// 0: no
-// 1: yes
-pref("extensions.enigmail.autocryptMode", 0);
-
 // enable automatic lookup of keys using Web Key Directory (WKD)
 // (see https://tools.ietf.org/html/draft-koch-openpgp-webkey-service)
 // 0: no
@@ -268,7 +263,7 @@ pref("mail.identity.default.enablePEP", true);
    Default pref values for the enigmail per-account
    settings
 */
-pref("mail.server.default.enableAutocrypt", true);
+pref("mail.server.default.enableAutocrypt", true); // see https://autocrypt.org
 pref("mail.server.default.acPreferEncrypt", 0);
 
 // prefer S/MIME or PGP/MIME (0: S/MIME, 1: PGP/MIME)

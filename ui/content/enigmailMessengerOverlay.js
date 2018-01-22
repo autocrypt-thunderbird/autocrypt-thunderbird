@@ -462,6 +462,28 @@ Enigmail.msg = {
       this.messageReload(false);
   },
 
+  /**
+   * Determine if Autocrypt is enabled for the currently selected message
+   */
+  isAutocryptEnabled: function() {
+    if (EnigmailPEPAdapter.usingPep()) return false;
+
+    try {
+      let email = EnigmailFuncs.stripEmail(gFolderDisplay.selectedMessage.recipients);
+      let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
+
+      if (maybeIdent && maybeIdent.identity) {
+        if (!maybeIdent.identity.getBoolAttribute("enablePgp")) return false;
+
+        let acct = EnigmailFuncs.getAccountForIdentity(maybeIdent.identity);
+        return acct.incomingServer.getBoolValue("enableAutocrypt");
+      }
+    }
+    catch (ex) {}
+
+    return false;
+  },
+
   messageImport: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageImport:\n");
 
@@ -657,7 +679,7 @@ Enigmail.msg = {
         }
 
         EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, Enigmail.msg.savedHeaders.autocrypt,
-          dateValue, EnigmailPrefs.getPref("autocryptMode") !== 0);
+          dateValue, Enigmail.msg.isAutocryptEnabled());
       }
       else {
         Enigmail.msg.createArtificialAutocryptHeader();
@@ -2289,7 +2311,7 @@ Enigmail.msg = {
           created = true;
 
           EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
-            EnigmailPrefs.getPref("autocryptMode") !== 0);
+            Enigmail.msg.isAutocryptEnabled());
         }
       }
     }
@@ -2299,7 +2321,7 @@ Enigmail.msg = {
         '; prefer-encrypt=reset; _enigmail_artificial=yes; keydata="LQ=="';
 
       EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
-        EnigmailPrefs.getPref("autocryptMode") !== 0);
+        Enigmail.msg.isAutocryptEnabled());
     }
   },
 

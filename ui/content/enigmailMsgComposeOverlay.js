@@ -1276,6 +1276,18 @@ Enigmail.msg = {
     return this.identity.getBoolAttribute("enablePgp");
   },
 
+  /**
+   * Determine if Autocrypt is enabled for the account
+   */
+  isAutocryptEnabled: function() {
+    if (this.isEnigmailEnabled()) {
+      let srv = this.getCurrentIncomingServer();
+      return (srv ? srv.getBoolValue("enableAutocrypt") : false);
+    }
+
+    return false;
+  },
+
   doPgpButton: function(what) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.doPgpButton: what=" + what + "\n");
 
@@ -4476,10 +4488,7 @@ Enigmail.msg = {
   },
 
   setAutocryptHeader: function() {
-    if (EnigmailPEPAdapter.usingPep() ||
-      EnigmailPrefs.getPref("autocryptMode") === 0) {
-      return;
-    }
+    if (!this.isAutocryptEnabled()) return;
 
     this.identity = getCurrentIdentity();
 
@@ -5237,7 +5246,7 @@ Enigmail.msg = {
 
         if (lookupList.length > 0) {
           new Promise((resolve, reject) => {
-            if (EnigmailPrefs.getPref("autocryptMode") === 0) {
+            if (!self.isAutocryptEnabled()) {
               resolve([]);
               return;
             }

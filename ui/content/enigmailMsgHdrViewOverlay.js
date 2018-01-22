@@ -530,7 +530,7 @@ Enigmail.hdrView = {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: tryImportAutocryptHeader()\n");
 
     if (!("autocrypt" in currentHeaderData)) return;
-    if (EnigmailPrefs.getPref("autocryptMode") === 0) return;
+    if (!Enigmail.msg.isAutocryptEnabled()) return;
     if (!("from" in currentHeaderData)) return;
 
     let fromEmail = "";
