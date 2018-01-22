@@ -411,7 +411,7 @@ function createSubkeyItem(subkey) {
     expire = subkey.expiry;
   }
 
-  let subkeyType = subkey.type === "pub" ? EnigmailLocale.getString("keyTypePublic") :
+  let subkeyType = subkey.type === "pub" ? EnigmailLocale.getString("keyTypePrimary") :
     EnigmailLocale.getString("keyTypeSubkey");
 
   let usagetext = "";
