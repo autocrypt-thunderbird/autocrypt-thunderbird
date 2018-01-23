@@ -38,6 +38,7 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
 Cu.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 
 var gCreatedSetupIds = [];
 
@@ -513,16 +514,18 @@ var EnigmailAutocrypt = {
 
         let setupData = importSetupKey(msg.data);
         if (setupData) {
-          let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
-          let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
-          ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
-          id.identity.setCharAttribute("pgpkeyId", "0x" + setupData.fpr);
-          id.identity.setBoolAttribute("enablePgp", true);
-          id.identity.setBoolAttribute("pgpSignEncrypted", true);
-          id.identity.setBoolAttribute("pgpMimeMode", true);
-          id.identity.setIntAttribute("pgpKeyMode", 1);
           EnigmailKeyEditor.setKeyTrust(null, "0x" + setupData.fpr, "5", function(returnCode) {
             if (returnCode === 0) {
+              let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
+              let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
+              ac.incomingServer.setBoolValue("enableAutocrypt", true);
+              ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
+              id.identity.setCharAttribute("pgpkeyId", "0x" + setupData.fpr);
+              id.identity.setBoolAttribute("enablePgp", true);
+              id.identity.setBoolAttribute("pgpSignEncrypted", true);
+              id.identity.setBoolAttribute("pgpMimeMode", true);
+              id.identity.setIntAttribute("pgpKeyMode", 1);
+              EnigmailPrefs.setPref("juniorMode", 1);
               resolve(setupData);
             }
             else {
