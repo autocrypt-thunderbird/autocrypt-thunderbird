@@ -162,7 +162,10 @@ var EnigmailRules = {
   },
 
   /**
-   * ...
+   * Create new rule or update existing rule if the rule already exists.
+   * The key to decide if the rule exists is the email address (must match 1:1)
+   *
+   * @param ruleObj: Object with attributes {keyList, sign, encrypt, pgpMime, flags}
    * @return: Number: 0 - no update / 1 - rule updated / 2 - new rule created
    */
   insertOrUpdateRule: function(ruleObj) {
