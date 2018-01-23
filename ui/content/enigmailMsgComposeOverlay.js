@@ -650,7 +650,7 @@ Enigmail.msg = {
     this.determineSendFlagId = null;
     this.disableSmime = false;
     this.saveDraftError = 0;
-    this.protectHeaders = EnigmailPrefs.getPref("protectHeaders");
+    this.protectHeaders = (EnigmailPrefs.getPref("protectedHeaders") === 2);
     this.enableUndoEncryption(false);
 
     this.displayProtectHeadersStatus();
@@ -889,15 +889,6 @@ Enigmail.msg = {
     var menuItem = document.getElementById("enigmail_" + optionIds[prefValue]);
     if (menuItem)
       menuItem.setAttribute("checked", "true");
-  },
-
-
-  usePpgMimeOption: function(value) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.usePpgMimeOption: " + value + "\n");
-
-    EnigmailPrefs.setPref("usePGPMimeOption", value);
-
-    return true;
   },
 
 
@@ -3825,8 +3816,6 @@ Enigmail.msg = {
         }
       }
 
-      var usePGPMimeOption = EnigmailPrefs.getPref("usePGPMimeOption");
-
       if (this.sendPgpMime) {
         // Use PGP/MIME
         sendFlags |= EnigmailConstants.SEND_PGP_MIME;
@@ -3944,6 +3933,8 @@ Enigmail.msg = {
 
       var usingPGPMime = (sendFlags & EnigmailConstants.SEND_PGP_MIME) &&
         (sendFlags & (ENCRYPT | SIGN));
+
+      this.checkProtectHeaders(sendFlags);
 
       // ----------------------- Rewrapping code, taken from function "encryptInline"
 
@@ -4085,9 +4076,26 @@ Enigmail.msg = {
 
     // The encryption process for PGP/MIME messages follows "here". It's
     // called automatically from nsMsgCompose->sendMsg().
-    // registration for this is dome in chrome.manifest
+    // registration for this is done in core.jsm: startup()
 
     return true;
+  },
+
+  checkProtectHeaders: function(sendFlags) {
+    if (!(sendFlags & EnigmailConstants.SEND_PGP_MIME)) return;
+    if (sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
+
+      if ((!this.protectHeaders) && EnigmailPrefs.getPref("protectedHeaders") === 1) {
+        let enableProtection = EnigmailDialog.confirmDlg(window,
+          EnigmailLocale.getString("msgCompose.protectSubject.question"),
+          EnigmailLocale.getString("msgCompose.protectSubject.yesButton"),
+          EnigmailLocale.getString("msgCompose.protectSubject.noButton"));
+
+        EnigmailPrefs.setPref("protectedHeaders", enableProtection ? 2 : 0);
+        this.protectHeaders = enableProtection;
+        this.displayProtectHeadersStatus();
+      }
+    }
   },
 
   encryptInline: function(sendInfo) {

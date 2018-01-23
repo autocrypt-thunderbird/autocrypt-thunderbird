@@ -28,9 +28,6 @@ pref("extensions.enigmail.agentAdditionalParam", "");
 // path to gpg executable
 pref("extensions.enigmail.agentPath", "");
 
-// allow empty subject line without asking for confirmation
-pref("extensions.enigmail.allowEmptySubject", false);
-
 // ** enigmail keySel preferences:
 // use rules to assign keys
 pref("extensions.enigmail.assignKeysByRules", true);
@@ -203,7 +200,8 @@ pref("extensions.enigmail.warnDownloadContactKeys", true);
 pref("extensions.enigmail.wrapHtmlBeforeSend", true);
 
 // enable encryption/signing of headers like subject, from, to
-pref("extensions.enigmail.protectHeaders", true);
+// 1: default: ask user at 1st time use / 0: off /  2: on
+pref("extensions.enigmail.protectedHeaders", 1);
 pref("extensions.enigmail.protectedSubjectText", "");
 
 // do reset the "references" and "in-reply-to" headers?
