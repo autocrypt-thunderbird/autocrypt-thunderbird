@@ -150,7 +150,7 @@ var EnigmailDialog = {
    *   - cancelButton   String    - Label for cancel button
    *     use "buttonType:label" or ":buttonType" to indicate special button types
    *        (buttonType is one of cancel, help, extra1, extra2)
-   *     if not button is provided, OK will be displayed
+   *     if no button is provided, OK will be displayed
    *
    * @checkedObj:    Object    - holding the checkbox value
    *

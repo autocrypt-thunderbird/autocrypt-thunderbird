@@ -3934,7 +3934,7 @@ Enigmail.msg = {
       var usingPGPMime = (sendFlags & EnigmailConstants.SEND_PGP_MIME) &&
         (sendFlags & (ENCRYPT | SIGN));
 
-      this.checkProtectHeaders(sendFlags);
+      if (!this.checkProtectHeaders(sendFlags)) return false;
 
       // ----------------------- Rewrapping code, taken from function "encryptInline"
 
@@ -4082,20 +4082,27 @@ Enigmail.msg = {
   },
 
   checkProtectHeaders: function(sendFlags) {
-    if (!(sendFlags & EnigmailConstants.SEND_PGP_MIME)) return;
+    if (!(sendFlags & EnigmailConstants.SEND_PGP_MIME)) return true;
     if (sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
 
       if ((!this.protectHeaders) && EnigmailPrefs.getPref("protectedHeaders") === 1) {
-        let enableProtection = EnigmailDialog.confirmDlg(window,
-          EnigmailLocale.getString("msgCompose.protectSubject.question"),
-          EnigmailLocale.getString("msgCompose.protectSubject.yesButton"),
-          EnigmailLocale.getString("msgCompose.protectSubject.noButton"));
+        let enableProtection = EnigmailDialog.msgBox(window, {
+          dialogTitle: EnigmailLocale.getString("msgCompose.protectSubject.dialogTitle"),
+          msgtext: EnigmailLocale.getString("msgCompose.protectSubject.question"),
+          iconType: EnigmailConstants.ICONTYPE_QUESTION,
+          button1: EnigmailLocale.getString("msgCompose.protectSubject.yesButton"),
+          button2: "extra1:" + EnigmailLocale.getString("msgCompose.protectSubject.noButton")
+        });
 
-        EnigmailPrefs.setPref("protectedHeaders", enableProtection ? 2 : 0);
-        this.protectHeaders = enableProtection;
+        if (enableProtection === -1) return false;
+
+        EnigmailPrefs.setPref("protectedHeaders", enableProtection === 0 ? 2 : 0);
+        this.protectHeaders = (enableProtection === 0);
         this.displayProtectHeadersStatus();
       }
     }
+
+    return true;
   },
 
   encryptInline: function(sendInfo) {
