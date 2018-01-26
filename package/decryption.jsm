@@ -455,8 +455,7 @@ var EnigmailDecryption = {
     var indentStrObj = {};
     var blockType = EnigmailArmor.locateArmoredBlock(cipherText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
     if (!blockType || blockType == "SIGNATURE") {
-      errorMsgObj.value = EnigmailLocale.getString("noPGPblock");
-      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
+      // return without displaying a message
       return "";
     }
 
