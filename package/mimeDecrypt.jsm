@@ -26,6 +26,7 @@ Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
 
@@ -40,6 +41,8 @@ const ENCODING_QP = 2;
 var gDebugLogLevel = 0;
 
 var gNumProc = 0;
+var gLastMessageData = "";
+var gLastMessage = null;
 
 ////////////////////////////////////////////////////////////////////
 // handler for PGP/MIME encrypted messages
@@ -242,6 +245,27 @@ EnigmailMimeDecrypt.prototype = {
     }
   },
 
+  /**
+   * if the request is for the same message as the previous one, then
+   * return the data of the last message. Otherwise do nothing
+   *
+   * @return: Object if message to be displayed, null otherwise
+   */
+  returnLastMessage: function() {
+    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
+
+    if (!gLastMessage) return currMsg;
+
+    if (gLastMessage.folder === currMsg.folder &&
+      gLastMessage.msgNum === currMsg.msgNum) {
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: returnLastMessage: returning same data as before\n");
+      this.returnData(gLastMessageData);
+      return null;
+    }
+
+    return currMsg;
+  },
+
   onStopRequest: function(request, win, status) {
     LOCAL_DEBUG("mimeDecrypt.jsm: onStopRequest\n");
     --gNumProc;
@@ -255,6 +279,7 @@ EnigmailMimeDecrypt.prototype = {
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     let url = {};
+    let currMsg = null;
 
     this.backgroundJob = false;
 
@@ -333,6 +358,9 @@ EnigmailMimeDecrypt.prototype = {
         EnigmailLog.writeException("mimeDecrypt.js", ex);
         EnigmailLog.DEBUG("mimeDecrypt.jsm: error while processing " + this.msgUriSpec + "\n");
       }
+
+      currMsg = this.returnLastMessage();
+      if (!currMsg) return;
     }
 
 
@@ -387,6 +415,8 @@ EnigmailMimeDecrypt.prototype = {
     this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
 
     this.returnData(this.decryptedData);
+    gLastMessageData = this.decryptedData;
+    gLastMessage = currMsg;
     this.decryptedData = "";
 
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
