@@ -26,7 +26,7 @@ const getEnigmailConsole = EnigmailLazy.loader("enigmail/pipeConsole.jsm", "Enig
 const getEnigmailGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 const getEnigmailMimeEncrypt = EnigmailLazy.loader("enigmail/mimeEncrypt.jsm", "EnigmailMimeEncrypt");
 const getEnigmailProtocolHandler = EnigmailLazy.loader("enigmail/protocolHandler.jsm", "EnigmailProtocolHandler");
-const getEnigmailFilters = EnigmailLazy.loader("enigmail/filters.jsm", "EnigmailFilters");
+const getEnigmailFiltersWrapper = EnigmailLazy.loader("enigmail/filtersWrapper.jsm", "EnigmailFiltersWrapper");
 const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 const getEnigmailOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
 const getEnigmailLocale = EnigmailLazy.loader("enigmail/locale.jsm", "EnigmailLocale");
@@ -83,11 +83,11 @@ var EnigmailCore = {
 
     function continueStartup() {
       getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
-      let mimeEncrypt = getEnigmailMimeEncrypt();
-      mimeEncrypt.startup(reason);
-      getEnigmailOverlays().startup(reason);
 
       try {
+        let mimeEncrypt = getEnigmailMimeEncrypt();
+        mimeEncrypt.startup(reason);
+        getEnigmailOverlays().startup(reason);
         let cLineReg = getEnigmailCommandLine().categoryRegistry;
         let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
         catMan.addCategoryEntry(cLineReg.category,
@@ -97,10 +97,12 @@ var EnigmailCore = {
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
         self.factories.push(new Factory(getEnigmailCommandLine().Handler));
         self.factories.push(new Factory(mimeEncrypt.Handler));
+        getEnigmailFiltersWrapper().onStartup();
       }
-      catch (ex) {}
+      catch (ex) {
+        getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
+      }
 
-      getEnigmailFilters().onStartup();
     }
 
     getEnigmailVerify().registerContentTypeHandler();
@@ -121,6 +123,7 @@ var EnigmailCore = {
       }
     }
 
+    getEnigmailFiltersWrapper().onShutdown();
     getEnigmailPEPAdapter().onShutdown();
     getEnigmailVerify().unregisterContentTypeHandler();
 

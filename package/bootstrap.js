@@ -110,7 +110,10 @@ function loadListOfModules() {
 function unloadModules() {
   for (let mod of gAllModules) {
     try {
-      Cu.unload("resource://enigmail" + mod);
+      // cannot unload filtersWrapper as you can't unregister filters in TB
+      if (mod !== "filtersWrapper.jsm") {
+        Cu.unload("resource://enigmail" + mod);
+      }
     }
     catch (ex) {}
   }

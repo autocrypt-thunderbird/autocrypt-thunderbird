@@ -35,6 +35,7 @@ MODFILES = \
            funcs.jsm \
            files.jsm \
            filters.jsm \
+           filtersWrapper.jsm \
            fixExchangeMsg.jsm \
            gpgAgent.jsm \
            glodaMime.jsm \

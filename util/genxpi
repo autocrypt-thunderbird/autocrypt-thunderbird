@@ -85,6 +85,7 @@ zip -9 --must-match\
     modules/execution.jsm \
     modules/files.jsm \
     modules/filters.jsm \
+    modules/filtersWrapper.jsm \
     modules/fixExchangeMsg.jsm \
     modules/glodaMime.jsm \
     modules/glodaUtils.jsm \

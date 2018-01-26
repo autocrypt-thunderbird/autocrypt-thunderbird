@@ -40,9 +40,6 @@ var gNewMailListenerInitiated = false;
  */
 
 const filterActionMoveDecrypt = {
-  id: EnigmailConstants.FILTER_MOVE_DECRYPT,
-  name: EnigmailLocale.getString("filter.decryptMove.label"),
-  value: "movemessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
 
     EnigmailLog.DEBUG("filters.jsm: filterActionMoveDecrypt: Move to: " + aActionValue + "\n");
@@ -68,11 +65,7 @@ const filterActionMoveDecrypt = {
     }
 
     return null;
-  },
-
-  allowDuplicates: false,
-  isAsync: true,
-  needsBody: true
+  }
 };
 
 /**
@@ -80,9 +73,6 @@ const filterActionMoveDecrypt = {
  * message untouched
  */
 const filterActionCopyDecrypt = {
-  id: EnigmailConstants.FILTER_COPY_DECRYPT,
-  name: EnigmailLocale.getString("filter.decryptCopy.label"),
-  value: "copymessage",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
     EnigmailLog.DEBUG("filters.jsm: filterActionCopyDecrypt: Copy to: " + aActionValue + "\n");
 
@@ -109,20 +99,13 @@ const filterActionCopyDecrypt = {
     }
 
     return null;
-  },
-
-  allowDuplicates: false,
-  isAsync: true,
-  needsBody: true
+  }
 };
 
 /**
  * filter action for to encrypt a mail to a specific key
  */
 const filterActionEncrypt = {
-  id: EnigmailConstants.FILTER_ENCRYPT,
-  name: EnigmailLocale.getString("filter.encrypt.label"),
-  value: "encryptto",
   apply: function(aMsgHdrs, aActionValue, aListener, aType, aMsgWindow) {
     // Ensure KeyRing is loaded.
     if (aMsgWindow) {
@@ -211,11 +194,7 @@ const filterActionEncrypt = {
     }
 
     return null;
-  },
-
-  allowDuplicates: false,
-  isAsync: true,
-  needsBody: true
+  }
 };
 
 function isPGPEncrypted(data) {
@@ -540,10 +519,6 @@ const newMailListener = {
 
 var EnigmailFilters = {
   onStartup: function() {
-    addFilterIfNotExists(filterActionMoveDecrypt);
-    addFilterIfNotExists(filterActionCopyDecrypt);
-    addFilterIfNotExists(filterActionEncrypt);
-
     let filterService = Cc["@mozilla.org/messenger/services/filters;1"].getService(Ci.nsIMsgFilterService);
     filterService.addCustomTerm(filterTermPGPEncrypted);
     initNewMailListener();
@@ -571,5 +546,9 @@ var EnigmailFilters = {
 
   removeNewMailConsumer: function(consumer) {
 
-  }
+  },
+
+  moveDecrypt: filterActionMoveDecrypt,
+  copyDecrypt: filterActionCopyDecrypt,
+  encrypt: filterActionEncrypt
 };
