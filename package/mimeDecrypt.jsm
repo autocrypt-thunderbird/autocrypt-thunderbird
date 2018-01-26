@@ -84,7 +84,7 @@ EnigmailMimeDecrypt.prototype = {
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest\n"); // always log this one
 
     ++gNumProc;
-    if (gNumProc > 2) {
+    if (gNumProc > EnigmailPrefs.getPref("maxNumProcesses")) {
       EnigmailLog.DEBUG("mimeDecrypt.jsm: number of parallel requests above threshold - ignoring requst\n");
       return;
     }

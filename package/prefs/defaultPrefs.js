@@ -105,6 +105,10 @@ pref("extensions.enigmail.autoKeyServerSelection", true);
 // keep passphrase for ... minutes
 pref("extensions.enigmail.maxIdleMinutes", 5);
 
+// maximum number of parallel decrypt processes that Enigmaik will handle
+// (requests aboved the threshold are ignored)
+pref("extensions.enigmail.maxNumProcesses", 3);
+
 // GnuPG hash algorithm
 // 0: automatic seletion (i.e. let GnuPG choose)
 // 1: SHA1, 2: RIPEMD160, 3: SHA256, 4: SHA384, 5: SHA512, 6: SHA224
