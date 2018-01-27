@@ -423,7 +423,7 @@ function getProxyModule() {
 function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resultObj) {
   let keyList = keys.map(function(x) {
     return "0x" + x.keyId.toString();
-  }).join(", ");
+  }).join(" ");
 
   EnigmailLog.DEBUG("keyserver.jsm: keyServerUpDownload: keyId=" + keyList + "\n");
 
