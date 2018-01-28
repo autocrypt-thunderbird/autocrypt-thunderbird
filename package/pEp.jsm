@@ -82,10 +82,9 @@ var EnigmailpEp = {
     };
 
     return this._callPepFunction(FT_CALL_FUNCTION, "version", [], onLoad);
-
   },
 
-  _getPepHomeDir: function() {
+  getPepHomeDir: function() {
     if (gPepHome) return gPepHome;
     let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
     let pepHomeDir = env.get("PEPHOME");
@@ -111,7 +110,7 @@ var EnigmailpEp = {
     DEBUG_LOG("getConnectionInfo()");
     if (!gConnectionInfo) {
       let fileHandle = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-      EnigmailFiles.initPath(fileHandle, this._getPepHomeDir());
+      EnigmailFiles.initPath(fileHandle, this.getPepHomeDir());
       fileHandle.append("json-token");
 
       if (!fileHandle.exists()) {
@@ -870,7 +869,26 @@ var EnigmailpEp = {
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
+  },
 
+  /**
+   * Stop the pEp adapter.
+   *
+   * @return: Promise.
+   */
+
+  shutdown: function() {
+    DEBUG_LOG("shutdown()");
+
+    gShuttingDown = true;
+    let onLoad = function() {
+      dropXmlRequest();
+      gConnectionInfo = null;
+      gShuttingDown = false;
+      return 0;
+    };
+
+    return this._callPepFunction(FT_CALL_FUNCTION, "shutdown", [], onLoad, onLoad);
   },
 
   registerTbListener: function(port, securityToken) {
@@ -1153,10 +1171,10 @@ var EnigmailpEp = {
           // do nothing
         },
         stdout: function(data) {
-          // do nothing
+          DEBUG_LOG("stdout from pep-json-server: " + data);
         },
         stderr: function(data) {
-          // do nothing
+          DEBUG_LOG("stderr from pep-json-server: " + data);
         }
       });
 
@@ -1223,6 +1241,9 @@ function makeError(str, ex, msg) {
 }
 
 function dropXmlRequest() {
+  if (gXmlReq) {
+    gXmlReq.abort();
+  }
   gXmlReq = null;
 }
 

@@ -392,7 +392,7 @@ var EnigmailPEPAdapter = {
 
           if (!gpgFile.exists()) {
             // GnuPG not found, try to install it
-            //installMissingGnuPG();
+            // installMissingGnuPG();
 
             deferred.resolve();
             return;
@@ -1056,7 +1056,7 @@ var EnigmailPEPAdapter = {
 function installMissingGnuPG() {
   if (!(EnigmailOS.isMac || EnigmailOS.isWin32)) return;
 
-  if (getDialog().confirmDlg(null, "Install GnuPG?")) { //TODO: localize
+  if (getDialog().confirmDlg(null, "In order to use pEp, GnuPG is required. As we could not find it, we suggest to download and install it for you.", "&Install")) { //TODO: localize
     let listener = {
       onStart: function(oReq) {
         this.oReq = oReq;
@@ -1065,7 +1065,9 @@ function installMissingGnuPG() {
       onProgress: function() {},
       onDownloaded: function() {},
       onLoaded: function() {
-        EnigmailPEPAdapter.initialize();
+        EnigmailpEp.shutdown().then(x => {
+          EnigmailPEPAdapter.initialize();
+        });
       },
       onWarning: function() {
         return false;
