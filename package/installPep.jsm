@@ -368,12 +368,30 @@ Installer.prototype = {
           return null;
         }
 
-        let profD = EnigmailApp.getProfileDirectory();
-        if (EnigmailFiles.extractZipFile(self.installerFile, profD)) {
+        let tempDir = EnigmailApp.getProfileDirectory();
+        tempDir.append("pep_tmp");
+        tempDir.createUnique(Ci.nsIFile.DIRECTORY_TYPE, 509 /* = 0775 */ );
+
+        let pepDir = EnigmailApp.getProfileDirectory();
+        pepDir.append("pepmda");
+
+        if (EnigmailFiles.extractZipFile(self.installerFile, tempDir)) {
+
+          if (pepDir.exists()) {
+            if (self.progressListener) {
+              self.progressListener.stopPep();
+            }
+            pepDir.remove(true);
+          }
+
+          pepDir = tempDir.clone();
+          pepDir.append("pepmda");
+          pepDir.moveTo(EnigmailApp.getProfileDirectory(), "pepmda");
+          tempDir.remove(true);
           deferred.resolve();
         }
         else {
-          deferred.reject("Could not unzip " + self.installerFile.path + " to " + profD.path + "\n");
+          deferred.reject("Could not unzip " + self.installerFile.path + " to " + tempDir.path + "\n");
         }
       }
       catch (ex) {

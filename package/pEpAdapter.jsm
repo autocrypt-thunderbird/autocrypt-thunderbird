@@ -1064,13 +1064,16 @@ function installMissingGnuPG() {
       onError: function() {},
       onProgress: function() {},
       onDownloaded: function() {},
-      onLoaded: function() {
+      onInstalled: function() {
         EnigmailpEp.shutdown().then(x => {
           EnigmailPEPAdapter.initialize();
         });
       },
       onWarning: function() {
         return false;
+      },
+      stopPep: function() {
+        EnigmailpEp.shutdown();
       }
     };
 
