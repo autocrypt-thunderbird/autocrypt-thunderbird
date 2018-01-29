@@ -198,7 +198,7 @@ Enigmail.msg = {
         Enigmail.msg.processFinalState();
         Enigmail.msg.updateStatusBar();
       },
-      50);
+      100);
   },
 
   toggleSmimeToolbar: function(event) {
@@ -264,7 +264,7 @@ Enigmail.msg = {
     EnigmailTimer.setTimeout(function _f() {
         Enigmail.msg.setIdentityDefaults();
       },
-      50);
+      100);
   },
 
 
@@ -3611,8 +3611,15 @@ Enigmail.msg = {
           this.addRecipients(toAddrList, recList);
         }
 
-        if (!this.confirmBeforeSend(toAddrList.join(", "), "", sendFlags, isOffline)) {
-          return false;
+        switch (msgSendType) {
+          case CiMsgCompDeliverMode.SaveAsDraft:
+          case CiMsgCompDeliverMode.SaveAsTemplate:
+          case CiMsgCompDeliverMode.AutoSaveAsDraft:
+            break;
+          default:
+            if (!this.confirmBeforeSend(toAddrList.join(", "), "", sendFlags, isOffline)) {
+              return false;
+            }
         }
       }
 
