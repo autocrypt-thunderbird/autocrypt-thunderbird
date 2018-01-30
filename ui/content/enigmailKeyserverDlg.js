@@ -1,41 +1,51 @@
+/*global Components: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
-
 "use strict";
 
-/* global EnigGetString: false, EnigGetPref: false, EnigSetPref: false, EnigAlert: false*/
+const Cu = Components.utils;
+
+const {
+  EnigmailLocale
+} = Cu.import("resource://enigmail/locale.jsm");
+const {
+  EnigmailPrefs
+} = Cu.import("resource://enigmail/prefs.jsm");
+const {
+  EnigmailDialog
+} = Cu.import("resource://enigmail/dialog.jsm");
+
 
 function onLoad() {
   window.arguments[1].value = "";
-  var keyIdText = document.getElementById("keyIdText");
-  var emailRow = document.getElementById("emailRow");
-  var keyText;
+  let keyIdText = document.getElementById("keyIdText");
+  let searchCollapser = document.getElementById("searchCollapser");
+  let keyText;
 
   if (typeof(window.arguments[0].keyId) == "string") {
     var keyId = window.arguments[0].keyId;
     if (window.arguments[0].upload) {
-      keyText = EnigGetString("uploadKey", keyId);
+      keyText = EnigmailLocale.getString("uploadKey", keyId);
     }
     else {
-      keyText = EnigGetString("importKey", keyId);
+      keyText = EnigmailLocale.getString("importKey", keyId);
     }
 
     if (keyText.length > 400) {
       keyText = keyText.substr(0, 400) + " ...";
     }
     keyIdText.firstChild.data = keyText;
-    emailRow.setAttribute("collapsed", "true");
+    searchCollapser.setAttribute("collapsed", "true");
   }
   else {
     keyIdText.setAttribute("collapsed", "true");
   }
 
-  var keyservers = EnigGetPref("keyserver").split(/[ ,;]/g);
+  var keyservers = EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g);
   var menulist = document.getElementById("selectedServer");
   var selected;
 
@@ -54,27 +64,27 @@ function onLoad() {
 }
 
 function onAccept() {
-  var menulist = document.getElementById("selectedServer");
+  let menulist = document.getElementById("selectedServer");
   window.arguments[1].value = menulist.value;
   if (typeof(window.arguments[0].keyId) != "string") {
     window.arguments[1].email = document.getElementById("email").value;
     if (!window.arguments[1].email) {
-      EnigAlert(EnigGetString("noEmailProvided"));
+      EnigmailDialog.alert(window, EnigmailLocale.getString("noEmailProvided"));
       return false;
     }
   }
   var selected = menulist.selectedIndex;
 
   if (selected !== 0) {
-    var servers = [menulist.value];
-    var nodes = menulist.menupopup.getElementsByTagName('menuitem');
-    for (var i = 0, e = nodes.length; i < e; ++i) {
+    let servers = [menulist.value];
+    let nodes = menulist.menupopup.getElementsByTagName('menuitem');
+    for (let i = 0, e = nodes.length; i < e; ++i) {
       if (i == selected) {
         continue;
       }
       servers.push(nodes[i].label);
     }
-    EnigSetPref("keyserver", servers.join(', '));
+    EnigmailPrefs.setPref("keyserver", servers.join(', '));
   }
   return true;
 }

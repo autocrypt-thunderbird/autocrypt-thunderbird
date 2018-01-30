@@ -21,9 +21,11 @@
         onload="onLoad();"
         ondialogaccept="return onAccept();">
 
-
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyserverDlg.js"/>
+
+  <broadcasterset>
+    <broadcaster id="searchCollapser"/>
+  </broadcasterset>
 
   <vbox orient="vertical">
     <description id="keyIdText" width="300px">...</description>
@@ -33,7 +35,7 @@
         <column flex="1"/>
       </columns>
       <rows>
-        <row id="emailRow">
+        <row id="emailRow" observes="searchCollapser">
           <hbox align="center">
             <label value="&enigmail.searchForKey.label;" control="email"/>
           </hbox>
@@ -47,8 +49,10 @@
         </row>
       </rows>
     </grid>
+
     <separator/>
-    <vbox orient="vertical" class="enigmailDialogInfoBox">
+
+    <vbox orient="vertical" class="enigmailDialogInfoBox" observes="searchCollapser">
       <caption id="searchForKeyExample" label="&enigmail.searchForKey.example;"/>
       <separator/>
       <description>
