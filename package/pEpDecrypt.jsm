@@ -22,6 +22,7 @@ Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: fa
 Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
 Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
@@ -30,6 +31,9 @@ Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: fa
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
 
 var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+
+var gLastMessageData = "";
+var gLastMessage = null;
 
 var EnigmailPEPDecrypt = {
   /**
@@ -216,7 +220,23 @@ PEPDecryptor.prototype = {
       return;
     }
 
-    this.decryptedData = "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt");
+    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
+    if (gLastMessage) {
+      if (gLastMessage.folder === currMsg.folder &&
+        gLastMessage.msgNum === currMsg.msgNum) {
+        EnigmailLog.DEBUG("pEpDecrypt.jsm: onStopRequest: returning same data as before\n");
+        this.decryptedData = gLastMessageData;
+        this.returnData();
+        return;
+      }
+    }
+
+    let wrapper = EnigmailMime.createBoundary();
+    this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+      'Content-Disposition: inline\r\n\r\n' +
+      '--' + wrapper + '\r\n' +
+      "Content-Type: text/plain\r\n\r\n" + EnigmailLocale.getString("pEpDecrypt.cannotDecrypt") + '\r\n' +
+      '--' + wrapper + '--\r\n';
 
     this.sourceData = "Content-Type: " + this.contentType + "\r\n\r\n" + this.sourceData;
 
@@ -250,7 +270,6 @@ PEPDecryptor.prototype = {
         if (hdr.search(/^content-type:\s+text\/(plain|html)/im) >= 0) {
           EnigmailLog.DEBUG("pEpDecrypt.jsm: done: adding multipart/mixed around '" + hdr + "'\n");
 
-          let wrapper = EnigmailMime.createBoundary();
           this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
             'Content-Disposition: inline\r\n\r\n' +
             '--' + wrapper + '\r\n' +
@@ -265,6 +284,12 @@ PEPDecryptor.prototype = {
       }
     }
 
+    gLastMessage = currMsg;
+    gLastMessageData = this.decryptedData;
+    this.returnData();
+  },
+
+  returnData: function() {
     if ("outputDecryptedData" in this.mimeSvc) {
       this.mimeSvc.outputDecryptedData(this.decryptedData, this.decryptedData.length);
     }
