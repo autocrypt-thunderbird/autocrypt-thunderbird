@@ -16,7 +16,8 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils:false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false*/
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+const getEnigmailPrefs = EnigmailLazy.loader("enigmail/prefs.jsm", "EnigmailPrefs");
 
 const CHECK_TOR_URI = "https://check.torproject.org/api/ip";
 const EXPECTED_TOR_EXISTS_RESPONSE = "\"IsTor\":true";
@@ -58,11 +59,11 @@ function getCurrentThread() {
 }
 
 function filterWith(portPref) {
-  const port = EnigmailPrefs.getPref(portPref);
+  const port = getEnigmailPrefs().getPref(portPref);
   const failoverProxy = null;
   return {
     applyFilter: function(proxyService, uri, proxyInfo) {
-      return proxyService.newProxyInfo("socks", EnigmailPrefs.getPref(TOR_IP_ADDR_PREF), port, CONNECTION_FLAGS, SECONDS_TO_WAIT_FOR_CONNECTION, failoverProxy);
+      return proxyService.newProxyInfo("socks", getEnigmailPrefs().getPref(TOR_IP_ADDR_PREF), port, CONNECTION_FLAGS, SECONDS_TO_WAIT_FOR_CONNECTION, failoverProxy);
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolProxyFilter, Ci.nsISupports])
   };
@@ -105,6 +106,6 @@ function checkTorExists(portPref) {
 var EnigmailSocks5Proxy = {
   checkTorExists: checkTorExists,
   torIpAddr: function() {
-    return EnigmailPrefs.getPref(TOR_IP_ADDR_PREF);
+    return getEnigmailPrefs().getPref(TOR_IP_ADDR_PREF);
   }
 };

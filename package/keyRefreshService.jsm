@@ -87,6 +87,7 @@ function getRandomKeyId(randomNumber) {
 
 function refreshKeyIfReady(keyserver, readyToRefresh, keyId) {
   if (readyToRefresh) {
+    EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: refreshing key ID " + keyId + "\n");
     keyserver.refresh(keyId);
   }
 }

@@ -103,6 +103,7 @@ function gpgRequest(keyId, uri, action, usingTor) {
     command: EnigmailGpgAgent.agentPath,
     args: args,
     usingTor: usingTor,
+    keyId: keyId,
     inputData: getInputData(action),
     envVars: [],
     isDownload: isDownload(action)
@@ -119,6 +120,7 @@ function requestOverTorWithSocks(keyId, uri, torProperties, action) {
   return {
     command: EnigmailGpgAgent.agentPath,
     args: args,
+    keyId: keyId,
     usingTor: true,
     envVars: [],
     isDownload: isDownload(action)
@@ -135,6 +137,7 @@ function requestOverTorWithHelper(keyId, uri, torProperties, action) {
   return {
     command: torProperties.command,
     args: args,
+    keyId: keyId,
     usingTor: true,
     envVars: torProperties.envVars,
     isDownload: isDownload(action)
@@ -199,7 +202,7 @@ function execute(request, listener, subproc) {
       done: function(result) {
         try {
           if (result.exitCode === 0 && request.isDownload) {
-            EnigmailKeyRing.clearCache();
+            EnigmailKeyRing.updateKeys(request.keyId);
           }
           if (exitCode === null) {
             exitCode = result.exitCode;
