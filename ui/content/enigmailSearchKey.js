@@ -244,10 +244,13 @@ function onStatusLoaded(request, connectionType) {
   else if (request.status == 500 && request.statusText == "OK") {
     request.requestCallbackFunc(ENIG_CONN_TYPE_HTTP, "no keys found", "[GNUPG:] NODATA 1\n");
   }
+  else if (request.status == 404) {
+    EnigmailDialog.info(window, getKeyNotFoundMsg());
+    closeDialog();
+  }
   else if (request.statusText != "OK") {
     EnigmailDialog.alert(window, EnigmailLocale.getString("keyDownloadFailed", request.statusText));
     closeDialog();
-    return;
   }
 }
 
@@ -305,7 +308,7 @@ function importKeys(connType, txt, errorTxt) {
     EnigmailDialog.keyImportDlg(window, gEnigRequest.importedKeyList.length > 0 ? gEnigRequest.importedKeyList : gEnigRequest.dlKeyList);
   }
   else if (gEnigRequest.errorTxt) {
-    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, getKeyNotFoundMsg());
   }
 
   gEnigRequest.httpInProgress = false;
@@ -317,7 +320,7 @@ function importHtmlKeys(txt) {
   let errorMsgObj = {};
 
   if (txt.length === 0) {
-    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, getKeyNotFoundMsg());
   }
   else {
     let enigmailSvc = GetEnigmailSvc();
@@ -522,7 +525,7 @@ function scanKeys(connType, htmlTxt) {
   document.getElementById("progress.box").setAttribute("hidden", "true");
   document.getElementById("selall-button").removeAttribute("hidden");
   if (gEnigRequest.keyList.length === 0) {
-    EnigmailDialog.info(window, EnigmailLocale.getString("noKeyFound"));
+    EnigmailDialog.info(window, getKeyNotFoundMsg());
     closeDialog();
   }
 
@@ -910,4 +913,14 @@ function keySelectCallback(event) {
 function ignoreUid(uid) {
   const ignoreList = "{Test 555 <sdfg@gga.com>}";
   return (ignoreList.indexOf("{" + trim(uid) + "}") >= 0);
+}
+
+
+function getKeyNotFoundMsg() {
+  if (window.arguments[INPUT].searchList.length == 1 &&
+    window.arguments[INPUT].searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) === 0) {
+    return EnigmailLocale.getString("keyDownload.keyUnavailable", window.arguments[INPUT].searchList[0]);
+  }
+
+  return EnigmailLocale.getString("noKeyFound");
 }
