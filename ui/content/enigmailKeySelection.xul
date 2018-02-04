@@ -129,6 +129,7 @@
     <button class="dialog"
             halign="right"
             id="importMissingKeys"
+            collapsed="true"
             label="&enigmail.importMissingKeys.label;"
             accesskey="&enigmail.importMissingKeys.accesskey;"
             tooltip="&enigmail.importMissingKeys.tooltip;"
