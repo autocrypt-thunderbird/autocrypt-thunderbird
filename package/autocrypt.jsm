@@ -58,11 +58,10 @@ var EnigmailAutocrypt = {
 
     return new Promise((resolve, reject) => {
       // critical parameters: {param: mandatory}
-      // TODO: remove type=1 field
       const CRITICAL = {
         addr: true,
         keydata: true,
-        type: false,
+        type: false, // That's actually oboslete according to the Level 1 spec.
         "prefer-encrypt": false
       };
 

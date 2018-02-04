@@ -296,9 +296,7 @@ var EnigmailRules = {
     //   - to addrKeysList  if a matching rule with keys was found
     //   - to addrNoKeyList if a rule with "do not process further rules" ("." as key) applies
     let emailAddrList = ("," + emailAddrsStr + ",").split(/\s*,\s*/);
-    // TODO: we split with , and spaces around
-    //       BUT what if , is in "..." part of an email?
-    //       => use lists!!!
+
     let openList = [];
     for (let i = 0; i < emailAddrList.length; ++i) {
       let orig = emailAddrList[i];

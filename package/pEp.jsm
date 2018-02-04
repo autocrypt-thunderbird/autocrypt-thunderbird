@@ -1161,6 +1161,8 @@ var EnigmailpEp = {
         }
       }
 
+      let foundGnuPG = true;
+
       let process = subprocess.call({
         workdir: resDirPath,
         command: exec,
@@ -1175,10 +1177,18 @@ var EnigmailpEp = {
         },
         stderr: function(data) {
           DEBUG_LOG("stderr from pep-json-server: " + data);
+          if (data.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED)/) >= 0) {
+            foundGnuPG = false;
+          }
         }
       });
 
       if (!EnigmailOS.isDosLike) process.wait();
+
+      if (!foundGnuPG) {
+        deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
+        return;
+      }
 
       DEBUG_LOG("_startPepServer: JSON server started");
 
