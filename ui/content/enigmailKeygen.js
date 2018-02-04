@@ -35,8 +35,8 @@ var gGeneratedKey = null;
 var gUsedId;
 
 const KEYGEN_CANCELLED = "cancelled";
-const KEYTYPE_DSA = 1;
 const KEYTYPE_RSA = 2;
+const KEYTYPE_ECC = 3;
 
 function enigmailKeygenLoad() {
   EnigmailLog.DEBUG("enigmailKeygen.js: Load\n");
@@ -343,11 +343,6 @@ function enigmailKeygenStart() {
   }
   var keySize = Number(document.getElementById("keySize").value);
   var keyType = Number(document.getElementById("keyType").value);
-
-  if ((keyType == KEYTYPE_DSA) && (keySize > 3072)) {
-    EnigmailDialog.info(window, EnigGetString("dsaSizeLimit"));
-    keySize = 3072;
-  }
 
   var curId = getCurrentIdentity();
   gUsedId = curId;

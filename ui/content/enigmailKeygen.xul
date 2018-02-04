@@ -108,10 +108,9 @@
               <label value="&enigmail.keyGen.keyType.label;" control="keyType"/>
             </hbox>
             <hbox flex="0">
-              <menulist id="keyType" label="&enigmail.keyGen.keyType.dsa;" value="1" >
+              <menulist id="keyType" label="&enigmail.keyGen.keyType.rsa;" value="2" >
                 <menupopup id="keyTypePopup">
                   <menuitem id="keySize_rsa" value="2" label="&enigmail.keyGen.keyType.rsa;" selected="true" oncommand="updateKeySizeSel(this)"/>
-                  <menuitem id="keyType_dsa" value="1" label="&enigmail.keyGen.keyType.dsa;" oncommand="updateKeySizeSel(this)"/>
                   <menuitem id="keyType_ecc" value="3" label="&enigmail.keyGen.keyType.ecc;" oncommand="updateKeySizeSel(this)" hidden="true"/>
                 </menupopup>
               </menulist>
@@ -124,8 +123,7 @@
             <hbox flex="0">
               <menulist id="keySize" label="4096" value="4096" >
                 <menupopup id="keySizePopup">
-                  <menuitem id="keySize_1024" value="1024" label="1024"/>
-                  <menuitem id="keySize_2048" value="2048" label="2048"/>
+                  <menuitem id="keySize_3072" value="3072" label="3072"/>
                   <menuitem id="keySize_4096" value="4096" label="4096" selected="true"/>
                 </menupopup>
               </menulist>
