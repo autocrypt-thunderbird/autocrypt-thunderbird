@@ -21,16 +21,15 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-//Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("resource://enigmail/system.jsm"); /*global EnigmailSystem: false */
 Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
 const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 
 const Cc = Components.classes;
@@ -576,7 +575,7 @@ var EnigmailGpgAgent = {
       if (!domWindow) {
         domWindow = EnigmailWindows.getBestParentWin();
       }
-      EnigmailDialog.alert(domWindow, EnigmailLocale.getString("oldGpgVersion20", [gpgVersion, getEnigmailGpg().getMinimumGpgVersion()]));
+      getDialog().alert(domWindow, EnigmailLocale.getString("oldGpgVersion20", [gpgVersion, getEnigmailGpg().getMinimumGpgVersion()]));
       throw Components.results.NS_ERROR_FAILURE;
     }
 
@@ -722,7 +721,7 @@ var EnigmailGpgAgent = {
       if (!domWindow) {
         domWindow = EnigmailWindows.getBestParentWin();
       }
-      EnigmailDialog.alert(domWindow, EnigmailLocale.getString(errMsg, homeDir) + "\n\n" + EnigmailLocale.getString("gpghomedir.notusable"));
+      getDialog().alert(domWindow, EnigmailLocale.getString(errMsg, homeDir) + "\n\n" + EnigmailLocale.getString("gpghomedir.notusable"));
       throw Components.results.NS_ERROR_FAILURE;
     }
   },
