@@ -59,7 +59,22 @@ EnigmailProtocolHandler.prototype = {
     if (aSpec.substr(0, 14) == "enigmail:dummy") aSpec = "enigmail:dummy";
 
     var uri = Cc[NS_SIMPLEURI_CONTRACTID].createInstance(Ci.nsIURI);
-    uri.spec = aSpec;
+    try {
+      uri.spec = aSpec;
+    }
+    catch (x) {
+      aSpec = aSpec.substr(9);
+      uri.scheme = "enigmail";
+
+      let i = aSpec.indexOf("?");
+      if (i >= 0) {
+        uri.query = aSpec.substr(i + 1);
+        uri.pathQueryRef = aSpec.substr(0, i);
+      }
+      else {
+        uri.pathQueryRef = aSpec;
+      }
+    }
 
     return uri;
   },

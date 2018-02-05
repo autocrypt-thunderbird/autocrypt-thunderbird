@@ -202,7 +202,7 @@ function execute(request, listener, subproc) {
       done: function(result) {
         try {
           if (result.exitCode === 0 && request.isDownload) {
-            EnigmailKeyRing.updateKeys(request.keyId);
+            EnigmailKeyRing.updateKeys([request.keyId]);
           }
           if (exitCode === null) {
             exitCode = result.exitCode;
