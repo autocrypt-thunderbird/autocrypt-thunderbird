@@ -446,14 +446,35 @@ var EnigmailpEp = {
       let params = [idObject];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "myself", params);
-
     }
     catch (ex) {
       let deferred = PromiseUtils.defer();
       deferred.reject(makeError("PEP-ERROR", ex));
       return deferred.promise;
     }
+  },
 
+  /**
+   * Update an identity
+   *
+   * @param idObject -  Object:
+   *  - address: email Address
+   *  - user_id: user ID (usually TOFU_email@address)
+   *  - username: name of person (Firstname Lastname)
+   */
+
+  updateIdentity: function(idObject) {
+    DEBUG_LOG("updateIdentity()");
+    try {
+      let params = [idObject];
+
+      return this._callPepFunction(FT_CALL_FUNCTION, "update_identity", params);
+    }
+    catch (ex) {
+      let deferred = PromiseUtils.defer();
+      deferred.reject(makeError("PEP-ERROR", ex));
+      return deferred.promise;
+    }
   },
 
   /**

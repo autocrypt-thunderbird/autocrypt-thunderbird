@@ -463,8 +463,20 @@ var EnigmailPEPAdapter = {
       self.pep.setMyself(pepId).then(
         function _ok(data) {
           if (data) {
-            self.processOwnIdentity(data);
+            let myId = self.processOwnIdentity(data);
+
+            if (myId) {
+              myId.user_id = "TOFU_" + myId.address;
+              return self.pep.updateIdentity(myId);
+            }
           }
+
+          let deferred = PromiseUtils.defer();
+          deferred.resolve();
+          return deferred;
+
+        }).then(
+        function _ok() {
           self.setOwnIdentities(accountNum + 1);
         }).catch(
         function _err(data) {
@@ -482,7 +494,10 @@ var EnigmailPEPAdapter = {
       let id = identityData.result.outParams[0];
 
       gOwnIdentities[id.address.toLowerCase()] = id;
+
+      return id;
     }
+    return null;
   },
 
 
