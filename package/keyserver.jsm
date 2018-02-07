@@ -26,7 +26,6 @@ Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
 Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
@@ -145,17 +144,21 @@ function requestOverTorWithHelper(keyId, uri, torProperties, action) {
 }
 
 function buildRequests(keyId, action, tor) {
-  const torProperties = tor.torProperties();
+
+  let torProperties = tor.getTorNotAvailableProperties();
 
   const uris = EnigmailKeyserverURIs.buildKeyserverUris();
   const requests = [];
 
-  if (tor.isRequired(action) && !torProperties.isAvailable) {
-    EnigmailLog.CONSOLE("Unable to perform action with key " + keyId + " because Tor is required but not available.\n");
-    return [];
-  }
-
   if (tor.isPreferred(action)) {
+    // tor is preferred or required
+    torProperties = tor.torProperties();
+
+    if (tor.isRequired(action) && !torProperties.isAvailable) {
+      EnigmailLog.CONSOLE("Unable to perform action with key " + keyId + " because Tor is required but not available.\n");
+      return [];
+    }
+
     uris.forEach(function(uri) {
       if (torProperties.helper !== null) {
         requests.push(requestOverTorWithHelper(keyId, uri, torProperties.helper, action));
@@ -378,7 +381,7 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
  * @param    String  keyId   - ID of the key to be refreshed
  */
 function refresh(keyId) {
-  EnigmailLog.WRITE("[KEYSERVER]: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString() + "\n");
+  EnigmailLog.DEBUG("keyserver.jsm: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString() + "\n");
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, EnigmailTor, EnigmailHttpProxy);
 

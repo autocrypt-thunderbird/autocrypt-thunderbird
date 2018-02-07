@@ -92,10 +92,12 @@ function isRequired(actionFlags) {
 }
 
 function combineIntoProxyhostURI(protocol, tor) {
+  EnigmailLog.DEBUG("tor.jsm: combineIntoProxyhostURI()\n");
   return protocol + createRandomCredential() + ":" + createRandomCredential() + "@" + tor.ip + ":" + tor.port;
 }
 
 function gpgProxyArgs(tor, versioning) {
+  EnigmailLog.DEBUG("tor.jsm: gpgProxyArgs()\n");
   if (EnigmailOS.isDosLike || !versioning.versionFoundMeetsMinimumVersionRequired("curl", MINIMUM_CURL_SOCKS5H_VERSION)) {
     return combineIntoProxyhostURI(OLD_CURL_PROTOCOL, tor);
   }
@@ -105,6 +107,7 @@ function gpgProxyArgs(tor, versioning) {
 }
 
 function createHelperArgs(helper, addAuth) {
+  EnigmailLog.DEBUG("tor.jsm: createHelperArgs()\n");
   let args = [];
   if (addAuth) {
     args = ["--user", createRandomCredential(), "--pass", createRandomCredential()];
@@ -125,6 +128,7 @@ function createRandomCredential() {
 }
 
 function torOn(portPref) {
+  EnigmailLog.DEBUG("tor.jsm: torOn()\n");
   if (EnigmailSocks5Proxy.checkTorExists(portPref)) {
     const port = EnigmailPrefs.getPref(portPref);
 
@@ -159,6 +163,7 @@ function usesDirmngr() {
 }
 
 function findTorExecutableHelper(versioning) {
+  EnigmailLog.DEBUG("tor.jsm: findTorExecutableHelper()\n");
   const helper = EnigmailFiles.resolvePathWithEnv("torsocks2") || EnigmailFiles.resolvePathWithEnv("torsocks");
   if (helper !== null) {
     const authOverArgs = useAuthOverArgs(helper, versioning);
@@ -179,6 +184,7 @@ function findTorExecutableHelper(versioning) {
  * @return true if Tor is running on either port, false if Tor is not running on either
  */
 function findTor() {
+  EnigmailLog.DEBUG("tor.jsm: findTor()\n");
   const torOnBrowser = torOn(TOR_BROWSER_BUNDLE_PORT_PREF);
   if (torOnBrowser !== null) {
     return torOnBrowser;
@@ -192,6 +198,7 @@ const systemCaller = {
 };
 
 function buildSocksProperties(tor) {
+  EnigmailLog.DEBUG("tor.jsm: buildSocksProperties()\n");
   return {
     command: "gpg",
     args: gpgProxyArgs(tor, EnigmailVersioning),
@@ -200,6 +207,7 @@ function buildSocksProperties(tor) {
 }
 
 function torNotAvailableProperties() {
+  EnigmailLog.DEBUG("tor.jsm: torNotAvailableProperties()\n");
   return {
     isAvailable: false,
     useTorMode: false,
@@ -232,6 +240,8 @@ function torNotAvailableProperties() {
  */
 
 function torProperties(system) {
+  EnigmailLog.DEBUG("tor.jsm: torProperties()\n");
+
   const tor = system.findTor();
 
   if (!meetsOSConstraints()) {
@@ -266,6 +276,7 @@ var EnigmailTor = {
   torProperties: function() {
     return torProperties(systemCaller);
   },
+  getTorNotAvailableProperties: torNotAvailableProperties,
   isPreferred: isPreferred,
   isRequired: isRequired
 };

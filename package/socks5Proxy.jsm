@@ -27,6 +27,7 @@ const CONNECTION_FLAGS = 0;
 const SECONDS_TO_WAIT_FOR_CONNECTION = -1;
 
 function createCheckTorURIChannel() {
+  EnigmailLog.DEBUG("socks5proxy.jsm: createCheckTorURIChannel()\n");
   const ioservice = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
   return ioservice.newChannel2(CHECK_TOR_URI, "UTF-8", null, null, null, null, null, null);
 }
@@ -40,6 +41,7 @@ function createScriptableInputStream(inputStream) {
 }
 
 function buildListener(hasFoundTor, isDoneChecking) {
+  EnigmailLog.DEBUG("socks5proxy.jsm: buildListener()\n");
   const listener = {
     onStartRequest: function(request, context) {},
     onStopRequest: function(request, context, statusCode) {
@@ -59,6 +61,8 @@ function getCurrentThread() {
 }
 
 function filterWith(portPref) {
+  EnigmailLog.DEBUG("socks5proxy.jsm: filterWith()\n");
+
   const port = getEnigmailPrefs().getPref(portPref);
   const failoverProxy = null;
   return {
@@ -77,6 +81,7 @@ function filterWith(portPref) {
  * @return true if a running Tor service has been found, false otherwise
  */
 function checkTorExists(portPref) {
+  EnigmailLog.DEBUG("socks5proxy.jsm: checkTorExists()\n");
   const pps = protocolProxyService().registerFilter(filterWith(portPref), 1);
 
   let doneCheckingTor = false;
@@ -106,6 +111,7 @@ function checkTorExists(portPref) {
 var EnigmailSocks5Proxy = {
   checkTorExists: checkTorExists,
   torIpAddr: function() {
+    EnigmailLog.DEBUG("socks5proxy.jsm: torIpAddr()\n");
     return getEnigmailPrefs().getPref(TOR_IP_ADDR_PREF);
   }
 };
