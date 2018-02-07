@@ -22,14 +22,15 @@ Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverUR
 
 const ONE_HOUR_IN_MILLISEC = 60 * 60 * 1000;
 
-let timer = null;
+let gTimer = null;
 
 function getTimer() {
-  if (timer === null) timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-  return timer;
+  if (gTimer === null) gTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+  return gTimer;
 }
 
 const HOURS_PER_WEEK_ENIGMAIL_IS_ON_PREF = "hoursPerWeekEnigmailIsOn";
+const SECONDS_MIN_DELAY = "refreshMinDelaySeconds";
 
 function calculateMaxTimeForRefreshInMilliseconds(totalPublicKeys) {
   const millisecondsAvailableForRefresh = EnigmailPrefs.getPref(HOURS_PER_WEEK_ENIGMAIL_IS_ON_PREF) * ONE_HOUR_IN_MILLISEC;
@@ -39,12 +40,16 @@ function calculateMaxTimeForRefreshInMilliseconds(totalPublicKeys) {
 function calculateWaitTimeInMilliseconds(totalPublicKeys) {
   const randomNumber = EnigmailRNG.generateRandomUint32();
   const maxTimeForRefresh = calculateMaxTimeForRefreshInMilliseconds(totalPublicKeys);
+  const minDelay = EnigmailPrefs.getPref(SECONDS_MIN_DELAY) * 1000;
 
-  EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: Wait time = random number: " + randomNumber + " % max time for refresh: " + maxTimeForRefresh + "\n");
+  EnigmailLog.DEBUG("keyRefreshService.jsm: Wait time = random number: " + randomNumber + " % max time for refresh: " + maxTimeForRefresh + "\n");
 
-  const millisec = randomNumber % maxTimeForRefresh;
+  let millisec = randomNumber % maxTimeForRefresh;
+  if (millisec < minDelay) {
+    millisec += minDelay;
+  }
 
-  EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: Time until next refresh in milliseconds: " + millisec + "\n");
+  EnigmailLog.DEBUG("keyRefreshService.jsm: Time until next refresh in milliseconds: " + millisec + "\n");
 
   return millisec;
 }
@@ -68,10 +73,10 @@ function setupNextRefresh(timer, waitTime) {
 
 function logMissingInformation(keyIdsExist, validKeyserversExist) {
   if (!keyIdsExist) {
-    EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: No keys available to refresh yet. Will recheck in an hour.\n");
+    EnigmailLog.DEBUG("keyRefreshService.jsm: No keys available to refresh yet. Will recheck in an hour.\n");
   }
   if (!validKeyserversExist) {
-    EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: Either no keyservers exist or the protocols specified are invalid. Will recheck in an hour.\n");
+    EnigmailLog.DEBUG("keyRefreshService.jsm: Either no keyservers exist or the protocols specified are invalid. Will recheck in an hour.\n");
   }
 }
 
@@ -87,7 +92,7 @@ function getRandomKeyId(randomNumber) {
 
 function refreshKeyIfReady(keyserver, readyToRefresh, keyId) {
   if (readyToRefresh) {
-    EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: refreshing key ID " + keyId + "\n");
+    EnigmailLog.DEBUG("keyRefreshService.jsm: refreshing key ID " + keyId + "\n");
     keyserver.refresh(keyId);
   }
 }
@@ -123,7 +128,7 @@ function refreshWith(keyserver, timer, readyToRefresh) {
  */
 function start(keyserver) {
   if (EnigmailPrefs.getPref("keyRefreshOn")) {
-    EnigmailLog.DEBUG("[KEY REFRESH SERVICE]: Started\n");
+    EnigmailLog.DEBUG("keyRefreshService.jsm: Started\n");
     const timer = getTimer();
     refreshWith(keyserver, timer, false);
   }

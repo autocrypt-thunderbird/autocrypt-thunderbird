@@ -231,8 +231,13 @@ pref("extensions.enigmail.refreshAllKeysRequireTor", false);
 // will happen to accommodate.
 pref("extensions.enigmail.hoursPerWeekEnigmailIsOn", 40);
 
+// The minimum number of seconds to wait between refreshing keys.
+// Applied if the refresh frequence from hoursPerWeekEnigmailIsOn
+// goes too low
+pref("extensions.enigmail.refreshMinDelaySeconds", 300);
+
 // Toggle to have user keys continuously refreshed
-pref("extensions.enigmail.keyRefreshOn", false);
+pref("extensions.enigmail.keyRefreshOn", true);
 
 // enable experimental features.
 // WARNING: such features may unfinished functions or tests that can break
