@@ -498,7 +498,7 @@ Enigmail.msg = {
 
     for (let i in mimeMsg.subParts) {
       if (getEncryptedSubPart(mimeMsg.subParts[i])) {
-        this.displayPartialEncryptedWarning();
+        this.displayPartialEncryptedWarning("mime");
         return;
       }
     }
@@ -4987,7 +4987,7 @@ Enigmail.msg = {
         }
       }
       if (hLines > 0 || tail.search(/[^\s>]/) >= 0) {
-        this.displayPartialEncryptedWarning();
+        this.displayPartialEncryptedWarning("inline");
       }
     }
 
@@ -5137,10 +5137,17 @@ Enigmail.msg = {
   /**
    * Display a warning message if we are replying to or forwarding
    * a partially decrypted email
+   *
+   * @param msgType: String - "mime" for PGP/MIME messages, "inline" for inline-PGP
    */
-  displayPartialEncryptedWarning: function() {
+  displayPartialEncryptedWarning: function(msgType) {
+    let msgLong = EnigmailLocale.getString("msgCompose.partiallyEncrypted.inlinePGP");
 
-    this.notifyUser(1, EnigmailLocale.getString("msgCompose.partiallyEncrypted.short"), "notifyPartialDecrypt", EnigmailLocale.getString("msgCompose.partiallyEncrypted.long"));
+    if (msgType === "mime") {
+      msgLong = EnigmailLocale.getString("msgCompose.partiallyEncrypted.mimeMsg");
+    }
+
+    this.notifyUser(1, EnigmailLocale.getString("msgCompose.partiallyEncrypted.short"), "notifyPartialDecrypt", msgLong);
   },
 
   editorSelectAll: function() {
