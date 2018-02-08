@@ -25,7 +25,6 @@ Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
 Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
 Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
@@ -205,7 +204,11 @@ function execute(request, listener, subproc) {
       done: function(result) {
         try {
           if (result.exitCode === 0 && request.isDownload) {
-            EnigmailKeyRing.updateKeys([request.keyId]);
+            if (typeof(request.keyId) === "string") {
+              EnigmailKeyRing.updateKeys([request.keyId]);
+            }
+            else
+              EnigmailKeyRing.updateKeys(request.keyId);
           }
           if (exitCode === null) {
             exitCode = result.exitCode;
@@ -213,7 +216,7 @@ function execute(request, listener, subproc) {
           listener.done(exitCode);
         }
         catch (ex) {
-          EnigmailLog.ERROR("keyserver.jsm: execute: subprocess.call failed at finish with '" + ex.toString() + "'\n");
+          EnigmailLog.ERROR("keyserver.jsm: execute: subprocess.call failed at finish with '" + ex.message + "'\n");
         }
       },
       stdout: function(data) {
@@ -229,7 +232,7 @@ function execute(request, listener, subproc) {
     });
   }
   catch (ex) {
-    EnigmailLog.ERROR("keyserver.jsm: execute: subprocess.call failed with '" + ex.toString() + "'\n");
+    EnigmailLog.ERROR("keyserver.jsm: execute: subprocess.call failed with '" + ex.message + "'\n");
     throw ex;
   }
 
@@ -295,7 +298,8 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  * @return:      Subprocess object, or null in case process could not be started
  */
 function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
-  if (keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY) &&
+    keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
     // special API for mailvelope.com
     return accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
   }
@@ -487,13 +491,18 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
     else {
       let inputObj = {};
       let resultObj = {};
-      if (access != EnigmailConstants.REFRESH_KEY) {
-        inputObj.upload = true;
-        inputObj.keyId = keyList;
-      }
-      else {
-        inputObj.upload = false;
-        inputObj.keyId = "";
+      switch (access) {
+        case EnigmailConstants.REFRESH_KEY:
+          inputObj.upload = false;
+          inputObj.keyId = "";
+          break;
+        case EnigmailConstants.DOWNLOAD_KEY:
+          inputObj.upload = false;
+          inputObj.keyId = keyList;
+          break;
+        default:
+          inputObj.upload = true;
+          inputObj.keyId = "";
       }
 
       win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
