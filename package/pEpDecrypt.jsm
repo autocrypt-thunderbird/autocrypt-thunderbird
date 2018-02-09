@@ -34,6 +34,7 @@ var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIS
 
 var gLastMessageData = "";
 var gLastMessage = null;
+var gLastStatus = {};
 
 var EnigmailPEPDecrypt = {
   /**
@@ -108,8 +109,6 @@ var EnigmailPEPDecrypt = {
     else {
       return decryptInlinePgp(pgpData, from, to, cc, replyTo);
     }
-
-
   },
 
   getEmailsFromMessage: function(url) {
@@ -197,6 +196,11 @@ PEPDecryptor.prototype = {
       this.ignoreMessage = (this.uri.spec.search(/[&?]header=enigmailFilter/) >= 0);
     }
 
+    if (!this.isReloadingLastMessage()) {
+      gLastMessageData = "";
+      gLastMessage = null;
+    }
+
     if ("mimePart" in this.mimeSvc) {
       this.mimePartNumber = this.mimeSvc.mimePart;
     }
@@ -220,15 +224,21 @@ PEPDecryptor.prototype = {
       return;
     }
 
-    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
-    if (gLastMessage) {
-      if (gLastMessage.folder === currMsg.folder &&
-        gLastMessage.msgNum === currMsg.msgNum) {
-        EnigmailLog.DEBUG("pEpDecrypt.jsm: onStopRequest: returning same data as before\n");
-        this.decryptedData = gLastMessageData;
-        this.returnData();
-        return;
+    if (this.isReloadingLastMessage()) {
+      EnigmailLog.DEBUG("pEpDecrypt.jsm: onStopRequest: returning same data as before\n");
+
+      this.decryptedData = gLastMessageData;
+      this.returnData();
+
+      if (!this.backgroundJob) {
+        // only display the decrption/verification status if not background-Job
+        this.decryptedHeaders = gLastStatus.decryptedHeaders;
+        this.mimePartNumber = gLastStatus.mimePartNumber;
+
+        this.displayStatus(gLastStatus.rating, gLastStatus.fpr, gLastStatus.dec.persons);
       }
+
+      return;
     }
 
     let wrapper = EnigmailMime.createBoundary();
@@ -281,10 +291,17 @@ PEPDecryptor.prototype = {
       if (!this.backgroundJob) {
         // only display the decrption/verification status if not background-Job
         this.displayStatus(rating, fpr, dec.persons);
+        gLastStatus = {
+          rating: rating,
+          fpr: fpr,
+          dec: dec,
+          decryptedHeaders: this.decryptedHeaders,
+          mimePartNumber: this.mimePartNumber
+        };
       }
     }
 
-    gLastMessage = currMsg;
+    gLastMessage = EnigmailURIs.msgIdentificationFromUrl(this.uri);
     gLastMessageData = this.decryptedData;
     this.returnData();
   },
@@ -328,6 +345,24 @@ PEPDecryptor.prototype = {
       EnigmailLog.writeException("pEpDecrypt.jsm", ex);
     }
     EnigmailLog.DEBUG("pEpDecrypt.jsm: displayStatus done\n");
+  },
+
+  /**
+   * Determine if we are reloading the same message as the previous one
+   *
+   * @return Boolean
+   */
+  isReloadingLastMessage: function() {
+    if (!this.uri) return false;
+    if (!gLastMessage) return false;
+
+    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
+
+    if (gLastMessage.folder === currMsg.folder && gLastMessage.msgNum === currMsg.msgNum) {
+      return true;
+    }
+
+    return false;
   },
 
   /**

@@ -43,6 +43,7 @@ var gDebugLogLevel = 0;
 var gNumProc = 0;
 var gLastMessageData = "";
 var gLastMessage = null;
+var gLastStatus = {};
 
 ////////////////////////////////////////////////////////////////////
 // handler for PGP/MIME encrypted messages
@@ -125,6 +126,11 @@ EnigmailMimeDecrypt.prototype = {
     if (uri) {
       this.uri = uri.QueryInterface(Ci.nsIURI).clone();
       EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
+    }
+
+    if (!this.isReloadingLastMessage()) {
+      gLastMessageData = "";
+      gLastMessage = null;
     }
   },
 
@@ -246,24 +252,21 @@ EnigmailMimeDecrypt.prototype = {
   },
 
   /**
-   * if the request is for the same message as the previous one, then
-   * return the data of the last message. Otherwise do nothing
+   * Determine if we are reloading the same message as the previous one
    *
-   * @return: Object if message to be displayed, null otherwise
+   * @return Boolean
    */
-  returnLastMessage: function() {
+  isReloadingLastMessage: function() {
+    if (!this.uri) return false;
+    if (!gLastMessage) return false;
+
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
-    if (!gLastMessage) return currMsg;
-
-    if (gLastMessage.folder === currMsg.folder &&
-      gLastMessage.msgNum === currMsg.msgNum) {
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: returnLastMessage: returning same data as before\n");
-      this.returnData(gLastMessageData);
-      return null;
+    if (gLastMessage.folder === currMsg.folder && gLastMessage.msgNum === currMsg.msgNum) {
+      return true;
     }
 
-    return currMsg;
+    return false;
   },
 
   onStopRequest: function(request, win, status) {
@@ -279,7 +282,7 @@ EnigmailMimeDecrypt.prototype = {
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     let url = {};
-    let currMsg = null;
+    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
     this.backgroundJob = false;
 
@@ -358,69 +361,78 @@ EnigmailMimeDecrypt.prototype = {
         EnigmailLog.writeException("mimeDecrypt.js", ex);
         EnigmailLog.DEBUG("mimeDecrypt.jsm: error while processing " + this.msgUriSpec + "\n");
       }
-
-      currMsg = this.returnLastMessage();
-      if (!currMsg) return;
     }
 
+    if (!this.isReloadingLastMessage()) {
+      if (this.xferEncoding == ENCODING_BASE64) {
+        this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
+      }
 
-    if (this.xferEncoding == ENCODING_BASE64) {
-      this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
-    }
+      var statusFlagsObj = {};
+      var errorMsgObj = {};
+      var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
+      win = windowManager.getMostRecentWindow(null);
 
-    var statusFlagsObj = {};
-    var errorMsgObj = {};
-    var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-    win = windowManager.getMostRecentWindow(null);
+      var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
+      // to avoid DoS attack
+      this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
+        statusFlagsObj, errorMsgObj, null, maxOutput);
 
-    var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
-    // to avoid DoS attack
-    this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
-      statusFlagsObj, errorMsgObj, null, maxOutput);
+      if (!this.proc) return;
 
-    if (!this.proc) return;
+      if (this.bytesWritten === 0 && this.outQueue.length === 0) {
+        // write something to gpg such that the process doesn't get stuck
+        this.outQueue = "NO DATA\n";
+      }
 
-    if (this.bytesWritten === 0 && this.outQueue.length === 0) {
-      // write something to gpg such that the process doesn't get stuck
-      this.outQueue = "NO DATA\n";
-    }
+      if (this.pipe) {
+        this.pipe.write(this.outQueue);
+        this.bytesWritten += this.outQueue.length;
+        this.outQueue = "";
+        this.pipe.close();
+      }
+      else {
+        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: pipe not yet ready\n");
+        this.closePipe = true;
+      }
 
-    if (this.pipe) {
-      this.pipe.write(this.outQueue);
-      this.bytesWritten += this.outQueue.length;
-      this.outQueue = "";
-      this.pipe.close();
+      // wait here for this.proc to terminate
+      this.proc.wait();
+
+      this.returnStatus = {};
+      EnigmailDecryption.decryptMessageEnd(this.statusStr,
+        this.exitCode,
+        this.dataLength,
+        false,
+        false,
+        EnigmailConstants.UI_PGP_MIME,
+        this.returnStatus);
+
+      this.displayStatus();
+
+      // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
+      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
+      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+
+      this.returnData(this.decryptedData);
+      gLastMessageData = this.decryptedData;
+      gLastMessage = currMsg;
+      gLastStatus = this.returnStatus;
+      gLastStatus.decryptedHeaders = this.decryptedHeaders;
+      gLastStatus.mimePartNumber = this.mimePartNumber;
+      this.decryptedData = "";
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
+      this.proc = null;
     }
     else {
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: pipe not yet ready\n");
-      this.closePipe = true;
+      this.returnStatus = gLastStatus;
+      this.decryptedHeaders = gLastStatus.decryptedHeaders;
+      this.mimePartNumber = gLastStatus.mimePartNumber;
+      this.exitCode = 0;
+      this.displayStatus();
+      this.returnData(gLastMessageData);
     }
 
-    // wait here for this.proc to terminate
-    this.proc.wait();
-
-    this.returnStatus = {};
-    EnigmailDecryption.decryptMessageEnd(this.statusStr,
-      this.exitCode,
-      this.dataLength,
-      false,
-      false,
-      EnigmailConstants.UI_PGP_MIME,
-      this.returnStatus);
-
-    this.displayStatus();
-
-    // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
-    this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
-    this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
-
-    this.returnData(this.decryptedData);
-    gLastMessageData = this.decryptedData;
-    gLastMessage = currMsg;
-    this.decryptedData = "";
-
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
-    this.proc = null;
   },
 
   displayStatus: function() {
