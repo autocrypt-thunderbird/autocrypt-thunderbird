@@ -60,6 +60,8 @@ tbLabels = [
              "sendMessageCheckLabel",
              "sendMessageCheckSendButtonLabel",
              "CheckMsg",
+             "FNC_enigmailVersion",
+             "FNC_isGpgWorking",
            ]
 
 
@@ -239,6 +241,46 @@ def checkJS (filename):
       #print "  " + label
       checkProperty(label,filename)
 
+def checkHTML (filename):
+  # print "----------------------------------------"
+  print(" checkHTML() " + filename)
+
+  global allLines
+  allLines += open(filename, 'r').read()
+
+  inComment = False
+  for line in open(filename, 'r'):
+    # process comments
+    # - can't deal with multiple comments in one line
+    if inComment:
+      commentEnd = line.find("-->")
+      if (commentEnd >= 0):
+        # end of multiline comment:
+        line = line[commentEnd+3:]
+        #print line
+        inComment = False
+      else:
+        # stay inside multiline comment:
+        #print "ignore: ", line
+        continue
+    commentBeg = line.find("<!--")
+    if commentBeg >= 0:
+      #print line
+      commentEnd = line.find("-->",commentBeg)
+      if (commentEnd >= 0):
+        # comment in one line:
+        line = line[0:commentBeg] + line[commentEnd+3:]
+        #print line
+      else:
+        # begin of multiline comment:
+        line = line[0:commentBeg]
+        inComment = True
+
+    # extract and check labels:
+    matches = re.findall('txtId *= *"([^;"]*)"', line)
+    for label in matches:
+      #print "  " + label
+      checkProperty(label,filename)
 
 def checkAllXULFiles():
   # check XUL files:
@@ -261,6 +303,15 @@ def checkAllJSFiles():
           filename = os.path.join(path,name)
           checkJS(filename)
 
+def checkAllHtmlFiles():
+  # check HTML files:
+  path = os.path.join(root,"ui","content")
+  for path, dirs, files in os.walk(path):
+    for name in files:
+      #if name.endswith(".html"):
+      if name.endswith(".html"):
+        filename = os.path.join(path,name)
+        checkHTML(filename)
 
 def processLabelResults():
   # Labels:
@@ -436,6 +487,8 @@ print("")
 checkAllXULFiles()
 print("")
 checkAllJSFiles()
+print("")
+checkAllHtmlFiles()
 print("")
 processLabelResults()
 print("")
