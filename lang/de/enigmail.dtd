@@ -44,9 +44,9 @@
 <!ENTITY enigmail.mime_parts_on_demand.label  "Anhänge nur herunterladen, wenn diese geöffnet werden sollen (nur bei IMAP)">
 
 
-<!ENTITY enigmail.maxIdleMinutesHead.label "Passphrase nach">
-<!ENTITY enigmail.maxIdleMinutesTail.label "Minuten Inaktivität vergessen.">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "Während dieser Zeit wird OpenPGP Sie nicht mehr nach der Passphrase fragen.">
+<!ENTITY enigmail.maxIdleMinutesHead.label "Passphrase bei Inaktivität">
+<!ENTITY enigmail.maxIdleMinutesTail.label "Minuten lang merken (vor erneuter Eingabeaufforderung).">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Während dieser Zeit wird Enigmail Sie nicht mehr nach der Passphrase fragen.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Zurücksetzen">
 <!ENTITY enigmail.resetPrefs.tooltip     "Alle Enigmail-Einstellungen werden auf die Standardwerte zurückgesetzt.">

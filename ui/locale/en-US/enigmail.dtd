@@ -60,8 +60,8 @@
 <!ENTITY enigmail.mime_parts_on_demand.label  "Only download attachments when opened (IMAP only)">
 
 
-<!ENTITY enigmail.maxIdleMinutesHead.label "Forget passphrase after">
-<!ENTITY enigmail.maxIdleMinutesTail.label "minutes of idle time">
+<!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
+<!ENTITY enigmail.maxIdleMinutesTail.label "minutes of inactivity (before needing to re-enter it)">
 <!ENTITY enigmail.maxIdleMinutes.tooltip   "Cache passphrase in memory for a limited time.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
