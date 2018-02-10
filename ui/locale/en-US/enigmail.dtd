@@ -22,7 +22,6 @@
 <!ENTITY enigmail.keyGen.keySize.label    "Key size">
 <!ENTITY enigmail.keyGen.console.label    "Key Generation">
 <!ENTITY enigmail.keyGen.keyType.label    "Key type">
-<!ENTITY enigmail.keyGen.keyType.dsa      "DSA &amp; El Gamal">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
 
@@ -148,7 +147,6 @@
 
 <!ENTITY enigmail.generateKey.label        "Generate key">
 <!ENTITY enigmail.help.label               "Help">
-<!ENTITY enigmail.about.title              "About Enigmail">
 <!ENTITY enigmail.about.label              "About Enigmail">
 <!ENTITY enigmail.reload.label             "Reload Message">
 <!ENTITY enigmail.browse.label             "Browse...">
@@ -177,7 +175,6 @@
 <!ENTITY enigmail.about.accesskey           "b">
 <!ENTITY enigmail.sendersKeyMenu.accesskey  "K">
 
-<!ENTITY enigmail.composetoolbar.label        "Enigmail Toolbar">
 <!ENTITY enigmail.composetoolbar.desc         "Enigmail Encryption Info">
 
 <!ENTITY enigmail.signedsend.label            "Sign Message">
@@ -541,7 +538,6 @@
 <!ENTITY enigmail.keyMan.keyType.label             "Type">
 <!ENTITY enigmail.keyMan.calcTrust.label           "Key Validity">
 <!ENTITY enigmail.keyMan.ownerTrust.label          "Owner Trust">
-<!ENTITY enigmail.keyMan.stopTransfer.label        "Stop transfer">
 <!ENTITY enigmail.keyMan.fingerprint.label         "Fingerprint">
 <!ENTITY enigmail.keyMan.pEpBlacklisted.label      "Blacklist">
 <!ENTITY enigmail.keyMan.selectAll.label           "Select all Keys">
@@ -597,7 +593,6 @@
 <!ENTITY enigmail.manageUidDlg.affectedKey.label     "Key to change:">
 <!ENTITY enigmail.manageUidDlg.availableUid.label    "Available user IDs:">
 <!ENTITY enigmail.manageUidDlg.addUid.label          "Add">
-<!ENTITY enigmail.manageUidDlg.deleteUid.label       "Delete">
 <!ENTITY enigmail.manageUidDlg.revokeUid.label       "Revoke">
 <!ENTITY enigmail.manageUidDlg.setPrimary.label      "Set primary">
 
@@ -772,8 +767,6 @@
 <!ENTITY enigmail.setupWiz.pgRevocert.button         "Create Revocation Certificate">
 
 <!-- wizard: key creation - key upload step -->
-<!ENTITY enigmail.setupWiz.pgAdvanced.title          "Additional Settings">
-<!ENTITY enigmail.setupWiz.pgAdvanced.subtitle       "Additional settings for your profile">
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
@@ -790,10 +783,6 @@
 <!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
 <!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importing keys and applying settings">
 <!ENTITY enigmail.setupWiz.pgImportSettings.error    "An error occurred during importing. Your settings could not be applied.">
-
-<!-- wizard: adjust settings page -->
-<!ENTITY enigmail.setupWiz.pgAdjustPref.title        "Adjust Preferences">
-<!ENTITY enigmail.setupWiz.pgAdjustPref.subtitle     "">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
@@ -887,8 +876,6 @@
 <!ENTITY enigmail.pepPref.credits.label              "Credits">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Thanks to">
 
-<!ENTITY enigmail.locateKeys.locating                "Locating Keys...">
-
 <!ENTITY enigmail.acPreferEncrypt.label              "Prefer encrypted emails from the people you mail with">
 <!ENTITY enigmail.enableAutocrypt.label              "Enable Autocrypt">
 
@@ -896,7 +883,6 @@
 <!ENTITY enigmail.acSetupPasswd.password             "Setup Code:">
 
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
-<!ENTITY enigmail.acKeyTransfer.welcome.start        "Create Setup Message">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "Initiate Key Transfer">
 <!ENTITY enigmail.acKeyTransfer.welcome.desc         "If you have another device that is Autocrypt-enabled, you can transfer your key to the other device via a so-called 'Autocrypt Setup Message'.
                                                       Such a message will allow your other device to send and receive encrypted emails just like Enigmail with just a few clicks.<html:br/><html:br/>
