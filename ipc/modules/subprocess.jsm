@@ -126,6 +126,7 @@ const DEFAULT_ENVIRONMENT = [];
 
 var gDebugFunction = null;
 var gErrorFunction = null;
+var gRunningProcesses = []; // Array with all running subprocesses
 
 function write(pipe, data) {
   let buffer = new Uint8Array(Array.from(data, c => c.charCodeAt(0)));
@@ -170,6 +171,14 @@ var readAllData = Task.async(function*(pipe, read, callback) {
 });
 
 
+function removeProcRef(proc) {
+  if (proc) {
+    let i = gRunningProcesses.indexOf(proc);
+    if (i >= 0) {
+      gRunningProcesses.splice(i, 1);
+    }
+  }
+}
 
 var subprocess = {
   registerLogHandler: function(func) {
@@ -198,6 +207,7 @@ var subprocess = {
     }
 
     function subProcessThen(proc) {
+      gRunningProcesses.push(proc);
 
       if (typeof options.stdin === "function") {
         // Some callers (e.g. child_process.js) depend on this
@@ -263,6 +273,10 @@ var subprocess = {
         .then(() => proc.wait())
         .then(result => {
           DEBUG_LOG("Complete: " + result.exitCode + "\n");
+          removeProcRef(proc);
+          if (gRunningProcesses.indexOf(proc) >= 0) {
+
+          }
           if (result.exitCode === null) result.exitCode = -1;
           resolved = result.exitCode;
           if (typeof options.done === "function") {
@@ -350,9 +364,26 @@ var subprocess = {
       kill: function(hard = false) {
         subproc.then(proc => {
           proc.kill(hard ? 0 : undefined);
+          removeProcRef();
         });
       }
     };
+  },
+
+
+  /**
+   * on shutdown kill all still running child processes
+   */
+  onShutdown: function() {
+    // create a copy of the array because gRunningProcesses will
+    // get altered during kill()
+    let procs = gRunningProcesses.map(x => x);
+
+    for (let i = 0; i < procs.length; i++) {
+      if (procs[i] && ("kill" in procs[i])) {
+        procs[i].kill(true);
+      }
+    }
   }
 };
 

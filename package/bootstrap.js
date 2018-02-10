@@ -36,6 +36,12 @@ function startup(data, reason) {
 }
 
 function shutdown(data, reason) {
+
+  const {
+    subprocess
+  } = Cu.import("resource://enigmail/subprocess.jsm", {});
+  subprocess.onShutdown();
+
   if (reason === APP_SHUTDOWN) return;
 
   const {
