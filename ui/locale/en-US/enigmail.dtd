@@ -133,7 +133,7 @@
 <!ENTITY enigmail.editRules.label        "Edit Per-Recipient Rules">
 
 <!ENTITY enigmail.decryptToFolder.label     "Decrypt to folder">
-<!ENTITY enigmail.decryptToFolder.accesskey "D">
+<!ENTITY enigmail.decryptToFolder.accesskey "y">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Recent">
