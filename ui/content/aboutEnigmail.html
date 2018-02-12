@@ -7,9 +7,6 @@
 <html>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="chrome://enigmail/skin/enigmail-html.css">
-  <head>
-    <title>About Enigmail</title>
-  </head>
 
   <script>
 Components.utils.import("resource://enigmail/localizeHtml.jsm");
@@ -32,6 +29,10 @@ function onload() {
   EnigmailLocalizeHtml.onPageLoad(document);
 }
   </script>
+
+  <head>
+    <title txtId="aboutEnigmail.tabName"></title>
+  </head>
 
   <body onload="onload()">
     <header class="header">
