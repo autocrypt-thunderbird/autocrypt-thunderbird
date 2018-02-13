@@ -178,6 +178,7 @@ function prefOnLoad() {
     //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
   }
 
+  document.getElementById("enigmail_protectHeaders").checked = (EnigGetPref("protectedHeaders") === 2);
   document.getElementById("enigmail_protectedSubjectText").setAttribute("placeholder", EnigGetString("msgCompose.encryptedSubjectStub"));
 
   // init "saved manual preferences" with current settings:
@@ -449,6 +450,16 @@ function prefOnAccept() {
     // only change setting in gpg-agent if value has actually changed
     // because gpg-agent deletes cache upon changing timeout settings
     EnigmailGpgAgent.setMaxIdlePref(maxIdle);
+  }
+
+  let protectionUndecided = (EnigGetPref("protectedHeaders") === 1);
+  let chk = document.getElementById("enigmail_protectHeaders").checked;
+
+  if (protectionUndecided && chk) {
+    EnigSetPref("protectedHeaders", 2);
+  }
+  else if (!protectionUndecided) {
+    EnigSetPref("protectedHeaders", chk ? 2 : 0);
   }
 
   EnigSavePrefs();
