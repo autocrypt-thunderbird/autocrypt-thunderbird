@@ -114,6 +114,8 @@ var EnigmailURIs = {
     // mailbox:///...?number=4455522&part=1.1.2&filename=test.eml&type=application/x-message-display&filename=test.eml
     // imap://user@host:port>UID>some>path>10?header=filter&emitter=js&examineEncryptedParts=true
 
+    if (!url) return null;
+
     EnigmailLog.DEBUG("uris.jsm: msgIdentificationFromUrl: url.pathQueryRef=" + ("path" in url ? url.path : url.pathQueryRef) + "\n");
 
     let msgNum = "";
