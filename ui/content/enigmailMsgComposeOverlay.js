@@ -4519,7 +4519,7 @@ Enigmail.msg = {
       key = EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"));
     }
     else {
-      key = EnigmailKeyRing.getSecretKeyByUserId(this.identity.email);
+      key = EnigmailKeyRing.getSecretKeyByEmail(this.identity.email);
     }
 
     if (key) {

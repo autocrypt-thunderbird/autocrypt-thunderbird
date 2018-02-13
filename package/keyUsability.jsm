@@ -45,27 +45,24 @@ var EnigmailKeyUsability = {
     if (!enigmailSvc) return [];
 
     let result = keySpecArr.reduce(function(p, keySpec) {
-      let keys;
+      let key;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
         let key = getKeyRing().getKeyById(keySpec);
         if (!key) return p;
-        keys = [key];
       }
       else {
-        keys = getKeyRing().getKeysByUserId(keySpec);
-        if (keys.length === 0) return p;
+        key = getKeyRing().getSecretKeyByEmail(keySpec);
+        if (!key) return p;
       }
 
       let maxExpiry = Number.MIN_VALUE;
       let maxKey = null;
 
-      for (let i in keys) {
-        let ex = keys[i].getKeyExpiry();
-        if (ex > maxExpiry) {
-          maxExpiry = ex;
-          maxKey = keys[i];
-        }
+      let ex = key.getKeyExpiry();
+      if (ex > maxExpiry) {
+        maxExpiry = ex;
+        maxKey = key;
       }
 
       if (maxExpiry < now + (DAY * numDays) && maxExpiry >= now) p.push(maxKey);
@@ -203,22 +200,19 @@ var EnigmailKeyUsability = {
     if (!enigmailSvc) return [];
 
     let result = keySpecArr.reduce(function(p, keySpec) {
-      let keys;
+      let key;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = getKeyRing().getKeyById(keySpec);
+        key = getKeyRing().getKeyById(keySpec);
         if (!key) return p;
-        keys = [key];
       }
       else {
-        keys = getKeyRing().getKeysByUserId(keySpec);
-        if (keys.length === 0) return p;
+        key = getKeyRing().getSecretKeyByEmail(keySpec);
+        if (!key) return p;
       }
 
-      for (let i in keys) {
-        let ot = keys[i].ownerTrust;
-        if (ot !== "u") p.push(keys[i]);
-      }
+      let ot = key.ownerTrust;
+      if (ot !== "u") p.push(key);
 
       return p;
     }, []);

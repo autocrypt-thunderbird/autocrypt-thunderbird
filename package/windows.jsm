@@ -475,6 +475,10 @@ var EnigmailWindows = {
   openKeyDetails: function(win, keyId, refresh) {
     const keyListObj = {};
 
+    if (!win) {
+      win = this.getBestParentWin();
+    }
+
     keyId = keyId.replace(/^0x/, "");
 
     if (refresh) {

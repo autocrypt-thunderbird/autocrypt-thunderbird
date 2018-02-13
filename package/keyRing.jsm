@@ -295,6 +295,21 @@ var EnigmailKeyRing = {
   },
 
   /**
+   * Specialized function for getSecretKeyByUserId() that takes into account
+   * the specifics of email addresses in UIDs.
+   *
+   * @param emailAddr: String - email address to search for without any angulars
+   *                            or names
+   *
+   * @return KeyObject with the found key, or null if no key found
+   */
+  getSecretKeyByEmail: function(emailAddr) {
+    let searchTerm = "(<" + emailAddr + ">| " + emailAddr + "$|^" + emailAddr + "$)";
+
+    return this.getSecretKeyByUserId(searchTerm);
+  },
+
+  /**
    * get the "best" possible secret key for a given user ID
    *
    * @param searchTerm   - String: a regular expression to match against all UIDs of the keys.
