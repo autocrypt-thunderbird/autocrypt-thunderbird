@@ -112,9 +112,7 @@
             <!-- Autocrypt tab -->
             <vbox flex="1" align="start">
               <description onclick="Enigmail.edit.handleClick(event)">
-                <enigmailLink href="https://autocrypt.org">Autocrypt</enigmailLink> is a standard that defines
-                how to achieve convenient end-to-end-encryption of e-mails.
-                It specifies how e-mail programs negotiate encryption capabilities using regular e-mails.
+                &enigmail.amPrefAutocrypt.description;
               </description>
 
               <checkbox id="enigmail_enableAutocrypt"

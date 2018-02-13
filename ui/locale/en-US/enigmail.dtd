@@ -373,6 +373,7 @@
 <!ENTITY enigmail.amPrefMimePreferProto.label       "If both, Enigmail and S/MIME encryption are possible, then:">
 <!ENTITY enigmail.amPrefMimePreferEnigmail.label    "Prefer Enigmail (OpenPGP)">
 <!ENTITY enigmail.amPrefMimePreferSMime.label       "Prefer S/MIME">
+<!ENTITY enigmail.amPrefAutocrypt.description       "<enigmailLink href='https://autocrypt.org'>Autocrypt</enigmailLink> is a standard that defines how to achieve convenient end-to-end-encryption of e-mails. It specifies how e-mail programs negotiate encryption capabilities using regular e-mails.">
 
 <!ENTITY enigmail.progressText.label               "Progress:">
 
