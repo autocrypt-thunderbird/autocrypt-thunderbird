@@ -2569,6 +2569,13 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getSenderUserId: type of userIdValue=" + typeof(userIdValue) + "\n");
       userIdValue = this.identity.email;
     }
+
+    if (this.identity.getIntAttribute("pgpKeyMode") === 0) {
+      let key = EnigmailKeyRing.getSecretKeyByEmail(userIdValue);
+      if (key) {
+        userIdValue = "0x" + key.fpr;
+      }
+    }
     return userIdValue;
   },
 

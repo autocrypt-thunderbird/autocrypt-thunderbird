@@ -304,6 +304,9 @@ var EnigmailKeyRing = {
    * @return KeyObject with the found key, or null if no key found
    */
   getSecretKeyByEmail: function(emailAddr) {
+    // sanitize email address
+    emailAddr = emailAddr.replace(/([\.\[\]\-\\])/g, "\\$1");
+
     let searchTerm = "(<" + emailAddr + ">| " + emailAddr + "$|^" + emailAddr + "$)";
 
     return this.getSecretKeyByUserId(searchTerm);
