@@ -408,6 +408,10 @@ EnigmailMimeDecrypt.prototype = {
         EnigmailConstants.UI_PGP_MIME,
         this.returnStatus);
 
+      if (this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
+        this.decryptedData = "";
+      }
+
       this.displayStatus();
 
       // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment

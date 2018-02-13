@@ -552,6 +552,12 @@ var EnigmailDecryption = {
     statusFlagsObj.value = retStatusObj.statusFlags;
     errorMsgObj.value = retStatusObj.errorMsg;
 
+    // do not return anything if gpg signales DECRYPTION_FAILED
+    // (which could be possible in case of MDC errors)
+    if (retStatusObj.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
+      plainText = "";
+    }
+
     userIdObj.value = retStatusObj.userId;
     keyIdObj.value = retStatusObj.keyId;
     sigDetailsObj.value = retStatusObj.sigDetails;
