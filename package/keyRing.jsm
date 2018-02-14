@@ -1882,7 +1882,7 @@ function runKeyUsabilityCheck() {
       }
     }
     catch (ex) {
-      EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.toString() + "\n");
+      EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.message + "\n" + ex.stack + "\n");
     }
 
   }, 60 * 1000); // 1 minute

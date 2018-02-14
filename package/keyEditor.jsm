@@ -301,6 +301,23 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
   return null;
 }
 
+function runKeyTrustCheck(callbackFunc) {
+  EnigmailLog.DEBUG("keyEdit.jsm: runKeyTrustCheck()\n");
+
+  let args = EnigmailGpg.getStandardArgs(true);
+  args = args.concat(["--yes", "--check-trustdb"]);
+
+  EnigmailExecution.execCmd2(EnigmailGpgAgent.agentPath,
+    args,
+    null,
+    function stdout(data) {
+      EnigmailLog.DEBUG(data);
+    },
+    function(result) {
+      EnigmailLog.DEBUG("keyEdit.jsm: runKeyTrustCheck: done\n");
+    });
+}
+
 /*
  * NOTE: the callbackFunc used in every call to the key editor needs to be implemented like this:
  * callbackFunc(returnCode, errorMsg)
@@ -316,7 +333,11 @@ var EnigmailKeyEditor = {
       },
       keyTrustCallback,
       null,
-      callbackFunc);
+      function _f(returnCode, errorMsg) {
+        runKeyTrustCheck();
+        EnigmailKeyRing.updateKeys([keyId]);
+        callbackFunc(returnCode, errorMsg);
+      });
   },
 
 
