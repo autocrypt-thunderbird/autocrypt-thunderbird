@@ -48,13 +48,12 @@ var EnigmailKeyUsability = {
       let key;
 
       if (keySpec.search(/^(0x)?[0-9A-F]{8,40}$/i) === 0) {
-        let key = getKeyRing().getKeyById(keySpec);
-        if (!key) return p;
+        key = getKeyRing().getKeyById(keySpec);
       }
       else {
         key = getKeyRing().getSecretKeyByEmail(keySpec);
-        if (!key) return p;
       }
+      if (!key) return p;
 
       let maxExpiry = Number.MIN_VALUE;
       let maxKey = null;
