@@ -107,18 +107,17 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
                         TZ=UTC date -r "$(SOURCE_DATE_EPOCH)" $(DATE_FMT) || \
                         TZ=UTC date $(DATE_FMT) )
 
-all: libs deploy
+all: deploy
 
 deploy: $(PREFFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules/preferences $(PREFFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules $(MODFILES)
+	echo '"use strict";' > buildDate.jsm
+	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> buildDate.jsm
+	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> buildDate.jsm
 
 
 clean:
 	$(DEPTH)/util/install -u $(DIST)/modules/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/modules $(MODFILES)
 
-libs:
-	echo '"use strict";' > buildDate.jsm
-	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> buildDate.jsm
-	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> buildDate.jsm
