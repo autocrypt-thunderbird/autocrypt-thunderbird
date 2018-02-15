@@ -16,7 +16,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 testing("key.jsm"); /*global EnigmailKey: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 component("enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
-EnigmailOpenPGP.initialize(); // make sure OpenPGP is initialized and available
+//EnigmailOpenPGP.initialize(); // make sure OpenPGP is initialized and available
 
 test(function shouldGetKeyDetails() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);

@@ -26,6 +26,15 @@ function isGpgExecutable(fullPath) {
   return (path.search(/^gpg/i) === 0);
 }
 
+function torNotAvailableProperties() {
+  return {
+    isAvailable: false,
+    useTorMode: false,
+    socks: null,
+    helper: null
+  }
+}
+
 test(function setupRequestWithTorHelper() {
   const torArgs = ["--user", "randomUser", "--pass", "randomPassword", "/usr/bin/gpg2"];
   const torProperties = {
@@ -135,7 +144,8 @@ test(withEnigmail(function createsRegularRequests_whenUserDoesNotWantTor() {
     },
     isPreferred: function() {
       return false;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
   const expectedKeyId = "1234";
 
@@ -180,7 +190,8 @@ test(withEnigmail(function createsRequestsWithTorAndWithoutTor_whenTorExistsOver
     },
     isPreferred: function(action) {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
 
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
@@ -235,7 +246,8 @@ test(withEnigmail(function createsRequestsWithTorAndWithoutTor_whenTorExistsOver
     },
     isPreferred: function(action) {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
 
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
@@ -281,7 +293,8 @@ test(withEnigmail(function createsNormalRequests_whenTorDoesntExist() {
     },
     isPreferred: function() {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
@@ -314,7 +327,8 @@ test(withEnigmail(function createsNormalRequests_whenTorUsesNormal() {
     },
     isPreferred: function() {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
   const requests = buildRequests(keyId, refreshAction, tor);
@@ -364,7 +378,8 @@ test(withEnigmail(function createsRequestsWithOnlyTor_whenTorIsRequired(enigmail
     },
     isPreferred: function(action) {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
 
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
@@ -402,7 +417,8 @@ test(withEnigmail(function returnNoRequests_whenTorIsRequiredButNotAvailable() {
     },
     isPreferred: function() {
       return true;
-    }
+    },
+    getTorNotAvailableProperties: torNotAvailableProperties
   };
 
   const refreshAction = EnigmailConstants.DOWNLOAD_KEY;

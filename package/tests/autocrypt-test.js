@@ -101,6 +101,7 @@ test(function prepareDb() {
       do_test_finished();
     });
   });
+  JSUnit.waitForAsyncTest(); // wait until that's done before starting the next test
 });
 
 
@@ -160,4 +161,5 @@ test(function processHeader() {
     Assert.equal(err, 1);
     do_test_finished();
   });
+
 });
