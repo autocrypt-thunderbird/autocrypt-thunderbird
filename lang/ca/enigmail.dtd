@@ -1,423 +1,860 @@
-<!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.keyUserId.label "Compte / Id.d'usuari">
-<!ENTITY enigmail.keygenTitle.label "Genera la clau OpenPGP">
-<!ENTITY enigmail.useForSigning.label "Usa la clau generada per a la identitat seleccionada">
-<!ENTITY enigmail.keyNoPassphrase.label "Sense contrasenya">
-<!ENTITY enigmail.keyPassphrase.label "Contrasenya">
+<!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.pEp.label               "">
+<!ENTITY enigmail.autocrypt.label         "">
+
+<!ENTITY enigmail.about.license           "">
+
+<!ENTITY enigmail.keyUserId.label         "Compte / Id.d'usuari">
+<!ENTITY enigmail.keygenTitle.label       "Genera la clau OpenPGP">
+<!ENTITY enigmail.useForSigning.label     "Usa la clau generada per a la identitat seleccionada">
+<!ENTITY enigmail.keyNoPassphrase.label   "Sense contrasenya">
+<!ENTITY enigmail.keyPassphrase.label     "Contrasenya">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Contrasenya (repetiu)">
-<!ENTITY enigmail.generateKey.tooltip "Genera una nova clau conforme a OpenPGP per xifrar i/o signar">
-<!ENTITY enigmail.cancelKey.label "Cancel·la">
-<!ENTITY enigmail.cancelKey.tooltip "Cancel·la la generació de la clau">
-<!ENTITY enigmail.keyGen.expiry.title "Caducitat de la clau">
-<!ENTITY enigmail.keyGen.expire.label "La clau caduca en">
-<!ENTITY enigmail.keyGen.days.label "dies">
-<!ENTITY enigmail.keyGen.months.label "mesos">
-<!ENTITY enigmail.keyGen.years.label "anys">
-<!ENTITY enigmail.keyGen.noExpiry.label "La clau no caduca">
-<!ENTITY enigmail.keyGen.keySize.label "Mida de la clau">
-<!ENTITY enigmail.keyGen.console.label "Consola de generació de la clau">
-<!ENTITY enigmail.keyGen.keyType.label "Tipus de clau">
-<!ENTITY enigmail.keyGen.keyType.dsa "DSA &amp; El Gamal">
-<!ENTITY enigmail.keyGen.keyType.rsa "RSA">
-<!ENTITY enigmail.preferences.label "Preferències Enigmail">
-<!ENTITY enigmail.passwordSettings.label "Paràmetres de contrasenya">
-<!ENTITY enigmail.userNoPassphrase.label "Mai demanis cap contrasenya">
+<!ENTITY enigmail.generateKey.tooltip     "Genera una nova clau conforme a OpenPGP per xifrar i/o signar">
+<!ENTITY enigmail.cancelKey.label         "Cancel·la">
+<!ENTITY enigmail.cancelKey.tooltip       "Cancel·la la generació de la clau">
+<!ENTITY enigmail.keyGen.expiry.title     "Caducitat de la clau">
+<!ENTITY enigmail.keyGen.expire.label     "La clau caduca en">
+<!ENTITY enigmail.keyGen.days.label       "dies">
+<!ENTITY enigmail.keyGen.months.label     "mesos">
+<!ENTITY enigmail.keyGen.years.label      "anys">
+<!ENTITY enigmail.keyGen.noExpiry.label   "La clau no caduca">
+<!ENTITY enigmail.keyGen.keySize.label    "Mida de la clau">
+<!ENTITY enigmail.keyGen.console.label    "">
+<!ENTITY enigmail.keyGen.keyType.label    "Tipus de clau">
+<!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
+<!ENTITY enigmail.keyGen.keyType.ecc      "">
+
+<!ENTITY enigmail.keyUpload.label         "">
+<!ENTITY enigmail.keyUpload.desc          "">
+<!ENTITY enigmail.keyUpload.sks.label     "">
+<!ENTITY enigmail.keyUpload.sks.desc      "">
+<!ENTITY enigmail.keyUpload.wks.label     "">
+<!ENTITY enigmail.keyAttachAuto.label     "">
+
+<!ENTITY enigmail.preferences.label       "Preferències Enigmail">
+
+<!ENTITY enigmail.passwordSettings.label   "">
+<!ENTITY enigmail.userNoPassphrase.label   "Mai demanis cap contrasenya">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Activeu-ho si la clau OpenPGP no està protegida per una contrasenya.">
-<!ENTITY enigmail.expertUser.tooltip "Premeu-ho si voleu veure els elements de menú i les opcions per a usuaris avançats.">
-<!ENTITY enigmail.basicUser.tooltip "Premeu-ho si no voleu veure els elements de menú i les opcions per a usuaris avançats.">
-<!ENTITY enigmail.prefs.pathsTitle.label "Fitxers i directoris">
-<!ENTITY enigmail.prefs.overrideGpg.label "Substituir amb">
-<!ENTITY enigmail.prefs.overrideGpg.tooltip "Feu clic per indicar una ubicació del GnuPG">
-<!ENTITY enigmail.agentAdditionalParam.label "Paràmetres addicionals pel GnuPG">
-<!ENTITY enigmail.agentAdditionalParam.tooltip "Indiqueu les opcions que seran emprades pel GnuPG.">
-<!ENTITY enigmail.mime_parts_on_demand.label "Descarrega només els adjunts quan s'obrin (només IMAP)">
+<!ENTITY enigmail.expertUserMenus.label    "">
+<!ENTITY enigmail.expertUser.tooltip       "Premeu-ho si voleu veure els elements de menú i les opcions per a usuaris avançats.">
+<!ENTITY enigmail.basicUserMenus.label     "">
+<!ENTITY enigmail.basicUser.tooltip        "Premeu-ho si no voleu veure els elements de menú i les opcions per a usuaris avançats.">
+
+<!ENTITY enigmail.prefs.pathsTitle.label      "Fitxers i directoris">
+<!ENTITY enigmail.prefs.overrideGpg.label     "Substituir amb">
+<!ENTITY enigmail.prefs.overrideGpg.tooltip   "Feu clic per indicar una ubicació del GnuPG">
+
+
+<!ENTITY enigmail.agentAdditionalParam.label    "Paràmetres addicionals pel GnuPG">
+<!ENTITY enigmail.agentAdditionalParam.tooltip  "Indiqueu les opcions que seran emprades pel GnuPG.">
+
+<!ENTITY enigmail.protectHeadersPrefs.label    "">
+<!ENTITY enigmail.protectHeadersPrefs.tooltip  "">
+<!ENTITY enigmail.protectedSubjectText.label    "">
+<!ENTITY enigmail.protectedSubjectText.tooltip  "">
+
+
+<!ENTITY enigmail.mime_parts_on_demand.label  "Descarrega només els adjunts quan s'obrin (només IMAP)">
+
+
 <!ENTITY enigmail.maxIdleMinutesHead.label "Recorda la contrasenya durant">
-<!ENTITY enigmail.maxIdleMinutesTail.label "minuts d'inactivitat">
-<!ENTITY enigmail.maxIdleMinutes.tooltip "Desa temporalment la contrasenya a la memòria durant un temps limitat.">
+<!ENTITY enigmail.maxIdleMinutesTail.label "">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Desa temporalment la contrasenya a la memòria durant un temps limitat.">
+
 <!ENTITY enigmail.resetPrefsButton.label "Reinicia">
-<!ENTITY enigmail.resetPrefs.tooltip "Retorna totes les preferències de l'Enigmail als seus valors per defecte.">
-<!ENTITY enigmail.basic.label "Bàsic">
-<!ENTITY enigmail.sending.label "En enviar">
-<!ENTITY enigmail.keySel.label "Selecció de clau">
-<!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advanced.label "Avançat">
-<!ENTITY enigmail.basicPrefs.label "Paràmetres bàsics">
-<!ENTITY enigmail.moreOptions.label "Més opcions">
+<!ENTITY enigmail.resetPrefs.tooltip     "Retorna totes les preferències de l'Enigmail als seus valors per defecte.">
+
+<!ENTITY enigmail.backupPrefsButton.label "">
+<!ENTITY enigmail.backupPrefs.tooltip     "">
+
+<!ENTITY enigmail.restorePrefsButton.label "">
+<!ENTITY enigmail.restorePrefs.tooltip     "">
+
+<!ENTITY enigmail.pref.acSetupMessage.desc   "">
+<!ENTITY enigmail.pref.acSetupMessage.button "">
+
+<!ENTITY enigmail.pref.backupRestore.overallDesc "">
+
+<!ENTITY enigmail.backupRestore.desc       "">
+
+<!ENTITY enigmail.basic.label            "Bàsic">
+<!ENTITY enigmail.sending.label          "En enviar">
+<!ENTITY enigmail.keySel.label           "Selecció de clau">
+<!ENTITY enigmail.pgpMime.label          "PGP/MIME">
+<!ENTITY enigmail.advanced.label         "Avançat">
+<!ENTITY enigmail.transferSettings.label "">
+
+<!ENTITY enigmail.basicPrefs.label       "Paràmetres bàsics">
+
+<!ENTITY enigmail.moreOptions.label       "Més opcions">
+
 <!ENTITY enigmail.useNonDefaultComment.label "Afegeix el comentari de l'Enigmail a la signatura OpenPGP">
-<!ENTITY enigmail.keyserver.label "Servidor de claus">
-<!ENTITY enigmail.keyserverDlg.label "Seleccioneu el servidor de claus">
-<!ENTITY enigmail.keyservers.label "Indiqueu el/s servidor/s de claus">
-<!ENTITY enigmail.keyservers.sample "Exemple: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
-<!ENTITY enigmail.searchForKey.label "Cerca per la clau">
+
+<!ENTITY enigmail.keyserver.label         "Servidor de claus">
+<!ENTITY enigmail.keyserverDlg.label      "Seleccioneu el servidor de claus">
+<!ENTITY enigmail.keyservers.label        "Indiqueu el/s servidor/s de claus">
+<!ENTITY enigmail.keyservers.sample2      "">
+
+<!ENTITY enigmail.searchForKey.example    "">
+<!ENTITY enigmail.searchForKey.desc1	    "">
+<!ENTITY enigmail.searchForKey.desc2      "">
+<!ENTITY enigmail.searchForKey.desc3      "">
+<!ENTITY enigmail.searchForKey.label      "Cerca per la clau">
+
 <!ENTITY enigmail.doubleDashSeparator.label "Tracta '--' com a separador de signatura">
-<!ENTITY enigmail.useGpgAgent.label "Empra gpg-agent per les contrasenyes">
-<!ENTITY enigmail.noHushMailSupport.label "Empra '&lt;' i '&gt;' per indicar les adreces de correu">
-<!ENTITY enigmail.doubleDashSeparator.tooltip "Dos guions junts en una línia indiquen un bloc de signatura">
-<!ENTITY enigmail.useGpgAgent.tooltip "Usa el gpg-agent (part del GnuPG 2) per a la introducció de contrasenyes">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Usa els caràcters '&lt;' i '&gt;' per indicar adreces de correu en el GnuPG. Desactiveu-ho si els destinataris tenen les antigues claus Hushmail.">
+<!ENTITY enigmail.noHushMailSupport.label   "Empra '<' i '>' per indicar les adreces de correu">
+
+<!ENTITY enigmail.doubleDashSeparator.tooltip  "Dos guions junts en una línia indiquen un bloc de signatura">
+<!ENTITY enigmail.noHushMailSupport.tooltip    "Usa els caràcters '<' i '>' per indicar adreces de correu en el GnuPG. Desactiveu-ho si els destinataris tenen les antigues claus Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Hauríeu de desactivar-ho si rebeu missatges PGP/MIME en carpetes IMAP.">
-<!ENTITY enigmail.disableSMIMEui.tooltip "Elimina el botó S/MIME de la barra d'eines de la finestra de composició dels missatges">
-<!ENTITY enigmail.decryptbutton.label "Desxifra">
-<!ENTITY enigmail.decryptbutton.tip "Desxifra o verifica el missatge amb Enigmail">
+<!ENTITY enigmail.disableSMIMEui.tooltip       "Elimina el botó S/MIME de la barra d'eines de la finestra de composició dels missatges">
+
+<!ENTITY enigmail.autoKeyServerSelection.label     "">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip   "">
+
+<!ENTITY enigmail.decryptbutton.label     "Desxifra">
+<!ENTITY enigmail.decryptbutton.tip       "Desxifra o verifica el missatge amb Enigmail">
+
 <!ENTITY enigmail.messengermenu.accesskey "n">
-<!ENTITY enigmail.decryptverify.label "Desxifra/Verifica">
-<!ENTITY enigmail.importpublickey.label "Importa la clau pública">
-<!ENTITY enigmail.autoDecrypt.label "Desxifra/verifica automàticament els missatges">
-<!ENTITY enigmail.clearPassphrase.label "Neteja la contrasenya desada">
-<!ENTITY enigmail.editRules.label "Edita les regles per cada destinatari">
-<!ENTITY enigmail.prefs.label "Preferències">
-<!ENTITY enigmail.debugMenu.label "Opcions de depuració">
-<!ENTITY enigmail.viewconsole.label "Visualitza la consola">
-<!ENTITY enigmail.generateKey.label "Genera la clau">
-<!ENTITY enigmail.help.label "Ajuda">
-<!ENTITY enigmail.about.title "Quant a l'Enigmail">
-<!ENTITY enigmail.about.label "Quant a l'Enigmail">
-<!ENTITY enigmail.reload.label "Recarrega el missatge IMAP">
-<!ENTITY enigmail.browse.label "Navega...">
-<!ENTITY enigmail.sendersKeyMenu.label "Clau del remitent">
-<!ENTITY enigmail.adminSmartCard.label "Gestiona la targeta intel·ligent ...">
-<!ENTITY enigmail.setupWiz.label "Auxiliar de configuració">
-<!ENTITY enigmail.decryptverify.accesskey "D">
+
+<!ENTITY enigmail.decryptverify.label    "Desxifra/Verifica">
+<!ENTITY enigmail.importpublickey.label  "Importa la clau pública">
+<!ENTITY enigmail.importKey.label        "">
+
+<!ENTITY enigmail.autoDecrypt.label      "Desxifra/verifica automàticament els missatges">
+<!ENTITY enigmail.clearPassphrase.label  "Neteja la contrasenya desada">
+<!ENTITY enigmail.editRules.label        "Edita les regles per cada destinatari">
+
+<!ENTITY enigmail.decryptToFolder.label     "">
+<!ENTITY enigmail.decryptToFolder.accesskey "">
+
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY enigmail.recent.label              "">
+<!ENTITY enigmail.recent.accesskey          "">
+
+<!ENTITY enigmail.prefs.label            "Preferències">
+
+<!ENTITY enigmail.debugMenu.label        "Opcions de depuració">
+<!ENTITY enigmail.viewconsole.label      "Visualitza la consola">
+<!ENTITY enigmail.viewlog.label          "">
+
+<!ENTITY enigmail.generateKey.label        "Genera la clau">
+<!ENTITY enigmail.help.label               "Ajuda">
+<!ENTITY enigmail.about.label              "Quant a l'Enigmail">
+<!ENTITY enigmail.reload.label             "Recarrega el missatge IMAP">
+<!ENTITY enigmail.browse.label             "Navega...">
+<!ENTITY enigmail.sendersKeyMenu.label     "Clau del remitent">
+<!ENTITY enigmail.adminSmartCard.label     "Gestiona la targeta intel·ligent ...">
+<!ENTITY enigmail.setupWiz.label           "Auxiliar de configuració">
+
+<!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.reload.accesskey "P">
-<!ENTITY enigmail.adminSmartCard.accesskey "t">
-<!ENTITY enigmail.autoDecrypt.accesskey "a">
-<!ENTITY enigmail.debugMenu.accesskey "d">
+<!ENTITY enigmail.reload.accesskey          "P">
+<!ENTITY enigmail.adminSmartCard.accesskey  "t">
+
+<!ENTITY enigmail.autoDecrypt.accesskey     "a">
+<!ENTITY enigmail.debugMenu.accesskey       "d">
+
 <!ENTITY enigmail.clearPassphrase.accesskey "j">
-<!ENTITY enigmail.editRules.accesskey "r">
-<!ENTITY enigmail.setupWiz.accesskey "A">
-<!ENTITY enigmail.prefs.accesskey "P">
-<!ENTITY enigmail.viewconsole.accesskey "c">
-<!ENTITY enigmail.help.accesskey "u">
-<!ENTITY enigmail.about.accesskey "Q">
-<!ENTITY enigmail.sendersKeyMenu.accesskey "C">
-<!ENTITY enigmail.signedsend.label "Signa el missatge">
-<!ENTITY enigmail.encryptedsend.label "Xifra el missatge">
-<!ENTITY enigmail.pgpAccountSettings.label "Opcions de signatura/xifrat...">
-<!ENTITY enigmail.sendOptionsMenu.label "Opcions d'enviament...">
-<!ENTITY enigmail.defaultKeySelOpts.label "Opcions de selecció de clau...">
-<!ENTITY enigmail.undoencryption.label "Desfés el xifrat">
-<!ENTITY enigmail.attachkey.label "Adjunta la clau pública ...">
-<!ENTITY enigmail.attachmykey.label "Adjunta la meva clau pública">
-<!ENTITY enigmail.composemenu.accesskey "n">
-<!ENTITY enigmail.signedsend.accesskey "g">
-<!ENTITY enigmail.signedsend.key "S">
-<!ENTITY enigmail.encryptedsend.accesskey "X">
-<!ENTITY enigmail.encryptedsend.key "x">
-<!ENTITY enigmail.sendOptionsMenu.accesskey "e">
-<!ENTITY enigmail.defaultKeySelOpts.accesskey "c">
+<!ENTITY enigmail.editRules.accesskey       "r">
+<!ENTITY enigmail.setupWiz.accesskey        "A">
+
+
+<!ENTITY enigmail.prefs.accesskey           "P">
+<!ENTITY enigmail.viewconsole.accesskey     "c">
+<!ENTITY enigmail.viewlog.accesskey         "">
+
+<!ENTITY enigmail.help.accesskey            "u">
+<!ENTITY enigmail.about.accesskey           "Q">
+<!ENTITY enigmail.sendersKeyMenu.accesskey  "C">
+
+<!ENTITY enigmail.composetoolbar.desc         "">
+
+<!ENTITY enigmail.signedsend.label            "Signa el missatge">
+<!ENTITY enigmail.encryptedsend.label         "Xifra el missatge">
+
+<!ENTITY enigmail.pepEnableProtection.label         "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+
+<!ENTITY enigmail.pgpAccountSettings.label     "Opcions de signatura/xifrat...">
+<!ENTITY enigmail.sendOptionsMenu.label        "Opcions d'enviament...">
+<!ENTITY enigmail.defaultKeySelOpts.label      "Opcions de selecció de clau...">
+<!ENTITY enigmail.usePgpMime.label             "">
+<!ENTITY enigmail.useInline.label              "">
+<!ENTITY enigmail.useSmime.label               "">
+
+<!ENTITY enigmail.tempTrustAllKeys.label       "">
+<!ENTITY enigmail.undoencryption.label         "Desfés el xifrat">
+<!ENTITY enigmail.attachkey.label              "Adjunta la clau pública ...">
+<!ENTITY enigmail.attachmykey.label            "Adjunta la meva clau pública">
+<!ENTITY enigmail.protectHeaders.label         "">
+
+<!ENTITY enigmail.composemenu.accesskey        "n">
+
+<!ENTITY enigmail.signedsend.accesskey         "g">
+<!ENTITY enigmail.signedsend.key               "S">
+<!ENTITY enigmail.encryptedsend.accesskey      "X">
+<!ENTITY enigmail.encryptedsend.key            "x">
+
+<!ENTITY enigmail.sendOptionsMenu.accesskey    "e">
+<!ENTITY enigmail.defaultKeySelOpts.accesskey  "c">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "O">
-<!ENTITY enigmail.undoencryption.accesskey "D">
-<!ENTITY enigmail.attachkey.accesskey "A">
-<!ENTITY enigmail.attachmykey.accesskey "m">
-<!ENTITY enigmail.defaultEncryption.label "Xifra per defecte els missatges">
-<!ENTITY enigmail.usePGPMimeAlways.label "Utilitza el PGP/MIME per defecte">
-<!ENTITY enigmail.advancedPrefsButton.label "Avançat...">
+<!ENTITY enigmail.usePgpMime.accesskey         "">
+<!ENTITY enigmail.useInline.accesskey          "">
+<!ENTITY enigmail.useSmime.accesskey           "">
+
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "">
+<!ENTITY enigmail.undoencryption.accesskey     "D">
+<!ENTITY enigmail.attachkey.accesskey          "A">
+<!ENTITY enigmail.attachmykey.accesskey        "m">
+
+
+<!-- account specific options -->
+<!ENTITY enigmail.defaultSigning.label            "">
+<!ENTITY enigmail.defaultEncryption.label         "Xifra per defecte els missatges">
+<!ENTITY enigmail.usePGPMimeAlways.label          "Utilitza el PGP/MIME per defecte">
+
+<!ENTITY enigmail.afterDefaultsAndRules.label     "">
+<!ENTITY enigmail.finallySignEncrypted.label      "">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "">
+
+<!ENTITY enigmail.autoEncryptDrafts.label         "">
+
+<!ENTITY enigmail.advancedPrefsButton.label       "Avançat...">
+<!ENTITY enigmail.openpgpPrefsButton.label        "">
+
+
+<!-- Sending Preferences -->
+
+<!ENTITY enigmail.SendingPrefs.label              "">
+<!ENTITY enigmail.seeAccountSettings.label        "">
+
+<!ENTITY enigmail.encryptionModelConvenient.label "">
+<!ENTITY enigmail.encryptionModelManually.label   "">
+
+<!ENTITY enigmail.keepCryptoSettingsForReply.label   "">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "">
+
+<!ENTITY enigmail.autoSendEncryptedOption.label   "">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip  "">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label   "">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "">
+
+<!ENTITY enigmail.acceptedKeysOption.label        "">
+<!ENTITY enigmail.acceptedKeysTrusted.label       "">
+<!ENTITY enigmail.acceptedKeysTrusted.tooltip     "">
+<!ENTITY enigmail.acceptedKeysAllUsable.label     "">
+<!ENTITY enigmail.acceptedKeysAllUsable.tooltip   "">
+
+<!ENTITY enigmail.confirmBeforeSendingOption.label           "">
+<!ENTITY enigmail.confirmBeforeSendingNever.label            "">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label           "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label   "">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "">
+
+
 <!-- keySel Preferences -->
+
 <!ENTITY enigmail.recipientsSelectionOption.label "Com s'haurien de triar les claus?">
-<!ENTITY enigmail.defineRules.label "Defineix les regles ...">
-<!ENTITY enigmail.wrapHtmlBeforeSend.label "Reajusta el text HTML signat abans d'enviar">
-<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Reajusta el text per assegurar que la signatura roman intacta.">
-<!ENTITY enigmail.autoKeyRetrieve.label "Baixa automàticament les claus per la verificació de la signatura">
-<!ENTITY enigmail.autoKeyRetrieve2.label "des del següent servidor de claus:">
-<!ENTITY enigmail.resetRememberedValues.label "Reinicia els avisos">
-<!ENTITY enigmail.resetRememberedValues.tooltip "Torna a mostrar tots els diàlegs d'avís i les qüestions que s'han ocultat abans.">
+<!ENTITY enigmail.assignKeysByRules.label             "">
+<!ENTITY enigmail.assignKeysByRules.tooltip           "">
+<!ENTITY enigmail.assignKeysByEmailAddr.label         "">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label   "">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "">
+<!ENTITY enigmail.assignKeysManuallyAlways.label      "">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip    "">
+<!ENTITY enigmail.defineRules.label               "Defineix les regles ...">
+
+
+<!ENTITY enigmail.wrapHtmlBeforeSend.label        "Reajusta el text HTML signat abans d'enviar">
+<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Reajusta el text per assegurar que la signatura roman intacta.">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Baixa automàticament les claus per la verificació de la signatura">
+<!ENTITY enigmail.autoKeyRetrieve2.label          "des del següent servidor de claus:">
+<!ENTITY enigmail.resetRememberedValues.label     "Reinicia els avisos">
+<!ENTITY enigmail.resetRememberedValues.tooltip   "Torna a mostrar tots els diàlegs d'avís i les qüestions que s'han ocultat abans.">
+
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTA: La generació de la clau pot trigar uns quants minuts en acabar.</a> No sortiu del navegador mentre s'està generant la clau. La navegació activa o les operacions d'ús intensiu del disc dur durant la generació de la clau renovaran el 'pou d'atzar' i acceleraran el procés. Rebreu un avís quan acabi el procés de generació de la clau.">
-<!ENTITY enigmail.userSelectionList.label "Selecció de la clau Enigmail">
-<!ENTITY enigmail.usersNotFound.label "Els destinataris no són vàlids, no són confiables o no s'han trobat">
-<!ENTITY enigmail.keyExpiry.label "Caducitat">
-<!ENTITY enigmail.keySelection.label "Selecció">
-<!ENTITY enigmail.keyId.label "Identificador de clau">
-<!ENTITY enigmail.displayNoLonger.label "No mostris aquest diàleg una altra vegada si no és possible xifrar">
-<!ENTITY enigmail.importMissingKeys.label "Baixa les claus que manquen">
-<!ENTITY enigmail.importMissingKeys.accesskey "i">
-<!ENTITY enigmail.importMissingKeys.tooltip "Intenta importar les claus que manquen des d'un servidor de claus">
-<!ENTITY enigmail.refreshKeys.label "Refresca la llista de claus">
-<!ENTITY enigmail.refreshKeys.accesskey "R">
-<!ENTITY enigmail.perRecipientsOption.label "Crea regla/s per destinatari">
-<!ENTITY enigmail.enigmailAttachDesc.label "Aquest missatge conté adjunts. Com els voleu xifrar/signar ?">
-<!ENTITY enigmail.enigEncryptAttachNone.label "Xifra/signa només el text del missatge, però no els adjunts">
-<!ENTITY enigmail.enigEncryptAttachInline.label "Xifra/signa cada adjunt per separat i envia el missatge emprant PGP en línia">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Xifra/signa el missatge sencer i envia'l emprant PGP/MIME">
-<!ENTITY enigmail.encryptAttachSkipDlg.label "Empra el mètode seleccionat en el futur per a tots els fitxers adjunts">
-<!ENTITY enigmail.ctxDecryptOpen.label "Desxifra i obre">
-<!ENTITY enigmail.ctxDecryptSave.label "Desxifra i desa com...">
-<!ENTITY enigmail.ctxImportKey.label "Importa la clau OpenPGP">
-<!ENTITY enigmail.ctxDecryptOpen.accesskey "D">
-<!ENTITY enigmail.ctxDecryptSave.accesskey "c">
-<!ENTITY enigmail.ctxImportKey.accesskey "I">
-<!ENTITY enigmail.detailsHdrButton.label "Detalls">
-<!ENTITY enigmail.amPrefTitle.label "Opcions OpenPGP">
-<!ENTITY enigmail.amPrefDesc.label "Enigmail permet l'ús de l'OpenPGP per xifrar i signar missatges. Us cal tenir GnuPG (gpg) instal·lat per emprar aquesta funcionalitat.">
-<!ENTITY enigmail.amPrefEnablePgp.label "Activa el funcionament de l'OpenPGP (Enigmail) per aquesta identitat">
-<!ENTITY enigmail.amPrefUseFromAddr.label "Usa l'adreça de correu d'aquesta identitat per identificar la clau OpenPGP">
-<!ENTITY enigmail.amPrefUseKeyId.label "Usa l'identificador específic de clau OpenPGP (0x1234ABCD):">
-<!ENTITY enigmail.amPrefSelectKey.label "Selecció de la clau ...">
-<!ENTITY enigmail.amPrefDefaultEncrypt.label "Opcions de redacció del missatge per defecte">
-<!ENTITY enigmail.encryptionDlg.label "Paràmetres Enigmail de xifra i signatura">
-<!ENTITY enigmail.encDlgEncrypt.label "Xifra el missatge">
-<!ENTITY enigmail.encDlgEncrypt.accesskey "X">
-<!ENTITY enigmail.encDlgSign.label "Signa el missatge">
-<!ENTITY enigmail.encDlgSign.accesskey "g">
-<!ENTITY enigmail.encDlgPgpMime.label "Empra PGP/MIME">
-<!ENTITY enigmail.encDlgPgpMime.accesskey "P">
-<!ENTITY enigmail.amPrefPgpHeader.label "Envia la capçalera 'OpenPGP'">
-<!ENTITY enigmail.amPrefPgpHeader.id.label "Envia la identificació de clau OpenPGP">
-<!ENTITY enigmail.amPrefPgpHeader.url.label "Envia l'URL per recuperar la clau:">
-<!ENTITY enigmail.progressText.label "Progrés:">
-<!ENTITY enigmail.openPgpSecurity.label "Seguretat OpenPGP">
-<!ENTITY enigmail.pgpSecurityInfo.label "Informació de seguretat Enigmail ...">
-<!ENTITY enigmail.copySecurityInfo.label "Copia la informació de seguretat Enigmail">
-<!ENTITY enigmail.showPhoto.label "Mostra l'identificador de foto OpenPGP">
-<!ENTITY enigmail.signSenderKey.label "Signa la clau ...">
-<!ENTITY enigmail.trustSenderKey.label "Estableix la confiança del propitari ...">
-<!ENTITY enigmail.signSenderKeyPopup.label "Signa la clau del remitent ...">
-<!ENTITY enigmail.trustSenderKeyPopup.label "Estableix la confiança del propietari de la clau del remitent ...">
-<!ENTITY enigmail.createRuleFromAddr.label "Crea una regla Enigmail per l'adreça...">
-<!ENTITY enigmail.keyManWindow.label "Gestió de claus">
-<!ENTITY enigmail.keyManWindow.accesskey "c">
-<!ENTITY enigmail.singleRcptSettings.label "Enigmail - Paràmetres de destinatari">
-<!ENTITY enigmail.selKeysButton.label "Selecció de clau/s...">
-<!ENTITY enigmail.action.label "Acció">
-<!ENTITY enigmail.nextRule.label "Continua amb la regla següent per l'adreça que coincideixi">
-<!ENTITY enigmail.nextAddress.label "No comprovis més regles per l'adreça que coincideixi">
-<!ENTITY enigmail.useKeys.label "Empra les següents claus OpenPGP:">
-<!ENTITY enigmail.selKeysButton.accesskey "S">
-<!ENTITY enigmail.setDefaultsFor.label "Per defecte ...">
-<!ENTITY enigmail.encryption.label "Xifrat">
-<!ENTITY enigmail.signing.label "Signat">
-<!ENTITY enigmail.never.label "Mai">
-<!ENTITY enigmail.always.label "Sempre">
-<!ENTITY enigmail.maybe.label "Sí, si es selecciona a la redacció del missatge">
-<!ENTITY enigmail.singleRcptSettings.desc "(Nota: en cas de conflicte, 'Mai' preval sobre 'Sempre')">
-<!ENTITY enigmail.ruleEmail.label "Estableix les regles Enigmail per a ">
-<!ENTITY enigmail.ruleEmail.tooltip "Ompliu només l'adreça de correu, NO establiu els noms dels recipients   Per exemple,        'Algun nom' <algun.nom@adreça.net>' no és vàlid">
-<!ENTITY enigmail.sepratationDesc.label "(Cal separar varies adreces de correu amb espais)">
-<!ENTITY enigmail.matchDescStart.label "Aplica la regla si és el destinatari">
-<!ENTITY enigmail.matchDescEnd.label "una de les adreces d'amunt">
-<!ENTITY enigmail.matchExact.label "És exactament">
-<!ENTITY enigmail.matchContains.label "Conté">
-<!ENTITY enigmail.matchBegin.label "Comença amb">
-<!ENTITY enigmail.matchEnd.label "Acaba amb">
-<!ENTITY enigmail.not.label "No">
-<!ENTITY enigmail.rulesEditor.label "Enigmail - Editor de regles per destinatari">
-<!ENTITY enigmail.email.label "Correu">
-<!ENTITY enigmail.pgpKeys.label "Clau/s OpenPGP">
-<!ENTITY enigmail.sign.label "Signat">
-<!ENTITY enigmail.encrypt.label "Xifra">
-<!ENTITY enigmail.edit.label "Modifica">
-<!ENTITY enigmail.edit.accesskey "M">
-<!ENTITY enigmail.add.label "Afegeix">
-<!ENTITY enigmail.add.accesskey "A">
-<!ENTITY enigmail.delete.label "Esborra">
-<!ENTITY enigmail.delete.accesskey "E">
-<!ENTITY enigmail.moveUp.label "Puja">
-<!ENTITY enigmail.moveUp.accesskey "P">
-<!ENTITY enigmail.moveDown.label "Baixa">
-<!ENTITY enigmail.moveDown.accesskey "B">
-<!ENTITY enigmail.searchRule.label "Mostra les regles que contenen l'adreça de correu:">
-<!ENTITY enigmail.clearSearch.label "Neteja">
-<!ENTITY enigmail.clearSearch.accesskey "N">
-<!ENTITY enigmail.searchKeyDlg.label "Baixa les claus OpenPGP">
-<!ENTITY enigmail.searchKeyDlgCapt.label "S'ha trobat les claus - Seleccioneu per a importar">
-<!ENTITY enigmail.created.label "Creada">
-<!ENTITY enigmail.progress.label "Progrés">
-<!ENTITY enigmail.sKeyDlg.title "Enigmail - Signatura de clau">
-<!ENTITY enigmail.sKeyDlg.signKey.label "Clau a signar:">
-<!ENTITY enigmail.sKeyDlg.fingerprint.label "Empremta digital:">
-<!ENTITY enigmail.sKeyDlg.signWithKey.label "Clau per signar:">
-<!ENTITY enigmail.sKeyDlg.checked.label "Amb quina cura heu verificat que la clau que aneu a signar ara pertany a la persona/es anomenada més amunt ?">
-<!ENTITY enigmail.sKeyDlg.noAnswer.label "No contestaré">
-<!ENTITY enigmail.sKeyDlg.notChecked.label "No he comprovat res">
-<!ENTITY enigmail.sKeyDlg.casualCheck.label "He fet una comprovació despreocupada">
-<!ENTITY enigmail.sKeyDlg.carefulCheck.label "He fet una comprovació curosa">
-<!ENTITY enigmail.sKeyDlg.createLocal.label "Signatura local (no és exportable)">
-<!ENTITY enigmail.addUidDlg.title "Enigmail - Afegir identificador d'usuari">
-<!ENTITY enigmail.addUidDlg.name.label "Nom">
-<!ENTITY enigmail.addUidDlg.email.label "Correu">
-<!ENTITY enigmail.keyTrust.title "Enigmail - Establir la confiança del propietari">
-<!ENTITY enigmail.keyTrust.trustKey.label "Clau a confiar:">
-<!ENTITY enigmail.keyTrust.trustLevel.label "Quant confieu en la clau ?">
-<!ENTITY enigmail.keyTrust.dontKnow.label "No ho sé">
-<!ENTITY enigmail.keyTrust.noTrust.label "No hi confio">
-<!ENTITY enigmail.keyTrust.marginalTrust.label "Hi confio marginalment">
-<!ENTITY enigmail.keyTrust.fullTrust.label "Hi confio plenament">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label "Hi confio fins al final">
-<!ENTITY enigmail.keyMan.title "Gestió de la clau Enigmail">
-<!ENTITY enigmail.keyMan.close.label "Tanca la finestra">
-<!ENTITY enigmail.keyMan.generate.label "Nova parella de claus">
-<!ENTITY enigmail.keyMan.sign.label "Signa la clau">
-<!ENTITY enigmail.keyMan.setTrust.label "Estableix la confiança del propietari">
-<!ENTITY enigmail.keyMan.genRevoke.label "Certificat de revocació">
-<!ENTITY enigmail.keyMan.ctxGenRevoke.label "Genera i desa un certificat de revocació">
-<!ENTITY enigmail.keyMan.fileMenu.label "Fitxer">
-<!ENTITY enigmail.keyMan.editMenu.label "Edita">
-<!ENTITY enigmail.keyMan.viewMenu.label "Visualitza">
-<!ENTITY enigmail.keyMan.keyserverMenu.label "Servidor de claus">
-<!ENTITY enigmail.keyMan.generateMenu.label "Genera">
-<!ENTITY enigmail.keyMan.fileMenu.accesskey "F">
-<!ENTITY enigmail.keyMan.editMenu.accesskey "E">
-<!ENTITY enigmail.keyMan.viewMenu.accesskey "V">
-<!ENTITY enigmail.keyMan.keyserverMenu.accesskey "c">
-<!ENTITY enigmail.keyMan.generateMenu.accesskey "G">
-<!ENTITY enigmail.keyMan.importFromFile.label "Importa les claus des d'un fitxer">
-<!ENTITY enigmail.keyMan.importFromServer.label "Cerca les claus">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label "Importa les claus des del porta-retalls">
-<!ENTITY enigmail.keyMan.exportToFile.label "Exporta les claus a un fitxer">
-<!ENTITY enigmail.keyMan.sendKeys.label "Envia les claus públiques per correu">
-<!ENTITY enigmail.keyMan.uploadToServer.label "Puja les claus públiques">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label "Copia les claus públiques al porta-retalls">
-<!ENTITY enigmail.keyMan.ctxExportToFile.label "Exporta les claus a un fitxer">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label "Puja les claus públiques a un servidor de claus">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "Copia les claus públiques al porta-retalls">
-<!ENTITY enigmail.keyMan.refreshSelKeys.label "Refresca les claus públiques seleccionades">
-<!ENTITY enigmail.keyMan.refreshAllKeys.label "Refresca totes les claus públiques">
-<!ENTITY enigmail.keyMan.ctxRefreshKey.label "Refresca les claus públiques des del servidor de claus">
-<!ENTITY enigmail.keyMan.reload.label "Recarrega la memòria cau de claus">
-<!ENTITY enigmail.keyMan.addPhoto.label "Afegir fotografia">
-<!ENTITY enigmail.keyMan.manageUid.label "Gestiona els identificadors d'usuari">
-<!ENTITY enigmail.keyMan.changePwd.label "Canvia la contrasenya">
-<!ENTITY enigmail.keyMan.delKey.label "Esborra la clau">
-<!ENTITY enigmail.keyMan.revokeKey.label "Revoca la clau">
-<!ENTITY enigmail.keyMan.keyProps.label "Propietats de la clau">
-<!ENTITY enigmail.keyMan.showAllKeys.label "Mostra totes les claus per defecte">
-<!ENTITY enigmail.keyMan.viewPhoto.label "Identificador de foto">
-<!ENTITY enigmail.keyMan.ctxViewPhoto.label "Visualitza l'identificador de foto">
-<!ENTITY enigmail.keyMan.userId.label "Nom">
-<!ENTITY enigmail.keyMan.keyType.label "Tipus">
-<!ENTITY enigmail.keyMan.calcTrust.label "Validesa de la clau">
-<!ENTITY enigmail.keyMan.ownerTrust.label "Confiança del propietari">
-<!ENTITY enigmail.keyMan.stopTransfer.label "Atura la transferència">
-<!ENTITY enigmail.keyMan.fingerprint.label "Empremta digital">
-<!ENTITY enigmail.keyMan.selectAll.label "Selecciona totes les claus">
-<!ENTITY enigmail.keyMan.emptyTree.tooltip "Introduïu els termes a cercar en la caixa de més amunt">
-<!ENTITY enigmail.keyMan.nothingFound.tooltip "No hi ha cap clau que coincideixi amb els termes a cercar">
-<!ENTITY enigmail.keyMan.pleaseWait.tooltip "Si us plau, espereu mentre es carreguen les claus ...">
-<!ENTITY enigmail.keyMan.filter.label "Cerca per:">
-<!ENTITY enigmail.keyMan.close.accesskey "T">
-<!ENTITY enigmail.keyMan.generate.accesskey "c">
-<!ENTITY enigmail.keyMan.sign.accesskey "S">
-<!ENTITY enigmail.keyMan.setTrust.accesskey "f">
-<!ENTITY enigmail.keyMan.genRevoke.accesskey "r">
-<!ENTITY enigmail.keyMan.delKey.accesskey "E">
-<!ENTITY enigmail.keyMan.revokeKey.accesskey "R">
-<!ENTITY enigmail.keyMan.importFromFile.accesskey "I">
-<!ENTITY enigmail.keyMan.exportToFile.accesskey "E">
-<!ENTITY enigmail.keyMan.importFromServer.accesskey "r">
-<!ENTITY enigmail.keyMan.uploadToServer.accesskey "u">
-<!ENTITY enigmail.keyMan.reload.accesskey "R">
-<!ENTITY enigmail.keyMan.manageUid.accesskey "G">
-<!ENTITY enigmail.keyMan.changePwd.accesskey "c">
-<!ENTITY enigmail.keyMan.showPhoto.accesskey "x">
+
+<!ENTITY enigmail.userSelectionList.label           "Selecció de la clau Enigmail">
+<!ENTITY enigmail.usersNotFound.label               "Els destinataris no són vàlids, no són confiables o no s'han trobat">
+<!ENTITY enigmail.keyExpiry.label                   "Caducitat">
+<!ENTITY enigmail.uidValidity.label                 "">
+<!ENTITY enigmail.keySelection.label                "Selecció">
+<!ENTITY enigmail.keyId.label                       "Identificador de clau">
+<!ENTITY enigmail.userSelSendSigned.label           "">
+<!ENTITY enigmail.userSelSendSigned.accesskey       "">
+<!ENTITY enigmail.userSelSendEncrypted.label        "">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "">
+<!ENTITY enigmail.displayNoLonger.label             "No mostris aquest diàleg una altra vegada si no és possible xifrar">
+<!ENTITY enigmail.importMissingKeys.label           "Baixa les claus que manquen">
+<!ENTITY enigmail.importMissingKeys.accesskey       "i">
+<!ENTITY enigmail.importMissingKeys.tooltip         "Intenta importar les claus que manquen des d'un servidor de claus">
+<!ENTITY enigmail.refreshKeys.label                 "Refresca la llista de claus">
+<!ENTITY enigmail.refreshKeys.accesskey             "R">
+<!ENTITY enigmail.send.label                        "">
+<!ENTITY enigmail.perRecipientsOption.label         "Crea regla/s per destinatari">
+
+<!ENTITY enigmail.enigmailAttachDesc.label          "Aquest missatge conté adjunts. Com els voleu xifrar/signar ?">
+<!ENTITY enigmail.enigEncryptAttachNone.label           "Xifra/signa només el text del missatge, però no els adjunts">
+<!ENTITY enigmail.enigAttachNoneSign.label              "">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label           "">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label    "">
+<!ENTITY enigmail.enigEncryptAttachInline.label         "Xifra/signa cada adjunt per separat i envia el missatge emprant PGP en línia">
+<!ENTITY enigmail.enigAttachInlineSign.label            "">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label         "">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label  "">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label        "Xifra/signa el missatge sencer i envia'l emprant PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label           "">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label        "">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label        "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label           "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label        "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "">
+<!ENTITY enigmail.encryptAttachSkipDlg.label        "Empra el mètode seleccionat en el futur per a tots els fitxers adjunts">
+
+
+<!ENTITY enigmail.ctxDecryptOpen.label              "Desxifra i obre">
+<!ENTITY enigmail.ctxDecryptSave.label              "Desxifra i desa com...">
+<!ENTITY enigmail.ctxImportKey.label                "Importa la clau OpenPGP">
+<!ENTITY enigmail.ctxVerifyAtt.label                "">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "c">
+<!ENTITY enigmail.ctxImportKey.accesskey            "I">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey            "">
+<!ENTITY enigmail.detailsHdrButton.label            "Detalls">
+<!ENTITY enigmail.revealAttachmentsButton.label     "">
+<!ENTITY enigmail.revealAttachments.button          "">
+
+<!ENTITY enigmail.exchangeGarbage.desc              "">
+<!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
+<!ENTITY enigmail.exchangeGarbage.waitMessage       "">
+
+<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefDesc.label                  "Enigmail permet l'ús de l'OpenPGP per xifrar i signar missatges. Us cal tenir GnuPG (gpg) instal·lat per emprar aquesta funcionalitat.">
+<!ENTITY enigmail.amPrefEnablePgp.label             "Activa el funcionament de l'OpenPGP (Enigmail) per aquesta identitat">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "Usa l'adreça de correu d'aquesta identitat per identificar la clau OpenPGP">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Usa l'identificador específic de clau OpenPGP (0x1234ABCD):">
+<!ENTITY enigmail.amPrefSelectKey.label             "Selecció de la clau ...">
+<!ENTITY enigmail.amPrefMsgComp.label               "">
+<!ENTITY enigmail.amPrefDefaultEncrypt.label        "Opcions de redacció del missatge per defecte">
+<!ENTITY enigmail.encryptionDlg.label               "Paràmetres Enigmail de xifra i signatura">
+<!ENTITY enigmail.encDlgProtocol.label              "">
+<!ENTITY enigmail.encDlgEncrypt.label               "Xifra el missatge">
+<!ENTITY enigmail.encDlgEncrypt.accesskey           "X">
+<!ENTITY enigmail.encDlgSign.label                  "Signa el missatge">
+<!ENTITY enigmail.encDlgSign.accesskey              "g">
+<!ENTITY enigmail.encDlgPgpMime.label               "Empra PGP/MIME">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
+<!ENTITY enigmail.encDlgInlinePgp.label             "">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "">
+<!ENTITY enigmail.encDlgSMime.label                 "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgReset.label                 "">
+<!ENTITY enigmail.encDlgReset.accesskey             "">
+<!ENTITY enigmail.amPrefPgpHeader.label             "Envia la capçalera 'OpenPGP'">
+<!ENTITY enigmail.amPrefPgpHeader.id.label          "Envia la identificació de clau OpenPGP">
+<!ENTITY enigmail.amPrefPgpHeader.url.label         "Envia l'URL per recuperar la clau:">
+<!ENTITY enigmail.amPrefMimePreferProto.label       "">
+<!ENTITY enigmail.amPrefMimePreferEnigmail.label    "">
+<!ENTITY enigmail.amPrefMimePreferSMime.label       "">
+<!ENTITY enigmail.amPrefAutocrypt.description       "">
+
+<!ENTITY enigmail.progressText.label               "Progrés:">
+
+<!ENTITY enigmail.openPgpSecurity.label            "Seguretat OpenPGP">
+
+<!ENTITY enigmail.pgpSecurityInfo.label            "Informació de seguretat Enigmail ...">
+<!ENTITY enigmail.copySecurityInfo.label           "Copia la informació de seguretat Enigmail">
+<!ENTITY enigmail.showPhoto.label                  "Mostra l'identificador de foto OpenPGP">
+<!ENTITY enigmail.photoViewer.title                "">
+<!ENTITY enigmail.displayKeyProperties.label       "">
+<!ENTITY enigmail.signSenderKey.label              "Signa la clau ...">
+<!ENTITY enigmail.trustSenderKey.label             "Estableix la confiança del propitari ...">
+<!ENTITY enigmail.signSenderKeyPopup.label         "Signa la clau del remitent ...">
+<!ENTITY enigmail.trustSenderKeyPopup.label        "Estableix la confiança del propietari de la clau del remitent ...">
+<!ENTITY enigmail.createRuleFromAddr.label         "Crea una regla Enigmail per l'adreça...">
+<!ENTITY enigmail.keyManWindow.label               "Gestió de claus">
+<!ENTITY enigmail.keyManWindow.accesskey           "c">
+
+<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Paràmetres de destinatari">
+
+<!ENTITY enigmail.compose.excesslength.label        "">
+<!ENTITY enigmail.compose.excesslength_action.label "">
+<!ENTITY enigmail.wrapSelectionList.label           "">
+<!ENTITY enigmail.compose.wrap_radio.label          "">
+<!ENTITY enigmail.compose.sendasis_radio.label      "">
+<!ENTITY enigmail.compose.use_mime_radio.label      "">
+<!ENTITY enigmail.compose.editmanually.label        "">
+
+<!ENTITY enigmail.selKeysButton.label               "Selecció de clau/s...">
+<!ENTITY enigmail.action.label                      "Acció">
+<!ENTITY enigmail.nextRule.label                    "Continua amb la regla següent per l'adreça que coincideixi">
+<!ENTITY enigmail.nextAddress.label                 "No comprovis més regles per l'adreça que coincideixi">
+<!ENTITY enigmail.useKeys.label                     "Empra les següents claus OpenPGP:">
+<!ENTITY enigmail.selKeysButton.accesskey           "S">
+<!ENTITY enigmail.setDefaultsFor.label              "Per defecte ...">
+<!ENTITY enigmail.encryption.label                  "Xifrat">
+<!ENTITY enigmail.signing.label                     "Signat">
+<!ENTITY enigmail.never.label                       "Mai">
+<!ENTITY enigmail.always.label                      "Sempre">
+<!ENTITY enigmail.maybe.label                       "Sí, si es selecciona a la redacció del missatge">
+<!ENTITY enigmail.singleRcptSettings.desc           "(Nota: en cas de conflicte, 'Mai' preval sobre 'Sempre')">
+<!ENTITY enigmail.ruleEmail.label                   "Estableix les regles Enigmail per a ">
+<!ENTITY enigmail.ruleEmail.tooltip                 "Ompliu només l'adreça de correu, NO establiu els noms dels recipients   Per exemple,        'Algun nom' <algun.nom@adreça.net>' no és vàlid">
+<!ENTITY enigmail.sepratationDesc.label             "(Cal separar varies adreces de correu amb espais)">
+<!ENTITY enigmail.matchDescStart.label              "Aplica la regla si és el destinatari">
+<!ENTITY enigmail.matchDescEnd.label                "una de les adreces d'amunt">
+<!ENTITY enigmail.matchExact.label                  "És exactament">
+<!ENTITY enigmail.matchContains.label               "Conté">
+<!ENTITY enigmail.matchBegin.label                  "Comença amb">
+<!ENTITY enigmail.matchEnd.label                    "Acaba amb">
+<!ENTITY enigmail.not.label                         "No">
+
+<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Editor de regles per destinatari">
+<!ENTITY enigmail.email.label                       "Correu">
+<!ENTITY enigmail.pgpKeys.label                     "Clau/s OpenPGP">
+<!ENTITY enigmail.sign.label                        "Signat">
+<!ENTITY enigmail.encrypt.label                     "Xifra">
+<!ENTITY enigmail.edit.label                        "Modifica">
+<!ENTITY enigmail.edit.accesskey                    "M">
+<!ENTITY enigmail.add.label                         "Afegeix">
+<!ENTITY enigmail.add.accesskey                     "A">
+<!ENTITY enigmail.delete.label                      "Esborra">
+<!ENTITY enigmail.delete.accesskey                  "E">
+<!ENTITY enigmail.moveUp.label                      "Puja">
+<!ENTITY enigmail.moveUp.accesskey                  "P">
+<!ENTITY enigmail.moveDown.label                    "Baixa">
+<!ENTITY enigmail.moveDown.accesskey                "B">
+<!ENTITY enigmail.searchRule.label                  "Mostra les regles que contenen l'adreça de correu:">
+<!ENTITY enigmail.clearSearch.label                 "Neteja">
+<!ENTITY enigmail.clearSearch.accesskey             "N">
+
+<!ENTITY enigmail.searchKeyDlg.label               "Baixa les claus OpenPGP">
+<!ENTITY enigmail.searchKeyDlgCapt.label           "S'ha trobat les claus - Seleccioneu per a importar">
+<!ENTITY enigmail.searchKeyDlgSelAll.label         "">
+
+<!ENTITY enigmail.created.label                    "Creada">
+
+<!ENTITY enigmail.progress.label                   "Progrés">
+
+<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Signatura de clau">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Clau a signar:">
+<!ENTITY enigmail.sKeyDlg.fingerprint.label        "Empremta digital:">
+<!ENTITY enigmail.sKeyDlg.signWithKey.label        "Clau per signar:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label        "">
+<!ENTITY enigmail.sKeyDlg.checked.label            "Amb quina cura heu verificat que la clau que aneu a signar ara pertany a la persona/es anomenada més amunt ?">
+<!ENTITY enigmail.sKeyDlg.noAnswer.label           "No contestaré">
+<!ENTITY enigmail.sKeyDlg.notChecked.label         "No he comprovat res">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label        "He fet una comprovació despreocupada">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "He fet una comprovació curosa">
+<!ENTITY enigmail.sKeyDlg.createLocal.label        "Signatura local (no és exportable)">
+
+<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Afegir identificador d'usuari">
+<!ENTITY enigmail.addUidDlg.name.label             "Nom">
+<!ENTITY enigmail.addUidDlg.email.label            "Correu">
+
+<!ENTITY enigmail.keyTrust.title                   "Enigmail - Establir la confiança del propietari">
+<!ENTITY enigmail.keyTrust.trustKey.label          "Clau a confiar:">
+<!ENTITY enigmail.keyTrust.trustLevel.label        "Quant confieu en la clau ?">
+<!ENTITY enigmail.keyTrust.trustLevel.tooltip      "">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "No ho sé">
+<!ENTITY enigmail.keyTrust.noTrust.label           "No hi confio">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "Hi confio marginalment">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "Hi confio plenament">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Hi confio fins al final">
+
+<!ENTITY enigmail.keyExpiry.title                   "">
+<!ENTITY enigmail.keyExpiry.expiryKey.label         "">
+
+<!ENTITY enigmail.keyMan.title                     "Gestió de la clau Enigmail">
+<!ENTITY enigmail.keyMan.close.label               "Tanca la finestra">
+<!ENTITY enigmail.keyMan.generate.label            "Nova parella de claus">
+<!ENTITY enigmail.keyMan.sign.label                "Signa la clau">
+<!ENTITY enigmail.keyMan.setTrust.label            "Estableix la confiança del propietari">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Certificat de revocació">
+<!ENTITY enigmail.keyMan.ctxGenRevoke.label        "Genera i desa un certificat de revocació">
+
+<!ENTITY enigmail.keyMan.fileMenu.label            "Fitxer">
+<!ENTITY enigmail.keyMan.editMenu.label            "Edita">
+<!ENTITY enigmail.keyMan.viewMenu.label            "Visualitza">
+<!ENTITY enigmail.keyMan.keyserverMenu.label       "Servidor de claus">
+<!ENTITY enigmail.keyMan.generateMenu.label        "Genera">
+
+<!ENTITY enigmail.keyMan.fileMenu.accesskey        "F">
+<!ENTITY enigmail.keyMan.editMenu.accesskey        "E">
+<!ENTITY enigmail.keyMan.viewMenu.accesskey        "V">
+<!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "c">
+<!ENTITY enigmail.keyMan.generateMenu.accesskey    "G">
+
+<!ENTITY enigmail.keyMan.importFromFile.label      "Importa les claus des d'un fitxer">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Cerca les claus">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Importa les claus des del porta-retalls">
+<!ENTITY enigmail.keyMan.importFromUrl.label       "">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Exporta les claus a un fitxer">
+<!ENTITY enigmail.keyMan.sendKeys.label            "Envia les claus públiques per correu">
+<!ENTITY enigmail.keyMan.createMail.label          "">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Puja les claus públiques">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copia les claus públiques al porta-retalls">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Exporta les claus a un fitxer">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Puja les claus públiques a un servidor de claus">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Copia les claus públiques al porta-retalls">
+<!ENTITY enigmail.keyMan.refreshSelKeys.label      "Refresca les claus públiques seleccionades">
+<!ENTITY enigmail.keyMan.refreshAllKeys.label      "Refresca totes les claus públiques">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Refresca les claus públiques des del servidor de claus">
+<!ENTITY enigmail.keyMan.initiateAcBackup.label    "">
+
+<!ENTITY enigmail.keyMan.reload.label              "Recarrega la memòria cau de claus">
+<!ENTITY enigmail.keyMan.addPhoto.label            "Afegir fotografia">
+<!ENTITY enigmail.keyMan.manageUid.label           "Gestiona els identificadors d'usuari">
+<!ENTITY enigmail.keyMan.changeExpiry.label        "">
+<!ENTITY enigmail.keyMan.changePwd.label           "Canvia la contrasenya">
+<!ENTITY enigmail.keyMan.delKey.label              "Esborra la clau">
+<!ENTITY enigmail.keyMan.revokeKey.label           "Revoca la clau">
+<!ENTITY enigmail.keyMan.keyProps.label            "Propietats de la clau">
+<!ENTITY enigmail.keyMan.showAllKeys.label         "Mostra totes les claus per defecte">
+<!ENTITY enigmail.keyMan.viewPhoto.label           "Identificador de foto">
+<!ENTITY enigmail.keyMan.ctxViewPhoto.label        "Visualitza l'identificador de foto">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label     "">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label   "">
+<!ENTITY enigmail.keyMan.showOthersKeys.label      "">
+<!ENTITY enigmail.keyMan.userId.label              "Nom">
+<!ENTITY enigmail.keyMan.keyType.label             "Tipus">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Validesa de la clau">
+<!ENTITY enigmail.keyMan.ownerTrust.label          "Confiança del propietari">
+<!ENTITY enigmail.keyMan.fingerprint.label         "Empremta digital">
+<!ENTITY enigmail.keyMan.pEpBlacklisted.label      "">
+<!ENTITY enigmail.keyMan.selectAll.label           "Selecciona totes les claus">
+<!ENTITY enigmail.keyMan.addToPRRule.label         "">
+<!ENTITY enigmail.keyMan.emptyTree.tooltip         "Introduïu els termes a cercar en la caixa de més amunt">
+<!ENTITY enigmail.keyMan.nothingFound.tooltip      "No hi ha cap clau que coincideixi amb els termes a cercar">
+<!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Si us plau, espereu mentre es carreguen les claus ...">
+
+<!ENTITY enigmail.keyMan.filter.label              "Cerca per:">
+
+<!ENTITY enigmail.keyMan.close.accesskey             "T">
+<!ENTITY enigmail.keyMan.generate.accesskey          "c">
+<!ENTITY enigmail.keyMan.sign.accesskey              "S">
+<!ENTITY enigmail.keyMan.setTrust.accesskey          "f">
+<!ENTITY enigmail.keyMan.genRevoke.accesskey         "r">
+<!ENTITY enigmail.keyMan.delKey.accesskey            "E">
+<!ENTITY enigmail.keyMan.revokeKey.accesskey         "R">
+<!ENTITY enigmail.keyMan.importFromFile.accesskey    "I">
+<!ENTITY enigmail.keyMan.exportToFile.accesskey      "E">
+<!ENTITY enigmail.keyMan.importFromServer.accesskey  "r">
+<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "u">
+<!ENTITY enigmail.keyMan.reload.accesskey            "R">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "">
+<!ENTITY enigmail.keyMan.manageUid.accesskey         "G">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "">
+<!ENTITY enigmail.keyMan.changePwd.accesskey         "c">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "">
+<!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "x">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
-<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey "C">
-<!ENTITY enigmail.keyMan.keyDetails.accesskey "C">
-<!ENTITY enigmail.keyMan.showAllKeys.accesskey "M">
-<!ENTITY enigmail.keyMan.enableKey.accesskey "A">
-<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey "R">
-<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "t">
-<!ENTITY enigmail.keyMan.selectAll.accesskey "t">
-<!ENTITY enigmail.keyMan.sendKeys.accesskey "E">
-<!ENTITY enigmail.keyMan.selectAll.key "t">
-<!ENTITY enigmail.manageUidDlg.title "Canvia l'identificador principal de clau">
-<!ENTITY enigmail.manageUidDlg.affectedKey.label "Clau a canviar:">
-<!ENTITY enigmail.manageUidDlg.availableUid.label "Identificadors d'usuari disponibles:">
-<!ENTITY enigmail.manageUidDlg.addUid.label "Afegeix">
-<!ENTITY enigmail.manageUidDlg.deleteUid.label "Esborra">
-<!ENTITY enigmail.manageUidDlg.revokeUid.label "Revoca">
-<!ENTITY enigmail.manageUidDlg.setPrimary.label "Estableix el principal">
-<!ENTITY enigmail.keyDetails.title "Propietats de la clau">
-<!ENTITY enigmail.keyDetails.userId.label "Identificador d'usuari principal">
-<!ENTITY enigmail.keyDetails.ID.label "Identificador">
-<!ENTITY enigmail.keyDetails.keyType.label "Tipus">
-<!ENTITY enigmail.keyDetails.keyPart.label "Part de la clau">
-<!ENTITY enigmail.keyDetails.algorithm.label "Algorisme">
-<!ENTITY enigmail.keyDetails.size.label "Mida">
-<!ENTITY enigmail.keyDetails.created.label "Creada">
-<!ENTITY enigmail.keyDetails.expiry.label "Caducitat">
-<!ENTITY enigmail.keyDetails.usage.label "Sintaxi">
-<!ENTITY enigmail.keyDetails.fingerprint.label "Empremta digital">
-<!ENTITY enigmail.keyDetails.selAction.label "Seleccioneu acció ...">
-<!ENTITY enigmail.keyDetails.selAction.accesskey "S">
-<!ENTITY enigmail.cardDetails.title "Detalls de la targeta intel·ligent OpenPGP">
-<!ENTITY enigmail.cardDetails.cardMenu.label "Targeta intel·ligent">
-<!ENTITY enigmail.cardDetails.adminPin.label "Canvi de PIN">
-<!ENTITY enigmail.cardDetails.genCardKey.label "Genera la clau">
-<!ENTITY enigmail.cardDetails.vendor.label "Fabricant">
-<!ENTITY enigmail.cardDetails.serial.label "Número de sèrie">
-<!ENTITY enigmail.cardDetails.name.label "Cognom, nom">
-<!ENTITY enigmail.cardDetails.lang.label "Idioma">
-<!ENTITY enigmail.cardDetails.sex.label "Sexe">
-<!ENTITY enigmail.cardDetails.url.label "URL de clau pública">
-<!ENTITY enigmail.cardDetails.login.label "Data d'entrada">
-<!ENTITY enigmail.cardDetails.forcepin.label "PIN signatura forçat">
-<!ENTITY enigmail.cardDetails.maxpinlen.label "Longitud màx. PIN">
-<!ENTITY enigmail.cardDetails.pinretry.label "Comptador d'intents de PIN">
-<!ENTITY enigmail.cardDetails.sigcount.label "Comptador de signatura">
-<!ENTITY enigmail.cardDetails.sigKey.label "Clau de signatura">
-<!ENTITY enigmail.cardDetails.keyCreated.label "Creada">
-<!ENTITY enigmail.cardDetails.encKey.label "Clau de xifrat">
-<!ENTITY enigmail.cardDetails.authKey.label "Clau d'autenticació">
-<!ENTITY enigmail.cardDetails.yes.label "Sí">
-<!ENTITY enigmail.cardDetails.no.label "No">
-<!ENTITY enigmail.cardDetails.male.label "Masculí">
-<!ENTITY enigmail.cardDetails.female.label "Femení">
-<!ENTITY enigmail.cardDetails.editData.label "Edita les dades de la targeta">
-<!ENTITY enigmail.cardDetails.save.label "Desa">
-<!ENTITY enigmail.cardDetails.reset.label "Reinicia">
-<!ENTITY enigmail.cardDetails.closeWindow.label "Tanca">
-<!ENTITY enigmail.cardDetails.adminPin.accesskey "P">
-<!ENTITY enigmail.cardDetails.genCardKey.accesskey "G">
-<!ENTITY enigmail.cardDetails.cardMenu.accesskey "T">
-<!ENTITY enigmail.cardDetails.editData.accesskey "E">
-<!ENTITY enigmail.genCardKey.title "Genera la clau OpenPGP">
-<!ENTITY enigmail.genCardKey.backupKey.label "Desa una còpia de seguretat de clau fora de la targeta">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>NOTA: La generació de la clau pot trigar uns minuts en acabar.</a> No sortiu de l'aplicació mentre estigui en curs la generació de la clau. Us avisaré quan acabi la generació de la clau.">
-<!ENTITY enigmail.cardPin.title "Canvi de PIN de la targeta">
-<!ENTITY enigmail.cardPin.action.label "Què voleu fer">
-<!ENTITY enigmail.cardPin.changePin.label "Canviar el PIN">
-<!ENTITY enigmail.cardPin.changeAdmPin.label "Canviar el PIN d'admin.">
-<!ENTITY enigmail.cardPin.unblockPin.label "Desblocar el PIN">
-<!ENTITY enigmail.cardPin.currAdmPin.label "PIN actual d'admin.">
-<!ENTITY enigmail.cardPin.newAdminPin.label "PIN nou d'admin.">
-<!ENTITY enigmail.cardPin.adminPinRepeat.label "Repetiu el PIN nou">
-<!ENTITY enigmail.cardPin.currPin.label "PIN actual">
-<!ENTITY enigmail.cardPin.newPin.label "PIN nou">
-<!ENTITY enigmail.cardPin.pinRepeat.label "Repetiu el PIN nou">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
+<!ENTITY enigmail.keyMan.keyDetails.accesskey        "C">
+<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "M">
+<!ENTITY enigmail.keyMan.enableKey.accesskey         "A">
+<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "R">
+<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "t">
+<!ENTITY enigmail.keyMan.selectAll.accesskey         "t">
+<!ENTITY enigmail.keyMan.sendKeys.accesskey          "E">
+<!ENTITY enigmail.keyMan.createMail.accesskey        "">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+
+
+<!ENTITY enigmail.keyMan.selectAll.key               "t">
+<!ENTITY enigmail.keyMan.keyDetails.key              "">
+<!ENTITY enigmail.keyMan.refreshKey.key              "">
+
+<!ENTITY enigmail.keySearch.selectAll.key            "">
+
+<!ENTITY enigmail.manageUidDlg.title                 "Canvia l'identificador principal de clau">
+<!ENTITY enigmail.manageUidDlg.affectedKey.label     "Clau a canviar:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label    "Identificadors d'usuari disponibles:">
+<!ENTITY enigmail.manageUidDlg.addUid.label          "Afegeix">
+<!ENTITY enigmail.manageUidDlg.revokeUid.label       "Revoca">
+<!ENTITY enigmail.manageUidDlg.setPrimary.label      "Estableix el principal">
+
+<!ENTITY enigmail.keyDetails.title                   "Propietats de la clau">
+<!ENTITY enigmail.keyDetails.signaturesTab           "">
+<!ENTITY enigmail.keyDetails.structureTab            "">
+<!ENTITY enigmail.keyDetails.uidCertifiedCol         "">
+<!ENTITY enigmail.keyDetails.userId.label            "Identificador d'usuari principal">
+<!ENTITY enigmail.keyDetails.ID.label                "Identificador">
+<!ENTITY enigmail.keyDetails.keyType.label           "Tipus">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Part de la clau">
+<!ENTITY enigmail.keyDetails.algorithm.label         "Algorisme">
+<!ENTITY enigmail.keyDetails.size.label              "Mida">
+<!ENTITY enigmail.keyDetails.created.label           "Creada">
+<!ENTITY enigmail.keyDetails.expiry.label            "Caducitat">
+<!ENTITY enigmail.keyDetails.usage.label             "Sintaxi">
+<!ENTITY enigmail.keyDetails.fingerprint.label       "Empremta digital">
+<!ENTITY enigmail.keyDetails.selAction.label         "Seleccioneu acció ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
+<!ENTITY enigmail.keyDetails.change.label            "">
+<!ENTITY enigmail.keyDetails.signKey.label           "">
+<!ENTITY enigmail.keyDetails.trustStatus.label       "">
+<!ENTITY enigmail.keyDetails.keyValidity.label       "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+
+<!ENTITY enigmail.cardDetails.title                  "Detalls de la targeta intel·ligent OpenPGP">
+<!ENTITY enigmail.cardDetails.cardMenu.label         "Targeta intel·ligent">
+<!ENTITY enigmail.cardDetails.adminPin.label         "Canvi de PIN">
+<!ENTITY enigmail.cardDetails.genCardKey.label       "Genera la clau">
+
+<!ENTITY enigmail.cardDetails.vendor.label           "Fabricant">
+<!ENTITY enigmail.cardDetails.serial.label           "Número de sèrie">
+<!ENTITY enigmail.cardDetails.name.label             "Cognom, nom">
+<!ENTITY enigmail.cardDetails.lang.label             "Idioma">
+<!ENTITY enigmail.cardDetails.sex.label              "Sexe">
+<!ENTITY enigmail.cardDetails.url.label              "URL de clau pública">
+<!ENTITY enigmail.cardDetails.login.label            "Data d'entrada">
+<!ENTITY enigmail.cardDetails.forcepin.label         "PIN signatura forçat">
+<!ENTITY enigmail.cardDetails.maxpinlen.label        "Longitud màx. PIN">
+<!ENTITY enigmail.cardDetails.pinretry.label         "Comptador d'intents de PIN">
+<!ENTITY enigmail.cardDetails.sigcount.label         "Comptador de signatura">
+<!ENTITY enigmail.cardDetails.sigKey.label           "Clau de signatura">
+<!ENTITY enigmail.cardDetails.keyCreated.label       "Creada">
+<!ENTITY enigmail.cardDetails.encKey.label           "Clau de xifrat">
+<!ENTITY enigmail.cardDetails.authKey.label          "Clau d'autenticació">
+<!ENTITY enigmail.cardDetails.yes.label              "Sí">
+<!ENTITY enigmail.cardDetails.no.label               "No">
+<!ENTITY enigmail.cardDetails.male.label             "Masculí">
+<!ENTITY enigmail.cardDetails.female.label           "Femení">
+<!ENTITY enigmail.cardDetails.editData.label         "Edita les dades de la targeta">
+<!ENTITY enigmail.cardDetails.save.label             "Desa">
+<!ENTITY enigmail.cardDetails.reset.label            "Reinicia">
+<!ENTITY enigmail.cardDetails.closeWindow.label      "Tanca">
+
+<!ENTITY enigmail.cardDetails.adminPin.accesskey     "P">
+<!ENTITY enigmail.cardDetails.genCardKey.accesskey   "G">
+<!ENTITY enigmail.cardDetails.cardMenu.accesskey     "T">
+<!ENTITY enigmail.cardDetails.editData.accesskey     "E">
+
+<!ENTITY enigmail.genCardKey.title                   "Genera la clau OpenPGP">
+<!ENTITY enigmail.genCardKey.backupKey.label         "Desa una còpia de seguretat de clau fora de la targeta">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTA: La generació de la clau pot trigar uns minuts en acabar.</a> No sortiu de l'aplicació mentre estigui en curs la generació de la clau. Us avisaré quan acabi la generació de la clau.">
+
+<!ENTITY enigmail.cardPin.title                      "Canvi de PIN de la targeta">
+<!ENTITY enigmail.cardPin.action.label               "Què voleu fer">
+<!ENTITY enigmail.cardPin.changePin.label            "Canviar el PIN">
+<!ENTITY enigmail.cardPin.changeAdmPin.label         "Canviar el PIN d'admin.">
+<!ENTITY enigmail.cardPin.unblockPin.label           "Desblocar el PIN">
+<!ENTITY enigmail.cardPin.currAdmPin.label           "PIN actual d'admin.">
+<!ENTITY enigmail.cardPin.newAdminPin.label          "PIN nou d'admin.">
+<!ENTITY enigmail.cardPin.adminPinRepeat.label       "Repetiu el PIN nou">
+<!ENTITY enigmail.cardPin.currPin.label              "PIN actual">
+<!ENTITY enigmail.cardPin.newPin.label               "PIN nou">
+<!ENTITY enigmail.cardPin.pinRepeat.label            "Repetiu el PIN nou">
+
 <!-- wizard: welcome step -->
-<!ENTITY enigmail.setupWiz.title "Auxiliar de configuració de l'Enigmail">
+<!ENTITY enigmail.setupWiz.title                     "Auxiliar de configuració de l'Enigmail">
+<!ENTITY enigmail.setupWiz.pgIntro.title             "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc              "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2             "">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow          "">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater        "">
+
+<!ENTITY enigmail.setupWiz.pgWelcome.title           "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "">
+
 <!-- wizard: select account IDs step -->
-<!ENTITY enigmail.setupWiz.pgSelectId.title "Selecció d'identitats">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Seleccioneu els comptes o identitats amb els que treballarà l'Enigmail">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Nota:</a> L'Enigmail sempre verificarà les signatures dels correus per cada compte o identitat, sense fer cas a si està habilitat o no.">
+<!ENTITY enigmail.setupWiz.pgSelectId.title          "Selecció d'identitats">
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Seleccioneu els comptes o identitats amb els que treballarà l'Enigmail">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc2          "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds   "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds    "">
+<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Nota:</a> L'Enigmail sempre verificarà les signatures dels correus per cada compte o identitat, sense fer cas a si està habilitat o no.">
+
 <!-- wizard: install GnuPG step -->
-<!ENTITY enigmail.setupWiz.pgInstall.title "Requereix GnuPG">
-<!ENTITY enigmail.setupWiz.pgInstall.installButton "Instal·la...">
-<!ENTITY enigmail.setupWiz.pgInstall.locateButton "Navega...">
-<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel "Baixant GnuPG...">
+<!ENTITY enigmail.setupWiz.pgInstall.title           "Requereix GnuPG">
+<!ENTITY enigmail.setupWiz.pgInstall.desc            "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1    "">
+
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc2    "">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton   "Instal·la...">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton    "Navega...">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "Baixant GnuPG...">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone     "">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "">
+
+
 <!-- wizard: key selection step -->
-<!ENTITY enigmail.setupWiz.pgKeySel.title "Selecció de clau">
-<!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Creació d'una clau per signar i xifrar correu">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey "Vull crear una nova parella de claus per signar i xifrar el meu correu">
-<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Vull seleccionar una de les claus següents per signar i xifrar el meu correu:">
+
+<!ENTITY enigmail.setupWiz.pgKeySel.title            "Selecció de clau">
+<!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Creació d'una clau per signar i xifrar correu">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "">
+<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Vull crear una nova parella de claus per signar i xifrar el meu correu">
+<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "Vull seleccionar una de les claus següents per signar i xifrar el meu correu:">
+
+
 <!-- wizard: key creation - password step -->
-<!ENTITY enigmail.setupWiz.pgKeyCreate.title "Creació de clau">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Creació d'una clau per signar i xifrar correu">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Confirmeu la vostra contrasenya teclejant-la una altra vegada">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Creació de clau">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Creació d'una clau per signar i xifrar correu">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Confirmeu la vostra contrasenya teclejant-la una altra vegada">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passErrorRepeat "">
+
+<!-- wizard: no key found step -->
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "">
+
 <!-- wizard: import key page -->
-<!ENTITY enigmail.setupWiz.pgKeyImport.title "Importa les claus OpenPGP">
-<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Fitxer de clau pública">
-<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Fitxer de clau privada">
+<!ENTITY enigmail.setupWiz.pgKeyImport.title         "Importa les claus OpenPGP">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Fitxer de clau pública">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Fitxer de clau privada">
+
 <!-- wizard: key creation - key generation step -->
-<!ENTITY enigmail.setupWiz.pgKeygen.title "Creació de la clau">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Ara s'està generant la vostra clau">
+
+<!ENTITY enigmail.setupWiz.pgKeygen.title            "Creació de la clau">
+<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Ara s'està generant la vostra clau">
+<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "">
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "">
+<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+
+<!-- wizard: key creation - key upload step -->
+<!ENTITY enigmail.setupWiz.pgUpload.title            "">
+<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "">
+<!ENTITY enigmail.attachAuto.desc                    "">
+
+<!-- wizard: import settings from previous installation -->
+<!ENTITY enigmail.setupWiz.pgImportSettings.title    "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc     "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error    "">
+
 <!-- wizard: final page -->
-<!ENTITY enigmail.setupWiz.pgComplete.title "Gràcies">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "L'Enigmail està llest per emprar-lo ara.<html:br/><html:br/>Gràcies per emprar l'Enigmail.">
-<!ENTITY enigmail.advancedIdentityDlg.title "Paràmetres d'identitat Enigmail avançats">
-<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Annexa la meva clau pública als missatges">
-<!ENTITY enigmail.addPhoto.title "Afegeix una fotografia a la clau">
-<!ENTITY enigmail.msgViewColumn.label "OpenPGP">
-<!ENTITY enigmail.msgViewColumn.tooltip "Ordena per l'estat OpenPGP">
-<!ENTITY enigmail.addToRule.useRuleButton.label "Afegeix una clau a la regla seleccionada">
-<!ENTITY enigmail.addToRule.newRuleButton.label "Crea una nova regla">
+<!ENTITY enigmail.setupWiz.pgComplete.title          "Gràcies">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "L'Enigmail està llest per emprar-lo ara.<html:br/><html:br/>Gràcies per emprar l'Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "">
+<!ENTITY enigmail.pgComplete.help.title              "">
+
+<!-- wizard: manual setup page -->
+<!ENTITY enigmail.setupWiz.pgExpert.title            "">
+<!ENTITY enigmail.setupWiz.pgExpert.desc             "">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "">
+
+
+
+<!ENTITY enigmail.advancedIdentityDlg.title          "Paràmetres d'identitat Enigmail avançats">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Annexa la meva clau pública als missatges">
+
+<!ENTITY enigmail.addPhoto.question.label            "">
+<!ENTITY enigmail.addPhoto.title                     "Afegeix una fotografia a la clau">
+<!ENTITY enigmail.msgViewColumn.tooltip              "Ordena per l'estat OpenPGP">
+<!ENTITY enigmail.addToRule.title                    "">
+<!ENTITY enigmail.addToRule.useRuleButton.label      "Afegeix una clau a la regla seleccionada">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "">
+<!ENTITY enigmail.addToRule.newRuleButton.label      "Crea una nova regla">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey  "">
+
+<!ENTITY enigmail.savelogfile.label                   "">
+
+<!ENTITY enigmail.filterEditor.moveError.label       "">
+
+<!-- Export wizard -->
+<!ENTITY enigmail.exportWiz.title                    "">
+<!ENTITY enigmail.exportWiz.pgIntro.title            "">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1            "">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "">
+<!ENTITY enigmail.exportWiz.pgExport.title           "">
+<!ENTITY enigmail.exportWiz.pgExport.exporting       "">
+<!ENTITY enigmail.exportWiz.pgExport.done            "">
+<!ENTITY enigmail.exportWiz.pgExport.failed          "">
+
+<!ENTITY enigmail.privacyPprefPane.juniorMode         "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
+
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.revokeTrust.label               "">
+<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.title             "">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">
+<!ENTITY enigmail.pEp.privacyStatus.label             "">
+<!ENTITY enigmail.pEp.composestatus.label             "">
+
+<!ENTITY enigmail.pepHandshake.SuggestionTitle       "">
+<!ENTITY enigmail.pepHandshake.explanation           "">
+
+<!ENTITY enigmail.pepPrepHandshake.desc              "">
+
+<!ENTITY enigmail.pepPref.window.title               "">
+<!ENTITY enigmail.pepPref.accountTab.label           "">
+<!ENTITY enigmail.pepPref.compatTab.label            "">
+<!ENTITY enigmail.pepPref.aboutTab.label             "">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "">
+<!ENTITY enigmail.pepPref.storeSecurely.title        "">
+<!ENTITY enigmail.pepPref.storeSecurely.label        "">
+<!ENTITY enigmail.pepPref.enableEncryption.label     "">
+<!ENTITY enigmail.pepPref.passiveMode.label          "">
+<!ENTITY enigmail.pepPref.protectedSubject.label     "">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "">
+<!ENTITY enigmail.pepPref.openpgpCompatibility.label "">
+<!ENTITY enigmail.pepPref.autoKeyLookup.label        "">
+<!ENTITY enigmail.pepPref.credits.label              "">
+<!ENTITY enigmail.pepPref.thanksTo.label             "">
+
+<!ENTITY enigmail.acPreferEncrypt.label              "">
+<!ENTITY enigmail.enableAutocrypt.label              "">
+
+<!ENTITY enigmail.acSetupPasswd.dlgTitle             "">
+<!ENTITY enigmail.acSetupPasswd.password             "">
+
+<!ENTITY enigmail.acKeyTransfer.window.title         "">
+<!ENTITY enigmail.acKeyTransfer.welcome.title        "">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "">
+
+<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "">
+<!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "">

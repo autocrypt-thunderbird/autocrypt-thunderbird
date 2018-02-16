@@ -1,490 +1,868 @@
-<!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.keyUserId.label "Tili / Käyttäjätunnus">
-<!ENTITY enigmail.keygenTitle.label "Luo OpenPGP-avain">
-<!ENTITY enigmail.useForSigning.label "Käytä luotua avainta valitulla käyttäjätiedolla">
-<!ENTITY enigmail.keyNoPassphrase.label "Ei salasanaa">
-<!ENTITY enigmail.keyPassphrase.label "Salasana">
+<!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.pEp.label               "">
+<!ENTITY enigmail.autocrypt.label         "">
+
+<!ENTITY enigmail.about.license           "">
+
+<!ENTITY enigmail.keyUserId.label         "Tili / Käyttäjätunnus">
+<!ENTITY enigmail.keygenTitle.label       "Luo OpenPGP-avain">
+<!ENTITY enigmail.useForSigning.label     "Käytä luotua avainta valitulla käyttäjätiedolla">
+<!ENTITY enigmail.keyNoPassphrase.label   "Ei salasanaa">
+<!ENTITY enigmail.keyPassphrase.label     "Salasana">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Salasana (toista)">
-<!ENTITY enigmail.generateKey.tooltip "Luo uuden OpenPGP-avaimen, jolla voi salata ja allekirjoittaa viestejä">
-<!ENTITY enigmail.cancelKey.label "Peruuta">
-<!ENTITY enigmail.cancelKey.tooltip "Peruuta avaimen luonti">
-<!ENTITY enigmail.keyGen.expiry.title "Avaimen vanhentuminen">
-<!ENTITY enigmail.keyGen.expire.label "Avain vanhenee">
-<!ENTITY enigmail.keyGen.days.label "päivässä">
-<!ENTITY enigmail.keyGen.months.label "kuukaudessa">
-<!ENTITY enigmail.keyGen.years.label "vuodessa">
-<!ENTITY enigmail.keyGen.noExpiry.label "Avain ei vanhene">
-<!ENTITY enigmail.keyGen.keySize.label "Avaimen koko">
-<!ENTITY enigmail.keyGen.console.label "Avaimen luonti -konsoli">
-<!ENTITY enigmail.keyGen.keyType.label "Avaintyyppi">
-<!ENTITY enigmail.keyGen.keyType.dsa "DSA ja El Gamal">
-<!ENTITY enigmail.keyGen.keyType.rsa "RSA">
-<!ENTITY enigmail.preferences.label "Enigmail-asetukset">
-<!ENTITY enigmail.passwordSettings.label "Salasanan asetukset">
-<!ENTITY enigmail.userNoPassphrase.label "Älä koskaan kysy salasanaa">
+<!ENTITY enigmail.generateKey.tooltip     "Luo uuden OpenPGP-avaimen, jolla voi salata ja allekirjoittaa viestejä">
+<!ENTITY enigmail.cancelKey.label         "Peruuta">
+<!ENTITY enigmail.cancelKey.tooltip       "Peruuta avaimen luonti">
+<!ENTITY enigmail.keyGen.expiry.title     "Avaimen vanhentuminen">
+<!ENTITY enigmail.keyGen.expire.label     "Avain vanhenee">
+<!ENTITY enigmail.keyGen.days.label       "päivässä">
+<!ENTITY enigmail.keyGen.months.label     "kuukaudessa">
+<!ENTITY enigmail.keyGen.years.label      "vuodessa">
+<!ENTITY enigmail.keyGen.noExpiry.label   "Avain ei vanhene">
+<!ENTITY enigmail.keyGen.keySize.label    "Avaimen koko">
+<!ENTITY enigmail.keyGen.console.label    "">
+<!ENTITY enigmail.keyGen.keyType.label    "Avaintyyppi">
+<!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
+<!ENTITY enigmail.keyGen.keyType.ecc      "">
+
+<!ENTITY enigmail.keyUpload.label         "">
+<!ENTITY enigmail.keyUpload.desc          "">
+<!ENTITY enigmail.keyUpload.sks.label     "">
+<!ENTITY enigmail.keyUpload.sks.desc      "">
+<!ENTITY enigmail.keyUpload.wks.label     "">
+<!ENTITY enigmail.keyAttachAuto.label     "">
+
+<!ENTITY enigmail.preferences.label       "Enigmail-asetukset">
+
+<!ENTITY enigmail.passwordSettings.label   "">
+<!ENTITY enigmail.userNoPassphrase.label   "Älä koskaan kysy salasanaa">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Valitse, jos OpenPGP-avaimesi ei ole suojattu salasanalla.">
-<!ENTITY enigmail.expertUserMenus.label "Näytä ylläpidon asetukset ja valikot ">
-<!ENTITY enigmail.expertUser.tooltip "Valitse, jos haluat paljastaa kaikki asetukset ja täydellisen OpenPGP-valikon.">
-<!ENTITY enigmail.basicUserMenus.label "Piilota ylläpidon asetukset ja valikot ">
-<!ENTITY enigmail.basicUser.tooltip "Paina mikäli et halua näyttää valikon kohteita ja vaihtoehtoja edistyneille käyttäjille. ">
-<!ENTITY enigmail.prefs.pathsTitle.label "Tiedostot ja kansiot">
-<!ENTITY enigmail.prefs.overrideGpg.label "Korvaa polulla">
-<!ENTITY enigmail.prefs.overrideGpg.tooltip "Valitse vaihtoehtoinen polku GnuPG:lle">
-<!ENTITY enigmail.agentAdditionalParam.label "GnuPG:n lisäkomentorivivalinnat">
-<!ENTITY enigmail.agentAdditionalParam.tooltip "Kirjoita GnuPG:lle komentorivivalintoja.">
-<!ENTITY enigmail.mime_parts_on_demand.label "Lataa MIME-liitteet vasta erikseen pyydettäessä (IMAP-kansiot)">
+<!ENTITY enigmail.expertUserMenus.label    "Näytä ylläpidon asetukset ja valikot ">
+<!ENTITY enigmail.expertUser.tooltip       "Valitse, jos haluat paljastaa kaikki asetukset ja täydellisen OpenPGP-valikon.">
+<!ENTITY enigmail.basicUserMenus.label     "Piilota ylläpidon asetukset ja valikot ">
+<!ENTITY enigmail.basicUser.tooltip        "Paina mikäli et halua näyttää valikon kohteita ja vaihtoehtoja edistyneille käyttäjille. ">
+
+<!ENTITY enigmail.prefs.pathsTitle.label      "Tiedostot ja kansiot">
+<!ENTITY enigmail.prefs.overrideGpg.label     "Korvaa polulla">
+<!ENTITY enigmail.prefs.overrideGpg.tooltip   "Valitse vaihtoehtoinen polku GnuPG:lle">
+
+
+<!ENTITY enigmail.agentAdditionalParam.label    "GnuPG:n lisäkomentorivivalinnat">
+<!ENTITY enigmail.agentAdditionalParam.tooltip  "Kirjoita GnuPG:lle komentorivivalintoja.">
+
+<!ENTITY enigmail.protectHeadersPrefs.label    "">
+<!ENTITY enigmail.protectHeadersPrefs.tooltip  "">
+<!ENTITY enigmail.protectedSubjectText.label    "">
+<!ENTITY enigmail.protectedSubjectText.tooltip  "">
+
+
+<!ENTITY enigmail.mime_parts_on_demand.label  "Lataa MIME-liitteet vasta erikseen pyydettäessä (IMAP-kansiot)">
+
+
 <!ENTITY enigmail.maxIdleMinutesHead.label "Säilytä salasana">
-<!ENTITY enigmail.maxIdleMinutesTail.label "minuuttia viimeisestä komennosta alkaen">
-<!ENTITY enigmail.maxIdleMinutes.tooltip "Muista salasanat määritetyn ajan verran.">
+<!ENTITY enigmail.maxIdleMinutesTail.label "">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Muista salasanat määritetyn ajan verran.">
+
 <!ENTITY enigmail.resetPrefsButton.label "Palauta oletusarvot">
-<!ENTITY enigmail.resetPrefs.tooltip "Palauta kaikki Enigmail-asetukset takaisin oletusarvoihinsa.">
-<!ENTITY enigmail.basic.label "Yleiset">
-<!ENTITY enigmail.sending.label "Lähetys">
-<!ENTITY enigmail.keySel.label "Avainten valinta">
-<!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advanced.label "Lisäasetukset">
-<!ENTITY enigmail.basicPrefs.label "Yleiset asetukset">
-<!ENTITY enigmail.moreOptions.label "Lisäasetukset">
+<!ENTITY enigmail.resetPrefs.tooltip     "Palauta kaikki Enigmail-asetukset takaisin oletusarvoihinsa.">
+
+<!ENTITY enigmail.backupPrefsButton.label "">
+<!ENTITY enigmail.backupPrefs.tooltip     "">
+
+<!ENTITY enigmail.restorePrefsButton.label "">
+<!ENTITY enigmail.restorePrefs.tooltip     "">
+
+<!ENTITY enigmail.pref.acSetupMessage.desc   "">
+<!ENTITY enigmail.pref.acSetupMessage.button "">
+
+<!ENTITY enigmail.pref.backupRestore.overallDesc "">
+
+<!ENTITY enigmail.backupRestore.desc       "">
+
+<!ENTITY enigmail.basic.label            "Yleiset">
+<!ENTITY enigmail.sending.label          "Lähetys">
+<!ENTITY enigmail.keySel.label           "Avainten valinta">
+<!ENTITY enigmail.pgpMime.label          "PGP/MIME">
+<!ENTITY enigmail.advanced.label         "Lisäasetukset">
+<!ENTITY enigmail.transferSettings.label "">
+
+<!ENTITY enigmail.basicPrefs.label       "Yleiset asetukset">
+
+<!ENTITY enigmail.moreOptions.label       "Lisäasetukset">
+
 <!ENTITY enigmail.useNonDefaultComment.label "Lisää Enigmail-kommentti OpenPGP-allekirjoitukseen">
-<!ENTITY enigmail.keyserver.label "Avainpalvelin">
-<!ENTITY enigmail.keyserverDlg.label "Valitse avainpalvelin">
-<!ENTITY enigmail.keyservers.label "Määritä avainpalvelimet">
-<!ENTITY enigmail.keyservers.sample "Esimerkiksi: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
-<!ENTITY enigmail.searchForKey.label "Etsi avainta">
+
+<!ENTITY enigmail.keyserver.label         "Avainpalvelin">
+<!ENTITY enigmail.keyserverDlg.label      "Valitse avainpalvelin">
+<!ENTITY enigmail.keyservers.label        "Määritä avainpalvelimet">
+<!ENTITY enigmail.keyservers.sample2      "">
+
+<!ENTITY enigmail.searchForKey.example    "">
+<!ENTITY enigmail.searchForKey.desc1	    "">
+<!ENTITY enigmail.searchForKey.desc2      "">
+<!ENTITY enigmail.searchForKey.desc3      "">
+<!ENTITY enigmail.searchForKey.label      "Etsi avainta">
+
 <!ENTITY enigmail.doubleDashSeparator.label "Käsittele  &quot;--&quot;-merkkiä sähköpostin allekirjoituksen erottimena">
-<!ENTITY enigmail.useGpgAgent.label "Käytä gpg-agenttia salasanojen hallintaan">
-<!ENTITY enigmail.noHushMailSupport.label "Erittele sähköpostiosoitteet &quot;&lt;&quot; ja &quot;&gt;&quot;-merkeillä">
-<!ENTITY enigmail.doubleDashSeparator.tooltip "Kaksi väliviivaa rivillä yksinään on merkkinä sähköpostin allekirjoitusosan alusta">
-<!ENTITY enigmail.useGpgAgent.tooltip "Käytä gpg-agenttia (osa GnuPG 2:a) salasanojen täyttämiseen">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Erittele sähköpostiosoitteet &quot;&lt;&quot; ja &quot;&gt;&quot;-merkeillä GnuPG:lle. Poista asetus käytöstä jos vastaanottajilla on vanhoja Hushmail-avaimia.">
+<!ENTITY enigmail.noHushMailSupport.label   "Erittele sähköpostiosoitteet &quot;<&quot; ja &quot;>&quot;-merkeillä">
+
+<!ENTITY enigmail.doubleDashSeparator.tooltip  "Kaksi väliviivaa rivillä yksinään on merkkinä sähköpostin allekirjoitusosan alusta">
+<!ENTITY enigmail.noHushMailSupport.tooltip    "Erittele sähköpostiosoitteet &quot;<&quot; ja &quot;>&quot;-merkeillä GnuPG:lle. Poista asetus käytöstä jos vastaanottajilla on vanhoja Hushmail-avaimia.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Asetus tulee ottaa pois käytöstä jos vastaanotat PGP/MIME-viestejä IMAP-kansioihin.">
-<!ENTITY enigmail.disableSMIMEui.tooltip "Poista S/MIME-painike viestin luonti-ikkunan työkalupalkista">
-<!ENTITY enigmail.decryptbutton.label "Pura salaus">
-<!ENTITY enigmail.decryptbutton.tip "Pura salaus tai varmista viesti OpenPGP:llä (Enigmail)">
+<!ENTITY enigmail.disableSMIMEui.tooltip       "Poista S/MIME-painike viestin luonti-ikkunan työkalupalkista">
+
+<!ENTITY enigmail.autoKeyServerSelection.label     "">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip   "">
+
+<!ENTITY enigmail.decryptbutton.label     "Pura salaus">
+<!ENTITY enigmail.decryptbutton.tip       "Pura salaus tai varmista viesti OpenPGP:llä (Enigmail)">
+
 <!ENTITY enigmail.messengermenu.accesskey "E">
-<!ENTITY enigmail.decryptverify.label "Pura tai varmista">
-<!ENTITY enigmail.importpublickey.label "Tuo julkinen avain">
-<!ENTITY enigmail.autoDecrypt.label "Pura ja varmista viestit automaattisesti">
-<!ENTITY enigmail.clearPassphrase.label "Poista salasana muistista">
-<!ENTITY enigmail.editRules.label "Muokkaa vastaanottajakohtaisia sääntöjä">
-<!ENTITY enigmail.prefs.label "Asetukset">
-<!ENTITY enigmail.debugMenu.label "OpenPGP:n virheenjäljitys">
-<!ENTITY enigmail.viewconsole.label "Näytä konsoli">
-<!ENTITY enigmail.generateKey.label "Luo avain">
-<!ENTITY enigmail.help.label "Ohje">
-<!ENTITY enigmail.about.title "Tietoja Enigmail:stä">
-<!ENTITY enigmail.about.label "Tietoja Enigmail:stä">
-<!ENTITY enigmail.reload.label "Lataa IMAP-viesti uudestaan">
-<!ENTITY enigmail.browse.label "Selaa...">
-<!ENTITY enigmail.sendersKeyMenu.label "Lähettäjän avain">
-<!ENTITY enigmail.adminSmartCard.label "Hallinnoi älykorttia...">
-<!ENTITY enigmail.setupWiz.label "Ohjattu asennus">
-<!ENTITY enigmail.decryptverify.accesskey "P">
+
+<!ENTITY enigmail.decryptverify.label    "Pura tai varmista">
+<!ENTITY enigmail.importpublickey.label  "Tuo julkinen avain">
+<!ENTITY enigmail.importKey.label        "">
+
+<!ENTITY enigmail.autoDecrypt.label      "Pura ja varmista viestit automaattisesti">
+<!ENTITY enigmail.clearPassphrase.label  "Poista salasana muistista">
+<!ENTITY enigmail.editRules.label        "Muokkaa vastaanottajakohtaisia sääntöjä">
+
+<!ENTITY enigmail.decryptToFolder.label     "">
+<!ENTITY enigmail.decryptToFolder.accesskey "">
+
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY enigmail.recent.label              "">
+<!ENTITY enigmail.recent.accesskey          "">
+
+<!ENTITY enigmail.prefs.label            "Asetukset">
+
+<!ENTITY enigmail.debugMenu.label        "OpenPGP:n virheenjäljitys">
+<!ENTITY enigmail.viewconsole.label      "Näytä konsoli">
+<!ENTITY enigmail.viewlog.label          "">
+
+<!ENTITY enigmail.generateKey.label        "Luo avain">
+<!ENTITY enigmail.help.label               "Ohje">
+<!ENTITY enigmail.about.label              "Tietoja Enigmail:stä">
+<!ENTITY enigmail.reload.label             "Lataa IMAP-viesti uudestaan">
+<!ENTITY enigmail.browse.label             "Selaa...">
+<!ENTITY enigmail.sendersKeyMenu.label     "Lähettäjän avain">
+<!ENTITY enigmail.adminSmartCard.label     "Hallinnoi älykorttia...">
+<!ENTITY enigmail.setupWiz.label           "Ohjattu asennus">
+
+<!ENTITY enigmail.decryptverify.accesskey   "P">
 <!ENTITY enigmail.importpublickey.accesskey "T">
-<!ENTITY enigmail.reload.accesskey "u">
-<!ENTITY enigmail.adminSmartCard.accesskey "H">
-<!ENTITY enigmail.autoDecrypt.accesskey "v">
-<!ENTITY enigmail.debugMenu.accesskey "j">
+<!ENTITY enigmail.reload.accesskey          "u">
+<!ENTITY enigmail.adminSmartCard.accesskey  "H">
+
+<!ENTITY enigmail.autoDecrypt.accesskey     "v">
+<!ENTITY enigmail.debugMenu.accesskey       "j">
+
 <!ENTITY enigmail.clearPassphrase.accesskey "o">
-<!ENTITY enigmail.editRules.accesskey "M">
-<!ENTITY enigmail.setupWiz.accesskey "S">
-<!ENTITY enigmail.prefs.accesskey "A">
-<!ENTITY enigmail.viewconsole.accesskey "k">
-<!ENTITY enigmail.help.accesskey "O">
-<!ENTITY enigmail.about.accesskey "T">
-<!ENTITY enigmail.sendersKeyMenu.accesskey "L">
-<!ENTITY enigmail.composetoolbar.label "Enigmail työkalupalkki">
-<!ENTITY enigmail.composetoolbar.desc "Enigmailin salauksen tiedot">
-<!ENTITY enigmail.signedsend.label "Allekirjoita viesti">
-<!ENTITY enigmail.encryptedsend.label "Salaa viesti">
-<!ENTITY enigmail.pgpAccountSettings.label "Allekirjoitus- ja salausasetukset...">
-<!ENTITY enigmail.sendOptionsMenu.label "Lähetysasetukset...">
-<!ENTITY enigmail.defaultKeySelOpts.label "Avainten valinnan asetukset...">
-<!ENTITY enigmail.undoencryption.label "Kumoa viestin salaus">
-<!ENTITY enigmail.attachkey.label "Liitä julkinen avain...">
-<!ENTITY enigmail.attachmykey.label "Liitä julkinen avaimeni">
-<!ENTITY enigmail.composemenu.accesskey "E">
-<!ENTITY enigmail.signedsend.accesskey "A">
-<!ENTITY enigmail.signedsend.key "S">
-<!ENTITY enigmail.encryptedsend.accesskey "S">
-<!ENTITY enigmail.encryptedsend.key "P">
-<!ENTITY enigmail.sendOptionsMenu.accesskey "L">
-<!ENTITY enigmail.defaultKeySelOpts.accesskey "A">
+<!ENTITY enigmail.editRules.accesskey       "M">
+<!ENTITY enigmail.setupWiz.accesskey        "S">
+
+
+<!ENTITY enigmail.prefs.accesskey           "A">
+<!ENTITY enigmail.viewconsole.accesskey     "k">
+<!ENTITY enigmail.viewlog.accesskey         "">
+
+<!ENTITY enigmail.help.accesskey            "O">
+<!ENTITY enigmail.about.accesskey           "T">
+<!ENTITY enigmail.sendersKeyMenu.accesskey  "L">
+
+<!ENTITY enigmail.composetoolbar.desc         "Enigmailin salauksen tiedot">
+
+<!ENTITY enigmail.signedsend.label            "Allekirjoita viesti">
+<!ENTITY enigmail.encryptedsend.label         "Salaa viesti">
+
+<!ENTITY enigmail.pepEnableProtection.label         "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+
+<!ENTITY enigmail.pgpAccountSettings.label     "Allekirjoitus- ja salausasetukset...">
+<!ENTITY enigmail.sendOptionsMenu.label        "Lähetysasetukset...">
+<!ENTITY enigmail.defaultKeySelOpts.label      "Avainten valinnan asetukset...">
+<!ENTITY enigmail.usePgpMime.label             "">
+<!ENTITY enigmail.useInline.label              "">
+<!ENTITY enigmail.useSmime.label               "">
+
+<!ENTITY enigmail.tempTrustAllKeys.label       "">
+<!ENTITY enigmail.undoencryption.label         "Kumoa viestin salaus">
+<!ENTITY enigmail.attachkey.label              "Liitä julkinen avain...">
+<!ENTITY enigmail.attachmykey.label            "Liitä julkinen avaimeni">
+<!ENTITY enigmail.protectHeaders.label         "">
+
+<!ENTITY enigmail.composemenu.accesskey        "E">
+
+<!ENTITY enigmail.signedsend.accesskey         "A">
+<!ENTITY enigmail.signedsend.key               "S">
+<!ENTITY enigmail.encryptedsend.accesskey      "S">
+<!ENTITY enigmail.encryptedsend.key            "P">
+
+<!ENTITY enigmail.sendOptionsMenu.accesskey    "L">
+<!ENTITY enigmail.defaultKeySelOpts.accesskey  "A">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "s">
-<!ENTITY enigmail.tempTrustAllKeys.accesskey "T">
-<!ENTITY enigmail.undoencryption.accesskey "K">
-<!ENTITY enigmail.attachkey.accesskey "L">
-<!ENTITY enigmail.attachmykey.accesskey "m">
+<!ENTITY enigmail.usePgpMime.accesskey         "">
+<!ENTITY enigmail.useInline.accesskey          "">
+<!ENTITY enigmail.useSmime.accesskey           "">
+
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
+<!ENTITY enigmail.undoencryption.accesskey     "K">
+<!ENTITY enigmail.attachkey.accesskey          "L">
+<!ENTITY enigmail.attachmykey.accesskey        "m">
+
+
 <!-- account specific options -->
-<!ENTITY enigmail.defaultSigning.label "Allekirjoita viestit oletusarvoisesti">
-<!ENTITY enigmail.defaultEncryption.label "Salaa viestit oletuksena">
-<!ENTITY enigmail.usePGPMimeAlways.label "Käytä aina PGP/MIME:ä">
-<!ENTITY enigmail.afterDefaultsAndRules.label "Käytön jälkeen oletusasetukset ja säännöt: ">
-<!ENTITY enigmail.finallySignEncrypted.label "Allekirjoita salatut viestit ">
-<!ENTITY enigmail.finallySignNotEncrypted.label "Allekirjoita salaamattomat viestit ">
-<!ENTITY enigmail.advancedPrefsButton.label "Lisäasetukset...">
-<!ENTITY enigmail.openpgpPrefsButton.label "Enigmail asetukset">
+<!ENTITY enigmail.defaultSigning.label            "Allekirjoita viestit oletusarvoisesti">
+<!ENTITY enigmail.defaultEncryption.label         "Salaa viestit oletuksena">
+<!ENTITY enigmail.usePGPMimeAlways.label          "Käytä aina PGP/MIME:ä">
+
+<!ENTITY enigmail.afterDefaultsAndRules.label     "Käytön jälkeen oletusasetukset ja säännöt: ">
+<!ENTITY enigmail.finallySignEncrypted.label      "Allekirjoita salatut viestit ">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "Allekirjoita salaamattomat viestit ">
+
+<!ENTITY enigmail.autoEncryptDrafts.label         "">
+
+<!ENTITY enigmail.advancedPrefsButton.label       "Lisäasetukset...">
+<!ENTITY enigmail.openpgpPrefsButton.label        "Enigmail asetukset">
+
+
 <!-- Sending Preferences -->
-<!ENTITY enigmail.SendingPrefs.label "Yleiset lähetysasetukset">
-<!ENTITY enigmail.encryptionModelConvenient.label "Kätevät salausasetukset ">
-<!ENTITY enigmail.encryptionModelManually.label "Manuaaliset salausasetukset ">
-<!ENTITY enigmail.autoSendEncryptedOption.label "Lähetä automaattisesti salattuna">
-<!ENTITY enigmail.autoSendEncryptedNever.label "Ei koskaan">
-<!ENTITY enigmail.autoSendEncryptedNever.tooltip "Älä lähetä automaattisesti salattuna paitsi jos vastaanottaja on säännöissä">
-<!ENTITY enigmail.autoSendEncryptedIfKeys.label "Jos mahdollista">
+
+<!ENTITY enigmail.SendingPrefs.label              "Yleiset lähetysasetukset">
+<!ENTITY enigmail.seeAccountSettings.label        "">
+
+<!ENTITY enigmail.encryptionModelConvenient.label "">
+<!ENTITY enigmail.encryptionModelManually.label   "">
+
+<!ENTITY enigmail.keepCryptoSettingsForReply.label   "">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "">
+
+<!ENTITY enigmail.autoSendEncryptedOption.label   "Lähetä automaattisesti salattuna">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "Ei koskaan">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip  "Älä lähetä automaattisesti salattuna paitsi jos vastaanottaja on säännöissä">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label   "Jos mahdollista">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Lähetä automattisesti salattuna. Kun kullakin vastaanottajalla on vähintään yksi avain, joka on tunnettu ja hyväksytty (katso edellä) eikä vastaanottajaa salata.">
-<!ENTITY enigmail.acceptedKeysOption.label "Lähetä salattuna, hyväksy ">
-<!ENTITY enigmail.acceptedKeysTrusted.label "Ainoastaan luotettavat avaimet">
-<!ENTITY enigmail.acceptedKeysAllUsable.label "Kaikki käyttökelpoiset avaimet">
-<!ENTITY enigmail.confirmBeforeSendingOption.label "Vahvista ennen lähettämistä.">
-<!ENTITY enigmail.confirmBeforeSendingNever.label "Ei koskaan">
-<!ENTITY enigmail.confirmBeforeSendingAlways.label "Aina">
-<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label "Mikäli salattu">
-<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label "Mikäli salaamaton">
+
+<!ENTITY enigmail.acceptedKeysOption.label        "Lähetä salattuna, hyväksy ">
+<!ENTITY enigmail.acceptedKeysTrusted.label       "Ainoastaan luotettavat avaimet">
+<!ENTITY enigmail.acceptedKeysTrusted.tooltip     "">
+<!ENTITY enigmail.acceptedKeysAllUsable.label     "Kaikki käyttökelpoiset avaimet">
+<!ENTITY enigmail.acceptedKeysAllUsable.tooltip   "">
+
+<!ENTITY enigmail.confirmBeforeSendingOption.label           "Vahvista ennen lähettämistä.">
+<!ENTITY enigmail.confirmBeforeSendingNever.label            "Ei koskaan">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label           "Aina">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "Mikäli salattu">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label   "Mikäli salaamaton">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "">
+
+
 <!-- keySel Preferences -->
+
 <!ENTITY enigmail.recipientsSelectionOption.label "Kuinka avaimet valitaan?">
-<!ENTITY enigmail.assignKeysManuallyIfMissing.label "Käsin, jos avaimia puuttuu ">
-<!ENTITY enigmail.assignKeysManuallyAlways.label "Aina (myös) manuaalisesti ">
-<!ENTITY enigmail.defineRules.label "Muokkaa sääntöjä ...">
-<!ENTITY enigmail.wrapHtmlBeforeSend.label "Rivitä allekirjoitettu HTML-viesti ennen lähettämistä">
-<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Järjestä viestin teksti niin, että allekirjoitus ei rikkoudu lähetyksen yhteydessä.">
-<!ENTITY enigmail.autoKeyRetrieve.label "Lataa avaimet automaattisesti">
-<!ENTITY enigmail.autoKeyRetrieve2.label "seuraavalta avainpalvelimelta:">
-<!ENTITY enigmail.resetRememberedValues.label "Nollaa varoitusikkuna-asetukset">
-<!ENTITY enigmail.resetRememberedValues.tooltip "Näytä jälleen kaikki varoitusikkunat ja -kysymykset, jotka olet aikaisemmmin päättänyt piilottaa.">
+<!ENTITY enigmail.assignKeysByRules.label             "">
+<!ENTITY enigmail.assignKeysByRules.tooltip           "">
+<!ENTITY enigmail.assignKeysByEmailAddr.label         "">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label   "Käsin, jos avaimia puuttuu ">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "">
+<!ENTITY enigmail.assignKeysManuallyAlways.label      "Aina (myös) manuaalisesti ">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip    "">
+<!ENTITY enigmail.defineRules.label               "Muokkaa sääntöjä ...">
+
+
+<!ENTITY enigmail.wrapHtmlBeforeSend.label        "Rivitä allekirjoitettu HTML-viesti ennen lähettämistä">
+<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Järjestä viestin teksti niin, että allekirjoitus ei rikkoudu lähetyksen yhteydessä.">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Lataa avaimet automaattisesti">
+<!ENTITY enigmail.autoKeyRetrieve2.label          "seuraavalta avainpalvelimelta:">
+<!ENTITY enigmail.resetRememberedValues.label     "Nollaa varoitusikkuna-asetukset">
+<!ENTITY enigmail.resetRememberedValues.tooltip   "Näytä jälleen kaikki varoitusikkunat ja -kysymykset, jotka olet aikaisemmmin päättänyt piilottaa.">
+
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Huom: Avaimen luominen voi kestää jopa useita minuutteja.</a> Älä sulje ohjelmaa kun avainta luodaan. Tietokoneen aktiivinen käyttäminen avainta luotaessa lisää avaimen luontiin tarvittavaa satunnaisuutta ja siten nopeuttaa luontiprosessia. Enigmail ilmoittaa kun avain on valmis.">
-<!ENTITY enigmail.userSelectionList.label "Enigmail-avainten valinta">
-<!ENTITY enigmail.usersNotFound.label "Vastaanottajia ei löydetty">
-<!ENTITY enigmail.keyExpiry.label "Vanhentuminen">
-<!ENTITY enigmail.uidValidity.label "Voimassaolo ">
-<!ENTITY enigmail.keySelection.label "Valinta">
-<!ENTITY enigmail.keyId.label "Avaimen tunnus">
-<!ENTITY enigmail.userSelSendSigned.label "Lähetä allekirjoitettu ">
-<!ENTITY enigmail.userSelSendSigned.accesskey "S">
-<!ENTITY enigmail.userSelSendEncrypted.label "Lähetä salattuna">
-<!ENTITY enigmail.userSelSendEncrypted.accesskey "E">
-<!ENTITY enigmail.displayNoLonger.label "Älä näytä tätä valikkoa uudestaan, jos salaus ei ole mahdollista">
-<!ENTITY enigmail.importMissingKeys.label "Lataa puuttuvat avaimet">
-<!ENTITY enigmail.importMissingKeys.accesskey "N">
-<!ENTITY enigmail.importMissingKeys.tooltip "Nouda puuttuvat avaimet avainpalvelimelta">
-<!ENTITY enigmail.refreshKeys.label "Päivitä avainlistaa">
-<!ENTITY enigmail.refreshKeys.accesskey "ä">
-<!ENTITY enigmail.send.label "Lähetä">
-<!ENTITY enigmail.perRecipientsOption.label "Luo vastaanottajakohtaisia sääntöjä">
-<!ENTITY enigmail.enigmailAttachDesc.label "Viestissä on liitetiedostoja. Kuinka niitä käsitellään?">
-<!ENTITY enigmail.enigEncryptAttachNone.label "Salaa/allekirjoita vain viestin teksti, älä liitteitä">
-<!ENTITY enigmail.enigAttachNoneSign.label "Allekirjoittaa ilmoitustekstin, mutta ei liitetiedostoja ">
-<!ENTITY enigmail.enigAttachNoneEncrypt.label "Salaa viestin, mutta ei liitetiedostoja">
-<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label "Salaa ja allekirjoittaa viestin, mutta ei liitetiedostoja ">
-<!ENTITY enigmail.enigEncryptAttachInline.label "Salaa jokainen liite erikseen, ja teksti käyttäen viestin sisäistä PGP:tä">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Salaa/allekirjoita viesti kokonaisuudessaan ja lähetä se käyttäen PGP/MIME:ä">
-<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label " Älä salaa / allekirjoita viestiä lainkaan ">
-<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label "Älä allekirjoita viestiä lainkaan ">
-<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label "Älä salaa viestiä lainkaan ">
+
+<!ENTITY enigmail.userSelectionList.label           "Enigmail-avainten valinta">
+<!ENTITY enigmail.usersNotFound.label               "Vastaanottajia ei löydetty">
+<!ENTITY enigmail.keyExpiry.label                   "Vanhentuminen">
+<!ENTITY enigmail.uidValidity.label                 "Voimassaolo ">
+<!ENTITY enigmail.keySelection.label                "Valinta">
+<!ENTITY enigmail.keyId.label                       "Avaimen tunnus">
+<!ENTITY enigmail.userSelSendSigned.label           "Lähetä allekirjoitettu ">
+<!ENTITY enigmail.userSelSendSigned.accesskey       "S">
+<!ENTITY enigmail.userSelSendEncrypted.label        "Lähetä salattuna">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "E">
+<!ENTITY enigmail.displayNoLonger.label             "Älä näytä tätä valikkoa uudestaan, jos salaus ei ole mahdollista">
+<!ENTITY enigmail.importMissingKeys.label           "Lataa puuttuvat avaimet">
+<!ENTITY enigmail.importMissingKeys.accesskey       "N">
+<!ENTITY enigmail.importMissingKeys.tooltip         "Nouda puuttuvat avaimet avainpalvelimelta">
+<!ENTITY enigmail.refreshKeys.label                 "Päivitä avainlistaa">
+<!ENTITY enigmail.refreshKeys.accesskey             "ä">
+<!ENTITY enigmail.send.label                        "Lähetä">
+<!ENTITY enigmail.perRecipientsOption.label         "Luo vastaanottajakohtaisia sääntöjä">
+
+<!ENTITY enigmail.enigmailAttachDesc.label          "Viestissä on liitetiedostoja. Kuinka niitä käsitellään?">
+<!ENTITY enigmail.enigEncryptAttachNone.label           "Salaa/allekirjoita vain viestin teksti, älä liitteitä">
+<!ENTITY enigmail.enigAttachNoneSign.label              "Allekirjoittaa ilmoitustekstin, mutta ei liitetiedostoja ">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label           "Salaa viestin, mutta ei liitetiedostoja">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label    "Salaa ja allekirjoittaa viestin, mutta ei liitetiedostoja ">
+<!ENTITY enigmail.enigEncryptAttachInline.label         "Salaa jokainen liite erikseen, ja teksti käyttäen viestin sisäistä PGP:tä">
+<!ENTITY enigmail.enigAttachInlineSign.label            "">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label         "">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label  "">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label        "Salaa/allekirjoita viesti kokonaisuudessaan ja lähetä se käyttäen PGP/MIME:ä">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label           "">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label        "">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label        " Älä salaa / allekirjoita viestiä lainkaan ">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label           "Älä allekirjoita viestiä lainkaan ">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label        "Älä salaa viestiä lainkaan ">
 <!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "Älä salaa ja allekirjoita viestiä ">
-<!ENTITY enigmail.encryptAttachSkipDlg.label "Tee samoin kaikille tuleville liitteille">
-<!ENTITY enigmail.ctxDecryptOpen.label "Pura salaus ja avaa">
-<!ENTITY enigmail.ctxDecryptSave.label "Pura salaus ja tallenna nimellä...">
-<!ENTITY enigmail.ctxImportKey.label "Tuo OpenPGP-avain">
-<!ENTITY enigmail.ctxVerifyAtt.label "Todentaa allekirjoituksen ">
-<!ENTITY enigmail.ctxDecryptOpen.accesskey "a">
-<!ENTITY enigmail.ctxDecryptSave.accesskey "t">
-<!ENTITY enigmail.ctxImportKey.accesskey "T">
-<!ENTITY enigmail.ctxVerifyAtt.accesskey "V">
-<!ENTITY enigmail.detailsHdrButton.label "Yksityiskohdat ">
-<!ENTITY enigmail.revealAttachments.button "Paljasta  ">
-<!ENTITY enigmail.exchangeGarbage.fixButton.label "Korjaa viesti">
-<!ENTITY enigmail.exchangeGarbage.waitMessage "Odota hetki ...">
-<!ENTITY enigmail.amPrefTitle.label "OpenPGP-asetukset">
-<!ENTITY enigmail.amPrefDesc.label "Enigmail tukee viestien salausta ja allekirjoitusta OpenPGP-avaimella. GnuPG (gpg) -ohjelman täytyy olla asennettuna, jotta Enigmail toimisi.">
-<!ENTITY enigmail.amPrefEnablePgp.label "Ota käyttöön OpenPGP-tuki (Enigmail) näiden käyttäjätietojen kanssa">
-<!ENTITY enigmail.amPrefUseFromAddr.label "Käytä näiden käyttäjätietojen sähköpostiosoitetta OpenGPG-avaimen selvittämiseen">
-<!ENTITY enigmail.amPrefUseKeyId.label "Käytä tiettyä OpenPGP-avaimen tunnusta (0x1234ABCD):">
-<!ENTITY enigmail.amPrefSelectKey.label "Valitse avain...">
-<!ENTITY enigmail.amPrefDefaultEncrypt.label "Viestien kirjoituksen oletusasetukset">
-<!ENTITY enigmail.encryptionDlg.label "Enigmail:n salaus- ja allekirjoitusasetukset">
-<!ENTITY enigmail.encDlgEncrypt.label "Salaa viesti">
-<!ENTITY enigmail.encDlgEncrypt.accesskey "S">
-<!ENTITY enigmail.encDlgSign.label "Allekirjoita viesti">
-<!ENTITY enigmail.encDlgSign.accesskey "A">
-<!ENTITY enigmail.encDlgPgpMime.label "Käytä PGP/MIME:ä">
-<!ENTITY enigmail.encDlgPgpMime.accesskey "K">
-<!ENTITY enigmail.encDlgReset.label "Palauta oletukset">
-<!ENTITY enigmail.amPrefPgpHeader.label "Lähetä OpenPGP-otsake">
-<!ENTITY enigmail.amPrefPgpHeader.id.label "Lähetä OpenPGP-avaintunnus">
-<!ENTITY enigmail.amPrefPgpHeader.url.label "Lähetä URL, josta hakea avain:">
-<!ENTITY enigmail.progressText.label "Edistyminen:">
-<!ENTITY enigmail.openPgpSecurity.label "OpenPGP-turvallisuus">
-<!ENTITY enigmail.pgpSecurityInfo.label "Enigmail-turvallisuustiedot...">
-<!ENTITY enigmail.copySecurityInfo.label "Kopioi Enigmail-turvallisuustiedot">
-<!ENTITY enigmail.showPhoto.label "Näytä OpenPGP-kuva">
-<!ENTITY enigmail.displayKeyProperties.label "Nähdäksesi tärkeimmät ominaisuudet ">
-<!ENTITY enigmail.signSenderKey.label "Allekirjoita avain...">
-<!ENTITY enigmail.trustSenderKey.label "Aseta omistajan luottamus...">
-<!ENTITY enigmail.signSenderKeyPopup.label "Allekirjoita lähettäjän avain...">
-<!ENTITY enigmail.trustSenderKeyPopup.label "Aseta lähettäjän avaimen omistajan luottamus...">
-<!ENTITY enigmail.createRuleFromAddr.label "Luo Enigmail-sääntö osoitteelle...">
-<!ENTITY enigmail.keyManWindow.label "Avainten hallinta">
-<!ENTITY enigmail.keyManWindow.accesskey "v">
-<!ENTITY enigmail.singleRcptSettings.label "Enigmail - Vastaanottaja-asetukset">
-<!ENTITY enigmail.selKeysButton.label "Valitse avaimet...">
-<!ENTITY enigmail.action.label "Toiminto">
-<!ENTITY enigmail.nextRule.label "Jatka seuraavaan sääntöön täsmäävällä osoitteelle">
-<!ENTITY enigmail.nextAddress.label "Älä tarkista enää sääntöjä täsmäävälle osoitteelle">
-<!ENTITY enigmail.useKeys.label "Käytä seuraavia OpenPGP-avaimia:">
-<!ENTITY enigmail.selKeysButton.accesskey "V">
-<!ENTITY enigmail.setDefaultsFor.label "Oletusasetukset toiminnolle...">
-<!ENTITY enigmail.encryption.label "Salaaminen">
-<!ENTITY enigmail.signing.label "Allekirjoittaminen">
-<!ENTITY enigmail.never.label "Ei koskaan">
-<!ENTITY enigmail.always.label "Aina">
-<!ENTITY enigmail.maybe.label "Vain jos valitaan erikseen viestiä kirjoitettaessa">
-<!ENTITY enigmail.singleRcptSettings.desc "(Huom: ristiriitatilanteissa valinta &quot;Ei koskaan&quot; on etusijalla)">
-<!ENTITY enigmail.ruleEmail.label "Aseta Enigmail-säännöt osoitteille">
-<!ENTITY enigmail.ruleEmail.tooltip "Kirjoita kenttään vain sähköpostiosoitteita. Älä kirjoita vastaanottajien nimiä Esim. &quot;Joku Nimi <joku.nimi@osoite.fi>&quot; on virheellinen">
-<!ENTITY enigmail.sepratationDesc.label "(Erota sähköpostiosoitteet väleillä)">
-<!ENTITY enigmail.matchDescStart.label "Sääntö pätee jos ylläoleva">
-<!ENTITY enigmail.matchExact.label "on täsmälleen vastaanottajan osoite">
-<!ENTITY enigmail.matchContains.label "on osa vastaanottajan osoitetta">
-<!ENTITY enigmail.matchBegin.label "ja vastaanottajan osoitteen alku täsmäävät">
-<!ENTITY enigmail.matchEnd.label "ja vastaanottajan osoitteen loppu täsmäävät">
-<!ENTITY enigmail.not.label "Ei">
-<!ENTITY enigmail.rulesEditor.label "Enigmail - Vastaanottajakohtaisten sääntöjen muokkain">
-<!ENTITY enigmail.email.label "Sähköposti">
-<!ENTITY enigmail.pgpKeys.label "OpenPGP-avaimet">
-<!ENTITY enigmail.sign.label "Allekirjoita">
-<!ENTITY enigmail.encrypt.label "Salaa">
-<!ENTITY enigmail.edit.label "Muokkaa">
-<!ENTITY enigmail.edit.accesskey "M">
-<!ENTITY enigmail.add.label "Lisää">
-<!ENTITY enigmail.add.accesskey "L">
-<!ENTITY enigmail.delete.label "Poista">
-<!ENTITY enigmail.delete.accesskey "o">
-<!ENTITY enigmail.moveUp.label "Siirrä ylös">
-<!ENTITY enigmail.moveUp.accesskey "y">
-<!ENTITY enigmail.moveDown.label "Siirrä alas">
-<!ENTITY enigmail.moveDown.accesskey "a">
-<!ENTITY enigmail.searchRule.label "Näytä säännöt, jotka pätevät sähköpostiosoitteille:">
-<!ENTITY enigmail.clearSearch.label "Tyhjennä">
-<!ENTITY enigmail.clearSearch.accesskey "T">
-<!ENTITY enigmail.searchKeyDlg.label "Nouda OpenPGP-avaimet">
-<!ENTITY enigmail.searchKeyDlgCapt.label "Löydettiin avaimia - Valitse tuotavat avaimet">
-<!ENTITY enigmail.created.label "Luotu">
-<!ENTITY enigmail.progress.label "Edistyminen">
-<!ENTITY enigmail.sKeyDlg.title "Enigmail - Allekirjoita avain">
-<!ENTITY enigmail.sKeyDlg.signKey.label "Allekirjoita avain:">
-<!ENTITY enigmail.sKeyDlg.fingerprint.label "Sormenjälki:">
-<!ENTITY enigmail.sKeyDlg.signWithKey.label "Allekirjoitusavain:">
-<!ENTITY enigmail.sKeyDlg.checked.label "Kuinka varma olet, että avain, jota olet allekirjoittamassa, todella kuuluu yllä mainitulle henkilölle?">
-<!ENTITY enigmail.sKeyDlg.noAnswer.label "En vastaa">
-<!ENTITY enigmail.sKeyDlg.notChecked.label "En ole ollenkaan varma">
-<!ENTITY enigmail.sKeyDlg.casualCheck.label "Olen kohtuullisen varma">
-<!ENTITY enigmail.sKeyDlg.carefulCheck.label "Olen aivan varma">
-<!ENTITY enigmail.sKeyDlg.createLocal.label "Paikallinen allekirjoitus (ei voi viedä)">
-<!ENTITY enigmail.addUidDlg.title "Enigmail - Lisää käyttäjätunnus">
-<!ENTITY enigmail.addUidDlg.name.label "Nimi">
-<!ENTITY enigmail.addUidDlg.email.label "Sähköposti">
-<!ENTITY enigmail.keyTrust.title "Enigmail - Aseta omistajan luottamus">
-<!ENTITY enigmail.keyTrust.trustKey.label "Aseta luottamustaso avaimelle:">
-<!ENTITY enigmail.keyTrust.trustLevel.label "Kuinka paljon luotat avaimeen?">
-<!ENTITY enigmail.keyTrust.dontKnow.label "En tiedä">
-<!ENTITY enigmail.keyTrust.noTrust.label "En luota">
-<!ENTITY enigmail.keyTrust.marginalTrust.label "Luotan osittain">
-<!ENTITY enigmail.keyTrust.fullTrust.label "Luotan täysin">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label "Luotan ehdottomasti">
-<!ENTITY enigmail.keyMan.title "Enigmail-avainten hallintaikkuna">
-<!ENTITY enigmail.keyMan.close.label "Sulje ikkuna">
-<!ENTITY enigmail.keyMan.generate.label "Uusi avainpari">
-<!ENTITY enigmail.keyMan.sign.label "Allekirjoita avain">
-<!ENTITY enigmail.keyMan.setTrust.label "Aseta omistajan luottamus">
-<!ENTITY enigmail.keyMan.genRevoke.label "Mitätöintivarmenne">
-<!ENTITY enigmail.keyMan.ctxGenRevoke.label "Luo ja tallenna mitätöintivarmenne">
-<!ENTITY enigmail.keyMan.fileMenu.label "Tiedosto">
-<!ENTITY enigmail.keyMan.editMenu.label "Muokkaa">
-<!ENTITY enigmail.keyMan.viewMenu.label "Näytä">
-<!ENTITY enigmail.keyMan.keyserverMenu.label "Avainpalvelin">
-<!ENTITY enigmail.keyMan.generateMenu.label "Luo">
-<!ENTITY enigmail.keyMan.fileMenu.accesskey "T">
-<!ENTITY enigmail.keyMan.editMenu.accesskey "M">
-<!ENTITY enigmail.keyMan.viewMenu.accesskey "N">
-<!ENTITY enigmail.keyMan.keyserverMenu.accesskey "p">
-<!ENTITY enigmail.keyMan.generateMenu.accesskey "L">
-<!ENTITY enigmail.keyMan.importFromFile.label "Tuo avaimet tiedostosta">
-<!ENTITY enigmail.keyMan.importFromServer.label "Etsi avaimia">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label "Tuo avaimet leikepöydältä">
-<!ENTITY enigmail.keyMan.exportToFile.label "Vie avaimet tiedostoon">
-<!ENTITY enigmail.keyMan.sendKeys.label "Lähetä julkiset avaimet sähköpostitse">
-<!ENTITY enigmail.keyMan.uploadToServer.label "Siirrä julkiset avaimet">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label "Kopioi julkiset avaimet leikepöydälle">
-<!ENTITY enigmail.keyMan.ctxExportToFile.label "Vie avaimet tiedostoon">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label "Siirrä julkiset avaimet avainpalvelimelle">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "Kopioi julkiset avaimet leikepöydälle">
-<!ENTITY enigmail.keyMan.refreshSelKeys.label "Päivitä valitut julkiset avaimet">
-<!ENTITY enigmail.keyMan.refreshAllKeys.label "Päivitä kaikki julkiset avaimet">
-<!ENTITY enigmail.keyMan.ctxRefreshKey.label "Päivitä julkiset avaimet avainpalvelimelta">
-<!ENTITY enigmail.keyMan.reload.label "Päivitä avainvälimuisti">
-<!ENTITY enigmail.keyMan.addPhoto.label "Lisää kuva">
-<!ENTITY enigmail.keyMan.manageUid.label "Hallinnoi käyttäjätunnuksia">
-<!ENTITY enigmail.keyMan.changeExpiry.label "Muuta erääntymispäivää">
-<!ENTITY enigmail.keyMan.changePwd.label "Vaihda salasanaa">
-<!ENTITY enigmail.keyMan.delKey.label "Poista avain">
-<!ENTITY enigmail.keyMan.revokeKey.label "Mitätöi avain">
-<!ENTITY enigmail.keyMan.keyProps.label "Avaimen ominaisuudet">
-<!ENTITY enigmail.keyMan.showAllKeys.label "Näytä kaikki avaimet oletuksena">
-<!ENTITY enigmail.keyMan.viewPhoto.label "Kuva">
-<!ENTITY enigmail.keyMan.ctxViewPhoto.label "Näytä kuva">
-<!ENTITY enigmail.keyMan.showInvalidKeys.label "Näytä virheelliset avaimet">
-<!ENTITY enigmail.keyMan.showUntrustedKeys.label "Näytä epäluotettavat avaimet">
-<!ENTITY enigmail.keyMan.userId.label "Nimi ">
-<!ENTITY enigmail.keyMan.keyType.label "Tyyppi">
-<!ENTITY enigmail.keyMan.calcTrust.label "Avaimen luotettavuus">
-<!ENTITY enigmail.keyMan.ownerTrust.label "Omistajan luottamus">
-<!ENTITY enigmail.keyMan.stopTransfer.label "Keskeytä siirto">
-<!ENTITY enigmail.keyMan.fingerprint.label "Sormenjälki">
-<!ENTITY enigmail.keyMan.selectAll.label "Valitse kaikki avaimet">
-<!ENTITY enigmail.keyMan.emptyTree.tooltip "Kirjoita hakusanat yllä olevaan kenttään">
-<!ENTITY enigmail.keyMan.nothingFound.tooltip "Hakusanalla ei löytynyt avaimia">
-<!ENTITY enigmail.keyMan.pleaseWait.tooltip "Odota hetki kun avaimia ladataan...">
-<!ENTITY enigmail.keyMan.filter.label "Suodata käyttäjätunnuksista tai avaintunnuksista:">
-<!ENTITY enigmail.keyMan.close.accesskey "S">
-<!ENTITY enigmail.keyMan.generate.accesskey "a">
-<!ENTITY enigmail.keyMan.sign.accesskey "A">
-<!ENTITY enigmail.keyMan.setTrust.accesskey "L">
-<!ENTITY enigmail.keyMan.genRevoke.accesskey "M">
-<!ENTITY enigmail.keyMan.delKey.accesskey "o">
-<!ENTITY enigmail.keyMan.revokeKey.accesskey "M">
-<!ENTITY enigmail.keyMan.importFromFile.accesskey "u">
-<!ENTITY enigmail.keyMan.exportToFile.accesskey "v">
-<!ENTITY enigmail.keyMan.importFromServer.accesskey "E">
-<!ENTITY enigmail.keyMan.uploadToServer.accesskey "S">
-<!ENTITY enigmail.keyMan.reload.accesskey "ä">
-<!ENTITY enigmail.keyMan.addPhoto.accesskey "P">
-<!ENTITY enigmail.keyMan.manageUid.accesskey "H">
-<!ENTITY enigmail.keyMan.changeExpiry.accesskey "E ">
-<!ENTITY enigmail.keyMan.changePwd.accesskey "i">
-<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey "D">
+<!ENTITY enigmail.encryptAttachSkipDlg.label        "Tee samoin kaikille tuleville liitteille">
+
+
+<!ENTITY enigmail.ctxDecryptOpen.label              "Pura salaus ja avaa">
+<!ENTITY enigmail.ctxDecryptSave.label              "Pura salaus ja tallenna nimellä...">
+<!ENTITY enigmail.ctxImportKey.label                "Tuo OpenPGP-avain">
+<!ENTITY enigmail.ctxVerifyAtt.label                "Todentaa allekirjoituksen ">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "a">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "t">
+<!ENTITY enigmail.ctxImportKey.accesskey            "T">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey            "V">
+<!ENTITY enigmail.detailsHdrButton.label            "Yksityiskohdat ">
+<!ENTITY enigmail.revealAttachmentsButton.label     "">
+<!ENTITY enigmail.revealAttachments.button          "Paljasta  ">
+
+<!ENTITY enigmail.exchangeGarbage.desc              "">
+<!ENTITY enigmail.exchangeGarbage.fixButton.label   "Korjaa viesti">
+<!ENTITY enigmail.exchangeGarbage.waitMessage       "Odota hetki ...">
+
+<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefDesc.label                  "Enigmail tukee viestien salausta ja allekirjoitusta OpenPGP-avaimella. GnuPG (gpg) -ohjelman täytyy olla asennettuna, jotta Enigmail toimisi.">
+<!ENTITY enigmail.amPrefEnablePgp.label             "Ota käyttöön OpenPGP-tuki (Enigmail) näiden käyttäjätietojen kanssa">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "Käytä näiden käyttäjätietojen sähköpostiosoitetta OpenGPG-avaimen selvittämiseen">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Käytä tiettyä OpenPGP-avaimen tunnusta (0x1234ABCD):">
+<!ENTITY enigmail.amPrefSelectKey.label             "Valitse avain...">
+<!ENTITY enigmail.amPrefMsgComp.label               "">
+<!ENTITY enigmail.amPrefDefaultEncrypt.label        "Viestien kirjoituksen oletusasetukset">
+<!ENTITY enigmail.encryptionDlg.label               "Enigmail:n salaus- ja allekirjoitusasetukset">
+<!ENTITY enigmail.encDlgProtocol.label              "">
+<!ENTITY enigmail.encDlgEncrypt.label               "Salaa viesti">
+<!ENTITY enigmail.encDlgEncrypt.accesskey           "S">
+<!ENTITY enigmail.encDlgSign.label                  "Allekirjoita viesti">
+<!ENTITY enigmail.encDlgSign.accesskey              "A">
+<!ENTITY enigmail.encDlgPgpMime.label               "Käytä PGP/MIME:ä">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "K">
+<!ENTITY enigmail.encDlgInlinePgp.label             "">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "">
+<!ENTITY enigmail.encDlgSMime.label                 "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgReset.label                 "Palauta oletukset">
+<!ENTITY enigmail.encDlgReset.accesskey             "">
+<!ENTITY enigmail.amPrefPgpHeader.label             "Lähetä OpenPGP-otsake">
+<!ENTITY enigmail.amPrefPgpHeader.id.label          "Lähetä OpenPGP-avaintunnus">
+<!ENTITY enigmail.amPrefPgpHeader.url.label         "Lähetä URL, josta hakea avain:">
+<!ENTITY enigmail.amPrefMimePreferProto.label       "">
+<!ENTITY enigmail.amPrefMimePreferEnigmail.label    "">
+<!ENTITY enigmail.amPrefMimePreferSMime.label       "">
+<!ENTITY enigmail.amPrefAutocrypt.description       "">
+
+<!ENTITY enigmail.progressText.label               "Edistyminen:">
+
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP-turvallisuus">
+
+<!ENTITY enigmail.pgpSecurityInfo.label            "Enigmail-turvallisuustiedot...">
+<!ENTITY enigmail.copySecurityInfo.label           "Kopioi Enigmail-turvallisuustiedot">
+<!ENTITY enigmail.showPhoto.label                  "Näytä OpenPGP-kuva">
+<!ENTITY enigmail.photoViewer.title                "">
+<!ENTITY enigmail.displayKeyProperties.label       "Nähdäksesi tärkeimmät ominaisuudet ">
+<!ENTITY enigmail.signSenderKey.label              "Allekirjoita avain...">
+<!ENTITY enigmail.trustSenderKey.label             "Aseta omistajan luottamus...">
+<!ENTITY enigmail.signSenderKeyPopup.label         "Allekirjoita lähettäjän avain...">
+<!ENTITY enigmail.trustSenderKeyPopup.label        "Aseta lähettäjän avaimen omistajan luottamus...">
+<!ENTITY enigmail.createRuleFromAddr.label         "Luo Enigmail-sääntö osoitteelle...">
+<!ENTITY enigmail.keyManWindow.label               "Avainten hallinta">
+<!ENTITY enigmail.keyManWindow.accesskey           "v">
+
+<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Vastaanottaja-asetukset">
+
+<!ENTITY enigmail.compose.excesslength.label        "">
+<!ENTITY enigmail.compose.excesslength_action.label "">
+<!ENTITY enigmail.wrapSelectionList.label           "">
+<!ENTITY enigmail.compose.wrap_radio.label          "">
+<!ENTITY enigmail.compose.sendasis_radio.label      "">
+<!ENTITY enigmail.compose.use_mime_radio.label      "">
+<!ENTITY enigmail.compose.editmanually.label        "">
+
+<!ENTITY enigmail.selKeysButton.label               "Valitse avaimet...">
+<!ENTITY enigmail.action.label                      "Toiminto">
+<!ENTITY enigmail.nextRule.label                    "Jatka seuraavaan sääntöön täsmäävällä osoitteelle">
+<!ENTITY enigmail.nextAddress.label                 "Älä tarkista enää sääntöjä täsmäävälle osoitteelle">
+<!ENTITY enigmail.useKeys.label                     "Käytä seuraavia OpenPGP-avaimia:">
+<!ENTITY enigmail.selKeysButton.accesskey           "V">
+<!ENTITY enigmail.setDefaultsFor.label              "Oletusasetukset toiminnolle...">
+<!ENTITY enigmail.encryption.label                  "Salaaminen">
+<!ENTITY enigmail.signing.label                     "Allekirjoittaminen">
+<!ENTITY enigmail.never.label                       "Ei koskaan">
+<!ENTITY enigmail.always.label                      "Aina">
+<!ENTITY enigmail.maybe.label                       "Vain jos valitaan erikseen viestiä kirjoitettaessa">
+<!ENTITY enigmail.singleRcptSettings.desc           "(Huom: ristiriitatilanteissa valinta &quot;Ei koskaan&quot; on etusijalla)">
+<!ENTITY enigmail.ruleEmail.label                   "Aseta Enigmail-säännöt osoitteille">
+<!ENTITY enigmail.ruleEmail.tooltip                 "Kirjoita kenttään vain sähköpostiosoitteita. Älä kirjoita vastaanottajien nimiä Esim. &quot;Joku Nimi <joku.nimi@osoite.fi>&quot; on virheellinen">
+<!ENTITY enigmail.sepratationDesc.label             "(Erota sähköpostiosoitteet väleillä)">
+<!ENTITY enigmail.matchDescStart.label              "Sääntö pätee jos ylläoleva">
+<!ENTITY enigmail.matchDescEnd.label                "">
+<!ENTITY enigmail.matchExact.label                  "on täsmälleen vastaanottajan osoite">
+<!ENTITY enigmail.matchContains.label               "on osa vastaanottajan osoitetta">
+<!ENTITY enigmail.matchBegin.label                  "ja vastaanottajan osoitteen alku täsmäävät">
+<!ENTITY enigmail.matchEnd.label                    "ja vastaanottajan osoitteen loppu täsmäävät">
+<!ENTITY enigmail.not.label                         "Ei">
+
+<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Vastaanottajakohtaisten sääntöjen muokkain">
+<!ENTITY enigmail.email.label                       "Sähköposti">
+<!ENTITY enigmail.pgpKeys.label                     "OpenPGP-avaimet">
+<!ENTITY enigmail.sign.label                        "Allekirjoita">
+<!ENTITY enigmail.encrypt.label                     "Salaa">
+<!ENTITY enigmail.edit.label                        "Muokkaa">
+<!ENTITY enigmail.edit.accesskey                    "M">
+<!ENTITY enigmail.add.label                         "Lisää">
+<!ENTITY enigmail.add.accesskey                     "L">
+<!ENTITY enigmail.delete.label                      "Poista">
+<!ENTITY enigmail.delete.accesskey                  "o">
+<!ENTITY enigmail.moveUp.label                      "Siirrä ylös">
+<!ENTITY enigmail.moveUp.accesskey                  "y">
+<!ENTITY enigmail.moveDown.label                    "Siirrä alas">
+<!ENTITY enigmail.moveDown.accesskey                "a">
+<!ENTITY enigmail.searchRule.label                  "Näytä säännöt, jotka pätevät sähköpostiosoitteille:">
+<!ENTITY enigmail.clearSearch.label                 "Tyhjennä">
+<!ENTITY enigmail.clearSearch.accesskey             "T">
+
+<!ENTITY enigmail.searchKeyDlg.label               "Nouda OpenPGP-avaimet">
+<!ENTITY enigmail.searchKeyDlgCapt.label           "Löydettiin avaimia - Valitse tuotavat avaimet">
+<!ENTITY enigmail.searchKeyDlgSelAll.label         "">
+
+<!ENTITY enigmail.created.label                    "Luotu">
+
+<!ENTITY enigmail.progress.label                   "Edistyminen">
+
+<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Allekirjoita avain">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Allekirjoita avain:">
+<!ENTITY enigmail.sKeyDlg.fingerprint.label        "Sormenjälki:">
+<!ENTITY enigmail.sKeyDlg.signWithKey.label        "Allekirjoitusavain:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label        "">
+<!ENTITY enigmail.sKeyDlg.checked.label            "Kuinka varma olet, että avain, jota olet allekirjoittamassa, todella kuuluu yllä mainitulle henkilölle?">
+<!ENTITY enigmail.sKeyDlg.noAnswer.label           "En vastaa">
+<!ENTITY enigmail.sKeyDlg.notChecked.label         "En ole ollenkaan varma">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label        "Olen kohtuullisen varma">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "Olen aivan varma">
+<!ENTITY enigmail.sKeyDlg.createLocal.label        "Paikallinen allekirjoitus (ei voi viedä)">
+
+<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Lisää käyttäjätunnus">
+<!ENTITY enigmail.addUidDlg.name.label             "Nimi">
+<!ENTITY enigmail.addUidDlg.email.label            "Sähköposti">
+
+<!ENTITY enigmail.keyTrust.title                   "Enigmail - Aseta omistajan luottamus">
+<!ENTITY enigmail.keyTrust.trustKey.label          "Aseta luottamustaso avaimelle:">
+<!ENTITY enigmail.keyTrust.trustLevel.label        "Kuinka paljon luotat avaimeen?">
+<!ENTITY enigmail.keyTrust.trustLevel.tooltip      "">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "En tiedä">
+<!ENTITY enigmail.keyTrust.noTrust.label           "En luota">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "Luotan osittain">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "Luotan täysin">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Luotan ehdottomasti">
+
+<!ENTITY enigmail.keyExpiry.title                   "">
+<!ENTITY enigmail.keyExpiry.expiryKey.label         "">
+
+<!ENTITY enigmail.keyMan.title                     "Enigmail-avainten hallintaikkuna">
+<!ENTITY enigmail.keyMan.close.label               "Sulje ikkuna">
+<!ENTITY enigmail.keyMan.generate.label            "Uusi avainpari">
+<!ENTITY enigmail.keyMan.sign.label                "Allekirjoita avain">
+<!ENTITY enigmail.keyMan.setTrust.label            "Aseta omistajan luottamus">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Mitätöintivarmenne">
+<!ENTITY enigmail.keyMan.ctxGenRevoke.label        "Luo ja tallenna mitätöintivarmenne">
+
+<!ENTITY enigmail.keyMan.fileMenu.label            "Tiedosto">
+<!ENTITY enigmail.keyMan.editMenu.label            "Muokkaa">
+<!ENTITY enigmail.keyMan.viewMenu.label            "Näytä">
+<!ENTITY enigmail.keyMan.keyserverMenu.label       "Avainpalvelin">
+<!ENTITY enigmail.keyMan.generateMenu.label        "Luo">
+
+<!ENTITY enigmail.keyMan.fileMenu.accesskey        "T">
+<!ENTITY enigmail.keyMan.editMenu.accesskey        "M">
+<!ENTITY enigmail.keyMan.viewMenu.accesskey        "N">
+<!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "p">
+<!ENTITY enigmail.keyMan.generateMenu.accesskey    "L">
+
+<!ENTITY enigmail.keyMan.importFromFile.label      "Tuo avaimet tiedostosta">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Etsi avaimia">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Tuo avaimet leikepöydältä">
+<!ENTITY enigmail.keyMan.importFromUrl.label       "">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Vie avaimet tiedostoon">
+<!ENTITY enigmail.keyMan.sendKeys.label            "Lähetä julkiset avaimet sähköpostitse">
+<!ENTITY enigmail.keyMan.createMail.label          "">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Siirrä julkiset avaimet">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Kopioi julkiset avaimet leikepöydälle">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Vie avaimet tiedostoon">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Siirrä julkiset avaimet avainpalvelimelle">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Kopioi julkiset avaimet leikepöydälle">
+<!ENTITY enigmail.keyMan.refreshSelKeys.label      "Päivitä valitut julkiset avaimet">
+<!ENTITY enigmail.keyMan.refreshAllKeys.label      "Päivitä kaikki julkiset avaimet">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Päivitä julkiset avaimet avainpalvelimelta">
+<!ENTITY enigmail.keyMan.initiateAcBackup.label    "">
+
+<!ENTITY enigmail.keyMan.reload.label              "Päivitä avainvälimuisti">
+<!ENTITY enigmail.keyMan.addPhoto.label            "Lisää kuva">
+<!ENTITY enigmail.keyMan.manageUid.label           "Hallinnoi käyttäjätunnuksia">
+<!ENTITY enigmail.keyMan.changeExpiry.label        "Muuta erääntymispäivää">
+<!ENTITY enigmail.keyMan.changePwd.label           "Vaihda salasanaa">
+<!ENTITY enigmail.keyMan.delKey.label              "Poista avain">
+<!ENTITY enigmail.keyMan.revokeKey.label           "Mitätöi avain">
+<!ENTITY enigmail.keyMan.keyProps.label            "Avaimen ominaisuudet">
+<!ENTITY enigmail.keyMan.showAllKeys.label         "Näytä kaikki avaimet oletuksena">
+<!ENTITY enigmail.keyMan.viewPhoto.label           "Kuva">
+<!ENTITY enigmail.keyMan.ctxViewPhoto.label        "Näytä kuva">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label     "Näytä virheelliset avaimet">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label   "Näytä epäluotettavat avaimet">
+<!ENTITY enigmail.keyMan.showOthersKeys.label      "">
+<!ENTITY enigmail.keyMan.userId.label              "Nimi ">
+<!ENTITY enigmail.keyMan.keyType.label             "Tyyppi">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Avaimen luotettavuus">
+<!ENTITY enigmail.keyMan.ownerTrust.label          "Omistajan luottamus">
+<!ENTITY enigmail.keyMan.fingerprint.label         "Sormenjälki">
+<!ENTITY enigmail.keyMan.pEpBlacklisted.label      "">
+<!ENTITY enigmail.keyMan.selectAll.label           "Valitse kaikki avaimet">
+<!ENTITY enigmail.keyMan.addToPRRule.label         "">
+<!ENTITY enigmail.keyMan.emptyTree.tooltip         "Kirjoita hakusanat yllä olevaan kenttään">
+<!ENTITY enigmail.keyMan.nothingFound.tooltip      "Hakusanalla ei löytynyt avaimia">
+<!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Odota hetki kun avaimia ladataan...">
+
+<!ENTITY enigmail.keyMan.filter.label              "Suodata käyttäjätunnuksista tai avaintunnuksista:">
+
+<!ENTITY enigmail.keyMan.close.accesskey             "S">
+<!ENTITY enigmail.keyMan.generate.accesskey          "a">
+<!ENTITY enigmail.keyMan.sign.accesskey              "A">
+<!ENTITY enigmail.keyMan.setTrust.accesskey          "L">
+<!ENTITY enigmail.keyMan.genRevoke.accesskey         "M">
+<!ENTITY enigmail.keyMan.delKey.accesskey            "o">
+<!ENTITY enigmail.keyMan.revokeKey.accesskey         "M">
+<!ENTITY enigmail.keyMan.importFromFile.accesskey    "u">
+<!ENTITY enigmail.keyMan.exportToFile.accesskey      "v">
+<!ENTITY enigmail.keyMan.importFromServer.accesskey  "E">
+<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "S">
+<!ENTITY enigmail.keyMan.reload.accesskey            "ä">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
+<!ENTITY enigmail.keyMan.manageUid.accesskey         "H">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "E ">
+<!ENTITY enigmail.keyMan.changePwd.accesskey         "i">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
-<!ENTITY enigmail.keyMan.showOthersKeys.accesskey "O">
-<!ENTITY enigmail.keyMan.showPhoto.accesskey "K">
+<!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "O">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "K">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "u">
-<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey "K">
-<!ENTITY enigmail.keyMan.keyDetails.accesskey "O">
-<!ENTITY enigmail.keyMan.showAllKeys.accesskey "D">
-<!ENTITY enigmail.keyMan.enableKey.accesskey "k">
-<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey "v">
-<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "k">
-<!ENTITY enigmail.keyMan.selectAll.accesskey "V">
-<!ENTITY enigmail.keyMan.sendKeys.accesskey "L">
-<!ENTITY enigmail.keyMan.createMail.accesskey "C">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "K">
+<!ENTITY enigmail.keyMan.keyDetails.accesskey        "O">
+<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "D">
+<!ENTITY enigmail.keyMan.enableKey.accesskey         "k">
+<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "v">
+<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "k">
+<!ENTITY enigmail.keyMan.selectAll.accesskey         "V">
+<!ENTITY enigmail.keyMan.sendKeys.accesskey          "L">
+<!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F ">
-<!ENTITY enigmail.keyMan.selectAll.key "A">
-<!ENTITY enigmail.manageUidDlg.title "Muuta ensisijaista käyttäjätunnusta">
-<!ENTITY enigmail.manageUidDlg.affectedKey.label "Muutettava avain:">
-<!ENTITY enigmail.manageUidDlg.availableUid.label "Käytettävissä olevat tunnukset:">
-<!ENTITY enigmail.manageUidDlg.addUid.label "Lisää">
-<!ENTITY enigmail.manageUidDlg.deleteUid.label "Poista">
-<!ENTITY enigmail.manageUidDlg.revokeUid.label "Mitätöi">
-<!ENTITY enigmail.manageUidDlg.setPrimary.label "Aseta ensisijaiseksi">
-<!ENTITY enigmail.keyDetails.title "Avaimen ominaisuudet">
-<!ENTITY enigmail.keyDetails.userId.label "Ensisijainen käyttäjätunnus">
-<!ENTITY enigmail.keyDetails.ID.label "Tunnus">
-<!ENTITY enigmail.keyDetails.keyType.label "Tyyppi">
-<!ENTITY enigmail.keyDetails.algorithm.label "Algorithmi">
-<!ENTITY enigmail.keyDetails.size.label "Koko">
-<!ENTITY enigmail.keyDetails.created.label "Luotu">
-<!ENTITY enigmail.keyDetails.expiry.label "Vanhenee">
-<!ENTITY enigmail.keyDetails.usage.label "Käyttö">
-<!ENTITY enigmail.keyDetails.fingerprint.label "Sormenjälki">
-<!ENTITY enigmail.keyDetails.selAction.label "Valitse toiminto ">
-<!ENTITY enigmail.keyDetails.selAction.accesskey "S">
-<!ENTITY enigmail.cardDetails.title "OpenPGP-älykortin tiedot">
-<!ENTITY enigmail.cardDetails.cardMenu.label "Älykortti">
-<!ENTITY enigmail.cardDetails.adminPin.label "Vaihda PIN-koodi">
-<!ENTITY enigmail.cardDetails.genCardKey.label "Luo avain">
-<!ENTITY enigmail.cardDetails.vendor.label "Valmistaja">
-<!ENTITY enigmail.cardDetails.serial.label "Sarjanumero">
-<!ENTITY enigmail.cardDetails.name.label "Etunimi, Sukunimi">
-<!ENTITY enigmail.cardDetails.lang.label "Kieli">
-<!ENTITY enigmail.cardDetails.sex.label "Sukupuoli">
-<!ENTITY enigmail.cardDetails.url.label "Julkisen avaimen URL">
-<!ENTITY enigmail.cardDetails.login.label "Kirjautumistieto">
-<!ENTITY enigmail.cardDetails.forcepin.label "Vaadi PIN-koodi allekirjoitettaessa">
-<!ENTITY enigmail.cardDetails.maxpinlen.label "Suurin PIN-koodin pituus">
-<!ENTITY enigmail.cardDetails.pinretry.label "PIN-koodin uusintayrityslaskuri">
-<!ENTITY enigmail.cardDetails.sigcount.label "Allekirjoituslaskuri">
-<!ENTITY enigmail.cardDetails.sigKey.label "Allekirjoitusavain">
-<!ENTITY enigmail.cardDetails.keyCreated.label "Luotu">
-<!ENTITY enigmail.cardDetails.encKey.label "Salausavain">
-<!ENTITY enigmail.cardDetails.authKey.label "Todennusavain">
-<!ENTITY enigmail.cardDetails.yes.label "Kyllä">
-<!ENTITY enigmail.cardDetails.no.label "Ei">
-<!ENTITY enigmail.cardDetails.male.label "Mies">
-<!ENTITY enigmail.cardDetails.female.label "Nainen">
-<!ENTITY enigmail.cardDetails.editData.label "Muokkaa kortin tietoja">
-<!ENTITY enigmail.cardDetails.save.label "Tallenna">
-<!ENTITY enigmail.cardDetails.reset.label "Palauta oletusarvot">
-<!ENTITY enigmail.cardDetails.closeWindow.label "Sulje">
-<!ENTITY enigmail.cardDetails.adminPin.accesskey "A">
-<!ENTITY enigmail.cardDetails.genCardKey.accesskey "L">
-<!ENTITY enigmail.cardDetails.cardMenu.accesskey "Ä">
-<!ENTITY enigmail.cardDetails.editData.accesskey "M">
-<!ENTITY enigmail.genCardKey.title "Luo OpenPGP-avain">
-<!ENTITY enigmail.genCardKey.backupKey.label "Tallenna varmuuskopio avaimesta toiselle medialle">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Huom: Avaimen luominen voi kestää jopa useita minuutteja.</a> Älä sulje ohjelmaa kun avainta luodaan. Enigmail ilmoittaa kun avain on valmis.">
-<!ENTITY enigmail.cardPin.title "Vaihda älykortin PIN-koodi">
-<!ENTITY enigmail.cardPin.action.label "Mitä haluat tehdä?">
-<!ENTITY enigmail.cardPin.changePin.label "Vaihtaa PIN-koodin">
-<!ENTITY enigmail.cardPin.changeAdmPin.label "Vaihtaa ADMIN PIN-koodin">
-<!ENTITY enigmail.cardPin.unblockPin.label "Pura PIN-koodin esto">
-<!ENTITY enigmail.cardPin.currAdmPin.label "Nykyinen ADMIN PIN-koodi">
-<!ENTITY enigmail.cardPin.newAdminPin.label "Uusi ADMIN PIN-koodi">
-<!ENTITY enigmail.cardPin.adminPinRepeat.label "Toista uusi ADMIN PIN-koodi">
-<!ENTITY enigmail.cardPin.currPin.label "Nykyinen PIN-koodi">
-<!ENTITY enigmail.cardPin.newPin.label "Uusi PIN-koodi">
-<!ENTITY enigmail.cardPin.pinRepeat.label "Toista uusi PIN-koodi">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+
+
+<!ENTITY enigmail.keyMan.selectAll.key               "A">
+<!ENTITY enigmail.keyMan.keyDetails.key              "">
+<!ENTITY enigmail.keyMan.refreshKey.key              "">
+
+<!ENTITY enigmail.keySearch.selectAll.key            "">
+
+<!ENTITY enigmail.manageUidDlg.title                 "Muuta ensisijaista käyttäjätunnusta">
+<!ENTITY enigmail.manageUidDlg.affectedKey.label     "Muutettava avain:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label    "Käytettävissä olevat tunnukset:">
+<!ENTITY enigmail.manageUidDlg.addUid.label          "Lisää">
+<!ENTITY enigmail.manageUidDlg.revokeUid.label       "Mitätöi">
+<!ENTITY enigmail.manageUidDlg.setPrimary.label      "Aseta ensisijaiseksi">
+
+<!ENTITY enigmail.keyDetails.title                   "Avaimen ominaisuudet">
+<!ENTITY enigmail.keyDetails.signaturesTab           "">
+<!ENTITY enigmail.keyDetails.structureTab            "">
+<!ENTITY enigmail.keyDetails.uidCertifiedCol         "">
+<!ENTITY enigmail.keyDetails.userId.label            "Ensisijainen käyttäjätunnus">
+<!ENTITY enigmail.keyDetails.ID.label                "Tunnus">
+<!ENTITY enigmail.keyDetails.keyType.label           "Tyyppi">
+<!ENTITY enigmail.keyDetails.keyPart.label           "">
+<!ENTITY enigmail.keyDetails.algorithm.label         "Algorithmi">
+<!ENTITY enigmail.keyDetails.size.label              "Koko">
+<!ENTITY enigmail.keyDetails.created.label           "Luotu">
+<!ENTITY enigmail.keyDetails.expiry.label            "Vanhenee">
+<!ENTITY enigmail.keyDetails.usage.label             "Käyttö">
+<!ENTITY enigmail.keyDetails.fingerprint.label       "Sormenjälki">
+<!ENTITY enigmail.keyDetails.selAction.label         "Valitse toiminto ">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
+<!ENTITY enigmail.keyDetails.change.label            "">
+<!ENTITY enigmail.keyDetails.signKey.label           "">
+<!ENTITY enigmail.keyDetails.trustStatus.label       "">
+<!ENTITY enigmail.keyDetails.keyValidity.label       "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+
+<!ENTITY enigmail.cardDetails.title                  "OpenPGP-älykortin tiedot">
+<!ENTITY enigmail.cardDetails.cardMenu.label         "Älykortti">
+<!ENTITY enigmail.cardDetails.adminPin.label         "Vaihda PIN-koodi">
+<!ENTITY enigmail.cardDetails.genCardKey.label       "Luo avain">
+
+<!ENTITY enigmail.cardDetails.vendor.label           "Valmistaja">
+<!ENTITY enigmail.cardDetails.serial.label           "Sarjanumero">
+<!ENTITY enigmail.cardDetails.name.label             "Etunimi, Sukunimi">
+<!ENTITY enigmail.cardDetails.lang.label             "Kieli">
+<!ENTITY enigmail.cardDetails.sex.label              "Sukupuoli">
+<!ENTITY enigmail.cardDetails.url.label              "Julkisen avaimen URL">
+<!ENTITY enigmail.cardDetails.login.label            "Kirjautumistieto">
+<!ENTITY enigmail.cardDetails.forcepin.label         "Vaadi PIN-koodi allekirjoitettaessa">
+<!ENTITY enigmail.cardDetails.maxpinlen.label        "Suurin PIN-koodin pituus">
+<!ENTITY enigmail.cardDetails.pinretry.label         "PIN-koodin uusintayrityslaskuri">
+<!ENTITY enigmail.cardDetails.sigcount.label         "Allekirjoituslaskuri">
+<!ENTITY enigmail.cardDetails.sigKey.label           "Allekirjoitusavain">
+<!ENTITY enigmail.cardDetails.keyCreated.label       "Luotu">
+<!ENTITY enigmail.cardDetails.encKey.label           "Salausavain">
+<!ENTITY enigmail.cardDetails.authKey.label          "Todennusavain">
+<!ENTITY enigmail.cardDetails.yes.label              "Kyllä">
+<!ENTITY enigmail.cardDetails.no.label               "Ei">
+<!ENTITY enigmail.cardDetails.male.label             "Mies">
+<!ENTITY enigmail.cardDetails.female.label           "Nainen">
+<!ENTITY enigmail.cardDetails.editData.label         "Muokkaa kortin tietoja">
+<!ENTITY enigmail.cardDetails.save.label             "Tallenna">
+<!ENTITY enigmail.cardDetails.reset.label            "Palauta oletusarvot">
+<!ENTITY enigmail.cardDetails.closeWindow.label      "Sulje">
+
+<!ENTITY enigmail.cardDetails.adminPin.accesskey     "A">
+<!ENTITY enigmail.cardDetails.genCardKey.accesskey   "L">
+<!ENTITY enigmail.cardDetails.cardMenu.accesskey     "Ä">
+<!ENTITY enigmail.cardDetails.editData.accesskey     "M">
+
+<!ENTITY enigmail.genCardKey.title                   "Luo OpenPGP-avain">
+<!ENTITY enigmail.genCardKey.backupKey.label         "Tallenna varmuuskopio avaimesta toiselle medialle">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>Huom: Avaimen luominen voi kestää jopa useita minuutteja.</a> Älä sulje ohjelmaa kun avainta luodaan. Enigmail ilmoittaa kun avain on valmis.">
+
+<!ENTITY enigmail.cardPin.title                      "Vaihda älykortin PIN-koodi">
+<!ENTITY enigmail.cardPin.action.label               "Mitä haluat tehdä?">
+<!ENTITY enigmail.cardPin.changePin.label            "Vaihtaa PIN-koodin">
+<!ENTITY enigmail.cardPin.changeAdmPin.label         "Vaihtaa ADMIN PIN-koodin">
+<!ENTITY enigmail.cardPin.unblockPin.label           "Pura PIN-koodin esto">
+<!ENTITY enigmail.cardPin.currAdmPin.label           "Nykyinen ADMIN PIN-koodi">
+<!ENTITY enigmail.cardPin.newAdminPin.label          "Uusi ADMIN PIN-koodi">
+<!ENTITY enigmail.cardPin.adminPinRepeat.label       "Toista uusi ADMIN PIN-koodi">
+<!ENTITY enigmail.cardPin.currPin.label              "Nykyinen PIN-koodi">
+<!ENTITY enigmail.cardPin.newPin.label               "Uusi PIN-koodi">
+<!ENTITY enigmail.cardPin.pinRepeat.label            "Toista uusi PIN-koodi">
+
 <!-- wizard: welcome step -->
-<!ENTITY enigmail.setupWiz.title "Enigmail:n ohjattu asennus">
+<!ENTITY enigmail.setupWiz.title                     "Enigmail:n ohjattu asennus">
+<!ENTITY enigmail.setupWiz.pgIntro.title             "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc              "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2             "">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow          "">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater        "">
+
+<!ENTITY enigmail.setupWiz.pgWelcome.title           "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "">
+
 <!-- wizard: select account IDs step -->
-<!ENTITY enigmail.setupWiz.pgSelectId.title "Valitse käyttäjätunnus">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Valitse tili tai käyttäjätunnus, jolle Enigmail asetetaan">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Huom.:</a> Enigmail varmentaa jokaisen sähköpostin 
+<!ENTITY enigmail.setupWiz.pgSelectId.title          "Valitse käyttäjätunnus">
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Valitse tili tai käyttäjätunnus, jolle Enigmail asetetaan">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc2          "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds   "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds    "">
+<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Huom.:</a> Enigmail varmentaa jokaisen sähköpostin 
 
 
                                                       allekirjoitukset riippumatta tilistä tai käyttäjätunnuksesta">
+
 <!-- wizard: install GnuPG step -->
-<!ENTITY enigmail.setupWiz.pgInstall.title "GnuPG vaaditaan">
-<!ENTITY enigmail.setupWiz.pgInstall.installButton "Asennetaan GnuPG...">
+<!ENTITY enigmail.setupWiz.pgInstall.title           "GnuPG vaaditaan">
+<!ENTITY enigmail.setupWiz.pgInstall.desc            "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1    "">
+
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc2    "">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton   "Asennetaan GnuPG...">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton    "">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone     "">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "">
+
+
 <!-- wizard: key selection step -->
-<!ENTITY enigmail.setupWiz.pgKeySel.title "Avaimen valinta">
-<!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Luo avain, jolla voi allekirjoittaa ja salata sähköpostiviestejä">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey "Luo uusi avainpari viestien allekirjoittamiseen ja salaamiseen">
-<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Käytän jotain alla olevista avaimista viestien allekirjoittamiseen ja salaamiseen:">
+
+<!ENTITY enigmail.setupWiz.pgKeySel.title            "Avaimen valinta">
+<!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Luo avain, jolla voi allekirjoittaa ja salata sähköpostiviestejä">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "">
+<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Luo uusi avainpari viestien allekirjoittamiseen ja salaamiseen">
+<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "Käytän jotain alla olevista avaimista viestien allekirjoittamiseen ja salaamiseen:">
+
+
 <!-- wizard: key creation - password step -->
-<!ENTITY enigmail.setupWiz.pgKeyCreate.title "Luo avain">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Luo avain viestien allekirjoittamiseen ja salaamiseen">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Varmista salasanasi kirjoittamalla se uudestaan">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey "I have existing public and private keys that I would like to import">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Luo avain">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Luo avain viestien allekirjoittamiseen ja salaamiseen">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Varmista salasanasi kirjoittamalla se uudestaan">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passErrorRepeat "">
+
+<!-- wizard: no key found step -->
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
+
 <!-- wizard: import key page -->
-<!ENTITY enigmail.setupWiz.pgKeyImport.title "Import OpenPGP Keys">
-<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle "Specify the files to import">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc "Please specifiy the files containing the public and the private keys to
+<!ENTITY enigmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specifiy the files containing the public and the private keys to
 
 
                                                       import. The entry for private keys can be left empty if the first file
 
                                                       contains both private and public keys.">
-<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile "Julkinen avaintiedosto">
-<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile "Yksityinen avaintiedosto">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Julkinen avaintiedosto">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Yksityinen avaintiedosto">
+
 <!-- wizard: key creation - key generation step -->
-<!ENTITY enigmail.setupWiz.pgKeygen.title "Avaimen luonti">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Avainta luodaan">
+
+<!ENTITY enigmail.setupWiz.pgKeygen.title            "Avaimen luonti">
+<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Avainta luodaan">
+<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "">
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "">
+<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+
+<!-- wizard: key creation - key upload step -->
+<!ENTITY enigmail.setupWiz.pgUpload.title            "">
+<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "">
+<!ENTITY enigmail.attachAuto.desc                    "">
+
+<!-- wizard: import settings from previous installation -->
+<!ENTITY enigmail.setupWiz.pgImportSettings.title    "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc     "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error    "">
+
 <!-- wizard: final page -->
-<!ENTITY enigmail.setupWiz.pgComplete.title "Kiitos">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail on valmis käytettäväksi.<html:br></html:br><html:br></html:br>Kiitos Enigmail-tiimin puolesta.">
-<!ENTITY enigmail.advancedIdentityDlg.title "Kehittyneet Enigmail henkilötietoasetukset">
-<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Lisää julkinen avaintiedosto viestiin.">
-<!ENTITY enigmail.addPhoto.question.label "Do you want to add the following picture to the following key?">
-<!ENTITY enigmail.addPhoto.title "Add Photo to Key">
-<!ENTITY enigmail.msgViewColumn.label "OpenPGP">
-<!ENTITY enigmail.addToRule.useRuleButton.accesskey "A">
-<!ENTITY enigmail.addToRule.newRuleButton.accesskey "N">
+<!ENTITY enigmail.setupWiz.pgComplete.title          "Kiitos">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail on valmis käytettäväksi.<html:br></html:br><html:br></html:br>Kiitos Enigmail-tiimin puolesta.">
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "">
+<!ENTITY enigmail.pgComplete.help.title              "">
+
+<!-- wizard: manual setup page -->
+<!ENTITY enigmail.setupWiz.pgExpert.title            "">
+<!ENTITY enigmail.setupWiz.pgExpert.desc             "">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "">
+
+
+
+<!ENTITY enigmail.advancedIdentityDlg.title          "Kehittyneet Enigmail henkilötietoasetukset">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Lisää julkinen avaintiedosto viestiin.">
+
+<!ENTITY enigmail.addPhoto.question.label            "Do you want to add the following picture to the following key?">
+<!ENTITY enigmail.addPhoto.title                     "Add Photo to Key">
+<!ENTITY enigmail.msgViewColumn.tooltip              "">
+<!ENTITY enigmail.addToRule.title                    "">
+<!ENTITY enigmail.addToRule.useRuleButton.label      "">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
+<!ENTITY enigmail.addToRule.newRuleButton.label      "">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey  "N">
+
+<!ENTITY enigmail.savelogfile.label                   "">
+
+<!ENTITY enigmail.filterEditor.moveError.label       "">
+
+<!-- Export wizard -->
+<!ENTITY enigmail.exportWiz.title                    "">
+<!ENTITY enigmail.exportWiz.pgIntro.title            "">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1            "">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "">
+<!ENTITY enigmail.exportWiz.pgExport.title           "">
+<!ENTITY enigmail.exportWiz.pgExport.exporting       "">
+<!ENTITY enigmail.exportWiz.pgExport.done            "">
+<!ENTITY enigmail.exportWiz.pgExport.failed          "">
+
+<!ENTITY enigmail.privacyPprefPane.juniorMode         "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
+
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.revokeTrust.label               "">
+<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.title             "">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">
+<!ENTITY enigmail.pEp.privacyStatus.label             "">
+<!ENTITY enigmail.pEp.composestatus.label             "">
+
+<!ENTITY enigmail.pepHandshake.SuggestionTitle       "">
+<!ENTITY enigmail.pepHandshake.explanation           "">
+
+<!ENTITY enigmail.pepPrepHandshake.desc              "">
+
+<!ENTITY enigmail.pepPref.window.title               "">
+<!ENTITY enigmail.pepPref.accountTab.label           "">
+<!ENTITY enigmail.pepPref.compatTab.label            "">
+<!ENTITY enigmail.pepPref.aboutTab.label             "">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "">
+<!ENTITY enigmail.pepPref.storeSecurely.title        "">
+<!ENTITY enigmail.pepPref.storeSecurely.label        "">
+<!ENTITY enigmail.pepPref.enableEncryption.label     "">
+<!ENTITY enigmail.pepPref.passiveMode.label          "">
+<!ENTITY enigmail.pepPref.protectedSubject.label     "">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "">
+<!ENTITY enigmail.pepPref.openpgpCompatibility.label "">
+<!ENTITY enigmail.pepPref.autoKeyLookup.label        "">
+<!ENTITY enigmail.pepPref.credits.label              "">
+<!ENTITY enigmail.pepPref.thanksTo.label             "">
+
+<!ENTITY enigmail.acPreferEncrypt.label              "">
+<!ENTITY enigmail.enableAutocrypt.label              "">
+
+<!ENTITY enigmail.acSetupPasswd.dlgTitle             "">
+<!ENTITY enigmail.acSetupPasswd.password             "">
+
+<!ENTITY enigmail.acKeyTransfer.window.title         "">
+<!ENTITY enigmail.acKeyTransfer.welcome.title        "">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "">
+
+<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "">
+<!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "">

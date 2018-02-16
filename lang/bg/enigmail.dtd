@@ -1,407 +1,860 @@
-<!ENTITY enigmail.label "Enigmail">
-<!ENTITY enigmail.keyUserId.label "Акаунт / User ID">
-<!ENTITY enigmail.keygenTitle.label "Генериране на OpenPGP Ключ">
-<!ENTITY enigmail.useForSigning.label "Използвайте генерирания ключ за избраната самоличност">
-<!ENTITY enigmail.keyNoPassphrase.label "Без парола за защита на частния ключ">
-<!ENTITY enigmail.keyPassphrase.label "Парола за защита на частния ключ">
+<!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.pEp.label               "">
+<!ENTITY enigmail.autocrypt.label         "">
+
+<!ENTITY enigmail.about.license           "">
+
+<!ENTITY enigmail.keyUserId.label         "Акаунт / User ID">
+<!ENTITY enigmail.keygenTitle.label       "Генериране на OpenPGP Ключ">
+<!ENTITY enigmail.useForSigning.label     "Използвайте генерирания ключ за избраната самоличност">
+<!ENTITY enigmail.keyNoPassphrase.label   "Без парола за защита на частния ключ">
+<!ENTITY enigmail.keyPassphrase.label     "Парола за защита на частния ключ">
 <!ENTITY enigmail.keyPassphraseRepeat.label "Повтори паролата">
-<!ENTITY enigmail.generateKey.tooltip "Генериране на нов OpenPGP съвместим ключ за криптиране и/или подписване">
-<!ENTITY enigmail.cancelKey.label "Отказ">
-<!ENTITY enigmail.cancelKey.tooltip "Отказ на генерирането на ключ">
-<!ENTITY enigmail.keyGen.expiry.title "Срок на валидност на ключа">
-<!ENTITY enigmail.keyGen.expire.label "Ключа изтича след">
-<!ENTITY enigmail.keyGen.days.label "дни">
-<!ENTITY enigmail.keyGen.months.label "месеца">
-<!ENTITY enigmail.keyGen.years.label "години">
-<!ENTITY enigmail.keyGen.noExpiry.label "Ключа е безсрочен">
-<!ENTITY enigmail.keyGen.keySize.label "Размер на ключа">
-<!ENTITY enigmail.keyGen.console.label "Конзола за генериране на ключ">
-<!ENTITY enigmail.keyGen.keyType.label "Тип на ключа">
-<!ENTITY enigmail.keyGen.keyType.dsa "DSA &amp; El Gamal">
-<!ENTITY enigmail.keyGen.keyType.rsa "RSA">
-<!ENTITY enigmail.preferences.label "Enigmail Настройки">
-<!ENTITY enigmail.passwordSettings.label "Настройки на паролата за защита на частния ключ">
-<!ENTITY enigmail.userNoPassphrase.label "Никога не питай за парола за защита на частния ключ">
+<!ENTITY enigmail.generateKey.tooltip     "Генериране на нов OpenPGP съвместим ключ за криптиране и/или подписване">
+<!ENTITY enigmail.cancelKey.label         "Отказ">
+<!ENTITY enigmail.cancelKey.tooltip       "Отказ на генерирането на ключ">
+<!ENTITY enigmail.keyGen.expiry.title     "Срок на валидност на ключа">
+<!ENTITY enigmail.keyGen.expire.label     "Ключа изтича след">
+<!ENTITY enigmail.keyGen.days.label       "дни">
+<!ENTITY enigmail.keyGen.months.label     "месеца">
+<!ENTITY enigmail.keyGen.years.label      "години">
+<!ENTITY enigmail.keyGen.noExpiry.label   "Ключа е безсрочен">
+<!ENTITY enigmail.keyGen.keySize.label    "Размер на ключа">
+<!ENTITY enigmail.keyGen.console.label    "">
+<!ENTITY enigmail.keyGen.keyType.label    "Тип на ключа">
+<!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
+<!ENTITY enigmail.keyGen.keyType.ecc      "">
+
+<!ENTITY enigmail.keyUpload.label         "">
+<!ENTITY enigmail.keyUpload.desc          "">
+<!ENTITY enigmail.keyUpload.sks.label     "">
+<!ENTITY enigmail.keyUpload.sks.desc      "">
+<!ENTITY enigmail.keyUpload.wks.label     "">
+<!ENTITY enigmail.keyAttachAuto.label     "">
+
+<!ENTITY enigmail.preferences.label       "Enigmail Настройки">
+
+<!ENTITY enigmail.passwordSettings.label   "">
+<!ENTITY enigmail.userNoPassphrase.label   "Никога не питай за парола за защита на частния ключ">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Активирай ако твоят OpenPGP ключа не е защитен с парола за защита на частния ключ.">
-<!ENTITY enigmail.expertUser.tooltip "Натиснете, ако искате да виждате менютата и опциите за напреднали потребители.">
-<!ENTITY enigmail.basicUser.tooltip "Натиснете, ако не искате да виждате менютата и опциите за напреднали потребители.">
-<!ENTITY enigmail.prefs.pathsTitle.label "Файлове и Директории">
-<!ENTITY enigmail.prefs.overrideGpg.label "Въведете нов път">
-<!ENTITY enigmail.prefs.overrideGpg.tooltip "Натиснете за да определите пътя към GnuPG">
-<!ENTITY enigmail.agentAdditionalParam.label "Допълнителни параметри на GnuPG">
-<!ENTITY enigmail.agentAdditionalParam.tooltip "Задайте опциите, които ще бъдат използвани от GnuPG.">
-<!ENTITY enigmail.mime_parts_on_demand.label "Зареждайте MIME-частите по подразбиране (папки IMAP)">
+<!ENTITY enigmail.expertUserMenus.label    "">
+<!ENTITY enigmail.expertUser.tooltip       "Натиснете, ако искате да виждате менютата и опциите за напреднали потребители.">
+<!ENTITY enigmail.basicUserMenus.label     "">
+<!ENTITY enigmail.basicUser.tooltip        "Натиснете, ако не искате да виждате менютата и опциите за напреднали потребители.">
+
+<!ENTITY enigmail.prefs.pathsTitle.label      "Файлове и Директории">
+<!ENTITY enigmail.prefs.overrideGpg.label     "Въведете нов път">
+<!ENTITY enigmail.prefs.overrideGpg.tooltip   "Натиснете за да определите пътя към GnuPG">
+
+
+<!ENTITY enigmail.agentAdditionalParam.label    "Допълнителни параметри на GnuPG">
+<!ENTITY enigmail.agentAdditionalParam.tooltip  "Задайте опциите, които ще бъдат използвани от GnuPG.">
+
+<!ENTITY enigmail.protectHeadersPrefs.label    "">
+<!ENTITY enigmail.protectHeadersPrefs.tooltip  "">
+<!ENTITY enigmail.protectedSubjectText.label    "">
+<!ENTITY enigmail.protectedSubjectText.tooltip  "">
+
+
+<!ENTITY enigmail.mime_parts_on_demand.label  "Зареждайте MIME-частите по подразбиране (папки IMAP)">
+
+
 <!ENTITY enigmail.maxIdleMinutesHead.label "Запомни паролата за защита за частния ключ за">
-<!ENTITY enigmail.maxIdleMinutesTail.label "минути през текущата сесия">
-<!ENTITY enigmail.maxIdleMinutes.tooltip "Запомни паролата за защита на частния ключ в паметта, за ограничен период от време">
+<!ENTITY enigmail.maxIdleMinutesTail.label "">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Запомни паролата за защита на частния ключ в паметта, за ограничен период от време">
+
 <!ENTITY enigmail.resetPrefsButton.label "Първоначални настройки">
-<!ENTITY enigmail.resetPrefs.tooltip "Възстановете първоначалните настройките на Enigmail.">
-<!ENTITY enigmail.basic.label "Основни">
-<!ENTITY enigmail.sending.label "Изпращане">
-<!ENTITY enigmail.keySel.label "Избор на ключ">
-<!ENTITY enigmail.pgpMime.label "PGP/MIME">
-<!ENTITY enigmail.advanced.label "Разширени">
-<!ENTITY enigmail.basicPrefs.label "Основни настройки">
-<!ENTITY enigmail.moreOptions.label "Допълнителни настройки">
+<!ENTITY enigmail.resetPrefs.tooltip     "Възстановете първоначалните настройките на Enigmail.">
+
+<!ENTITY enigmail.backupPrefsButton.label "">
+<!ENTITY enigmail.backupPrefs.tooltip     "">
+
+<!ENTITY enigmail.restorePrefsButton.label "">
+<!ENTITY enigmail.restorePrefs.tooltip     "">
+
+<!ENTITY enigmail.pref.acSetupMessage.desc   "">
+<!ENTITY enigmail.pref.acSetupMessage.button "">
+
+<!ENTITY enigmail.pref.backupRestore.overallDesc "">
+
+<!ENTITY enigmail.backupRestore.desc       "">
+
+<!ENTITY enigmail.basic.label            "Основни">
+<!ENTITY enigmail.sending.label          "Изпращане">
+<!ENTITY enigmail.keySel.label           "Избор на ключ">
+<!ENTITY enigmail.pgpMime.label          "PGP/MIME">
+<!ENTITY enigmail.advanced.label         "Разширени">
+<!ENTITY enigmail.transferSettings.label "">
+
+<!ENTITY enigmail.basicPrefs.label       "Основни настройки">
+
+<!ENTITY enigmail.moreOptions.label       "Допълнителни настройки">
+
 <!ENTITY enigmail.useNonDefaultComment.label "Добавяне на OpenPGP коментар в подписа">
-<!ENTITY enigmail.keyserver.label "Сървър за OpenPGP сертификати">
-<!ENTITY enigmail.keyserverDlg.label "Изберете сървър">
-<!ENTITY enigmail.keyservers.label "Задайте вашия(те) сървър(ри)">
-<!ENTITY enigmail.keyservers.sample "Пример: sks.dnsalias.net, pgp.mit.edu, ldap://certserver.pgp.com">
-<!ENTITY enigmail.searchForKey.label "Търсене на сертификати">
+
+<!ENTITY enigmail.keyserver.label         "Сървър за OpenPGP сертификати">
+<!ENTITY enigmail.keyserverDlg.label      "Изберете сървър">
+<!ENTITY enigmail.keyservers.label        "Задайте вашия(те) сървър(ри)">
+<!ENTITY enigmail.keyservers.sample2      "">
+
+<!ENTITY enigmail.searchForKey.example    "">
+<!ENTITY enigmail.searchForKey.desc1	    "">
+<!ENTITY enigmail.searchForKey.desc2      "">
+<!ENTITY enigmail.searchForKey.desc3      "">
+<!ENTITY enigmail.searchForKey.label      "Търсене на сертификати">
+
 <!ENTITY enigmail.doubleDashSeparator.label "'--' е разделител на сигнатурата">
-<!ENTITY enigmail.useGpgAgent.label "Използвайте gpg-agent за пароли за защита на частния ключ">
-<!ENTITY enigmail.noHushMailSupport.label "Използвайте '&lt;' и '&gt;' за да уточните имейл адресите">
-<!ENTITY enigmail.doubleDashSeparator.tooltip "Две тирета на една линия означават блок на сигнатурата.">
-<!ENTITY enigmail.useGpgAgent.tooltip "Използвайте gpg-agent (част от GnuPG 2) за всички искания за въвеждане на всички пароли за защита на частния ключ.">
-<!ENTITY enigmail.noHushMailSupport.tooltip "Използвайте '&lt;' и '&gt;' символи за да уточните имейл адреси за GnuPG. Изключете ако получателите имат стари Hushmail ключове.">
+<!ENTITY enigmail.noHushMailSupport.label   "Използвайте '<' и '>' за да уточните имейл адресите">
+
+<!ENTITY enigmail.doubleDashSeparator.tooltip  "Две тирета на една линия означават блок на сигнатурата.">
+<!ENTITY enigmail.noHushMailSupport.tooltip    "Използвайте '<' и '>' символи за да уточните имейл адреси за GnuPG. Изключете ако получателите имат стари Hushmail ключове.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Трябва да изключите тази функция, ако получавате PGP/MIME съобщения в IMAP папки.">
-<!ENTITY enigmail.disableSMIMEui.tooltip "Премахване на S/MIME бутона от лентата с инструменти на прозореца за съставяне на съобщения.">
-<!ENTITY enigmail.decryptbutton.label "Декриптиране">
-<!ENTITY enigmail.decryptbutton.tip "Декриптиране и проверка на съобщението чрез Enigmail">
+<!ENTITY enigmail.disableSMIMEui.tooltip       "Премахване на S/MIME бутона от лентата с инструменти на прозореца за съставяне на съобщения.">
+
+<!ENTITY enigmail.autoKeyServerSelection.label     "">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip   "">
+
+<!ENTITY enigmail.decryptbutton.label     "Декриптиране">
+<!ENTITY enigmail.decryptbutton.tip       "Декриптиране и проверка на съобщението чрез Enigmail">
+
 <!ENTITY enigmail.messengermenu.accesskey "n">
-<!ENTITY enigmail.decryptverify.label "Декриптиране/Проверка">
-<!ENTITY enigmail.importpublickey.label "Внасяне на публичен ключ">
-<!ENTITY enigmail.autoDecrypt.label "Автоматично Декриптиране/Проверка на съобщенията">
-<!ENTITY enigmail.clearPassphrase.label "Премахване на запомнените пароли за защита на частния ключ">
-<!ENTITY enigmail.editRules.label "Редактиране на правилата за получател">
-<!ENTITY enigmail.prefs.label "Настройки">
-<!ENTITY enigmail.debugMenu.label "Опции за отстраняване на грешки">
-<!ENTITY enigmail.viewconsole.label "Отвори конзолата">
-<!ENTITY enigmail.generateKey.label "Генериране на ключ">
-<!ENTITY enigmail.help.label "Помощ">
-<!ENTITY enigmail.about.title "Относно Enigmail">
-<!ENTITY enigmail.about.label "Относно Enigmail">
-<!ENTITY enigmail.reload.label "Презареждане на съобщението">
-<!ENTITY enigmail.browse.label "Отвори...">
-<!ENTITY enigmail.sendersKeyMenu.label "Ключ на подателя">
-<!ENTITY enigmail.adminSmartCard.label "Управление на Смарткарта ...">
-<!ENTITY enigmail.setupWiz.label "Съветник за настройка">
-<!ENTITY enigmail.decryptverify.accesskey "D">
+
+<!ENTITY enigmail.decryptverify.label    "Декриптиране/Проверка">
+<!ENTITY enigmail.importpublickey.label  "Внасяне на публичен ключ">
+<!ENTITY enigmail.importKey.label        "">
+
+<!ENTITY enigmail.autoDecrypt.label      "Автоматично Декриптиране/Проверка на съобщенията">
+<!ENTITY enigmail.clearPassphrase.label  "Премахване на запомнените пароли за защита на частния ключ">
+<!ENTITY enigmail.editRules.label        "Редактиране на правилата за получател">
+
+<!ENTITY enigmail.decryptToFolder.label     "">
+<!ENTITY enigmail.decryptToFolder.accesskey "">
+
+<!-- "recent" label for Folder selection submenu -->
+<!ENTITY enigmail.recent.label              "">
+<!ENTITY enigmail.recent.accesskey          "">
+
+<!ENTITY enigmail.prefs.label            "Настройки">
+
+<!ENTITY enigmail.debugMenu.label        "Опции за отстраняване на грешки">
+<!ENTITY enigmail.viewconsole.label      "Отвори конзолата">
+<!ENTITY enigmail.viewlog.label          "">
+
+<!ENTITY enigmail.generateKey.label        "Генериране на ключ">
+<!ENTITY enigmail.help.label               "Помощ">
+<!ENTITY enigmail.about.label              "Относно Enigmail">
+<!ENTITY enigmail.reload.label             "Презареждане на съобщението">
+<!ENTITY enigmail.browse.label             "Отвори...">
+<!ENTITY enigmail.sendersKeyMenu.label     "Ключ на подателя">
+<!ENTITY enigmail.adminSmartCard.label     "Управление на Смарткарта ...">
+<!ENTITY enigmail.setupWiz.label           "Съветник за настройка">
+
+<!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.reload.accesskey "E">
-<!ENTITY enigmail.adminSmartCard.accesskey "M">
-<!ENTITY enigmail.autoDecrypt.accesskey "A">
-<!ENTITY enigmail.debugMenu.accesskey "g">
+<!ENTITY enigmail.reload.accesskey          "E">
+<!ENTITY enigmail.adminSmartCard.accesskey  "M">
+
+<!ENTITY enigmail.autoDecrypt.accesskey     "A">
+<!ENTITY enigmail.debugMenu.accesskey       "g">
+
 <!ENTITY enigmail.clearPassphrase.accesskey "l">
-<!ENTITY enigmail.editRules.accesskey "R">
-<!ENTITY enigmail.setupWiz.accesskey "S">
-<!ENTITY enigmail.prefs.accesskey "P">
-<!ENTITY enigmail.viewconsole.accesskey "c">
-<!ENTITY enigmail.help.accesskey "H">
-<!ENTITY enigmail.about.accesskey "b">
-<!ENTITY enigmail.sendersKeyMenu.accesskey "K">
-<!ENTITY enigmail.signedsend.label "Подпиши съобщението">
-<!ENTITY enigmail.encryptedsend.label "Криптирай съобщението">
-<!ENTITY enigmail.pgpAccountSettings.label "Опции за Криптиране/Подписване...">
-<!ENTITY enigmail.sendOptionsMenu.label "Опции при изпращане...">
-<!ENTITY enigmail.defaultKeySelOpts.label "Опции за избор на ключ...">
-<!ENTITY enigmail.undoencryption.label "Отмяна на криптиране">
-<!ENTITY enigmail.attachkey.label "Прикрепяне на публичен ключ ...">
-<!ENTITY enigmail.attachmykey.label "Прикрепи моят публичен ключ">
-<!ENTITY enigmail.composemenu.accesskey "n">
-<!ENTITY enigmail.signedsend.accesskey "S">
-<!ENTITY enigmail.signedsend.key "S">
-<!ENTITY enigmail.encryptedsend.accesskey "E">
-<!ENTITY enigmail.encryptedsend.key "E">
-<!ENTITY enigmail.sendOptionsMenu.accesskey "S">
-<!ENTITY enigmail.defaultKeySelOpts.accesskey "K">
+<!ENTITY enigmail.editRules.accesskey       "R">
+<!ENTITY enigmail.setupWiz.accesskey        "S">
+
+
+<!ENTITY enigmail.prefs.accesskey           "P">
+<!ENTITY enigmail.viewconsole.accesskey     "c">
+<!ENTITY enigmail.viewlog.accesskey         "">
+
+<!ENTITY enigmail.help.accesskey            "H">
+<!ENTITY enigmail.about.accesskey           "b">
+<!ENTITY enigmail.sendersKeyMenu.accesskey  "K">
+
+<!ENTITY enigmail.composetoolbar.desc         "">
+
+<!ENTITY enigmail.signedsend.label            "Подпиши съобщението">
+<!ENTITY enigmail.encryptedsend.label         "Криптирай съобщението">
+
+<!ENTITY enigmail.pepEnableProtection.label         "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+
+<!ENTITY enigmail.pgpAccountSettings.label     "Опции за Криптиране/Подписване...">
+<!ENTITY enigmail.sendOptionsMenu.label        "Опции при изпращане...">
+<!ENTITY enigmail.defaultKeySelOpts.label      "Опции за избор на ключ...">
+<!ENTITY enigmail.usePgpMime.label             "">
+<!ENTITY enigmail.useInline.label              "">
+<!ENTITY enigmail.useSmime.label               "">
+
+<!ENTITY enigmail.tempTrustAllKeys.label       "">
+<!ENTITY enigmail.undoencryption.label         "Отмяна на криптиране">
+<!ENTITY enigmail.attachkey.label              "Прикрепяне на публичен ключ ...">
+<!ENTITY enigmail.attachmykey.label            "Прикрепи моят публичен ключ">
+<!ENTITY enigmail.protectHeaders.label         "">
+
+<!ENTITY enigmail.composemenu.accesskey        "n">
+
+<!ENTITY enigmail.signedsend.accesskey         "S">
+<!ENTITY enigmail.signedsend.key               "S">
+<!ENTITY enigmail.encryptedsend.accesskey      "E">
+<!ENTITY enigmail.encryptedsend.key            "E">
+
+<!ENTITY enigmail.sendOptionsMenu.accesskey    "S">
+<!ENTITY enigmail.defaultKeySelOpts.accesskey  "K">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
-<!ENTITY enigmail.undoencryption.accesskey "U">
-<!ENTITY enigmail.attachkey.accesskey "A">
-<!ENTITY enigmail.attachmykey.accesskey "M">
-<!ENTITY enigmail.defaultEncryption.label "Криптиране на съобщенията по подразбиране">
-<!ENTITY enigmail.usePGPMimeAlways.label "Използване на PGP/MIME по подразбиране">
-<!ENTITY enigmail.advancedPrefsButton.label "Разширени ...">
+<!ENTITY enigmail.usePgpMime.accesskey         "">
+<!ENTITY enigmail.useInline.accesskey          "">
+<!ENTITY enigmail.useSmime.accesskey           "">
+
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "">
+<!ENTITY enigmail.undoencryption.accesskey     "U">
+<!ENTITY enigmail.attachkey.accesskey          "A">
+<!ENTITY enigmail.attachmykey.accesskey        "M">
+
+
+<!-- account specific options -->
+<!ENTITY enigmail.defaultSigning.label            "">
+<!ENTITY enigmail.defaultEncryption.label         "Криптиране на съобщенията по подразбиране">
+<!ENTITY enigmail.usePGPMimeAlways.label          "Използване на PGP/MIME по подразбиране">
+
+<!ENTITY enigmail.afterDefaultsAndRules.label     "">
+<!ENTITY enigmail.finallySignEncrypted.label      "">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "">
+
+<!ENTITY enigmail.autoEncryptDrafts.label         "">
+
+<!ENTITY enigmail.advancedPrefsButton.label       "Разширени ...">
+<!ENTITY enigmail.openpgpPrefsButton.label        "">
+
+
+<!-- Sending Preferences -->
+
+<!ENTITY enigmail.SendingPrefs.label              "">
+<!ENTITY enigmail.seeAccountSettings.label        "">
+
+<!ENTITY enigmail.encryptionModelConvenient.label "">
+<!ENTITY enigmail.encryptionModelManually.label   "">
+
+<!ENTITY enigmail.keepCryptoSettingsForReply.label   "">
+<!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "">
+
+<!ENTITY enigmail.autoSendEncryptedOption.label   "">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "">
+<!ENTITY enigmail.autoSendEncryptedNever.tooltip  "">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.label   "">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "">
+
+<!ENTITY enigmail.acceptedKeysOption.label        "">
+<!ENTITY enigmail.acceptedKeysTrusted.label       "">
+<!ENTITY enigmail.acceptedKeysTrusted.tooltip     "">
+<!ENTITY enigmail.acceptedKeysAllUsable.label     "">
+<!ENTITY enigmail.acceptedKeysAllUsable.tooltip   "">
+
+<!ENTITY enigmail.confirmBeforeSendingOption.label           "">
+<!ENTITY enigmail.confirmBeforeSendingNever.label            "">
+<!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label           "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "">
+<!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.label   "">
+<!ENTITY enigmail.confirmBeforeSendingIfNotEncrypted.tooltip "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.label          "">
+<!ENTITY enigmail.confirmBeforeSendingIfRules.tooltip        "">
+
+
 <!-- keySel Preferences -->
+
 <!ENTITY enigmail.recipientsSelectionOption.label "Как да избираме ключове?">
-<!ENTITY enigmail.defineRules.label "Редактиране на правилата ...">
-<!ENTITY enigmail.wrapHtmlBeforeSend.label "Преформатиране на подписания HTML преди изпращане">
-<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip "Преподредеждане на текста, за да се гарантира, че подписа ще остане непокътнат.">
-<!ENTITY enigmail.autoKeyRetrieve.label "Автоматично сваляне на ключове за проверка на подписа">
-<!ENTITY enigmail.autoKeyRetrieve2.label "от следния сървър за ключове:">
-<!ENTITY enigmail.resetRememberedValues.label "Нулиране на Предупрежденията">
-<!ENTITY enigmail.resetRememberedValues.tooltip "Показване на всички стари предупреждения и въпроси.">
+<!ENTITY enigmail.assignKeysByRules.label             "">
+<!ENTITY enigmail.assignKeysByRules.tooltip           "">
+<!ENTITY enigmail.assignKeysByEmailAddr.label         "">
+<!ENTITY enigmail.assignKeysByEmailAddr.tooltip       "">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.label   "">
+<!ENTITY enigmail.assignKeysManuallyIfMissing.tooltip "">
+<!ENTITY enigmail.assignKeysManuallyAlways.label      "">
+<!ENTITY enigmail.assignKeysManuallyAlways.tooltip    "">
+<!ENTITY enigmail.defineRules.label               "Редактиране на правилата ...">
+
+
+<!ENTITY enigmail.wrapHtmlBeforeSend.label        "Преформатиране на подписания HTML преди изпращане">
+<!ENTITY enigmail.wrapHtmlBeforeSend.tooltip      "Преподредеждане на текста, за да се гарантира, че подписа ще остане непокътнат.">
+<!ENTITY enigmail.autoKeyRetrieve.label           "Автоматично сваляне на ключове за проверка на подписа">
+<!ENTITY enigmail.autoKeyRetrieve2.label          "от следния сървър за ключове:">
+<!ENTITY enigmail.resetRememberedValues.label     "Нулиране на Предупрежденията">
+<!ENTITY enigmail.resetRememberedValues.tooltip   "Показване на всички стари предупреждения и въпроси.">
+
 <!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>Забележка: Генерирането на ключа може да отнеме няколко минути.</a> Не излизайте от приложението докато трае генерирането на ключа. Активното браузване или извършването на активни операции с диска по време на генерирането на ключа ще генерира 'случайни числа' и ще ускори процеса. Ще бъдете уведомени, когато генерирането на ключа приключи.">
-<!ENTITY enigmail.userSelectionList.label "Enigmail избор на ключ">
-<!ENTITY enigmail.usersNotFound.label "Получателите не са валидни, не са доверени или не са намерени">
-<!ENTITY enigmail.keyExpiry.label "Срок на валидност">
-<!ENTITY enigmail.keySelection.label "Избор">
-<!ENTITY enigmail.keyId.label "Идентификатор на ключа">
-<!ENTITY enigmail.displayNoLonger.label "Не показвай този прозорец отново, ако криптирането е невъзможно">
-<!ENTITY enigmail.importMissingKeys.label "Сваляне на липстващи ключове">
-<!ENTITY enigmail.importMissingKeys.accesskey "D">
-<!ENTITY enigmail.importMissingKeys.tooltip "Опитай се да свалиш липстващите ключове от сървъра с ключове">
-<!ENTITY enigmail.refreshKeys.label "Обнови списъка с ключове">
-<!ENTITY enigmail.refreshKeys.accesskey "R">
-<!ENTITY enigmail.perRecipientsOption.label "Създаване на правило за получател(и)">
-<!ENTITY enigmail.enigmailAttachDesc.label "Това съобщение съдържа прикачени файлове. Желаете ли да ги криптирате/подпишете?">
-<!ENTITY enigmail.enigEncryptAttachNone.label "Шифроване и подписване на текста само на съобщенията, без прикачените файлове">
-<!ENTITY enigmail.enigEncryptAttachInline.label "Криптиране/подписване на всеки прикачен файл отделно и изпращане на съобщение чрез използване на inline PGP">
-<!ENTITY enigmail.enigEncryptAttachPgpMime.label "Криптиране/подписване на съобщението, като цяло и изпращането като PGP/MIME">
-<!ENTITY enigmail.encryptAttachSkipDlg.label "Използване на избрания метод за всички бъдещи прикачени файлове">
-<!ENTITY enigmail.ctxDecryptOpen.label "Декриптиране и отваряне">
-<!ENTITY enigmail.ctxDecryptSave.label "Декриптиране и Запис като...">
-<!ENTITY enigmail.ctxImportKey.label "Внасяне на OpenPGP Ключ">
-<!ENTITY enigmail.ctxDecryptOpen.accesskey "D">
-<!ENTITY enigmail.ctxDecryptSave.accesskey "C">
-<!ENTITY enigmail.ctxImportKey.accesskey "I">
-<!ENTITY enigmail.detailsHdrButton.label "Детайли">
-<!ENTITY enigmail.amPrefTitle.label "OpenPGP Опции">
-<!ENTITY enigmail.amPrefDesc.label "Enigmail предоставя поддръжа на криптирани съобщения и цифровото им подписване на основата на OpenGPG.">
-<!ENTITY enigmail.amPrefEnablePgp.label "Включване на OpenPGP (Enigmail) поддръжка за тази самоличност">
-<!ENTITY enigmail.amPrefUseFromAddr.label "Използване на имейл адреса на тази самоличност за идентифициране на OpenPGP ключа">
-<!ENTITY enigmail.amPrefUseKeyId.label "Използване на друг идентификатор на OpenPGP ключ (Формат: 0x1234ABCD):">
-<!ENTITY enigmail.amPrefSelectKey.label "Избор на ключ ...">
-<!ENTITY enigmail.amPrefDefaultEncrypt.label "Настройки по подразбиране за съставяне на съобщение">
-<!ENTITY enigmail.encryptionDlg.label "Настройки на Enigmail за криптиране и подписване">
-<!ENTITY enigmail.encDlgEncrypt.label "Криптиране на съобщението">
-<!ENTITY enigmail.encDlgEncrypt.accesskey "E">
-<!ENTITY enigmail.encDlgSign.label "Подписване на съобщенето">
-<!ENTITY enigmail.encDlgSign.accesskey "S">
-<!ENTITY enigmail.encDlgPgpMime.label "Използване на PGP/MIME">
-<!ENTITY enigmail.encDlgPgpMime.accesskey "U">
-<!ENTITY enigmail.amPrefPgpHeader.label "Изпращане на 'OpenPGP' Заглавие">
-<!ENTITY enigmail.amPrefPgpHeader.id.label "Изпращане на OpenPGP идентификатор на ключа">
-<!ENTITY enigmail.amPrefPgpHeader.url.label "Изпращане на URL адрес за възстановяване на ключ:">
-<!ENTITY enigmail.progressText.label "Прогрес:">
-<!ENTITY enigmail.openPgpSecurity.label "OpenPGP Сигурност">
-<!ENTITY enigmail.pgpSecurityInfo.label "Enigmail информация за сигурността ...">
-<!ENTITY enigmail.copySecurityInfo.label "Копиране на Enigmail информация за сигурността">
-<!ENTITY enigmail.showPhoto.label "Преглед на OpenPGP фото идентификация">
-<!ENTITY enigmail.signSenderKey.label "Подпиши ключа ...">
-<!ENTITY enigmail.trustSenderKey.label "Настройка на доверието към собственика на ключа ...">
-<!ENTITY enigmail.signSenderKeyPopup.label "Подпиши ключа на подателя ...">
-<!ENTITY enigmail.trustSenderKeyPopup.label "Настройка на доверието към собственика на ключа на подателя...">
-<!ENTITY enigmail.createRuleFromAddr.label "Създаване на Enigmail правило от адрес...">
-<!ENTITY enigmail.keyManWindow.label "Управление на ключовете">
-<!ENTITY enigmail.keyManWindow.accesskey "y">
-<!ENTITY enigmail.singleRcptSettings.label "Enigmail - Настройки на получател">
-<!ENTITY enigmail.selKeysButton.label "Избор на ключ(ове)...">
-<!ENTITY enigmail.action.label "Действие">
-<!ENTITY enigmail.nextRule.label "Продължете със следващото правило за съвпадащ адрес">
-<!ENTITY enigmail.nextAddress.label "Не проверявай следващите правила за съвпадащ адрес">
-<!ENTITY enigmail.useKeys.label "Използвайте следните OpenPGP ключове:">
-<!ENTITY enigmail.selKeysButton.accesskey "S">
-<!ENTITY enigmail.setDefaultsFor.label "Настройки по подразбиране за ...">
-<!ENTITY enigmail.encryption.label "Криптиране">
-<!ENTITY enigmail.signing.label "Подписване">
-<!ENTITY enigmail.never.label "Никога">
-<!ENTITY enigmail.always.label "Винаги">
-<!ENTITY enigmail.maybe.label "Да, ако това е избрано при съставяне на съобщение">
-<!ENTITY enigmail.singleRcptSettings.desc "(Забележка: в случай на конфликт, 'Никога' има по-висок приоритет от 'Винаги')">
-<!ENTITY enigmail.ruleEmail.label "Настройване на Enigmail правила за">
-<!ENTITY enigmail.ruleEmail.tooltip "Може да се въвеждат само имейл адреси, но не и имена на получатели Например 'Some Name <some.name@address.net>' е невалидно">
-<!ENTITY enigmail.sepratationDesc.label "(Ако има няколко имейл адреса ги разделяйте, чрез интервали)">
-<!ENTITY enigmail.matchDescStart.label "Приеми правилото ако имейл адреса на получателя">
-<!ENTITY enigmail.matchDescEnd.label "един от гореуказаните адреси">
-<!ENTITY enigmail.matchExact.label "Е точно">
-<!ENTITY enigmail.matchContains.label "Съдържа">
-<!ENTITY enigmail.matchBegin.label "Започва с">
-<!ENTITY enigmail.matchEnd.label "Завършва с">
-<!ENTITY enigmail.not.label "Не е">
-<!ENTITY enigmail.rulesEditor.label "Enigmail - Редактор на правилата за получателите">
-<!ENTITY enigmail.email.label "Имейл">
-<!ENTITY enigmail.pgpKeys.label "OpenPGP Ключ(ове)">
-<!ENTITY enigmail.sign.label "Подписване">
-<!ENTITY enigmail.encrypt.label "Криптиране">
-<!ENTITY enigmail.edit.label "Промяна">
-<!ENTITY enigmail.edit.accesskey "M">
-<!ENTITY enigmail.add.label "Добавяне">
-<!ENTITY enigmail.add.accesskey "A">
-<!ENTITY enigmail.delete.label "Изтриване">
-<!ENTITY enigmail.delete.accesskey "E">
-<!ENTITY enigmail.moveUp.label "Преместване нагоре">
-<!ENTITY enigmail.moveUp.accesskey "U">
-<!ENTITY enigmail.moveDown.label "Преместване надолу">
-<!ENTITY enigmail.moveDown.accesskey "D">
-<!ENTITY enigmail.searchRule.label "Преглед на правилата с имейл адреси съдържащи:">
-<!ENTITY enigmail.clearSearch.label "Изчистване">
-<!ENTITY enigmail.clearSearch.accesskey "C">
-<!ENTITY enigmail.searchKeyDlg.label "Сваляне на OpenPGP ключове">
-<!ENTITY enigmail.searchKeyDlgCapt.label "Намерени са ключове - изберете за внясяне">
-<!ENTITY enigmail.created.label "Създаден на">
-<!ENTITY enigmail.progress.label "Прогрес">
-<!ENTITY enigmail.sKeyDlg.title "Enigmail - Подписване на ключ">
-<!ENTITY enigmail.sKeyDlg.signKey.label "Ключът който ще бъде подписан:">
-<!ENTITY enigmail.sKeyDlg.fingerprint.label "Отпечатък:">
-<!ENTITY enigmail.sKeyDlg.signWithKey.label "Ключ за подписване:">
-<!ENTITY enigmail.sKeyDlg.checked.label "Колко внимателно сте проверили, че ключа който сте на път да подпишете принадлежи на лицето(та) посочени по нагоре?">
-<!ENTITY enigmail.sKeyDlg.noAnswer.label "Не искам да отговарям">
-<!ENTITY enigmail.sKeyDlg.notChecked.label "Не съм проверил всички">
-<!ENTITY enigmail.sKeyDlg.casualCheck.label "Провел съм обичайната проверка">
-<!ENTITY enigmail.sKeyDlg.carefulCheck.label "Провел съм пълна проверка">
-<!ENTITY enigmail.sKeyDlg.createLocal.label "Локален подпис (Не може да бъде експортиран)">
-<!ENTITY enigmail.addUidDlg.title "Enigmail - Добавяне на потребителска идентификация">
-<!ENTITY enigmail.addUidDlg.name.label "Име">
-<!ENTITY enigmail.addUidDlg.email.label "Имейл">
-<!ENTITY enigmail.keyTrust.title "Enigmail - Определяне на нивото на доверие към собственика на ключа">
-<!ENTITY enigmail.keyTrust.trustKey.label "Ключ на който се доверяваме:">
-<!ENTITY enigmail.keyTrust.trustLevel.label "Какво е доверието ви в ключа?">
-<!ENTITY enigmail.keyTrust.dontKnow.label "Не знам">
-<!ENTITY enigmail.keyTrust.noTrust.label "Нямам му доверие">
-<!ENTITY enigmail.keyTrust.marginalTrust.label "Имам му незначително доверие">
-<!ENTITY enigmail.keyTrust.fullTrust.label "Имам му пълно доверие">
-<!ENTITY enigmail.keyTrust.ultimateTrust.label "Вярвам му безкрайно">
-<!ENTITY enigmail.keyMan.title "Enigmail Управление на ключовете">
-<!ENTITY enigmail.keyMan.close.label "Затваряне на прозореца">
-<!ENTITY enigmail.keyMan.generate.label "Нова двойка ключове">
-<!ENTITY enigmail.keyMan.sign.label "Подписване на ключ">
-<!ENTITY enigmail.keyMan.setTrust.label "Определяне на нивото на доверие към собственика на ключа">
-<!ENTITY enigmail.keyMan.genRevoke.label "Нулиращ сертификат">
-<!ENTITY enigmail.keyMan.ctxGenRevoke.label "Генериране и запис на Нулиращ Сертификат">
-<!ENTITY enigmail.keyMan.fileMenu.label "Файл">
-<!ENTITY enigmail.keyMan.editMenu.label "Редактиране">
-<!ENTITY enigmail.keyMan.viewMenu.label "Отвори">
-<!ENTITY enigmail.keyMan.keyserverMenu.label "Сървър за ключове">
-<!ENTITY enigmail.keyMan.generateMenu.label "Генериране">
-<!ENTITY enigmail.keyMan.fileMenu.accesskey "F">
-<!ENTITY enigmail.keyMan.editMenu.accesskey "E">
-<!ENTITY enigmail.keyMan.viewMenu.accesskey "V">
-<!ENTITY enigmail.keyMan.keyserverMenu.accesskey "K">
-<!ENTITY enigmail.keyMan.generateMenu.accesskey "G">
-<!ENTITY enigmail.keyMan.importFromFile.label "Внасяне на ключове от файл">
-<!ENTITY enigmail.keyMan.importFromServer.label "Търсене на ключове">
-<!ENTITY enigmail.keyMan.importFromClipbrd.label "Внасяне на ключове от Клипборда">
-<!ENTITY enigmail.keyMan.exportToFile.label "Експортиране на ключове във файл">
-<!ENTITY enigmail.keyMan.sendKeys.label "Изпращане на публичните ключове чрез имейл">
-<!ENTITY enigmail.keyMan.uploadToServer.label "Качване на публичните ключове">
-<!ENTITY enigmail.keyMan.copyToClipbrd.label "Копирай публичните ключове в Клипборда">
-<!ENTITY enigmail.keyMan.ctxExportToFile.label "Експортиране на ключове във файл">
-<!ENTITY enigmail.keyMan.ctxUploadToServer.label "Качване на публичните ключове на сървъра за ключове">
-<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label "Копирай публичните ключове в Клипборда">
-<!ENTITY enigmail.keyMan.refreshSelKeys.label "Обновяване на избраните публични ключове">
-<!ENTITY enigmail.keyMan.refreshAllKeys.label "Обновяване на всички публични ключове">
-<!ENTITY enigmail.keyMan.ctxRefreshKey.label "Обновяване на публични ключове от сървъра за ключове">
-<!ENTITY enigmail.keyMan.reload.label "Презареди кеша на ключовете">
-<!ENTITY enigmail.keyMan.manageUid.label "Управление на потребителски регистрации">
-<!ENTITY enigmail.keyMan.changePwd.label "Промяна на паролата за защита на частния ключ">
-<!ENTITY enigmail.keyMan.delKey.label "Изтриване на ключ">
-<!ENTITY enigmail.keyMan.revokeKey.label "Анулиране на ключ">
-<!ENTITY enigmail.keyMan.keyProps.label "Свойства на ключа">
-<!ENTITY enigmail.keyMan.showAllKeys.label "Показане на всички ключове по подразбиране">
-<!ENTITY enigmail.keyMan.viewPhoto.label "Фото идентификация">
-<!ENTITY enigmail.keyMan.ctxViewPhoto.label "Отвори Фото идентификация">
-<!ENTITY enigmail.keyMan.userId.label "Име">
-<!ENTITY enigmail.keyMan.keyType.label "Тип">
-<!ENTITY enigmail.keyMan.calcTrust.label "Валидност">
-<!ENTITY enigmail.keyMan.ownerTrust.label "Доверие">
-<!ENTITY enigmail.keyMan.stopTransfer.label "Спиране на трансфер">
-<!ENTITY enigmail.keyMan.fingerprint.label "Отпечатък">
-<!ENTITY enigmail.keyMan.selectAll.label "Избор на всички ключове">
-<!ENTITY enigmail.keyMan.emptyTree.tooltip "Въвеждане на въпрос за търсене">
-<!ENTITY enigmail.keyMan.nothingFound.tooltip "Няма съвпадащи ключове с търсенето">
-<!ENTITY enigmail.keyMan.pleaseWait.tooltip "Моля изчакайте докато ключовете бъдат заредени ...">
-<!ENTITY enigmail.keyMan.filter.label "Търсене за:">
-<!ENTITY enigmail.keyMan.close.accesskey "C">
-<!ENTITY enigmail.keyMan.generate.accesskey "K">
-<!ENTITY enigmail.keyMan.sign.accesskey "S">
-<!ENTITY enigmail.keyMan.setTrust.accesskey "T">
-<!ENTITY enigmail.keyMan.genRevoke.accesskey "R">
-<!ENTITY enigmail.keyMan.delKey.accesskey "D">
-<!ENTITY enigmail.keyMan.revokeKey.accesskey "R">
-<!ENTITY enigmail.keyMan.importFromFile.accesskey "I">
-<!ENTITY enigmail.keyMan.exportToFile.accesskey "E">
-<!ENTITY enigmail.keyMan.importFromServer.accesskey "S">
-<!ENTITY enigmail.keyMan.uploadToServer.accesskey "U">
-<!ENTITY enigmail.keyMan.reload.accesskey "R">
-<!ENTITY enigmail.keyMan.manageUid.accesskey "M">
-<!ENTITY enigmail.keyMan.changePwd.accesskey "P">
-<!ENTITY enigmail.keyMan.showPhoto.accesskey "P">
+
+<!ENTITY enigmail.userSelectionList.label           "Enigmail избор на ключ">
+<!ENTITY enigmail.usersNotFound.label               "Получателите не са валидни, не са доверени или не са намерени">
+<!ENTITY enigmail.keyExpiry.label                   "Срок на валидност">
+<!ENTITY enigmail.uidValidity.label                 "">
+<!ENTITY enigmail.keySelection.label                "Избор">
+<!ENTITY enigmail.keyId.label                       "Идентификатор на ключа">
+<!ENTITY enigmail.userSelSendSigned.label           "">
+<!ENTITY enigmail.userSelSendSigned.accesskey       "">
+<!ENTITY enigmail.userSelSendEncrypted.label        "">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "">
+<!ENTITY enigmail.displayNoLonger.label             "Не показвай този прозорец отново, ако криптирането е невъзможно">
+<!ENTITY enigmail.importMissingKeys.label           "Сваляне на липстващи ключове">
+<!ENTITY enigmail.importMissingKeys.accesskey       "D">
+<!ENTITY enigmail.importMissingKeys.tooltip         "Опитай се да свалиш липстващите ключове от сървъра с ключове">
+<!ENTITY enigmail.refreshKeys.label                 "Обнови списъка с ключове">
+<!ENTITY enigmail.refreshKeys.accesskey             "R">
+<!ENTITY enigmail.send.label                        "">
+<!ENTITY enigmail.perRecipientsOption.label         "Създаване на правило за получател(и)">
+
+<!ENTITY enigmail.enigmailAttachDesc.label          "Това съобщение съдържа прикачени файлове. Желаете ли да ги криптирате/подпишете?">
+<!ENTITY enigmail.enigEncryptAttachNone.label           "Шифроване и подписване на текста само на съобщенията, без прикачените файлове">
+<!ENTITY enigmail.enigAttachNoneSign.label              "">
+<!ENTITY enigmail.enigAttachNoneEncrypt.label           "">
+<!ENTITY enigmail.enigAttachNoneEncryptAndSign.label    "">
+<!ENTITY enigmail.enigEncryptAttachInline.label         "Криптиране/подписване на всеки прикачен файл отделно и изпращане на съобщение чрез използване на inline PGP">
+<!ENTITY enigmail.enigAttachInlineSign.label            "">
+<!ENTITY enigmail.enigAttachInlineEncrypt.label         "">
+<!ENTITY enigmail.enigAttachInlineEncryptAndSign.label  "">
+<!ENTITY enigmail.enigEncryptAttachPgpMime.label        "Криптиране/подписване на съобщението, като цяло и изпращането като PGP/MIME">
+<!ENTITY enigmail.enigAttachPgpMimeSign.label           "">
+<!ENTITY enigmail.enigAttachPgpMimeEncrypt.label        "">
+<!ENTITY enigmail.enigAttachPgpMimeEncryptAndSign.label "">
+<!ENTITY enigmail.enigEncryptAttachDontEncryptMsg.label        "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgSign.label           "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncrypt.label        "">
+<!ENTITY enigmail.enigAttachDontEncryptMsgEncryptAndSign.label "">
+<!ENTITY enigmail.encryptAttachSkipDlg.label        "Използване на избрания метод за всички бъдещи прикачени файлове">
+
+
+<!ENTITY enigmail.ctxDecryptOpen.label              "Декриптиране и отваряне">
+<!ENTITY enigmail.ctxDecryptSave.label              "Декриптиране и Запис като...">
+<!ENTITY enigmail.ctxImportKey.label                "Внасяне на OpenPGP Ключ">
+<!ENTITY enigmail.ctxVerifyAtt.label                "">
+<!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "C">
+<!ENTITY enigmail.ctxImportKey.accesskey            "I">
+<!ENTITY enigmail.ctxVerifyAtt.accesskey            "">
+<!ENTITY enigmail.detailsHdrButton.label            "Детайли">
+<!ENTITY enigmail.revealAttachmentsButton.label     "">
+<!ENTITY enigmail.revealAttachments.button          "">
+
+<!ENTITY enigmail.exchangeGarbage.desc              "">
+<!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
+<!ENTITY enigmail.exchangeGarbage.waitMessage       "">
+
+<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefDesc.label                  "Enigmail предоставя поддръжа на криптирани съобщения и цифровото им подписване на основата на OpenGPG.">
+<!ENTITY enigmail.amPrefEnablePgp.label             "Включване на OpenPGP (Enigmail) поддръжка за тази самоличност">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "Използване на имейл адреса на тази самоличност за идентифициране на OpenPGP ключа">
+<!ENTITY enigmail.amPrefUseKeyId.label              "Използване на друг идентификатор на OpenPGP ключ (Формат: 0x1234ABCD):">
+<!ENTITY enigmail.amPrefSelectKey.label             "Избор на ключ ...">
+<!ENTITY enigmail.amPrefMsgComp.label               "">
+<!ENTITY enigmail.amPrefDefaultEncrypt.label        "Настройки по подразбиране за съставяне на съобщение">
+<!ENTITY enigmail.encryptionDlg.label               "Настройки на Enigmail за криптиране и подписване">
+<!ENTITY enigmail.encDlgProtocol.label              "">
+<!ENTITY enigmail.encDlgEncrypt.label               "Криптиране на съобщението">
+<!ENTITY enigmail.encDlgEncrypt.accesskey           "E">
+<!ENTITY enigmail.encDlgSign.label                  "Подписване на съобщенето">
+<!ENTITY enigmail.encDlgSign.accesskey              "S">
+<!ENTITY enigmail.encDlgPgpMime.label               "Използване на PGP/MIME">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
+<!ENTITY enigmail.encDlgInlinePgp.label             "">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "">
+<!ENTITY enigmail.encDlgSMime.label                 "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgReset.label                 "">
+<!ENTITY enigmail.encDlgReset.accesskey             "">
+<!ENTITY enigmail.amPrefPgpHeader.label             "Изпращане на 'OpenPGP' Заглавие">
+<!ENTITY enigmail.amPrefPgpHeader.id.label          "Изпращане на OpenPGP идентификатор на ключа">
+<!ENTITY enigmail.amPrefPgpHeader.url.label         "Изпращане на URL адрес за възстановяване на ключ:">
+<!ENTITY enigmail.amPrefMimePreferProto.label       "">
+<!ENTITY enigmail.amPrefMimePreferEnigmail.label    "">
+<!ENTITY enigmail.amPrefMimePreferSMime.label       "">
+<!ENTITY enigmail.amPrefAutocrypt.description       "">
+
+<!ENTITY enigmail.progressText.label               "Прогрес:">
+
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP Сигурност">
+
+<!ENTITY enigmail.pgpSecurityInfo.label            "Enigmail информация за сигурността ...">
+<!ENTITY enigmail.copySecurityInfo.label           "Копиране на Enigmail информация за сигурността">
+<!ENTITY enigmail.showPhoto.label                  "Преглед на OpenPGP фото идентификация">
+<!ENTITY enigmail.photoViewer.title                "">
+<!ENTITY enigmail.displayKeyProperties.label       "">
+<!ENTITY enigmail.signSenderKey.label              "Подпиши ключа ...">
+<!ENTITY enigmail.trustSenderKey.label             "Настройка на доверието към собственика на ключа ...">
+<!ENTITY enigmail.signSenderKeyPopup.label         "Подпиши ключа на подателя ...">
+<!ENTITY enigmail.trustSenderKeyPopup.label        "Настройка на доверието към собственика на ключа на подателя...">
+<!ENTITY enigmail.createRuleFromAddr.label         "Създаване на Enigmail правило от адрес...">
+<!ENTITY enigmail.keyManWindow.label               "Управление на ключовете">
+<!ENTITY enigmail.keyManWindow.accesskey           "y">
+
+<!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Настройки на получател">
+
+<!ENTITY enigmail.compose.excesslength.label        "">
+<!ENTITY enigmail.compose.excesslength_action.label "">
+<!ENTITY enigmail.wrapSelectionList.label           "">
+<!ENTITY enigmail.compose.wrap_radio.label          "">
+<!ENTITY enigmail.compose.sendasis_radio.label      "">
+<!ENTITY enigmail.compose.use_mime_radio.label      "">
+<!ENTITY enigmail.compose.editmanually.label        "">
+
+<!ENTITY enigmail.selKeysButton.label               "Избор на ключ(ове)...">
+<!ENTITY enigmail.action.label                      "Действие">
+<!ENTITY enigmail.nextRule.label                    "Продължете със следващото правило за съвпадащ адрес">
+<!ENTITY enigmail.nextAddress.label                 "Не проверявай следващите правила за съвпадащ адрес">
+<!ENTITY enigmail.useKeys.label                     "Използвайте следните OpenPGP ключове:">
+<!ENTITY enigmail.selKeysButton.accesskey           "S">
+<!ENTITY enigmail.setDefaultsFor.label              "Настройки по подразбиране за ...">
+<!ENTITY enigmail.encryption.label                  "Криптиране">
+<!ENTITY enigmail.signing.label                     "Подписване">
+<!ENTITY enigmail.never.label                       "Никога">
+<!ENTITY enigmail.always.label                      "Винаги">
+<!ENTITY enigmail.maybe.label                       "Да, ако това е избрано при съставяне на съобщение">
+<!ENTITY enigmail.singleRcptSettings.desc           "(Забележка: в случай на конфликт, 'Никога' има по-висок приоритет от 'Винаги')">
+<!ENTITY enigmail.ruleEmail.label                   "Настройване на Enigmail правила за">
+<!ENTITY enigmail.ruleEmail.tooltip                 "Може да се въвеждат само имейл адреси, но не и имена на получатели Например 'Some Name <some.name@address.net>' е невалидно">
+<!ENTITY enigmail.sepratationDesc.label             "(Ако има няколко имейл адреса ги разделяйте, чрез интервали)">
+<!ENTITY enigmail.matchDescStart.label              "Приеми правилото ако имейл адреса на получателя">
+<!ENTITY enigmail.matchDescEnd.label                "един от гореуказаните адреси">
+<!ENTITY enigmail.matchExact.label                  "Е точно">
+<!ENTITY enigmail.matchContains.label               "Съдържа">
+<!ENTITY enigmail.matchBegin.label                  "Започва с">
+<!ENTITY enigmail.matchEnd.label                    "Завършва с">
+<!ENTITY enigmail.not.label                         "Не е">
+
+<!ENTITY enigmail.rulesEditor.label                 "Enigmail - Редактор на правилата за получателите">
+<!ENTITY enigmail.email.label                       "Имейл">
+<!ENTITY enigmail.pgpKeys.label                     "OpenPGP Ключ(ове)">
+<!ENTITY enigmail.sign.label                        "Подписване">
+<!ENTITY enigmail.encrypt.label                     "Криптиране">
+<!ENTITY enigmail.edit.label                        "Промяна">
+<!ENTITY enigmail.edit.accesskey                    "M">
+<!ENTITY enigmail.add.label                         "Добавяне">
+<!ENTITY enigmail.add.accesskey                     "A">
+<!ENTITY enigmail.delete.label                      "Изтриване">
+<!ENTITY enigmail.delete.accesskey                  "E">
+<!ENTITY enigmail.moveUp.label                      "Преместване нагоре">
+<!ENTITY enigmail.moveUp.accesskey                  "U">
+<!ENTITY enigmail.moveDown.label                    "Преместване надолу">
+<!ENTITY enigmail.moveDown.accesskey                "D">
+<!ENTITY enigmail.searchRule.label                  "Преглед на правилата с имейл адреси съдържащи:">
+<!ENTITY enigmail.clearSearch.label                 "Изчистване">
+<!ENTITY enigmail.clearSearch.accesskey             "C">
+
+<!ENTITY enigmail.searchKeyDlg.label               "Сваляне на OpenPGP ключове">
+<!ENTITY enigmail.searchKeyDlgCapt.label           "Намерени са ключове - изберете за внясяне">
+<!ENTITY enigmail.searchKeyDlgSelAll.label         "">
+
+<!ENTITY enigmail.created.label                    "Създаден на">
+
+<!ENTITY enigmail.progress.label                   "Прогрес">
+
+<!ENTITY enigmail.sKeyDlg.title                    "Enigmail - Подписване на ключ">
+<!ENTITY enigmail.sKeyDlg.signKey.label            "Ключът който ще бъде подписан:">
+<!ENTITY enigmail.sKeyDlg.fingerprint.label        "Отпечатък:">
+<!ENTITY enigmail.sKeyDlg.signWithKey.label        "Ключ за подписване:">
+<!ENTITY enigmail.sKeyDlg.ownKeyTrust.label        "">
+<!ENTITY enigmail.sKeyDlg.checked.label            "Колко внимателно сте проверили, че ключа който сте на път да подпишете принадлежи на лицето(та) посочени по нагоре?">
+<!ENTITY enigmail.sKeyDlg.noAnswer.label           "Не искам да отговарям">
+<!ENTITY enigmail.sKeyDlg.notChecked.label         "Не съм проверил всички">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label        "Провел съм обичайната проверка">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "Провел съм пълна проверка">
+<!ENTITY enigmail.sKeyDlg.createLocal.label        "Локален подпис (Не може да бъде експортиран)">
+
+<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Добавяне на потребителска идентификация">
+<!ENTITY enigmail.addUidDlg.name.label             "Име">
+<!ENTITY enigmail.addUidDlg.email.label            "Имейл">
+
+<!ENTITY enigmail.keyTrust.title                   "Enigmail - Определяне на нивото на доверие към собственика на ключа">
+<!ENTITY enigmail.keyTrust.trustKey.label          "Ключ на който се доверяваме:">
+<!ENTITY enigmail.keyTrust.trustLevel.label        "Какво е доверието ви в ключа?">
+<!ENTITY enigmail.keyTrust.trustLevel.tooltip      "">
+<!ENTITY enigmail.keyTrust.dontKnow.label          "Не знам">
+<!ENTITY enigmail.keyTrust.noTrust.label           "Нямам му доверие">
+<!ENTITY enigmail.keyTrust.marginalTrust.label     "Имам му незначително доверие">
+<!ENTITY enigmail.keyTrust.fullTrust.label         "Имам му пълно доверие">
+<!ENTITY enigmail.keyTrust.ultimateTrust.label     "Вярвам му безкрайно">
+
+<!ENTITY enigmail.keyExpiry.title                   "">
+<!ENTITY enigmail.keyExpiry.expiryKey.label         "">
+
+<!ENTITY enigmail.keyMan.title                     "Enigmail Управление на ключовете">
+<!ENTITY enigmail.keyMan.close.label               "Затваряне на прозореца">
+<!ENTITY enigmail.keyMan.generate.label            "Нова двойка ключове">
+<!ENTITY enigmail.keyMan.sign.label                "Подписване на ключ">
+<!ENTITY enigmail.keyMan.setTrust.label            "Определяне на нивото на доверие към собственика на ключа">
+<!ENTITY enigmail.keyMan.genRevoke.label           "Нулиращ сертификат">
+<!ENTITY enigmail.keyMan.ctxGenRevoke.label        "Генериране и запис на Нулиращ Сертификат">
+
+<!ENTITY enigmail.keyMan.fileMenu.label            "Файл">
+<!ENTITY enigmail.keyMan.editMenu.label            "Редактиране">
+<!ENTITY enigmail.keyMan.viewMenu.label            "Отвори">
+<!ENTITY enigmail.keyMan.keyserverMenu.label       "Сървър за ключове">
+<!ENTITY enigmail.keyMan.generateMenu.label        "Генериране">
+
+<!ENTITY enigmail.keyMan.fileMenu.accesskey        "F">
+<!ENTITY enigmail.keyMan.editMenu.accesskey        "E">
+<!ENTITY enigmail.keyMan.viewMenu.accesskey        "V">
+<!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "K">
+<!ENTITY enigmail.keyMan.generateMenu.accesskey    "G">
+
+<!ENTITY enigmail.keyMan.importFromFile.label      "Внасяне на ключове от файл">
+<!ENTITY enigmail.keyMan.importFromServer.label    "Търсене на ключове">
+<!ENTITY enigmail.keyMan.importFromClipbrd.label   "Внасяне на ключове от Клипборда">
+<!ENTITY enigmail.keyMan.importFromUrl.label       "">
+<!ENTITY enigmail.keyMan.exportToFile.label        "Експортиране на ключове във файл">
+<!ENTITY enigmail.keyMan.sendKeys.label            "Изпращане на публичните ключове чрез имейл">
+<!ENTITY enigmail.keyMan.createMail.label          "">
+<!ENTITY enigmail.keyMan.uploadToServer.label      "Качване на публичните ключове">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.label       "Копирай публичните ключове в Клипборда">
+<!ENTITY enigmail.keyMan.ctxExportToFile.label     "Експортиране на ключове във файл">
+<!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Качване на публичните ключове на сървъра за ключове">
+<!ENTITY enigmail.keyMan.ctxCopyToClipbrd.label    "Копирай публичните ключове в Клипборда">
+<!ENTITY enigmail.keyMan.refreshSelKeys.label      "Обновяване на избраните публични ключове">
+<!ENTITY enigmail.keyMan.refreshAllKeys.label      "Обновяване на всички публични ключове">
+<!ENTITY enigmail.keyMan.downloadContactKeys.label "">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Обновяване на публични ключове от сървъра за ключове">
+<!ENTITY enigmail.keyMan.initiateAcBackup.label    "">
+
+<!ENTITY enigmail.keyMan.reload.label              "Презареди кеша на ключовете">
+<!ENTITY enigmail.keyMan.addPhoto.label            "">
+<!ENTITY enigmail.keyMan.manageUid.label           "Управление на потребителски регистрации">
+<!ENTITY enigmail.keyMan.changeExpiry.label        "">
+<!ENTITY enigmail.keyMan.changePwd.label           "Промяна на паролата за защита на частния ключ">
+<!ENTITY enigmail.keyMan.delKey.label              "Изтриване на ключ">
+<!ENTITY enigmail.keyMan.revokeKey.label           "Анулиране на ключ">
+<!ENTITY enigmail.keyMan.keyProps.label            "Свойства на ключа">
+<!ENTITY enigmail.keyMan.showAllKeys.label         "Показане на всички ключове по подразбиране">
+<!ENTITY enigmail.keyMan.viewPhoto.label           "Фото идентификация">
+<!ENTITY enigmail.keyMan.ctxViewPhoto.label        "Отвори Фото идентификация">
+<!ENTITY enigmail.keyMan.showInvalidKeys.label     "">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.label   "">
+<!ENTITY enigmail.keyMan.showOthersKeys.label      "">
+<!ENTITY enigmail.keyMan.userId.label              "Име">
+<!ENTITY enigmail.keyMan.keyType.label             "Тип">
+<!ENTITY enigmail.keyMan.calcTrust.label           "Валидност">
+<!ENTITY enigmail.keyMan.ownerTrust.label          "Доверие">
+<!ENTITY enigmail.keyMan.fingerprint.label         "Отпечатък">
+<!ENTITY enigmail.keyMan.pEpBlacklisted.label      "">
+<!ENTITY enigmail.keyMan.selectAll.label           "Избор на всички ключове">
+<!ENTITY enigmail.keyMan.addToPRRule.label         "">
+<!ENTITY enigmail.keyMan.emptyTree.tooltip         "Въвеждане на въпрос за търсене">
+<!ENTITY enigmail.keyMan.nothingFound.tooltip      "Няма съвпадащи ключове с търсенето">
+<!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Моля изчакайте докато ключовете бъдат заредени ...">
+
+<!ENTITY enigmail.keyMan.filter.label              "Търсене за:">
+
+<!ENTITY enigmail.keyMan.close.accesskey             "C">
+<!ENTITY enigmail.keyMan.generate.accesskey          "K">
+<!ENTITY enigmail.keyMan.sign.accesskey              "S">
+<!ENTITY enigmail.keyMan.setTrust.accesskey          "T">
+<!ENTITY enigmail.keyMan.genRevoke.accesskey         "R">
+<!ENTITY enigmail.keyMan.delKey.accesskey            "D">
+<!ENTITY enigmail.keyMan.revokeKey.accesskey         "R">
+<!ENTITY enigmail.keyMan.importFromFile.accesskey    "I">
+<!ENTITY enigmail.keyMan.exportToFile.accesskey      "E">
+<!ENTITY enigmail.keyMan.importFromServer.accesskey  "S">
+<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
+<!ENTITY enigmail.keyMan.reload.accesskey            "R">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "">
+<!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "">
+<!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "">
+<!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
-<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey "C">
-<!ENTITY enigmail.keyMan.keyDetails.accesskey "K">
-<!ENTITY enigmail.keyMan.showAllKeys.accesskey "D">
-<!ENTITY enigmail.keyMan.enableKey.accesskey "B">
-<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey "R">
-<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey "A">
-<!ENTITY enigmail.keyMan.selectAll.accesskey "A">
-<!ENTITY enigmail.keyMan.sendKeys.accesskey "S">
-<!ENTITY enigmail.keyMan.selectAll.key "A">
-<!ENTITY enigmail.manageUidDlg.title "Промяна на първичната идентификация на потребителя">
-<!ENTITY enigmail.manageUidDlg.affectedKey.label "Ключ за промяна:">
-<!ENTITY enigmail.manageUidDlg.availableUid.label "Достъпни идентификации:">
-<!ENTITY enigmail.manageUidDlg.addUid.label "Добавяне">
-<!ENTITY enigmail.manageUidDlg.deleteUid.label "Изтриване">
-<!ENTITY enigmail.manageUidDlg.revokeUid.label "Анулиране">
-<!ENTITY enigmail.manageUidDlg.setPrimary.label "Установи за първична">
-<!ENTITY enigmail.keyDetails.title "Свойства на ключа">
-<!ENTITY enigmail.keyDetails.userId.label "Първичен идентификатор на потребител">
-<!ENTITY enigmail.keyDetails.ID.label "Идентификатор">
-<!ENTITY enigmail.keyDetails.keyType.label "Тип">
-<!ENTITY enigmail.keyDetails.keyPart.label "Част на ключа">
-<!ENTITY enigmail.keyDetails.algorithm.label "Алгоритъм">
-<!ENTITY enigmail.keyDetails.size.label "Размер">
-<!ENTITY enigmail.keyDetails.created.label "Създаден на">
-<!ENTITY enigmail.keyDetails.expiry.label "Срок на валидност">
-<!ENTITY enigmail.keyDetails.fingerprint.label "Отпечатък">
-<!ENTITY enigmail.keyDetails.selAction.label "Избери действие ...">
-<!ENTITY enigmail.keyDetails.selAction.accesskey "S">
-<!ENTITY enigmail.cardDetails.title "OpenPGP детайли на Смарткарта">
-<!ENTITY enigmail.cardDetails.cardMenu.label "Смарткарта">
-<!ENTITY enigmail.cardDetails.adminPin.label "Промяна на ПИН">
-<!ENTITY enigmail.cardDetails.genCardKey.label "Генериране на ключ">
-<!ENTITY enigmail.cardDetails.vendor.label "Производител">
-<!ENTITY enigmail.cardDetails.serial.label "Сериен номер">
-<!ENTITY enigmail.cardDetails.name.label "Име, Фамилия">
-<!ENTITY enigmail.cardDetails.lang.label "Език">
-<!ENTITY enigmail.cardDetails.sex.label "Пол">
-<!ENTITY enigmail.cardDetails.url.label "URL адрес на публичния ключ">
-<!ENTITY enigmail.cardDetails.login.label "Информация за потребителя">
-<!ENTITY enigmail.cardDetails.forcepin.label "Искане на ПИН при всяка операция">
-<!ENTITY enigmail.cardDetails.maxpinlen.label "Максимална дължина на ПИН-а">
-<!ENTITY enigmail.cardDetails.pinretry.label "Брояч на опитите за въвеждане на ПИН">
-<!ENTITY enigmail.cardDetails.sigcount.label "Брояч на подписа">
-<!ENTITY enigmail.cardDetails.sigKey.label "Ключ на подписа">
-<!ENTITY enigmail.cardDetails.keyCreated.label "Създаден на">
-<!ENTITY enigmail.cardDetails.encKey.label "Ключ за криптиране">
-<!ENTITY enigmail.cardDetails.authKey.label "Ключ за автентификация">
-<!ENTITY enigmail.cardDetails.yes.label "Да">
-<!ENTITY enigmail.cardDetails.no.label "Не">
-<!ENTITY enigmail.cardDetails.male.label "Мъж">
-<!ENTITY enigmail.cardDetails.female.label "Жена">
-<!ENTITY enigmail.cardDetails.editData.label "Промяна на данните на картата">
-<!ENTITY enigmail.cardDetails.save.label "Запис">
-<!ENTITY enigmail.cardDetails.reset.label "Нулиране">
-<!ENTITY enigmail.cardDetails.closeWindow.label "Затваряне">
-<!ENTITY enigmail.cardDetails.adminPin.accesskey "P">
-<!ENTITY enigmail.cardDetails.genCardKey.accesskey "G">
-<!ENTITY enigmail.cardDetails.cardMenu.accesskey "S">
-<!ENTITY enigmail.cardDetails.editData.accesskey "E">
-<!ENTITY enigmail.genCardKey.title "Генериране на OpenPGP Ключ">
-<!ENTITY enigmail.genCardKey.backupKey.label "Запиши резервно копие на ключа (не на картата)">
-<!ENTITY enigmail.genCardKey.desc "<a class='enigmailStrong'>Забележка: Генерирането на ключа може да отнеме няколко минути.</a> Не излизайте от приложението докато трае генерирането на ключа. Ще бъдете уведомени, когато генерирането на ключа приключи">
-<!ENTITY enigmail.cardPin.title "Промяна на ПИН-а на Смарткартата">
-<!ENTITY enigmail.cardPin.action.label "Какво искате да направите">
-<!ENTITY enigmail.cardPin.changePin.label "Промяна на ПИН">
-<!ENTITY enigmail.cardPin.changeAdmPin.label "Промяна на администраторския ПИН">
-<!ENTITY enigmail.cardPin.unblockPin.label "Отблокиране на ПИН">
-<!ENTITY enigmail.cardPin.currAdmPin.label "Текущ администраторски пин">
-<!ENTITY enigmail.cardPin.newAdminPin.label "Нов администраторски ПИН">
-<!ENTITY enigmail.cardPin.adminPinRepeat.label "Повторете новият ПИН">
-<!ENTITY enigmail.cardPin.currPin.label "Текущ ПИН">
-<!ENTITY enigmail.cardPin.newPin.label "Нов ПИН">
-<!ENTITY enigmail.cardPin.pinRepeat.label "Повторете новият ПИН">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "">
+<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
+<!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
+<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "D">
+<!ENTITY enigmail.keyMan.enableKey.accesskey         "B">
+<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "R">
+<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "A">
+<!ENTITY enigmail.keyMan.selectAll.accesskey         "A">
+<!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
+<!ENTITY enigmail.keyMan.createMail.accesskey        "">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+
+
+<!ENTITY enigmail.keyMan.selectAll.key               "A">
+<!ENTITY enigmail.keyMan.keyDetails.key              "">
+<!ENTITY enigmail.keyMan.refreshKey.key              "">
+
+<!ENTITY enigmail.keySearch.selectAll.key            "">
+
+<!ENTITY enigmail.manageUidDlg.title                 "Промяна на първичната идентификация на потребителя">
+<!ENTITY enigmail.manageUidDlg.affectedKey.label     "Ключ за промяна:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label    "Достъпни идентификации:">
+<!ENTITY enigmail.manageUidDlg.addUid.label          "Добавяне">
+<!ENTITY enigmail.manageUidDlg.revokeUid.label       "Анулиране">
+<!ENTITY enigmail.manageUidDlg.setPrimary.label      "Установи за първична">
+
+<!ENTITY enigmail.keyDetails.title                   "Свойства на ключа">
+<!ENTITY enigmail.keyDetails.signaturesTab           "">
+<!ENTITY enigmail.keyDetails.structureTab            "">
+<!ENTITY enigmail.keyDetails.uidCertifiedCol         "">
+<!ENTITY enigmail.keyDetails.userId.label            "Първичен идентификатор на потребител">
+<!ENTITY enigmail.keyDetails.ID.label                "Идентификатор">
+<!ENTITY enigmail.keyDetails.keyType.label           "Тип">
+<!ENTITY enigmail.keyDetails.keyPart.label           "Част на ключа">
+<!ENTITY enigmail.keyDetails.algorithm.label         "Алгоритъм">
+<!ENTITY enigmail.keyDetails.size.label              "Размер">
+<!ENTITY enigmail.keyDetails.created.label           "Създаден на">
+<!ENTITY enigmail.keyDetails.expiry.label            "Срок на валидност">
+<!ENTITY enigmail.keyDetails.usage.label             "">
+<!ENTITY enigmail.keyDetails.fingerprint.label       "Отпечатък">
+<!ENTITY enigmail.keyDetails.selAction.label         "Избери действие ...">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
+<!ENTITY enigmail.keyDetails.change.label            "">
+<!ENTITY enigmail.keyDetails.signKey.label           "">
+<!ENTITY enigmail.keyDetails.trustStatus.label       "">
+<!ENTITY enigmail.keyDetails.keyValidity.label       "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+
+<!ENTITY enigmail.cardDetails.title                  "OpenPGP детайли на Смарткарта">
+<!ENTITY enigmail.cardDetails.cardMenu.label         "Смарткарта">
+<!ENTITY enigmail.cardDetails.adminPin.label         "Промяна на ПИН">
+<!ENTITY enigmail.cardDetails.genCardKey.label       "Генериране на ключ">
+
+<!ENTITY enigmail.cardDetails.vendor.label           "Производител">
+<!ENTITY enigmail.cardDetails.serial.label           "Сериен номер">
+<!ENTITY enigmail.cardDetails.name.label             "Име, Фамилия">
+<!ENTITY enigmail.cardDetails.lang.label             "Език">
+<!ENTITY enigmail.cardDetails.sex.label              "Пол">
+<!ENTITY enigmail.cardDetails.url.label              "URL адрес на публичния ключ">
+<!ENTITY enigmail.cardDetails.login.label            "Информация за потребителя">
+<!ENTITY enigmail.cardDetails.forcepin.label         "Искане на ПИН при всяка операция">
+<!ENTITY enigmail.cardDetails.maxpinlen.label        "Максимална дължина на ПИН-а">
+<!ENTITY enigmail.cardDetails.pinretry.label         "Брояч на опитите за въвеждане на ПИН">
+<!ENTITY enigmail.cardDetails.sigcount.label         "Брояч на подписа">
+<!ENTITY enigmail.cardDetails.sigKey.label           "Ключ на подписа">
+<!ENTITY enigmail.cardDetails.keyCreated.label       "Създаден на">
+<!ENTITY enigmail.cardDetails.encKey.label           "Ключ за криптиране">
+<!ENTITY enigmail.cardDetails.authKey.label          "Ключ за автентификация">
+<!ENTITY enigmail.cardDetails.yes.label              "Да">
+<!ENTITY enigmail.cardDetails.no.label               "Не">
+<!ENTITY enigmail.cardDetails.male.label             "Мъж">
+<!ENTITY enigmail.cardDetails.female.label           "Жена">
+<!ENTITY enigmail.cardDetails.editData.label         "Промяна на данните на картата">
+<!ENTITY enigmail.cardDetails.save.label             "Запис">
+<!ENTITY enigmail.cardDetails.reset.label            "Нулиране">
+<!ENTITY enigmail.cardDetails.closeWindow.label      "Затваряне">
+
+<!ENTITY enigmail.cardDetails.adminPin.accesskey     "P">
+<!ENTITY enigmail.cardDetails.genCardKey.accesskey   "G">
+<!ENTITY enigmail.cardDetails.cardMenu.accesskey     "S">
+<!ENTITY enigmail.cardDetails.editData.accesskey     "E">
+
+<!ENTITY enigmail.genCardKey.title                   "Генериране на OpenPGP Ключ">
+<!ENTITY enigmail.genCardKey.backupKey.label         "Запиши резервно копие на ключа (не на картата)">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>Забележка: Генерирането на ключа може да отнеме няколко минути.</a> Не излизайте от приложението докато трае генерирането на ключа. Ще бъдете уведомени, когато генерирането на ключа приключи">
+
+<!ENTITY enigmail.cardPin.title                      "Промяна на ПИН-а на Смарткартата">
+<!ENTITY enigmail.cardPin.action.label               "Какво искате да направите">
+<!ENTITY enigmail.cardPin.changePin.label            "Промяна на ПИН">
+<!ENTITY enigmail.cardPin.changeAdmPin.label         "Промяна на администраторския ПИН">
+<!ENTITY enigmail.cardPin.unblockPin.label           "Отблокиране на ПИН">
+<!ENTITY enigmail.cardPin.currAdmPin.label           "Текущ администраторски пин">
+<!ENTITY enigmail.cardPin.newAdminPin.label          "Нов администраторски ПИН">
+<!ENTITY enigmail.cardPin.adminPinRepeat.label       "Повторете новият ПИН">
+<!ENTITY enigmail.cardPin.currPin.label              "Текущ ПИН">
+<!ENTITY enigmail.cardPin.newPin.label               "Нов ПИН">
+<!ENTITY enigmail.cardPin.pinRepeat.label            "Повторете новият ПИН">
+
 <!-- wizard: welcome step -->
-<!ENTITY enigmail.setupWiz.title "Enigmail Съветник за настройка">
+<!ENTITY enigmail.setupWiz.title                     "Enigmail Съветник за настройка">
+<!ENTITY enigmail.setupWiz.pgIntro.title             "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc              "">
+<!ENTITY enigmail.setupWiz.pgIntro.desc2             "">
+<!ENTITY enigmail.setupWiz.pgIntro.startNow          "">
+<!ENTITY enigmail.setupWiz.pgIntro.startLater        "">
+
+<!ENTITY enigmail.setupWiz.pgWelcome.title           "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "">
+<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "">
+<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "">
+<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "">
+
 <!-- wizard: select account IDs step -->
-<!ENTITY enigmail.setupWiz.pgSelectId.title "Избор на идентификации">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle "Изберете акаунт или идентификация, чрез която желаете да работите с Enigmail ">
-<!ENTITY enigmail.setupWiz.pgSelectId.note "<a class='enigmailStrong'>Забележка:</a> Enigmail винаги ще проверява подписите                                                             на писмата за всеки акаунт или идентичност, независимо дали това е активирано или не">
+<!ENTITY enigmail.setupWiz.pgSelectId.title          "Избор на идентификации">
+<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Изберете акаунт или идентификация, чрез която желаете да работите с Enigmail ">
+<!ENTITY enigmail.setupWiz.pgSelectId.desc2          "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds   "">
+<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds    "">
+<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Забележка:</a> Enigmail винаги ще проверява подписите                                                             на писмата за всеки акаунт или идентичност, независимо дали това е активирано или не">
+
+<!-- wizard: install GnuPG step -->
+<!ENTITY enigmail.setupWiz.pgInstall.title           "">
+<!ENTITY enigmail.setupWiz.pgInstall.desc            "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc1    "">
+
+<!ENTITY enigmail.setupWiz.pgInstall.installDesc2    "">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "">
+<!ENTITY enigmail.setupWiz.pgInstall.installButton   "">
+<!ENTITY enigmail.setupWiz.pgInstall.locateButton    "">
+<!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "">
+<!ENTITY enigmail.setupWiz.pgInstall.installDone     "">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "">
+
+
 <!-- wizard: key selection step -->
-<!ENTITY enigmail.setupWiz.pgKeySel.title "Избор на ключ">
-<!ENTITY enigmail.setupWiz.pgKeySel.subtitle "Създаване на ключ за подписване и криптиране">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey "Искам да създада нова двойка ключове за подписване и криптиране на имейла ми">
-<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey "Искам да избера един от по-долните ключове за подписване и криптиране на имейла ми:">
+
+<!ENTITY enigmail.setupWiz.pgKeySel.title            "Избор на ключ">
+<!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Създаване на ключ за подписване и криптиране">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "">
+<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Искам да създада нова двойка ключове за подписване и криптиране на имейла ми">
+<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "Искам да избера един от по-долните ключове за подписване и криптиране на имейла ми:">
+
+
 <!-- wizard: key creation - password step -->
-<!ENTITY enigmail.setupWiz.pgKeyCreate.title "Създаване на ключ">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle "Създаване на ключ за подписване и криптиране на имейли">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat "Моля потвърдете вашата парола за защита на частния ключ, като я въведете отново">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Създаване на ключ">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Създаване на ключ за подписване и криптиране на имейли">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Моля потвърдете вашата парола за защита на частния ключ, като я въведете отново">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passErrorRepeat "">
+
+<!-- wizard: no key found step -->
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "">
+
+<!-- wizard: import key page -->
+<!ENTITY enigmail.setupWiz.pgKeyImport.title         "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "">
+
 <!-- wizard: key creation - key generation step -->
-<!ENTITY enigmail.setupWiz.pgKeygen.title "Генериране на ключ">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle "Вашият ключ се генерира">
+
+<!ENTITY enigmail.setupWiz.pgKeygen.title            "Генериране на ключ">
+<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Вашият ключ се генерира">
+<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "">
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "">
+<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+
+<!-- wizard: key creation - key upload step -->
+<!ENTITY enigmail.setupWiz.pgUpload.title            "">
+<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "">
+<!ENTITY enigmail.attachAuto.desc                    "">
+
+<!-- wizard: import settings from previous installation -->
+<!ENTITY enigmail.setupWiz.pgImportSettings.title    "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.desc     "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "">
+<!ENTITY enigmail.setupWiz.pgImportSettings.error    "">
+
 <!-- wizard: final page -->
-<!ENTITY enigmail.setupWiz.pgComplete.title "Благодаря">
-<!ENTITY enigmail.setupWiz.pgComplete.desc "Enigmail е готов за използване.<html:br/><html:br/>Благодарим ви, че използвате Enigmail.">
-<!ENTITY enigmail.advancedIdentityDlg.title "Разширени Enigmail настройки на идентификациите">
-<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label "Прикачвай моят публичен ключ към съобщенията">
+<!ENTITY enigmail.setupWiz.pgComplete.title          "Благодаря">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail е готов за използване.<html:br/><html:br/>Благодарим ви, че използвате Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "">
+<!ENTITY enigmail.pgComplete.help.title              "">
+
+<!-- wizard: manual setup page -->
+<!ENTITY enigmail.setupWiz.pgExpert.title            "">
+<!ENTITY enigmail.setupWiz.pgExpert.desc             "">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "">
+
+
+
+<!ENTITY enigmail.advancedIdentityDlg.title          "Разширени Enigmail настройки на идентификациите">
+<!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Прикачвай моят публичен ключ към съобщенията">
+
+<!ENTITY enigmail.addPhoto.question.label            "">
+<!ENTITY enigmail.addPhoto.title                     "">
+<!ENTITY enigmail.msgViewColumn.tooltip              "">
+<!ENTITY enigmail.addToRule.title                    "">
+<!ENTITY enigmail.addToRule.useRuleButton.label      "">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "">
+<!ENTITY enigmail.addToRule.newRuleButton.label      "">
+<!ENTITY enigmail.addToRule.newRuleButton.accesskey  "">
+
+<!ENTITY enigmail.savelogfile.label                   "">
+
+<!ENTITY enigmail.filterEditor.moveError.label       "">
+
+<!-- Export wizard -->
+<!ENTITY enigmail.exportWiz.title                    "">
+<!ENTITY enigmail.exportWiz.pgIntro.title            "">
+<!ENTITY enigmail.exportWiz.pgIntro.desc1            "">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "">
+<!ENTITY enigmail.exportWiz.pgExport.title           "">
+<!ENTITY enigmail.exportWiz.pgExport.exporting       "">
+<!ENTITY enigmail.exportWiz.pgExport.done            "">
+<!ENTITY enigmail.exportWiz.pgExport.failed          "">
+
+<!ENTITY enigmail.privacyPprefPane.juniorMode         "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "">
+<!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
+
+<!ENTITY enigmail.pEp.verifyTrustwords.label          "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.revokeTrust.label               "">
+<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.title             "">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
+<!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+
+<!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">
+<!ENTITY enigmail.pEp.privacyStatus.label             "">
+<!ENTITY enigmail.pEp.composestatus.label             "">
+
+<!ENTITY enigmail.pepHandshake.SuggestionTitle       "">
+<!ENTITY enigmail.pepHandshake.explanation           "">
+
+<!ENTITY enigmail.pepPrepHandshake.desc              "">
+
+<!ENTITY enigmail.pepPref.window.title               "">
+<!ENTITY enigmail.pepPref.accountTab.label           "">
+<!ENTITY enigmail.pepPref.compatTab.label            "">
+<!ENTITY enigmail.pepPref.aboutTab.label             "">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "">
+<!ENTITY enigmail.pepPref.storeSecurely.title        "">
+<!ENTITY enigmail.pepPref.storeSecurely.label        "">
+<!ENTITY enigmail.pepPref.enableEncryption.label     "">
+<!ENTITY enigmail.pepPref.passiveMode.label          "">
+<!ENTITY enigmail.pepPref.protectedSubject.label     "">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "">
+<!ENTITY enigmail.pepPref.openpgpCompatibility.label "">
+<!ENTITY enigmail.pepPref.autoKeyLookup.label        "">
+<!ENTITY enigmail.pepPref.credits.label              "">
+<!ENTITY enigmail.pepPref.thanksTo.label             "">
+
+<!ENTITY enigmail.acPreferEncrypt.label              "">
+<!ENTITY enigmail.enableAutocrypt.label              "">
+
+<!ENTITY enigmail.acSetupPasswd.dlgTitle             "">
+<!ENTITY enigmail.acSetupPasswd.password             "">
+
+<!ENTITY enigmail.acKeyTransfer.window.title         "">
+<!ENTITY enigmail.acKeyTransfer.welcome.title        "">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "">
+
+<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "">
+<!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "">
