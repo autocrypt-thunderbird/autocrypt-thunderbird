@@ -38,6 +38,10 @@ sub loaddtd { # ($file)
     elsif ($buf =~ /^<!--.*-->$'/i) {
       #print "+ comment\n";
     }
+    elsif ($buf =~ /^<!ENTITY (.*)"">\s*$'/i) {
+      print "empty string $1\n";
+      next;
+    }
     elsif ($buf =~ /^<!ENTITY (.*)"(.*)">\s*$'/i) {
       $ind=trim($1);
       #print "+ Line  '$ind'\n";
