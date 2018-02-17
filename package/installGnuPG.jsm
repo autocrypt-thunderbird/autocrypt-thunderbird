@@ -30,6 +30,7 @@ var EXPORTED_SYMBOLS = ["InstallGnuPG"];
 
 var Cu = Components.utils;
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
@@ -461,8 +462,7 @@ Installer.prototype = {
       var platform = xulRuntime.XPCOMABI.toLowerCase();
       var os = EnigmailOS.getOS().toLowerCase();
 
-      // create a  XMLHttpRequest object
-      var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+      var oReq = new XMLHttpRequest();
       oReq.onload = reqListener;
       oReq.addEventListener("error",
         function(e) {
@@ -622,7 +622,7 @@ Installer.prototype = {
 
     try {
       // create a  XMLHttpRequest object
-      var oReq = Components.classes["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+      var oReq = new XMLHttpRequest();
 
       oReq.addEventListener("load", onLoaded, false);
       oReq.addEventListener("error",

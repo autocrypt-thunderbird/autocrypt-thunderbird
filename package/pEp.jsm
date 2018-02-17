@@ -31,6 +31,7 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
@@ -1302,7 +1303,7 @@ function executeXmlRequest(url, data, onloadFunc, onerrorFunc) {
   gRequestQueue.push(req);
 
   if (!gXmlReq) {
-    gXmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+    gXmlReq = new XMLHttpRequest();
     gXmlReq.onloadend = function() {
       DEBUG_LOG("executeXmlRequest: onloadEnd");
       processNextXmlRequest();

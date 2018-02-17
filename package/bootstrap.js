@@ -11,6 +11,8 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
+
 var gAllModules = [];
 
 function install() {}
@@ -18,62 +20,67 @@ function install() {}
 function uninstall() {}
 
 function startup(data, reason) {
-  const {
-    EnigmailCore
-  } = Cu.import("resource://enigmail/core.jsm", {});
-  const {
-    EnigmailAmPrefsService
-  } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
-  const {
-    EnigmailPgpmimeHander
-  } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
+  try {
+    const {
+      EnigmailCore
+    } = Cu.import("resource://enigmail/core.jsm", {});
+    const {
+      EnigmailAmPrefsService
+    } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
+    const {
+      EnigmailPgpmimeHander
+    } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
 
-  loadListOfModules();
+    loadListOfModules();
 
-  EnigmailAmPrefsService.startup(reason);
-  EnigmailCore.startup(reason);
-  EnigmailPgpmimeHander.startup(reason);
+    EnigmailAmPrefsService.startup(reason);
+    EnigmailCore.startup(reason);
+    EnigmailPgpmimeHander.startup(reason);
+  }
+  catch (ex) {} // if we fail, we should at least not break other addons
 }
 
 function shutdown(data, reason) {
+  try {
+    const {
+      subprocess
+    } = Cu.import("resource://enigmail/subprocess.jsm", {});
+    subprocess.onShutdown();
 
-  const {
-    subprocess
-  } = Cu.import("resource://enigmail/subprocess.jsm", {});
-  subprocess.onShutdown();
+    if (reason === APP_SHUTDOWN) return;
 
-  if (reason === APP_SHUTDOWN) return;
+    const {
+      EnigmailCore
+    } = Cu.import("resource://enigmail/core.jsm", {});
+    const {
+      EnigmailAmPrefsService
+    } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
+    const {
+      EnigmailPgpmimeHander
+    } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
+    const {
+      EnigmailOverlays
+    } = Cu.import("resource://enigmail/overlays.jsm", {});
+    const {
+      EnigmailWindows
+    } = Cu.import("resource://enigmail/windows.jsm", {});
 
-  const {
-    EnigmailCore
-  } = Cu.import("resource://enigmail/core.jsm", {});
-  const {
-    EnigmailAmPrefsService
-  } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
-  const {
-    EnigmailPgpmimeHander
-  } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
-  const {
-    EnigmailOverlays
-  } = Cu.import("resource://enigmail/overlays.jsm", {});
-  const {
-    EnigmailWindows
-  } = Cu.import("resource://enigmail/windows.jsm", {});
+    const {
+      Services
+    } = Components.utils.import("resource://gre/modules/Services.jsm", {});
 
-  const {
-    Services
-  } = Components.utils.import("resource://gre/modules/Services.jsm", {});
+    shutdownModule(EnigmailWindows, reason);
+    shutdownModule(EnigmailOverlays, reason);
+    shutdownModule(EnigmailAmPrefsService, reason);
+    shutdownModule(EnigmailCore, reason);
+    shutdownModule(EnigmailPgpmimeHander, reason);
+    unloadModules();
 
-  shutdownModule(EnigmailWindows, reason);
-  shutdownModule(EnigmailOverlays, reason);
-  shutdownModule(EnigmailAmPrefsService, reason);
-  shutdownModule(EnigmailCore, reason);
-  shutdownModule(EnigmailPgpmimeHander, reason);
-  unloadModules();
-
-  // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
-  //               in order to fully update images and locales, their caches need clearing here
-  Services.obs.notifyObservers(null, "chrome-flush-caches", null);
+    // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
+    //               in order to fully update images and locales, their caches need clearing here
+    Services.obs.notifyObservers(null, "chrome-flush-caches", null);
+  }
+  catch (ex) {} // never fail
 }
 
 /**
@@ -90,7 +97,7 @@ function shutdownModule(module, reason) {
  * Load list of all Enigmail modules that can be potentially loaded
  */
 function loadListOfModules() {
-  let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+  let request = new XMLHttpRequest();
   request.open("GET", "resource://enigmail/all-modules.txt", true); // async=true
   request.responseType = "text";
   request.onerror = function(event) {};

@@ -47,6 +47,7 @@ const {
   Services
 } = Cu.import("resource://gre/modules/Services.jsm", {});
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
 
 // the following constants need to be customized for each addon
 const BASE_PATH = "chrome://enigmail/content/";
@@ -505,7 +506,7 @@ function insertXul(srcUrl, window, document, callback) {
 
   DEBUG_LOG("overlays.jsm: insertXul(" + srcUrl + ")\n");
 
-  let xmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+  let xmlReq = new XMLHttpRequest();
 
   xmlReq.onload = function() {
     DEBUG_LOG("loaded: " + srcUrl + "\n");

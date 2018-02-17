@@ -13,6 +13,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
 Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
@@ -298,10 +299,13 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  * @return:      Subprocess object, or null in case process could not be started
  */
 function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
-  if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY) &&
-    keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
-    // special API for mailvelope.com
-    return accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
+
+  if (keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
+    if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY) ||
+      matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
+      // special API for mailvelope.com
+      return accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
+    }
   }
 
   const request = build(actionFlags, keyserver, searchTerms, errorMsgObj, EnigmailHttpProxy);
@@ -319,6 +323,9 @@ function buildHkpPayload(actionFlags, searchTerms) {
     payLoad = "keytext=" + encodeURIComponent(keyData);
     return payLoad;
   }
+  else if (matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
+    return "";
+  }
 
   // other actions are not yet implemented
   return null;
@@ -331,18 +338,19 @@ function buildHkpPayload(actionFlags, searchTerms) {
  * currently only key uploading is supported
  */
 function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
-  EnigmailLog.DEBUG("keyserver.jsm: accessMailvelope()\n");
+  EnigmailLog.DEBUG("keyserver.jsm: accessHkp()\n");
 
   const ERROR_MSG = "[GNUPG:] ERROR X";
   let keySrv = parseKeyserverUrl(keyserver);
   let protocol = "https"; // protocol is always hkps (which equals to https in TB)
 
   let payLoad = buildHkpPayload(actionFlags, searchTerms);
-  if (!payLoad) return null;
+  if (payLoad === null) return null;
 
   let errorCode = 0;
+  let method = "GET";
 
-  let xmlReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+  let xmlReq = new XMLHttpRequest();
 
   xmlReq.onload = function _onLoad() {
     EnigmailLog.DEBUG("keyserver.jsm: onload(): status=" + xmlReq.status + "\n");
@@ -351,6 +359,20 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
       listener.stderr(ERROR_MSG);
       errorCode = 1;
     }
+    else if (matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
+      let r = importHkpKey(xmlReq.responseText, listener);
+      if (r !== 0) {
+        listener.done(r);
+      }
+      else if (searchTerms.length > 0) {
+        accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
+        return;
+      }
+
+      return;
+    }
+
+    listener.done(errorCode);
   };
 
   xmlReq.onerror = function(e) {
@@ -361,10 +383,31 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 
   xmlReq.onloadend = function() {
     EnigmailLog.DEBUG("keyserver.jsm: loadEnd:\n");
-    listener.done(errorCode);
   };
 
-  xmlReq.open("POST", protocol + "://" + keySrv.host + ":" + keySrv.port + "/pks/add");
+  let url = protocol + "://" + keySrv.host + ":" + keySrv.port;
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY)) {
+    url += "/pks/add";
+    method = "POST";
+  }
+  else if (matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
+    let keys = searchTerms.split(/ +/);
+    if (searchTerms.length > 0) {
+      let keyId = keys[0];
+      if (keyId.indexOf("0x") !== 0) {
+        keyId = "0x" + keyId;
+      }
+      url += "/pks/lookup?search=" + keyId + "&op=get&options=mr";
+      keys.shift(); // remove 1st key
+      searchTerms = keys.join(" ");
+    }
+    else {
+      listener.done(0);
+      return null;
+    }
+  }
+
+  xmlReq.open(method, url);
   xmlReq.send(payLoad);
 
   // return the same API as subprocess
@@ -376,6 +419,13 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
       xmlReq.abort();
     }
   };
+}
+
+function importHkpKey(keyData, listener) {
+  EnigmailLog.DEBUG("keyserver.jsm: importHkpKey()\n");
+
+  let errorMsgObj = {};
+  return EnigmailKeyRing.importKey(null, false, keyData, "", errorMsgObj);
 }
 
 /**

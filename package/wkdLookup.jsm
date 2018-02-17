@@ -16,6 +16,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.importGlobalProperties(["XMLHttpRequest"]);
 Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
@@ -175,7 +176,7 @@ var EnigmailWkdLookup = {
     EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey(" + email + ")\n");
 
     return new Promise((resolve, reject) => {
-      let oReq = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance();
+      let oReq = new XMLHttpRequest();
 
       oReq.addEventListener("load", function _f() {
         EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: data for " + email + "\n");
