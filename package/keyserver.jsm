@@ -341,6 +341,16 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
   EnigmailLog.DEBUG("keyserver.jsm: accessHkp()\n");
 
   const ERROR_MSG = "[GNUPG:] ERROR X";
+
+  function downloadNextKey() {
+    if (searchTerms.length > 0) {
+      accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
+    }
+    else {
+      listener.done(0);
+    }
+  }
+
   let keySrv = parseKeyserverUrl(keyserver);
   let protocol = "https"; // protocol is always hkps (which equals to https in TB)
 
@@ -354,19 +364,30 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 
   xmlReq.onload = function _onLoad() {
     EnigmailLog.DEBUG("keyserver.jsm: onload(): status=" + xmlReq.status + "\n");
-    if (xmlReq.status >= 400) {
-      EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
-      listener.stderr(ERROR_MSG);
-      errorCode = 1;
+    if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY)) {
+      if (xmlReq.status >= 400) {
+        EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
+        listener.stderr(ERROR_MSG);
+        errorCode = 1;
+      }
     }
     else if (matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
-      let r = importHkpKey(xmlReq.responseText, listener);
-      if (r !== 0) {
-        listener.done(r);
+      if (xmlReq.status >= 400 && xmlReq.status < 500) {
+        downloadNextKey();
       }
-      else if (searchTerms.length > 0) {
-        accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
-        return;
+      else if (xmlReq.status >= 500) {
+        EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
+        listener.stderr(ERROR_MSG);
+        errorCode = 1;
+      }
+      else {
+        let r = importHkpKey(xmlReq.responseText, listener);
+        if (r !== 0) {
+          listener.done(r);
+        }
+        else {
+          downloadNextKey();
+        }
       }
 
       return;
@@ -424,8 +445,12 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 function importHkpKey(keyData, listener) {
   EnigmailLog.DEBUG("keyserver.jsm: importHkpKey()\n");
 
-  let errorMsgObj = {};
-  return EnigmailKeyRing.importKey(null, false, keyData, "", errorMsgObj);
+  if (keyData.length > 0) {
+    let errorMsgObj = {};
+    return EnigmailKeyRing.importKey(null, false, keyData, "", errorMsgObj);
+  }
+
+  return 0;
 }
 
 /**
