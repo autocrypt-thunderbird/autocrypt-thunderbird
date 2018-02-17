@@ -32,7 +32,7 @@ function torNotAvailableProperties() {
     useTorMode: false,
     socks: null,
     helper: null
-  }
+  };
 }
 
 test(function setupRequestWithTorHelper() {

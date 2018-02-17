@@ -263,15 +263,6 @@
             oncommand="Enigmail.msg.toggleProtectHeaders()">
     </toolbarbutton>
 
-    <!-- Enigmail: button -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="enigmail-toolbar-header-button"
-            label="&enigmail.composetoolbar.desc;"
-            buttontype="thunderbird"
-            oncommand="Enigmail.msg.doPgpButton('displaySecuritySettings')">
-      <label id="enigmail-toolbar-hdr-text" value="&enigmail.label;:"/>
-    </toolbarbutton>
-
     <!-- status info button -->
     <toolbarbutton class="toolbarbutton-1"
             id="enigmail-toolbar-text-button"
