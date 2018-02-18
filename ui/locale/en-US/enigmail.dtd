@@ -28,8 +28,8 @@
 <!ENTITY enigmail.keyUpload.label         "Checking whenever your email provider is supported">
 <!ENTITY enigmail.keyUpload.desc          "Publishing your public key on the internet allows others to send you encrypted email without contacting you first.">
 <!ENTITY enigmail.keyUpload.sks.label     "Upload to the global OpenPGP keyservers">
-<!ENTITY enigmail.keyUpload.sks.desc      "Uploading your key to the global OpenPGP key servers allows users of legacy mail apps to send you encrypted or signed messages. Keep in mind that everybody can read everything uploaded to these key servers (think of it like a phonebook). Do not upload your key if you want to keep the email address associated with it private.">
-<!ENTITY enigmail.keyUpload.wks.label     "Upload to the keyserver of your mail provider">
+<!ENTITY enigmail.keyUpload.sks.desc      "Uploading your key to the global OpenPGP key servers allows users of legacy email apps to send you encrypted or signed messages. Keep in mind that everybody can read everything uploaded to these key servers (think of it like a phonebook). Do not upload your key if you want to keep the email address associated with it private.">
+<!ENTITY enigmail.keyUpload.wks.label     "Upload to the keyserver of your email provider">
 <!ENTITY enigmail.keyAttachAuto.label     "Always attach my public key">
 
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
@@ -76,11 +76,11 @@
 <!ENTITY enigmail.pref.acSetupMessage.button "Initiate Autocrypt Key Transfer">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supports two ways to transfer your keys and your settings to another device.<html:br/><html:br/>
-                                            The 'Autocrypt Key Transfer' requires that the mail client on the other device is Autocrypt-compliant.
+                                            The 'Autocrypt Key Transfer' requires that the email client on the other device is Autocrypt-compliant.
                                             While this is the easier solution, only a limited set of apps currently support this standard.<html:br/><html:br/>
                                             The other way is to 'Backup &amp; restore' your settings.
                                             This will create a ZIP file with all required information and keys, that you can copy to your new device.
-                                            Enigmail can directly import these settings; for other mail clients, the ZIP file can be unpacked and handled manually.">
+                                            Enigmail can directly import these settings; for other email clients, the ZIP file can be unpacked and handled manually.">
 
 <!ENTITY enigmail.backupRestore.desc       "Export (backup) and Restore your Enigmail settings including your OpenPGP keys.">
 
@@ -394,7 +394,7 @@
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Recipient Settings">
 
-<!ENTITY enigmail.compose.excesslength.label        "You have very long lines in your mail. They should be handled differently to avoid bad signatures.">
+<!ENTITY enigmail.compose.excesslength.label        "You have very long lines in your email. They should be handled differently to avoid bad signatures.">
 <!ENTITY enigmail.compose.excesslength_action.label "How do you want to proceed?">
 <!ENTITY enigmail.wrapSelectionList.label           "Select wrap">
 <!ENTITY enigmail.compose.wrap_radio.label          "Wrap automatically (good signature, but may not look good)">
@@ -508,7 +508,7 @@
 <!ENTITY enigmail.keyMan.importFromUrl.label       "Import Keys from URL">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Export Keys to File">
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
-<!ENTITY enigmail.keyMan.createMail.label          "Compose Mail to Selected Keys">
+<!ENTITY enigmail.keyMan.createMail.label          "Compose Email to Selected Keys">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
 <!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your provider's Webkey Directory">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
@@ -771,7 +771,7 @@
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
-<!ENTITY enigmail.attachAuto.desc                    "When enabled, your public key is automatically attached to your mails">
+<!ENTITY enigmail.attachAuto.desc                    "When enabled, your public key is automatically attached to your emails">
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
