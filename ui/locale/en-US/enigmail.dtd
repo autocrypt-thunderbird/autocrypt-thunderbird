@@ -727,12 +727,12 @@
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create a new Key Pair">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of two keys:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your <html:b>public key</html:b> is <html:b>for others</html:b> to send you encrypted emails. You can distribute it to everybody.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>private key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>secret key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
                                                       You should give it to nobody.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your <html:b>private key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your <html:b>secret key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
                                                       You should give it to nobody.
-                                                      To secure your private key, you will be prompted for a passphrase in the following two dialogs.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is a password to protect your private key. It prevents misuse of your private key.">
+                                                      To secure your secret key, you will be prompted for a passphrase in the following two dialogs.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is a password to protect your secret key. It prevents misuse of your secret key.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "The passphrase should be a phrase containing at least 8 characters, digits and punctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are <html:b>not</html:b> recommended.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
@@ -743,16 +743,16 @@
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "Create or Import OpenPGP Keys">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "You don't seem to have any OpenPGP keys yet. Would you like to create a new key, or
                                                       do you want to import keys from a file?">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and private keys that I would like to import">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and secret keys that I would like to import">
 
 <!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
 <!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the private keys to
-                                                      import. The entry for private keys can be left empty if the first file
-                                                      contains both private and public keys.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the secret keys to
+                                                      import. The entry for secret keys can be left empty if the first file
+                                                      contains both secret and public keys.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Public key file">
-<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Private key file">
+<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Secret key file">
 
 <!-- wizard: key creation - key generation step -->
 
@@ -761,7 +761,7 @@
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Your Key is Generated">
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "Revocation Certificate Creation">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "You can now create your revocation certificate">
-<!ENTITY enigmail.setupWiz.pgRevocert.desc           "In case your private key gets lost or compromised, you might need to revoke your public key
+<!ENTITY enigmail.setupWiz.pgRevocert.desc           "In case your secret key gets lost or compromised, you might need to revoke your public key
                                                       such that others don't continue to use your old key.
                                                       For this purpose, you need a revocation certificate.
                                                       <html:br/>You will be prompted to enter your password for this. Please transfer the certificate to a medium which can be stored away safely such as a CD or USB stick. If somebody gains access to this certificate they can use it to render your key unusable.">
