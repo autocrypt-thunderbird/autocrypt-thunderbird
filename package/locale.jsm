@@ -94,7 +94,7 @@ var EnigmailLocale = {
       return uaPref.getComplexValue("locale", Ci.nsISupportsString).data;
     }
     catch (e) {}
-    return uaPref.getCharPref("locale");
+    return this.get().getCategory("NSILOCALE_MESSAGES").substr(0, 5);
   },
 
   shutdown: function(reason) {

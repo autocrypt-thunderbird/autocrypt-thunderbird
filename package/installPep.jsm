@@ -33,7 +33,7 @@ const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.enigmail.net/service/getPepDownload.svc";
+const PEP_QUERY_URL = "https://www.enigmail.net/service/getPepDownload.svc";
 
 
 function toHexString(charCode) {
@@ -258,6 +258,15 @@ Installer.prototype = {
 
 
     EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl: start request\n");
+
+    let queryUrl = PEP_QUERY_URL;
+
+    // if ENIGMAIL_DOWNLOAD_URL env variable is set, use that instead of to
+    // official URL (for testing)
+    let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    if (env.get("ENIGMAIL_PEP_DOWNLOAD_URL")) {
+      queryUrl = env.get("ENIGMAIL_PEP_DOWNLOAD_URL");
+    }
 
     var self = this;
 
