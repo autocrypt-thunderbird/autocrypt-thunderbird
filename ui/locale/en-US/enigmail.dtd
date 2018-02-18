@@ -771,7 +771,7 @@
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
-<!ENTITY enigmail.attachAuto.desc                    "By activation your public keys gets attached to your mails automatically">
+<!ENTITY enigmail.attachAuto.desc                    "When enabled, your public key is automatically attached to your mails">
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
@@ -877,7 +877,7 @@
 <!ENTITY enigmail.pepPref.credits.label              "Credits">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Thanks to">
 
-<!ENTITY enigmail.acPreferEncrypt.label              "Prefer encrypted emails from the people you mail with">
+<!ENTITY enigmail.acPreferEncrypt.label              "Prefer encrypted emails from the people you exchange email with">
 <!ENTITY enigmail.enableAutocrypt.label              "Enable Autocrypt">
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt Setup Code">
