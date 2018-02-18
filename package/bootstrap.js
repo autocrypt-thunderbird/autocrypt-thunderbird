@@ -37,7 +37,9 @@ function startup(data, reason) {
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
   }
-  catch (ex) {} // if we fail, we should at least not break other addons
+  catch (ex) {
+    logException(ex);
+  }
 }
 
 function shutdown(data, reason) {
@@ -80,7 +82,9 @@ function shutdown(data, reason) {
     //               in order to fully update images and locales, their caches need clearing here
     Services.obs.notifyObservers(null, "chrome-flush-caches", null);
   }
-  catch (ex) {} // never fail
+  catch (ex) {
+    logException(ex);
+  }
 }
 
 /**
@@ -130,4 +134,14 @@ function unloadModules() {
     }
     catch (ex) {}
   }
+}
+
+function logException(exc) {
+  try {
+    const {
+      Services
+    } = Cu.import("resource://gre/modules/Services.jsm");
+    Services.console.logStringMessage(exc.toString() + "\n" + exc.stack);
+  }
+  catch (x) {}
 }
