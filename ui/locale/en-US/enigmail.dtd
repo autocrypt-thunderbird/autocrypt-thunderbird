@@ -61,7 +61,7 @@
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of inactivity (before needing to re-enter it)">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "Cache passphrase in memory for a limited time.">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Remember passphrase in memory for a limited time.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.resetPrefs.tooltip     "Set all Enigmail preferences back to their default value.">
@@ -77,7 +77,7 @@
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supports two ways to transfer your keys and your settings to another device.<html:br/><html:br/>
                                             The 'Autocrypt Key Transfer' requires that the email client on the other device is Autocrypt-compliant.
-                                            While this is the easier solution, only a limited set of apps currently support this standard.<html:br/><html:br/>
+                                            While this is the easier solution, only a few apps currently support this standard.<html:br/><html:br/>
                                             The other way is to 'Backup &amp; restore' your settings.
                                             This will create a ZIP file with all required information and keys, that you can copy to your new device.
                                             Enigmail can directly import these settings; for other email clients, the ZIP file can be unpacked and handled manually.">
@@ -102,7 +102,7 @@
 <!ENTITY enigmail.keyservers.label        "Specify your keyserver(s)">
 <!ENTITY enigmail.keyservers.sample2      "Example: pool.sks-keyservers.net, pgp.mit.edu">
 
-<!ENTITY enigmail.searchForKey.example    "Example 'Forename Surname &lt;user@example.com&gt;'">
+<!ENTITY enigmail.searchForKey.example    "Example: 'Forename Surname &lt;user@example.com&gt;'">
 <!ENTITY enigmail.searchForKey.desc1	    "'Forename Surname' finds all keys that contain 'Forename' OR 'Surname'">
 <!ENTITY enigmail.searchForKey.desc2      "'Forename+Surname' finds all keys that contain both 'Forename' AND 'Surname'">
 <!ENTITY enigmail.searchForKey.desc3      "'example.com' finds all keys that contain 'example.com', such as 'example@example.com'">
@@ -733,7 +733,7 @@
                                                       You should give it to nobody.
                                                       To secure your secret key, you will be prompted for a passphrase in the following two dialogs.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is a password to protect your secret key. It prevents misuse of your secret key.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "The passphrase should be a phrase containing at least 8 characters, digits and punctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are <html:b>not</html:b> recommended.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "The passphrase should contain several words and at least 8 characters, digits and punctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are <html:b>not</html:b> recommended.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "Passphrase should contain at least 8 characters">
