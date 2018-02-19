@@ -177,7 +177,7 @@ PgpMimeHandler.prototype = {
         cth = EnigmailPEPDecrypt.getDecryptionService(ct);
       }
       else
-        cth = new EnigmailMimeDecrypt();
+        cth = EnigmailMimeDecrypt.newPgpMimeHandler();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       if (ct.search(/application\/pgp-signature/i) > 0) {

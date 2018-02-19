@@ -26,7 +26,7 @@ testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false */
 
 
 test(function extractEncryptedHeadersTest() {
-  var dec = new EnigmailMimeDecrypt();
+  var dec = EnigmailMimeDecrypt.newPgpMimeHandler();
   dec.decryptedData = 'This is a Hello World example';
 
   dec.extractEncryptedHeaders();

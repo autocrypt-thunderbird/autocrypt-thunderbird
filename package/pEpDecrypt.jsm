@@ -30,11 +30,10 @@ Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: fa
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
 
+const LAST_MSG = EnigmailSingletons.lastDecryptedMessage;
+
 var inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 
-var gLastMessageData = "";
-var gLastMessage = null;
-var gLastStatus = {};
 
 var EnigmailPEPDecrypt = {
   /**
@@ -197,8 +196,8 @@ PEPDecryptor.prototype = {
     }
 
     if (!this.isReloadingLastMessage()) {
-      gLastMessageData = "";
-      gLastMessage = null;
+      LAST_MSG.lastMessageData = "";
+      LAST_MSG.lastMessageURI = null;
     }
 
     if ("mimePart" in this.mimeSvc) {
@@ -227,15 +226,15 @@ PEPDecryptor.prototype = {
     if (this.isReloadingLastMessage()) {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStopRequest: returning same data as before\n");
 
-      this.decryptedData = gLastMessageData;
+      this.decryptedData = LAST_MSG.lastMessageData;
       this.returnData();
 
       if (!this.backgroundJob) {
         // only display the decrption/verification status if not background-Job
-        this.decryptedHeaders = gLastStatus.decryptedHeaders;
-        this.mimePartNumber = gLastStatus.mimePartNumber;
+        this.decryptedHeaders = LAST_MSG.lastPepStatus.decryptedHeaders;
+        this.mimePartNumber = LAST_MSG.lastPepStatus.mimePartNumber;
 
-        this.displayStatus(gLastStatus.rating, gLastStatus.fpr, gLastStatus.dec.persons);
+        this.displayStatus(LAST_MSG.lastPepStatus.rating, LAST_MSG.lastPepStatus.fpr, LAST_MSG.lastPepStatus.dec.persons);
       }
 
       return;
@@ -291,7 +290,7 @@ PEPDecryptor.prototype = {
       if (!this.backgroundJob) {
         // only display the decrption/verification status if not background-Job
         this.displayStatus(rating, fpr, dec.persons);
-        gLastStatus = {
+        LAST_MSG.lastPepStatus = {
           rating: rating,
           fpr: fpr,
           dec: dec,
@@ -301,8 +300,8 @@ PEPDecryptor.prototype = {
       }
     }
 
-    gLastMessage = EnigmailURIs.msgIdentificationFromUrl(this.uri);
-    gLastMessageData = this.decryptedData;
+    LAST_MSG.lastMessageURI = EnigmailURIs.msgIdentificationFromUrl(this.uri);
+    LAST_MSG.lastMessageData = this.decryptedData;
     this.returnData();
   },
 
@@ -354,11 +353,11 @@ PEPDecryptor.prototype = {
    */
   isReloadingLastMessage: function() {
     if (!this.uri) return false;
-    if (!gLastMessage) return false;
+    if (!LAST_MSG.lastMessageURI) return false;
 
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
-    if (gLastMessage.folder === currMsg.folder && gLastMessage.msgNum === currMsg.msgNum) {
+    if (LAST_MSG.lastMessageURI.folder === currMsg.folder && LAST_MSG.lastMessageURI.msgNum === currMsg.msgNum) {
       return true;
     }
 

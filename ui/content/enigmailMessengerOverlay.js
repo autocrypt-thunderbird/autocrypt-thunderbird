@@ -241,12 +241,18 @@ Enigmail.msg = {
     }
   },
 
+  clearLastMessage: function() {
+    const {
+      EnigmailSingletons
+    } = Components.utils.import("resource://enigmail/singletons.jsm");
+    EnigmailSingletons.clearLastDecryptedMessage();
+  },
 
   messageReload: function(noShowReload) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageReload: " + noShowReload + "\n");
 
     Enigmail.msg.noShowReload = noShowReload;
-
+    this.clearLastMessage();
     ReloadMessage();
   },
 
@@ -261,6 +267,7 @@ Enigmail.msg = {
   },
 
   reloadCompleteMsg: function() {
+    this.clearLastMessage();
     gDBView.reloadMessageWithAllParts();
   },
 
