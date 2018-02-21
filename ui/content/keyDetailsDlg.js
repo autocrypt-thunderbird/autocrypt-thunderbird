@@ -92,6 +92,13 @@ function reloadData() {
       photoImg.setAttribute("hidden", "true");
     }
 
+    if (keyObj.isOwnerTrustUseful()) {
+      document.getElementById("setOwnerTrust").removeAttribute("collapsed");
+    }
+    else {
+      document.getElementById("setOwnerTrust").setAttribute("collapsed", "true");
+    }
+
     if (keyObj.hasSubUserIds()) {
       document.getElementById("alsoknown").removeAttribute("collapsed");
       createUidData(uidList, keyObj);

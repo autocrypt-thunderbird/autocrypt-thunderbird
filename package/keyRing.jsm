@@ -2005,6 +2005,20 @@ KeyObject.prototype = {
   },
 
   /**
+   * Is the function to set owner trust available for the key?
+   * Requirements: The key is signed with at least medium validity level,
+   * or the secret key is available.
+   *
+   * @return Boolean true if yes
+   */
+  isOwnerTrustUseful: function() {
+    if (this.secretAvailable) return true;
+    if (this.keyTrust.search(/^[fu]/) === 0) return true;
+
+    return false;
+  },
+
+  /**
    * Determine if the public key is valid. If not, return a description why it's not
    *
    * @return Object:

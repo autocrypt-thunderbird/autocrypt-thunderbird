@@ -766,10 +766,14 @@ Enigmail.hdrView = {
     var trust = false;
     var unknown = false;
     var signedMsg = false;
+    var keyObj = null;
 
     if (Enigmail.msg.securityInfo) {
       if (Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.PHOTO_AVAILABLE) {
         photo = true;
+      }
+      if (Enigmail.msg.securityInfo.keyId) {
+        keyObj = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
       }
       if (Enigmail.msg.securityInfo.msgSigned) {
         signedMsg = true;
@@ -777,7 +781,7 @@ Enigmail.hdrView = {
             (EnigmailConstants.REVOKED_KEY | EnigmailConstants.EXPIRED_KEY_SIGNATURE | EnigmailConstants.UNVERIFIED_SIGNATURE))) {
           sign = true;
         }
-        if (!(Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE)) {
+        if (keyObj && keyObj.isOwnerTrustUseful()) {
           trust = true;
         }
 

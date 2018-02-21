@@ -158,7 +158,7 @@
                   oncommand="enigSignKey()"/>
         <menuitem label="&enigmail.keyMan.setTrust.label;"
                   id="setTrust"
-                  observes="bcNoKey"
+                  observes="bcSetTrust"
                   accesskey="&enigmail.keyMan.setTrust.accesskey;"
                   oncommand="enigEditKeyTrust()"/>
 
@@ -347,7 +347,7 @@
       <menuseparator/>
 
       <menuitem id="ctxSign" observes="bcSignKey" label="&enigmail.keyMan.sign.label;" oncommand="enigSignKey()"/>
-      <menuitem id="ctxTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
+      <menuitem id="ctxTrust" observes="bcSetTrust" label="&enigmail.keyMan.setTrust.label;" oncommand="enigEditKeyTrust()"/>
       <menuitem id="ctxAddToRule" observes="bcSignKey" label="&enigmail.keyMan.addToPRRule.label;" oncommand="addToPRRule()"/>
 
       <menuseparator/>

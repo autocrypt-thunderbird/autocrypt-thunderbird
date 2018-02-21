@@ -117,7 +117,7 @@
             </html:td>
             <html:td id="ownerTrust"/>
             <html:td>
-              <button label="&enigmail.keyDetails.change.label;" oncommand="setOwnerTrust()"/>
+              <button id="setOwnerTrust" label="&enigmail.keyDetails.change.label;" oncommand="setOwnerTrust()"/>
             </html:td>
           </html:tr>
         </html:table>

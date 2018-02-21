@@ -222,6 +222,13 @@ function enigmailKeyMenu() {
     }
   }
 
+  if (keyList.length == 1 && gKeyList[keyList[0]].isOwnerTrustUseful()) {
+    document.getElementById("bcSetTrust").removeAttribute("collapsed");
+  }
+  else {
+    document.getElementById("bcSetTrust").setAttribute("collapsed", "true");
+  }
+
   if (keyList.length == 1) {
     document.getElementById("bcSignKey").removeAttribute("disabled");
     document.getElementById("bcOneKey").removeAttribute("disabled");
