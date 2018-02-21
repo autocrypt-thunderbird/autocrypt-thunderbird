@@ -51,7 +51,7 @@ const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-const queryUrl = "https://www.enigmail.net/service/getGnupgDownload.svc";
+const GPG_QUERY_URL = "https://www.enigmail.net/service/getGnupgDownload.svc";
 
 function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
@@ -454,6 +454,15 @@ Installer.prototype = {
 
 
     EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl: start request\n");
+
+    let queryUrl = GPG_QUERY_URL;
+
+    // if ENIGMAIL_GPG_DOWNLOAD_URL env variable is set, use that instead of the
+    // official URL (for testing)
+    let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+    if (env.get("ENIGMAIL_GPG_DOWNLOAD_URL")) {
+      queryUrl = env.get("ENIGMAIL_GPG_DOWNLOAD_URL");
+    }
 
     var self = this;
 

@@ -261,7 +261,7 @@ Installer.prototype = {
 
     let queryUrl = PEP_QUERY_URL;
 
-    // if ENIGMAIL_DOWNLOAD_URL env variable is set, use that instead of to
+    // if ENIGMAIL_PEP_DOWNLOAD_URL env variable is set, use that instead of the
     // official URL (for testing)
     let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
     if (env.get("ENIGMAIL_PEP_DOWNLOAD_URL")) {
