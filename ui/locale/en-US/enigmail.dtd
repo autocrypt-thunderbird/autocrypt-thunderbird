@@ -73,7 +73,7 @@
 <!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 
 <!ENTITY enigmail.pref.acSetupMessage.desc   "Transfer your key to another Autocrypt-enabled device.">
-<!ENTITY enigmail.pref.acSetupMessage.button "Initiate Autocrypt Setup">
+<!ENTITY enigmail.pref.acSetupMessage.button "Start Autocrypt Setup">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supports two ways to transfer your keys and your settings to another device.<html:br/><html:br/>
                                             The 'Autocrypt Key Transfer' requires that the email client on the other device is Autocrypt-compliant.
@@ -884,7 +884,7 @@
 <!ENTITY enigmail.acSetupPasswd.password             "Setup Code:">
 
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
-<!ENTITY enigmail.acKeyTransfer.welcome.title        "Initiate Key Transfer">
+<!ENTITY enigmail.acKeyTransfer.welcome.title        "Start Key Transfer">
 <!ENTITY enigmail.acKeyTransfer.welcome.desc         "If you have another device that is Autocrypt-enabled, you can transfer your key to the other device via a so-called 'Autocrypt Setup Message'.
                                                       Such a message will allow your other device to send and receive encrypted emails just like Enigmail with just a few clicks.<html:br/><html:br/>
                                                       Please select below the account for which you want to transfer your key.
