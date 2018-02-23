@@ -1433,23 +1433,28 @@ Enigmail.hdrView = {
      * @return Boolean: true: there are siblings / false: no siblings
      */
     hasUnauthenticatedParts: function(mimePartNumber) {
-      function hasSiblings(mimePart, searchPartNum, parent) {
-        if (mimePart.partNum.indexOf(parent) == 0 && mimePart.partNum !== searchPartNum) return true;
+      function hasSiblings(mimePart, searchPartNum, parentNum) {
+        if (mimePart.partNum === parentNum) {
+          // if we're a direct child of a PGP/MIME encrypted message, we know that everything
+          // is authenticated on this level
+          if (mimePart.fullContentType.search(/^multipart\/encrypted.{1,255}protocol="?application\/pgp-encrypted"?/i) === 0) return false;
+        }
+        if (mimePart.partNum.indexOf(parentNum) == 0 && mimePart.partNum !== searchPartNum) return true;
 
         for (let i in mimePart.subParts) {
-          if (hasSiblings(mimePart.subParts[i], searchPartNum, parent)) return true;
+          if (hasSiblings(mimePart.subParts[i], searchPartNum, parentNum)) return true;
         }
 
         return false;
       }
 
-      let parent = mimePartNumber.replace(/\.\d+$/, "");
+      let parentNum = mimePartNumber.replace(/\.\d+$/, "");
       if (mimePartNumber.search(/\./) < 0) {
-        parent = "";
+        parentNum = "";
       }
 
       if (mimePartNumber && Enigmail.msg.mimeParts) {
-        if (hasSiblings(Enigmail.msg.mimeParts, mimePartNumber, parent)) return true;
+        if (hasSiblings(Enigmail.msg.mimeParts, mimePartNumber, parentNum)) return true;
       }
 
       return false;
