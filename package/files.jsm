@@ -491,6 +491,15 @@ var EnigmailFiles = {
    * @return Boolean: true if extraction successfull, false otherwise
    */
   extractZipFile: function(zipFile, targetDir) {
+
+    // create missing parent directories
+    function createDirWithParents(dirObj) {
+      if (!dirObj.parent.exists()) {
+        createDirWithParents(dirObj.parent);
+      }
+      dirObj.create(dirObj.DIRECTORY_TYPE, 493);
+    }
+
     try {
       let zipReader = EnigmailFiles.openZipFile(zipFile);
       let f = zipReader.findEntries("*");
@@ -504,15 +513,14 @@ var EnigmailFiles = {
           t.initWithPath(t.path + "/" + i);
         }
         else {
-          let w = i.split('/').join("\\");
-          t.initWithPath(t.path + "\\" + w);
+          t.initWithPath(t.path + "\\" + i);
         }
 
         if (!t.parent.exists()) {
-          t.parent.create(t.DIRECTORY_TYPE, 493); // equals 0755
+          createDirWithParents(t.parent);
         }
 
-        if (!entry.isDirectory) {
+        if (!(entry.isDirectory || i.endsWith("\\"))) {
           zipReader.extract(i, t);
         }
       }
