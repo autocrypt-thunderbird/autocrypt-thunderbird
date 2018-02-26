@@ -22,6 +22,9 @@ function uninstall() {}
 function startup(data, reason) {
   try {
     const {
+      EnigmailApp
+    } = Cu.import("resource://enigmail/app.jsm", {});
+    const {
       EnigmailCore
     } = Cu.import("resource://enigmail/core.jsm", {});
     const {
@@ -33,6 +36,7 @@ function startup(data, reason) {
 
     loadListOfModules();
 
+    EnigmailApp.initAddon(data);
     EnigmailAmPrefsService.startup(reason);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);

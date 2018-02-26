@@ -14,8 +14,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
@@ -56,34 +56,28 @@ var EnigmailApp = {
    * Get Enigmail version
    */
   getVersion: function() {
-    EnigmailLog.DEBUG("app.jsm: getVersion\n");
-    EnigmailLog.DEBUG("app.jsm: installed version: " + EnigmailApp.version + "\n");
-    return EnigmailApp.version;
+    getEnigmailLog().DEBUG("app.jsm: getVersion\n");
+    getEnigmailLog().DEBUG("app.jsm: installed version: " + EnigmailApp.version + "\n");
+    return EnigmailApp._version;
   },
 
   /**
    * Get Enigmail installation directory
    */
   getInstallLocation: function() {
-    return EnigmailApp.installLocation;
+    return EnigmailApp._installLocation;
   },
 
   setVersion: function(version) {
-    EnigmailApp.version = version;
+    EnigmailApp._version = version;
   },
 
   setInstallLocation: function(location) {
-    EnigmailApp.installLocation = location;
+    EnigmailApp._installLocation = location;
   },
 
-  registerAddon: function(addon) {
+  initAddon: function(addon) {
     EnigmailApp.setVersion(addon.version);
-    EnigmailApp.setInstallLocation(addon.getResourceURI("").QueryInterface(Ci.nsIFileURL).file);
-  },
-
-  initAddon: function() {
-    AddonManager.getAddonByID(ENIG_EXTENSION_GUID, EnigmailApp.registerAddon);
+    EnigmailApp.setInstallLocation(addon.installPath);
   }
 };
-
-EnigmailApp.initAddon();
