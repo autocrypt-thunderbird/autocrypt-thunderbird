@@ -37,9 +37,12 @@ function initPrefService() {
     p.branch = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
     p.defaultBranch = p.service.getDefaultBranch(null);
 
-    if (p.branch.getCharPref("logDirectory")) {
-      EnigmailLog.setLogLevel(5);
+    try {
+      if (p.branch.getCharPref("logDirectory")) {
+        EnigmailLog.setLogLevel(5);
+      }
     }
+    catch (ex) {} // don't log anythign if accessing logDirectory fails
   }
   catch (ex) {
     EnigmailLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
