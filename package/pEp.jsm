@@ -413,7 +413,7 @@ var EnigmailpEp = {
     DEBUG_LOG("getIdentityRating()");
     try {
       let params = [
-        userId, [""] // rating
+        {"address": userId.address}, [""] // rating
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "identity_rating", params);

@@ -227,6 +227,9 @@ var EnigmailPEPAdapter = {
         gPepAvailable = null;
 
         self.initialize();
+      },
+      stopPep: function() {
+        EnigmailpEp.shutdown();
       }
     };
 
@@ -391,9 +394,7 @@ var EnigmailPEPAdapter = {
           gpgFile.initWithPath(gpgEnv.gnupg_path);
 
           if (!gpgFile.exists()) {
-            // GnuPG not found, try to install it
-            // installMissingGnuPG();
-
+            // this should not really happen ...
             deferred.resolve();
             return;
           }
@@ -464,11 +465,6 @@ var EnigmailPEPAdapter = {
         function _ok(data) {
           if (data) {
             let myId = self.processOwnIdentity(data);
-
-            if (myId) {
-              myId.user_id = "TOFU_" + myId.address;
-              return self.pep.updateIdentity(myId);
-            }
           }
 
           let deferred = PromiseUtils.defer();
