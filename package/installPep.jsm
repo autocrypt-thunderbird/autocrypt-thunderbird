@@ -35,6 +35,7 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const PEP_QUERY_URL = "https://www.enigmail.net/service/getPepDownload.svc";
 
+var gInstallInProgress = 0;
 
 function toHexString(charCode) {
   return ("0" + charCode.toString(16)).slice(-2);
@@ -249,6 +250,7 @@ Installer.prototype = {
 
     function onError(error) {
       deferred.reject("error");
+      gInstallInProgress = 0;
       if (self.progressListener) {
         return self.progressListener.onError(error);
       }
@@ -284,9 +286,12 @@ Installer.prototype = {
           onError(error);
         },
         false);
+      queryUrl = queryUrl + "?vEnigmail=" + escape(EnigmailApp.getVersion()) + "&os=" + escape(os) +
+        "&platform=" + escape(platform);
 
-      oReq.open("get", queryUrl + "?vEnigmail=" + escape(EnigmailApp.getVersion()) + "&os=" + escape(os) + "&platform=" +
-        escape(platform), true);
+      EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl: accessing '" + queryUrl + "'\n");
+
+      oReq.open("get", queryUrl, true);
       oReq.send();
     }
     catch (ex) {
@@ -333,11 +338,13 @@ Installer.prototype = {
         // "this" is set by the calling XMLHttpRequest
         performInstall(this.response).then(function _f() {
           performCleanup();
+          gInstallInProgress = 0;
         });
       }
       catch (ex) {
         EnigmailLog.writeException("installPep.jsm", ex);
 
+        gInstallInProgress = 0;
         if (self.progressListener)
           self.progressListener.onError({
             type: "installPep.installFailed"
@@ -481,10 +488,16 @@ var EnigmailInstallPep = {
   startInstaller: function(progressListener) {
     EnigmailLog.DEBUG("installPep.jsm: startInstaller()\n");
 
+    if (gInstallInProgress > 0) return null;
+
+    gInstallInProgress = 1;
+
     let i = new Installer(progressListener);
     i.getDownloadUrl(i).
     then(function _gotUrl() {
       i.performDownload();
+    }).catch(function _err() {
+      gInstallInProgress = 0;
     });
     return i;
   },
