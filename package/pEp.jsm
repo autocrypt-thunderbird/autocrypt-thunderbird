@@ -412,8 +412,10 @@ var EnigmailpEp = {
   getIdentityRating: function(userId) {
     DEBUG_LOG("getIdentityRating()");
     try {
-      let params = [
-        {"address": userId.address}, [""] // rating
+      let params = [{
+          "address": userId.address
+        },
+        [""] // rating
       ];
 
       return this._callPepFunction(FT_CALL_FUNCTION, "identity_rating", params);
@@ -1185,6 +1187,7 @@ var EnigmailpEp = {
 
       let foundGnuPG = true;
 
+      let stderrData = "";
       let process = subprocess.call({
         workdir: resDirPath,
         command: exec,
@@ -1199,16 +1202,21 @@ var EnigmailpEp = {
         },
         stderr: function(data) {
           DEBUG_LOG("stderr from pep-json-server: " + data);
-          if (data.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED)/) >= 0) {
-            foundGnuPG = false;
+          stderrData += data;
+
+          if (stderrData.length > 0) {
+            if (stderrData.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED|CANNOT_LOAD_GPGME)/) >= 0) {
+              foundGnuPG = false;
+              deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
+            }
           }
         }
       });
 
       if (!EnigmailOS.isDosLike) process.wait();
+      DEBUG_LOG("_startPepServer: JSON startup done");
 
       if (!foundGnuPG) {
-        deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
         return;
       }
 

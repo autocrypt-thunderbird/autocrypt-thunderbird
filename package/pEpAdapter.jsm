@@ -325,12 +325,12 @@ var EnigmailPEPAdapter = {
     let deferred = PromiseUtils.defer();
     let self = this;
 
+    EnigmailpEp.registerLogHandler(EnigmailLog.DEBUG);
+
     if (gJmObservers === null) {
       gJmObservers = {};
       EnigmailPrefs.registerPrefObserver("juniorMode", self.handleJuniorModeChange);
     }
-
-    EnigmailpEp.registerLogHandler(EnigmailLog.DEBUG);
 
     let pEpMode = EnigmailPrefs.getPref("juniorMode");
     // force using Enigmail (do not use pEp)
@@ -1080,7 +1080,7 @@ function installMissingGnuPG() {
       onError: function() {},
       onProgress: function() {},
       onDownloaded: function() {},
-      onInstalled: function() {
+      onLoaded: function() {
         EnigmailpEp.shutdown().then(x => {
           EnigmailPEPAdapter.initialize();
         });

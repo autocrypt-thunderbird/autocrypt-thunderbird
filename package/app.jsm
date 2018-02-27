@@ -57,7 +57,7 @@ var EnigmailApp = {
    */
   getVersion: function() {
     getEnigmailLog().DEBUG("app.jsm: getVersion\n");
-    getEnigmailLog().DEBUG("app.jsm: installed version: " + EnigmailApp.version + "\n");
+    getEnigmailLog().DEBUG("app.jsm: installed version: " + EnigmailApp._version + "\n");
     return EnigmailApp._version;
   },
 

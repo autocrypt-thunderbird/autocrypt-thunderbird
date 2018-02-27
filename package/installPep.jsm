@@ -169,7 +169,11 @@ Installer.prototype = {
   cleanupOnOs: function() {
     EnigmailLog.DEBUG("installPep.jsm.cleanupOnOs():\n");
 
-    this.installerFile.remove(false);
+    try {
+      let extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
+      extAppLauncher.deleteTemporaryFileOnExit(this.installerFile);
+    }
+    catch (ex) {}
 
     if (this.progressListener) {
       this.progressListener.onInstalled();
@@ -498,6 +502,7 @@ var EnigmailInstallPep = {
       i.performDownload();
     }).catch(function _err() {
       gInstallInProgress = 0;
+      i.cleanupOnOs();
     });
     return i;
   },

@@ -520,7 +520,7 @@ var EnigmailFiles = {
           createDirWithParents(t.parent);
         }
 
-        if (!(entry.isDirectory || i.endsWith("\\"))) {
+        if (!(entry.isDirectory || i.search(/[\/\\]$/) >= 0)) {
           zipReader.extract(i, t);
         }
       }
