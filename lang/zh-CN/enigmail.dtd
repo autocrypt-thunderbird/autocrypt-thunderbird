@@ -1,8 +1,8 @@
 <!ENTITY enigmail.label                   "Enigmail">
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
-<!ENTITY enigmail.autocrypt.label         "">
+<!ENTITY enigmail.autocrypt.label         "自动加密">
 
-<!ENTITY enigmail.about.license           "">
+<!ENTITY enigmail.about.license           "Enigmail 是依照 <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla 公共许可证 2.0</html> 授权的开源软件。">
 
 <!ENTITY enigmail.keyUserId.label         "账户 / 个人标识">
 <!ENTITY enigmail.keygenTitle.label       "请指定您的备份数据所在的文件。">
@@ -341,9 +341,9 @@
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "请稍候...">
 
 <!ENTITY enigmail.amPrefTitle.label                 "">
-<!ENTITY enigmail.amPrefDesc.label                  "Enigmail 为您提供 OpenPGP 加密和数字签名邮件支持。要使用该功能，您必须安装了 GnuPG (gpg) 程序。">
+<!ENTITY enigmail.amPrefDesc.label                  "Enigmail 为您提供 OpenPGP 加密和数字签名邮件支持。要使用该功能，您必须先安装 GnuPG (gpg) 程序。">
 <!ENTITY enigmail.amPrefEnablePgp.label             "为这个标识打开 OpenPGP 支持 (Enigmail)">
-<!ENTITY enigmail.amPrefUseFromAddr.label           "使用这个标识的电子邮件地址标示 OpenPGP 密钥">
+<!ENTITY enigmail.amPrefUseFromAddr.label           "使用这个身份的电子邮件地址标示 OpenPGP 密钥">
 <!ENTITY enigmail.amPrefUseKeyId.label              "使用指定的 OpenPGP 密钥标识 (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "选择密钥...">
 <!ENTITY enigmail.amPrefMsgComp.label               "">

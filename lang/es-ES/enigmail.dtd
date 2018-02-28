@@ -4,7 +4,7 @@
 
 <!ENTITY enigmail.about.license           "Enigmail es de código abierto y está licenciado bajo la <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
-<!ENTITY enigmail.keyUserId.label         "Cuenta / ID de usuario">
+<!ENTITY enigmail.keyUserId.label         "Cuenta / Identificación de usuario">
 <!ENTITY enigmail.keygenTitle.label       "Generar clave OpenPGP">
 <!ENTITY enigmail.useForSigning.label     "Usar la clave generada para la identidad seleccionada">
 <!ENTITY enigmail.keyNoPassphrase.label   "Sin frase-contraseña">
@@ -12,7 +12,7 @@
 <!ENTITY enigmail.keyPassphraseRepeat.label "Frase-contraseña (repetir)">
 <!ENTITY enigmail.generateKey.tooltip     "Genera una nueva clave compatible con OpenPGP para cifrado y/o firma">
 <!ENTITY enigmail.cancelKey.label         "Cancelar">
-<!ENTITY enigmail.cancelKey.tooltip       "Cancelar la generación de clave">
+<!ENTITY enigmail.cancelKey.tooltip       "Cancelar generación de clave">
 <!ENTITY enigmail.keyGen.expiry.title     "Caducidad de la clave">
 <!ENTITY enigmail.keyGen.expire.label     "La clave caduca dentro de">
 <!ENTITY enigmail.keyGen.days.label       "días">
@@ -23,12 +23,12 @@
 <!ENTITY enigmail.keyGen.console.label    "Generación de clave">
 <!ENTITY enigmail.keyGen.keyType.label    "Tipo de clave">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
-<!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Cifrado de Curva Elíptica)">
+<!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Curva Elíptica)">
 
 <!ENTITY enigmail.keyUpload.label         "Comprobar el momento en que su proveedor de correo electrónico esté soportado">
 <!ENTITY enigmail.keyUpload.desc          "Publicar su clave pública en Internet permite que otros el envíen correo electrónico cifrado sin contactar previamente con usted.">
 <!ENTITY enigmail.keyUpload.sks.label     "Subir a los servidores de claves OpenPGP globales">
-<!ENTITY enigmail.keyUpload.sks.desc      "Subir su clave a los servidores OpenPGP globales permite a los usuarios de aplicaciones de correo que los consultan enviarle mensajes cifrados y/o firmados. Recuerde que cualquiera puede leer todo lo subido a estos servidores de claves (piense en ellos como una guía telefónica). No suba su clave si quiere mantener en privado la dirección de correo electrónico asociada a ella.">
+<!ENTITY enigmail.keyUpload.sks.desc      "Subir su clave a los servidores OpenPGP globales permite a los usuarios de aplicaciones de correo heredadas (clientes clásicos) enviarle mensajes cifrados y/o firmados. Recuerde que cualquiera puede leer todo lo subido a estos servidores de claves (piense en ellos como en una guía telefónica). No suba su clave si no quiere hacer pública la dirección de correo electrónico asociada a ella.">
 <!ENTITY enigmail.keyUpload.wks.label     "Subir al servidor de claves de su proveedor de correo">
 <!ENTITY enigmail.keyAttachAuto.label     "Adjuntar siempre mi clave pública">
 
@@ -295,7 +295,7 @@
 <!ENTITY enigmail.keyExpiry.label                   "Caducidad">
 <!ENTITY enigmail.uidValidity.label                 "Validez">
 <!ENTITY enigmail.keySelection.label                "Selección">
-<!ENTITY enigmail.keyId.label                       "Identificador de la clave">
+<!ENTITY enigmail.keyId.label                       "Identificador de clave">
 <!ENTITY enigmail.userSelSendSigned.label           "Enviar firmado">
 <!ENTITY enigmail.userSelSendSigned.accesskey       "S">
 <!ENTITY enigmail.userSelSendEncrypted.label        "Enviar cifrado">
@@ -465,7 +465,7 @@
 <!ENTITY enigmail.sKeyDlg.carefulCheck.label       "He realizado una comprobación muy cuidadosa">
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Firma local (no se puede exportar)">
 
-<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Añadir identificador de usuario">
+<!ENTITY enigmail.addUidDlg.title                  "Enigmail - Añadir identificación de usuario">
 <!ENTITY enigmail.addUidDlg.name.label             "Nombre">
 <!ENTITY enigmail.addUidDlg.email.label            "Correo electrónico">
 
@@ -508,7 +508,7 @@
 <!ENTITY enigmail.keyMan.importFromUrl.label       "Importar claves desde URL">
 <!ENTITY enigmail.keyMan.exportToFile.label        "Exportar claves a un fichero">
 <!ENTITY enigmail.keyMan.sendKeys.label            "Enviar claves públicas por correo">
-<!ENTITY enigmail.keyMan.createMail.label          "Redactar correo a las claves seleccionadas">
+<!ENTITY enigmail.keyMan.createMail.label          "Redactar correo para las claves seleccionadas">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Subir claves públicas">
 <!ENTITY enigmail.keyMan.uploadToWkd.label         "Subir al Directorio Webkey de su proveedor">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copiar claves públicas al portapapeles">
@@ -523,13 +523,13 @@
 
 <!ENTITY enigmail.keyMan.reload.label              "Recargar caché de claves">
 <!ENTITY enigmail.keyMan.addPhoto.label            "Añadir fotografía">
-<!ENTITY enigmail.keyMan.manageUid.label           "Administrar identificadores de usuario">
+<!ENTITY enigmail.keyMan.manageUid.label           "Administrar identificaciones de usuario">
 <!ENTITY enigmail.keyMan.changeExpiry.label        "Cambiar fecha de caducidad">
 <!ENTITY enigmail.keyMan.changePwd.label           "Cambiar contraseña">
 <!ENTITY enigmail.keyMan.delKey.label              "Borrar clave">
 <!ENTITY enigmail.keyMan.revokeKey.label           "Revocar clave">
 <!ENTITY enigmail.keyMan.keyProps.label            "Propiedades de la clave">
-<!ENTITY enigmail.keyMan.showAllKeys.label         "Mostrar por defecto todas las claves">
+<!ENTITY enigmail.keyMan.showAllKeys.label         "Mostrar todas las claves por defecto">
 <!ENTITY enigmail.keyMan.viewPhoto.label           "Identificador de foto">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label        "Ver identificador de foto">
 <!ENTITY enigmail.keyMan.showInvalidKeys.label     "Mostrar claves inválidas">
@@ -590,9 +590,9 @@
 
 <!ENTITY enigmail.keySearch.selectAll.key            "a">
 
-<!ENTITY enigmail.manageUidDlg.title                 "Cambiar identificador de usuario primario">
+<!ENTITY enigmail.manageUidDlg.title                 "Cambiar identificación primaria de usuario">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label     "Clave a cambiar:">
-<!ENTITY enigmail.manageUidDlg.availableUid.label    "Identificadores de usuario disponibles:">
+<!ENTITY enigmail.manageUidDlg.availableUid.label    "Identificaciones de usuario disponibles:">
 <!ENTITY enigmail.manageUidDlg.addUid.label          "Añadir">
 <!ENTITY enigmail.manageUidDlg.revokeUid.label       "Revocar">
 <!ENTITY enigmail.manageUidDlg.setPrimary.label      "Establecer primaria">
@@ -601,7 +601,7 @@
 <!ENTITY enigmail.keyDetails.signaturesTab           "Certificaciones">
 <!ENTITY enigmail.keyDetails.structureTab            "Estructura">
 <!ENTITY enigmail.keyDetails.uidCertifiedCol         "Identificación del usuario / Certificado por">
-<!ENTITY enigmail.keyDetails.userId.label            "Identificador de usuario primario">
+<!ENTITY enigmail.keyDetails.userId.label            "Identificación primaria de usuario">
 <!ENTITY enigmail.keyDetails.ID.label                "Identificador">
 <!ENTITY enigmail.keyDetails.keyType.label           "Tipo">
 <!ENTITY enigmail.keyDetails.keyPart.label           "Parte de la clave">
@@ -810,10 +810,10 @@ en dos pasos:
 <!ENTITY enigmail.advancedIdentityDlg.title          "Configuración avanzada de identidades Enigmail">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Adjuntar mi clave pública a los mensajes">
 
-<!ENTITY enigmail.addPhoto.question.label            "¿Desea añadir la siguiente imagen a la siguiente clave?">
+<!ENTITY enigmail.addPhoto.question.label            "¿Desea añadir la imagen a continuación a la siguiente clave?">
 <!ENTITY enigmail.addPhoto.title                     "Añadir fotografía a la clave">
 <!ENTITY enigmail.msgViewColumn.tooltip              "Ordenar por estado OpenPGP">
-<!ENTITY enigmail.addToRule.title                    "Añadir clave a la regla por destinatario">
+<!ENTITY enigmail.addToRule.title                    "Añadir clave a regla por-destinatario">
 <!ENTITY enigmail.addToRule.useRuleButton.label      "Añadir clave a la regla seleccionada">
 <!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label      "Crear nueva regla">

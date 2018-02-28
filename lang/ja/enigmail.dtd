@@ -61,7 +61,7 @@
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "パスフレーズを">
 <!ENTITY enigmail.maxIdleMinutesTail.label "分間保持する (再入力までの時間)">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "制限時間だけパスフレーズをメモリー上に一時的に保存します">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "制限時間だけパスフレーズをメモリー上に保持します">
 
 <!ENTITY enigmail.resetPrefsButton.label "リセット">
 <!ENTITY enigmail.resetPrefs.tooltip     "Enigmail の設定を初期値に戻します">
@@ -73,10 +73,10 @@
 <!ENTITY enigmail.restorePrefs.tooltip     "Enigmail のすべての設定と OpenPGP 鍵をファイルから読み込みます">
 
 <!ENTITY enigmail.pref.acSetupMessage.desc   "Autocrypt が有効なデバイスへの鍵の移行">
-<!ENTITY enigmail.pref.acSetupMessage.button "Autocrypt 鍵移行の開始">
+<!ENTITY enigmail.pref.acSetupMessage.button "Autocrypt Key Transfer の開始">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail は、二つの方法で設定と OpenPGP 鍵を他のデバイスへ移行することができます。<html:br/><html:br/>
-                                            「Autocrypt 鍵移行」は、移行先のデバイスに Autocrypt に対応したメールクライアントが存在する必要があります。
+                                            「Autocrypt Key Transfer」は、移行先のデバイスに Autocrypt に対応したメールクライアントが存在する必要があります。
                                             こちらは移行は容易ですが、この標準に対応したクライアントは現時点では限られています。<html:br/><html:br/>
                                             もう一つの方法は、設定の「エクスポート/インポート」です。
                                             こちらの方法では、すべての設定と OpenPGP 鍵を ZIP ファイルに保存し、新しいデバイスで読み込みます。
@@ -102,7 +102,7 @@
 <!ENTITY enigmail.keyservers.label        "鍵サーバーを指定する (複数指定可)">
 <!ENTITY enigmail.keyservers.sample2      "例: hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu">
 
-<!ENTITY enigmail.searchForKey.example    "例 'Forename Surname <user@example.com>'">
+<!ENTITY enigmail.searchForKey.example    "例: 'Forename Surname <user@example.com>'">
 <!ENTITY enigmail.searchForKey.desc1	    "'Forename Surname' は 'Forename' あるいは 'Surname' を含む鍵を検索します">
 <!ENTITY enigmail.searchForKey.desc2      "'Forename+Surname' は 'Forename' と 'Surname' の両方を含む鍵を検索します">
 <!ENTITY enigmail.searchForKey.desc3      "'example.com' は 'example@example.com' のように 'example.com' を含む鍵を検索します">
@@ -733,7 +733,7 @@
                                                       秘密鍵を第三者に公開してはいけません。
                                                       秘密鍵の安全性を保つために、パスフレーズを設定することができます。以下の 2 つのダイアログにパスフレーズを入力してください。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "<html:b>パスフレーズ</html:b> は、秘密鍵を保護するためのパスワードです。これにより、あなた自身による秘密鍵の誤使用や、第三者による不正使用が防止されます。">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "パスフレーズは最低でも 8 文字の長さが必要です。アルファベット (大文字小文字は区別されます)・数字・記号が使用可能です。ウムラルトを含むアルファベットや、ひらがな・カタカナ・漢字などそれぞれの言語に特有な文字の使用は <html:b>推奨されません</html:b>。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "パスフレーズは最低でも 8 文字の長さが必要で、複数の単語から構成されるべきです。アルファベット (大文字小文字は区別されます)・数字・記号が使用可能です。ウムラルトを含むアルファベットや、ひらがな・カタカナ・漢字などそれぞれの言語に特有な文字の使用は <html:b>推奨されません</html:b>。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "確認のため、もう一度パスフレーズを入力してください">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "パスフレーズの品質:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "パスフレーズは最低でも 8 文字の長さが必要です">
@@ -883,9 +883,9 @@
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt セットアップコード">
 <!ENTITY enigmail.acSetupPasswd.password             "セットアップコード:">
 
-<!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt 鍵移行">
+<!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "鍵移行の開始">
-<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Autocrypt が有効なデバイスをお持ちであれば、「Autocrypt 鍵移行」によってあなたの OpenPGP 鍵を他のデバイスに移行することができます。
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Autocrypt が有効なデバイスをお持ちであれば、「Autocrypt Key Transfer」によってあなたの OpenPGP 鍵を他のデバイスに移行することができます。
                                                       この方法では、数クリックの操作のみで、暗号化したメッセージのやり取りを行うことができるようになります。<html:br/><html:br/>
                                                       鍵移行を行いたいアカウントを選択してください。
                                                       表示されたセットアップコード (パスワード) を、移行先のデバイスに入力してください。">

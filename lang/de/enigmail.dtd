@@ -133,7 +133,7 @@
 <!ENTITY enigmail.editRules.label        "Empfängerregeln bearbeiten">
 
 <!ENTITY enigmail.decryptToFolder.label     "In Ordner entschlüsseln">
-<!ENTITY enigmail.decryptToFolder.accesskey "y">
+<!ENTITY enigmail.decryptToFolder.accesskey "h">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Zuletzt gesehene Ordner">
@@ -581,7 +581,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "f">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "N">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "S">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -780,7 +780,8 @@ Zu diesem Zweck benötigen Sie ein Widerrufszertifikat.
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Danke">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail ist nun fertig eingerichtet.<html:br/><html:br/>Danke, dass Sie Enigmail verwenden.">
-<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "">
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "Es ist zu empfehlen den öffentlichen Schlüssel auf das WebKey-Verzeichnis Ihres E-Mail Anbieters hochzuladen sodass Andere diesen automatisch finden und nutzen können.
+                                                        <html:br/>Bitte bestätigen Sie die Anfrage die Sie in Ihrem Posteingang finden werden wenn Sie dies wollen.">
 <!ENTITY enigmail.pgComplete.help.title              "Für weitere Informationen zur Verwendung von Enigmail, besuchen Sie bitte">
 
 <!-- wizard: manual setup page -->
@@ -868,7 +869,7 @@ Bitte übertragen Sie die generierte Datei auf Ihren neuen Rechner, starten Sie 
 <!ENTITY enigmail.pepPref.credits.label              "Danksagung">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Dankeschön an">
 
-<!ENTITY enigmail.acPreferEncrypt.label              "">
+<!ENTITY enigmail.acPreferEncrypt.label              "Verschlüsselte E-Mails von Kontakten die Sie kennen bevorzugen">
 <!ENTITY enigmail.enableAutocrypt.label              "Autocrypt aktivieren">
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt-Einrichtungs-Code">
@@ -876,9 +877,12 @@ Bitte übertragen Sie die generierte Datei auf Ihren neuen Rechner, starten Sie 
 
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt-Schlüsselübertragung">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "Initiiere Schlüsselübertragung">
-<!ENTITY enigmail.acKeyTransfer.welcome.desc         "">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Wenn Sie ein anderes Autocrypt-fähiges Gerät haben, können Sie Ihren Schlüssel auf das andere Gerät übertragen mit einer sogennanten 'Autocrypt Einrichtungsnachricht'.
+                                                      Diese Nachricht ermöglicht es vom anderen Gerät verschlüsselte Nachrichten mit Enigmail zu senden und zu empfangen mit nur wenign Klicks.<html:br/><html:br/>
+                                                      Wählen Sie unten das Konto dessen Schlüssel übertragen werden soll.
+                                                      Es wird am folgenden Schirm ein Einrichtungspasswort angezeigt das auf dem anderen Gerät eingegeben werden muss um den Schlüssel und die dazugehörigen Einstellungen zu importieren.">
 
 <!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Erstelle Einrichtungsnachricht für Konto">
 <!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Code für Autocrypt-Einrichtungsnachricht">
-<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "">
-<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "Die Einrichtungsnachricht wurden Ihnen selbst zugesandt.<html:br/><html:br/>Wecheln Sie nun zum anderen Gerät und öffnen Sie die Nachricht. Sie sollten um ein Passwort gefragt werden. Geben Sie dort die folgenden Ziffern ein:">
+<!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "Wenn dies abgeschlossen ist, ist das anderen Gerät bereit um Autocrypt zu nutzen.">
