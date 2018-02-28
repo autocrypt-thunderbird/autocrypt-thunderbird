@@ -144,7 +144,7 @@ MimeDecryptHandler.prototype = {
   processData: function(data) {
     // detect MIME part boundary
     if (data.indexOf(this.boundary) >= 0) {
-      LOCAL_DEBUG("mimeDecrypt.jsm: onDataAvailable: found boundary\n");
+      LOCAL_DEBUG("mimeDecrypt.jsm: processData: found boundary\n");
       ++this.mimePartCount;
       this.headerMode = 1;
       return;
@@ -201,7 +201,16 @@ MimeDecryptHandler.prototype = {
       }
 
       if (!this.dataIsBase64) {
-        this.processData(data);
+        if (data.search(/[\r\n][^\r\n]+[\r\n]/) >= 0) {
+          // process multi-line data line by line
+          let lines = data.replace(/\r\n/g, "\n").split(/\n/);
+
+          for (let i = 0; i < lines.length; i++) {
+            this.processData(lines[i] + "\r\n");
+          }
+        }
+        else
+          this.processData(data);
       }
       else {
         this.base64Cache += data;
