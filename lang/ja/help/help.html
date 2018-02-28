@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>Enigmail ヘルプ</title>
+</head>
+
+<body>
+<h1>Enigmail ヘルプ</h1>
+<h3>メッセージを読む時の Enigmail の使用方法</h3>
+<ul>
+  <li><b>メインウインドウの復号ボタン</b><br />
+    このボタンをはいくつかの用途で使われます。: 暗号化、検証、または公開鍵のインポートなどです。通常、暗号化/検証は自動的に行われます。設定によって無効にすることも可能です。しかし、失敗した時には、短いエラーメッセージが Enigmail に表示されるだけです。このボタンをクリックすることで、GnuPG コマンドの出力結果を含めて詳細なエラーメッセージを表示します。</li>
+  <li><b>メッセージヘッダーのペンと鍵のアイコン</b><br />
+    メッセージヘッダーに表示されている <em>ペン</em> と <em>鍵</em> のアイコンは、あなたが読んでいるメッセージの署名が正しいか、暗号化されているかを示しています。もしそのメッセージが署名された後に改ざんされている場合、<em>ペン</em>のアイコンは<em>×印つきのペン</em>のアイコンとして表示され問題を示します。ペンや鍵のアイコンを右クリックすることで、以下のメニューが表示されます。
+      <ul>
+        <li><em>Enigmail セキュリティー情報</em>: GnuPG がそのメッセージに対して出力した結果を表示します。</li>
+        <li><em>Enigmail セキュリティー情報をコピー</em>: GnuPG の出力をクリップボードにコピーします。返信に貼るなどに利用できます。</li>
+        <li><em>OpenPGP フォト ID を表示</em>: 公開鍵に写真が埋め込まれていれば、メッセージの送信者の <em>フォト ID</em> を表示します。<em>(このオプションは写真が公開鍵に埋め込まれている場合に有効です。)</em></li>
+        <li><em>S/MIME セキュリティー情報</em>: このメッセージの S/MIME セキュリティー情報を表示します。</li>
+      </ul>
+      <p>もしあなたが <em>keyserver-options auto-key-retrieve</em> を <tt>gpg.conf</tt> に設定していない状態で署名か暗号化されているメッセージを読むと、<em>ペン</em>のアイコンが<em>？</em>と共に表示され、ヘッダーのステータスラインに <em>メッセージの一部分が 署名 されています; 詳しくは「詳細」ボタンをクリックしてください</em> と表示され、メッセージペインには OpenPGP メッセージブロックと署名ブロックが表示されます。</p>
+      <p><em>keyserver-options auto-key-retrieve</em> が <tt>gpg.conf</tt> に設定されている場合でも、OpenPGP 鍵が既定の鍵サーバーに無い場合は同様のアイコンが表示されます。</p>
+      <p><em>ペンと？</em> のアイコンをクリックすると、該当する公開鍵を持っていない旨が表示されます。OK をクリックすると、鍵サーバーのリストが表示された別ウィンドウが開きメッセージの送信者の公開鍵をダウンロードすることができます。</p>
+      <p>あなたが使いたい公開鍵サーバーのリストを編集するには、<strong>Enigmail -&gt; 設定 -&gt; 鍵サーバー</strong> タブを選択し、<em>公開鍵サーバー:</em> の欄にアドレスをカンマ区切りで入力してください。<em>リストの一番上のサーバーが既定で使用されます。</em></p>
+  </li>
+  <li><b>暗号化された添付ファイルを開く / 添付された OpenPGP 鍵のインポート</b><br />
+    拡張子が *.pgp, *.asc *.gpg の添付ファイルは Enigmail で自動的に認識されます。 それらの添付ファイルを右クリックすると、特別な選択肢がコンテキストメニューに表示されます。暗号化された添付ファイルの場合には、<em>復号して開く</em> と <em>復号して名前をつけて保存</em> が表示され、開いたり保存する前に添付ファイルを Enigmail で復号することができます。添付ファイルが OpenPGP 鍵ファイルの場合には、<em>OpenPGP 鍵を読み込む</em> が表示され、OpenPGP 鍵を読み込むことができます。</li>
+</ul>
+<hr />
+<p> 更なるヘルプは以下のサイトで利用できます (英語): <a href="https://www.enigmail.net/support/" target="_blank">Enigmail Help web page</a> <br />
+Enigmail について質問や意見がある場合には、<a href="https://www.enigmail.net/support/list.php" target="_blank">Enigmail mailing list</a> にメッセージを送信してください。</p>
+<p>Enigmail はオープンソースであり、<a href="https://www.mozilla.org/MPL/2.0" target="_blank">Mozilla Public License 2.0</a>  でライセンスされています。</p>
+</body>
+</html>
