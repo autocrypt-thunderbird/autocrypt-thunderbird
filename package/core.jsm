@@ -186,6 +186,15 @@ var EnigmailCore = {
 
   addToEnvList: function(str) {
     gEnvList.push(str);
+  },
+
+  setEnvVariable: function(varname, value) {
+    for (let i = 0; i < gEnvList.length; i++) {
+      if (gEnvList[i].startsWith(varname + "=")) {
+        gEnvList[i] = varname + "=" + value;
+        break;
+      }
+    }
   }
 };
 

@@ -904,6 +904,8 @@ var EnigmailpEp = {
   shutdown: function() {
     DEBUG_LOG("shutdown()");
 
+    let deferred = PromiseUtils.defer();
+
     gShuttingDown = true;
     let onLoad = function() {
       dropXmlRequest();
@@ -912,7 +914,13 @@ var EnigmailpEp = {
       return 0;
     };
 
-    return this._callPepFunction(FT_CALL_FUNCTION, "shutdown", [], onLoad, onLoad);
+    return this._callPepFunction(FT_CALL_FUNCTION, "shutdown", [], onLoad, onLoad).
+    then(x => {
+      onLoad();
+    }).
+    catch(x => {
+      onLoad();
+    });
   },
 
   registerTbListener: function(port, securityToken) {
@@ -1201,13 +1209,14 @@ var EnigmailpEp = {
           DEBUG_LOG("stdout from pep-json-server: " + data);
         },
         stderr: function(data) {
-          DEBUG_LOG("stderr from pep-json-server: " + data);
-          stderrData += data;
+          if (stderrData.length < 2048) {
+            stderrData += data;
 
-          if (stderrData.length > 0) {
-            if (stderrData.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED|CANNOT_LOAD_GPGME)/) >= 0) {
-              foundGnuPG = false;
-              deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
+            if (stderrData.length > 0) {
+              if (stderrData.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED|CANNOT_LOAD_GPGME)/) >= 0) {
+                foundGnuPG = false;
+                deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
+              }
             }
           }
         }

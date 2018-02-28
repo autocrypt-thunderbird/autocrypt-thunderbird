@@ -40,6 +40,7 @@ Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getInstallGnuPG = EnigmailLazy.loader("enigmail/installGnuPG.jsm", "InstallGnuPG");
+const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 // pEp JSON Server executable name
 const PEP_SERVER_EXECUTABLE = "pep-json-server";
@@ -1082,7 +1083,26 @@ function installMissingGnuPG() {
       onDownloaded: function() {},
       onLoaded: function() {
         EnigmailpEp.shutdown().then(x => {
-          EnigmailPEPAdapter.initialize();
+          let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+          let gpgPath = getGpgAgent().resolveGpgPath(env);
+          if (gpgPath) {
+            let p = env.get("PATH");
+            if (EnigmailOS.isDosLike) {
+              p = p.replace(/;$/, "");
+              p += ";" + gpgPath.parent.path + ";";
+            }
+            else {
+              p += ":" + gpgPath.parent.path;
+            }
+            env.set("PATH", p);
+            EnigmailCore.setEnvVariable("PATH", p);
+          }
+
+          EnigmailTimer.setTimeout(function _f() {
+            // wait at 0.5 seconds t, then re-initialize
+            EnigmailPEPAdapter.initialize();
+          }, 500);
+
         });
       },
       onWarning: function() {

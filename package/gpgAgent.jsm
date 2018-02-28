@@ -343,7 +343,7 @@ var EnigmailGpgAgent = {
 
     let exitCode = -1;
     let outStr = "";
-    EnigmailLog.DEBUG("gpgAgent.jsm: .getGpgHomeDir: calling subprocess with '" + command.path + "'\n");
+    EnigmailLog.DEBUG("gpgAgent.jsm: getGpgHomeDir: calling subprocess with '" + command.path + "'\n");
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
 
@@ -362,7 +362,7 @@ var EnigmailGpgAgent = {
       exitCode = subprocess.call(proc).wait();
     }
     catch (ex) {
-      EnigmailLog.ERROR("gpgAgent.jsm: .getGpgHomeDir: subprocess.call failed with '" + ex.toString() + "'\n");
+      EnigmailLog.ERROR("gpgAgent.jsm: getGpgHomeDir: subprocess.call failed with '" + ex.toString() + "'\n");
       EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
       throw ex;
     }
@@ -375,7 +375,13 @@ var EnigmailGpgAgent = {
     return null;
   },
 
+  /**
+   * @param domWindow:     Object - parent window, may be NULL
+   * @param esvc:          Object - Enigmail service object
+   * @param preferredPath: String - try to use specific path to locate gpg
+   */
   setAgentPath: function(domWindow, esvc, preferredPath) {
+    EnigmailLog.DEBUG("gpgAgent.jsm: setAgentPath()\n");
     let agentPath = "";
     try {
       if (preferredPath) {
@@ -391,14 +397,6 @@ var EnigmailGpgAgent = {
     var agentName = "";
 
     EnigmailGpgAgent.resetGpgAgent();
-
-    if (EnigmailOS.isDosLike) {
-      agentName = "gpg2.exe;gpg.exe;gpg1.exe";
-    }
-    else {
-      agentName = "gpg2;gpg;gpg1";
-    }
-
 
     if (agentPath) {
       // Locate GnuPG executable
@@ -437,67 +435,17 @@ var EnigmailGpgAgent = {
       }
       catch (ex) {
         esvc.initializationError = EnigmailLocale.getString("gpgNotFound", [agentPath]);
-        EnigmailLog.ERROR("gpgAgent.jsm: .initialize: Error - " + esvc.initializationError + "\n");
+        EnigmailLog.ERROR("gpgAgent.jsm: initialize: Error - " + esvc.initializationError + "\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
     }
     else {
-      // Resolve relative path using PATH environment variable
-      const envPath = esvc.environment.get("PATH");
-      agentPath = EnigmailFiles.resolvePath(agentName, envPath, EnigmailOS.isDosLike);
-
-      if (!agentPath && EnigmailOS.isDosLike) {
-        // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
-        let gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
-        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
-      }
-
-      if ((!agentPath) && EnigmailOS.isWin32) {
-        // Look up in Windows Registry
-        const installDir = ["Software\\GNU\\GNUPG", "Software\\GNUPG"];
-
-        try {
-          for (let i = 0; i < installDir.length && !agentPath; i++) {
-            let gpgPath = EnigmailOS.getWinRegistryString(installDir[i], "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-
-            agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
-            if (!agentPath) {
-              gpgPath += "\\bin";
-              agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
-            }
-          }
-        }
-        catch (ex) {}
-
-        if (!agentPath) {
-          // try to determine the default PATH from the registry after the installation
-          // if we could not get any information from the registry
-          try {
-            let winPath = EnigmailOS.getWinRegistryString("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", "Path", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
-            agentPath = EnigmailFiles.resolvePath(agentName, winPath, EnigmailOS.isDosLike);
-          }
-          catch (ex) {}
-        }
-
-        if (!agentPath) {
-          // default for gpg4win 3.0
-          let gpgPath = "C:\\Program Files\\GnuPG\\bin;C:\\Program Files (x86)\\GnuPG\\bin";
-          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
-        }
-      }
-
-      if (!agentPath && !EnigmailOS.isDosLike) {
-        // Unix-like systems: check /usr/bin and /usr/local/bin
-        let gpgPath = "/usr/bin:/usr/local/bin";
-        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
-      }
-
+      agentPath = this.resolveGpgPath(esvc.environment);
       if (!agentPath) {
         esvc.initializationError = EnigmailLocale.getString("gpgNotInPath");
-        EnigmailLog.ERROR("gpgAgent.jsm: : Error - " + esvc.initializationError + "\n");
+        EnigmailLog.ERROR("gpgAgent.jsm: Error - " + esvc.initializationError + "\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
-      agentPath = agentPath.QueryInterface(Ci.nsIFile);
     }
 
     agentPath.normalize(); // replace a/../b with b
@@ -517,7 +465,7 @@ var EnigmailGpgAgent = {
     let exitCode = -1;
     let outStr = "";
     let errStr = "";
-    EnigmailLog.DEBUG("gpgAgent.jsm: .setAgentPath: calling subprocess with '" + command.path + "'\n");
+    EnigmailLog.DEBUG("gpgAgent.jsm: setAgentPath: calling subprocess with '" + command.path + "'\n");
 
     EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
 
@@ -539,7 +487,7 @@ var EnigmailGpgAgent = {
       exitCode = subprocess.call(proc).wait();
     }
     catch (ex) {
-      EnigmailLog.ERROR("gpgAgent.jsm: .setAgentPath: subprocess.call failed with '" + ex.toString() + "'\n");
+      EnigmailLog.ERROR("gpgAgent.jsm: setAgentPath: subprocess.call failed with '" + ex.toString() + "'\n");
       EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
       throw ex;
     }
@@ -548,7 +496,7 @@ var EnigmailGpgAgent = {
     outStr = EnigmailSystem.convertNativeToUnicode(outStr);
 
     if (exitCode !== 0) {
-      EnigmailLog.ERROR("gpgAgent.jsm: .setAgentPath: gpg failed with exitCode " + exitCode + " msg='" + outStr + " " + errStr + "'\n");
+      EnigmailLog.ERROR("gpgAgent.jsm: setAgentPath: gpg failed with exitCode " + exitCode + " msg='" + outStr + " " + errStr + "'\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
@@ -584,7 +532,83 @@ var EnigmailGpgAgent = {
 
     EnigmailGpgAgent.checkGpgHomeDir(domWindow, esvc);
 
-    EnigmailLog.DEBUG("gpgAgent.jsm: .setAgentPath: gpgconf found: " + (EnigmailGpgAgent.gpgconfPath ? "yes" : "no") + "\n");
+    EnigmailLog.DEBUG("gpgAgent.jsm: setAgentPath: gpgconf found: " + (EnigmailGpgAgent.gpgconfPath ? "yes" : "no") + "\n");
+  },
+
+
+  /**
+   * Determine the location of the GnuPG executable
+   *
+   * @param env: Object: nsIEnvironment to use
+   *
+   * @return Object: nsIFile pointing to gpg, or NULL
+   */
+  resolveGpgPath: function(env) {
+    EnigmailLog.DEBUG("gpgAgent.jsm: resolveGpgPath()\n");
+
+    let agentName = "";
+    if (EnigmailOS.isDosLike) {
+      agentName = "gpg2.exe;gpg.exe";
+    }
+    else {
+      agentName = "gpg2;gpg";
+    }
+
+    // Resolve relative path using PATH environment variable
+    const envPath = env.get("PATH");
+    let agentPath = EnigmailFiles.resolvePath(agentName, envPath, EnigmailOS.isDosLike);
+
+    if (!agentPath && EnigmailOS.isDosLike) {
+      // DOS-like systems: search for GPG in c:\gnupg, c:\gnupg\bin, d:\gnupg, d:\gnupg\bin
+      let gpgPath = "c:\\gnupg;c:\\gnupg\\bin;d:\\gnupg;d:\\gnupg\\bin";
+      agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
+    }
+
+    if ((!agentPath) && EnigmailOS.isWin32) {
+      // Look up in Windows Registry
+      const installDir = ["Software\\GNU\\GNUPG", "Software\\GNUPG"];
+
+      try {
+        for (let i = 0; i < installDir.length && !agentPath; i++) {
+          let gpgPath = EnigmailOS.getWinRegistryString(installDir[i], "Install Directory", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+
+          agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+          if (!agentPath) {
+            gpgPath += "\\bin";
+            agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike());
+          }
+        }
+      }
+      catch (ex) {}
+
+      if (!agentPath) {
+        // try to determine the default PATH from the registry after the installation
+        // if we could not get any information from the registry
+        try {
+          let winPath = EnigmailOS.getWinRegistryString("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", "Path", nsIWindowsRegKey.ROOT_KEY_LOCAL_MACHINE);
+          agentPath = EnigmailFiles.resolvePath(agentName, winPath, EnigmailOS.isDosLike);
+        }
+        catch (ex) {}
+      }
+
+      if (!agentPath) {
+        // default for gpg4win 3.0
+        let gpgPath = "C:\\Program Files\\GnuPG\\bin;C:\\Program Files (x86)\\GnuPG\\bin";
+        agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
+      }
+    }
+
+    if (!agentPath && !EnigmailOS.isDosLike) {
+      // Unix-like systems: check /usr/bin and /usr/local/bin
+      let gpgPath = "/usr/bin:/usr/local/bin";
+      agentPath = EnigmailFiles.resolvePath(agentName, gpgPath, EnigmailOS.isDosLike);
+    }
+
+    if (!agentPath) {
+      return null;
+    }
+
+    return agentPath.QueryInterface(Ci.nsIFile);
   },
 
   // resolve the path for GnuPG helper tools
