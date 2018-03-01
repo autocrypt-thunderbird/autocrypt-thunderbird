@@ -8,8 +8,11 @@
 Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
 
 var EnigmailPrefOverlay = {
+  _windowResized: 0,
+
   juniorModeCallback: function(item) {
     EnigmailPrefs.setPref("juniorMode", Number(item.value));
   },
@@ -17,18 +20,26 @@ var EnigmailPrefOverlay = {
   initJuniorMode: function() {
     EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode()\n");
     let prefGroup = document.getElementById("enigmail_juniorModeGroup");
-    if (EnigmailPEPAdapter.isPepAvailable()) {
-      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
-      prefGroup.removeAttribute("hidden");
-    }
-    else {
-      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp NOT available\n");
-      prefGroup.setAttribute("hidden", "true");
-    }
 
-    let jm = EnigmailPrefs.getPref("juniorMode");
-    document.getElementById("enigmail_juniorMode").value = jm;
+    EnigmailTimer.setTimeout(function _f() {
+      let jm = EnigmailPrefs.getPref("juniorMode");
+      document.getElementById("enigmail_juniorMode").value = jm;
 
+      if (EnigmailPEPAdapter.isPepAvailable()) {
+        EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
+        prefGroup.removeAttribute("hidden");
+
+        let prefWindow = document.getElementById("MailPreferences");
+        if (this._windowResized === 0 && prefWindow.currentPane.id === "panePrivacy") {
+          window.resizeBy(0, prefGroup.clientHeight);
+        }
+      }
+      else {
+        EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp NOT available\n");
+        prefGroup.setAttribute("hidden", "true");
+      }
+
+    }, 100);
   },
 
   onWindowClose: function(event) {
