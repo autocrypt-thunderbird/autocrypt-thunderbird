@@ -143,7 +143,11 @@ var EnigmailMsgCompFields = {
   },
 
   getEnigmailValues: function(enigCompFields) {
-    let cf = enigCompFields.QueryInterface(Ci.nsIMsgSearchValue);
+    let cf = '{}';
+    try {
+      cf = enigCompFields.QueryInterface(Ci.nsIMsgSearchValue);
+    }
+    catch (x) {}
 
     let o = {};
     try {
