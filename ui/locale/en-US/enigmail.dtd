@@ -117,7 +117,7 @@
 <!ENTITY enigmail.disableSMIMEui.tooltip       "Remove the S/MIME button from the message composition window toolbar">
 
 <!ENTITY enigmail.autoKeyServerSelection.label     "Always use first keyserver">
-<!ENTITY enigmail.autoKeyServerSelection.tooltip   "Take the first keyserver from the list as default.">
+<!ENTITY enigmail.autoKeyServerSelection.tooltip   "Take the first keyserver from the list as default">
 
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with Enigmail">
@@ -246,7 +246,7 @@
 <!ENTITY enigmail.autoSendEncryptedNever.label    "Never">
 <!ENTITY enigmail.autoSendEncryptedNever.tooltip  "Don't automatically send encrypted except explicitly triggered by per-recipient rules">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.label   "If possible">
-<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one keys is known and accepted (see above) and no recipient rule forces not to encrypt.">
+<!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "Automatically send encrypted when for each recipient at least one key is known and accepted (see above) and no per-recipient rule forces not to encrypt.">
 
 <!ENTITY enigmail.acceptedKeysOption.label        "To send encrypted, accept">
 <!ENTITY enigmail.acceptedKeysTrusted.label       "Only trusted keys">
@@ -420,10 +420,10 @@
 <!ENTITY enigmail.sepratationDesc.label             "(Separate several email addresses with spaces)">
 <!ENTITY enigmail.matchDescStart.label              "Apply rule if recipient">
 <!ENTITY enigmail.matchDescEnd.label                "one of the above addresses">
-<!ENTITY enigmail.matchExact.label                  "Is exactly">
-<!ENTITY enigmail.matchContains.label               "Contains">
-<!ENTITY enigmail.matchBegin.label                  "Starts with">
-<!ENTITY enigmail.matchEnd.label                    "Ends with">
+<!ENTITY enigmail.matchExact.label                  "is exactly">
+<!ENTITY enigmail.matchContains.label               "contains">
+<!ENTITY enigmail.matchBegin.label                  "starts with">
+<!ENTITY enigmail.matchEnd.label                    "ends with">
 <!ENTITY enigmail.not.label                         "Not">
 
 <!ENTITY enigmail.rulesEditor.label                 "Enigmail - Per-Recipient Rules Editor">
@@ -510,7 +510,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.label            "Send Public Keys by Email">
 <!ENTITY enigmail.keyMan.createMail.label          "Compose Email to Selected Keys">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Upload Public Keys">
-<!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your provider's Webkey Directory">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "Upload to your provider's Web Key Directory">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Copy Public Keys to Clipboard">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Export Keys to File">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Upload Public Keys to Keyserver">
