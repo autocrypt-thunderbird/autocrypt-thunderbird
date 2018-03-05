@@ -203,6 +203,9 @@ pref("extensions.enigmail.warnDownloadContactKeys", true);
 // wrap HTML messages before sending inline PGP messages
 pref("extensions.enigmail.wrapHtmlBeforeSend", true);
 
+// automatically download pepmda if it is available (without askin user)
+pref("extensions.enigmail.pEpAutoDownload", true);
+
 // enable encryption/signing of headers like subject, from, to
 // 1: default: ask user at 1st time use / 0: off /  2: on
 pref("extensions.enigmail.protectedHeaders", 1);

@@ -20,6 +20,7 @@ Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
 Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
 Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
+Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
 
@@ -485,12 +486,17 @@ var EnigmailInstallPep = {
    *     progressListener needs to implement the following methods:
    *       void    onError    ({type: errorType, name: errorName})
    *       void    onInstalled ()
+   * @param manualInstall: Boolean: if true, ignore pEpAutoDownload option
    *
-   * @return Installer object
+   * @return Installer object or null (if not installation started)
    */
 
-  startInstaller: function(progressListener) {
+  startInstaller: function(progressListener, manualInstall = false) {
     EnigmailLog.DEBUG("installPep.jsm: startInstaller()\n");
+
+    if (!manualInstall) {
+      if (!EnigmailPrefs.getPref("pEpAutoDownload")) return null;
+    }
 
     if (gInstallInProgress > 0) return null;
 
@@ -507,8 +513,21 @@ var EnigmailInstallPep = {
     return i;
   },
 
-  isPepInstallerAvailable: function() {
+  /**
+   * Determine if pEp installer is available online
+   *
+   * @param manualInstall: Boolean: if true, ignore pEpAutoDownload option
+   *
+   * @return true: installer for current platform is online available
+   *         false: otherwise
+   */
+  isPepInstallerAvailable: function(manualInstall = false) {
     EnigmailLog.DEBUG("installPep.jsm: isPepInstallerAvailable()\n");
+
+    if (!manualInstall) {
+      // don't download anything if auto-download is disabled
+      if (!EnigmailPrefs.getPref("pEpAutoDownload")) return false;
+    }
 
     let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
     let urlObj = null;
