@@ -47,6 +47,7 @@ MODFILES = \
            key.jsm \
            keyEditor.jsm \
            keyRing.jsm \
+           keyObj.jsm \
            keyUsability.jsm \
            keyRefreshService.jsm \
            keyserver.jsm \

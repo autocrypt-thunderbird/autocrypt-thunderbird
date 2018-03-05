@@ -81,10 +81,6 @@ const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ENIG_C = Components.classes;
 const ENIG_I = Components.interfaces;
 
-// Key algorithms
-const ENIG_KEYTYPE_DSA = 1;
-const ENIG_KEYTYPE_RSA = 2;
-
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENIG_KEY_TRUST = 1;

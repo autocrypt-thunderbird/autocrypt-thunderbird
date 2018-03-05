@@ -96,6 +96,7 @@ zip -9 --must-match\
     modules/installPep.jsm \
     modules/key.jsm \
     modules/keyEditor.jsm \
+    modules/keyObj.jsm \
     modules/keyRing.jsm \
     modules/keyUsability.jsm \
     modules/keyRefreshService.jsm \
