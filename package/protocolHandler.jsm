@@ -60,20 +60,34 @@ EnigmailProtocolHandler.prototype = {
 
     var uri = Cc[NS_SIMPLEURI_CONTRACTID].createInstance(Ci.nsIURI);
     try {
+      // TB <= 58
       uri.spec = aSpec;
     }
     catch (x) {
       aSpec = aSpec.substr(9);
-      uri.scheme = "enigmail";
-
       let i = aSpec.indexOf("?");
-      if (i >= 0) {
-        uri.query = aSpec.substr(i + 1);
-        uri.pathQueryRef = aSpec.substr(0, i);
+      try {
+        // TB < 60
+        uri.scheme = "enigmail";
+        if (i >= 0) {
+          uri.query = aSpec.substr(i + 1);
+          uri.pathQueryRef = aSpec.substr(0, i);
+        }
+        else {
+          uri.pathQueryRef = aSpec;
+        }
       }
-      else {
-        uri.pathQueryRef = aSpec;
+      catch (ex) {
+        uri = uri.mutate().setScheme("enigmail").finalize();
+        if (i >= 0) {
+          uri = uri.mutate().setQuery(aSpec.substr(i + 1)).finalize();
+          uri = uri.mutate().setPathQueryRef(aSpec.substr(0, i)).finalize();
+        }
+        else {
+          uri = uri.mutate().setPathQueryRef(aSpec).finalize();
+        }
       }
+
     }
 
     return uri;
