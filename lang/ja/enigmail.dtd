@@ -73,7 +73,7 @@
 <!ENTITY enigmail.restorePrefs.tooltip     "Enigmail のすべての設定と OpenPGP 鍵をファイルから読み込みます">
 
 <!ENTITY enigmail.pref.acSetupMessage.desc   "Autocrypt が有効なデバイスへの鍵の移行">
-<!ENTITY enigmail.pref.acSetupMessage.button "Autocrypt Key Transfer の開始">
+<!ENTITY enigmail.pref.acSetupMessage.button "Autocrypt セットアップの開始">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail は、二つの方法で設定と OpenPGP 鍵を他のデバイスへ移行することができます。<html:br/><html:br/>
                                             「Autocrypt Key Transfer」は、移行先のデバイスに Autocrypt に対応したメールクライアントが存在する必要があります。
@@ -510,7 +510,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.label            "公開鍵をメッセージで送る">
 <!ENTITY enigmail.keyMan.createMail.label          "選択した鍵に対してメッセージを作成する">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "公開鍵をアップロード">
-<!ENTITY enigmail.keyMan.uploadToWkd.label         "公開鍵をあなたのプロバイダーの Webkey Directory にアップロード">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "公開鍵をあなたのプロバイダーの Web Key Directory にアップロード">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "公開鍵をクリップボードにコピー">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "鍵をファイルへエクスポート">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "公開鍵を鍵サーバーへアップロード">
@@ -885,7 +885,7 @@
 
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt Key Transfer">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "鍵移行の開始">
-<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Autocrypt が有効なデバイスをお持ちであれば、「Autocrypt Key Transfer」によってあなたの OpenPGP 鍵を他のデバイスに移行することができます。
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Autocrypt が有効なデバイスをお持ちであれば、「Autocrypt セットアップメッセージ」によってあなたの OpenPGP 鍵を他のデバイスに移行することができます。
                                                       この方法では、数クリックの操作のみで、暗号化したメッセージのやり取りを行うことができるようになります。<html:br/><html:br/>
                                                       鍵移行を行いたいアカウントを選択してください。
                                                       表示されたセットアップコード (パスワード) を、移行先のデバイスに入力してください。">
