@@ -15,7 +15,7 @@
 /* global EnigGetWindowOptions: false, gKeygenRequest: true, gGeneratedKey: true, EnigConfirm: false, EnigGetString: false*/
 /* global enigmailKeygenCloseRequest: true, EnigLongAlert: false, EnigAlert: false, gEnigmailSvc: true, gAllData: true */
 /* global EnigGetPref: false, EnigSetPref: false, EnigFilePicker: false, EnigGetFilePath: false, KEYGEN_CANCELLED: false */
-/* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false, EnigGetVersion: false, ENIG_KEYTYPE_RSA: false */
+/* global ENIG_C: false, ENIG_I: false, ENIG_ENIGMAIL_CONTRACTID: false, EnigGetVersion: false */
 /* global genAndSaveRevCert: false, ENIG_ACCOUNT_MANAGER_CONTRACTID: false, enigmailCheckPassphrase: false */
 
 
@@ -971,7 +971,7 @@ function wizardGenKey() {
       EnigmailData.convertFromUnicode(userEmail),
       365 * 5 /* 5 years */ ,
       4096,
-      ENIG_KEYTYPE_RSA,
+      "RSA",
       EnigmailData.convertFromUnicode(passphrase),
       listener);
   }
@@ -1171,7 +1171,7 @@ function wizardGetSelectedIdentity() {
   return gEnigAccountMgr.getIdentity(identityKey);
 }
 
-function wizardAdjustPref(){
+function wizardAdjustPref() {
   let maxIdle = document.getElementById("maxIdleMinutes").value;
   EnigmailGpgAgent.setMaxIdlePref(maxIdle);
 

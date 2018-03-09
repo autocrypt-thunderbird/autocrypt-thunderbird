@@ -35,8 +35,6 @@ var gGeneratedKey = null;
 var gUsedId;
 
 const KEYGEN_CANCELLED = "cancelled";
-const KEYTYPE_RSA = 2;
-const KEYTYPE_ECC = 3;
 
 function enigmailKeygenLoad() {
   EnigmailLog.DEBUG("enigmailKeygen.js: Load\n");

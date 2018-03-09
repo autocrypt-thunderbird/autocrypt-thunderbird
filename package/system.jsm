@@ -133,7 +133,7 @@ function getUnixCharset() {
       if (localeFile.exists()) break;
     }
 
-    if (!localeFile.exists()) return "iso-8859-1";
+    if (!localeFile.exists()) return "utf-8";
 
     let output = "";
 
@@ -153,12 +153,12 @@ function getUnixCharset() {
     if (m && m.length > 2) {
       lc = m[2].replace(/"/g, "");
     }
-    else return "iso-8859-1";
+    else return "utf-8";
   }
 
   let i = lc.search(/[.@]/);
 
-  if (i < 0) return "iso-8859-1";
+  if (i < 0) return "utf-8";
 
   lc = lc.substr(i + 1);
 

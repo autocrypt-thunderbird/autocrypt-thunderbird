@@ -89,7 +89,7 @@ let gLoadingKeys = false;
   This module operates with a Key Store (array) containing objects with the following properties:
 
   * keyList [Array] of EnigmailKeyObj
-  
+
   * keySortList [Array]:  used for quickly sorting the keys
     - userId (in lower case)
     - keyId
@@ -810,7 +810,7 @@ var EnigmailKeyRing = {
    * @comment:    String     - email part of UID (<> will be added)
    * @expiryDate: Number     - Unix timestamp of key expiry date; 0 if no expiry
    * @keyLength:  Number     - size of key in bytes (e.g 4096)
-   * @keyType:    Number     - 1 = DSA / 2 = RSA
+   * @keyType:    String     - RSA or ECC
    * @passphrase: String     - password; null if no password
    * @listener:   Object     - {
    *                             function onDataAvailable(data) {...},
@@ -835,14 +835,11 @@ var EnigmailKeyRing = {
     let inputData = "%echo Generating key\nKey-Type: ";
 
     switch (keyType) {
-      case KEYTYPE_DSA:
-        inputData += "DSA\nKey-Length: " + keyLength + "\nSubkey-Type: 16\nSubkey-Length: " + keyLength + "\n";
-        break;
-      case KEYTYPE_RSA:
+      case "RSA":
         inputData += "RSA\nKey-Usage: sign,auth\nKey-Length: " + keyLength;
         inputData += "\nSubkey-Type: RSA\nSubkey-Usage: encrypt\nSubkey-Length: " + keyLength + "\n";
         break;
-      case KEYTYPE_ECC:
+      case "ECC":
         inputData += "EDDSA\nKey-Curve: Ed25519\nKey-Usage: sign\n";
         inputData += "Subkey-Type: ECDH\nSubkey-Curve: Curve25519\nSubkey-Usage: encrypt\n";
         break;
