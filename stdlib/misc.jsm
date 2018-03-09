@@ -6,12 +6,13 @@
  * @fileoverview This file provides various utilities: some helpers to deal with
  * identity management, some helpers for JS programming, some helpers for
  * low-level XPCOM stuff...
- * @author Jonathan Protzenko
  */
 
 var EXPORTED_SYMBOLS = [
   // Identity management helpers
   'gIdentities', 'fillIdentities', 'getIdentities', 'getDefaultIdentity', 'getIdentityForEmail',
+  // Account management helpers:
+  'hasConfiguredAccounts',
   // JS programming helpers
   'range', 'MixIn', 'combine', 'entries',
   // XPCOM helpers
@@ -372,4 +373,23 @@ function combine(a1, a2) {
   if (a1.length != a2.length)
     throw new Error("combine: the given arrays have different lengths");
   return [...range(0, a1.length)].map(i => [a1[i], a2[i]]);
+}
+
+
+/**
+ * Determine if at least one account / identity is configured
+ * @return {Bool}
+ */
+function hasConfiguredAccounts() {
+  let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+  for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+    let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+
+    if (ac.incomingServer.type !== "none") {
+      if (ac.defaultIdentity.email.length > 0) return true;
+    }
+  }
+
+  return false;
 }

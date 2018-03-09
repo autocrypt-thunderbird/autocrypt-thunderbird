@@ -25,7 +25,8 @@ Cu.import("resource://enigmail/stdlib/compose.jsm");
 Cu.import("resource://enigmail/stdlib/misc.jsm");
 /* global gIdentities: false, fillIdentities: false, getIdentities: false, getDefaultIdentity: false, getIdentityForEmail,
  range: false, MixIn: false, combine: false, entries, NS_FAILED: false, NS_SUCCEEDED, dateAsInMessageList: false, escapeHtml: false, sanitize: false, parseMimeLine,
- encodeUrlParameters: false, decodeUrlParameters, systemCharset, isOSX: false, isWindows: false, isAccel: false */
+ encodeUrlParameters: false, decodeUrlParameters, systemCharset, isOSX: false, isWindows: false, isAccel: false
+ hasConfiguredAccounts: false */
 Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm");
 /* global msgHdrToMessageBody: false, msgHdrToNeckoURL: false, msgHdrGetTags: false, msgUriToMsgHdr,
  msgHdrGetUri: false, msgHdrFromNeckoUrl: false, msgHdrSetTags: false, msgHdrIsDraft: false, msgHdrIsSent: false, msgHdrIsArchive: false, msgHdrIsInbox: false,
@@ -52,6 +53,7 @@ var EnigmailStdlib = {
   'getIdentities': getIdentities,
   'getDefaultIdentity': getDefaultIdentity,
   'getIdentityForEmail': getIdentityForEmail,
+  'hasConfiguredAccounts': hasConfiguredAccounts,
   'range': range,
   'MixIn': MixIn,
   'combine': combine,

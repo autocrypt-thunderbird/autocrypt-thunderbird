@@ -42,6 +42,11 @@ var EnigmailWindows = {
   openSetupWizard: function(win, skipIntro) {
     EnigmailLog.DEBUG("windows.jsm: openSetupWizard()\n");
 
+    if (!EnigmailStdlib.hasConfiguredAccounts()) {
+      EnigmailLog.DEBUG("windows.jsm: openSetupWizard: no configured accounts\n");
+      return;
+    }
+
     let param = "";
     if (skipIntro) {
       param = "?skipIntro=true";

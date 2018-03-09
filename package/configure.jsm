@@ -27,6 +27,7 @@ Cu.import("resource://enigmail/windows.jsm");
 Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
 Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 Cu.import("resource://enigmail/installPep.jsm"); /* global EnigmailInstallPep: false */
+Cu.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
 Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
 
 /**
@@ -165,6 +166,19 @@ function displayUpgradeInfo() {
 var EnigmailConfigure = {
   configureEnigmail: function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
+
+    if (!EnigmailStdlib.hasConfiguredAccounts()) {
+      EnigmailLog.DEBUG("configure.jsm: configureEnigmail: no account configured. Waiting 60 seconds.\n");
+
+      // try again in 60 seconds
+      EnigmailTimer.setTimeout(
+        function _f() {
+          EnigmailConfigure.configureEnigmail(win, startingPreferences);
+        },
+        60000);
+      return;
+    }
+
     let oldVer = EnigmailPrefs.getPref("configuredVersion");
 
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
