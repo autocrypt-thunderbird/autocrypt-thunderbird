@@ -289,7 +289,7 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
       keyEdit.gotData.bind(keyEdit),
       function(result) {
         EnigmailKeyRing.updateKeys(keyIdList);
-        keyEdit.onComplete(parentCallback, result.exitCode);
+        keyEdit.onComplete(parentCallback, 0); // ignore exit code from GnuPG
       }
     );
   }
