@@ -272,10 +272,6 @@ function enigmailCheckPassphrase() {
     return null;
   }
 
-  if (passphrase.length < 8) {
-    EnigAlert(EnigGetString("passphrase.min8keys"));
-    return null;
-  }
   return passphrase;
 }
 
@@ -315,7 +311,7 @@ function enigmailKeygenStart() {
       }
 
       passphrase = enigmailCheckPassphrase();
-      if (!passphrase) return;
+      if (passphrase === null) return;
     }
 
   }

@@ -713,7 +713,7 @@ function checkPassphrasesEqual() {
     passRepImg.hidden = true;
   }
 
-  disableNext(p1.length < 8 || p1 != p2);
+  disableNext(p1 != p2);
 }
 
 
@@ -902,15 +902,10 @@ function wizardLocateGpg() {
 
 function checkPassphrase() {
 
-  // gpg >= 2.1 queries passphrase using gpg-agent only
+  // gpg 2.1  - 2.1.2 queries passphrase using gpg-agent only
   if (EnigmailGpg.getGpgFeature("keygen-passphrase")) {
     var passphrase = enigmailCheckPassphrase();
-    if (!passphrase) return false;
-
-    if (passphrase.length < 8) {
-      EnigmailDialog.info(window, EnigGetString("passphrase.min8keys"));
-      return false;
-    }
+    if (passphrase === null) return false;
   }
 
   return true;
