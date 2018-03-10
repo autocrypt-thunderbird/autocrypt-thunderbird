@@ -340,7 +340,7 @@ function enigmailKeygenStart() {
     }
   }
   var keySize = Number(document.getElementById("keySize").value);
-  var keyType = Number(document.getElementById("keyType").value);
+  var keyType = document.getElementById("keyType").value;
 
   var curId = getCurrentIdentity();
   gUsedId = curId;
