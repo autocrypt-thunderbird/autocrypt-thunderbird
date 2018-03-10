@@ -294,13 +294,13 @@
       <label control="passphrase" value="&enigmail.keyPassphrase.label;" />
       <hbox>
         <textbox id="passphrase" size="20" type="password" oninput="checkPassphraseQuality(this)" onblur="checkPassphraseOnChange(this)"/>
-        <image id="passphraseErrorImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+        <image id="passphraseErrorImg" hidden="true" class="enigmailErrorIcon"/>
       </hbox>
       <label id="passphraseError" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passError;" class="passphraseError"/>
       <label control="passphraseRepeat" value="&enigmail.setupWiz.pgKeyCreate.passRepeat;" />
       <hbox>
         <textbox id="passphraseRepeat" size="20" type="password" oninput="checkPassphrasesEqual()"/>
-        <image id="passphraseErrorRepImg" hidden="true" src='chrome://enigmail/skin/password-error.png' style="padding-top: 5px; padding-bottom: 5px;"/>
+        <image id="passphraseErrorRepImg" hidden="true" class="enigmailErrorIcon"/>
       </hbox>
       <label id="passphraseErrorRepeat" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passErrorRepeat;" class="passphraseError"/>
       <description>&enigmail.setupWiz.pgKeyCreate.passQuality;</description>

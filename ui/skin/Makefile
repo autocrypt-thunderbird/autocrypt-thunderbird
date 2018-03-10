@@ -62,7 +62,7 @@ SKIN_TB_WIN_XP = \
 	images/attach-disabled-18.svg \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
-	images/password-error.png \
+	images/password-error.svg \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
@@ -126,7 +126,7 @@ SKIN_AERO = \
 	images/attach-active-18.svg \
 	images/attach-disabled-18.svg \
 	images/attach-inactive-18.svg \
-	images/password-error.png \
+	images/password-error.svg \
 	images/warning-16.png \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
@@ -193,7 +193,7 @@ SKIN_TB_MAC = \
 	images/attach-disabled-18.svg \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
-	images/password-error.png \
+	images/password-error.svg \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
@@ -258,7 +258,7 @@ SKIN_TB_LINUX = \
 	images/attach-disabled-18.svg \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
-	images/password-error.png \
+	images/password-error.svg \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
@@ -334,7 +334,7 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/attach-active-24.svg \
 	images/attach-active-30.svg \
 	images/warning-16.png \
-	images/password-error.png \
+	images/password-error.svg \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
@@ -407,7 +407,7 @@ SKIN_MODERN = \
 	tb-windows/images/enigEncForceNo.png \
 	images/modern-toolbar-background.png \
 	images/warning-16.png \
-	images/password-error.png \
+	images/password-error.svg \
 	images/col-pEpGreen.svg \
 	images/col-pEpYellow.svg \
 	images/col-pEpRed.svg \
