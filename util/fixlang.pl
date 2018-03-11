@@ -39,7 +39,7 @@ sub loaddtd { # ($file)
       #print "+ comment\n";
     }
     elsif ($buf =~ /^<!ENTITY (.*)"">\s*$'/i) {
-      print "empty string $1\n";
+      #print "empty string $1\n";
       next;
     }
     elsif ($buf =~ /^<!ENTITY (.*)"(.*)">\s*$'/i) {
@@ -47,6 +47,7 @@ sub loaddtd { # ($file)
       #print "+ Line  '$ind'\n";
       $val=$2;
       if ($ind eq "enigmail.ruleEmail.tooltip"
+          || $ind eq "enigmail.searchForKey.example"
           || $ind eq "enigmail.noHushMailSupport.label"
           || $ind eq "enigmail.noHushMailSupport.tooltip") {
         $val =~ s/\</&lt;/g;
