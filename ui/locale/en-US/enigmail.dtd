@@ -61,7 +61,7 @@
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Remember passphrase for">
 <!ENTITY enigmail.maxIdleMinutesTail.label "minutes of inactivity (before needing to re-enter it)">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "Remember passphrase in memory for a limited time.">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "Remember passphrase for a limited time.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Reset">
 <!ENTITY enigmail.resetPrefs.tooltip     "Set all Enigmail preferences back to their default value.">
@@ -222,8 +222,8 @@
 <!ENTITY enigmail.usePGPMimeAlways.label          "Use PGP/MIME by default">
 
 <!ENTITY enigmail.afterDefaultsAndRules.label     "After application of defaults and rules:">
-<!ENTITY enigmail.finallySignEncrypted.label      "sign encrypted messages">
-<!ENTITY enigmail.finallySignNotEncrypted.label   "sign non-encrypted messages">
+<!ENTITY enigmail.finallySignEncrypted.label      "Sign encrypted messages">
+<!ENTITY enigmail.finallySignNotEncrypted.label   "Sign non-encrypted messages">
 
 <!ENTITY enigmail.autoEncryptDrafts.label         "Encrypt draft messages on saving">
 
@@ -461,8 +461,8 @@
 <!ENTITY enigmail.sKeyDlg.checked.label            "How carefully have you verified that the key you are about to sign actually belongs to the person(s) named above?">
 <!ENTITY enigmail.sKeyDlg.noAnswer.label           "I will not answer">
 <!ENTITY enigmail.sKeyDlg.notChecked.label         "I have not checked at all">
-<!ENTITY enigmail.sKeyDlg.casualCheck.label        "I have done casual checking">
-<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "I have done very careful checking">
+<!ENTITY enigmail.sKeyDlg.casualCheck.label        "I did a quick check">
+<!ENTITY enigmail.sKeyDlg.carefulCheck.label       "I have checked very carefully">
 <!ENTITY enigmail.sKeyDlg.createLocal.label        "Local signature (cannot be exported)">
 
 <!ENTITY enigmail.addUidDlg.title                  "Enigmail - Add User ID">
@@ -628,7 +628,7 @@
 <!ENTITY enigmail.cardDetails.serial.label           "Serial Number">
 <!ENTITY enigmail.cardDetails.name.label             "Firstname, Name">
 <!ENTITY enigmail.cardDetails.lang.label             "Language">
-<!ENTITY enigmail.cardDetails.sex.label              "Sex">
+<!ENTITY enigmail.cardDetails.sex.label              "Gender">
 <!ENTITY enigmail.cardDetails.url.label              "URL of public key">
 <!ENTITY enigmail.cardDetails.login.label            "Login data">
 <!ENTITY enigmail.cardDetails.forcepin.label         "Force signature PIN">
@@ -725,7 +725,7 @@
 <!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create Key">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create a new Key Pair">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of two keys:">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of keys:">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your <html:b>public key</html:b> is <html:b>for others</html:b> to send you encrypted emails. You can distribute it to everybody.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>secret key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
                                                       You should give it to nobody.">
@@ -803,7 +803,7 @@
 <!ENTITY enigmail.advancedIdentityDlg.title          "Advanced Enigmail Identity Settings">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach my public key to messages">
 
-<!ENTITY enigmail.addPhoto.question.label            "Do you want to add the following picture to the following key?">
+<!ENTITY enigmail.addPhoto.question.label            "Do you want to add the following picture to the key?">
 <!ENTITY enigmail.addPhoto.title                     "Add Photo to Key">
 <!ENTITY enigmail.msgViewColumn.tooltip              "Sort by the OpenPGP status">
 <!ENTITY enigmail.addToRule.title                    "Add Key to Per-Recipient Rule">
