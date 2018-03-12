@@ -245,6 +245,7 @@ var EnigmailConfigure = {
   },
 
   upgradeTo20: function() {
+    EnigmailPrefs.setPref("juniorMode", 0); // disable pEp if upgrading from older version
     replaceKeyIdWithFpr();
     displayUpgradeInfo();
   }
