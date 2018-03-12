@@ -36,19 +36,13 @@
 .enigmailPepRating:hover {
   background-color: #DDDDDD;
 
-  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
-  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+  border-color: transparent ThreeDShadow;
 }
 
 .enigmailPepRating:active {
   background-color: #CCCCCC;
 
-  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
-  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+  border-color: transparent ThreeDShadow;
 }
 
 

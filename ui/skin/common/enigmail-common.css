@@ -111,10 +111,7 @@ enigmailLink {
   margin-bottom: 2px !important;
   padding: 0 2px;
   border-radius: 4px;
-  -moz-border-top-colors: transparent threedhighlight threedlightshadow;
-  -moz-border-right-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-bottom-colors: transparent threeddarkshadow threedshadow;
-  -moz-border-left-colors: transparent threedhighlight threedlightshadow;
+  border-color: transparent ThreeDShadow;
   min-height: 1ex;
 }
 
