@@ -20,26 +20,21 @@ var EnigmailPrefOverlay = {
   initJuniorMode: function() {
     EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode()\n");
     let prefGroup = document.getElementById("enigmail_juniorModeGroup");
+    let forceOn = document.getElementById("enigmail_juniorModeForceOn");
+    forceOn.setAttribute("disabled", "true");
 
-    EnigmailTimer.setTimeout(function _f() {
-      let jm = EnigmailPrefs.getPref("juniorMode");
-      document.getElementById("enigmail_juniorMode").value = jm;
+    let jm = EnigmailPrefs.getPref("juniorMode");
+    document.getElementById("enigmail_juniorMode").value = jm;
 
-      if (EnigmailPEPAdapter.isPepAvailable()) {
-        EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
-        prefGroup.removeAttribute("hidden");
+    let prefWindow = document.getElementById("MailPreferences");
+    if (this._windowResized === 0 && prefWindow.currentPane.id === "panePrivacy") {
+      window.resizeBy(0, prefGroup.clientHeight);
+    }
 
-        let prefWindow = document.getElementById("MailPreferences");
-        if (this._windowResized === 0 && prefWindow.currentPane.id === "panePrivacy") {
-          window.resizeBy(0, prefGroup.clientHeight);
-        }
-      }
-      else {
-        EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp NOT available\n");
-        prefGroup.setAttribute("hidden", "true");
-      }
-
-    }, 100);
+    if (EnigmailPEPAdapter.isPepAvailable()) {
+      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
+      forceOn.removeAttribute("disabled");
+    }
   },
 
   onWindowClose: function(event) {
