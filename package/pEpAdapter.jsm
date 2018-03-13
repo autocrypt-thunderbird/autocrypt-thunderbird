@@ -52,6 +52,7 @@ var gPepListenerPort = -1;
 var gOwnIdentities = [];
 var gJmObservers = null;
 var gJmObserverId = 0;
+var gAttemptedInstall = false;
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPAdapter"];
 
@@ -220,10 +221,12 @@ var EnigmailPEPAdapter = {
   installPep: function(isManual = false) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: installPep()\n");
 
+    gAttemptedInstall = true;
     let self = this;
     let progressListener = {
       onError: function(err) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: got error " + err.type + "\n");
+        gPepAvailable = false;
       },
       onInstalled: function() {
         EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: installation completed\n");
@@ -388,7 +391,7 @@ var EnigmailPEPAdapter = {
     }
     else if (pEpMode === 2) {
       // if force pEp mode, and pEp not found, try to install it
-      this.installPep();
+      if (!gAttemptedInstall) this.installPep();
       deferred.resolve();
       return deferred.promise;
     }
