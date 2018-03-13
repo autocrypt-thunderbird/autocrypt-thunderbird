@@ -350,7 +350,7 @@
 <!ENTITY enigmail.amPrefEnablePgp.label             "Enable OpenPGP support (Enigmail) for this identity">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Use email address of this identity to identify OpenPGP key">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Use specific OpenPGP key ID:">
-<!ENTITY enigmail.amPrefSelectKey.label             "Select Key ...">
+<!ENTITY enigmail.amPrefSelectKey.label             "Select Key">
 <!ENTITY enigmail.amPrefMsgComp.label               "Message Composition">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Message Composition Default Options">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Encryption &amp; Signing Settings">

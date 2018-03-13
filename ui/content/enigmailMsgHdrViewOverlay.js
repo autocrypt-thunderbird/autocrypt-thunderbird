@@ -358,6 +358,8 @@ Enigmail.hdrView = {
         EnigmailDialog.info(window, errorMsg);
       }
       else {
+        // TODO: can we ever get to this point anymore?
+        // FIXME: the viewInfo string is outdated
         statusInfo = EnigmailLocale.getString("failedDecryptVerify");
         statusLine = statusInfo + EnigmailLocale.getString("viewInfo");
       }
