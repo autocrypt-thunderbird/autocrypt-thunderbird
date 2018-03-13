@@ -262,7 +262,7 @@ var EnigmailPEPAdapter = {
 
     currVer = currVer.replace(/ .*/, "");
 
-    EnigmailPrefs.setPref("pepLastUpdate", now);
+    EnigmailPrefs.setPref("pEpLastUpdate", now);
 
     if (!EnigmailInstallPep.isPepUpdateAvailable(false, currVer)) return;
 
@@ -399,8 +399,14 @@ var EnigmailPEPAdapter = {
     try {
       EnigmailpEp.getPepVersion().then(function _success(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
-        if (typeof(data) === "string") {
-          gPepVersion = data;
+        if (data === null) {
+          gPepVersion = "0.10.0";
+        }
+        else if (typeof(data) === "object") {
+          gPepVersion = data.version;
+        }
+
+        if (gPepVersion) {
           startListener();
           if (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0) {
             EnigmailpEp.startKeyserverLookup();

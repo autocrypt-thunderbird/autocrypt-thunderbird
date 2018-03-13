@@ -82,7 +82,7 @@ var EnigmailpEp = {
       return version;
     };
 
-    return this._callPepFunction(FT_CALL_FUNCTION, "version", [], onLoad);
+    return this._callPepFunction(FT_CALL_FUNCTION, "serverVersion", [], onLoad);
   },
 
   getPepHomeDir: function() {
