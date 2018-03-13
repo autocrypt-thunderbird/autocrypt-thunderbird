@@ -158,6 +158,11 @@ Enigmail.msg = {
 
     }, 3600 * 1000); // 1 hour
 
+    EnigmailTimer.setTimeout(function _f() {
+      // check if there is an update to pEp after 10 minutes of uptime
+      EnigmailPEPAdapter.checkForPepUpdate();
+    }, 600 * 1000);
+
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);

@@ -214,8 +214,10 @@ var EnigmailPEPAdapter = {
 
   /**
    * try to download and install pEp (runs asynchronously!)
+   *
+   * @param isManual: Boolean: is installation manually requested
    */
-  installPep: function() {
+  installPep: function(isManual = false) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: installPep()\n");
 
     let self = this;
@@ -234,7 +236,39 @@ var EnigmailPEPAdapter = {
       }
     };
 
-    EnigmailInstallPep.startInstaller(progressListener);
+    EnigmailInstallPep.startInstaller(progressListener, isManual);
+  },
+
+  /**
+   * check if an update to the pEp engine is available online.
+   * If yes, ask user if it should be installed.
+   */
+  checkForPepUpdate: function() {
+    let updateMode = EnigmailPrefs.getPref("pEpAutoUpdate");
+
+    // don't try if update disabled
+    if (updateMode === 2) return;
+
+    // check once a week
+    let now = Math.floor(Date.now() / 1000);
+    if (now < EnigmailPrefs.getPref("pEpLastUpdate") + 604800) return;
+
+    let currVer = this.getPepVersion();
+    if (!currVer) return;
+    currVer = currVer.replace(/ .*/, "");
+
+    EnigmailPrefs.setPref("pepLastUpdate", now);
+
+    if (!EnigmailInstallPep.isPepUpdateAvailable(false, currVer)) return;
+
+    let update = getDialog().confirmPref(null, EnigmailLocale.getString("pep.updateAvailable"),
+      "pEpAutoUpdate",
+      EnigmailLocale.getString("dlg.button.install"),
+      EnigmailLocale.getString("dlg.button.ignore"));
+
+    if (update > 0) {
+      this.installPep(true);
+    }
   },
 
   /**

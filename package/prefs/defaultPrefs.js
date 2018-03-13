@@ -206,6 +206,12 @@ pref("extensions.enigmail.wrapHtmlBeforeSend", true);
 // automatically download pepmda if it is available (without askin user)
 pref("extensions.enigmail.pEpAutoDownload", true);
 
+// holds the last result of the last check for pEp updates
+pref("extensions.enigmail.pEpLastUpdate", 0);
+
+// automatically update pEp?
+pref("extensions.enigmail.pEpAutoUpdate", 0);
+
 // enable encryption/signing of headers like subject, from, to
 // 1: default: ask user at 1st time use / 0: off /  2: on
 pref("extensions.enigmail.protectedHeaders", 1);

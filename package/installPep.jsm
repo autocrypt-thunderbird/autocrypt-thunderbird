@@ -36,6 +36,11 @@ const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const PEP_QUERY_URL = "https://www.enigmail.net/service/getPepDownload.svc";
 
+// install modes
+const INSTALL_AUTO = 0;
+const INSTALL_MANUAL = 1;
+const INSTALL_UPDATE = 2;
+
 var gInstallInProgress = 0;
 
 function toHexString(charCode) {
@@ -215,13 +220,14 @@ Installer.prototype = {
       url: this.url,
       hash: this.hash,
       comamnd: this.command,
-      mount: this.mount
+      mount: this.mount,
+      pepVersion: this.pepVersion
     };
 
     return o;
   },
 
-  getDownloadUrl: function(on) {
+  getDownloadUrl: function(on, installType) {
 
     let deferred = PromiseUtils.defer();
 
@@ -240,6 +246,7 @@ Installer.prototype = {
         try {
           let doc = JSON.parse(this.responseText);
           self.url = doc.url;
+          self.pepVersion = doc.pepVersion;
           self.hash = sanitizeHash(doc.hash);
           deferred.resolve();
         }
@@ -293,6 +300,14 @@ Installer.prototype = {
         false);
       queryUrl = queryUrl + "?vEnigmail=" + escape(EnigmailApp.getVersion()) + "&os=" + escape(os) +
         "&platform=" + escape(platform);
+
+      switch (installType) {
+        case INSTALL_MANUAL:
+          queryUrl += "&queryType=manual";
+          break;
+        case INSTALL_UPDATE:
+          queryUrl += "&queryType=update";
+      }
 
       EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl: accessing '" + queryUrl + "'\n");
 
@@ -534,7 +549,7 @@ var EnigmailInstallPep = {
 
     let i = new Installer(null);
 
-    i.getDownloadUrl(i).
+    i.getDownloadUrl(i, manualInstall ? INSTALL_MANUAL : INSTALL_AUTO).
     then(function _gotUrl() {
       urlObj = i.getUrlObj();
       inspector.exitNestedEventLoop();
@@ -546,5 +561,49 @@ var EnigmailInstallPep = {
     inspector.enterNestedEventLoop(0);
 
     return (urlObj ? urlObj.url !== null && urlObj.url !== "" : false);
+  },
+
+  /**
+   * Determine if an update to pEp is available online
+   *
+   * @param manualInstall: Boolean: if true, ignore pEpAutoDownload option
+   * @param currentPepVersion: the current version of pEp
+   *
+   * @return true: installer for current platform is online available
+   *         false: otherwise
+   */
+  isPepUpdateAvailable: function(manualInstall = false, currentPepVersion) {
+    EnigmailLog.DEBUG("installPep.jsm: isPepUpdateAvailable()\n");
+
+    if (!manualInstall) {
+      // don't download anything if auto-download is disabled
+      if (!EnigmailPrefs.getPref("pEpAutoDownload")) return false;
+    }
+
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+    let urlObj = null;
+
+    let i = new Installer(null);
+
+    i.getDownloadUrl(i, INSTALL_UPDATE).
+    then(function _gotUrl() {
+      urlObj = i.getUrlObj();
+      inspector.exitNestedEventLoop();
+    }).
+    catch(function _err(data) {
+      inspector.exitNestedEventLoop();
+    });
+
+    inspector.enterNestedEventLoop(0);
+
+    let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+
+    if (urlObj && ("pepVersion" in urlObj)) {
+      // current version older than available version?
+      if (vc.compare(currentPepVersion, urlObj.pepVersion) < 0) return true;
+    }
+
+    return false;
   }
+
 };
