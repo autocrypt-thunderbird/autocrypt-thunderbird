@@ -255,6 +255,8 @@ var EnigmailPEPAdapter = {
 
     let currVer = this.getPepVersion();
     if (!currVer) return;
+    if (!this.usingPep()) return;
+
     currVer = currVer.replace(/ .*/, "");
 
     EnigmailPrefs.setPref("pepLastUpdate", now);
