@@ -15,7 +15,7 @@ const Cu = Components.utils;
 
 /**
  This module implements the EnigmailKeyObj class with the following members:
- 
+
   - keyId           - 16 digits (8-byte) public key ID (/not/ preceeded with 0x)
   - userId          - main user ID
   - fpr             - fingerprint
@@ -117,7 +117,6 @@ class EnigmailKeyObj {
     if ("ownerTrust" in keyData) this.ownerTrust = keyData.ownerTrust;
     if ("algoSym" in keyData) this.algoSym = keyData.algoSym;
     if ("keySize" in keyData) this.keySize = keyData.keySize;
-    // TODO: fix algorithm = lineArr[KEY_ALGO_ID];
 
     this.userIds = [];
     this.subKeys = [];

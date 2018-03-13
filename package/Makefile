@@ -7,6 +7,8 @@ DEPTH		= ..
 
 include $(DEPTH)/config/autoconf.mk
 
+DIRS = cryptoAPI
+
 PREFFILES = prefs/defaultPrefs.js
 
 MODFILES = \
@@ -23,6 +25,7 @@ MODFILES = \
            configure.jsm \
            constants.jsm \
            core.jsm \
+           cryptoAPI.jsm \
            data.jsm \
            decryption.jsm \
            persistentCrypto.jsm \
@@ -107,7 +110,7 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
                         TZ=UTC date -r "$(SOURCE_DATE_EPOCH)" $(DATE_FMT) || \
                         TZ=UTC date $(DATE_FMT) )
 
-all: deploy
+all: dirs deploy
 
 deploy: $(PREFFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/modules/preferences $(PREFFILES)
@@ -121,3 +124,9 @@ clean:
 	$(DEPTH)/util/install -u $(DIST)/modules/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/modules $(MODFILES)
 
+.PHONY: dirs $(DIRS)
+
+dirs: $(DIRS)
+
+$(DIRS):
+	$(MAKE) -C $@
