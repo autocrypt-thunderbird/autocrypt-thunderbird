@@ -1885,6 +1885,7 @@ Enigmail.msg = {
     if (!enigmailSvc) return;
 
     var origAtt, signatureAtt;
+    var isEncrypted = false;
 
     if ((EnigmailMsgRead.getAttachmentName(anAttachment).search(/\.sig$/i) > 0) ||
       (anAttachment.contentType.search(/^application\/pgp-signature/i) === 0)) {
@@ -1899,17 +1900,39 @@ Enigmail.msg = {
           break;
         }
       }
+
+      if (!origAtt) {
+        for (let i = 0; i < currentAttachments.length; i++) {
+          if (origName == EnigmailMsgRead.getAttachmentName(currentAttachments[i]).replace(/\.pgp$/i, "")) {
+            isEncrypted = true;
+            origAtt = currentAttachments[i];
+            break;
+          }
+        }
+      }
     }
     else {
       // we have a supposedly original file; need to know the .sig file;
 
       origAtt = anAttachment;
-      var sigName = EnigmailMsgRead.getAttachmentName(anAttachment) + ".sig";
+      var attachName = EnigmailMsgRead.getAttachmentName(anAttachment);
+      var sigName = attachName + ".sig";
 
       for (let i = 0; i < currentAttachments.length; i++) {
         if (sigName == EnigmailMsgRead.getAttachmentName(currentAttachments[i])) {
           signatureAtt = currentAttachments[i];
           break;
+        }
+      }
+
+      if (!signatureAtt && attachName.search(/\.pgp$/i) > 0) {
+        sigName = attachName.replace(/\.pgp$/i, '.sig');
+        for (let i = 0; i < currentAttachments.length; i++) {
+          if (sigName == EnigmailMsgRead.getAttachmentName(currentAttachments[i])) {
+            isEncrypted = true;
+            signatureAtt = currentAttachments[i];
+            break;
+          }
         }
       }
     }
@@ -1936,6 +1959,13 @@ Enigmail.msg = {
     outFile1.append(EnigmailMsgRead.getAttachmentName(origAtt));
     outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     EnigmailFiles.writeUrlToFile(origAtt.url, outFile1);
+
+    if (isEncrypted) {
+      // Try to decrypt message if we suspect the message is encrypted. If it fails we will just verify the encrypted data.
+      EnigmailDecryption.decryptAttachment(window, outFile1,
+        EnigmailMsgRead.getAttachmentName(origAtt),
+        EnigmailFiles.readBinaryFile(outFile1), {}, {}, {});
+    }
 
     outFile2 = Components.classes["@mozilla.org/file/local;1"].
     createInstance(Components.interfaces.nsIFile);

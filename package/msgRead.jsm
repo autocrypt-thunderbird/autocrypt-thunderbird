@@ -109,9 +109,9 @@ var EnigmailMsgRead = {
    * Determine if an attachment is possibly signed
    */
   checkSignedAttachment: function(attachmentObj, index, currentAttachments) {
-    var escapeRegex = function (string){
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-    };
+    function escapeRegex(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+    }
 
     var attachmentList;
     if (index !== null) {
@@ -138,8 +138,12 @@ var EnigmailMsgRead = {
       (attachmentList[index].contentType.match(/^application\/pgp-signature/i))) {
       findFile = new RegExp(escapeRegex(attName.replace(/\.(sig|asc)$/, "")));
     }
-    else
+    else if (attName.search(/\.pgp$/i) > 0) {
+      findFile = new RegExp(escapeRegex(attName.replace(/\.pgp$/, "")) + "(\\.pgp)?\\.(sig|asc)$");
+    }
+    else {
       findFile = new RegExp(escapeRegex(attName) + "\\.(sig|asc)$");
+    }
 
     for (let i in attachmentList) {
       if ((i != index) &&
