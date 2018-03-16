@@ -11,7 +11,7 @@ var EnigmailSingletons = {
   // handle to most recent message reader window
   messageReader: null,
 
-  // information about the last PGP/MIME decrpyted message (pEp and mimeDecrypt)
+  // information about the last PGP/MIME decrypted message (pEp and mimeDecrypt)
   lastDecryptedMessage: {},
 
   clearLastDecryptedMessage: function() {
