@@ -106,15 +106,31 @@ var EnigmailPEPAdapter = {
   filter: EnigmailPEPFilter,
 
   /**
-   * Get the pEp JSON server version number.
+   * Get the pEp JSON server version numbers.
    *
-   * @return String:
+   * @return Object:
    *     - null if the module is not initialized
-   *     - a non-empty string if pEp is available
-   *     - "" in case pEp is not available
+   *     - Object with String members:
+   *         api:     the JSON API version number, or "" if pEp is unavailable
+   *         package: the package version number, or null if no package
+   *         engine:  the pEp engine version number, or "" if pEp is unavailable
    */
   getPepVersion: function() {
     return gPepVersion;
+  },
+
+  /**
+   * Get the pEp package version number.
+   *
+   * @return String:
+   *     - null if no package or the module is not initialized
+   *     - a non-empty string if the pEp package version is configured
+   */
+  getPepPackageVersion: function() {
+    let version = this.getPepVersion();
+    if (version && "package" in version) return version.package;
+
+    return null;
   },
 
   /**
@@ -125,7 +141,7 @@ var EnigmailPEPAdapter = {
   usingPep: function() {
     if (!this.getPepJuniorMode()) return false;
 
-    if ((typeof(gPepVersion) === "string") && gPepVersion.length > 0) {
+    if ((gPepVersion !== null) && gPepVersion.api.length > 0) {
       return true;
     }
 
@@ -256,7 +272,7 @@ var EnigmailPEPAdapter = {
     let now = Math.floor(Date.now() / 1000);
     if (now < EnigmailPrefs.getPref("pEpLastUpdate") + 604800) return;
 
-    let currVer = this.getPepVersion();
+    let currVer = this.getPepPackageVersion();
     if (!currVer) return;
     if (!this.usingPep()) return;
 
@@ -400,10 +416,18 @@ var EnigmailPEPAdapter = {
       EnigmailpEp.getPepVersion().then(function _success(data) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: success '" + JSON.stringify(data) + "'\n");
         if (data === null) {
-          gPepVersion = "0.10.0";
+          gPepVersion = {
+            api: "0.10.0",
+            package: null,
+            engine: "0.9.0"
+          };
         }
         else if (typeof(data) === "object") {
-          gPepVersion = data.version;
+          gPepVersion = {
+            api: data.api_version,
+            package: data.package_version,
+            engine: data.engine_version
+          };
         }
 
         if (gPepVersion) {
@@ -469,7 +493,11 @@ var EnigmailPEPAdapter = {
           installMissingGnuPG();
         }
 
-        gPepVersion = "";
+        gPepVersion = {
+          api: "",
+          package: null,
+          engine: ""
+        };
         deferred.resolve();
       });
     }

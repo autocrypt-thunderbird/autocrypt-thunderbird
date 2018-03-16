@@ -35,6 +35,7 @@ const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
 const PEP_QUERY_URL = "https://www.enigmail.net/service/getPepDownload.svc";
+const PEP_MAX_VERSION = "1.*"; // accept any pEp package versions 0.* and 1.*, but not 2.0
 
 // install modes
 const INSTALL_AUTO = 0;
@@ -600,8 +601,10 @@ var EnigmailInstallPep = {
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
 
     if (urlObj && ("pepVersion" in urlObj)) {
-      // current version older than available version?
-      if (vc.compare(currentPepVersion, urlObj.pepVersion) < 0) return true;
+      // current version older than available version
+      // and available version <= PEP_MAX_VERSION?
+      if (vc.compare(currentPepVersion, urlObj.pepVersion) < 0 &&
+        vc.compare(urlObj.pepVersion, PEP_MAX_VERSION) < 0) return true;
     }
 
     return false;
