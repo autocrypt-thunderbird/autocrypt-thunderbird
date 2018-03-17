@@ -693,7 +693,7 @@ PgpMimeEncrypt.prototype = {
       if (!this.isDraft) {
         toAddr = jsmime.headerparser.parseAddressingHeader(this.recipientList);
 
-        if (!self.msgIdentity.getBoolAttribute("attachPgpKey")) {
+        if (!self.msgIdentity.getBoolAttribute("attachPepKey")) {
           encryptFlags = 0x4; // do not attach own key
         }
       }

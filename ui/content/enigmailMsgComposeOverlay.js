@@ -3434,7 +3434,7 @@ Enigmail.msg = {
   attachPepKey: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.attachPepKey()\n");
 
-    if (this.identity.getBoolAttribute("attachPgpKey")) {
+    if (this.identity.getBoolAttribute("attachPepKey")) {
       let id = EnigmailPEPAdapter.getOwnIdentityForEmail(this.identity.email);
       if (id) {
 

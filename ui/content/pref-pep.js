@@ -103,7 +103,7 @@ function loadIdentitySettings() {
 
   gTrustedServer.checked = id.getBoolAttribute("autoEncryptDrafts");
   gEnableEncryption.checked = id.getBoolAttribute("enablePEP");
-  gPassiveMode.checked = id.getBoolAttribute("attachPgpKey");
+  gPassiveMode.checked = id.getBoolAttribute("attachPepKey");
   gProtectedSubject.checked = id.getBoolAttribute("protectSubject");
   gWarnReply.checked = id.getBoolAttribute("warnWeakReply");
 }
@@ -113,7 +113,7 @@ function storeIdentitySettings() {
 
   id.setBoolAttribute("autoEncryptDrafts", gTrustedServer.checked);
   id.setBoolAttribute("enablePEP", gEnableEncryption.checked);
-  id.setBoolAttribute("attachPgpKey", gPassiveMode.checked);
+  id.setBoolAttribute("attachPepKey", gPassiveMode.checked);
   id.setBoolAttribute("protectSubject", gProtectedSubject.checked);
   id.setBoolAttribute("warnWeakReply", gWarnReply.checked);
 }
