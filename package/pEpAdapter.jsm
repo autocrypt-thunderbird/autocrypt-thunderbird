@@ -423,11 +423,20 @@ var EnigmailPEPAdapter = {
           };
         }
         else if (typeof(data) === "object") {
-          gPepVersion = {
-            api: data.api_version,
-            package: data.package_version,
-            engine: data.engine_version
-          };
+          if ("api_version" in data) {
+            gPepVersion = {
+              api: data.api_version,
+              package: data.package_version,
+              engine: data.engine_version
+            };
+          }
+          else {
+            gPepVersion = {
+              api: data.version,
+              package: data.version,
+              engine: data.version
+            };
+          }
         }
 
         if (gPepVersion) {
