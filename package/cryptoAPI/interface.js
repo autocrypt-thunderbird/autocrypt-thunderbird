@@ -10,7 +10,9 @@
  * CryptoAPI - abstract interface
  */
 
+/*global Components: false, Cc: false, Ci: false, Cu: false */
 
+var inspector;
 
 class CryptoAPI {
   constructor() {
@@ -19,5 +21,27 @@ class CryptoAPI {
 
   get apiName() {
     return this.api_name;
+  }
+
+  /**
+   * Synchronize a promise
+   */
+  sync(promise) {
+    if (!inspector) {
+      inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+    }
+
+    let res = null;
+    let p = promise.then(gotResult => {
+      res = gotResult;
+      inspector.exitNestedEventLoop();
+    }).catch(gotResult => {
+      res = gotResult;
+      inspector.exitNestedEventLoop();
+    });
+
+    inspector.enterNestedEventLoop(0);
+
+    return res;
   }
 }
