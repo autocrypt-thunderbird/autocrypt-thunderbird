@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "">
 
-<!ENTITY enigmail.about.license           "">
+<!ENTITY enigmail.about.license           "Enigmail è open source e rilasciato nei termini della licenza <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0.</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Account / ID utente">
 <!ENTITY enigmail.keygenTitle.label       "Visualizza impostazioni avanzate e menu">
@@ -20,7 +20,7 @@
 <!ENTITY enigmail.keyGen.years.label      "anni">
 <!ENTITY enigmail.keyGen.noExpiry.label   "La chiave non scade">
 <!ENTITY enigmail.keyGen.keySize.label    "Lunghezza della chiave">
-<!ENTITY enigmail.keyGen.console.label    "">
+<!ENTITY enigmail.keyGen.console.label    "Generazione chiave">
 <!ENTITY enigmail.keyGen.keyType.label    "Tipo chiave">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Curva ellittica)">
@@ -30,7 +30,7 @@
 <!ENTITY enigmail.keyUpload.sks.label     "">
 <!ENTITY enigmail.keyUpload.sks.desc      "">
 <!ENTITY enigmail.keyUpload.wks.label     "">
-<!ENTITY enigmail.keyAttachAuto.label     "">
+<!ENTITY enigmail.keyAttachAuto.label     "Allega sempre la mia chiave pubblica">
 
 <!ENTITY enigmail.preferences.label       "Preferenze Enigmail">
 
@@ -84,7 +84,7 @@
 <!ENTITY enigmail.keySel.label           "Selezione chiave">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
 <!ENTITY enigmail.advanced.label         "Avanzate">
-<!ENTITY enigmail.transferSettings.label "">
+<!ENTITY enigmail.transferSettings.label "Impostazioni di trasferimento">
 
 <!ENTITY enigmail.basicPrefs.label       "Impostazioni base">
 
@@ -340,13 +340,13 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "Ripara il messaggio">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Attendi...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Opzioni firma/cifratura...">
 <!ENTITY enigmail.amPrefDesc.label                  "Il supporto per la cifratura e la firma dei messaggi in formato OpenPGP è fornito da Enigmail. È necessario che tu abbia installato GnuPG (gpg) per poter usare questa funzionalità.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Abilita il supporto OpenPGP (Enigmail) per questa identità">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Usa l'indirizzo email di questa identità per scegliere la chiave OpenPGP">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Usa la chiave OpenPGP con ID (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Seleziona la chiave...">
-<!ENTITY enigmail.amPrefMsgComp.label               "">
+<!ENTITY enigmail.amPrefMsgComp.label               "Composizione messaggio">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Impostazioni predefinite per la composizione dei messaggi">
 <!ENTITY enigmail.encryptionDlg.label               "Impostazioni Enigmail di cifratura e firma">
 <!ENTITY enigmail.encDlgProtocol.label              "Standard di cifratura/firma">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "E">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "T">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "t">
@@ -751,15 +751,15 @@ vuoi importare le chiavi da un file?">
 <!ENTITY enigmail.setupWiz.pgKeygen.title            "Creazione della chiave">
 <!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "La creazione della tua chiave è in corso">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "La tua chiave è stata generata">
-<!ENTITY enigmail.setupWiz.pgRevocert.title          "">
+<!ENTITY enigmail.setupWiz.pgRevocert.title          "Creazione certificato di revoca">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
 <!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
 <!ENTITY enigmail.setupWiz.pgRevocert.button         "">
 
 <!-- wizard: key creation - key upload step -->
-<!ENTITY enigmail.setupWiz.pgUpload.title            "">
+<!ENTITY enigmail.setupWiz.pgUpload.title            "Carica chiave pubblica">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "">
-<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "">
+<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Allega la tua chiave pubblica">
 <!ENTITY enigmail.attachAuto.desc                    "">
 
 <!-- wizard: import settings from previous installation -->

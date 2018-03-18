@@ -61,7 +61,7 @@
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "パスフレーズを">
 <!ENTITY enigmail.maxIdleMinutesTail.label "分間保持する (再入力までの時間)">
-<!ENTITY enigmail.maxIdleMinutes.tooltip   "制限時間だけパスフレーズをメモリー上に保持します">
+<!ENTITY enigmail.maxIdleMinutes.tooltip   "制限時間だけパスフレーズを保持します">
 
 <!ENTITY enigmail.resetPrefsButton.label "リセット">
 <!ENTITY enigmail.resetPrefs.tooltip     "Enigmail の設定を初期値に戻します">
@@ -725,7 +725,7 @@
 <!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title         "鍵の生成">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "新しい鍵ペアの生成">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "ここでは 2 つの鍵からなる鍵ペアを生成します。">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "ここでは鍵ペアを生成します。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "<html:b>公開鍵</html:b> は、あなた宛に暗号化メッセージを送るときおよび、あなたによる署名メッセージを検証するときに <html:b>第三者によって</html:b> 使用されます。公開鍵は第三者に配布することができます。">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "<html:b>秘密鍵</html:b> は、暗号化メッセージを復号するときおよび署名メッセージを送るときに <html:b>あなた自身によって</html:b> 使用されます。
                                                       秘密鍵を第三者に公開してはいけません。">
@@ -803,7 +803,7 @@
 <!ENTITY enigmail.advancedIdentityDlg.title          "上級者向け Enigmail 設定">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "自分の公開鍵をメッセージに添付する">
 
-<!ENTITY enigmail.addPhoto.question.label            "この写真をフォト ID として追加しますか？">
+<!ENTITY enigmail.addPhoto.question.label            "この写真を鍵に追加しますか？">
 <!ENTITY enigmail.addPhoto.title                     "フォト ID の追加">
 <!ENTITY enigmail.msgViewColumn.tooltip              "クリックすると OpenPGP ステータスで並べ替えます">
 <!ENTITY enigmail.addToRule.title                    "この鍵を受取人ごとの設定に追加">

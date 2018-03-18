@@ -14,7 +14,7 @@
 <!ENTITY enigmail.cancelKey.label         "Annuler">
 <!ENTITY enigmail.cancelKey.tooltip       "Annuler la génération de clé">
 <!ENTITY enigmail.keyGen.expiry.title     "Expiration de la clé">
-<!ENTITY enigmail.keyGen.expire.label     "La clé expire dans">
+<!ENTITY enigmail.keyGen.expire.label     "La clé expirera dans">
 <!ENTITY enigmail.keyGen.days.label       "jours">
 <!ENTITY enigmail.keyGen.months.label     "mois">
 <!ENTITY enigmail.keyGen.years.label      "ans">
@@ -73,12 +73,12 @@
 <!ENTITY enigmail.restorePrefs.tooltip     "Restaurer tous vos paramètres d’Enigmail, dont vos clés OpenPGP, à partir d’un fichier.">
 
 <!ENTITY enigmail.pref.acSetupMessage.desc   "Transférer votre clé vers un autre appareil compatible Autocrypt">
-<!ENTITY enigmail.pref.acSetupMessage.button "Lancer le transfert de clé Autocrypt">
+<!ENTITY enigmail.pref.acSetupMessage.button "Lancer la configuration Autocrypt">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail prend en charge deux manières de transférer vos clés et vos paramètres vers un autre appareil.<html:br/><html:br/>
 Le transfert de clé Autocrypt exige que le client de courriel de l’autre appareil soit conforme Autocrypt.
 Bien que ce soit la solution la plus facile, seul un nombre limité de clients prennent cette norme en charge actuellement.<html:br/><html:br/>
-L’autre manière est de sauvegarder et restaurer vos paramètres.
+L’autre manière est de sauvegarder et restaurer vos paramètres.
 Cela créera un fichier ZIP contenant tous les renseignements et clés nécessaires que vous pourrez copier sur votre nouvel appareil.
 Enigmail peut importer ces paramètres directement ; pour les autres clients de courriel, le fichier ZIP peut être décompressé et traité manuellement.">
 
@@ -102,7 +102,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.keyservers.label        "Indiquer vos serveurs de clés ">
 <!ENTITY enigmail.keyservers.sample2      "Exemple : aussi pool.sks-keyservers.net, pgp.mit.edu">
 
-<!ENTITY enigmail.searchForKey.example    "Exemple « prénom nom de famille <utilisateur@exemple.com> »">
+<!ENTITY enigmail.searchForKey.example    "Exemple : « prénom nom de famille <utilisateur@exemple.com> »">
 <!ENTITY enigmail.searchForKey.desc1	    "« Prénom nom de famille » trouve toutes les clés contenant le « prénom » OU le « nom de famille »">
 <!ENTITY enigmail.searchForKey.desc2      "« Prénom+nom de famille » trouve toutes les clés contenant à la fois le « prénom » ET le « nom de famille »">
 <!ENTITY enigmail.searchForKey.desc3      "« exemple.com » trouve toutes les clés contenant « exemple.com », comme « exemple@exemple.com »">
@@ -145,7 +145,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.viewconsole.label      "Afficher la console">
 <!ENTITY enigmail.viewlog.label          "Afficher le journal">
 
-<!ENTITY enigmail.generateKey.label        "Générer la clé">
+<!ENTITY enigmail.generateKey.label        "Générer une clé">
 <!ENTITY enigmail.help.label               "Aide">
 <!ENTITY enigmail.about.label              "À propos d’Enigmail">
 <!ENTITY enigmail.reload.label             "Recharger le message">
@@ -288,7 +288,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.resetRememberedValues.label     "Réinitialiser les avertissements">
 <!ENTITY enigmail.resetRememberedValues.tooltip   "Réafficher toutes les boîtes de dialogue et questions d’avertissement que vous avez masqués auparavant.">
 
-<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTE : la génération d’une clé peut prendre plusieurs minutes.</a> Veuillez ne pas quitter l’application tant que la génération de la clé est en cours. Parcourir activement le Web ou effectuer des opérations sollicitant le disque dur pendant la génération de la clé renouvellera la « réserve d’aléation » (entropie) et accélérera le processus. Vous serez averti quand l’opération de génération de clé sera terminée.">
+<!ENTITY enigmail.keygen.desc "<a class='enigmailStrong'>NOTE : la génération d’une clé peut prendre plusieurs minutes.</a> Veuillez ne pas quitter l’application tant que la génération de clé est en cours. Parcourir activement le Web ou effectuer des opérations sollicitant le disque dur pendant la génération de clé renouvellera la « réserve d’aléation » (entropie) et accélérera le processus. Vous serez averti quand l’opération de génération de clé sera terminée.">
 
 <!ENTITY enigmail.userSelectionList.label           "Sélection de clés d’Enigmail">
 <!ENTITY enigmail.usersNotFound.label               "Les destinataires sont invalides, non dignes de confiance ou introuvables">
@@ -302,7 +302,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.userSelSendEncrypted.accesskey    "C">
 <!ENTITY enigmail.displayNoLonger.label             "Ne plus afficher cette boîte de dialogue si le chiffrement est impossible">
 <!ENTITY enigmail.importMissingKeys.label           "Télécharger les clés manquantes">
-<!ENTITY enigmail.importMissingKeys.accesskey       "T">
+<!ENTITY enigmail.importMissingKeys.accesskey       "D">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Essayer d’importer les clés manquantes à partir d’un serveur de clés">
 <!ENTITY enigmail.refreshKeys.label                 "Actualiser la liste des clés">
 <!ENTITY enigmail.refreshKeys.accesskey             "A">
@@ -350,7 +350,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.amPrefEnablePgp.label             "Activer la prise en charge d’OpenPGP (Enigmail) pour cette identité">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Utiliser l’adresse courriel de cette identité pour identifier la clé OpenPGP">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Utiliser un ID de clé OpenPGP précis :">
-<!ENTITY enigmail.amPrefSelectKey.label             "Choisir une clé…">
+<!ENTITY enigmail.amPrefSelectKey.label             "Choisir la clé">
 <!ENTITY enigmail.amPrefMsgComp.label               "Rédaction de messages">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Options par défaut de rédaction de messages">
 <!ENTITY enigmail.encryptionDlg.label               "Paramètres de chiffrement et de signature d’Enigmail">
@@ -484,15 +484,15 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 
 <!ENTITY enigmail.keyMan.title                     "Enigmail — Gestion des clés">
 <!ENTITY enigmail.keyMan.close.label               "Fermer la fenêtre">
-<!ENTITY enigmail.keyMan.generate.label            "Nouvelle paire de clés">
+<!ENTITY enigmail.keyMan.generate.label            "Nouvelle biclé">
 <!ENTITY enigmail.keyMan.sign.label                "Signer la clé">
 <!ENTITY enigmail.keyMan.setTrust.label            "Définir le niveau de confiance envers le propriétaire">
 <!ENTITY enigmail.keyMan.genRevoke.label           "Certificat de révocation">
 <!ENTITY enigmail.keyMan.ctxGenRevoke.label        "Générer et enregistrer un certificat de révocation">
 
 <!ENTITY enigmail.keyMan.fileMenu.label            "Fichier">
-<!ENTITY enigmail.keyMan.editMenu.label            "Modifier">
-<!ENTITY enigmail.keyMan.viewMenu.label            "Visualiser">
+<!ENTITY enigmail.keyMan.editMenu.label            "Édition">
+<!ENTITY enigmail.keyMan.viewMenu.label            "Affichage">
 <!ENTITY enigmail.keyMan.keyserverMenu.label       "Serveur de clés">
 <!ENTITY enigmail.keyMan.generateMenu.label        "Générer">
 
@@ -518,7 +518,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.keyMan.refreshSelKeys.label      "Actualiser les clés publiques sélectionnées">
 <!ENTITY enigmail.keyMan.refreshAllKeys.label      "Actualiser toutes les clés publiques">
 <!ENTITY enigmail.keyMan.downloadContactKeys.label "Trouver des clés pour tous les contacts">
-<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Actualiser les clés publiques à partir des serveurs de clés">
+<!ENTITY enigmail.keyMan.ctxRefreshKey.label       "Actualiser les clés publiques à partir d’un serveur de clés">
 <!ENTITY enigmail.keyMan.initiateAcBackup.label    "Créer un message de configuration Autocrypt">
 
 <!ENTITY enigmail.keyMan.reload.label              "Recharger le cache des clés">
@@ -655,7 +655,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 
 <!ENTITY enigmail.genCardKey.title                   "Générer une clé OpenPGP">
 <!ENTITY enigmail.genCardKey.backupKey.label         "Enregistrer une copie de sauvegarde de la clé externe à la carte">
-<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTE : la génération de la clé peut prendre plusieurs minutes.</a> Veuillez ne pas quitter l’application tant que cette opération est en cours. Vous serez averti quand l’opération de génération de clé sera terminée.">
+<!ENTITY enigmail.genCardKey.desc                    "<a class='enigmailStrong'>NOTE : la génération de clé peut prendre plusieurs minutes.</a> Veuillez ne pas quitter l’application tant que cette opération est en cours. Vous serez averti quand l’opération de génération de clé sera terminée.">
 
 <!ENTITY enigmail.cardPin.title                      "Changer le NIP de la carte à puce intelligente">
 <!ENTITY enigmail.cardPin.action.label               "Que souhaitez-vous faire ?">
@@ -702,35 +702,35 @@ L’assistant a tenté de trouver l’exécutable GnuPG, mais sans succès.">
 Si vous le souhaitez, cliquez sur le bouton « Installer GnuPG » pour télécharger et installer GnuPG.">
 
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc2    "Autrement, si vous avez déjà installé GnuPG, utilisez le bouton « Parcourir » pour définir manuellement le chemin vers GnuPG.">
-<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "Localiser GnuPG avec le bouton Parcourir">
+<!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "Veuillez trouver GnuPG à l’aide du bouton Parcourir">
 <!ENTITY enigmail.setupWiz.pgInstall.installButton   "Installer GnuPG…">
 <!ENTITY enigmail.setupWiz.pgInstall.locateButton    "Parcourir…">
 <!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "Téléchargement de GnuPG…">
-<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Démarrage de l’installateur. Suivez les indications de l’assistant d’installation GnuPG.">
+<!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Démarrage du programme d’installation. Veuillez suivre les étapes de l’assistant d’installation GnuPG.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDone     "L’installation est terminée. Veuillez poursuivre le processus de configuration à la page suivante de l’assistant.">
-<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Installation correcte de GnuPG trouvée.">
+<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Une installation valide de GnuPG a été trouvée.">
 
 
 <!-- wizard: key selection step -->
 
 <!ENTITY enigmail.setupWiz.pgKeySel.title            "Sélection de clé">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Créer une clé pour signer et chiffrer les courriels">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "Nous avons détecté que vous avez déjà une clé OpenPGP.
-                                                      Vous pouvez utiliser une de vos clés existantes, ou créer une nouvelle paire de clés.">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Je veux créer une nouvelle paire de clés pour signer et chiffrer mes courriels">
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "Nous avons détecté que vous avez déjà une clé OpenPGP. Vous pouvez soit utiliser une de vos clés existantes soit créer une nouvelle biclé.">
+<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Je veux créer une nouvelle biclé pour signer et chiffrer mes courriels">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "Je veux sélectionner une des clés ci-dessous pour signer et chiffrer mes courriels :">
 
 
 <!-- wizard: key creation - password step -->
 <!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Créer une clé">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Créer une clé pour signer et chiffrer les messages">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "Cette boîte de dialogue créera une paire de deux clés :">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Créer une nouvelle biclé">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "Cette boîte de dialogue créera deux clés :">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Votre <html:b>clé publique</html:b> permet <html:b>aux autres</html:b> de vous envoyer des courriels chiffrés. Vous pouvez la distribuer à tout le monde.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Votre <html:b>clé privée vous permet</html:b> de déchiffrer ces courriels et d’envoyer des courriels signés. Vous ne devriez la donner à personne.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Votre <html:b>clé privée vous permet</html:b> de déchiffrer ces courriels et d’envoyer des courriels signés. Vous ne devriez la donner à personne.
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Votre <html:b>clé privée</html:b><html:b> <html:b>vous</html:b> permet de déchiffrer ces courriels et d’envoyer des courriels signés. Vous ne devriez la donner à personne.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Votre <html:b>clé privée</html:b> <html:b>vous</html:b> permet de déchiffrer ces courriels et d’envoyer des courriels signés.
+Vous ne devriez la donner à personne.
 Pour protéger votre clé privée, vous serez invité à saisir une phrase de passe dans les deux boîtes de dialogue suivantes.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Votre <html:b>phrase de passe</html:b> protège votre clé privée. Elle prévient l’usage abusif de votre clé privée.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "La phrase de passe doit être une phrase composée d’au moins 8 caractères, chiffres et signes de ponctuation. Les signes diacritiques (p. ex. i, ç, ê) et les caractères propres à une langue <html:b>ne</html:b> sont <html:b>pas</html:b> recommandés.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "La phrase de passe doit être composée de plusieurs mots et d’au moins 8 caractères, chiffres et signes de ponctuation. Les signes diacritiques (p. ex. i, ç, ê) et les caractères propres à une langue <html:b>ne sont pas</html:b> recommandés.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Veuillez confirmer votre phrase de passe en la saisissant à nouveau">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Qualité de la phrase de passe :">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "La phrase de passe devrait comprendre au moins 8 caractères">
@@ -738,22 +738,20 @@ Pour protéger votre clé privée, vous serez invité à saisir une phrase de pa
 
 <!-- wizard: no key found step -->
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "Créer ou importer des clés OpenPGP">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "Vous ne semblez pas posséder de clé OpenPGP. Souhaitez-vous en créer une dès maintenant, ou
-
-souhaitez-vous importer une clé depuis un fichier ?">
+<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "Vous ne semblez pas encore avoir de clés OpenPGP. Souhaitez-vous créer une nouvelle clé ou importer des clés à partir d’un fichier ?">
 <!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "J’ai des clés publiques et privées que je souhaite importer">
 
 <!-- wizard: import key page -->
 <!ENTITY enigmail.setupWiz.pgKeyImport.title         "Importer des clés OpenPGP">
-<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Sélectionner les fichiers à importer">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Sélectionnez les fichiers contenant les clés publiques et privées à importer. Le champ de la clé privée peut rester vide si le premier fichier contient à la fois une clé privée et publique.">
+<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Indiquer les fichiers à importer">
+<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Veuillez indiquer les fichiers contenant les clés publiques et privées à importer. Le champ de la clé privée peut rester vide si le premier fichier contient à la fois une clé privée et publique.">
 <!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Fichier de clé publique">
 <!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Fichier de clé privée">
 
 <!-- wizard: key creation - key generation step -->
 
 <!ENTITY enigmail.setupWiz.pgKeygen.title            "Création de clé">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Votre clé est en cours de création">
+<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Votre clé est en cours de génération">
 <!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Votre clé a été générée">
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "Création d’un certificat de révocation">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "Vous pouvez maintenant créer votre certificat de révocation">
@@ -766,22 +764,22 @@ Pour ce faire, il vous faut un certificat de révocation.
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Téléverser la clé publique">
 <!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publier votre clé publique sur Internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Joindre votre clé publique">
-<!ENTITY enigmail.attachAuto.desc                    "En activant cette option, vos clés publiques sont jointes automatiquement à vos courriels">
+<!ENTITY enigmail.attachAuto.desc                    "En activant cette option, votre clé publique est jointe automatiquement à vos courriels">
 
 <!-- wizard: import settings from previous installation -->
-<!ENTITY enigmail.setupWiz.pgImportSettings.title    " Importer les paramètres depuis l’installation antérieure">
+<!ENTITY enigmail.setupWiz.pgImportSettings.title    " Importer les paramètres d’une installation antérieure">
 <!ENTITY enigmail.setupWiz.pgImportSettings.desc     "Enigmail permet de transférer tous ses paramètres vers un nouvel ordinateur, dont vos clés OpenPGP. Cela est fait en deux étapes :
 <html:ol>
 <html:li>exporter vos données du premier ordinateur en utilisant l’assistant de sauvegarde dans le préférences d’Enigmail </html:li>
  <html:li>importer les données dans le second ordinateur en utilisant cet assistant.</html:li>
 </html:ol>">
-<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Veuillez indiquer le fichier qui contient vos paramètres sauvegardés:">
-<!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importation des clés et application des paramètres">
+<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Veuillez indiquer le fichier contenant vos données sauvegardées :">
+<!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importation des clés et paramètrage">
 <!ENTITY enigmail.setupWiz.pgImportSettings.error    "Une erreur s’est produite durant l’importation. Vos paramètres n’ont pas pu être appliqués.">
 
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Merci">
-<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail est maintenant prêt à l’emploi.<html:br></html:br><html:br></html:br>Merci d’utiliser Enigmail.">
+<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail est maintenant prêt à être utilisé.<html:br/><html:br/>Nous vous remercions d’utiliser Enigmail.">
 <!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "Nous vous recommandons de téléverser votre clé publique vers l’annuaire de clés Web (WKD) de votre fournisseur de services de courriel afin que les autres puissent la trouver et l’utiliser.
 <html:br/>Si vous souhaitez le faire, veuillez confirmer la demande que vous trouverez dans votre boîte de réception.">
 <!ENTITY enigmail.pgComplete.help.title              "Pour de plus amples renseignements sur l’utilisation d’Enigmail, veuillez visiter">
@@ -789,17 +787,17 @@ Pour ce faire, il vous faut un certificat de révocation.
 <!-- wizard: manual setup page -->
 <!ENTITY enigmail.setupWiz.pgExpert.title            "Configuration manuelle d’Enigmail">
 <!ENTITY enigmail.setupWiz.pgExpert.desc             "Vous avez choisi de ne pas utiliser l’assistant pour configurer Enigmail.">
-<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "Le gestionnaire de clés Enigmail est disponible ici">
-<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "Les paramètres experts sont disponibles ici">
+<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "Le gestionnaire de clés d’Enigmail se trouve ici">
+<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "Les paramètres experts se trouvent ici">
 
 
 
-<!ENTITY enigmail.advancedIdentityDlg.title          "Paramètres d’identité Enigmail avancés">
+<!ENTITY enigmail.advancedIdentityDlg.title          "Paramètres avancés d’identité Enigmail">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Joindre ma clé publique aux messages">
 
-<!ENTITY enigmail.addPhoto.question.label            "Voulez vous ajouter la photo suivante à la clé ?">
+<!ENTITY enigmail.addPhoto.question.label            "Voulez vous ajouter la photo suivante à la clé?">
 <!ENTITY enigmail.addPhoto.title                     "Ajouter une photo à la clé">
-<!ENTITY enigmail.msgViewColumn.tooltip              "Trier par statut OpenPGP">
+<!ENTITY enigmail.msgViewColumn.tooltip              "Trier selon l’état OpenPGP">
 <!ENTITY enigmail.addToRule.title                    "Ajouter la clé à une règle par destinataire">
 <!ENTITY enigmail.addToRule.useRuleButton.label      "Ajouter une clé à la règle sélectionnée">
 <!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
@@ -818,34 +816,34 @@ Pour ce faire, il vous faut un certificat de révocation.
 <html:li>exporter vos données du premier ordinateur en utilisant cet assistant</html:li>
  <html:li>importer les données dans le second ordinateur en utilisant l’assistant de configuration.</html:li>
 </html:ol>">
-<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "Spécifiez le fichier d’exportation :">
-<!ENTITY enigmail.exportWiz.pgExport.title           "Exportation des paramètres Enigmail">
+<!ENTITY enigmail.exportWiz.pgIntro.specifyFile      "Veuillez sélectionner le fichier d’exportation :">
+<!ENTITY enigmail.exportWiz.pgExport.title           "Exportation des paramètres d’Enigmail">
 <!ENTITY enigmail.exportWiz.pgExport.exporting       "Enregistrement en cours. Les phrases de passe de vos clés vous seront peut-être demandées.">
 <!ENTITY enigmail.exportWiz.pgExport.done            "Vos clés OpenPGP et vos paramètres Enigmail sont maintenant enregistrés.
 Veuillez transférer le fichier généré vers votre nouvel ordinateur, y lancer Thunderbird, puis l’assistant de configuration à partir du menu Enigmail.">
-<!ENTITY enigmail.exportWiz.pgExport.failed          "Une erreur s’est produite durant l’exportation. Vos paramètres n’ont pas pu être enregistrés.">
+<!ENTITY enigmail.exportWiz.pgExport.failed          "Une erreur s’est produite durant l’exportation. Les paramètres n’ont pas pu être exportés.">
 
-<!ENTITY enigmail.privacyPprefPane.juniorMode         "Enigmail mode enfant">
-<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "Décider automatiquement si le mode enfant devrait être utilisé">
+<!ENTITY enigmail.privacyPprefPane.juniorMode         "Mode junior d’Enigmail">
+<!ENTITY enigmail.privacyPprefPane.juniorModeAuto     "Décider automatiquement si le mode junior devrait être utilisé">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOff "Forcer l’utilisation de S/MIME et d’Enigmail">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "Forcer l’utilisation de p≡p (Pretty Easy Privacy)">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "Poignée de main p≡p">
 <!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "H">
 <!ENTITY enigmail.pEp.revokeTrust.label               "Annuler la confiance p≡p">
-<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "Ce message a été chiffré avec p≡p. Cliquez sur l’icône pour obtenir plus de détails.">
+<!ENTITY enigmail.messeneger.pEpIcon.tootlip          "Ce message a été chiffré avec p≡p. Cliquer sur l’icône pour plus de détails.">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Vérifier les mots de confiance p≡p">
 <!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Veuillez demander à votre correspondant de vous lire ses mots de confiance en personne ou par téléphone. Ces mots devraient correspondre aux mots ci-dessous.">
-<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "Vous êtes en train d’ajouter un nouvel appareil à votre groupe d’appareils p≡p. Confirmez cette action en vérifiant les mots de confiance suivant.">
-<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Empreinte de ma clé :">
+<!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "Vous êtes sur le point d’ajouter un appareil à votre groupe d’appareils p≡p. Confirmez en vérifiant les mots de confiance suivants.">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Empreinte de ma clé :">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "Mots de confiance">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "Mots de confiance longs">
 <!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Empreinte">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "Confirmer les mots de confiance">
-<!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "Mots de confiance ou clé invalides">
-<!ENTITY enigmail.pEp.privacyStatus.label             "Statut de votre vie privée :">
+<!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "Mots de confiance erronés/Méfiance à l’égard de la clé">
+<!ENTITY enigmail.pEp.privacyStatus.label             "État de confidentialité :">
 <!ENTITY enigmail.pEp.composestatus.label             "Inconnu">
 
 <!ENTITY enigmail.pepHandshake.SuggestionTitle       "Suggestion p≡p">
@@ -854,20 +852,20 @@ Veuillez transférer le fichier généré vers votre nouvel ordinateur, y lancer
 <!ENTITY enigmail.pepPrepHandshake.desc              "Chargement des données, veuillez patienter…">
 
 <!ENTITY enigmail.pepPref.window.title               "Préférences Enigmail/p≡p">
-<!ENTITY enigmail.pepPref.accountTab.label           "Compte d’utilisateur">
+<!ENTITY enigmail.pepPref.accountTab.label           "Compte">
 <!ENTITY enigmail.pepPref.compatTab.label            "Compatibilité">
 <!ENTITY enigmail.pepPref.aboutTab.label             "À propos">
-<!ENTITY enigmail.pepPref.accountSecurity.desc       "Sécurité du compte d’utilisateur">
-<!ENTITY enigmail.pepPref.storeSecurely.title        "Conserver de manière sécurisée les messages pour ces comptes">
-<!ENTITY enigmail.pepPref.storeSecurely.label        "Conserver les messages de manière sécurisée">
-<!ENTITY enigmail.pepPref.enableEncryption.label     "Activer la protection de la vie privée">
-<!ENTITY enigmail.pepPref.passiveMode.label          "Joindre ma clé aux messages sortant">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "Sécurité du compte">
+<!ENTITY enigmail.pepPref.storeSecurely.title        "Enregistrer les messages en toute sécurité pour ces comptes">
+<!ENTITY enigmail.pepPref.storeSecurely.label        "Enregistrer les messages en toute sécurité">
+<!ENTITY enigmail.pepPref.enableEncryption.label     "Activer la protection de la confidentialité">
+<!ENTITY enigmail.pepPref.passiveMode.label          "Joindre ma clé aux messages sortants">
 <!ENTITY enigmail.pepPref.protectedSubject.label     "Activer les objets de messages protégés">
-<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Attirer mon attention lorsqu’un message risque d’être exposé lors d’une réponse ou d’un transfert">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Afficher un avertissement si un message n’est plus sécurisé à cause d’une réponse ou d’un transfert">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "Compatibilité OpenPGP">
-<!ENTITY enigmail.pepPref.autoKeyLookup.label        "Rechercher automatiquement les clés sur un serveur">
+<!ENTITY enigmail.pepPref.autoKeyLookup.label        "Rechercher automatiquement les clés sur le serveur">
 <!ENTITY enigmail.pepPref.credits.label              "Crédits">
-<!ENTITY enigmail.pepPref.thanksTo.label             "Merci à">
+<!ENTITY enigmail.pepPref.thanksTo.label             "Nous remercions">
 
 <!ENTITY enigmail.acPreferEncrypt.label              "Préférer des courriels chiffrés provenant des personnes avec qui vous échangez des courriels">
 <!ENTITY enigmail.enableAutocrypt.label              "Activer Autocrypt">

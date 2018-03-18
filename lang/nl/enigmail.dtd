@@ -88,7 +88,7 @@ Enigmail kan deze instellingen direct importeren; voor andere e-mailclients kan 
 <!ENTITY enigmail.keySel.label           "Sleutelselectie">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
 <!ENTITY enigmail.advanced.label         "Geavanceerd">
-<!ENTITY enigmail.transferSettings.label "Overbregningsinstellingen">
+<!ENTITY enigmail.transferSettings.label "Overbrengingsinstellingen">
 
 <!ENTITY enigmail.basicPrefs.label       "Basisinstellingen">
 
@@ -195,7 +195,7 @@ Enigmail kan deze instellingen direct importeren; voor andere e-mailclients kan 
 <!ENTITY enigmail.attachmykey.label            "Mijn publieke sleutel bijvoegen">
 <!ENTITY enigmail.protectHeaders.label         "Onderwerp beschermen">
 
-<!ENTITY enigmail.composemenu.accesskey        "a">
+<!ENTITY enigmail.composemenu.accesskey        "E">
 
 <!ENTITY enigmail.signedsend.accesskey         "O">
 <!ENTITY enigmail.signedsend.key               "S">
