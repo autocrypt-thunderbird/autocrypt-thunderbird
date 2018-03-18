@@ -31,10 +31,13 @@ var EnigmailPrefOverlay = {
       window.resizeBy(0, prefGroup.clientHeight);
     }
 
-    if (EnigmailPEPAdapter.isPepAvailable()) {
-      EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
-      forceOn.removeAttribute("disabled");
-    }
+    // call check to pEp-avalability asynchronously
+    EnigmailTimer.setTimeout(function _f() {
+      if (EnigmailPEPAdapter.isPepAvailable()) {
+        EnigmailLog.DEBUG("enigmailPrivacyOverlay.js: initJuniorMode - pEp is available\n");
+        forceOn.removeAttribute("disabled");
+      }
+    }, 10);
   },
 
   onWindowClose: function(event) {
