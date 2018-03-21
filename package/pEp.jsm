@@ -1064,6 +1064,12 @@ var EnigmailpEp = {
         }
 
         let r = loadListener(parsedObj);
+
+        if (typeof(r) === "object" && "result" in r && "return" in r.result && "status" in r.result.return) {
+          if (r.result.return.status !== 0) {
+            DEBUG_LOG("_callPepFunction: '" + functionName + "' returned with error: " + JSON.stringify(r));
+          }
+        }
         deferred.resolve(r);
       }
       catch (ex) {

@@ -712,7 +712,7 @@ PgpMimeEncrypt.prototype = {
         }
 
         EnigmailPEPAdapter.pep.encryptMimeString(s + this.pipeQueue, null, encryptFlags).then(function _f(res) {
-          EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: SUCCESS\n");
+          EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption: got result\n");
           if ((typeof(res) === "object") && ("result" in res)) {
             resultObj = res.result.outParams;
           }
