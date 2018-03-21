@@ -45,7 +45,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
   then(function _f(a) {
     Assert.equal(0, a.result[0].status);
 
-    return EnigmailpEp.getIdentity("strike.devtest@gmail.com", "Enigmail-UnitTest-User");
+    return EnigmailpEp.getIdentity({ address: "strike.devtest@gmail.com"});
   }).
   then(function _f(a) {
     Assert.equal("65537E212DC19025AD38EDB2781617319CE311C4", a.result[0].fpr);

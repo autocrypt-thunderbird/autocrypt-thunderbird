@@ -481,38 +481,6 @@ var EnigmailpEp = {
   },
 
   /**
-   * get a user identity from pEp
-   *
-   * @param emailAddress: String          - the email address
-   * @param userId      : String          - unique C string to identify person that identity is refering to
-   *
-   * @return: Promise.
-   *  then:  returned result
-   *  catch: Error object (see above)
-   */
-  getIdentity: function(emailAddress, userId) {
-    DEBUG_LOG("getIdentity()");
-    if (!userId) userId = "";
-    if (!emailAddress) emailAddress = "";
-
-    try {
-      let params = [
-        emailAddress,
-        userId, ["OP"]
-      ];
-
-      return this._callPepFunction(FT_CALL_FUNCTION, "get_identity", params);
-
-    }
-    catch (ex) {
-      let deferred = PromiseUtils.defer();
-      deferred.reject(makeError("PEP-ERROR", ex));
-      return deferred.promise;
-    }
-  },
-
-
-  /**
    * get all own identities from pEp
    *
    * @return: Promise.

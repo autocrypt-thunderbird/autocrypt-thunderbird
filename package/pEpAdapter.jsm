@@ -717,7 +717,7 @@ var EnigmailPEPAdapter = {
 
   getIdentityForEmail: function(emailAddress) {
     let deferred = PromiseUtils.defer();
-    EnigmailpEp.getIdentity(emailAddress, "TOFU_" + emailAddress).then(function _ok(data) {
+    EnigmailpEp.updateIdentity({ address: emailAddress }).then(function _ok(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
         if ("username" in data.result.outParams[0] && data.result.outParams[0].username) {
           let u = jsmime.headerparser.parseAddressingHeader(data.result.outParams[0].username, true);
