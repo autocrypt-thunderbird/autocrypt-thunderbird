@@ -2090,6 +2090,20 @@ Enigmail.msg = {
     if (callbackArg.actionType == "importKey") {
       var preview = EnigmailKey.getKeyListFromKeyBlock(callbackArg.data, errorMsgObj);
 
+      if (errorMsgObj.value !== "" || preview.length === 0) {
+        // try decrypting the attachment
+        exitStatus = EnigmailDecryption.decryptAttachment(window, outFile,
+          EnigmailMsgRead.getAttachmentName(callbackArg.attachment),
+          callbackArg.data,
+          exitCodeObj, statusFlagsObj,
+          errorMsgObj);
+        if ((exitStatus) && exitCodeObj.value === 0) {
+          // success decrypting, let's try again
+          callbackArg.data = EnigmailFiles.readBinaryFile(outFile);
+          preview = EnigmailKey.getKeyListFromKeyBlock(callbackArg.data, errorMsgObj);
+        }
+      }
+
       if (errorMsgObj.value === "") {
         if (preview.length > 0) {
           if (preview.length == 1) {
@@ -2129,7 +2143,7 @@ Enigmail.msg = {
       else {
         EnigmailDialog.alert(window, EnigmailLocale.getString("previewFailed") + "\n" + errorMsgObj.value);
       }
-
+      outFile.remove(true);
       return;
     }
 
@@ -2276,7 +2290,8 @@ Enigmail.msg = {
     let keyFound = false;
 
     for (let i in currentAttachments) {
-      if (currentAttachments[i].contentType.search(/application\/pgp-keys/i) >= 0) {
+      if (currentAttachments[i].contentType.search(/application\/pgp-keys/i) >= 0 ||
+        EnigmailMsgRead.getAttachmentName(currentAttachments[i]).match(/\.asc\.(gpg|pgp)$/i)) {
         // found attached key
         this.handleAttachment("importKey", currentAttachments[i]);
         keyFound = true;

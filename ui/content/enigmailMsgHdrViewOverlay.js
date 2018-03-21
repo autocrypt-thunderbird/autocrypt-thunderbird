@@ -988,17 +988,22 @@ Enigmail.hdrView = {
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.setAttribute('disabled', true);
       }
-      else if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
-        importMenu.setAttribute('disabled', true);
-        decryptOpenMenu.setAttribute('disabled', true);
-        decryptSaveMenu.setAttribute('disabled', true);
-        verifyMenu.removeAttribute('disabled');
-      }
       else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0])) {
-        importMenu.setAttribute('disabled', true);
+        if ((typeof(selectedAttachments[0].name) !== 'undefined' && selectedAttachments[0].name.match(/\.asc\.(gpg|pgp)$/i)) ||
+          (typeof(selectedAttachments[0].displayName) !== 'undefined' && selectedAttachments[0].displayName.match(/\.asc\.(gpg|pgp)$/i))) {
+          importMenu.removeAttribute('disabled');
+        }
+        else {
+          importMenu.setAttribute('disabled', true);
+        }
         decryptOpenMenu.removeAttribute('disabled');
         decryptSaveMenu.removeAttribute('disabled');
-        verifyMenu.setAttribute('disabled', true);
+        if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
+          verifyMenu.removeAttribute('disabled');
+        }
+        else {
+          verifyMenu.setAttribute('disabled', true);
+        }
         if (typeof(selectedAttachments[0].displayName) == "undefined") {
           if (!selectedAttachments[0].name) {
             selectedAttachments[0].name = "message.pgp";
@@ -1008,6 +1013,12 @@ Enigmail.hdrView = {
         if (!selectedAttachments[0].displayName) {
           selectedAttachments[0].displayName = "message.pgp";
         }
+      }
+      else if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
+        importMenu.setAttribute('disabled', true);
+        decryptOpenMenu.setAttribute('disabled', true);
+        decryptSaveMenu.setAttribute('disabled', true);
+        verifyMenu.removeAttribute('disabled');
       }
       else {
         importMenu.setAttribute('disabled', true);
