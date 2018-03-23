@@ -20,9 +20,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 
 var gTxtConverter = null;
 

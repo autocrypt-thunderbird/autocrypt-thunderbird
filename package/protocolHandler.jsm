@@ -15,12 +15,12 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm");
+Cu.import("chrome://enigmail/content/modules/data.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";
@@ -161,25 +161,25 @@ EnigmailProtocolHandler.prototype = {
       // About Enigmail
       //            winName = "about:"+enigmail;
       winName = "about:enigmail";
-      spec = "chrome://enigmail/content/enigmailAbout.xul";
+      spec = "chrome://enigmail/content/ui/enigmailAbout.xul";
 
     }
     else if (aURI.spec == aURI.scheme + ":console") {
       // Display enigmail console messages
       winName = "enigmail:console";
-      spec = "chrome://enigmail/content/enigmailConsole.xul";
+      spec = "chrome://enigmail/content/ui/enigmailConsole.xul";
 
     }
     else if (aURI.spec == aURI.scheme + ":keygen") {
       // Display enigmail key generation console
       winName = "enigmail:keygen";
-      spec = "chrome://enigmail/content/enigmailKeygen.xul";
+      spec = "chrome://enigmail/content/ui/enigmailKeygen.xul";
 
     }
     else {
       // Display Enigmail about page
       winName = "about:enigmail";
-      spec = "chrome://enigmail/content/enigmailAbout.xul";
+      spec = "chrome://enigmail/content/ui/enigmailAbout.xul";
     }
 
     var windowManager = Cc[WMEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);

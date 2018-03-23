@@ -29,7 +29,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "setTimeout",
   "resource://gre/modules/Timer.jsm"); /* global Timer: false */
 
 var SubScriptLoader = Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader);
-SubScriptLoader.loadSubScript("resource://enigmail/enigmailprocess_shared.js", this);
+SubScriptLoader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared.js", this);
 
 var EXPORTED_SYMBOLS = ["BaseProcess", "PromiseWorker", "SubprocessConstants"];
 

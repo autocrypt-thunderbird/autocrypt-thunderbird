@@ -25,7 +25,7 @@
         onclick="return contentAreaClick(event);"
         ondialogaccept="onAccept();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/pref-pep.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/pref-pep.js"/>
 
   <tabbox flex="1" style="margin:5px" id="prefTabs">
     <tabs id="prefTabBox">

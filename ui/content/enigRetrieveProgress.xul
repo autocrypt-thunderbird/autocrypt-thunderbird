@@ -22,7 +22,7 @@
         onunload="onUnload()"
         oncancel="return onCancel()">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigRetrieveProgress.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigRetrieveProgress.js"/>
 
     <grid flex="1">
       <columns>

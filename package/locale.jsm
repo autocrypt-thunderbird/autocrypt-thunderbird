@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
-Components.utils.import("resource://enigmail/log.jsm");
+Components.utils.import("chrome://enigmail/content/modules/log.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

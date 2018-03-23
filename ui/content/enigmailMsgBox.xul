@@ -26,7 +26,7 @@
         ondialogaccept="dlgClose('accept')"
         buttonpack="center">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgBox.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgBox.js"/>
 
   <popupset>
     <menupopup id="ctxmenu">

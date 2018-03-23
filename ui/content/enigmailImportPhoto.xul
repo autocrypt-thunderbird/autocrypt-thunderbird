@@ -23,8 +23,8 @@
         width="400px"
         height="450px"
         buttons="accept, cancel">
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailImportPhoto.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailImportPhoto.js"/>
 
   <hbox align="center">
     <vbox align="center">

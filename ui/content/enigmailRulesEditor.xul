@@ -25,8 +25,8 @@
         ondialogaccept="return enigmailDlgOnAccept();"
         ondialoghelp="EnigHelpWindow('rulesEditor');">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailRulesEditor.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailRulesEditor.js"/>
 
   <groupbox width="700px" flex="1">
     <vbox flex="1" align="stretch">

@@ -13,10 +13,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Cu.import("resource://enigmail/rules.jsm"); /* global EnigmailRules: false */
-Cu.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
-Cu.import("resource://enigmail/prefs.jsm"); /* global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /* global EnigmailPrefs: false */
 
 const TYPE_BOOL = 1;
 const TYPE_CHAR = 2;

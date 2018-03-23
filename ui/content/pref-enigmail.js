@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js
 /*global Components */
 
 /* global EnigmailLog: false, EnigmailLocale: false, EnigmailGpgAgent: false, EnigmailPrefs: false, EnigmailDialog: false */
@@ -25,9 +25,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/configBackup.jsm"); /* global EnigmailConfigBackup: false */
-Cu.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/configBackup.jsm"); /* global EnigmailConfigBackup: false */
+Cu.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 
@@ -296,14 +296,14 @@ function resetPrefs() {
 // Serializes various Enigmail settings into a separate file.
 function backupPrefs() {
 
-  window.open("chrome://enigmail/content/exportSettingsWizard.xul",
+  window.open("chrome://enigmail/content/ui/exportSettingsWizard.xul",
     "", "chrome,centerscreen,resizable,modal");
 }
 
 
 function restorePrefs() {
 
-  window.open("chrome://enigmail/content/enigmailSetupWizard.xul?doRestore=true",
+  window.open("chrome://enigmail/content/ui/enigmailSetupWizard.xul?doRestore=true",
     "", "chrome,centerscreen,resizable,modal");
 }
 

@@ -8,7 +8,7 @@
 
 /*global Components: false */
 
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
 
 
 window.addEventListener("load-enigmail", function _enigmail_msgPrintLoad() {

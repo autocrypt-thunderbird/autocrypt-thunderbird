@@ -14,8 +14,8 @@ MODFILES = \
 all: deploy
 
 deploy: $(MODFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/modules/cryptoAPI $(MODFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules/cryptoAPI $(MODFILES)
 
 
 clean:
-	$(DEPTH)/util/install -u $(DIST)/modules/cryptoAPI $(MODFILES)
+	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules/cryptoAPI $(MODFILES)

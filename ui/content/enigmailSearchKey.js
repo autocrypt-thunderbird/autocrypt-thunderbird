@@ -6,7 +6,7 @@
 
 /* eslint no-invalid-this: 0 */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js
 
 "use strict";
 

@@ -14,29 +14,29 @@
 /* global gExpandedHeaderView: false, CanDetachAttachments: true */
 /* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
-Components.utils.import("resource://enigmail/webKey.jsm"); /* global EnigmailWks: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Components.utils.import("resource://enigmail/msgRead.jsm"); /*global EnigmailMsgRead: false */
-Components.utils.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
-Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
+Components.utils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
+Components.utils.import("chrome://enigmail/content/modules/webKey.jsm"); /* global EnigmailWks: false */
+Components.utils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global EnigmailMsgRead: false */
+Components.utils.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+Components.utils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -1261,7 +1261,7 @@ Enigmail.hdrView = {
           onComplete: Enigmail.msg.reloadCompleteMsg.bind(Enigmail.msg)
         };
 
-        window.openDialog("chrome://enigmail/content/pepPrepHandshake.xul",
+        window.openDialog("chrome://enigmail/content/ui/pepPrepHandshake.xul",
           "", "dialog,modal,centerscreen", inputObj);
       }
     });

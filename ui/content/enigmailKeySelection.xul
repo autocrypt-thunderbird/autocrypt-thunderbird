@@ -27,8 +27,8 @@
         minheight="450">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeySelection.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeySelection.js"/>
 
   <groupbox id="dialogHeadline" orient="vertical">
      <caption id="usersNotFoundCapt" label="&enigmail.usersNotFound.label;"/>
@@ -73,7 +73,7 @@
           <treecol id="selectionCol" style="width:19px"
                    label="&enigmail.keySelection.label;"
                    class="treecol-image"
-                   src="chrome://enigmail/content/check1.png"
+                   src="chrome://enigmail/content/ui/check1.png"
                    ignoreincolumnpicker="true"
                    persist="width"/>
           <splitter class="tree-splitter"/>

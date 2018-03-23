@@ -12,15 +12,15 @@ var EXPORTED_SYMBOLS = ["EnigmailVerifyAttachment"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 const Ci = Components.interfaces;
 

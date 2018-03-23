@@ -15,22 +15,22 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
-Cu.import("resource://enigmail/app.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/dialog.jsm");
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm");
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/prefs.jsm");
+Cu.import("chrome://enigmail/content/modules/app.jsm");
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/dialog.jsm");
+Cu.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("chrome://enigmail/content/modules/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 
 const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];

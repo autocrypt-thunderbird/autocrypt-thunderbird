@@ -52,7 +52,7 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
 function initialize() {
   const {
     EnigmailLog
-  } = Cu.import("resource://enigmail/log.jsm", {});
+  } = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
   EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
 
   try {
@@ -61,7 +61,7 @@ function initialize() {
     window = appShellSvc.hiddenDOMWindow;
     document = window.document;
 
-    Services.scriptloader.loadSubScript("resource://enigmail/stdlib/openpgp-lib.js", null, "UTF-8");
+    Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/stdlib/openpgp-lib.js", null, "UTF-8");
 
     //this.openpgp = window.openpgp;
   }

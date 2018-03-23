@@ -8,14 +8,14 @@
 
 /* global Components: false */
 
-Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 
 var gUserId;
 var gEnigmailUid;
@@ -132,7 +132,7 @@ function addUid() {
   var resultObj = {
     refresh: false
   };
-  window.openDialog("chrome://enigmail/content/enigmailAddUidDlg.xul",
+  window.openDialog("chrome://enigmail/content/ui/enigmailAddUidDlg.xul",
     "", "dialog,modal,centerscreen", inputObj, resultObj);
   window.arguments[1].refresh = resultObj.refresh;
   reloadUidList();

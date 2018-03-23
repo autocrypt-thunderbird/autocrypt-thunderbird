@@ -15,10 +15,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
-Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
-Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 Cu.importGlobalProperties(["TextDecoder"]);
 
 const {

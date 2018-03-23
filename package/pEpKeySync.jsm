@@ -11,16 +11,16 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/send.jsm"); /*global EnigmailSend: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/pEp.jsm"); /*global EnigmailpEp: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 
 
@@ -142,7 +142,7 @@ var EnigmailPEPKeySync = {
             ownId: myId,
             otherId: partnerId
           };
-          win.openDialog("chrome://enigmail/content/pepTrustWords.xul",
+          win.openDialog("chrome://enigmail/content/ui/pepTrustWords.xul",
             "", "dialog,modal,centerscreen", inputObj);
         }
         catch (ex) {

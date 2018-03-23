@@ -16,16 +16,16 @@ const Ci = Components.interfaces;
 
 const COLOR_UNDEF = -471142;
 
-Cu.import("resource://enigmail/pEp.jsm"); /*global EnigmailpEp: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
-Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/pEp.jsm"); /*global EnigmailpEp: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];

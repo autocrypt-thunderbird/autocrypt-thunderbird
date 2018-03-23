@@ -8,7 +8,7 @@
 
 "use strict";
 
-// Uses: chrome://enigmail/content/enigmailCommon.js:
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js:
 /* global EnigGetPref: false, EnigGetString: false, EnigFormatFpr: false, EnigGetTrustLabel: false */
 /* global GetEnigmailSvc: false, EnigConfirm: false, EnigAlert: false, EnigShowPhoto: false, EnigFilePicker: false */
 /* global enigGetService: false, EnigGetTempDir: false, EnigReadFileContents: false, EnigGetLocalFileApi: false, EnigAlertPref: false */
@@ -27,14 +27,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Cu.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+Cu.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
 
 
 const INPUT = 0;
@@ -547,7 +547,7 @@ function keyMgrAddPhoto(userId, keyId) {
     okPressed: false
   };
 
-  window.openDialog("chrome://enigmail/content/enigmailImportPhoto.xul", inFile, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
+  window.openDialog("chrome://enigmail/content/ui/enigmailImportPhoto.xul", inFile, "chrome,modal=1,resizable=1,dialog=1,centerscreen", argsObj);
 
   if (!argsObj.okPressed) return;
 
@@ -895,7 +895,7 @@ function enigmailManageUids() {
   var resultObj = {
     refresh: false
   };
-  window.openDialog("chrome://enigmail/content/enigmailManageUidDlg.xul",
+  window.openDialog("chrome://enigmail/content/ui/enigmailManageUidDlg.xul",
     "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
   if (resultObj.refresh) {
     refreshKeys();
@@ -1189,7 +1189,7 @@ function addToPRRule() {
     keyId: gKeyList[keyList[0]].keyId,
     userId: gKeyList[keyList[0]].userId
   };
-  window.openDialog("chrome://enigmail/content/enigmailSelectRule.xul",
+  window.openDialog("chrome://enigmail/content/ui/enigmailSelectRule.xul",
     "", "dialog,modal,centerscreen", inputObj);
 
 }
@@ -1567,10 +1567,10 @@ var gKeyListView = {
 
     if (r.rowType === "key" && col.id === "pepBlacklistCol") {
       if (gPepKeyBlacklist.indexOf(keyObj.fpr) >= 0) {
-        return "chrome://enigmail/content/check1.png";
+        return "chrome://enigmail/content/ui/check1.png";
       }
       else {
-        return "chrome://enigmail/content/check0.png";
+        return "chrome://enigmail/content/ui/check0.png";
       }
     }
 

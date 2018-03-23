@@ -13,14 +13,14 @@ const Cu = Components.utils;
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
-Cu.import("resource://enigmail/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Cu.import("chrome://enigmail/content/modules/errorHandling.jsm"); /*global EnigmailErrorHandling: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 // dialog is just an array we'll use to store various properties from the dialog document...
 var dialog;

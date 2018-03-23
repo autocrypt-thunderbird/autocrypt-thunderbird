@@ -17,15 +17,15 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
-Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_PROTO = "application/pgp-signature";

@@ -9,8 +9,8 @@
 
 /* global Components: false, DirPaneHasFocus: false, GetSelectedAddressesFromDirTree: false, GetSelectedAddresses: false */
 
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 
 var EnigmailAbOverlay = {
   createRuleFromAddress: function(emailAddressNode) {

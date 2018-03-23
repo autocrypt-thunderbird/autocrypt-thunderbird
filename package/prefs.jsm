@@ -14,8 +14,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
 const {
   Services
 } = Cu.import("resource://gre/modules/Services.jsm");
@@ -67,7 +67,7 @@ function pref(key, val) {
 function setDefaultPrefs() {
   EnigmailLog.DEBUG("prefs.jsm: setDefaultPrefs()\n");
 
-  Services.scriptloader.loadSubScript("resource://enigmail/preferences/defaultPrefs.js", {}, "UTF-8");
+  Services.scriptloader.loadSubScript("chrome://enigmail/content/preferences/defaultPrefs.js", {}, "UTF-8");
 
   let branch = p.defaultBranch;
   for (let key in gPrefs) {

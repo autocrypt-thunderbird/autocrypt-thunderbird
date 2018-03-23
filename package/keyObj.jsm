@@ -65,17 +65,17 @@ const Cu = Components.utils;
      * getVirtualKeySize
 */
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");

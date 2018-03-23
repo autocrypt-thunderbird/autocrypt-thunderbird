@@ -26,9 +26,9 @@
         onload="onLoad();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/keyDetailsDlg.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyManager.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/keyDetailsDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeyManager.js"/>
 
   <broadcasterset>
     <broadcaster id="ownKeyCommands" hidden="true"/>

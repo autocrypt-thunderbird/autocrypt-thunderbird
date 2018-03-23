@@ -9,8 +9,8 @@
 
 /* global Components: false, gDBView: false */
 
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 if (!Enigmail) var Enigmail = {};
 

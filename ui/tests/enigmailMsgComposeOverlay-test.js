@@ -25,7 +25,7 @@ function run_test() {
   window.document = JSUnit.createDOMDocument();
   document = window.document;
 
-  do_load_module("chrome://enigmail/content/enigmailMsgComposeOverlay.js");
+  do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
 
   trustAllKeys_test();
 }

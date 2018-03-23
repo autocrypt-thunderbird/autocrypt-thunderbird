@@ -9,13 +9,13 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/keyEditor.jsm");
-Components.utils.import("resource://enigmail/log.jsm");
-Components.utils.import("resource://enigmail/locale.jsm");
-Components.utils.import("resource://enigmail/dialog.jsm");
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm");
+Components.utils.import("chrome://enigmail/content/modules/log.jsm");
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm");
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm");
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/trust.jsm"); /*global EnigmailTrust: false */
 
 var gExportableSignatureList = null;
 var gLocalSignatureList = null;

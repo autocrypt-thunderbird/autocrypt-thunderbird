@@ -14,12 +14,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
-Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
 Cu.import("resource:///modules/mailServices.js"); /*global MailServices: false */
 
 var EnigmailSend = {

@@ -6,6 +6,8 @@ DEPTH  = ../..
 
 include $(DEPTH)/config/autoconf.mk
 
+AM_FILES = am-enigprefs.xul
+
 UIFILES = \
 	autocryptInitiateBackup.xul \
 	autocryptInitiateBackup.js \
@@ -127,5 +129,6 @@ UIFILES = \
 	
 all: deploy
 
-deploy: $(UIFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content $(UIFILES)
+deploy: $(UIFILES) $(AM_FILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/ui $(UIFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content $(AM_FILES)

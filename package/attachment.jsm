@@ -13,12 +13,12 @@ var EXPORTED_SYMBOLS = ["EnigmailAttachment"];
 
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 

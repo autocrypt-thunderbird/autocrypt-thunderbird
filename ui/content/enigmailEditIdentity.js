@@ -9,11 +9,11 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -256,7 +256,7 @@ Enigmail.edit = {
     inputObj.options += ",sendlabel=" + label;
     inputObj.options += ",";
 
-    window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/ui/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
       var selKey = resultObj.userList[0];
@@ -274,7 +274,7 @@ Enigmail.edit = {
       identitySettings: this.advancedSettings,
       pgpKeyMode: this.pgpKeyMode.selectedItem.value
     };
-    window.openDialog("chrome://enigmail/content/enigmailAdvancedIdentityDlg.xul", "", "dialog,modal,centerscreen", inputObj);
+    window.openDialog("chrome://enigmail/content/ui/enigmailAdvancedIdentityDlg.xul", "", "dialog,modal,centerscreen", inputObj);
   }
 };
 

@@ -23,7 +23,7 @@
         ondialogaccept="return onAccept();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSignKeyDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailSignKeyDlg.js"/>
 
   <vbox orient="vertical">
     <grid>

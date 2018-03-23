@@ -18,8 +18,8 @@
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/am-enigprefs.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/am-enigprefs.js"/>
 
   <broadcasterset>
     <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>

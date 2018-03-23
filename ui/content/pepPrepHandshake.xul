@@ -22,7 +22,7 @@
         ondialogcancel="return onCancel();"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/pepPrepHandshake.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/pepPrepHandshake.js"/>
 
   <vbox orient="vertical" flex="1">
     <label value="&enigmail.pepPrepHandshake.desc;"/>

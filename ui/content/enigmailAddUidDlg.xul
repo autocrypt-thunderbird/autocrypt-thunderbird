@@ -21,7 +21,7 @@
         ondialogaccept="return onAccept();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAddUidDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailAddUidDlg.js"/>
 
   <vbox>
     <grid>

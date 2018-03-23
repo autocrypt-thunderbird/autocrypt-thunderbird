@@ -45,8 +45,8 @@
     <em:homepageURL>https://www.enigmail.net/</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
-    <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>
-    <em:aboutURL>chrome://enigmail/content/enigmailAbout.xul</em:aboutURL>
+    <em:optionsURL>chrome://enigmail/content/ui/pref-enigmail.xul</em:optionsURL>
+    <em:aboutURL>chrome://enigmail/content/ui/enigmailAbout.xul</em:aboutURL>
     <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
 
   </Description>

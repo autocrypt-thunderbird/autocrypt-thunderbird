@@ -50,7 +50,7 @@ const {
 Cu.importGlobalProperties(["XMLHttpRequest"]);
 
 // the following constants need to be customized for each addon
-const BASE_PATH = "chrome://enigmail/content/";
+const BASE_PATH = "chrome://enigmail/content/ui/";
 const MY_ADDON_ID = "enigmail";
 
 const overlays = {
@@ -100,7 +100,7 @@ const overlays = {
     "enigmailEditIdentity.xul"
   ],
   "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  "chrome://enigmail/content/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
+  "chrome://enigmail/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
   //
   // // Overlay for privacy preferences in Thunderbird
   "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
@@ -119,7 +119,7 @@ const overlays = {
 ///////// Enigmail-specific part start
 const {
   EnigmailLog
-} = Cu.import("resource://enigmail/log.jsm", {});
+} = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
 
 function DEBUG_LOG(str) {
   EnigmailLog.DEBUG(str);

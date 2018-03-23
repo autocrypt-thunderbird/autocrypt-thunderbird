@@ -12,16 +12,16 @@
  * helper functions for message composition
  */
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Components.utils.import("resource://enigmail/trust.jsm"); /*global EnigmailTrust: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Components.utils.import("chrome://enigmail/content/modules/trust.jsm"); /*global EnigmailTrust: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 if (!Enigmail) var Enigmail = {};
 

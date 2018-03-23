@@ -14,11 +14,11 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
-Cu.import("resource://enigmail/os.jsm"); /* global EnigmailOS: false */
-Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
-Cu.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
-Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /* global subprocess: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
 
 var gKernel32Dll = null;
 var gSystemCharset = null;

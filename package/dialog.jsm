@@ -15,11 +15,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/windows.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
-Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/windows.jsm");
+Cu.import("chrome://enigmail/content/modules/prefs.jsm");
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;
@@ -117,7 +117,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "_blank",
+    win.openDialog("chrome://enigmail/content/ui/enigmailMsgBox.xul", "_blank",
       "chrome,dialog,modal,centerscreen,resizable,titlebar", {
         msgtext: mesg,
         checkboxLabel: checkboxLabel,
@@ -168,7 +168,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailMsgBox.xul", "",
+    win.openDialog("chrome://enigmail/content/ui/enigmailMsgBox.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", argsObj, result);
 
     if (argsObj.checkboxLabel) {
@@ -435,7 +435,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/enigmailKeyImportInfo.xul", "",
+    win.openDialog("chrome://enigmail/content/ui/enigmailKeyImportInfo.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         keyList: keyList
       },

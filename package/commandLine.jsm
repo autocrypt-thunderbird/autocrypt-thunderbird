@@ -38,7 +38,7 @@ Handler.prototype = {
       cmdLine.preventDefault = true; // do not open main app window
 
       const wwatch = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher);
-      wwatch.openWindow(null, "chrome://enigmail/content/enigmailKeyManager.xul", "_blank", "chrome,dialog=no,all", cmdLine);
+      wwatch.openWindow(null, "chrome://enigmail/content/ui/enigmailKeyManager.xul", "_blank", "chrome,dialog=no,all", cmdLine);
     }
   },
 

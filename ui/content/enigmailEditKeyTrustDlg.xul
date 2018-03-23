@@ -24,7 +24,7 @@
         >
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditKeyTrustDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditKeyTrustDlg.js"/>
 
   <vbox orient="vertical">
     <hbox>

@@ -14,14 +14,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/funcs.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/os.jsm");
-Cu.import("resource://enigmail/files.jsm");
-Cu.import("resource://enigmail/app.jsm");
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/os.jsm");
+Cu.import("chrome://enigmail/content/modules/files.jsm");
+Cu.import("chrome://enigmail/content/modules/app.jsm");
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
@@ -381,7 +381,7 @@ var EnigmailRules = {
           inputObj.toAddress = "{" + theAddr + "}";
           inputObj.options = "";
           inputObj.command = "add";
-          window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "",
+          window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "",
             "dialog,modal,centerscreen,resizable", inputObj, resultObj);
           if (resultObj.cancelled === true) {
             return false;

@@ -22,7 +22,7 @@ EXTRA_JS_MODULES =  \
 	enigmailprocess_win.jsm
 
 all: $(EXTRA_JS_MODULES)
-	$(DEPTH)/util/install -m 644 $(DIST)/modules $^
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules $^
 
 clean: $(EXTRA_JS_MODULES)
-	$(DEPTH)/util/install -u $(DIST)/modules $^
+	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules $^

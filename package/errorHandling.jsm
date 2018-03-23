@@ -13,13 +13,13 @@ var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/system.jsm"); /* global EnigmailSystem: false */
-Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/data.jsm");
+Cu.import("chrome://enigmail/content/modules/core.jsm");
+Cu.import("chrome://enigmail/content/modules/system.jsm"); /* global EnigmailSystem: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 

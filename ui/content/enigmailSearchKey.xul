@@ -24,8 +24,8 @@
         minheight="50">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSearchKey.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailSearchKey.js"/>
 
   <!-- <separator/> -->
 

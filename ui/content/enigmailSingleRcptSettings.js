@@ -4,14 +4,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 
 "use strict";
 
-Components.utils.import("resource://enigmail/rules.jsm"); /* global EnigmailRules: false */
+Components.utils.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailSingleRcptSettings");
@@ -218,7 +218,7 @@ function enigmailDlgKeySelection() {
   inputObj.options += ",sendlabel=" + label;
   inputObj.options += ",";
 
-  window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  window.openDialog("chrome://enigmail/content/ui/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   try {
     if (resultObj.cancelled) return;
   }

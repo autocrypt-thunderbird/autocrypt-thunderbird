@@ -11,13 +11,13 @@ const Cu = Components.utils;
 
 const {
   EnigmailLocale
-} = Cu.import("resource://enigmail/locale.jsm");
+} = Cu.import("chrome://enigmail/content/modules/locale.jsm");
 const {
   EnigmailPrefs
-} = Cu.import("resource://enigmail/prefs.jsm");
+} = Cu.import("chrome://enigmail/content/modules/prefs.jsm");
 const {
   EnigmailDialog
-} = Cu.import("resource://enigmail/dialog.jsm");
+} = Cu.import("chrome://enigmail/content/modules/dialog.jsm");
 
 
 function onLoad() {

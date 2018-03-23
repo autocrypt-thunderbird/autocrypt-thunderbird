@@ -27,7 +27,7 @@
         ondialogaccept="dlgClose(0)">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyImportInfo.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeyImportInfo.js"/>
 
   <vbox align="center" flex="1" style="overflow:auto" id="outerbox">
     <hbox align="center" flex="1">

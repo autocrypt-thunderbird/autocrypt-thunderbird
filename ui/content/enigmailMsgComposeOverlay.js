@@ -16,35 +16,35 @@
 /*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false, getCurrentAccountKey: false */
 /*global Sendlater3Composing: false, MailServices: false */
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Components.utils.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /* global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/passwords.jsm"); /*global EnigmailPassword: false */
-Components.utils.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
-Components.utils.import("resource://enigmail/encryption.jsm"); /*global EnigmailEncryption: false */
-Components.utils.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
-Components.utils.import("resource://enigmail/clipboard.jsm"); /*global EnigmailClipboard: false */
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Components.utils.import("resource://enigmail/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
-Components.utils.import("resource://enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-Components.utils.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Components.utils.import("resource://enigmail/msgRead.jsm"); /*global EnigmailMsgRead: false */
-Components.utils.import("resource://enigmail/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+Components.utils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+Components.utils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+Components.utils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false */
+Components.utils.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
+Components.utils.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Components.utils.import("chrome://enigmail/content/modules/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
+Components.utils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+Components.utils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global EnigmailMsgRead: false */
+Components.utils.import("chrome://enigmail/content/modules/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
 Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -147,14 +147,14 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
       EnigmailTimer.setTimeout(function _f() {
         if ("loadOverlay" in sb.contentDocument) {
-          sb.contentDocument.loadOverlay("chrome://enigmail/content/enigmailAbContactsPanel.xul", null);
+          sb.contentDocument.loadOverlay("chrome://enigmail/content/ui/enigmailAbContactsPanel.xul", null);
         }
       }, 2000);
     }
 
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
-      event.target.loadOverlay("chrome://enigmail/content/enigmailCustToolOverlay.xul", null);
+      event.target.loadOverlay("chrome://enigmail/content/ui/enigmailCustToolOverlay.xul", null);
     }, false);
 
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
@@ -992,7 +992,7 @@ Enigmail.msg = {
     }
     var userIdValue = "";
 
-    window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/ui/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     try {
       if (resultObj.cancelled) return;
       this.extractAndAttachKey(resultObj.userList, true);
@@ -1249,7 +1249,7 @@ Enigmail.msg = {
       account = EnigmailFuncs.getAccountForIdentity(currentId);
     }
     catch (ex) {}
-    window.openDialog("chrome://enigmail/content/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
+    window.openDialog("chrome://enigmail/content/ui/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
       account: account
     });
@@ -2377,7 +2377,7 @@ Enigmail.msg = {
       onComplete: Enigmail.msg.getPepMessageRating.bind(Enigmail.msg)
     };
 
-    window.openDialog("chrome://enigmail/content/pepPrepHandshake.xul",
+    window.openDialog("chrome://enigmail/content/ui/pepPrepHandshake.xul",
       "", "dialog,modal,centerscreen", inputObj);
   },
 
@@ -2391,7 +2391,7 @@ Enigmail.msg = {
       success: false,
       resetDefaults: false
     };
-    window.openDialog("chrome://enigmail/content/enigmailEncryptionDlg.xul", "", "dialog,modal,centerscreen", inputObj);
+    window.openDialog("chrome://enigmail/content/ui/enigmailEncryptionDlg.xul", "", "dialog,modal,centerscreen", inputObj);
 
     if (!inputObj.success) return; // Cancel pressed
 
@@ -2990,7 +2990,7 @@ Enigmail.msg = {
       inputObj.dialogHeader = EnigmailLocale.getString("recipientsSelectionHdr");
 
       // perform key selection dialog:
-      window.openDialog("chrome://enigmail/content/enigmailKeySelection.xul", "",
+      window.openDialog("chrome://enigmail/content/ui/enigmailKeySelection.xul", "",
         "dialog,modal,centerscreen,resizable", inputObj, resultObj);
 
       // process result from key selection dialog:
@@ -3123,7 +3123,7 @@ Enigmail.msg = {
         if (excess) {
           EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Excess lines detected\n");
           var resultObj = {};
-          window.openDialog("chrome://enigmail/content/enigmailWrapSelection.xul", "", "dialog,modal,centerscreen", resultObj);
+          window.openDialog("chrome://enigmail/content/ui/enigmailWrapSelection.xul", "", "dialog,modal,centerscreen", resultObj);
           try {
             if (resultObj.cancelled) {
               // cancel pressed -> do not send, return instead.
@@ -3908,12 +3908,12 @@ Enigmail.msg = {
               //add var to disable remember box since we're dealing with restricted scenarios...
               inputObj.restrictedScenario = true;
               resultObj.selected = -1;
-              window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul", "", "dialog,modal,centerscreen", inputObj, resultObj);
+              window.openDialog("chrome://enigmail/content/ui/enigmailAttachmentsDialog.xul", "", "dialog,modal,centerscreen", inputObj, resultObj);
             }
           }
           else {
             resultObj.selected = -1;
-            window.openDialog("chrome://enigmail/content/enigmailAttachmentsDialog.xul", "", "dialog,modal,centerscreen", inputObj, resultObj);
+            window.openDialog("chrome://enigmail/content/ui/enigmailAttachmentsDialog.xul", "", "dialog,modal,centerscreen", inputObj, resultObj);
           }
           if (resultObj.selected < 0) {
             // dialog cancelled

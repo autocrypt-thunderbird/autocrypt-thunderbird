@@ -15,19 +15,19 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/lazy.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/persistentCrypto.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/streams.jsm"); /* global EnigmailStreams: false */
-Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm");
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/core.jsm");
+Cu.import("chrome://enigmail/content/modules/persistentCrypto.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /* global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
-Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false */
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");

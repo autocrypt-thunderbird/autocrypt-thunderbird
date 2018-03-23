@@ -23,4 +23,4 @@ skin          enigmail    modern/1.0 chrome/skin/modern/
 
 
 # Resource module registration
-resource enigmail modules/
+# resource enigmail modules/

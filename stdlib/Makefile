@@ -17,8 +17,8 @@ MODFILES = \
 all: deploy
 
 deploy: $(MODFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/modules/stdlib $(MODFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules/stdlib $(MODFILES)
 
 
 clean:
-	$(DEPTH)/util/install -u $(DIST)/modules/stdlib $(MODFILES)
+	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules/stdlib $(MODFILES)

@@ -21,7 +21,7 @@
         onload="onLoad();"
         ondialogaccept="return onAccept();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeyserverDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeyserverDlg.js"/>
 
   <broadcasterset>
     <broadcaster id="searchCollapser"/>

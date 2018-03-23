@@ -21,7 +21,7 @@
         buttons="accept"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailManageUidDlg.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailManageUidDlg.js"/>
 
   <vbox orient="vertical" flex="1">
     <hbox align="center">

@@ -15,14 +15,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/data.jsm");
-Cu.import("resource://enigmail/files.jsm");
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/subprocess.jsm");
-Cu.import("resource://enigmail/errorHandling.jsm");
-Cu.import("resource://enigmail/core.jsm");
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
-Cu.import("resource://enigmail/constants.jsm"); /* global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm");
+Cu.import("chrome://enigmail/content/modules/files.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/subprocess.jsm");
+Cu.import("chrome://enigmail/content/modules/errorHandling.jsm");
+Cu.import("chrome://enigmail/content/modules/core.jsm");
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 
 const loadOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
 

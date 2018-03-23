@@ -14,7 +14,7 @@
 
 
   <link rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailAbOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailAbOverlay.js"/>
 
   <!-- Thunderbird / SeaMonkey -->
   <window id="addressbookWindow">

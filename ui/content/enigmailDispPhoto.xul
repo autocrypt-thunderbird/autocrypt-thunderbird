@@ -24,7 +24,7 @@
         height="400px"
         buttons="accept">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailDispPhoto.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailDispPhoto.js"/>
 
   <hbox align="center">
     <vbox align="center">

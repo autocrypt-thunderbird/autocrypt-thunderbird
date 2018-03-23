@@ -10,7 +10,7 @@
  * This file tests the implementation of subprocess.jsm
  */
 
-Components.utils.import("resource://enigmail/subprocess.jsm"); /* global subprocess: false */
+Components.utils.import("chrome://enigmail/content/modules/subprocess.jsm"); /* global subprocess: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

@@ -18,7 +18,8 @@ var EnigmailLazy = {
     return function() {
       if (holder === null) {
         const into = {};
-        Cu.import("resource://" + component, into);
+        component = component.replace(/^enigmail\//, "");
+        Cu.import("chrome://enigmail/content/modules/" + component, into);
         holder = into[name];
       }
       return holder;

@@ -25,7 +25,7 @@ function EnigmailCryptoAPI() {
   if (!gCurrentApi) {
     const {
       getGnuPGAPI
-    } = Cu.import("resource://enigmail/cryptoAPI/gnupg.js");
+    } = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg.js");
 
     gCurrentApi = getGnuPGAPI();
   }

@@ -29,7 +29,7 @@
         persist="screenX screenY width height">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailConsole.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailConsole.js"/>
 
 <commandset id="tasksCommands"/>
 
@@ -73,6 +73,6 @@
 </menubar>
 
 <browser id="contentFrame" name="contentFrame"
-        src="chrome://enigmail/content/enigmailConsole.htm" flex="100%"/>
+        src="chrome://enigmail/content/ui/enigmailConsole.htm" flex="100%"/>
 
 </window>

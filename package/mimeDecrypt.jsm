@@ -18,17 +18,17 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/decryption.jsm"); /*global EnigmailDecryption: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/uris.jsm"); /*global EnigmailURIs: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";

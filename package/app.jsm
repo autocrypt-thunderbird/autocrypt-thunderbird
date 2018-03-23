@@ -14,7 +14,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";

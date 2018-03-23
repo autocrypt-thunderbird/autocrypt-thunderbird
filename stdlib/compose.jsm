@@ -29,9 +29,9 @@ Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/mailServices.js");
 
-Cu.import("resource://enigmail/stdlib/misc.jsm");
-Cu.import("resource://enigmail/stdlib/msgHdrUtils.jsm");
-Cu.import("resource://enigmail/log.jsm");
+Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+Cu.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
 
 /**
  * Use the mailnews component to stream a message, and process it in a way

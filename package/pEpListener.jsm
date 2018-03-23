@@ -24,8 +24,8 @@ const MIN_PORT_NUM = 15900;
 const MAX_PORT_NUM = 15991;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 
 const HTTP_OK = "200";
 const HTTP_ERR_BAD_REQUEST = "400";

@@ -25,7 +25,7 @@
         minheight="50">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/pepTrustWords.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/pepTrustWords.js"/>
 
   <vbox flex="1">
     <hbox align="center" flex="1" id="overallDesc">

@@ -23,7 +23,7 @@
         onload="onLoad();">
 
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCardDetails.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCardDetails.js"/>
 
   <broadcasterset>
     <broadcaster id="bcEditMode" readonly="true"/>

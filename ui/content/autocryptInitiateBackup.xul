@@ -24,7 +24,7 @@
         style="min-height: 500px;"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/autocryptInitiateBackup.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/autocryptInitiateBackup.js"/>
 
   <!-- Select Account Page -->
   <wizardpage id="pgSelectId" pageid="pgSelectId"

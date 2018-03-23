@@ -113,16 +113,16 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
 all: dirs deploy
 
 deploy: $(PREFFILES) $(MODFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/modules/preferences $(PREFFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/modules $(MODFILES)
-	echo '"use strict";' > $(DIST)/modules/buildDate.jsm
-	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> $(DIST)/modules/buildDate.jsm
-	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> $(DIST)/modules/buildDate.jsm
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/preferences $(PREFFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules $(MODFILES)
+	echo '"use strict";' > $(DIST)/chrome/content/modules/buildDate.jsm
+	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> $(DIST)/chrome/content/modules/buildDate.jsm
+	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> $(DIST)/chrome/content/modules/buildDate.jsm
 
 
 clean:
-	$(DEPTH)/util/install -u $(DIST)/modules/preferences $(PREFFILES)
-	$(DEPTH)/util/install -u $(DIST)/modules $(MODFILES)
+	$(DEPTH)/util/install -u $(DIST)/chrome/content/preferences $(PREFFILES)
+	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules $(MODFILES)
 
 .PHONY: dirs $(DIRS)
 

@@ -25,9 +25,9 @@
         minwidth="450px"
         width="600px">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailKeygen.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailGenCardKey.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeygen.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailGenCardKey.js"/>
 
   <broadcasterset>
     <broadcaster id="bcBackupKey"/>
@@ -118,7 +118,7 @@
   <description>&enigmail.genCardKey.desc;</description>
 
   <iframe id="keygenConsole" type="content" name="keygenConsole"
-          src="chrome://enigmail/content/enigmailKeygenConsole.htm"
+          src="chrome://enigmail/content/ui/enigmailKeygenConsole.htm"
           height="200" flex="1"/>
 
 </groupbox>

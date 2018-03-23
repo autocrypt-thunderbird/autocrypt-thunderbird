@@ -22,5 +22,5 @@
    </treecols>
   <!--/tree -->
 
-  <script type="text/javascript" src="chrome://enigmail/content/columnOverlay.js"/>
+  <script type="text/javascript" src="chrome://enigmail/content/ui/columnOverlay.js"/>
 </overlay>

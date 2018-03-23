@@ -13,7 +13,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
+Cu.import("chrome://enigmail/content/modules/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 
 const SECURITY_RANDOM_GENERATOR = "@mozilla.org/security/random-generator;1";
 

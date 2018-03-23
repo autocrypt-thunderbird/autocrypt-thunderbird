@@ -7,10 +7,10 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 
 const INPUT = 0;
 const CLOSE_WIN = "close";

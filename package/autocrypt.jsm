@@ -19,26 +19,26 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false*/
-Cu.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false*/
-Cu.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false*/
-Cu.import("resource://enigmail/mime.jsm"); /* global EnigmailMime: false*/
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false*/
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
-Cu.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("resource://enigmail/send.jsm"); /*global EnigmailSend: false */
-Cu.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("resource://enigmail/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
-Cu.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/openpgp.jsm"); /*global EnigmailOpenPGP: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+Cu.import("chrome://enigmail/content/modules/send.jsm"); /*global EnigmailSend: false */
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("chrome://enigmail/content/modules/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
 
 var gCreatedSetupIds = [];
 

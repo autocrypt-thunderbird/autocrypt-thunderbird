@@ -23,8 +23,8 @@
         buttons="accept,cancel"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailWrapSelection.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailWrapSelection.js"/>
 
   <vbox orient="vertical">
     <description>&enigmail.compose.excesslength.label;</description>

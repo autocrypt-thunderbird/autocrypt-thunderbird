@@ -14,24 +14,24 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
-Cu.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Cu.import("resource://enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("resource://enigmail/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/tor.jsm"); /*global EnigmailTor: false */
-Cu.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("resource://enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
-Cu.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Cu.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
-Cu.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+Cu.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/tor.jsm"); /*global EnigmailTor: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Cu.import("chrome://enigmail/content/modules/webKey.jsm"); /*global EnigmailWks: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
@@ -580,7 +580,7 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
           inputObj.keyId = "";
       }
 
-      win.openDialog("chrome://enigmail/content/enigmailKeyserverDlg.xul",
+      win.openDialog("chrome://enigmail/content/ui/enigmailKeyserverDlg.xul",
         "", "dialog,modal,centerscreen", inputObj, resultObj);
       keyDlObj.keyServer = resultObj.value;
     }
@@ -591,7 +591,7 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
   }
 
   if (!hideProgess) {
-    win.openDialog("chrome://enigmail/content/enigRetrieveProgress.xul",
+    win.openDialog("chrome://enigmail/content/ui/enigRetrieveProgress.xul",
       "", "dialog,modal,centerscreen", keyDlObj, resultObj);
   }
   else {

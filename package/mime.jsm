@@ -14,9 +14,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/rng.jsm"); /*global EnigmailRNG: false */
-Components.utils.import("resource://enigmail/streams.jsm"); /*global EnigmailStreams: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+Components.utils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
 
 var EnigmailMime = {
   /***

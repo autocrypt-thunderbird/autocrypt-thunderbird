@@ -48,8 +48,8 @@ Cu.import("resource:///modules/iteratorUtils.jsm"); // for toXPCOMArray
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/mailServices.js");
 
-Cu.import("resource://enigmail/stdlib/misc.jsm");
-Cu.import("resource://enigmail/log.jsm");
+Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
 
 // Adding a messenger lazy getter to the MailServices even though it's not a service
 XPCOMUtils.defineLazyGetter(MailServices, "messenger", function() {

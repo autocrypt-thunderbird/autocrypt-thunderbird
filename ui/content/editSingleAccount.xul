@@ -22,7 +22,7 @@
         ondialogaccept="Enigmail.edit.onAcceptEditor();"
         style="min-width: 45em; min-height: 47em;">
 
-  <!--script type="application/x-javascript" src="chrome://enigmail/content/enigmailEditIdentity.js"/-->
+  <!--script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditIdentity.js"/-->
 
   <broadcasterset>
     <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>

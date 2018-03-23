@@ -5,10 +5,10 @@
 
 /* eslint strict: 0 */
 
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
 
 var EnigmailPrefOverlay = {
   _windowResized: 0,

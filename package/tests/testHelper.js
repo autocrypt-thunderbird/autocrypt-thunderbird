@@ -248,7 +248,7 @@ function setupTestAccounts() {
   }
 }
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 
 function withEnigmail(f) {
   return function() {
@@ -266,8 +266,8 @@ function withEnigmail(f) {
 
 CustomAssert.registerExtraAssertionsOn(Assert);
 
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
 function withLogFiles(f) {
   return function() {
     try {

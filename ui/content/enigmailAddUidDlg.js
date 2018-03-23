@@ -8,11 +8,11 @@
 
 
 "use strict";
-Components.utils.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
-Components.utils.import("resource://enigmail/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/data.jsm"); /* global EnigmailData: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
 
 function onAccept() {
   var name = document.getElementById("addUid_name");

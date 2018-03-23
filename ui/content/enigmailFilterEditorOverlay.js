@@ -10,7 +10,7 @@
 
 /* global gActionListOrdered: false, checkActionsReorder: true */
 
-Components.utils.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
+Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
 
 
 var EnigmailFilterEditor = {

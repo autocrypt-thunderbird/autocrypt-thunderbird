@@ -40,7 +40,7 @@ Cu.import("resource:///modules/mailServices.js");
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",
   "@mozilla.org/intl/scriptabledateformat;1");
 
-Cu.import("resource://enigmail/log.jsm");
+Cu.import("chrome://enigmail/content/modules/log.jsm");
 
 let isOSX = ("nsILocalFileMac" in Ci);
 let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);

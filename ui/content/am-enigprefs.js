@@ -8,9 +8,9 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -52,7 +52,7 @@ function onPreInit(account, accountValues) {
 
   if (!foundEnigmail) {
     // Enigmail Overlay not yet loaded
-    document.loadOverlay("chrome://enigmail/content/enigmailEditIdentity.xul", {
+    document.loadOverlay("chrome://enigmail/content/ui/enigmailEditIdentity.xul", {
       observe: function(subject, topic, data) {
         EnigmailLog.DEBUG("am-enigprefs.js: onPreInit: topic=" + topic + "\n");
         // let e = new Event("load-enigmail");

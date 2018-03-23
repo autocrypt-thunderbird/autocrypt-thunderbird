@@ -17,18 +17,18 @@ const Cu = Components.utils;
 
 /*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
 
-Cu.import("resource://enigmail/log.jsm");
-Cu.import("resource://enigmail/prefs.jsm");
-Cu.import("resource://enigmail/timer.jsm");
-Cu.import("resource://enigmail/app.jsm");
-Cu.import("resource://enigmail/locale.jsm");
-Cu.import("resource://enigmail/dialog.jsm");
-Cu.import("resource://enigmail/windows.jsm");
-Cu.import("resource://enigmail/core.jsm"); /* global EnigmailCore: false */
-Cu.import("resource://enigmail/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
-Cu.import("resource://enigmail/installPep.jsm"); /* global EnigmailInstallPep: false */
-Cu.import("resource://enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
-Cu.import("resource://enigmail/lazy.jsm"); /* global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/prefs.jsm");
+Cu.import("chrome://enigmail/content/modules/timer.jsm");
+Cu.import("chrome://enigmail/content/modules/app.jsm");
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/dialog.jsm");
+Cu.import("chrome://enigmail/content/modules/windows.jsm");
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+Cu.import("chrome://enigmail/content/modules/installPep.jsm"); /* global EnigmailInstallPep: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 /**
  * Upgrade sending prefs
@@ -157,7 +157,7 @@ function isPepInstallable() {
 function displayUpgradeInfo() {
   EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
   try {
-    EnigmailWindows.openMailTab("chrome://enigmail/content/upgradeInfo.html");
+    EnigmailWindows.openMailTab("chrome://enigmail/content/ui/upgradeInfo.html");
   }
   catch (ex) {}
 }
@@ -222,7 +222,7 @@ var EnigmailConfigure = {
               // but
               // - without starting the service again because we do that right now
               // - and modal (waiting for its end)
-              win.openDialog("chrome://enigmail/content/pref-enigmail.xul",
+              win.openDialog("chrome://enigmail/content/ui/pref-enigmail.xul",
                 "_blank", "chrome,resizable=yes,modal", {
                   'showBasic': true,
                   'clientType': 'thunderbird',

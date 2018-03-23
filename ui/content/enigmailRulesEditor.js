@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js
 
 /* global Components */
 /* global EnigInitCommon, EnigGetString, GetEnigmailSvc, EnigAlert, EnigConfirm */
@@ -15,8 +15,8 @@
 EnigInitCommon("enigmailRulesEditor");
 
 const Cu = Components.utils;
-Cu.import("resource://enigmail/rules.jsm"); /*global EnigmailRules: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 
 const INPUT = 0;
 const RESULT = 1;
@@ -178,7 +178,7 @@ function enigDoEdit() {
     inputObj.pgpmime = Number(node.getAttribute("pgpMime"));
     inputObj.negate = Number(node.getAttribute("negateRule"));
 
-    window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+    window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     if (resultObj.cancelled === false) {
       createRow(node, resultObj);
     }
@@ -192,7 +192,7 @@ function enigDoAdd() {
   inputObj.toAddress = "{}";
   inputObj.command = "add";
 
-  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (resultObj.cancelled === false) {
     var treeItem = document.createElement("treeitem");
     createRow(treeItem, resultObj);

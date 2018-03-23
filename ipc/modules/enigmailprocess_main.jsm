@@ -26,15 +26,15 @@ var {
 
 Cu.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-Cu.import("resource://enigmail/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+Cu.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
 
 if (AppConstants.platform == "win") {
   XPCOMUtils.defineLazyModuleGetter(this, "SubprocessImpl",
-    "resource://enigmail/enigmailprocess_win.jsm"); /* global SubprocessImpl: false */
+    "chrome://enigmail/content/modules/enigmailprocess_win.jsm"); /* global SubprocessImpl: false */
 }
 else {
   XPCOMUtils.defineLazyModuleGetter(this, "SubprocessImpl",
-    "resource://enigmail/enigmailprocess_unix.jsm");
+    "chrome://enigmail/content/modules/enigmailprocess_unix.jsm");
 }
 
 /**

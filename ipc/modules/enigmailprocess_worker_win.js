@@ -10,9 +10,9 @@
 
 /* global importScripts: false */
 
-importScripts("resource://enigmail/enigmailprocess_shared.js",
-  "resource://enigmail/enigmailprocess_shared_win.js",
-  "resource://enigmail/enigmailprocess_worker_common.js");
+importScripts("chrome://enigmail/content/modules/enigmailprocess_shared.js",
+  "chrome://enigmail/content/modules/enigmailprocess_shared_win.js",
+  "chrome://enigmail/content/modules/enigmailprocess_worker_common.js");
 
 /* global ctypes: false, libc: false, unix: false, SubprocessConstants: false */
 /* global debug: false */

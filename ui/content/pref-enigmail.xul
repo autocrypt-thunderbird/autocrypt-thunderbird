@@ -23,8 +23,8 @@
         onload="prefOnLoad();"
         ondialogaccept="return prefOnAccept();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/pref-enigmail.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/pref-enigmail.js"/>
 
   <popupset>
     <tooltip id="prefs.overrideGpg.tooltip">

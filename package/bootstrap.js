@@ -23,16 +23,16 @@ function startup(data, reason) {
   try {
     const {
       EnigmailApp
-    } = Cu.import("resource://enigmail/app.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/app.jsm", {});
     const {
       EnigmailCore
-    } = Cu.import("resource://enigmail/core.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/core.jsm", {});
     const {
       EnigmailAmPrefsService
-    } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
     const {
       EnigmailPgpmimeHander
-    } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
 
     loadListOfModules();
 
@@ -50,26 +50,26 @@ function shutdown(data, reason) {
   try {
     const {
       subprocess
-    } = Cu.import("resource://enigmail/subprocess.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/subprocess.jsm", {});
     subprocess.onShutdown();
 
     if (reason === APP_SHUTDOWN) return;
 
     const {
       EnigmailCore
-    } = Cu.import("resource://enigmail/core.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/core.jsm", {});
     const {
       EnigmailAmPrefsService
-    } = Cu.import("resource://enigmail/amPrefsService.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
     const {
       EnigmailPgpmimeHander
-    } = Cu.import("resource://enigmail/pgpmimeHandler.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
     const {
       EnigmailOverlays
-    } = Cu.import("resource://enigmail/overlays.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {});
     const {
       EnigmailWindows
-    } = Cu.import("resource://enigmail/windows.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/windows.jsm", {});
 
     const {
       Services
@@ -106,7 +106,7 @@ function shutdownModule(module, reason) {
  */
 function loadListOfModules() {
   let request = new XMLHttpRequest();
-  request.open("GET", "resource://enigmail/all-modules.txt", true); // async=true
+  request.open("GET", "chrome://enigmail/content/modules/all-modules.txt", true); // async=true
   request.responseType = "text";
   request.onerror = function(event) {};
   request.onload = function(event) {

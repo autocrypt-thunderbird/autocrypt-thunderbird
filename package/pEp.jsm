@@ -32,12 +32,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
-Cu.import("resource://enigmail/subprocess.jsm"); /*global subprocess: false */
+Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-Cu.import("resource://enigmail/timer.jsm"); /*global EnigmailTimer: false */
-Cu.import("resource://enigmail/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
 
 var gRequestId = 1;
 var gConnectionInfo = null;

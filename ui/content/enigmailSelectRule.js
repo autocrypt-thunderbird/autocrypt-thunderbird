@@ -16,8 +16,8 @@
 
 EnigInitCommon("enigmailSelectRule");
 
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 
 function addKeyToRule() {
   var node = getCurrentNode();
@@ -56,7 +56,7 @@ function createNewRuleWithKey() {
     inputObj.toAddress = "{" + EnigmailFuncs.stripEmail(keyObj.userId) + "}";
   }
 
-  window.openDialog("chrome://enigmail/content/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
+  window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (!resultObj.cancelled) {
     var treeItem = document.createElement("treeitem");
     createRow(treeItem, resultObj);

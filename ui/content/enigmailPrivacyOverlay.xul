@@ -13,7 +13,7 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="text/javascript" src="chrome://enigmail/content/enigmailPrivacyOverlay.js"/>
+  <script type="text/javascript" src="chrome://enigmail/content/ui/enigmailPrivacyOverlay.js"/>
   <link rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
 
   <prefpane id="panePrivacy" insertafter="mailContentGroup">

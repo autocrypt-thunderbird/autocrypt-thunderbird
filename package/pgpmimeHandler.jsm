@@ -24,15 +24,15 @@ Cm.QueryInterface(Ci.nsIComponentRegistrar);
 var EXPORTED_SYMBOLS = ["EnigmailPgpmimeHander"];
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
-Cu.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Cu.import("resource://enigmail/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
-Cu.import("resource://enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Cu.import("resource://enigmail/wksMimeHandler.jsm"); /*global EnigmailWksMimeHandler: false */
-Cu.import("resource://enigmail/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://enigmail/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Cu.import("resource://enigmail/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Cu.import("resource://enigmail/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Cu.import("chrome://enigmail/content/modules/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
+Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
+Cu.import("chrome://enigmail/content/modules/wksMimeHandler.jsm"); /*global EnigmailWksMimeHandler: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");

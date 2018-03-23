@@ -24,8 +24,8 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeHelper.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailMsgComposeOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgComposeHelper.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js"/>
 
   <link rel="stylesheet" type="text/css" href="chrome://enigmail/skin/enigmail.css"/>
 

@@ -21,7 +21,7 @@
         onload="onLoad();"
         ondialogaccept="return onAccept();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/enigmailSetCardPin.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailSetCardPin.js"/>
 
 
   <vbox>

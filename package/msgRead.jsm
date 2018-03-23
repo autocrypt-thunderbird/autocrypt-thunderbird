@@ -18,9 +18,9 @@ const Cu = Components.utils;
  * Message-reading related functions
  */
 
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/app.jsm"); /*global EnigmailApp: false */
-Cu.import("resource://enigmail/versioning.jsm"); /*global EnigmailVersioning: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
+Cu.import("chrome://enigmail/content/modules/versioning.jsm"); /*global EnigmailVersioning: false */
 
 const ExtraHeaders = ["autocrypt", "openpgp"];
 

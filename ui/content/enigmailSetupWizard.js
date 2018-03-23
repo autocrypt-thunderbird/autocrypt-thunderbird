@@ -21,20 +21,20 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/files.jsm"); /* global EnigmailFiles: false */
-Components.utils.import("resource://enigmail/configBackup.jsm"); /*global EnigmailConfigBackup: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/installGnuPG.jsm"); /*global InstallGnuPG: false */
-Components.utils.import("resource://enigmail/passwordCheck.jsm"); /*global EnigmailPasswordCheck: false */
-Components.utils.import("resource://enigmail/execution.jsm"); /*global EnigmailExecution: false */
-Components.utils.import("resource://enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/stdlib.jsm"); /*global EnigmailStdlib: false */
-Components.utils.import("resource://enigmail/webKey.jsm"); /*global EnigmailWks: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
-Components.utils.import("resource://enigmail/keyserver.jsm"); /*global EnigmailKeyServer: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Components.utils.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
+Components.utils.import("chrome://enigmail/content/modules/configBackup.jsm"); /*global EnigmailConfigBackup: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/installGnuPG.jsm"); /*global InstallGnuPG: false */
+Components.utils.import("chrome://enigmail/content/modules/passwordCheck.jsm"); /*global EnigmailPasswordCheck: false */
+Components.utils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+Components.utils.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Components.utils.import("chrome://enigmail/content/modules/webKey.jsm"); /*global EnigmailWks: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 

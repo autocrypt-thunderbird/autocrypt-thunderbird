@@ -13,8 +13,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("resource://enigmail/os.jsm"); /*global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
 
 const KEYSERVER_PREF = "keyserver";
 const AUTO_KEYSERVER_SELECTION_PREF = "autoKeyServerSelection";

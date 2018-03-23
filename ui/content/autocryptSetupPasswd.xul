@@ -23,7 +23,7 @@
         ondialogaccept="onAccept();"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/autocryptSetupPasswd.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/autocryptSetupPasswd.js"/>
 
     <broadcasterset>
       <broadcaster id="bc-input"

@@ -15,8 +15,8 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils:false */
-Cu.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false*/
-Cu.import("resource://enigmail/lazy.jsm"); /*global EnigmailLazy: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false*/
+Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 const getEnigmailPrefs = EnigmailLazy.loader("enigmail/prefs.jsm", "EnigmailPrefs");
 
 const CHECK_TOR_URI = "https://check.torproject.org/api/ip";

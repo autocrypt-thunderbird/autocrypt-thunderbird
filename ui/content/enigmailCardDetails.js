@@ -9,18 +9,18 @@
 "use strict";
 
 
-Components.utils.import("resource://enigmail/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("resource://enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("resource://enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /*global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/time.jsm"); /*global EnigmailTime: false */
-Components.utils.import("resource://enigmail/events.jsm"); /*global EnigmailEvents: false */
-Components.utils.import("resource://enigmail/card.jsm"); /*global EnigmailCard: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /*global EnigmailKeyEditor: false */
+Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
+Components.utils.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
+Components.utils.import("chrome://enigmail/content/modules/card.jsm"); /*global EnigmailCard: false */
 
 var gCardData = {};
 
@@ -171,7 +171,7 @@ function doSaveChanges() {
 }
 
 function engmailGenerateCardKey() {
-  window.openDialog("chrome://enigmail/content/enigmailGenCardKey.xul",
+  window.openDialog("chrome://enigmail/content/ui/enigmailGenCardKey.xul",
     "", "dialog,modal,centerscreen");
 
   EnigmailKeyRing.clearCache();
@@ -179,7 +179,7 @@ function engmailGenerateCardKey() {
 }
 
 function enigmailAdminPin() {
-  window.openDialog("chrome://enigmail/content/enigmailSetCardPin.xul",
+  window.openDialog("chrome://enigmail/content/ui/enigmailSetCardPin.xul",
     "", "dialog,modal,centerscreen");
   onLoad();
 }

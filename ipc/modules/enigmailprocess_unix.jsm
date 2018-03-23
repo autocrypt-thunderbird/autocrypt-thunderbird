@@ -26,10 +26,10 @@ Cu.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
 Cu.import("resource://gre/modules/osfile.jsm"); /* global ctypes: false */
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 Cu.import("resource://gre/modules/Task.jsm"); /* global Task: false */
-Cu.import("resource://enigmail/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+Cu.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
 
-Services.scriptloader.loadSubScript("resource://enigmail/enigmailprocess_shared.js", this);
-Services.scriptloader.loadSubScript("resource://enigmail/enigmailprocess_shared_unix.js", this);
+Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared.js", this);
+Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared_unix.js", this);
 
 class UnixPromiseWorker extends PromiseWorker {
   constructor(...args) {
@@ -77,7 +77,7 @@ class UnixPromiseWorker extends PromiseWorker {
 
 class Process extends BaseProcess {
   static get WORKER_URL() {
-    return "resource://enigmail/enigmailprocess_worker_unix.js";
+    return "chrome://enigmail/content/modules/enigmailprocess_worker_unix.js";
   }
 
   static get WorkerClass() {

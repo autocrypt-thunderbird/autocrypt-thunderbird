@@ -8,13 +8,13 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
-Components.utils.import("resource://enigmail/log.jsm"); /* global EnigmailLog: false */
-Components.utils.import("resource://enigmail/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("resource://enigmail/dialog.jsm"); /* global EnigmailDialog: false */
-Components.utils.import("resource://enigmail/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("resource://enigmail/constants.jsm"); /*global EnigmailConstants: false */
+Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+Components.utils.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
 const Ci = Components.interfaces;
 

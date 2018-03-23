@@ -8,11 +8,11 @@
 
 "use strict";
 
-Components.utils.import("resource://enigmail/core.jsm"); /*global EnigmailCore: false*/
-Components.utils.import("resource://enigmail/pipeConsole.jsm"); /*global EnigmailConsole: false */
-Components.utils.import("resource://enigmail/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("resource://enigmail/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("resource://enigmail/windows.jsm"); /*global EnigmailWindows: false */
+Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false*/
+Components.utils.import("chrome://enigmail/content/modules/pipeConsole.jsm"); /*global EnigmailConsole: false */
+Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 
 /* global goUpdateCommand: false */
 

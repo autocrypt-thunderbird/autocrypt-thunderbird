@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/enigmailCommon.js
+// Uses: chrome://enigmail/content/ui/enigmailCommon.js
 
 "use strict";
 
@@ -16,8 +16,8 @@
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
-Components.utils.import("resource://enigmail/funcs.jsm"); /* global EnigmailFuncs: false */
-Components.utils.import("resource://enigmail/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
 
 const INPUT = 0;
 const RESULT = 1;

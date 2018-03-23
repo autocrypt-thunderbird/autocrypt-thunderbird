@@ -20,7 +20,7 @@ const {
 } = Cu.import("resource://gre/modules/Services.jsm");
 
 // Load generic API
-Services.scriptloader.loadSubScript("resource://enigmail/cryptoAPI/interface.js",
+Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI/interface.js",
   null, "UTF-8"); /* global CryptoAPI */
 
 

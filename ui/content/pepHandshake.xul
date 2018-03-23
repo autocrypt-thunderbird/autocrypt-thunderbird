@@ -23,7 +23,7 @@
         minwidth="650px"
         onload="onLoad();">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/pepHandshake.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/pepHandshake.js"/>
 
   <vbox orient="vertical" flex="1">
     <hbox align="center">
