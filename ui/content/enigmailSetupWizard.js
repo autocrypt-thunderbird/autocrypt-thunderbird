@@ -1241,7 +1241,6 @@ function wizardApplyId(identity, keyId) {
   identity.setBoolAttribute("enablePgp", true);
   identity.setIntAttribute("pgpKeyMode", 1);
   identity.setCharAttribute("pgpkeyId", "0x" + keyId);
-  identity.setIntAttribute("openPgpHeaderMode", 0);
 
   // process signing settings:
   // NOTE: option defaultSigningPolicy is an INT

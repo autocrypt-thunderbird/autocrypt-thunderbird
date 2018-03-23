@@ -107,6 +107,12 @@
                          observes="enigmail_bcEnablePgp"/>
                 </hbox>
               </radiogroup>
+
+              <separator/>
+
+              <checkbox id="openpgp.sendKeyWithMsg"
+                          label="&enigmail.amPrefPgp.sendKeyWithMsg.label;"
+                          checked="false"/>
             </vbox>
 
             <!-- Autocrypt tab -->
@@ -132,12 +138,6 @@
 
         <hbox autostretch="never" id="enigmail_PrefsBox">
           <spacer flex="1"/>
-          <button class="dialog"
-                  id="enigmail_advancedAccountPrefsButton"
-                  observes="enigmail_bcEnablePgp"
-                  advanced="true"
-                  label="&enigmail.advancedPrefsButton.label;"
-                  oncommand="Enigmail.edit.advancedIdentitySettings()"/>
           <button class="dialog"
                   id="enigmail_openpgpPrefsButton"
                   observes="enigmail_bcEnablePgp"

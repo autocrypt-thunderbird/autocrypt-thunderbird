@@ -22,8 +22,6 @@ UIFILES = \
 	aboutEnigmail.html \
 	enigmailAddUidDlg.js \
 	enigmailAddUidDlg.xul \
-	enigmailAdvancedIdentityDlg.js \
-	enigmailAdvancedIdentityDlg.xul \
 	enigmailMsgBox.js \
 	enigmailMsgBox.xul \
 	enigmailAttachmentsDialog.xul \

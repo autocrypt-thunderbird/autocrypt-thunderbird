@@ -4463,9 +4463,6 @@ Enigmail.msg = {
 
   modifyCompFields: function() {
 
-    const HEADERMODE_KEYID = 0x01;
-    const HEADERMODE_URL = 0x10;
-
     try {
 
       if (!this.identity) {
@@ -4475,28 +4472,6 @@ Enigmail.msg = {
       if (this.isEnigmailEnabled()) {
         if (EnigmailPrefs.getPref("addHeaders")) {
           this.setAdditionalHeader("X-Enigmail-Version", EnigmailApp.getVersion());
-        }
-        var pgpHeader = "";
-        var openPgpHeaderMode = this.identity.getIntAttribute("openPgpHeaderMode");
-
-        if (openPgpHeaderMode & HEADERMODE_KEYID) {
-
-          let key = EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"));
-          if (key && key.fpr && key.fpr.length > 0) {
-            pgpHeader += "id=" + key.fpr;
-          }
-        }
-        if (openPgpHeaderMode & HEADERMODE_URL) {
-          if (pgpHeader.indexOf("=") > 0) pgpHeader += ";\r\n\t";
-          pgpHeader += "url=" + this.identity.getCharAttribute("openPgpUrlName");
-        }
-
-        if (openPgpHeaderMode === 0) {
-          pgpHeader = "preference=signencrypt";
-        }
-
-        if (pgpHeader.length > 0) {
-          this.setAdditionalHeader("OpenPGP", pgpHeader);
         }
 
         this.setAutocryptHeader();
