@@ -466,7 +466,7 @@
             }
 
             var asm = function(stdlib, foreign, buffer) {
-              "use asm";
+              // "use no asm"; // needs fixing for TB 60
 
               var S0 = 0,
                 S1 = 0,
@@ -2196,7 +2196,7 @@
         }
 
         function sha256_asm(stdlib, foreign, buffer) {
-          "use asm";
+          // "use no asm";
 
           // SHA256 state
           var H0 = 0,
@@ -5309,7 +5309,7 @@
           // implementation that has a few functions hand-inlined and a few loops
           // hand-unrolled.
           Rusha._core = function RushaCore(stdlib, foreign, heap) {
-            'use asm';
+            // 'use no asm';
             var H = new Int32Array(heap);
 
             function hash(k, x) {
