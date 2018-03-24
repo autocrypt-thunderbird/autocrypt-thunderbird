@@ -230,6 +230,7 @@ Installer.prototype = {
   },
 
   getDownloadUrl: function(on, installType) {
+    EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl: installType=" + installType + "\n");
 
     let deferred = PromiseUtils.defer();
 
@@ -520,7 +521,7 @@ var EnigmailInstallPep = {
     gInstallInProgress = 1;
 
     let i = new Installer(progressListener);
-    i.getDownloadUrl(i).
+    i.getDownloadUrl(i, manualInstall ? INSTALL_MANUAL : INSTALL_AUTO).
     then(function _gotUrl() {
       i.performDownload();
     }).catch(function _err() {
