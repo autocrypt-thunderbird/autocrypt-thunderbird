@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
-<!ENTITY enigmail.about.license           "Enigmail is opensource en gelicentieerd onder de <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
+<!ENTITY enigmail.about.license           "Enigmail is open source en gelicentieerd onder de <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Account / Gebruikers-ID">
 <!ENTITY enigmail.keygenTitle.label       "OpenPGP-sleutel genereren">
@@ -20,15 +20,15 @@
 <!ENTITY enigmail.keyGen.years.label      "jaar">
 <!ENTITY enigmail.keyGen.noExpiry.label   "Sleutel vervalt niet">
 <!ENTITY enigmail.keyGen.keySize.label    "Sleutelgrootte">
-<!ENTITY enigmail.keyGen.console.label    "Sleutelgeneratie">
+<!ENTITY enigmail.keyGen.console.label    "Sleutel aanmaken">
 <!ENTITY enigmail.keyGen.keyType.label    "Sleuteltype">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptische Curve)">
 
 <!ENTITY enigmail.keyUpload.label         "Telkens controleren als uw e-mailprovider ondersteund wordt">
-<!ENTITY enigmail.keyUpload.desc          "Door uw publieke sleutel op het internet te publiceren, stelt u anderen in staat om u versleutelde e-mailberichten te zenden zonder eerst contact met u op te nemen.">
+<!ENTITY enigmail.keyUpload.desc          "Door uw publieke sleutel op het internet te publiceren, zijn anderen in staat om u versleutelde e-mailberichten te zenden zonder eerst contact met u op te nemen.">
 <!ENTITY enigmail.keyUpload.sks.label     "Uw publieke sleutel uploaden naar de wereldwijde OpenPGP-keyservers">
-<!ENTITY enigmail.keyUpload.sks.desc      "Door uw sleutel naar de wereldwijde OpenPGP-keyservers te uploaden, stelt u gebruikers van legacy-e-mailapps in staat om u versleutelde of ondertekende berichten te zenden. Onthoud dat iedereen alles kan lezen wat naar deze keyservers is geüpload. (Zie het als een telefoongids.) Upload uw sleutel niet, als u het e-mailadres dat aan de sleutel gekoppeld is privé wilt houden.">
+<!ENTITY enigmail.keyUpload.sks.desc      "Door uw sleutel naar de wereldwijde OpenPGP-keyservers te uploaden, stelt u gebruikers van verouderde e-mailprogramma’s in staat om u versleutelde of ondertekende berichten te zenden. Onthoud dat iedereen alles kan lezen wat naar deze keyservers is geüpload. (Zie het als een telefoongids.) Upload uw sleutel niet, als u het e-mailadres dat aan de sleutel gekoppeld is privé wilt houden.">
 <!ENTITY enigmail.keyUpload.wks.label     "Uploaden naar de keyserver van uw e-mailprovider">
 <!ENTITY enigmail.keyAttachAuto.label     "Altijd mijn publieke sleutel aan berichten koppelen">
 
@@ -76,10 +76,10 @@
 <!ENTITY enigmail.pref.acSetupMessage.button "Autocrypt-sleuteloverbrenging initiëren">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail ondersteunt twee manieren om uw sleutels en instellingen over te brengen naar een ander apparaat.<html:br/><html:br/>
-‘Autocrypt-sleuteloverbrenging’ vereist dat de e-mailclient op het andere apparaat compatibel is met Autocrypt.
-Hoewel dit de eenvoudigere oplossing is, ondersteunt slechts een beperkt aantal clients op dit moment deze standaard.<html:br/><html:br/>De andere manier is via ‘het maken en terugzetten van een reservekopie’ van uw instellingen.
-Dit creëert een ZIP-bestand met alle benodigde informatie en sleutels, welke u naar uw nieuwe apparaat kunt kopiëren.
-Enigmail kan deze instellingen direct importeren; voor andere e-mailclients kan het ZIP-bestand uitgepakt worden en handmatig worden verwerkt.">
+‘Autocrypt-sleuteloverbrenging’ vereist dat het e-mailprogramma op het andere apparaat compatibel is met Autocrypt.
+Hoewel dit de eenvoudigere oplossing is, ondersteunt slechts een beperkt aantal programma’s op dit moment deze standaard.<html:br/><html:br/>De andere manier is via ‘het maken en terugzetten van een reservekopie’ van uw instellingen.
+Dit creëert een zipbestand met alle benodigde informatie en sleutels, dat u naar uw nieuwe apparaat kunt kopiëren.
+Enigmail kan deze instellingen direct importeren; voor andere e-mailprogramma’s kan het zipbestand uitgepakt worden en handmatig worden verwerkt.">
 
 <!ENTITY enigmail.backupRestore.desc       "Uw Enigmail-instellingen exporteren (back-up maken), inclusief uw OpenPGP-sleutels.">
 

@@ -417,7 +417,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.singleRcptSettings.desc           "(Note : en cas de conflit, « Jamais » prévaut sur « Toujours »)">
 <!ENTITY enigmail.ruleEmail.label                   "Définir les règles Enigmail pour">
 <!ENTITY enigmail.ruleEmail.tooltip                 "Ne compléter que les adresses courriel, ne PAS définir les noms des destinataires\nPar exemple, « un nom <un.nom@adresse.net> » est invalide">
-<!ENTITY enigmail.sepratationDesc.label             "(Séparer plusieurs adresses courriel par des espaces)">
+<!ENTITY enigmail.sepratationDesc.label             "(séparer plusieurs adresses courriel par des espaces)">
 <!ENTITY enigmail.matchDescStart.label              "Appliquer la règle si le destinataire">
 <!ENTITY enigmail.matchDescEnd.label                "l’une des adresses ci-dessus">
 <!ENTITY enigmail.matchExact.label                  "est exactement">
@@ -544,7 +544,7 @@ Enigmail peut importer ces paramètres directement ; pour les autres clients d
 <!ENTITY enigmail.keyMan.selectAll.label           "Sélectionner toutes les clés">
 <!ENTITY enigmail.keyMan.addToPRRule.label         "Ajouter une règle par destinataire">
 <!ENTITY enigmail.keyMan.emptyTree.tooltip         "Saisir les termes d’interrogation recherchés dans la zone de saisie ci-dessus">
-<!ENTITY enigmail.keyMan.nothingFound.tooltip      "Aucune clé ne correspond à vos termes d'interrogation">
+<!ENTITY enigmail.keyMan.nothingFound.tooltip      "Aucune clé ne correspond à vos termes d’interrogation">
 <!ENTITY enigmail.keyMan.pleaseWait.tooltip        "Veuillez patienter pendant le chargement des clés…">
 
 <!ENTITY enigmail.keyMan.filter.label              "Rechercher :">

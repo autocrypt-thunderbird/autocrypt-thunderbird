@@ -350,7 +350,7 @@
 <!ENTITY enigmail.amPrefEnablePgp.label             "この ID に対して Enigmail による OpenPGP サポートを有効にする">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "このアカウントのメールアドレスを OpenPGP 鍵 の識別に使用">
 <!ENTITY enigmail.amPrefUseKeyId.label              "指定した OpenPGP 鍵 ID を使用:">
-<!ENTITY enigmail.amPrefSelectKey.label             "鍵の選択...">
+<!ENTITY enigmail.amPrefSelectKey.label             "鍵の選択">
 <!ENTITY enigmail.amPrefMsgComp.label               "メッセージの作成">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "メッセージ作成時の既定の設定">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail 暗号化および署名設定">
