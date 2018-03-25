@@ -575,6 +575,10 @@ function keyServerUpDownload(win, keys, access, hideProgess, callbackFunc, resul
           inputObj.upload = false;
           inputObj.keyId = keyList;
           break;
+        case EnigmailConstants.UPLOAD_KEY:
+          inputObj.upload = true;
+          inputObj.keyId = keyList;
+          break;
         default:
           inputObj.upload = true;
           inputObj.keyId = "";
