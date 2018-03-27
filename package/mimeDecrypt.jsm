@@ -424,7 +424,8 @@ MimeDecryptHandler.prototype = {
         EnigmailConstants.UI_PGP_MIME,
         this.returnStatus);
 
-      if (this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
+      if ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
+        (this.returnStatus.statusFlags & EnigmailConstants.NO_SECKEY)) {
         this.decryptedData = "";
       }
 
