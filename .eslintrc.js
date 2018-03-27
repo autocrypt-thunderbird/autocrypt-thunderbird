@@ -66,5 +66,12 @@ module.exports = {
     "browser": true,
     "node": true,
   },
-  "extends": "eslint:recommended"
+  "extends": "eslint:recommended",
+  "globals": {
+     "ChromeUtils": true,
+     "Components": true,
+     "Cc": true,
+     "Cu": true,
+     "Ci": true
+  }
 };
