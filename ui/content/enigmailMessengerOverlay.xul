@@ -214,7 +214,7 @@
   <menupopup id="mailContext">
     <menu
         id="enigmailContext-decryptToFolder"
-        insertafter="mailContext-copyMenu"
+        noinsertafter="mailContext-copyMenu"
         label="&enigmail.decryptToFolder.label;"
         accesskey="&enigmail.decryptToFolder.accesskey;"
         oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
