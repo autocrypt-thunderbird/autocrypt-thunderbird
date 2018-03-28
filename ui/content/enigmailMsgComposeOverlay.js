@@ -347,8 +347,7 @@ Enigmail.msg = {
 
     if (!id.getUnicharAttribute("signing_cert_name")) return false;
 
-    return id.getBoolPref("sign_mail");
-
+    return id.getBoolAttribute("sign_mail");
   },
 
   setIdentityDefaults: function() {
@@ -393,6 +392,12 @@ Enigmail.msg = {
     const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
 
     this.sendMode = 0;
+
+    if (this.getSmimeSigningEnabled()) {
+      this.sendMode |= SIGN;
+      this.reasonSigned = EnigmailLocale.getString("reasonEnabledByDefault");
+    }
+
     if (!this.isEnigmailEnabled()) {
       return;
     }
@@ -3592,6 +3597,17 @@ Enigmail.msg = {
       this.statusPGPMime == EnigmailConstants.ENIG_FINAL_FORCESMIME) {
 
       // use S/MIME and return
+      switch (msgSendType) {
+        case CiMsgCompDeliverMode.SaveAsDraft:
+        case CiMsgCompDeliverMode.SaveAsTemplate:
+        case CiMsgCompDeliverMode.AutoSaveAsDraft:
+          break;
+        default:
+          if (this.attachOwnKeyObj.appendAttachment) {
+            this.attachOwnKey();
+            Attachments2CompFields(gMsgCompose.compFields); // update list of attachments
+          }
+      }
 
       let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
 
@@ -3602,7 +3618,7 @@ Enigmail.msg = {
 
       if (conf === null) return false;
       if (conf) {
-
+        // confirm before send requested
         msgCompFields = gMsgCompose.compFields;
         splitRecipients = msgCompFields.splitRecipients;
 
@@ -3848,13 +3864,17 @@ Enigmail.msg = {
       toAddrStr = result.toAddrStr;
       bccAddrStr = result.bccAddrStr;
 
+      if (this.attachOwnKeyObj.appendAttachment) {
+        this.attachOwnKey();
+      }
+
+
       if (this.preferPgpOverSmime(sendFlags) === 0) {
         // use S/MIME
+        Attachments2CompFields(gMsgCompose.compFields); // update list of attachments
         sendFlags = 0;
         return true;
       }
-
-      if (this.attachOwnKeyObj.appendAttachment) this.attachOwnKey();
 
       var bucketList = document.getElementById("attachmentBucket");
       var hasAttachments = ((bucketList && bucketList.hasChildNodes()) || gMsgCompose.compFields.attachVCard);
