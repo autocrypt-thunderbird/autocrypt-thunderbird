@@ -108,7 +108,9 @@ var EnigmailAutocrypt = {
           }
         }
 
-        if (fromAddr !== paramArr.addr.toLowerCase()) {
+        paramArr.addr = paramArr.addr.toLowerCase();
+
+        if (fromAddr !== paramArr.addr) {
           EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader: from Addr " + fromAddr + " != " + paramArr.addr.toLowerCase() + "\n");
 
           resolve(3);
@@ -712,7 +714,7 @@ function appendUser(connection, paramsArr) {
   connection.executeTransaction(function _trx() {
     connection.execute("insert into autocrypt_keydata (email, keydata, fpr, type, last_seen_autocrypt, last_seen, state) values " +
       "(:email, :keyData, :fpr, :type, :lastAutocrypt, :lastSeen, :state)", {
-        email: paramsArr.addr,
+        email: paramsArr.addr.toLowerCase(),
         keyData: paramsArr.keydata,
         fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
         type: paramsArr.type,
@@ -779,7 +781,7 @@ function updateUser(connection, paramsArr, resultRows, autoCryptEnabled) {
     updateStr = "update autocrypt_keydata set state = :state, keydata = :keyData, last_seen_autocrypt = :lastAutocrypt, " +
       "fpr = :fpr, last_seen = :lastSeen where email = :email and type = :type";
     updateObj = {
-      email: paramsArr.addr,
+      email: paramsArr.addr.toLowerCase(),
       state: paramsArr["prefer-encrypt"],
       keyData: paramsArr.keydata,
       fpr: ("fpr" in paramsArr ? paramsArr.fpr : ""),
@@ -791,7 +793,7 @@ function updateUser(connection, paramsArr, resultRows, autoCryptEnabled) {
   else {
     updateStr = "update autocrypt_keydata set state = :state, last_seen = :lastSeen where email = :email and type = :type";
     updateObj = {
-      email: paramsArr.addr,
+      email: paramsArr.addr.toLowerCase(),
       state: paramsArr["prefer-encrypt"],
       type: paramsArr.type,
       lastSeen: paramsArr.dateSent.toJSON()
