@@ -217,17 +217,17 @@ var EnigmailArmor = {
    * Remove all headers from an OpenPGP Armored message and replace them
    * with a set of new headers.
    *
-   * @param text:  String - ASCII armored message
-   * @param headers: Object - key/value pairs of new headers to insert
+   * @param armorText: String - ASCII armored message
+   * @param headers:   Object - key/value pairs of new headers to insert
    *
    * @return String - new armored message
    */
-  replaceArmorHeaders: function(text, headers) {
+  replaceArmorHeaders: function(armorText, headers) {
 
-    text = text.replace(/\r\n/g, "\n");
+    let text = armorText.replace(/\r\n/g, "\n");
     let i = text.search(/\n/);
 
-    if (i < 0) return text;
+    if (i < 0) return armorText;
     let m = text.substr(0, i + 1);
 
     for (let j in headers) {
@@ -235,7 +235,7 @@ var EnigmailArmor = {
     }
 
     i = text.search(/\n\n/);
-    if (i < 0) return text;
+    if (i < 0) return armorText;
     m += text.substr(i + 1);
 
     return m;

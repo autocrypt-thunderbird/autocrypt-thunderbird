@@ -378,6 +378,12 @@ var EnigmailAutocrypt = {
 
       let keyData = EnigmailKeyRing.extractSecretKey(true, "0x" + key.fpr, {}, {});
 
+      if (!keyData || keyData.length === 0) {
+        EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: no key found for " + identity.email + "\n");
+        reject(1);
+        return;
+      }
+
       let ac = EnigmailFuncs.getAccountForIdentity(identity);
       let preferEncrypt = ac.incomingServer.getIntValue("acPreferEncrypt") > 0 ? "mutual" : "nopreference";
 
@@ -423,8 +429,10 @@ var EnigmailAutocrypt = {
    */
   sendSetupMessage: function(identity) {
     EnigmailLog.DEBUG("autocrypt.jsm: sendSetupMessage()\n");
+
+    let self = this;
     return new Promise((resolve, reject) => {
-      this.createSetupMessage(identity).then(res => {
+      self.createSetupMessage(identity).then(res => {
         let composeFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
         composeFields.characterSet = "UTF-8";
         composeFields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
