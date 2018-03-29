@@ -127,7 +127,18 @@ function refreshKeys() {
 }
 
 function reloadKeys() {
-  buildKeyList(false);
+
+  let i = 0;
+  let c = Components.stack;
+
+  while (c) {
+    if (c.name == "reloadKeys") i++;
+    c = c.caller
+  }
+
+  // detect recursion and don't continue if too much recursion
+  // this can happen if the key list is empty
+  if (i < 4) buildKeyList(false);
 }
 
 function buildKeyList(refresh) {
