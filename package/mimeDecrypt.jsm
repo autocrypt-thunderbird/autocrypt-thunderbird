@@ -425,7 +425,7 @@ MimeDecryptHandler.prototype = {
         this.returnStatus);
 
       if ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
-        (this.returnStatus.statusFlags & EnigmailConstants.NO_SECKEY)) {
+        !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY)) {
         this.decryptedData = "";
       }
 
