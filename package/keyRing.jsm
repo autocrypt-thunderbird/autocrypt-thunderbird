@@ -644,7 +644,7 @@ var EnigmailKeyRing = {
    * @param keyBlock        String   - data containing key
    * @param keyId           String   - key ID expected to import (no meaning)
    * @param errorMsgObj     Object   - o.value will contain error message from GnuPG
-   * @param importedKeysObj Object   - [OPTIONAL] o.value will contain an array of the key IDs imported
+   * @param importedKeysObj Object   - [OPTIONAL] o.value will contain an array of the FPRs imported
    *
    * @return Integer -  exit code:
    *      ExitCode == 0  => success

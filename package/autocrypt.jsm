@@ -244,20 +244,26 @@ var EnigmailAutocrypt = {
                 if (keysObj.value) {
                   importedKeys = importedKeys.concat(keysObj.value);
 
-                  // enable encryption if state (prefer-encrypt) is "mutual";
-                  // otherwise, disable it explicitely
-                  let signEncrypt = (keyArr[i].state === "mutual" ? 1 : 0);
+                  if (keysObj.value.length > 0) {
+                    let key = EnigmailKeyRing.getKeyById(keysObj.value[0]);
 
-                  let ruleObj = {
-                    email: "{" + keyArr[i].email + "}",
-                    keyList: "0x" + keyArr[i].fpr,
-                    sign: signEncrypt,
-                    encrypt: signEncrypt,
-                    pgpMime: 2,
-                    flags: 0
-                  };
+                    // enable encryption if state (prefer-encrypt) is "mutual";
+                    // otherwise, disable it explicitely
+                    let signEncrypt = (keyArr[i].state === "mutual" ? 1 : 0);
 
-                  EnigmailRules.insertOrUpdateRule(ruleObj);
+                    if (key && key.fpr) {
+                      let ruleObj = {
+                        email: "{" + keyArr[i].email + "}",
+                        keyList: "0x" + key.fpr,
+                        sign: signEncrypt,
+                        encrypt: signEncrypt,
+                        pgpMime: 2,
+                        flags: 0
+                      };
+
+                      EnigmailRules.insertOrUpdateRule(ruleObj);
+                    }
+                  }
                 }
               }
             }
