@@ -385,12 +385,12 @@
 
             <hbox>
               <hbox align="center">
-                <label control="enigmail_protectedSubjectText"
+                <label control="protectedSubjectText"
                        tooltip="protectedSubjectText.tooltip"
                        value="&enigmail.protectedSubjectText.label;"/>
               </hbox>
               <hbox>
-                <textbox id="enigmail_protectedSubjectText"
+                <textbox id="protectedSubjectText"
                          tooltip="protectedSubjectText.tooltip"
                          placeholder=""
                          size="40"/>

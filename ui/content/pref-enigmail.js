@@ -138,6 +138,7 @@ function prefOnLoad() {
   displayPrefs(false, true, false);
 
   document.getElementById("enigmail_agentPath").value = EnigConvertToUnicode(EnigGetPref("agentPath"), "utf-8");
+  document.getElementById("protectedSubjectText").value = EnigConvertToUnicode(EnigGetPref("protectedSubjectText"), "utf-8");
 
   var maxIdle = -1;
   if (!gEnigmailSvc) {
@@ -432,9 +433,12 @@ function prefOnAccept() {
     document.getElementById("enigmail_agentPath").value = "";
   }
   var newAgentPath = document.getElementById("enigmail_agentPath").value;
+  var protectedSubjectText = document.getElementById("protectedSubjectText").value;
 
   displayPrefs(false, false, true);
   EnigSetPref("agentPath", EnigConvertFromUnicode(newAgentPath, "utf-8"));
+  EnigSetPref("protectedSubjectText", EnigConvertFromUnicode(protectedSubjectText, "utf-8"));
+
 
   if (gMimePartsElement &&
     (gMimePartsElement.checked != gMimePartsValue)) {
