@@ -180,7 +180,7 @@ function prefOnLoad() {
   }
 
   document.getElementById("enigmail_protectHeaders").checked = (EnigGetPref("protectedHeaders") === 2);
-  document.getElementById("enigmail_protectedSubjectText").setAttribute("placeholder", EnigGetString("msgCompose.encryptedSubjectStub"));
+  document.getElementById("protectedSubjectText").setAttribute("placeholder", EnigGetString("msgCompose.encryptedSubjectStub"));
 
   // init "saved manual preferences" with current settings:
   gSavedManualPrefKeepSettingsForReply = EnigGetPref("keepSettingsForReply");
