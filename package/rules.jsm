@@ -454,6 +454,12 @@ var EnigmailRules = {
         let addr = openList[openIndex].addr;
         // search with { and } around because these are used a begin and end markers in the rules:
         let idx = ('{' + addr + '}').indexOf(ruleEmailElem);
+
+        if (idx < 0) {
+          addr = EnigmailConstants.AC_RULE_PREFIX + addr;
+          idx = ('{' + addr + '}').indexOf(ruleEmailElem);
+        }
+
         if (idx >= 0) {
           if (ruleEmailElem == rule.email) {
             EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +

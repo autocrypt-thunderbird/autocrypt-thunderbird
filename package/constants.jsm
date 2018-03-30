@@ -129,6 +129,7 @@ var EnigmailConstants = {
   /* attachment handling */
 
   /* per-recipient rules */
+  AC_RULE_PREFIX: "autocrypt://",
 
   CARD_PIN_CHANGE: 1,
   CARD_PIN_UNBLOCK: 2,
