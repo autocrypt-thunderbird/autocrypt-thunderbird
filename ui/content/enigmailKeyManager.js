@@ -133,7 +133,7 @@ function reloadKeys() {
 
   while (c) {
     if (c.name == "reloadKeys") i++;
-    c = c.caller
+    c = c.caller;
   }
 
   // detect recursion and don't continue if too much recursion
