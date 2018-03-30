@@ -141,6 +141,26 @@ function defaultPgpMime() {
 }
 
 /**
+ * set the Autocrypt prefer-encrypt option to "mutual" for all existing
+ * accounts
+ */
+function setAutocryptForOldAccounts() {
+  try {
+    let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+    let changedSomething = false;
+
+    for (let acct = 0; acct < accountManager.accounts.length; acct++) {
+      let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
+      if (ac.incomingServer.type.search(/(pop3|imap|movemail)/) >= 0) {
+        ac.incomingServer.setIntValue("acPreferEncrypt", 1);
+      }
+    }
+  }
+  catch (ex) {}
+}
+
+
+/**
  * Determine if pEp is avaliable, and if it is not available,
  * whether it can be downaloaded and installed. This does not
  * trigger installation.
@@ -238,6 +258,9 @@ var EnigmailConfigure = {
       if (vc.compare(oldVer, "2.0a1pre") < 0) {
         this.upgradeTo20();
       }
+      if (vc.compare(oldVer, "2.0.1a2pre") < 0) {
+        this.upgradeTo201();
+      }
     }
 
     EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
@@ -248,5 +271,9 @@ var EnigmailConfigure = {
     EnigmailPrefs.setPref("juniorMode", 0); // disable pEp if upgrading from older version
     replaceKeyIdWithFpr();
     displayUpgradeInfo();
+  },
+
+  upgradeTo201: function() {
+    setAutocryptForOldAccounts();
   }
 };
