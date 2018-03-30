@@ -647,6 +647,12 @@ var EnigmailGpgAgent = {
       EnigmailLog.DEBUG("gpgAgent.jsm: detectGpgAgent: no GPG_AGENT_INFO variable set\n");
       EnigmailGpgAgent.gpgAgentInfo.preStarted = false;
 
+      if (!getEnigmailGpg().getGpgFeature("supports-gpg-agent")) {
+        esvc.initializationError = EnigmailLocale.getString("gpgAgent.noAutostart", getEnigmailGpg().agentVersion);
+        EnigmailLog.ERROR("gpgAgent.jsm: Error - " + esvc.initializationError + "\n");
+        throw Components.results.NS_ERROR_FAILURE;
+      }
+
       var command = null;
       var outStr = "";
       var errorStr = "";
