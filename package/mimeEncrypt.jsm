@@ -214,8 +214,13 @@ PgpMimeEncrypt.prototype = {
               hashAlgoObj) === 0) {
             this.hashAlgorithm = hashAlgoObj.value;
           }
-          else
+          else {
+            if ("statusFlags" in hashAlgoObj && hashAlgoObj.statusFlags !== 0 && hashAlgoObj.errorMsg) {
+              EnigmailDialog.alert(this.win, hashAlgoObj.errorMsg);
+            }
+
             throw Cr.NS_ERROR_FAILURE;
+          }
         }
       }
       else

@@ -60,11 +60,15 @@ var EnigmailHash = {
         }
       };
 
+      let errorMsgObj = {};
+      let statusFlagsObj = {};
       const proc = EnigmailEncryption.encryptMessageStart(win, testUiFlags, fromMailAddr, "",
         "", hashAlgo, sendFlags,
-        listener, {}, {});
+        listener, statusFlagsObj, errorMsgObj);
 
       if (!proc) {
+        hashAlgoObj.errorMsg = errorMsgObj.value;
+        hashAlgoObj.statusFlags = statusFlagsObj.value;
         return 1;
       }
 
