@@ -423,7 +423,7 @@ SKIN_MODERN = \
 all: deploy
 
 deploy: $(UIFILES) $(SKIN_TB_WIN_XP) $(SKIN_AERO) $(SKIN_TB_MAC) $(SKIN_TB_LINUX) $(SKIN_CLASSIC_SEAMONKEY) $(SKIN_MODERN)
-	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content $(UIFILES)
+	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/ui $(UIFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/skin/tb-win-xp $(SKIN_TB_WIN_XP)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/skin/aero $(SKIN_AERO)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/skin/tb-mac $(SKIN_TB_MAC)
