@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, EnigmailFiles: false */
-/*jshint -W097 */
+/*global dump: false*/
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,22 @@ var TestHelper = {
   },
 
   loadModule: function(name) {
-    Components.utils.import("resource://" + name);
+    let modName = "";
+    if (name.search(/^enigmail\//) === 0) {
+      modName = "chrome://enigmail/content/modules/" + name.replace(/^enigmail\//, "");
+    }
+    else {
+      modName = "resource://" + name;
+    }
+
+    try {
+      Components.utils.import(modName);
+    }
+    catch (ex) {
+      dump("Error importing module: '" + modName + "'\n");
+      dump(ex.message + "\n" + ex.stack);
+      throw ex;
+    }
   },
 
   testing: function(name) {
