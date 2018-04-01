@@ -725,7 +725,7 @@ Si vous le souhaitez, cliquez sur le bouton « Installer GnuPG » pour télécha
 <!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Créer une nouvelle biclé">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "Cette boîte de dialogue créera deux clés :">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Votre <html:b>clé publique</html:b> permet <html:b>aux autres</html:b> de vous envoyer des courriels chiffrés. Vous pouvez la distribuer à tout le monde.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Votre <html:b>clé privée</html:b><html:b> <html:b>vous</html:b> permet de déchiffrer ces courriels et d’envoyer des courriels signés. Vous ne devriez la donner à personne.">
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Votre <html:b>clé privée</html:b> <html:b>vous</html:b> permet de déchiffrer ces courriels et d’envoyer des courriels signés. Vous ne devriez la donner à personne.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Votre <html:b>clé privée</html:b> <html:b>vous</html:b> permet de déchiffrer ces courriels et d’envoyer des courriels signés.
 Vous ne devriez la donner à personne.
 Pour protéger votre clé privée, vous serez invité à saisir une phrase de passe dans les deux boîtes de dialogue suivantes.">
