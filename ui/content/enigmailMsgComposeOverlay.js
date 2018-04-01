@@ -2249,6 +2249,9 @@ Enigmail.msg = {
   setMenuSettings: function(postfix) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setMenuSettings: postfix=" + postfix + "\n");
 
+    let enigmailEnabled = this.isEnigmailEnabled();
+    let smimeEnabled = this.isSmimeEnabled();
+
     const SIGN = EnigmailConstants.SEND_SIGNED;
     const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
 
@@ -2281,6 +2284,12 @@ Enigmail.msg = {
     elem = document.getElementById("enigmail_compose_pgpmime_item" + postfix);
     if (elem) {
       elem.setAttribute("label", this.statusPGPMimeStr);
+      if (enigmailEnabled) {
+        elem.removeAttribute("disabled");
+      }
+      else {
+        elem.setAttribute("disabled", "true");
+      }
 
       switch (this.statusPGPMime) {
         case EnigmailConstants.ENIG_FINAL_YES:
@@ -2294,6 +2303,12 @@ Enigmail.msg = {
       elem = document.getElementById("enigmail_compose_inline_item" + postfix);
       if (elem) {
         elem.setAttribute("label", this.statusInlinePGPStr);
+        if (enigmailEnabled) {
+          elem.removeAttribute("disabled");
+        }
+        else {
+          elem.setAttribute("disabled", "true");
+        }
 
         switch (this.statusPGPMime) {
           case EnigmailConstants.ENIG_FINAL_NO:
@@ -2310,6 +2325,13 @@ Enigmail.msg = {
       elem = document.getElementById("enigmail_compose_smime_item" + postfix);
       if (elem) {
         elem.setAttribute("label", this.statusSMimeStr);
+        if (smimeEnabled) {
+          elem.removeAttribute("disabled");
+        }
+        else {
+          elem.setAttribute("disabled", "true");
+        }
+
         switch (this.statusPGPMime) {
           case EnigmailConstants.ENIG_FINAL_SMIME:
           case EnigmailConstants.ENIG_FINAL_FORCESMIME:
