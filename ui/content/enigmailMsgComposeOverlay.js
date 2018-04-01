@@ -2786,7 +2786,6 @@ Enigmail.msg = {
    * @return: Boolean - true: keys for all recipients are available
    */
   isSmimeEncryptionPossible: function() {
-    let ret = false;
     let id = getCurrentIdentity();
 
     if (id.getUnicharAttribute("encryption_cert_name") === "") return false;
@@ -2797,6 +2796,7 @@ Enigmail.msg = {
     let emailAddresses = {};
 
     try {
+      if (!gMsgCompose.compFields.hasRecipients) return false;
       Components.classes["@mozilla.org/messenger-smime/smimejshelper;1"]
         .createInstance(Components.interfaces.nsISMimeJSHelper)
         .getNoCertAddresses(gMsgCompose.compFields,
