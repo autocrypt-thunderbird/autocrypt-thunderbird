@@ -12,7 +12,7 @@
 /* global GetEnigmailSvc: false, EnigAlert: false, EnigConvertGpgToUnicode: false */
 /* global EnigCleanGuiList: false, EnigGetTrustLabel: false, EnigShowPhoto: false, EnigSignKey: false */
 /* global EnigEditKeyExpiry: false, EnigEditKeyTrust: false, EnigChangeKeyPwd: false, EnigRevokeKey: false */
-/* global EnigCreateRevokeCert: false */
+/* global EnigCreateRevokeCert: false, EnigmailTimer: false */
 
 // from enigmailKeyManager.js:
 /* global keyMgrAddPhoto: false */
@@ -85,8 +85,15 @@ function reloadData() {
     }
 
     if (keyObj.photoAvailable === true) {
-      photoImg.setAttribute("src", "enigmail://photo/0x" + gKeyId);
-      photoImg.removeAttribute("hidden");
+      let pFile = EnigmailKeyRing.getPhotoFile("0x" + gKeyId, 0, {}, {});
+
+      if (pFile && pFile.isFile() && pFile.isReadable()) {
+        const photoUri = Cc["@mozilla.org/network/io-service;1"].
+        getService(Ci.nsIIOService).newFileURI(pFile).spec;
+
+        photoImg.setAttribute("src", photoUri);
+        photoImg.removeAttribute("hidden");
+      }
     }
     else {
       photoImg.setAttribute("hidden", "true");

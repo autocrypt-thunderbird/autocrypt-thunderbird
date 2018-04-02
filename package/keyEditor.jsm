@@ -535,7 +535,11 @@ var EnigmailKeyEditor = {
       },
       addPhotoCallback,
       null,
-      callbackFunc);
+      function _f(returnCode, errorMsg) {
+        runKeyTrustCheck();
+        EnigmailKeyRing.updateKeys([keyId]);
+        callbackFunc(returnCode, errorMsg);
+      });
   },
 
 

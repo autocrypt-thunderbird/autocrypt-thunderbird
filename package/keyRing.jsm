@@ -767,6 +767,12 @@ var EnigmailKeyRing = {
     }
 
     if (foundPicture >= 0 && foundPicture === photoNumber) {
+      if (photoDataObj.value.search(/^gpg: /) === 0) {
+        // skip disturbing gpg output
+        let i = photoDataObj.value.search(/\n/) + 1;
+        skipData += i;
+      }
+
       const pictureData = photoDataObj.value.substr(16 + skipData, imgSize);
       if (!pictureData.length) {
         return null;
@@ -782,13 +788,17 @@ var EnigmailKeyRing = {
         const fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
         fileStream.init(picFile, flags, DEFAULT_FILE_PERMS, 0);
         if (fileStream.write(pictureData, pictureData.length) !== pictureData.length) {
+          fileStream.close();
           throw Components.results.NS_ERROR_FAILURE;
         }
 
         fileStream.flush();
         fileStream.close();
-        return picFile;
 
+        // delete picFile upon exit
+        let extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
+        extAppLauncher.deleteTemporaryFileOnExit(picFile);
+        return picFile;
       }
       catch (ex) {
         exitCodeObj.value = -1;
