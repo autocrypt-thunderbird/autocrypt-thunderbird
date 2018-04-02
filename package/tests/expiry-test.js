@@ -20,7 +20,7 @@ component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 setupTestAccounts();
 
-test(function shouldCheckKeyExpiry() {
+test(withTestGpgHome(withEnigmail(function shouldCheckKeyExpiry() {
 
   EnigmailKeyRing.clearCache();
   let keyListObj = EnigmailKeyRing.getAllKeys();
@@ -42,6 +42,7 @@ test(function shouldCheckKeyExpiry() {
   Assert.equal(b.length, 3);
 
   keyListObj.keySortList.push(1); // ensure that key list is not reloaded
+  keyListObj.keyList = [];
   keyListObj.keyList.push(createKeyObj("ABCDEF0123456789", "user1@enigmail-test.net", now + DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("DBCDEF0123456789", "user2@enigmail-test.net", now - DAY * 5, true));
   keyListObj.keyList.push(createKeyObj("EBCDEF0123456789", "user2@enigmail-test.net", now + DAY * 100, true));
@@ -60,14 +61,14 @@ test(function shouldCheckKeyExpiry() {
 
   k = EnigmailKeyUsability.getExpiryForKeySpec(["user1@enigmail-test.net", "user2@enigmail-test.net", "user5@enigmail-test.net"], 10);
   Assert.equal(k.map(getKeyId).join(" "), "ABCDEF0123456789 ACCDEF0123456789");
-});
+})));
 
 test(function shouldCheckKeySpecs() {
   let a = EnigmailKeyUsability.getKeysSpecForIdentities();
   Assert.equal(a.join(" "), "ABCDEF0123456789 user2@enigmail-test.net user4@enigmail-test.net");
 });
 
-test(function shouldGetNewlyExpiredKeys() {
+test(withTestGpgHome(withEnigmail(function shouldGetNewlyExpiredKeys() {
   EnigmailPrefs.setPref("keyCheckResult", "");
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
   let a = EnigmailKeyUsability.getNewlyExpiredKeys();
@@ -90,9 +91,9 @@ test(function shouldGetNewlyExpiredKeys() {
 
   a = EnigmailKeyUsability.getNewlyExpiredKeys();
   Assert.equal(a.length, 0);
-});
+})));
 
-test(function shouldDoKeyExpiryCheck() {
+test(withTestGpgHome(withEnigmail(function shouldDoKeyExpiryCheck() {
 
   EnigmailPrefs.setPref("keyCheckResult", "");
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 101);
@@ -110,7 +111,7 @@ test(function shouldDoKeyExpiryCheck() {
   EnigmailPrefs.setPref("warnKeyExpiryNumDays", 10);
   str = EnigmailKeyUsability.keyExpiryCheck();
   Assert.equal(str, "");
-});
+})));
 
 function getKeyId(key) {
   return key.keyId;
@@ -133,6 +134,18 @@ function createKeyObj(keyId, userId, expiryDate, hasSecretKey) {
     }],
     subKeys: [],
     signatures: [],
+    getEncryptionValidity: function() {
+      return {
+        keyValid: true,
+        reason: ""
+      };
+    },
+    getSigningValidity: function() {
+      return {
+        keyValid: true,
+        reason: ""
+      };
+    },
     getKeyExpiry: function() {
       if (this.expiryTime === 0) return Number.MAX_VALUE;
       return this.expiryTime;

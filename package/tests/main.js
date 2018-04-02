@@ -21,6 +21,7 @@ function execTest(filename) {
     do_subtest(filename);
 }
 
+execTest("autocrypt-test.js");
 execTest("armor-test.js");
 execTest("data-test.js");
 execTest("system-test.js");
@@ -53,6 +54,5 @@ execTest("versioning-test.js");
 execTest("rng-test.js");
 execTest("filters-test.js");
 execTest("webKey-test.js");
-execTest("autocrypt-test.js");
 
 // execTest("pep-test.js"); // not yet enabled
