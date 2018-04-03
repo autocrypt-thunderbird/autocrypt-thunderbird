@@ -356,6 +356,7 @@ PEPDecryptor.prototype = {
   isReloadingLastMessage: function() {
     if (!this.uri) return false;
     if (!LAST_MSG.lastMessageURI) return false;
+    if (("lastMessageData" in LAST_MSG) && LAST_MSG.lastMessageData === "") return false;
 
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
