@@ -600,13 +600,15 @@ Enigmail.msg = {
         prefix = this.getMailPref("mail.forward_subject_prefix") + ": ";
     }
 
-    subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
-
     switch (gMsgCompose.type) {
       case CT.Draft:
       case CT.Template:
+      case CT.EditTemplate:
       case CT.ForwardInline:
       case CT.ForwardAsAttachment:
+      case CT.EditAsNew:
+        subject = EnigmailData.convertToUnicode(subject, "UTF-8");
+        subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
         gMsgCompose.compFields.subject = prefix + subject;
         subjElem.value = prefix + subject;
         break;
