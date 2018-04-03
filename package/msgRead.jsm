@@ -56,7 +56,7 @@ var EnigmailMsgRead = {
   },
 
   /**
-   * Clean up extraExpandedHeaders after upgrading to TB 59.
+   * Clean up extraExpandedHeaders after upgrading to TB 59 and newer, or upon shutdown.
    */
   cleanupOldPref: function() {
     let r = EnigmailPrefs.getPrefRoot();
@@ -257,5 +257,15 @@ var EnigmailMsgRead = {
     }
 
     return text;
+  },
+
+  onShutdown: function(reason) {
+    try {
+      let isPlatform59 = EnigmailVersioning.greaterThanOrEqual(EnigmailApp.getPlatformVersion(), "59.0a1");
+      if (isPlatform59) return;
+
+      EnigmailMsgRead.cleanupOldPref();
+    }
+    catch (ex) {}
   }
 };
