@@ -1007,7 +1007,7 @@ var EnigmailpEp = {
    * @return Boolean (true = yes)
    */
   checkAdapterApiLevel: function(requiredVersion) {
-    vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+    let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
     return vc.compare(gPepAdapterApiVer, requiredVersion) >= 0;
   },
 
