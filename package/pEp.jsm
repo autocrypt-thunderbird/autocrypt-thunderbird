@@ -26,6 +26,7 @@ var gPepHome = null;
 var gPepServerPath = null;
 var gLogFunction = null;
 var gShuttingDown = false;
+var gPepAdapterApiVer = "0.0.0";
 
 const Cu = Components.utils;
 const Cc = Components.classes;
@@ -992,6 +993,24 @@ var EnigmailpEp = {
     gPepServerPath = pathName;
   },
 
+  setAdapterApiVersion: function(v) {
+    DEBUG_LOG("setAdapterApiVersion(" + v + ")");
+
+    gPepAdapterApiVer = v;
+  },
+
+  /**
+   * Check if the pEp adapter fulfills at least a given API version.
+   *
+   * @param requiredVersion: String - min. version, e.g. 1.2.3
+   *
+   * @return Boolean (true = yes)
+   */
+  checkAdapterApiLevel: function(requiredVersion) {
+    vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+    return vc.compare(gPepAdapterApiVer, requiredVersion) >= 0;
+  },
+
   /******************* internal (private) methods *********************/
   /**
    * Asynchronously call a pEp function
@@ -1196,7 +1215,13 @@ var EnigmailpEp = {
         }
       });
 
-      if (!EnigmailOS.isDosLike) process.wait();
+      if (!self.checkAdapterApiLevel("0.14.0")) {
+        if (!EnigmailOS.isDosLike) process.wait();
+      }
+      else {
+        process.wait();
+      }
+
       DEBUG_LOG("_startPepServer: JSON startup done");
 
       if (!foundGnuPG) {

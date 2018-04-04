@@ -217,7 +217,15 @@ var EnigmailPEPAdapter = {
         process.wait();
         EnigmailLog.DEBUG("pEpAdapter.jsm: isPepAvailable: got version '" + pepVersionStr + "'\n");
         if (pepVersionStr.search(/pEp JSON/i) >= 0) {
+          let m = pepVersionStr.match(/^\s+version\s+(\d+\.\d+\.\d+)/im);
           gPepAvailable = true;
+          if (m && m.length > 1) {
+            EnigmailpEp.setAdapterApiVersion(m[1]);
+
+          }
+        }
+        else {
+          EnigmailpEp.setAdapterApiVersion("0.10.0");
         }
       }
       else if (attemptInstall) {
@@ -717,7 +725,9 @@ var EnigmailPEPAdapter = {
 
   getIdentityForEmail: function(emailAddress) {
     let deferred = PromiseUtils.defer();
-    EnigmailpEp.updateIdentity({ address: emailAddress }).then(function _ok(data) {
+    EnigmailpEp.updateIdentity({
+      address: emailAddress
+    }).then(function _ok(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
         if ("username" in data.result.outParams[0] && data.result.outParams[0].username) {
           let u = jsmime.headerparser.parseAddressingHeader(data.result.outParams[0].username, true);
