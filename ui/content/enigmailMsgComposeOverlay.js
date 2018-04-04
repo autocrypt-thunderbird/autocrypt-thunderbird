@@ -1780,6 +1780,7 @@ Enigmail.msg = {
 
   tryEnablingSMime: function(encFinally, signFinally) {
     let encryptSmime = false;
+    let autoSendEncrypted = EnigmailPrefs.getPref("autoSendEncrypted");
 
     gSMFields.requireEncryptMessage = false;
     gSMFields.signMessage = false;
@@ -1804,7 +1805,7 @@ Enigmail.msg = {
     }
 
     if (!encryptSmime) {
-      if (EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
+      if (autoSendEncrypted === 1) {
         if (this.isSmimeEncryptionPossible()) {
           if (this.mimePreferOpenPGP === 0) {
             // S/MIME is preferred and encryption is possible
@@ -1852,7 +1853,7 @@ Enigmail.msg = {
 
       if ((encFinally === EnigmailConstants.ENIG_FINAL_NO || encFinally === EnigmailConstants.ENIG_FINAL_FORCENO) &&
         this.mimePreferOpenPGP === 0 &&
-        !this.autoPgpEncryption &&
+        !(this.autoPgpEncryption && autoSendEncrypted === 1) &&
         (signFinally === EnigmailConstants.ENIG_FINAL_YES || signFinally === EnigmailConstants.ENIG_FINAL_FORCEYES)) {
         // S/MIME is preferred
         this.statusPGPMime = EnigmailConstants.ENIG_FINAL_SMIME;
