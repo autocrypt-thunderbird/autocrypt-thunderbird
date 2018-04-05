@@ -272,14 +272,27 @@ Enigmail.msg = {
   getAccDefault: function(key) {
     //EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getAccDefault: identity="+this.identity.key+"("+this.identity.email+") key="+key+"\n");
     let res = null;
+    let mimePreferOpenPGP = this.identity.getIntAttribute("mimePreferOpenPGP");
+    let isSmimeEnabled = this.isSmimeEnabled();
+    let preferSmimeByDefault = (isSmimeEnabled && mimePreferOpenPGP === 0);
 
     if (this.isEnigmailEnabled()) {
       switch (key) {
         case 'sign':
-          res = this.identity.getBoolAttribute("sign_mail");
+          if (preferSmimeByDefault) {
+            res = (this.identity.getIntAttribute("sign_mail") > 0);
+          }
+          else {
+            res = (this.identity.getIntAttribute("defaultSigningPolicy") > 0);
+          }
           break;
         case 'encrypt':
-          res = (this.identity.getIntAttribute("encryptionpolicy") > 0);
+          if (preferSmimeByDefault) {
+            res = (this.identity.getIntAttribute("encryptionpolicy") > 0);
+          }
+          else {
+            res = (this.identity.getIntAttribute("defaultEncryptionPolicy") > 0);
+          }
           break;
         case 'pgpMimeMode':
           res = this.identity.getBoolAttribute(key);
