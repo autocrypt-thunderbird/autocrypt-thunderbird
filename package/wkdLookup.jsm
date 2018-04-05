@@ -290,9 +290,11 @@ function importDownloadedKeys(keysArr) {
   let keyData = "";
   for (let k in keysArr) {
     try {
-      keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.enums.armor.public_key, keysArr[k]);
+      keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keysArr[k]);
     }
-    catch (ex) {}
+    catch (ex) {
+      EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: exeption=" + ex + "\n");
+    }
   }
 
   let keyList = EnigmailKey.getKeyListFromKeyBlock(keyData, {}, false);
