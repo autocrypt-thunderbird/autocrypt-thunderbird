@@ -166,7 +166,10 @@ zip -9 --must-match\
     chrome/content/modules/wksMimeHandler.jsm \
     chrome/content/modules/zbase32.jsm \
     chrome/content/modules/all-modules.txt \
-    chrome/content/am-enigprefs.xul \
+    chrome/content/am-enigprefs.xul
+
+zip -9 \
+    ../${xpiFile} \
     chrome/content/ui/*.* \
     chrome/skin/aero/*.* \
     chrome/skin/modern/*.* \
