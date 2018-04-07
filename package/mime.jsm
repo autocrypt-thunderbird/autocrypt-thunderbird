@@ -219,12 +219,6 @@ var EnigmailMime = {
    */
 
   extractProtectedHeaders: function(contentData) {
-
-    // quick return
-    if (contentData.search(/text\/rfc822-headers/i) < 0) {
-      return null;
-    }
-
     // find first MIME delimiter. Anything before that delimiter is the top MIME structure
     let m = contentData.search(/^--/m);
 
