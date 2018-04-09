@@ -47,7 +47,7 @@
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/ui/pref-enigmail.xul</em:optionsURL>
     <em:aboutURL>chrome://enigmail/content/ui/enigmailAbout.xul</em:aboutURL>
-    <em:iconURL>chrome://enigmail/skin/enigmail-about.png</em:iconURL>
+    <em:iconURL>chrome://enigmail/skin/enigmail-about.svg</em:iconURL>
 
   </Description>
 
