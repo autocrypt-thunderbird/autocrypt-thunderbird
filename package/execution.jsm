@@ -362,6 +362,7 @@ var EnigmailExecution = {
   },
 
   execCmd2: function(command, args, stdinFunc, stdoutFunc, doneFunc) {
+    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
     const procBuilder = new EnigmailExecution.processBuilder();
     procBuilder.setCommand(command);
     procBuilder.setArguments(args);
