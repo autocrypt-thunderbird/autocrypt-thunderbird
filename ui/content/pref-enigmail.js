@@ -574,6 +574,12 @@ function activateRulesButton(radioListObj, buttonId) {
   }
 }
 
+function handleClick(event) {
+  if (event.target.hasAttribute("href")) {
+    EnigmailWindows.openMailTab(event.target.getAttribute("href"));
+  }
+}
+
 
 function enigLocateGpg() {
   var fileName = "gpg";
