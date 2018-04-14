@@ -222,10 +222,6 @@ var EnigmailMime = {
     // find first MIME delimiter. Anything before that delimiter is the top MIME structure
     let m = contentData.search(/^--/m);
 
-    if (m < 5) {
-      return null;
-    }
-
     let protectedHdr = ["subject", "date", "from",
       "to", "cc", "reply-to", "references",
       "newsgroups", "followup-to", "message-id"
@@ -239,28 +235,44 @@ var EnigmailMime = {
     let ct = outerHdr.extractHeader("content-type", false) || "";
     if (ct === "") return null;
 
-    let bound = EnigmailMime.getBoundary(ct);
-    if (bound === "") return null;
+    let startPos = -1,
+      endPos = -1,
+      bound = "";
 
-    // search for "outer" MIME delimiter(s)
-    let r = new RegExp("^--" + bound, "mg");
+    if (ct.search(/^multipart\//i) === 0) {
+      // multipart/xyz message type
+      if (m < 5) {
+        return null;
+      }
 
-    let startPos = -1;
-    let endPos = -1;
 
-    // 1st match: start of 1st MIME-subpart
-    let match = r.exec(contentData);
-    if (match && match.index) {
-      startPos = match.index;
+      bound = EnigmailMime.getBoundary(ct);
+      if (bound === "") return null;
+
+      // search for "outer" MIME delimiter(s)
+      let r = new RegExp("^--" + bound, "mg");
+
+      startPos = -1;
+      endPos = -1;
+
+      // 1st match: start of 1st MIME-subpart
+      let match = r.exec(contentData);
+      if (match && match.index) {
+        startPos = match.index;
+      }
+
+      // 2nd  match: end of 1st MIME-subpart
+      match = r.exec(contentData);
+      if (match && match.index) {
+        endPos = match.index;
+      }
+
+      if (startPos < 0 || endPos < 0) return null;
     }
-
-    // 2nd  match: end of 1st MIME-subpart
-    match = r.exec(contentData);
-    if (match && match.index) {
-      endPos = match.index;
+    else {
+      startPos = contentData.length;
+      endPos = 0;
     }
-
-    if (startPos < 0 || endPos < 0) return null;
 
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     headers.initialize(contentData.substring(0, startPos));
