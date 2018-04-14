@@ -473,13 +473,7 @@
 
         <vbox flex="1">
 
-          <description style="max-width: 500px;">
-            &enigmail.pref.backupRestore.overallDesc;
-          </description>
-
-          <separator style="height: 20px;"/>
-
-          <description>
+          <description onclick="handleClick(event)">
             &enigmail.pref.acSetupMessage.desc;
           </description>
 

@@ -274,9 +274,22 @@ Enigmail.msg = {
     let res = null;
     let mimePreferOpenPGP = this.identity.getIntAttribute("mimePreferOpenPGP");
     let isSmimeEnabled = this.isSmimeEnabled();
-    let preferSmimeByDefault = (isSmimeEnabled && mimePreferOpenPGP === 0);
-
-    if (this.isEnigmailEnabled()) {
+    let isEnigmailEnabled = this.isEnigmailEnabled();
+    let preferSmimeByDefault = false;
+	
+    if (isSmimeEnabled && isEnigmailEnabled) {
+      if (this.pgpmimeForced === EnigmailConstants.ENIG_FORCE_SMIME) {
+        preferSmimeByDefault = true;
+      }
+      else if (this.pgpmimeForced === EnigmailConstants.ENIG_FORCE_ALWAYS) {
+        preferSmimeByDefault = true;
+      }
+      else {
+        preferSmimeByDefault = (mimePreferOpenPGP === 0);  
+      }
+    } 
+	
+    if (isEnigmailEnabled) {
       switch (key) {
         case 'sign':
           if (preferSmimeByDefault) {
