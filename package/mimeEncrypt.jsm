@@ -254,6 +254,9 @@ PgpMimeEncrypt.prototype = {
     let visibleHdr = "";
 
     let addrParser = jsmime.headerparser.parseAddressingHeader;
+    let newsParser = function(s) {
+      return jsmime.headerparser.parseStructuredHeader("Newsgroups", s);
+    };
     let noParser = function(s) {
       return s;
     };
@@ -277,7 +280,7 @@ PgpMimeEncrypt.prototype = {
       },
       newsgroups: {
         field: "Newsgroups",
-        parser: noParser
+        parser: newsParser
       },
       followupTo: {
         field: "Followup-To",
