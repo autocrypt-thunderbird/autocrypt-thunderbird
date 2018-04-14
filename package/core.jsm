@@ -97,7 +97,6 @@ var EnigmailCore = {
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
         self.factories.push(new Factory(getEnigmailCommandLine().Handler));
         self.factories.push(new Factory(mimeEncrypt.Handler));
-        getEnigmailFiltersWrapper().onStartup();
       }
       catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
@@ -107,6 +106,7 @@ var EnigmailCore = {
 
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailWksMimeHandler().registerContentTypeHandler();
+    getEnigmailFiltersWrapper().onStartup();
     getEnigmailPEPAdapter().initialize().then(continueStartup).catch(continueStartup);
   },
 
