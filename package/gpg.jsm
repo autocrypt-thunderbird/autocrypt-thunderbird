@@ -130,8 +130,9 @@ var EnigmailGpg = {
    socks-on-windows     - is SOCKS proxy supported on Windows (true for gpg >= 2.0.20)
    supports-dirmngr     - is dirmngr supported (true for gpg >= 2.1)
    supports-ecc-keys    - are ECC (elliptic curve) keys supported (true for gpg >= 2.1)
-   supports-sender      - does gnupg understand the --sender argument
+   supports-sender      - does gnupg understand the --sender argument (true for gpg >= 2.1.15)
    supports-wkd         - does gpg support wkd (web key directory) (true for gpg >= 2.1.19)
+   export-result        - does gpg print EXPORTED when exporting keys (true for gpg >= 2.1.10)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -176,6 +177,8 @@ var EnigmailGpg = {
           return "quit";
       case "supports-sender":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.15");
+      case "export-result":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.10");
       case "supports-wkd":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.19");
     }

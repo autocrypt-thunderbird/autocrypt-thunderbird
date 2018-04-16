@@ -442,13 +442,27 @@ class EnigmailKeyObj {
       const statusObj = {};
       const exitCodeObj = {};
       let keyBlock = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, statusObj);
+      let exportOK = true;
 
-      let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + this.fpr, "m");
-      if (statusObj.value.search(r) < 0) {
-        retObj.exitCode = 2;
-        retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+      if (EnigmailGpg.getGpgFeature("export-result")) {
+        // GnuPG 2.1.10+
+        let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + this.fpr, "m");
+        if (statusObj.value.search(r) < 0) {
+          retObj.exitCode = 2;
+          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+          exportOK = false;
+        }
       }
       else {
+        // GnuPG older than 2.1.10
+        if (keyBlock.length < 50) {
+          retObj.exitCode = 2;
+          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+          exportOK = false;
+        }
+      }
+
+      if (exportOK) {
         this.minimalKeyBlock = null;
 
         if (isECC) {
