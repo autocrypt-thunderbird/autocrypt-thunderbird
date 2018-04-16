@@ -276,7 +276,7 @@ Enigmail.msg = {
     let isSmimeEnabled = this.isSmimeEnabled();
     let isEnigmailEnabled = this.isEnigmailEnabled();
     let preferSmimeByDefault = false;
-	
+
     if (isSmimeEnabled && isEnigmailEnabled) {
       if (this.pgpmimeForced === EnigmailConstants.ENIG_FORCE_SMIME) {
         preferSmimeByDefault = true;
@@ -285,15 +285,15 @@ Enigmail.msg = {
         preferSmimeByDefault = true;
       }
       else {
-        preferSmimeByDefault = (mimePreferOpenPGP === 0);  
+        preferSmimeByDefault = (mimePreferOpenPGP === 0);
       }
-    } 
-	
+    }
+
     if (isEnigmailEnabled) {
       switch (key) {
         case 'sign':
           if (preferSmimeByDefault) {
-            res = (this.identity.getIntAttribute("sign_mail") > 0);
+            res = (this.identity.getBoolAttribute("sign_mail"));
           }
           else {
             res = (this.identity.getIntAttribute("defaultSigningPolicy") > 0);
@@ -306,6 +306,9 @@ Enigmail.msg = {
           else {
             res = (this.identity.getIntAttribute("defaultEncryptionPolicy") > 0);
           }
+          break;
+        case 'sign-pgp':
+          res = (this.identity.getIntAttribute("defaultSigningPolicy") > 0);
           break;
         case 'pgpMimeMode':
           res = this.identity.getBoolAttribute(key);
@@ -326,7 +329,7 @@ Enigmail.msg = {
     else if (this.isSmimeEnabled()) {
       switch (key) {
         case 'sign':
-          res = this.identity.getBoolAttribute("sign_mail") > 0;
+          res = this.identity.getBoolAttribute("sign_mail");
           break;
         case 'encrypt':
           res = (this.identity.getIntAttribute("encryptionpolicy") > 0);
@@ -345,6 +348,7 @@ Enigmail.msg = {
         case 'signIfEnc':
         case 'pgpMimeMode':
         case 'attachPgpKey':
+        case 'sign-pgp':
           return false;
       }
     }
@@ -1655,7 +1659,7 @@ Enigmail.msg = {
       case EnigmailConstants.ENIG_UNDEF:
         if (this.sendMode & SIGN) {
           signFinally = EnigmailConstants.ENIG_FINAL_YES;
-          if (pgpEnabled && this.getAccDefault("sign")) {
+          if (pgpEnabled && this.getAccDefault("sign-pgp")) {
             signReason = EnigmailLocale.getString("reasonEnabledByDefault");
           }
         }
@@ -1731,6 +1735,27 @@ Enigmail.msg = {
 
       encFinally = r.encFinally;
       signFinally = r.signFinally;
+
+      // FIXME: check if bug 776 can be fixed here
+
+      if (encFinally === EnigmailConstants.ENIG_FINAL_NO &&
+        this.signByRules === EnigmailConstants.ENIG_UNDEF &&
+        signFinally !== EnigmailConstants.ENIG_FINAL_FORCEYES &&
+        signFinally !== EnigmailConstants.ENIG_FINAL_FORCENO) {
+
+        if (this.isEnigmailEnabled() &&
+          !this.identity.getBoolAttribute("sign_mail") &&
+          (this.getAccDefault("signIfNotEnc") || this.identity.getIntAttribute("defaultSigningPolicy") > 0)) {
+          signFinally = EnigmailConstants.ENIG_FINAL_YES;
+          this.statusPGPMime = EnigmailConstants.ENIG_FINAL_UNDEF;
+        }
+        else if (this.isSmimeEnabled() &&
+          this.identity.getIntAttribute("defaultSigningPolicy") === 0 &&
+          this.identity.getBoolAttribute("sign_mail")) {
+          signFinally = EnigmailConstants.ENIG_FINAL_YES;
+          this.statusPGPMime = EnigmailConstants.ENIG_FINAL_SMIME;
+        }
+      }
 
       // update the S/MIME GUI elements
       try {
