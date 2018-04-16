@@ -31,6 +31,7 @@ MODFILES = \
            persistentCrypto.jsm \
            dialog.jsm \
            encryption.jsm \
+           enigmailOverlays.jsm \
            errorHandling.jsm \
            events.jsm \
            execution.jsm \

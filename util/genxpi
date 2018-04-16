@@ -80,6 +80,7 @@ zip -9 --must-match\
     chrome/content/modules/encryption.jsm \
     chrome/content/modules/core.jsm \
     chrome/content/modules/configBackup.jsm \
+    chrome/content/modules/enigmailOverlays.jsm \
     chrome/content/modules/errorHandling.jsm \
     chrome/content/modules/funcs.jsm \
     chrome/content/modules/gpgAgent.jsm \
