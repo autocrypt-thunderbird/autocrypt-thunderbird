@@ -200,7 +200,7 @@ var EnigmailEncryption = {
 
     if (sign) {
       keyList = keyList.reduce(function _f(p, keyObj) {
-        if (keyObj.getSigningValidity().keyValid) p.push(keyObj);
+        if (keyObj && keyObj.getSigningValidity().keyValid) p.push(keyObj);
         return p;
       }, []);
     }
