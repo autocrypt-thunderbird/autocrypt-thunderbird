@@ -277,6 +277,10 @@ var EnigmailMime = {
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     headers.initialize(contentData.substring(0, startPos));
 
+    // we got a potentially protected header. Let's check ...
+    ct = headers.extractHeader("content-type", false) || "";
+    if (this.getParameter(ct, "protected-headers").search(/^v1$/i) !== 0) return null;
+
     for (let i in protectedHdr) {
       if (headers.hasHeader(protectedHdr[i])) {
         newHeaders[protectedHdr[i]] = jsmime.headerparser.decodeRFC2047Words(headers.extractHeader(protectedHdr[i], true)) || undefined;
