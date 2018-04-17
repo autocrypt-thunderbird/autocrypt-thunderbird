@@ -7,14 +7,14 @@
 /**
  * Load overlays in a similar way as XUL did for non-bootstrapped addons
  * Unlike "real" XUL, overlays are only loaded over window URLs, and no longer
- * over any xul file that is loaded somewhere.
+ * over any XUL file that is loaded somewhere.
  *
  *
- * Prepare the XUL files:
+ * A. Prepare your XUL files:
  *
  * 1. Elements can be referenced by ID, or by CSS selector (document.querySelector()).
  *    To use the a CSS Selector query, define the attribute "overlay_target"
- *    e.g. <vbox overlay_target=".test>...</vbox>
+ *    e.g. <vbox overlay_target=".test">...</vbox>
  *
  * 2. define CSS the same way as you would in HTML, i.e.:
  *      <link rel="stylesheet" type="text/css" href="chrome://some/cssFile.css"/>
@@ -26,7 +26,7 @@
  *      targetToolbox="some_id"   --> the ID of the *toolbox* where the buttons are added
  *      targetToolbar="some_id"   --> the ID of the *toolbar* where the buttons are added
  *
- * Prepare the JavaScript:
+ * B. Prepare your JavaScript:
  * Event listeners registering to listen for a "load" event now need to listen to "load-"+ addonID
  */
 
@@ -49,13 +49,66 @@ function ERROR_LOG(str) {
   Cu.reportError("overlays.jsm: " + str + "\n");
 }
 
-const gWindowListeners = {};
 
 var Overlays = {
+  /**
+   * Load one or more overlays into a window.
+   *
+   * @param addonID:      String          - the ID of the addon (e.g. "addon@example.com")
+   * @param targetWindow: nsIDOMWindow    - the target window where to merge XUL files
+   * @param listOfXul:    Array of String - the list of overlays (URLs) to load
+   *
+   * @return Promise.
+   *  the Promise suceeds with then(numOverlays)
+   *    numOverlays is the number of overlays loaded
+   */
   loadOverlays: function(addonID, targetWindow, listOfXul) {
-    return mergeXulFiles(addonID, targetWindow, listOfXul);
+
+    let p = new Promise((resolve, reject) => {
+      function _loadOverlay(targetWindow, listOfXul, index) {
+        DEBUG_LOG("loadOverlay(" + index + ")\n");
+
+        try {
+          if (index < listOfXul.length) {
+            let url = listOfXul[index];
+            let document = targetWindow.document;
+
+            let observer = function(result) {
+              _loadOverlay(targetWindow, listOfXul, index + 1);
+            };
+
+            insertXul(addonID, url, targetWindow, document, observer);
+          }
+          else {
+            DEBUG_LOG("loadOverlay: completed");
+
+            let e = new Event("load-" + addonID);
+            targetWindow.dispatchEvent(e);
+            DEBUG_LOG("loadOverlay: event completed");
+
+            resolve(index);
+          }
+        }
+        catch (ex) {
+          ERROR_LOG("mergeXulFiles: could not overlay for " + targetWindow.document.location.href + ":\n" + ex.message + "\n");
+          reject(index);
+        }
+      }
+
+      _loadOverlay(targetWindow, listOfXul, 0);
+    });
+
+    return p;
   },
 
+  /**
+   * Unload overlays from a window, e.g. if an addon is disabled.
+   * UI elements and CSS added by loadOverlays() are removed with this function.
+   * JavaScript needs to be unloaded manually.
+   *
+   * @param addonID:      String          - the ID of the addon (e.g. "addon@example.com")
+   * @param targetWindow: nsIDOMWindow    - the target window where to merge XUL files
+   */
   unloadOverlays: function(addonID, targetWindow) {
     let document = targetWindow.document;
 
@@ -80,6 +133,12 @@ var Overlays = {
     }
   }
 };
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Private functions
+//////////////////////////////////////////////////////////////////////////////////////////
+
 
 /**
  * Load XUL into window
@@ -394,52 +453,6 @@ function insertXul(addonId, srcUrl, window, document, callback) {
   xmlReq.send();
 }
 
-/**
- * Load one or more overlays into a window.
- *
- * @param window:         nsIDOMWindow - the target window
- * @param overlayDefsArr: Array of String - the list of overlays to load
- *
- * @return Promise (numOverlays - the number of overlays loaded)
- */
-function mergeXulFiles(addonId, window, overlayDefsArr) {
-
-  let p = new Promise((resolve, reject) => {
-    function loadOverlay(window, overlayDefs, index) {
-      DEBUG_LOG("loadOverlay(" + index + ")\n");
-
-      try {
-        if (index < overlayDefs.length) {
-          let url = overlayDefs[index];
-          let document = window.document;
-
-          let observer = function(result) {
-            loadOverlay(window, overlayDefs, index + 1);
-          };
-
-          insertXul(addonId, url, window, document, observer);
-        }
-        else {
-          DEBUG_LOG("loadOverlay: completed");
-
-          let e = new Event("load-" + addonId);
-          window.dispatchEvent(e);
-          DEBUG_LOG("loadOverlay: event completed");
-
-          resolve(index);
-        }
-      }
-      catch (ex) {
-        ERROR_LOG("mergeXulFiles: could not overlay for " + window.document.location.href + ":\n" + ex.message + "\n");
-        reject(index);
-      }
-    }
-
-    loadOverlay(window, overlayDefsArr, 0);
-  });
-
-  return p;
-}
 
 
 function unloadCSS(url, targetWindow) {

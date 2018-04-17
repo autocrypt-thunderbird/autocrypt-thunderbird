@@ -71,7 +71,7 @@ function shutdown(data, reason) {
     } = Cu.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
     const {
       EnigmailOverlays
-    } = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {});
+    } = Cu.import("chrome://enigmail/content/modules/enigmailOverlays.jsm", {});
     const {
       EnigmailWindows
     } = Cu.import("chrome://enigmail/content/modules/windows.jsm", {});

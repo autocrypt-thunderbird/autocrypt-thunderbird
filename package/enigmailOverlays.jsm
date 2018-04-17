@@ -132,7 +132,7 @@ function ERROR_LOG(str) {
 
 var WindowListener = {
   setupUI: function(window, overlayDefs) {
-    DEBUG_LOG("overlays.jsm: setupUI(" + window.document.location.href + ")\n");
+    DEBUG_LOG("enigmailOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
     let ovl = [];
 
     for (let index = 0; index < overlayDefs.length; index++) {
@@ -153,11 +153,12 @@ var WindowListener = {
       ovl.push(BASE_PATH + url);
     }
 
-    Overlays.loadOverlays("enigmail", window, ovl);
+    Overlays.loadOverlays(MY_ADDON_ID, window, ovl);
   },
 
   tearDownUI: function(window) {
-    Overlays.unloadOverlays("enigmail", window);
+    DEBUG_LOG("enigmailOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
+    Overlays.unloadOverlays(MY_ADDON_ID, window);
   },
 
   // nsIWindowMediatorListener functions
@@ -204,7 +205,7 @@ var EnigmailOverlays = {
    * @param reason: Number - bootstrap "reason" constant
    */
   startup: function(reason) {
-    DEBUG_LOG("overlays.jsm: startup()\n");
+    DEBUG_LOG("enigmailOverlays.jsm: startup()\n");
 
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
@@ -217,7 +218,7 @@ var EnigmailOverlays = {
       try {
         let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 
-        DEBUG_LOG("overlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
+        DEBUG_LOG("enigmailOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
 
         if (domWindow.document.location.href === "about:blank") {
           // a window is available, but it's not yet fully loaded
@@ -233,7 +234,7 @@ var EnigmailOverlays = {
         }
       }
       catch (ex) {
-        DEBUG_LOG("overlays.jsm: startup: error " + ex.message + "\n");
+        DEBUG_LOG("enigmailOverlays.jsm: startup: error " + ex.message + "\n");
       }
     }
   },
