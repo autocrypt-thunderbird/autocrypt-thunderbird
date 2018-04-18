@@ -4622,6 +4622,12 @@ Enigmail.msg = {
     if (!this.isAutocryptEnabled()) return;
 
     this.identity = getCurrentIdentity();
+    let fromMail = this.identity.email;
+
+    try {
+      fromMail = EnigmailFuncs.stripEmail(gMsgCompose.compFields.from);
+    }
+    catch (ex) {}
 
     let key;
     if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
@@ -4638,7 +4644,7 @@ Enigmail.msg = {
       let k = key.getMinimalPubKey();
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
-        this.setAdditionalHeader('Autocrypt', 'addr=' + this.identity.email + prefMutual + '; keydata=\r\n' + keyData);
+        this.setAdditionalHeader('Autocrypt', 'addr=' + fromMail + prefMutual + '; keydata=\r\n' + keyData);
       }
     }
   },
