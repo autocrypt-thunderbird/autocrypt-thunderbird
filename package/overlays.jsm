@@ -268,7 +268,13 @@ function insertXul(addonId, srcUrl, window, document, callback) {
 
       // try to insert according to insertafter/before
       if (insertX(nn, 'insertafter',
-          pn => pn.parentNode.insertBefore(nn, pn.nextSibling)) ||
+          pn => {
+            if (pn.nextSibling) {
+              pn.parentNode.insertBefore(nn, pn.nextSibling);
+            }
+            else
+              pn.parentNode.appendChild(nn);
+          }) ||
         insertX(nn, 'insertbefore',
           pn => pn.parentNode.insertBefore(nn, pn))) {}
       // just append
