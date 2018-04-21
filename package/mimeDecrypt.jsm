@@ -437,11 +437,22 @@ MimeDecryptHandler.prototype = {
       this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
 
       this.returnData(this.decryptedData);
-      LAST_MSG.lastMessageData = this.decryptedData;
-      LAST_MSG.lastMessageURI = currMsg;
-      LAST_MSG.lastStatus = this.returnStatus;
-      LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
-      LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
+
+      // don't remember the last message if it contains an embedded PGP/MIME message
+      // to avoid ending up in a loop
+      if (this.mimePartNumber === "1" &&
+        this.decryptedData.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
+        LAST_MSG.lastMessageData = this.decryptedData;
+        LAST_MSG.lastMessageURI = currMsg;
+        LAST_MSG.lastStatus = this.returnStatus;
+        LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
+        LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
+      }
+      else {
+        LAST_MSG.lastMessageURI = null;
+        LAST_MSG.lastMessageData = "";
+      }
+
       this.decryptedData = "";
       EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
       this.proc = null;
