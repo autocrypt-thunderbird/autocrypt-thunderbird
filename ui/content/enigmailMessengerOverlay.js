@@ -697,8 +697,9 @@ Enigmail.msg = {
         Enigmail.msg.createArtificialAutocryptHeader();
       }
 
-      var msgSigned = null;
-      var msgEncrypted = null;
+      var msgSigned = (mimeMsg.fullContentType.search(/^multipart\/signed/i) === 0 &&
+        EnigmailMime.getProtocol(mimeMsg.fullContentType).search(/^application\/pgp-signature/i) === 0);
+      var msgEncrypted = false;
       var resultObj = {
         encrypted: [],
         signed: []
@@ -708,8 +709,8 @@ Enigmail.msg = {
         this.enumerateMimeParts(mimeMsg, resultObj);
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: embedded objects: " + resultObj.encrypted.join(", ") + " / " + resultObj.signed.join(", ") + "\n");
 
-        msgSigned = resultObj.signed.length > 0;
-        msgEncrypted = resultObj.encrypted.length > 0;
+        msgSigned = msgSigned || resultObj.signed.length > 0;
+        msgEncrypted = msgEncrypted || resultObj.encrypted.length > 0;
 
         if ("autocrypt-setup-message" in Enigmail.msg.savedHeaders && Enigmail.msg.savedHeaders["autocrypt-setup-message"].toLowerCase() === "v1") {
           if (currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) === 0) {
