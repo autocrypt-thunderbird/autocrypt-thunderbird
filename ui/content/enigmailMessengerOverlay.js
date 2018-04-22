@@ -699,7 +699,8 @@ Enigmail.msg = {
 
       var msgSigned = (mimeMsg.fullContentType.search(/^multipart\/signed/i) === 0 &&
         EnigmailMime.getProtocol(mimeMsg.fullContentType).search(/^application\/pgp-signature/i) === 0);
-      var msgEncrypted = false;
+      var msgEncrypted = (mimeMsg.fullContentType.search(/^multipart\/encrypted/i) === 0 &&
+        EnigmailMime.getProtocol(mimeMsg.fullContentType).search(/^application\/pgp-encrypted/i) === 0);
       var resultObj = {
         encrypted: [],
         signed: []
@@ -776,7 +777,6 @@ Enigmail.msg = {
       var contentEncoding = "";
       var xEnigmailVersion = "";
       var msgUriSpec = this.getCurrentMsgUriSpec();
-      var encrypedMsg;
 
       if (Enigmail.msg.savedHeaders) {
         contentType = Enigmail.msg.savedHeaders["content-type"];
