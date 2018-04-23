@@ -506,7 +506,7 @@ Enigmail.msg = {
       let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
         let msgUrl = EnigmailMsgRead.getUrlFromUriSpec(msgUri);
-        this.setOriginalSubject(msgHdr.subject);
+        if (!draft) this.setOriginalSubject(msgHdr.subject);
         properties = msgHdr.getUint32Property("enigmail");
         try {
           EnigmailMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
