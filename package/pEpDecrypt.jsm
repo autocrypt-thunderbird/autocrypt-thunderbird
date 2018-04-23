@@ -302,8 +302,17 @@ PEPDecryptor.prototype = {
       }
     }
 
-    LAST_MSG.lastMessageURI = EnigmailURIs.msgIdentificationFromUrl(this.uri);
-    LAST_MSG.lastMessageData = this.decryptedData;
+    if (this.mimePartNumber === "1" &&
+      this.decryptedData.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
+
+      LAST_MSG.lastMessageURI = EnigmailURIs.msgIdentificationFromUrl(this.uri);
+      LAST_MSG.lastMessageData = this.decryptedData;
+    }
+    else {
+      LAST_MSG.lastMessageURI = null;
+      LAST_MSG.lastMessageData = "";
+    }
+
     this.returnData();
   },
 
