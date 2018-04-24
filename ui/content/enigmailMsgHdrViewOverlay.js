@@ -11,7 +11,7 @@
 /* globals from Thunderbird: */
 /* global gFolderDisplay: false, currentAttachments: false, gSMIMEContainer: false, gSignedUINode: false, gEncryptedUINode: false */
 /* global gDBView: false, msgWindow: false, messageHeaderSink: false, gMessageListeners: false, findEmailNodeFromPopupNode: true */
-/* global gExpandedHeaderView: false, CanDetachAttachments: true */
+/* global gExpandedHeaderView: false, CanDetachAttachments: true, gEncryptedURIService: false */
 /* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
 
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
@@ -45,6 +45,7 @@ Enigmail.hdrView = {
   statusBar: null,
   enigmailBox: null,
   lastEncryptedMsgKey: null,
+  lastEncryptedUri: null,
   pEpStatus: null,
 
 
@@ -927,6 +928,11 @@ Enigmail.hdrView = {
       EnigmailURIs.forgetEncryptedUri(Enigmail.hdrView.lastEncryptedMsgKey);
       Enigmail.hdrView.lastEncryptedMsgKey = null;
     }
+
+    if (Enigmail.hdrView.lastEncryptedUri && gEncryptedURIService) {
+      gEncryptedURIService.forgetEncrypted(Enigmail.hdrView.lastEncryptedUri);
+      Enigmail.hdrView.lastEncryptedUri = null;
+    }
   },
 
   displayExtendedStatus: function(displayOn) {
@@ -1482,6 +1488,14 @@ Enigmail.hdrView = {
       let uriSpec = (uri ? uri.spec : null);
 
       if (this.isCurrentMessage(uri)) {
+
+        if (statusFlags & EnigmailConstants.DECRYPTION_OKAY) {
+          if (gEncryptedURIService) {
+            // remember encrypted message URI to enable TB prevention against EFAIL attack
+            Enigmail.hdrView.lastEncryptedUri = gFolderDisplay.selectedMessageUris[0];
+            gEncryptedURIService.rememberEncrypted(Enigmail.hdrView.lastEncryptedUri);
+          }
+        }
 
         if (!this.displaySubPart(mimePartNumber, uriSpec)) return;
         if (this.hasUnauthenticatedParts(mimePartNumber)) {
