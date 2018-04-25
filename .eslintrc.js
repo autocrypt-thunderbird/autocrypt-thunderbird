@@ -1,4 +1,7 @@
 module.exports = {
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
   "rules": {
     "linebreak-style": [
       2,
@@ -68,10 +71,10 @@ module.exports = {
   },
   "extends": "eslint:recommended",
   "globals": {
-     "ChromeUtils": true,
-     "Components": true,
-     "Cc": true,
-     "Cu": true,
-     "Ci": true
+    "ChromeUtils": true,
+    "Components": true,
+    "Cc": true,
+    "Cu": true,
+    "Ci": true
   }
 };
