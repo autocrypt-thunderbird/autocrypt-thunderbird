@@ -28,8 +28,12 @@
 
 var EXPORTED_SYMBOLS = ["Overlays"];
 
-ChromeUtils.import("resource://gre/modules/Console.jsm");
-ChromeUtils.defineModuleGetter(this, "Services", "resource://gre/modules/Services.jsm");
+const Cu = Components.utils;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+
+Cu.import("resource://gre/modules/Console.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
 
