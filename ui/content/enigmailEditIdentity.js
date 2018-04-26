@@ -31,7 +31,7 @@ Enigmail.edit = {
   pgpSignEncPolicy: null,
   autoEncryptDrafts: null,
   usingPep: null,
-  openPgpSendKeyWithMsg : null,
+  openPgpSendKeyWithMsg: null,
 
   onInit: function() {
     // initialize all of our elements based on the current identity values....
@@ -118,7 +118,7 @@ Enigmail.edit = {
       this.account = gAccount;
       this.identity = gIdentity;
     }
-    else {
+    else if ("arguments" in window) {
       this.identity = window.arguments[0].identity;
       this.account = window.arguments[0].account;
     }
