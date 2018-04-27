@@ -29,9 +29,6 @@ const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE = 0x20;
 const DEFAULT_FILE_PERMS = 0x180; // equals 0600
 
-const NS_DOMPARSER_CONTRACTID = "@mozilla.org/xmlextras/domparser;1";
-const NS_DOMSERIALIZER_CONTRACTID = "@mozilla.org/xmlextras/xmlserializer;1";
-
 const rulesListHolder = {
   rulesList: null
 };
@@ -63,7 +60,7 @@ var EnigmailRules = {
       return false;
     }
 
-    var domParser = Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
+    var domParser = new DOMParser();
     rulesListHolder.rulesList = domParser.parseFromString(contents, "text/xml");
 
     return true;
@@ -73,7 +70,7 @@ var EnigmailRules = {
     EnigmailLog.DEBUG("rules.jsm: saveRulesFile()\n");
 
     var flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-    var domSerializer = Cc[NS_DOMSERIALIZER_CONTRACTID].createInstance(Ci.nsIDOMSerializer);
+    var domSerializer = new XMLSerializer();
     var rulesFile = this.getRulesFile();
     if (rulesFile) {
       if (rulesListHolder.rulesList) {
@@ -138,7 +135,7 @@ var EnigmailRules = {
   addRule: function(appendToEnd, toAddress, keyList, sign, encrypt, pgpMime, flags) {
     EnigmailLog.DEBUG("rules.jsm: addRule()\n");
     if (!rulesListHolder.rulesList) {
-      var domParser = Cc[NS_DOMPARSER_CONTRACTID].createInstance(Ci.nsIDOMParser);
+      var domParser = new DOMParser();
       rulesListHolder.rulesList = domParser.parseFromString("<pgpRuleList/>", "text/xml");
     }
     var negate = (flags & 1);
