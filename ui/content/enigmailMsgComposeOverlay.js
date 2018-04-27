@@ -115,6 +115,7 @@ Enigmail.msg = {
   determineSendFlagId: null,
   trustAllKeys: false,
   protectHeaders: false,
+  draftSubjectEncrypted: false,
   attachOwnKeyObj: {
     appendAttachment: false,
     attachedObj: null,
@@ -506,14 +507,15 @@ Enigmail.msg = {
       let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
         let msgUrl = EnigmailMsgRead.getUrlFromUriSpec(msgUri);
-        if (!draft) this.setOriginalSubject(msgHdr.subject);
         properties = msgHdr.getUint32Property("enigmail");
         try {
           EnigmailMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
             if (draft) {
               self.setDraftOptions(mimeMsg);
+              if (self.draftSubjectEncrypted) self.setOriginalSubject(msgHdr.subject);
             }
             else {
+              if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject);
               self.checkMimeStructure(mimeMsg);
             }
           });
@@ -606,6 +608,7 @@ Enigmail.msg = {
       Enigmail.msg.setFinalSendMode(pgpMime);
 
       if (stat.substr(4, 1) == "1") Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
+      if (stat.substr(5, 1) == "1") Enigmail.msg.draftSubjectEncrypted = true;
     }
     else {
       // drafts from older versions of Enigmail
@@ -2629,9 +2632,10 @@ Enigmail.msg = {
     // 2: signing
     // 3: PGP/MIME
     // 4: attach own key
+    // 5: subject encrypted
 
     var draftStatus = "N" + this.encryptForced + this.signForced + this.pgpmimeForced +
-      (this.attachOwnKeyObj.appendAttachment ? "1" : "0");
+      (this.attachOwnKeyObj.appendAttachment ? "1" : "0") + "1";
 
     this.setAdditionalHeader("X-Enigmail-Draft-Status", draftStatus);
   },
@@ -3316,7 +3320,7 @@ Enigmail.msg = {
       return true;
     }
 
-    let sendFlags = EnigmailConstants.SEND_PGP_MIME | EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SAVE_MESSAGE | EnigmailConstants.SEND_ALWAYS_TRUST;
+    let sendFlags = EnigmailConstants.SEND_PGP_MIME | EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SAVE_MESSAGE | EnigmailConstants.SEND_ALWAYS_TRUST | EnigmailConstants.ENCRYPT_HEADERS;
 
     let fromAddr = this.identity.email;
     let userIdValue = this.getSenderUserId();
@@ -3387,6 +3391,8 @@ Enigmail.msg = {
     EnigmailMsgCompFields.setValue(newSecurityInfo, "senderEmailAddr", fromAddr);
     EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", fromAddr);
     EnigmailMsgCompFields.setValue(newSecurityInfo, "bccRecipients", "");
+    EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", gMsgCompose.compFields.subject);
+    gMsgCompose.compFields.subject = "";
     this.dirty = true;
 
     return true;
