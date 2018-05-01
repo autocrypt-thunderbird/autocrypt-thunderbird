@@ -2623,7 +2623,7 @@ Enigmail.msg = {
     }
   },
 
-  setDraftStatus: function() {
+  setDraftStatus: function(doEncrypt) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftStatus - enabling draft mode\n");
 
     // Draft Status:
@@ -2635,7 +2635,7 @@ Enigmail.msg = {
     // 5: subject encrypted
 
     var draftStatus = "N" + this.encryptForced + this.signForced + this.pgpmimeForced +
-      (this.attachOwnKeyObj.appendAttachment ? "1" : "0") + "1";
+      (this.attachOwnKeyObj.appendAttachment ? "1" : "0") + (doEncrypt && this.protectHeaders ? "1" : "0");
 
     this.setAdditionalHeader("X-Enigmail-Draft-Status", draftStatus);
   },
@@ -3305,7 +3305,7 @@ Enigmail.msg = {
 
     let doEncrypt = this.isEnigmailEnabled() && this.identity.getBoolAttribute("autoEncryptDrafts");
 
-    this.setDraftStatus();
+    this.setDraftStatus(doEncrypt);
 
     if (!doEncrypt) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
@@ -3320,7 +3320,11 @@ Enigmail.msg = {
       return true;
     }
 
-    let sendFlags = EnigmailConstants.SEND_PGP_MIME | EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SAVE_MESSAGE | EnigmailConstants.SEND_ALWAYS_TRUST | EnigmailConstants.ENCRYPT_HEADERS;
+    let sendFlags = EnigmailConstants.SEND_PGP_MIME | EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SAVE_MESSAGE | EnigmailConstants.SEND_ALWAYS_TRUST;
+
+    if (this.protectHeaders) {
+      sendFlags |= EnigmailConstants.ENCRYPT_HEADERS;
+    }
 
     let fromAddr = this.identity.email;
     let userIdValue = this.getSenderUserId();
@@ -3392,8 +3396,11 @@ Enigmail.msg = {
     EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", fromAddr);
     EnigmailMsgCompFields.setValue(newSecurityInfo, "bccRecipients", "");
     EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", gMsgCompose.compFields.subject);
-    gMsgCompose.compFields.subject = "";
     this.dirty = true;
+
+    if (this.protectHeaders) {
+      gMsgCompose.compFields.subject = "";
+    }
 
     return true;
   },
