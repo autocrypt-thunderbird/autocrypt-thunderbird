@@ -26,7 +26,7 @@
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
 
 <!ENTITY enigmail.keyUpload.label         "Checking whenever your email provider is supported">
-<!ENTITY enigmail.keyUpload.desc          "Publishing your public key on the internet allows others to send you encrypted email without contacting you first.">
+<!ENTITY enigmail.keyUpload.desc          "Publishing your public key on the Internet allows others to send you encrypted email without contacting you first.">
 <!ENTITY enigmail.keyUpload.sks.label     "Upload to the global OpenPGP keyservers">
 <!ENTITY enigmail.keyUpload.sks.desc      "Uploading your key to the global OpenPGP key servers allows users of legacy email apps to send you encrypted or signed messages. Keep in mind that everybody can read everything uploaded to these key servers (think of it like a phonebook). Do not upload your key if you want to keep the email address associated with it private.">
 <!ENTITY enigmail.keyUpload.wks.label     "Upload to the keyserver of your email provider">
@@ -73,7 +73,7 @@
 <!ENTITY enigmail.restorePrefs.tooltip     "Restore all Enigmail preferences including your OpenPGP keys from a file.">
 
 <!ENTITY enigmail.pref.acSetupMessage.desc   "Transfer your key to another Autocrypt-enabled device. ( <enigmailLink href='https://autocrypt.org'>What is Autocrypt</enigmailLink> )">
-<!ENTITY enigmail.pref.acSetupMessage.button "Start Autocrypt Setup">
+<!ENTITY enigmail.pref.acSetupMessage.button "Initiate Autocrypt Setup">
 
 <!ENTITY enigmail.backupRestore.desc       "Export (backup) and Restore your Enigmail settings including your OpenPGP keys.">
 
@@ -762,7 +762,7 @@
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
-<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the internet">
+<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the Internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
 <!ENTITY enigmail.attachAuto.desc                    "When enabled, your public key is automatically attached to your emails">
 
@@ -837,7 +837,7 @@
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "This message was encrypted with p≡p. Click the icon for more details.">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "Verify p≡p Trustwords">
-<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you. They should match the Trustwords below.">
+<!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "Please ask your correspondent to read his Trustwords in person or via phone to you. They must match the Trustwords below.">
 <!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "You are about to add a device to your p≡p device group. Confirm by successfully verifying the following Trustwords.">
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Fingerprint for my key:">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "Trustwords">
@@ -864,7 +864,7 @@
 <!ENTITY enigmail.pepPref.enableEncryption.label     "Enable privacy protection">
 <!ENTITY enigmail.pepPref.passiveMode.label          "Attach my key to outgoing messages">
 <!ENTITY enigmail.pepPref.protectedSubject.label     "Enable protected message subjects">
-<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message looses security through reply or forward">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message looses security through a reply or forwarding">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP Compatibility">
 <!ENTITY enigmail.pepPref.autoKeyLookup.label        "Lookup keys on server automatically">
 <!ENTITY enigmail.pepPref.credits.label              "Credits">
