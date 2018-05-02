@@ -2399,14 +2399,25 @@ Enigmail.msg = {
         }
       }
 
-      let menuElement = document.getElementById("enigmail_insert_own_key");
-      if (menuElement) {
+      elem = document.getElementById("enigmail_insert_own_key");
+      if (elem) {
         if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
-          menuElement.setAttribute("checked", this.attachOwnKeyObj.appendAttachment.toString());
-          menuElement.removeAttribute("disabled");
+          elem.setAttribute("checked", this.attachOwnKeyObj.appendAttachment.toString());
+          elem.removeAttribute("disabled");
         }
         else {
-          menuElement.setAttribute("disabled", "true");
+          elem.setAttribute("disabled", "true");
+        }
+      }
+
+      elem = document.getElementById("enigmail_encrypt_subject");
+      if (elem) {
+        if (enigmailEnabled) {
+          elem.setAttribute("checked", this.protectHeaders ? "true" : "false");
+          elem.removeAttribute("disabled");
+        }
+        else {
+          elem.setAttribute("disabled", "true");
         }
       }
     }

@@ -125,6 +125,14 @@
               accesskey="&enigmail.undoencryption.accesskey;"
               oncommand="Enigmail.msg.undoEncryption();" />
 
+          <menuitem id="enigmail_encrypt_subject"
+              label="&enigmail.protectHeaders.label;"
+              accesskey="&enigmail.protectHeaders.accesskey;"
+              type="checkbox"
+              checked="false"
+              advanced="true"
+              oncommand="Enigmail.msg.toggleProtectHeaders();" />
+
           <menuitem id="enigmail_insert_own_key"
               label="&enigmail.attachmykey.label;"
               accesskey="&enigmail.attachmykey.accesskey;"
