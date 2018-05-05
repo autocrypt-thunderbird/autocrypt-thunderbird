@@ -205,12 +205,12 @@ Enigmail.msg = {
     /* global toggleSignMessage: false, toggleEncryptMessage: false */
     switch (event.target.id) {
       case "menu_securitySign2":
-        this.toggleSignMessage();
+        toggleSignMessage();
         event.stopPropagation();
         this.toggleSMimeSign();
         break;
       case "menu_securityEncryptRequire2":
-        this.toggleEncryptMessage();
+        toggleEncryptMessage();
         event.stopPropagation();
         this.toggleSMimeEncrypt();
     }
@@ -222,7 +222,8 @@ Enigmail.msg = {
       this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
     }
     else {
-      this.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+      //this.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+      this.setFinalSendMode('final-encryptNo');
 
       if (!gSMFields.signMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
     }
@@ -235,7 +236,7 @@ Enigmail.msg = {
       this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
     }
     else {
-      this.signForced = EnigmailConstants.ENIG_FINAL_FORCENO;
+      this.setFinalSendMode('final-signNo');
 
       if (!gSMFields.requireEncryptMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
     }
