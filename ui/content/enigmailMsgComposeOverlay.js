@@ -146,7 +146,7 @@ Enigmail.msg = {
     if (sb) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
       EnigmailTimer.setTimeout(function _f() {
-        if ("loadOverlay" in sb.contentDocument) {
+        if (sb && sb.contentDocument && ("loadOverlay" in sb.contentDocument)) {
           sb.contentDocument.loadOverlay("chrome://enigmail/content/ui/enigmailAbContactsPanel.xul", null);
         }
       }, 2000);
@@ -512,10 +512,10 @@ Enigmail.msg = {
           EnigmailMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
             if (draft) {
               self.setDraftOptions(mimeMsg);
-              if (self.draftSubjectEncrypted) self.setOriginalSubject(msgHdr.subject);
+              if (self.draftSubjectEncrypted) self.setOriginalSubject(msgHdr.subject, false);
             }
             else {
-              if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject);
+              if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject, false);
               self.checkMimeStructure(mimeMsg);
             }
           });
@@ -620,7 +620,7 @@ Enigmail.msg = {
     Enigmail.msg.setOwnKeyStatus();
   },
 
-  setOriginalSubject: function(subject) {
+  setOriginalSubject: function(subject, forceSetting) {
     const CT = Components.interfaces.nsIMsgCompType;
     let subjElem = document.getElementById("msgSubject");
     let prefix = "";
@@ -631,8 +631,17 @@ Enigmail.msg = {
       case CT.ForwardInline:
       case CT.ForwardAsAttachment:
         prefix = this.getMailPref("mail.forward_subject_prefix") + ": ";
+        break;
+      case CT.Reply:
+      case CT.ReplyAll:
+      case CT.ReplyToSender:
+      case CT.ReplyToGroup:
+      case CT.ReplyToSenderAndGroup:
+      case CT.ReplyToList:
+        if (!subject.startsWith("Re: ")) prefix = "Re: ";
     }
 
+    let doSetSubject = forceSetting;
     switch (gMsgCompose.type) {
       case CT.Draft:
       case CT.Template:
@@ -640,11 +649,16 @@ Enigmail.msg = {
       case CT.ForwardInline:
       case CT.ForwardAsAttachment:
       case CT.EditAsNew:
-        subject = EnigmailData.convertToUnicode(subject, "UTF-8");
-        subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
-        gMsgCompose.compFields.subject = prefix + subject;
-        subjElem.value = prefix + subject;
+        doSetSubject = true;
         break;
+    }
+
+    if (doSetSubject) {
+      subject = EnigmailData.convertToUnicode(subject, "UTF-8");
+      subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
+      gMsgCompose.compFields.subject = prefix + subject;
+      subjElem.value = prefix + subject;
+      if (typeof subjElem.oninput === "function") subjElem.oninput();
     }
   },
 
@@ -5542,7 +5556,10 @@ Enigmail.composeStateListener = {
     if (!isEditable || isEmpty)
       return;
 
-    // Required for TB < 48 (with window recycling)
+    let msgHdr = Enigmail.msg.getMsgHdr();
+    if (msgHdr) {
+      Enigmail.msg.setOriginalSubject(msgHdr.subject, true);
+    }
     Enigmail.msg.fixMessageSubject();
 
     if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {

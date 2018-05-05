@@ -499,6 +499,9 @@ MimeDecryptHandler.prototype = {
           }),
           this.mimePartNumber);
       }
+      else {
+        this.updateHeadersInMsgDb();
+      }
       this.statusDisplayed = true;
     }
     catch (ex) {
@@ -652,6 +655,18 @@ MimeDecryptHandler.prototype = {
     return 0;
   },
 
+  updateHeadersInMsgDb: function() {
+    if (this.mimePartNumber !== "1") return;
+    if (!this.uri) return;
+
+    if (this.decryptedHeaders && ("subject" in this.decryptedHeaders)) {
+      try {
+        let msgDbHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+        msgDbHdr.subject = EnigmailData.convertFromUnicode(this.decryptedHeaders.subject, "utf-8");
+      }
+      catch (x) {}
+    }
+  },
 
   extractEncryptedHeaders: function() {
 
