@@ -96,7 +96,7 @@ Enigmail.hlp = {
       keyMissing = EnigmailKeyRing.getValidKeysForAllRecipients(addresses, minTrustLevel, details, resultingArray);
     }
     catch (ex) {
-      EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (exception: " + ex.message + ")\n");
+      EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: doValidKeysForAllRecipients(): return null (exception: " + ex.message + "\n" + ex.stack + ")\n");
       return null;
     }
     if (keyMissing) {
