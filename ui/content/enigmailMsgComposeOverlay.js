@@ -202,6 +202,8 @@ Enigmail.msg = {
   },
 
   toggleSmimeToolbar: function(event) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleSmimeToolbar\n");
+
     /* global toggleSignMessage: false, toggleEncryptMessage: false */
     switch (event.target.id) {
       case "menu_securitySign2":
@@ -217,6 +219,8 @@ Enigmail.msg = {
   },
 
   toggleSMimeEncrypt: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleSMimeEncrypt\n");
+
     if (gSMFields && gSMFields.requireEncryptMessage) {
       this.encryptForced = EnigmailConstants.ENIG_ALWAYS;
       this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
@@ -231,6 +235,8 @@ Enigmail.msg = {
   },
 
   toggleSMimeSign: function() {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.toggleSMimeSign\n");
+
     if (gSMFields && gSMFields.signMessage) {
       this.signForced = EnigmailConstants.ENIG_ALWAYS;
       this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
