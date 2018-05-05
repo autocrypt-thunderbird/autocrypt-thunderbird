@@ -18,7 +18,6 @@ const Cu = Components.utils;
 Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
 Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
@@ -27,6 +26,7 @@ Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: fals
 Cu.import("chrome://enigmail/content/modules/versioning.jsm"); /*global EnigmailVersioning: false */
 Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 const MINIMUM_GPG_VERSION = "2.0.14";
 const GPG_BATCH_OPT_LIST = ["--batch", "--no-tty", "--status-fd", "2"];
@@ -241,6 +241,11 @@ var EnigmailGpg = {
 
   // returns the output of --with-colons --list-config
   getGnupgConfig: function(exitCodeObj, errorMsgObj) {
+    if (!EnigmailGpg.agentPath) {
+      exitCodeObj.value = 0;
+      return "";
+    }
+
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["--fixed-list-mode", "--with-colons", "--list-config"]);
 
@@ -280,7 +285,7 @@ var EnigmailGpg = {
     const cfgStr = EnigmailGpg.getGnupgConfig(exitCodeObj, errorMsgObj);
 
     if (exitCodeObj.value !== 0) {
-      EnigmailDialog.alert(errorMsgObj.value);
+      getDialog().alert(errorMsgObj.value);
       return null;
     }
 
