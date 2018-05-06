@@ -202,13 +202,12 @@ function onCancel() {
   }
 
   if (gEnigRequest.gpgkeysRequest) {
-
     try {
-      var p = gEnigRequest.gpgkeysRequest;
-      gEnigRequest.gpgkeysRequest = null;
+      let p = gEnigRequest.gpgkeysRequest;
       p.kill(false);
     }
     catch (ex) {}
+    gEnigRequest.gpgkeysRequest = null;
   }
 
   gOutputData = "";

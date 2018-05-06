@@ -70,7 +70,7 @@
 
   <hbox id="progress.box">
     <label value="&enigmail.progress.label;:" control="dialog.progress"/>
-    <progressmeter id="dialog.progress" mode="determined" value="0"/>
+    <progressmeter id="dialog.progress" mode="undetermined" value="0"/>
   </hbox>
 
     <vbox align="start">
