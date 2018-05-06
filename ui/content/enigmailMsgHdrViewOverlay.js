@@ -1112,8 +1112,12 @@ Enigmail.hdrView = {
 
   setSubject: function(subject) {
     if (gFolderDisplay.selectedMessages.length === 1 && gFolderDisplay.selectedMessage) {
-      gFolderDisplay.selectedMessage.subject = EnigmailData.convertFromUnicode(subject, "utf-8");
-      this.updateHdrBox("subject", subject);
+      let subj = EnigmailData.convertFromUnicode(subject, "utf-8");
+      if (gFolderDisplay.selectedMessage.flags & Components.interfaces.nsMsgMessageFlags.HasRe) {
+        subj = subj.replace(/^(Re: )+(.*)/, "$2");
+      }
+      gFolderDisplay.selectedMessage.subject = subj;
+      this.updateHdrBox("subject", subject); // this needs to be the unmodified subject
     }
   },
 
