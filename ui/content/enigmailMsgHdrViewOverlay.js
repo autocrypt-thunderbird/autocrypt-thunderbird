@@ -322,7 +322,11 @@ Enigmail.hdrView = {
         statusLine = statusInfo + EnigmailLocale.getString("clickDecryptRetry");
       }
       else if (statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
-        if (statusFlags & EnigmailConstants.MISSING_PASSPHRASE) {
+        if (statusFlags & EnigmailConstants.MISSING_MDC) {
+          statusInfo = EnigmailLocale.getString("missingMdcError");
+          statusLine = statusInfo;
+        }
+        else if (statusFlags & EnigmailConstants.MISSING_PASSPHRASE) {
           statusInfo = EnigmailLocale.getString("missingPassphrase");
           statusLine = statusInfo + EnigmailLocale.getString("clickDecryptRetry");
         }

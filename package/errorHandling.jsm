@@ -44,9 +44,6 @@ const gStatusFlags = {
   ERROR: EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED,
   DECRYPTION_FAILED: EnigmailConstants.DECRYPTION_FAILED,
   DECRYPTION_OKAY: EnigmailConstants.DECRYPTION_OKAY,
-  TRUST_UNDEFINED: EnigmailConstants.UNTRUSTED_IDENTITY,
-  TRUST_NEVER: EnigmailConstants.UNTRUSTED_IDENTITY,
-  TRUST_MARGINAL: EnigmailConstants.UNTRUSTED_IDENTITY,
   TRUST_FULLY: EnigmailConstants.TRUSTED_IDENTITY,
   TRUST_ULTIMATE: EnigmailConstants.TRUSTED_IDENTITY,
   CARDCTRL: EnigmailConstants.CARDCTRL,
@@ -56,7 +53,8 @@ const gStatusFlags = {
   END_ENCRYPTION: EnigmailConstants.END_ENCRYPTION,
   INV_SGNR: 0x100000000,
   IMPORT_OK: 0x200000000,
-  FAILURE: 0x400000000
+  FAILURE: 0x400000000,
+  DECRYPTION_INFO: 0x400000000
 };
 
 // taken from libgpg-error: gpg-error.h
@@ -298,6 +296,17 @@ function noData(c) {
   }
 }
 
+function decryptionInfo(c) {
+  // Recognize only "DECRYPTION_INFO 0 123"
+  if (c.statusLine.search(/DECRYPTION_INFO 0 /) >= 0) {
+    c.statusFlags |= EnigmailConstants.MISSING_MDC;
+    c.flag = EnigmailConstants.MISSING_MDC;
+    EnigmailLog.DEBUG("errorHandling.jsm: missing MDC!\n");
+    c.retStatusObj.statusMsg += EnigmailLocale.getString("missingMdcError") + "\n";
+  }
+}
+
+
 function decryptionFailed(c) {
   c.inDecryptionFailed = true;
 }
@@ -325,6 +334,7 @@ function setupFailureLookup() {
   result[gStatusFlags.INV_SGNR] = invalidSignature;
   result[gStatusFlags.IMPORT_OK] = importOk;
   result[gStatusFlags.FAILURE] = failureMessage;
+  result[gStatusFlags.DECRYPTION_INFO] = decryptionInfo;
   return result;
 }
 
