@@ -425,19 +425,9 @@ class EnigmailKeyObj {
       keyData: ""
     };
 
-
-    // TODO: remove ECC special case once OpenPGP.js supports it
-    let isECC = (this.algoSym.search(/(ECDH|ECDSA|EDDSA)/) >= 0);
-
     if (!this.minimalKeyBlock) {
       let args = EnigmailGpg.getStandardArgs(true);
-
-      if (!isECC) {
-        args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
-      }
-      else {
-        args = args.concat(["--export-options", "export-minimal,no-export-attributes", "--export", this.fpr]);
-      }
+      args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
 
       const statusObj = {};
       const exitCodeObj = {};
@@ -464,15 +454,9 @@ class EnigmailKeyObj {
 
       if (exportOK) {
         this.minimalKeyBlock = null;
-
-        if (isECC) {
-          this.minimalKeyBlock = btoa(keyBlock);
-        }
-        else {
-          let minKey = getStrippedKey(keyBlock);
-          if (minKey) {
-            this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
-          }
+        let minKey = getStrippedKey(keyBlock);
+        if (minKey) {
+          this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
         }
 
         if (!this.minimalKeyBlock) {
@@ -530,19 +514,16 @@ function getStrippedKey(armoredKey) {
     if (!msg || msg.keys.length === 0) return null;
 
     let key = msg.keys[0];
-    let uid = key.getPrimaryUser();
+    let uid = EnigmailFuncs.syncPromise(key.getPrimaryUser());
     if (!uid || !uid.user) return null;
 
+    let encSubkey = EnigmailFuncs.syncPromise(key.getEncryptionKeyPacket());
     let foundSubKey = null;
-    let foundCreationDate = new Date(0);
 
-    // go backwards through the subkeys as the newest key is usually
-    // later in the list
-    for (let i = key.subKeys.length - 1; i >= 0; i--) {
-      if (key.subKeys[i].subKey.created > foundCreationDate &&
-        key.subKeys[i].isValidEncryptionKey(key.primaryKey)) {
-        foundCreationDate = key.subKeys[i].subKey.created;
+    for (let i = 0; i < key.subKeys.length; i++) {
+      if (key.subKeys[i].subKey === encSubkey) {
         foundSubKey = key.subKeys[i];
+        break;
       }
     }
 

@@ -407,6 +407,25 @@ var EnigmailFuncs = {
     }
 
     return null;
-  }
+  },
 
+  /**
+   * Synchronize a promise
+   */
+  syncPromise: function(promise) {
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+    let res = null;
+    let p = promise.then(gotResult => {
+      res = gotResult;
+      inspector.exitNestedEventLoop();
+    }).catch(gotResult => {
+      res = gotResult;
+      inspector.exitNestedEventLoop();
+    });
+
+    inspector.enterNestedEventLoop(0);
+
+    return res;
+  }
 };

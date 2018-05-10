@@ -290,6 +290,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
   // uses the key listing from shouldGetKeyValidityErrors
   let key = EnigmailKeyRing.getKeyById("D535623BB60E9E71");
 
+  // this test is crucial as it depends on openpgp.js internal functions
   let pubKey = key.getMinimalPubKey();
 
   Assert.equal(pubKey.exitCode, 0);
