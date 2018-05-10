@@ -31,14 +31,14 @@ test(function getBoundaryTest() {
 
 });
 
-const msg1 = 'Content-Type: multipart/mixed; boundary="OuterBoundary"\r\n' +
+const msg1 = 'Content-Type: multipart/mixed; boundary="OuterBoundary";\r\n' +
+  '  protected-headers="v1"\r\n' +
   'References: <some@msg.id>\r\n' +
   'Subject: Outer hidden subject\r\n' +
   '\r\n' +
   '--OuterBoundary\r\n' +
   'Content-Transfer-Encoding: base64\r\n' +
   'Content-Type: text/rfc822-headers; charset="us-ascii";\r\n' +
-  '  protected-headers="v1,<12345678@enigmail-test.net>"\r\n' +
   'Content-Disposition: inline\r\n' +
   '\r\n' +
   'U3ViamVjdDogVGhlIGhpZGRlbiBzdWJqZWN0CkRhdGU6IFN1biwgMjEgSnVuIDIwMTUgMT\r\n' +
@@ -78,14 +78,15 @@ const msg2 = 'Content-Type: multipart/mixed; boundary="OuterBoundary"\r\n' +
 test(function extractProtectedHeadersTest() {
 
   var r = EnigmailMime.extractProtectedHeaders(msg1);
+  //Assert.equal(r, 0);
 
   var expected = msg2;
 
   var got = r.startPos;
-  Assert.equal(got, 117, "startPos of removed data");
+  Assert.equal(got, 144, "startPos of removed data");
 
   got = r.endPos;
-  Assert.equal(got, 767, "endPos of removed data");
+  Assert.equal(got, 739, "endPos of removed data");
 
   got = r.newHeaders.subject;
   expected = "The hidden subject";
