@@ -54,7 +54,7 @@ const gStatusFlags = {
   INV_SGNR: 0x100000000,
   IMPORT_OK: 0x200000000,
   FAILURE: 0x400000000,
-  DECRYPTION_INFO: 0x400000000
+  DECRYPTION_INFO: 0x800000000
 };
 
 // taken from libgpg-error: gpg-error.h
