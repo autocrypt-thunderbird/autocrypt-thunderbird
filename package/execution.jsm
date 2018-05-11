@@ -284,6 +284,97 @@ var EnigmailExecution = {
   },
 
   /**
+   * Execute a command and return a Promise
+   * Accepts input and returns error message and statusFlags.
+   */
+
+  execAsync: function(command, args, input) {
+    EnigmailLog.WRITE("execution.jsm: execAsync: command = '" + command.path + "'\n");
+
+    if ((typeof input) != "string") input = "";
+
+    let preInput = "";
+    let outputData = "";
+    let errOutput = "";
+    EnigmailLog.CONSOLE("enigmail> " + EnigmailFiles.formatCmdLine(command, args) + "\n");
+
+    const procBuilder = new EnigmailExecution.processBuilder();
+    procBuilder.setCommand(command);
+    procBuilder.setArguments(args);
+    procBuilder.setEnvironment(EnigmailCore.getEnvList());
+    procBuilder.setStdin(
+      function(pipe) {
+        if (input.length > 0 || preInput.length > 0) {
+          pipe.write(preInput + input);
+        }
+        pipe.close();
+      }
+    );
+    procBuilder.setStdout(
+      function(data) {
+        outputData += data;
+      }
+    );
+    procBuilder.setStderr(
+      function(data) {
+        errOutput += data;
+      }
+    );
+
+    return new Promise((resolve, reject) => {
+      procBuilder.setDone(
+        function(exitCode) {
+          EnigmailLog.DEBUG("  enigmail> DONE\n");
+          EnigmailLog.DEBUG("execution.jsm: execAsync: exitCode = " + exitCode + "\n");
+          EnigmailLog.DEBUG("execution.jsm: execAsync: errOutput = " + errOutput + "\n");
+
+          let retStatusObj = {};
+          let errorMsg = EnigmailErrorHandling.parseErrorOutput(errOutput, retStatusObj);
+
+          let statusFlagsObj = {
+            value: retStatusObj.statusFlags
+          };
+
+          exitCode = EnigmailExecution.fixExitCode(exitCode, statusFlagsObj);
+
+          if (retStatusObj.blockSeparation.indexOf(" ") > 0) {
+            exitCode = 2;
+          }
+
+          EnigmailLog.CONSOLE(errorMsg + "\n");
+
+          resolve({
+            exitCode: exitCode,
+            stdoutData: outputData,
+            stderrData: errOutput,
+            errorMsg: errorMsg,
+            statusFlags: statusFlagsObj.value,
+            statusMsg: retStatusObj.statusMsg,
+            blockSeparation: retStatusObj.blockSeparation
+          });
+        }
+      );
+      const proc = procBuilder.build();
+      try {
+        subprocess.call(proc);
+      }
+      catch (ex) {
+        EnigmailLog.ERROR("execution.jsm: execAsync: subprocess.call failed with '" + ex.toString() + "'\n");
+        EnigmailLog.DEBUG("  enigmail> DONE with FAILURE\n");
+        reject({
+          exitCode: -1,
+          stdoutData: "",
+          stderrData: "",
+          errorMsg: "",
+          statusFlags: 0,
+          statusMsg: "",
+          blockSeparation: ""
+        });
+      }
+    });
+  },
+
+  /**
    * Fix the exit code of GnuPG (which may be wrong in some circumstances)
    *
    * @exitCode:       Number - the exitCode obtained from GnuPG
