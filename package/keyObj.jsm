@@ -72,27 +72,12 @@ Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: fa
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
-
-const ENTRY_ID = 0;
-const KEY_TRUST_ID = 1;
-const KEY_SIZE_ID = 2;
-const KEY_ALGO_ID = 3;
-const KEY_ID = 4;
-const CREATED_ID = 5;
-const EXPIRY_ID = 6;
-const UID_ID = 7;
-const OWNERTRUST_ID = 8;
-const USERID_ID = 9;
-const SIG_TYPE_ID = 10;
-
-const UNKNOWN_SIGNATURE = "[User ID not found]";
 
 class EnigmailKeyObj {
   constructor(keyData) {
@@ -138,13 +123,7 @@ class EnigmailKeyObj {
    */
   get signatures() {
     if (this._sigList === null) {
-      let exitCodeObj = {},
-        errorMsgObj = {};
-      let r = getKeySig(this.keyId, exitCodeObj, errorMsgObj);
-
-      if (r.length > 0) {
-        this._sigList = extractSignatures(r, false);
-      }
+      this._sigList = getKeySig(this.keyId);
     }
 
     return this._sigList;
@@ -542,110 +521,7 @@ function getStrippedKey(armoredKey) {
   return null;
 }
 
-// returns the output of --with-colons --list-sig
-function getKeySig(keyId, exitCodeObj, errorMsgObj) {
-  const args = EnigmailGpg.getStandardArgs(true).
-  concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).
-  concat(keyId.split(" "));
-
-  const statusFlagsObj = {};
-  const cmdErrorMsgObj = {};
-  const listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
-
-  if (!(statusFlagsObj.value & EnigmailConstants.BAD_SIGNATURE)) {
-    // ignore exit code as recommended by GnuPG authors
-    exitCodeObj.value = 0;
-  }
-
-  if (exitCodeObj.value !== 0) {
-    errorMsgObj.value = EnigmailLocale.getString("badCommand");
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
-      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-    }
-
-    return "";
-  }
-  return listText;
-}
-
-/**
- * Return signatures for a given key list
- *
- * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
- *                                  Only the first public key is processed!
- * @param Boolean ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
- *
- * @return Array of Object:
- *     - uid
- *     - uidLabel
- *     - creationDate
- *     - sigList: [uid, creationDate, signerKeyId, sigType ]
- */
-
-function extractSignatures(gpgKeyList, ignoreUnknownUid) {
-  EnigmailLog.DEBUG("keyRing.jsm: extractSignatures: " + gpgKeyList + "\n");
-
-  var listObj = {};
-
-  let havePub = false;
-  let currUid = "",
-    keyId = "",
-    fpr = "";
-
-  const lineArr = gpgKeyList.split(/\n/);
-  for (let i = 0; i < lineArr.length; i++) {
-    // process lines such as:
-    //  tru::1:1395895453:1442881280:3:1:5
-    //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
-    //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
-    //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
-    //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
-    //  sub:e:2048:1:B214734F0F5C7041:1316219469:1199912694:::::e:
-    //  sub:f:2048:1:70E7A471DABE08B0:1316221524:1546189300:::::s:
-    const lineTokens = lineArr[i].split(/:/);
-    switch (lineTokens[ENTRY_ID]) {
-      case "pub":
-        if (havePub) {
-          return listObj;
-        }
-        havePub = true;
-        keyId = lineTokens[KEY_ID];
-        break;
-      case "fpr":
-        if (fpr === "") fpr = lineTokens[USERID_ID];
-        break;
-      case "uid":
-      case "uat":
-        currUid = lineTokens[UID_ID];
-        listObj[currUid] = {
-          userId: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
-          rawUserId: lineTokens[USERID_ID],
-          keyId: keyId,
-          fpr: fpr,
-          created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
-          sigList: []
-        };
-        break;
-      case "sig":
-        if (lineTokens[SIG_TYPE_ID].substr(0, 2).toLowerCase() !== "1f") {
-          // ignrore revoked signature
-
-          let sig = {
-            userId: EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
-            created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
-            signerKeyId: lineTokens[KEY_ID],
-            sigType: lineTokens[SIG_TYPE_ID],
-            sigKnown: lineTokens[USERID_ID] != UNKNOWN_SIGNATURE
-          };
-
-          if (!ignoreUnknownUid || sig.userId != UNKNOWN_SIGNATURE) {
-            listObj[currUid].sigList.push(sig);
-          }
-        }
-        break;
-    }
-  }
-
-  return listObj;
+function getKeySig(keyId) {
+  const cApi = EnigmailCryptoAPI();
+  return cApi.sync(cApi.getKeySignatures(keyId));
 }

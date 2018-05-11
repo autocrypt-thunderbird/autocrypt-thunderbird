@@ -44,4 +44,8 @@ class CryptoAPI {
 
     return res;
   }
+
+  async getKeySignatures(keyId) {
+    return null;
+  }
 }
