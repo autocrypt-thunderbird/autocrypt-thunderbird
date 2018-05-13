@@ -66,18 +66,11 @@ const Cu = Components.utils;
 */
 
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
-
-
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
-const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
 
 class EnigmailKeyObj {
   constructor(keyData) {
@@ -123,7 +116,8 @@ class EnigmailKeyObj {
    */
   get signatures() {
     if (this._sigList === null) {
-      this._sigList = getKeySig(this.keyId);
+      const cApi = EnigmailCryptoAPI();
+      this._sigList = cApi.sync(cApi.getKeySignatures(this.keyId));
     }
 
     return this._sigList;
@@ -398,55 +392,8 @@ class EnigmailKeyObj {
   getMinimalPubKey() {
     EnigmailLog.DEBUG("keyObj.jsm: EnigmailKeyObj.getMinimalPubKey: " + this.keyId + "\n");
 
-    let retObj = {
-      exitCode: 0,
-      errorMsg: "",
-      keyData: ""
-    };
-
-    if (!this.minimalKeyBlock) {
-      let args = EnigmailGpg.getStandardArgs(true);
-      args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", this.fpr]);
-
-      const statusObj = {};
-      const exitCodeObj = {};
-      let keyBlock = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, statusObj);
-      let exportOK = true;
-
-      if (EnigmailGpg.getGpgFeature("export-result")) {
-        // GnuPG 2.1.10+
-        let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + this.fpr, "m");
-        if (statusObj.value.search(r) < 0) {
-          retObj.exitCode = 2;
-          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
-          exportOK = false;
-        }
-      }
-      else {
-        // GnuPG older than 2.1.10
-        if (keyBlock.length < 50) {
-          retObj.exitCode = 2;
-          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
-          exportOK = false;
-        }
-      }
-
-      if (exportOK) {
-        this.minimalKeyBlock = null;
-        let minKey = getStrippedKey(keyBlock);
-        if (minKey) {
-          this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
-        }
-
-        if (!this.minimalKeyBlock) {
-          retObj.exitCode = 1;
-          retObj.errorMsg = "No valid (sub-)key";
-        }
-      }
-    }
-
-    retObj.keyData = this.minimalKeyBlock;
-    return retObj;
+    const cApi = EnigmailCryptoAPI();
+    return cApi.sync(cApi.getMinimalPubKey(this.fpr));
   }
 
   /**
@@ -470,58 +417,4 @@ class EnigmailKeyObj {
         return this.keySize;
     }
   }
-}
-
-/**
- * Get a minimal stripped key containing only:
- * - The public key
- * - the primary UID + its self-signature
- * - the newest valild encryption key + its signature packet
- *
- * @param armoredKey - String: Key data (in OpenPGP armored format)
- *
- * @return Uint8Array, or null
- */
-
-function getStrippedKey(armoredKey) {
-  EnigmailLog.DEBUG("keyObj.jsm: EnigmailKeyObj.getStrippedKey()\n");
-
-  try {
-    let openpgp = getOpenPGP().openpgp;
-    let msg = openpgp.key.readArmored(armoredKey);
-
-    if (!msg || msg.keys.length === 0) return null;
-
-    let key = msg.keys[0];
-    let uid = EnigmailFuncs.syncPromise(key.getPrimaryUser());
-    if (!uid || !uid.user) return null;
-
-    let encSubkey = EnigmailFuncs.syncPromise(key.getEncryptionKeyPacket());
-    let foundSubKey = null;
-
-    for (let i = 0; i < key.subKeys.length; i++) {
-      if (key.subKeys[i].subKey === encSubkey) {
-        foundSubKey = key.subKeys[i];
-        break;
-      }
-    }
-
-    if (!foundSubKey) return null;
-
-    let p = new openpgp.packet.List();
-    p.push(key.primaryKey);
-    p.concat(uid.user.toPacketlist());
-    p.concat(foundSubKey.toPacketlist());
-
-    return p.write();
-  }
-  catch (ex) {
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyObj.getStrippedKey: ERROR " + ex.message + "\n");
-  }
-  return null;
-}
-
-function getKeySig(keyId) {
-  const cApi = EnigmailCryptoAPI();
-  return cApi.sync(cApi.getKeySignatures(keyId));
 }

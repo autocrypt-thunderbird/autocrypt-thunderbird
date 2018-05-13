@@ -9,6 +9,7 @@ include $(DEPTH)/config/autoconf.mk
 
 MODFILES = \
 	gnupg.js \
+	openpgp-js.js \
 	interface.js	
 
 all: deploy
