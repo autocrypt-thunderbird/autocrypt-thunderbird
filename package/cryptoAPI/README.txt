@@ -6,6 +6,11 @@ operations and generic function that are related to OpenPGP. The goal is that
 there is no call to GnuPG, openpgp.js or any other crypto-library outside this
 structure.
 
+The API should be accessed via CryptoAPI.jsm, which will (in the future)
+determine which API the user selected or is appropriate. Currently only the
+GnuPGCryptoAPI will be returned and is directly accessible.
+
+
 Class Hierarchy
 ---------------
 
