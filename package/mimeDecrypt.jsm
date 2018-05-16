@@ -560,25 +560,46 @@ MimeDecryptHandler.prototype = {
     }
     catch (ex) {}
 
-    let i = this.decryptedData.search(/\n\r?\n/);
-    if (i > 0) {
-      var hdr = this.decryptedData.substr(0, i).split(/\r?\n/);
-      for (let j = 0; j < hdr.length; j++) {
-        if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
-          LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
+    if (this.mimePartNumber !== "1") {
+      this.addWrapperToDecryptedResult();
+    }
+    else {
+      let i = this.decryptedData.search(/\n\r?\n/);
+      if (i > 0) {
+        var hdr = this.decryptedData.substr(0, i).split(/\r?\n/);
+        for (let j = 0; j < hdr.length; j++) {
+          if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
+            LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
 
-          let wrapper = EnigmailMime.createBoundary();
-          this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
-            'Content-Disposition: inline\r\n\r\n' +
-            '--' + wrapper + '\r\n' +
-            this.decryptedData + '\r\n' +
-            '--' + wrapper + '--\r\n';
-          break;
+            this.addWrapperToDecryptedResult();
+            break;
+          }
         }
       }
     }
 
     this.exitCode = exitCode;
+  },
+
+  addWrapperToDecryptedResult: function() {
+    let wrapper = EnigmailMime.createBoundary();
+
+    let head = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+      'Content-Disposition: inline\r\n\r\n' +
+      '--' + wrapper + '\r\n';
+
+    if (this.mimePartNumber !== "1") {
+      // Efail protection layer
+      head += 'Content-Type: text/html\r\n\r\n' +
+        '<!-- > <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> --> ' +
+        '<!-- \'> <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> --> ' +
+        '<!-- "> <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> -->\r\n\r\n' +
+        '--' + wrapper + '\r\n';
+    }
+
+    this.decryptedData = head +
+      this.decryptedData + '\r\n' +
+      '--' + wrapper + '--\r\n';
   },
 
   extractContentType: function(data) {
