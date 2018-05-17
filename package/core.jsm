@@ -287,17 +287,20 @@ function initializeEnvironment(env) {
 
   gEnvList = [];
 
-  if (!getEnigmailPrefs().getPref("gpgLocaleEn")) {
-    passEnv = passEnv.concat([
-      "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
-      "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME"
-    ]);
-  }
-  else if (getEnigmailOS().getOS() === "WINNT") {
-    // force output on Windows to EN-US
-    EnigmailCore.addToEnvList("LC_ALL=en_US");
-    EnigmailCore.addToEnvList("LANG=en_US");
-  }
+  // if (!getEnigmailPrefs().getPref("gpgLocaleEn")) {
+  //   passEnv = passEnv.concat([
+  //     "LANG", "LANGUAGE", "LC_ALL", "LC_COLLATE", "LC_CTYPE",
+  //     "LC_MESSAGES", "LC_MONETARY", "LC_NUMERIC", "LC_TIME"
+  //   ]);
+  // }
+  // else if (getEnigmailOS().getOS() === "WINNT") {
+  //   // force output on Windows to EN-US
+  //   EnigmailCore.addToEnvList("LC_ALL=en_US");
+  //   EnigmailCore.addToEnvList("LANG=en_US");
+  // }
+
+  EnigmailCore.addToEnvList("LC_ALL=C");
+  EnigmailCore.addToEnvList("LANG=C");
 
   const passList = env.get("ENIGMAIL_PASS_ENV");
   if (passList) {
