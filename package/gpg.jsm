@@ -133,6 +133,7 @@ var EnigmailGpg = {
    supports-sender      - does gnupg understand the --sender argument (true for gpg >= 2.1.15)
    supports-wkd         - does gpg support wkd (web key directory) (true for gpg >= 2.1.19)
    export-result        - does gpg print EXPORTED when exporting keys (true for gpg >= 2.1.10)
+   decryption-info      - does gpg print DECRYPTION_INFO (true for gpg >= 2.0.19)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -179,6 +180,8 @@ var EnigmailGpg = {
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.15");
       case "export-result":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.10");
+      case "decryption-info":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.19");
       case "supports-wkd":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.19");
     }

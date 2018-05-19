@@ -22,6 +22,7 @@ Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global Enigmail
 Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
+const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");
 
 
 const gStatusFlags = {
@@ -297,12 +298,20 @@ function noData(c) {
 }
 
 function decryptionInfo(c) {
-  // Recognize only "DECRYPTION_INFO 0 123"
-  if (c.statusLine.search(/DECRYPTION_INFO 0 /) >= 0) {
-    c.statusFlags |= EnigmailConstants.MISSING_MDC;
-    c.flag = EnigmailConstants.MISSING_MDC;
-    EnigmailLog.DEBUG("errorHandling.jsm: missing MDC!\n");
-    c.retStatusObj.statusMsg += EnigmailLocale.getString("missingMdcError") + "\n";
+  // Recognize "DECRYPTION_INFO 0 1 2"
+  if (c.statusLine.search(/DECRYPTION_INFO /) >= 0) {
+    let lineSplit = c.statusLine.split(/ +/);
+
+    let mdcMethod = lineSplit[1];
+    let aeadAlgo = lineSplit.length > 3 ? lineSplit[3] : "0";
+
+    if (mdcMethod === "0" && aeadAlgo === "0") {
+      c.statusFlags |= EnigmailConstants.MISSING_MDC;
+      c.statusFlags |= EnigmailConstants.DECRYPTION_FAILED; // be sure to fail
+      c.flag = EnigmailConstants.MISSING_MDC;
+      EnigmailLog.DEBUG("errorHandling.jsm: missing MDC!\n");
+      c.retStatusObj.statusMsg += EnigmailLocale.getString("missingMdcError") + "\n";
+    }
   }
 }
 
@@ -406,12 +415,14 @@ function parseErrorLine(errLine, c) {
   }
   else {
     // non-status line (details of previous status command)
-    if (errLine == "gpg: WARNING: message was not integrity protected") {
-      // workaround for Gpg < 2.0.8 that don't fail on missing MDC for old
-      // algorithms like CAST5
-      c.statusFlags |= EnigmailConstants.DECRYPTION_FAILED;
-      c.inDecryptionFailed = true;
+    if (!getEnigmailGpg().getGpgFeature("decryption-info")) {
+      if (errLine == "gpg: WARNING: message was not integrity protected") {
+        // workaround for Gpg < 2.0.19 that don't print DECRYPTION_INFO
+        c.statusFlags |= EnigmailConstants.DECRYPTION_FAILED;
+        c.inDecryptionFailed = true;
+      }
     }
+
     c.errArray.push(errLine);
     // save details of DECRYPTION_FAILED message ass error message
     if (c.inDecryptionFailed) {
