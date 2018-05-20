@@ -364,6 +364,33 @@ var EnigmailMime = {
   },
 
   /**
+   * Try to determine if the message structure is a known MIME structure,
+   * based on the MIME part number and the uriSpec.
+   *
+   * @param mimePartNumber: String - the MIME part we are requested to decrypt
+   * @param uriSpec:        String - the URI spec of the message (or msg part) loaded by TB
+   *
+   * @return Boolean: true: regular message structure, MIME part is safe to be decrypted
+   *                  false: otherwise
+   */
+  isRegularMimeStructure: function(mimePartNumber, uriSpec) {
+    if (mimePartNumber.length === 0) return true;
+    if (mimePartNumber.search(/^1(\.1)*$/) === 0) return true;
+
+    if (!uriSpec) return true;
+
+    // is the message a subpart of a complete attachment?
+    let msgPart = this.getMimePartNumber(uriSpec);
+    if (msgPart.length > 0) {
+      if (mimePartNumber.indexOf(msgPart) === 0 &&
+        mimePartNumber.substr(msgPart.length).search(/^(\.1)+$/) === 0) return true;
+    }
+
+    return false;
+  },
+
+
+  /**
    * Parse a MIME message and return a tree structur of TreeObject
    *
    * @param url:         String   - the URL to load and parse
