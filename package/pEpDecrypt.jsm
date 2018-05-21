@@ -219,7 +219,9 @@ PEPDecryptor.prototype = {
   onStopRequest: function() {
     // make the string a complete MIME message
 
-    if (this.ignoreMessage) {
+    let spec = this.uri ? this.uri.spec : null;
+
+    if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec) || this.ignoreMessage) {
       this.mimeSvc.onStopRequest(null, null, 0);
       return;
     }
@@ -323,15 +325,6 @@ PEPDecryptor.prototype = {
     let head = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
       'Content-Disposition: inline\r\n\r\n' +
       '--' + wrapper + '\r\n';
-
-    if (this.mimePartNumber !== "1") {
-      // Efail protection layer
-      head += 'Content-Type: text/html\r\n\r\n' +
-        '<!-- > <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> --> ' +
-        '<!-- \'> <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> --> ' +
-        '<!-- "> <pre style="visibility:visible; display: block; font: fixed; font-size: 10px;"> -->\r\n\r\n' +
-        '--' + wrapper + '\r\n';
-    }
 
     this.decryptedData = head +
       this.decryptedData + '\r\n' +
