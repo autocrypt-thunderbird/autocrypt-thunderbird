@@ -382,8 +382,13 @@ var EnigmailMime = {
     // is the message a subpart of a complete attachment?
     let msgPart = this.getMimePartNumber(uriSpec);
     if (msgPart.length > 0) {
+      // load attached messages
       if (mimePartNumber.indexOf(msgPart) === 0 &&
         mimePartNumber.substr(msgPart.length).search(/^(\.1)+$/) === 0) return true;
+
+      // load attachments of attached messages
+      if (msgPart.indexOf(mimePartNumber) === 0 &&
+        uriSpec.search(/[\?&]filename=/) > 0) return true;
     }
 
     return false;

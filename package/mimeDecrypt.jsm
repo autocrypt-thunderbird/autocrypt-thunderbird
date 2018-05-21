@@ -380,7 +380,9 @@ MimeDecryptHandler.prototype = {
       }
     }
 
-    if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, this.uri ? this.uri.spec : null)) {
+    let spec = this.uri ? this.uri.spec : null;
+    EnigmailLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
+    if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec)) {
       this.returnData("");
       return;
     }
