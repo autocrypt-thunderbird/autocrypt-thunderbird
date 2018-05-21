@@ -523,7 +523,6 @@ Enigmail.msg = {
             }
             else {
               if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject, false);
-              self.checkMimeStructure(mimeMsg);
             }
           });
         }
@@ -541,30 +540,6 @@ Enigmail.msg = {
     }
 
     return properties;
-  },
-
-  checkMimeStructure: function(mimeMsg) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.checkMimeStructure\n");
-
-    if (mimeMsg.fullContentType.search(/^multipart\/encrypted.*protocol="?application\/pgp-encrypted?"/i) === 0) return;
-
-    function getEncryptedSubPart(mimeMsg) {
-      if (mimeMsg.fullContentType.search(/^multipart\/encrypted.*protocol="?application\/pgp-encrypted?"/i) === 0) return true;
-      if (mimeMsg.fullContentType.search(/^message\/rfc822/i) === 0) return false;
-
-      for (let i in mimeMsg.subParts) {
-        if (getEncryptedSubPart(mimeMsg.subParts[i])) return true;
-      }
-
-      return false;
-    }
-
-    for (let i in mimeMsg.subParts) {
-      if (getEncryptedSubPart(mimeMsg.subParts[i])) {
-        this.displayPartialEncryptedWarning("mime");
-        return;
-      }
-    }
   },
 
   setDraftOptions: function(mimeMsg) {
@@ -4904,7 +4879,6 @@ Enigmail.msg = {
 
   decryptQuote: function(interactive) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.decryptQuote: " + interactive + "\n");
-    const CT = Components.interfaces.nsIMsgCompType;
 
     if (gWindowLocked || this.processed)
       return;
@@ -5123,32 +5097,7 @@ Enigmail.msg = {
       this.editorInsertText(tail);
 
     if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY) {
-      let hLines = (head.search(/[^\s>]/) < 0 ? 0 : 1);
-
-      if (hLines > 0) {
-        switch (gMsgCompose.type) {
-          case CT.Reply:
-          case CT.ReplyAll:
-          case CT.ReplyToSender:
-          case CT.ReplyToGroup:
-          case CT.ReplyToSenderAndGroup:
-          case CT.ReplyToList:
-            {
-              // if head contains at most 1 line of text, we assume it's the
-              // header above the quote (e.g. XYZ wrote:)
-
-              let h = head.split(/\r?\n/);
-              hLines = -1;
-
-              for (let i = 0; i < h.length; i++) {
-                if (h[i].search(/[^\s>]/) >= 0) hLines++;
-              }
-            }
-        }
-      }
-      if (hLines > 0 || tail.search(/[^\s>]/) >= 0) {
-        this.displayPartialEncryptedWarning("inline");
-      }
+      this.checkInlinePgpReply(head, tail);
     }
 
     if (clipBoard.supportsSelectionClipboard()) {
@@ -5218,6 +5167,47 @@ Enigmail.msg = {
 
     this.processFinalState();
     this.updateStatusBar();
+  },
+
+  checkInlinePgpReply: function(head, tail) {
+    const CT = Components.interfaces.nsIMsgCompType;
+    if (!this.identity) return;
+
+    let hLines = (head.search(/[^\s>]/) < 0 ? 0 : 1);
+
+    if (hLines > 0) {
+      switch (gMsgCompose.type) {
+        case CT.Reply:
+        case CT.ReplyAll:
+        case CT.ReplyToSender:
+        case CT.ReplyToGroup:
+        case CT.ReplyToSenderAndGroup:
+        case CT.ReplyToList:
+          {
+            // if head contains at only a few line of text, we assume it's the
+            // header above the quote (e.g. XYZ wrote:) and the user's signature
+
+            let h = head.split(/\r?\n/);
+            hLines = -1;
+
+            for (let i = 0; i < h.length; i++) {
+              if (h[i].search(/[^\s>]/) >= 0) hLines++;
+            }
+          }
+      }
+    }
+
+    if (hLines > 0 && (!this.identity.sigOnReply || this.identity.sigBottom)) {
+      // display warning if no signature on top of message
+      this.displayPartialEncryptedWarning();
+    }
+    else if (hLines > 10) {
+      this.displayPartialEncryptedWarning();
+    }
+    else if (tail.search(/[^\s>]/) >= 0 && !(this.identity.sigOnReply && this.identity.sigBottom)) {
+      // display warning if no signature below message
+      this.displayPartialEncryptedWarning();
+    }
   },
 
   editorInsertText: function(plainText) {
@@ -5296,16 +5286,10 @@ Enigmail.msg = {
 
   /**
    * Display a warning message if we are replying to or forwarding
-   * a partially decrypted email
-   *
-   * @param msgType: String - "mime" for PGP/MIME messages, "inline" for inline-PGP
+   * a partially decrypted inline-PGP email
    */
-  displayPartialEncryptedWarning: function(msgType) {
+  displayPartialEncryptedWarning: function() {
     let msgLong = EnigmailLocale.getString("msgCompose.partiallyEncrypted.inlinePGP");
-
-    if (msgType === "mime") {
-      msgLong = EnigmailLocale.getString("msgCompose.partiallyEncrypted.mimeMsg");
-    }
 
     this.notifyUser(1, EnigmailLocale.getString("msgCompose.partiallyEncrypted.short"), "notifyPartialDecrypt", msgLong);
   },
