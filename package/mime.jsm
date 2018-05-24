@@ -375,7 +375,7 @@ var EnigmailMime = {
    */
   isRegularMimeStructure: function(mimePartNumber, uriSpec) {
     if (mimePartNumber.length === 0) return true;
-    if (mimePartNumber.search(/^1(\.1)*$/) === 0) return true;
+    if (mimePartNumber === "1") return true;
 
     if (!uriSpec) return true;
 
