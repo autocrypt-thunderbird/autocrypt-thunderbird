@@ -64,6 +64,7 @@ var EnigmailConstants = {
   UI_PGP_MIME: 0x08,
   UI_TEST: 0x10,
   UI_RESTORE_STRICTLY_MIME: 0x20,
+  UI_IGNORE_MDC_ERROR: 0x40, // force decryption, even if we got an MDC error
 
   /* Send message flags */
   SEND_SIGNED: 0x0001, //    1

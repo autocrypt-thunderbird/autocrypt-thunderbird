@@ -413,7 +413,7 @@ var EnigmailDecryption = {
    *  Decrypts a PGP ciphertext and returns the the plaintext
    *
    *in  @parent a window object
-   *in  @uiFlags see flag options in EnigmailConstants.idl, UI_INTERACTIVE, UI_ALLOW_KEY_IMPORT
+   *in  @uiFlags see flag options in EnigmailConstants, UI_INTERACTIVE, UI_ALLOW_KEY_IMPORT
    *in  @cipherText a string containing a PGP Block
    *out @signatureObj
    *out @exitCodeObj contains the exit code
@@ -557,7 +557,11 @@ var EnigmailDecryption = {
 
     // do not return anything if gpg signales DECRYPTION_FAILED
     // (which could be possible in case of MDC errors)
-    if (retStatusObj.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
+    if ((uiFlags & EnigmailConstants.UI_IGNORE_MDC_ERROR) &&
+      (retStatusObj.statusFlags & EnigmailConstants.MISSING_MDC)) {
+      EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: ignoring MDC error\n");
+    }
+    else if (retStatusObj.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
       plainText = "";
     }
 

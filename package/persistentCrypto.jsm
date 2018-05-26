@@ -19,7 +19,6 @@ Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: fa
 Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
 Cu.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
 Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
@@ -42,6 +41,7 @@ Cu.import("chrome://enigmail/content/modules/glodaMime.jsm");
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");
+const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -577,13 +577,17 @@ CryptMessageIntoFolder.prototype = {
                 EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption OK\n");
                 exitCode = 0;
               }
+              else if (statusFlagsObj.value & (EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.MISSING_MDC)) {
+                EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption without MDC protection\n");
+                exitCode = 0;
+              }
               else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
                 EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption failed\n");
                 // since we cannot find out if the user wants to cancel
                 // we should ask
                 let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachment.name, self.subject]);
 
-                if (!EnigmailDialog.confirmDlg(null, msg,
+                if (!getDialog().confirmDlg(null, msg,
                     EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
                   o.status = STATUS_FAILURE;
                   resolve(o);
@@ -889,7 +893,8 @@ CryptMessageIntoFolder.prototype = {
       var signatureObj = {};
       signatureObj.value = "";
 
-      var uiFlags = EnigmailConstants.UI_INTERACTIVE | EnigmailConstants.UI_UNVERIFIED_ENC_OK;
+      const uiFlags = EnigmailConstants.UI_INTERACTIVE | EnigmailConstants.UI_UNVERIFIED_ENC_OK |
+        EnigmailConstants.UI_IGNORE_MDC_ERROR;
 
       var plaintexts = [];
       var blocks = EnigmailArmor.locateArmoredBlocks(mime.body);
@@ -929,17 +934,20 @@ CryptMessageIntoFolder.prototype = {
             keyIdObj, userIdObj, sigDetailsObj, errorMsgObj, blockSeparationObj, encToDetailsObj);
           if (!plaintext || plaintext.length === 0) {
             if (statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) {
-              EnigmailDialog.alert(null, errorMsgObj.value);
+              getDialog().alert(null, errorMsgObj.value);
               this.foundPGP = -1;
               return -1;
             }
 
+            if (statusFlagsObj.value & (EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.MISSING_MDC)) {
+              EnigmailLog.DEBUG("persistentCrypto.jsm: decryptINLINE: no MDC protection, decrypting anyway\n");
+            }
             if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
               // since we cannot find out if the user wants to cancel
               // we should ask
               let msg = EnigmailLocale.getString("converter.decryptBody.failed", this.subject);
 
-              if (!EnigmailDialog.confirmDlg(null, msg,
+              if (!getDialog().confirmDlg(null, msg,
                   EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
                 this.foundPGP = -1;
                 return -1;

@@ -432,9 +432,15 @@ MimeDecryptHandler.prototype = {
         EnigmailConstants.UI_PGP_MIME,
         this.returnStatus);
 
-      if ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
-        !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY)) {
-        this.decryptedData = "";
+      let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
+        !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
+
+      if (!(this.uri && this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0)) {
+        // don't return decrypted data if decryption failed (because it's likely an MDC error),
+        // unless we are called for permanent decryption
+        if (mdcError) {
+          this.decryptedData = "";
+        }
       }
 
       this.displayStatus();
@@ -448,7 +454,8 @@ MimeDecryptHandler.prototype = {
       // don't remember the last message if it contains an embedded PGP/MIME message
       // to avoid ending up in a loop
       if (this.mimePartNumber === "1" &&
-        this.decryptedData.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
+        this.decryptedData.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0 &&
+        !mdcError) {
         LAST_MSG.lastMessageData = this.decryptedData;
         LAST_MSG.lastMessageURI = currMsg;
         LAST_MSG.lastStatus = this.returnStatus;
