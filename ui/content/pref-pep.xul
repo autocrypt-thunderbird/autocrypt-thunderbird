@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
-<!ENTITY % brandDTD SYSTEM "chrome://global/locale/brand.dtd" >
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
 %brandDTD;
 <!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
 %enigMailDTD;
