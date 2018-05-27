@@ -9,6 +9,7 @@
 "use strict";
 
 /* global gActionListOrdered: false, checkActionsReorder: true */
+/* global nsMsgFilterAction: false, gFilterActionStrings: false, gFilterActionList: true */
 
 Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
 
@@ -16,6 +17,16 @@ Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global
 var EnigmailFilterEditor = {
   onLoad: function() {
     let self = this;
+
+    if ("arguments" in window && window.arguments[0]) {
+      let args = window.arguments[0];
+
+      if ("filter" in args) {
+        // editing a filter
+        this.reInitialize(args.filter);
+      }
+    }
+
     // Overwrite the original checkActionsReorder function
     this.enigmail_origCheckActionsReorder = checkActionsReorder;
 
@@ -31,6 +42,26 @@ var EnigmailFilterEditor = {
     window.removeEventListener("unload-enigmail", EnigmailFilterEditor.onUnload, false);
     checkActionsReorder = this.enigmail_origCheckActionsReorder;
     EnigmailFilterEditor = undefined;
+  },
+
+  reInitialize: function(filter) {
+    while (gFilterActionList.firstChild) {
+      gFilterActionList.removeChild(gFilterActionList.firstChild);
+    }
+
+    let numActions = filter.actionCount;
+    for (let actionIndex = 0; actionIndex < numActions; actionIndex++) {
+      let filterAction = filter.getActionAt(actionIndex);
+
+      var newActionRow = document.createElement('listitem');
+      newActionRow.setAttribute('initialActionIndex', actionIndex);
+      newActionRow.className = 'ruleaction';
+      gFilterActionList.appendChild(newActionRow);
+      newActionRow.setAttribute('value',
+        filterAction.type == nsMsgFilterAction.Custom ?
+        filterAction.customId : gFilterActionStrings[filterAction.type]);
+      newActionRow.setAttribute('onfocus', 'this.storeFocus();');
+    }
   },
 
   checkMoveAction: function() {
