@@ -1097,6 +1097,9 @@ Enigmail.msg = {
         Enigmail.hdrView.displayPepStatus(pEpResult.rating, pEpResult.fpr, null, pEpResult.persons);
       }
       else {
+        if ((head.length > 0) || (tail.length > 0)) {
+          statusFlags |= EnigmailConstants.PARTIALLY_PGP;
+        }
         Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
           sigDetailsObj.value,
           errorMsg,
