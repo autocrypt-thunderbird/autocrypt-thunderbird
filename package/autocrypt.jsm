@@ -521,7 +521,7 @@ var EnigmailAutocrypt = {
 
       let enc = {
         message: encMessage,
-        password: passwd,
+        passwords: [passwd],
         format: 'utf8'
       };
 
