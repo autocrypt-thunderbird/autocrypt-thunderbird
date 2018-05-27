@@ -22,7 +22,6 @@ const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
 
 const nsICommandLineHandler = Ci.nsICommandLineHandler;
 const nsIFactory = Ci.nsIFactory;
-const nsISupports = Ci.nsISupports;
 
 function Handler() {}
 
@@ -30,7 +29,7 @@ Handler.prototype = {
   classDescription: "Enigmail Key Management CommandLine Service",
   classID: NS_ENIGCLINE_SERVICE_CID,
   contractID: NS_CLINE_SERVICE_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([nsICommandLineHandler, nsIFactory, nsISupports]),
+  QueryInterface: XPCOMUtils.generateQI([nsICommandLineHandler, nsIFactory]),
 
   // nsICommandLineHandler
   handle: function(cmdLine) {

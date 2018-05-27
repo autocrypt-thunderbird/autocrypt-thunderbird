@@ -112,8 +112,7 @@ MessageCompFields.prototype = {
   QueryInterface: XPCOMUtils.generateQI([
     Ci.nsIMsgSearchValue, // we abuse nsIMsgSearchValue as we cannot create a custom QueryInterface anymore
     Ci.nsIMsgSMIMECompFields,
-    Ci.nsIMsgCompFields,
-    Ci.nsISupports
+    Ci.nsIMsgCompFields
   ]),
 
   toString: function() {

@@ -69,7 +69,7 @@ function filterWith(portPref) {
     applyFilter: function(proxyService, uri, proxyInfo) {
       return proxyService.newProxyInfo("socks", getEnigmailPrefs().getPref(TOR_IP_ADDR_PREF), port, CONNECTION_FLAGS, SECONDS_TO_WAIT_FOR_CONNECTION, failoverProxy);
     },
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolProxyFilter, Ci.nsISupports])
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolProxyFilter])
   };
 }
 

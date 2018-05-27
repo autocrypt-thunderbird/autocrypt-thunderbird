@@ -47,7 +47,6 @@ var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
 
 // Interfaces
-const nsISupports = Ci.nsISupports;
 const nsIEnvironment = Ci.nsIEnvironment;
 
 var gPreferredGpgPath = null;

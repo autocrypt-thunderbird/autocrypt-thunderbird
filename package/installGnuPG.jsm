@@ -329,7 +329,7 @@ Installer.prototype = {
       // use runwAsync in order to get UAC approval on Windows 7 / 8 if required
 
       var obs = {
-        QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver, Ci.nsISupports]),
+        QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
 
         observe: function(proc, aTopic, aData) {
           EnigmailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='" + aTopic + "' \n");
