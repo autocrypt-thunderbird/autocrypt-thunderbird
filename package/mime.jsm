@@ -373,8 +373,10 @@ var EnigmailMime = {
    * @return Boolean: true: regular message structure, MIME part is safe to be decrypted
    *                  false: otherwise
    */
-  isRegularMimeStructure: function(mimePartNumber, uriSpec) {
+  isRegularMimeStructure: function(mimePartNumber, uriSpec, acceptSubParts = false) {
     if (mimePartNumber.length === 0) return true;
+
+    if (acceptSubParts && (mimePartNumber.search(/^1(\.1)*$/) === 0)) return true;
     if (mimePartNumber === "1") return true;
 
     if (!uriSpec) return true;
