@@ -441,6 +441,10 @@ function detectForgedInsets(c) {
       c.withinCryptoMsg = false;
     }
     else if (c.statusArray[j].search(c.plaintextPat) === 0) {
+      if (!c.withinCryptoMsg) {
+        c.statusFlags = c.statusFlags & ~EnigmailConstants.DECRYPTION_OKAY;
+      }
+
       ++c.plaintextCount;
       if ((c.statusArray.length > j + 1) && (c.statusArray[j + 1].search(c.plaintextLengthPat) === 0)) {
         var matches = c.statusArray[j + 1].match(/(\w+) (\d+)/);
