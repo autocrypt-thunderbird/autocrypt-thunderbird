@@ -69,15 +69,7 @@ function getUserDefinedKeyserverURIs() {
 }
 
 function combineIntoURI(protocol, domain, port) {
-  // HACK: Returns hkps.pool.sks-keyservers.net only because
-  // GnuPG version 2.1.14 in Windows does not parse
-  // hkps://hkps.pool.sks-keyservers.net:443 correctly
-  if (domain === "hkps.pool.sks-keyservers.net" && EnigmailOS.isDosLike) {
-    return domain;
-  }
-  else {
-    return protocol + "://" + domain + ":" + port;
-  }
+  return protocol + "://" + domain + ":" + port;
 }
 
 function isValidProtocol(uri) {

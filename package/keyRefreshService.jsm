@@ -20,6 +20,7 @@ Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs
 Cu.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
 Cu.import("chrome://enigmail/content/modules/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
 
+const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ONE_HOUR_IN_MILLISEC = 60 * 60 * 1000;
 
 let gTimer = null;
@@ -101,9 +102,16 @@ function refreshWith(keyserver, timer, readyToRefresh) {
   const keyId = getRandomKeyId(EnigmailRNG.generateRandomUint32());
   const keyIdsExist = keyId !== null;
   const validKeyserversExist = EnigmailKeyserverURIs.validKeyserversExist();
+  const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
   if (keyIdsExist && validKeyserversExist) {
-    refreshKeyIfReady(keyserver, readyToRefresh, keyId);
+    if (ioService && (!ioService.offline)) {
+      // don't try to refresh if we are offline
+      refreshKeyIfReady(keyserver, readyToRefresh, keyId);
+    }
+    else {
+      EnigmailLog.DEBUG("keyRefreshService.jsm: offline - not refreshing any key\n");
+    }
     const waitTime = calculateWaitTimeInMilliseconds(EnigmailKeyRing.getAllKeys().keyList.length);
     setupNextRefresh(timer, waitTime);
   }

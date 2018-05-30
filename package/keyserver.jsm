@@ -39,6 +39,13 @@ const ENIG_DEFAULT_HKP_PORT = "11371";
 const ENIG_DEFAULT_HKPS_PORT = "443";
 const ENIG_DEFAULT_LDAP_PORT = "389";
 
+/* Keyserver Action Flags: from EnigmailConstants
+  SEARCH_KEY
+  DOWNLOAD_KEY
+  UPLOAD_KEY
+  REFRESH_KEY
+  UPLOAD_WKD
+*/
 function matchesKeyserverAction(action, flag) {
   return (action & flag) === flag;
 }
@@ -178,9 +185,9 @@ function buildRequests(keyId, action, tor) {
   return requests;
 }
 
-function stringContains(stringToCheck, substring) {
-  return stringToCheck.indexOf(substring) > -1;
-}
+// function stringContains(stringToCheck, substring) {
+//   return stringToCheck.indexOf(substring) > -1;
+// }
 
 function convertRequestArgsToStrings(args) {
   return args.map(function(a) {
@@ -243,25 +250,25 @@ function execute(request, listener, subproc) {
   return proc;
 }
 
-function executeRefresh(request, subproc) {
-  let stdout = "";
-  let stderr = "";
-  let successful = false;
-
-  const listener = {
-    done: function(exitCode) {
-      successful = stringContains(stderr, "IMPORT_OK");
-    },
-    stderr: function(data) {
-      stderr += data;
-    },
-    stdout: function(data) {
-      stdout += data;
-    }
-  };
-  execute(request, listener, subproc).wait();
-  return successful;
-}
+// function executeRefresh(request, subproc) {
+//   let stdout = "";
+//   let stderr = "";
+//   let successful = false;
+//
+//   const listener = {
+//     done: function(exitCode) {
+//       successful = stringContains(stderr, "IMPORT_OK");
+//     },
+//     stderr: function(data) {
+//       stderr += data;
+//     },
+//     stdout: function(data) {
+//       stdout += data;
+//     }
+//   };
+//   execute(request, listener, subproc).wait();
+//   return successful;
+// }
 
 function invalidArgumentsExist(actionFlags, keyserver, searchTerms, errorMsgObj) {
   if (!keyserver) {
@@ -300,10 +307,10 @@ function build(actionFlags, keyserver, searchTerms, errorMsgObj) {
  */
 function access(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
 
-  if (keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
-    if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY) ||
-      matchesKeyserverAction(actionFlags, EnigmailConstants.DOWNLOAD_KEY)) {
-      // special API for mailvelope.com
+  if ((!EnigmailPrefs.getPref("useGpgKeysTool")) ||
+    keyserver.search(/^(hkps:\/\/)?keys.mailvelope.com$/i) === 0) {
+    if (matchesKeyserverAction(actionFlags, EnigmailConstants.UPLOAD_KEY) || isDownload(actionFlags)) {
+      // use own implementation for mailvelope.com or if internal method is configured
       return accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj);
     }
   }
@@ -338,9 +345,13 @@ function buildHkpPayload(actionFlags, searchTerms) {
  * currently only key uploading is supported
  */
 function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
-  EnigmailLog.DEBUG("keyserver.jsm: accessHkp()\n");
+  EnigmailLog.DEBUG(`keyserver.jsm: accessHkp(${keyserver})\n`);
 
   const ERROR_MSG = "[GNUPG:] ERROR X";
+  if (matchesKeyserverAction(actionFlags, EnigmailConstants.REFRESH_KEY)) {
+    // we don't (need to) distinguish between refresh and download for our internal protocol
+    actionFlags = EnigmailConstants.DOWNLOAD_KEY;
+  }
 
   function downloadNextKey() {
     if (searchTerms.length > 0) {
@@ -352,7 +363,16 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
   }
 
   let keySrv = parseKeyserverUrl(keyserver);
-  let protocol = "https"; // protocol is always hkps (which equals to https in TB)
+  let protocol = "https"; // default is  hkps
+  switch (keySrv.protocol) {
+    case "hkp":
+      protocol = "http";
+      break;
+    case "ldap":
+      throw Components.results.NS_ERROR_FAILURE;
+    default:
+      protocol = "https";
+  }
 
   let payLoad = buildHkpPayload(actionFlags, searchTerms);
   if (payLoad === null) return null;
@@ -397,13 +417,13 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
   };
 
   xmlReq.onerror = function(e) {
-    EnigmailLog.DEBUG("keyserver.jsm: onerror: " + e + "\n");
+    EnigmailLog.DEBUG("keyserver.jsm: accessHkp: onerror: " + e + "\n");
     listener.stderr(ERROR_MSG);
     listener.done(1);
   };
 
   xmlReq.onloadend = function() {
-    EnigmailLog.DEBUG("keyserver.jsm: loadEnd:\n");
+    EnigmailLog.DEBUG("keyserver.jsm: accessHkp: loadEnd\n");
   };
 
   let url = protocol + "://" + keySrv.host + ":" + keySrv.port;
@@ -428,6 +448,7 @@ function accessHkp(actionFlags, keyserver, searchTerms, listener, errorMsgObj) {
     }
   }
 
+  EnigmailLog.DEBUG(`keyserver.jsm: accessHkp: requesting ${url}\n`);
   xmlReq.open(method, url);
   xmlReq.send(payLoad);
 
@@ -447,30 +468,54 @@ function importHkpKey(keyData, listener) {
 
   if (keyData.length > 0) {
     let errorMsgObj = {};
-    return EnigmailKeyRing.importKey(null, false, keyData, "", errorMsgObj);
+    let r = EnigmailKeyRing.importKey(null, false, keyData, "", errorMsgObj);
+
+    if (r === 0) {
+      listener.stderr("IMPORT_OK");
+    }
   }
 
   return 0;
 }
 
 /**
- * Refresh will refresh a key over Tor if Tor is available and over hkps if hkps is configured
- * and available.
+ * Refresh will refresh a key over the default key server
  *
  * @param    String  keyId   - ID of the key to be refreshed
+ *
+ * @return Promise<Object>:
+ *   - successful: Boolean
+ *   - stdout:     String
+ *   - stderr:     String
  */
 function refresh(keyId) {
   EnigmailLog.DEBUG("keyserver.jsm: Trying to refresh key: " + keyId + " at time: " + new Date().toUTCString() + "\n");
-  const refreshAction = EnigmailConstants.DOWNLOAD_KEY;
-  const requests = buildRequests(keyId, refreshAction, EnigmailTor, EnigmailHttpProxy);
+  return new Promise((resolve, reject) => {
+    //access(actionFlags, keyserver, searchTerms, listener, errorMsgObj)
+    let uris = EnigmailKeyserverURIs.buildKeyserverUris();
+    let successful = false,
+      stdout = "",
+      stderr = "";
 
-  for (let i = 0; i < requests.length; i++) {
-    const successStatus = executeRefresh(requests[i], subprocess);
-    if (successStatus || i === requests.length - 1) {
-      logRefreshAction(successStatus, requests[i].usingTor, keyId);
-      return;
-    }
-  }
+    let errorMsgObj = {};
+    let listener = {
+      done: function(exitCode) {
+        successful = (stderr.indexOf("IMPORT_OK") >= 0);
+        resolve({
+          successful: successful,
+          stdout: stdout,
+          stderr: stderr
+        });
+      },
+      stderr: function(data) {
+        stderr += data;
+      },
+      stdout: function(data) {
+        stdout += data;
+      }
+    };
+    access(EnigmailConstants.DOWNLOAD_KEY, uris[0], keyId, listener, errorMsgObj);
+  });
 }
 
 function logRefreshAction(successStatus, usingTor, keyId) {
