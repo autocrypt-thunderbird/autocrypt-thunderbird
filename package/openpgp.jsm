@@ -52,7 +52,11 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
 ];
 
 const console = {
-  assert: function() {}
+  assert: function() {},
+  log: function() {},
+  error: function() {},
+  table: function() {},
+  warn: function() {}
 };
 
 function initialize() {
