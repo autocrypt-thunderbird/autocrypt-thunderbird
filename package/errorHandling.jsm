@@ -433,17 +433,18 @@ function parseErrorLine(errLine, c) {
 
 function detectForgedInsets(c) {
   // detect forged message insets
+  let hasUnencryptedText = false;
+  let hasEncryptedPart = false;
   for (var j = 0; j < c.statusArray.length; j++) {
     if (c.statusArray[j].search(c.cryptoStartPat) === 0) {
       c.withinCryptoMsg = true;
+      hasEncryptedPart = true;
     }
     else if (c.withinCryptoMsg && c.statusArray[j].search(c.cryptoEndPat) === 0) {
       c.withinCryptoMsg = false;
     }
     else if (c.statusArray[j].search(c.plaintextPat) === 0) {
-      if (!c.withinCryptoMsg) {
-        c.statusFlags = c.statusFlags & ~EnigmailConstants.DECRYPTION_OKAY;
-      }
+      if (!c.withinCryptoMsg) hasUnencryptedText = true;
 
       ++c.plaintextCount;
       if ((c.statusArray.length > j + 1) && (c.statusArray[j + 1].search(c.plaintextLengthPat) === 0)) {
@@ -458,8 +459,8 @@ function detectForgedInsets(c) {
       }
     }
   }
-  if (c.plaintextCount > 1) {
-    c.statusFlags |= (EnigmailConstants.PARTIALLY_PGP | EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.BAD_SIGNATURE);
+  if (c.plaintextCount > 1 || (hasEncryptedPart && hasUnencryptedText)) {
+    c.statusFlags |= (EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.BAD_SIGNATURE);
   }
 }
 
