@@ -63,6 +63,11 @@ function buildUriOptionsFor(keyserver) {
   return uris;
 }
 
+function getDefaultKeyServer() {
+  let keyservers = EnigmailPrefs.getPref(KEYSERVER_PREF).split(/\s*[,;]\s*/g);
+  return keyservers[0];
+}
+
 function getUserDefinedKeyserverURIs() {
   const keyservers = EnigmailPrefs.getPref(KEYSERVER_PREF).split(/\s*[,;]\s*/g);
   return EnigmailPrefs.getPref(AUTO_KEYSERVER_SELECTION_PREF) ? [keyservers[0]] : keyservers;
@@ -115,6 +120,7 @@ function validKeyserversExist() {
 }
 
 var EnigmailKeyserverURIs = {
+  getDefaultKeyServer: getDefaultKeyServer,
   buildKeyserverUris: buildKeyserverUris,
   validKeyserversExist: validKeyserversExist
 };
