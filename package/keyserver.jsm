@@ -46,6 +46,53 @@ const ENIG_DEFAULT_LDAP_PORT = "389";
 */
 
 
+function parseKeyserverUrl(keyserver) {
+  if (keyserver.length > 1024) {
+    // insane length of keyserver is forbidden
+    throw Components.results.NS_ERROR_FAILURE;
+  }
+
+  keyserver = keyserver.toLowerCase();
+  let protocol = "";
+  if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
+    protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
+    keyserver = keyserver.replace(/^[a-zA-Z0-9_.-]+:\/\//, "");
+  }
+  else {
+    protocol = "hkp";
+  }
+
+  let port = "";
+  switch (protocol) {
+    case "hkp":
+      port = ENIG_DEFAULT_HKP_PORT;
+      break;
+    case "hkps":
+      port = ENIG_DEFAULT_HKPS_PORT;
+      break;
+    case "ldap":
+      port = ENIG_DEFAULT_LDAP_PORT;
+      break;
+  }
+
+  var m = keyserver.match(/^(.+)(:)(\d+)$/);
+  if (m && m.length == 4) {
+    keyserver = m[1];
+    port = m[3];
+  }
+
+  if (keyserver === "keys.mailvelope.com") {
+    protocol = "hkps";
+    port = ENIG_DEFAULT_HKPS_PORT;
+  }
+
+  return {
+    protocol: protocol,
+    host: keyserver,
+    port: port
+  };
+}
+
 const keyServerBuiltin = {
   /**
    * parse a keyserver specification and return host, protocol and port
@@ -55,52 +102,6 @@ const keyServerBuiltin = {
    *
    * @return Object: {port, host, protocol} (all Strings)
    */
-  parseKeyserverUrl: function(keyserver) {
-    if (keyserver.length > 1024) {
-      // insane length of keyserver is forbidden
-      throw Components.results.NS_ERROR_FAILURE;
-    }
-
-    keyserver = keyserver.toLowerCase();
-    let protocol = "";
-    if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
-      protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
-      keyserver = keyserver.replace(/^[a-zA-Z0-9_.-]+:\/\//, "");
-    }
-    else {
-      protocol = "hkp";
-    }
-
-    let port = "";
-    switch (protocol) {
-      case "hkp":
-        port = ENIG_DEFAULT_HKP_PORT;
-        break;
-      case "hkps":
-        port = ENIG_DEFAULT_HKPS_PORT;
-        break;
-      case "ldap":
-        port = ENIG_DEFAULT_LDAP_PORT;
-        break;
-    }
-
-    var m = keyserver.match(/^(.+)(:)(\d+)$/);
-    if (m && m.length == 4) {
-      keyserver = m[1];
-      port = m[3];
-    }
-
-    if (keyserver === "keys.mailvelope.com") {
-      protocol = "hkps";
-      port = ENIG_DEFAULT_HKPS_PORT;
-    }
-
-    return {
-      protocol: protocol,
-      host: keyserver,
-      port: port
-    };
-  },
 
   buildHkpPayload: function(actionFlag, searchTerms) {
     let payLoad = null,
@@ -121,6 +122,47 @@ const keyServerBuiltin = {
 
     // other actions are not yet implemented
     return null;
+  },
+
+  /**
+   * return the URL and the HTTP access method for a given action
+   */
+  createRequestUrl: function(keyserver, actionFlag, searchTerm) {
+    let keySrv = parseKeyserverUrl(keyserver);
+
+    let method = "GET";
+    let protocol;
+
+    switch (keySrv.protocol) {
+      case "hkp":
+        protocol = "http";
+        break;
+      case "ldap":
+        throw Components.results.NS_ERROR_FAILURE;
+      default: // equals to hkps
+        protocol = "https";
+    }
+
+    let url = protocol + "://" + keySrv.host + ":" + keySrv.port;
+
+    if (actionFlag === EnigmailConstants.UPLOAD_KEY) {
+      url += "/pks/add";
+      method = "POST";
+    }
+    else if (actionFlag === EnigmailConstants.DOWNLOAD_KEY) {
+      if (searchTerm.indexOf("0x") !== 0) {
+        searchTerm = "0x" + searchTerm;
+      }
+      url += "/pks/lookup?search=" + searchTerm + "&op=get&options=mr";
+    }
+    else if (actionFlag === EnigmailConstants.SEARCH_KEY) {
+      url += "/pks/lookup?search=" + escape(searchTerm) + "&fingerprint=on&op=index&options=mr";
+    }
+
+    return {
+      url: url,
+      method: method
+    };
   },
 
   /**
@@ -151,18 +193,6 @@ const keyServerBuiltin = {
         actionFlag = EnigmailConstants.DOWNLOAD_KEY;
       }
 
-      let keySrv = this.parseKeyserverUrl(keyserver);
-      let protocol = "https"; // default is  hkps
-      switch (keySrv.protocol) {
-        case "hkp":
-          protocol = "http";
-          break;
-        case "ldap":
-          throw Components.results.NS_ERROR_FAILURE;
-        default:
-          protocol = "https";
-      }
-
       let payLoad = this.buildHkpPayload(actionFlag, keyId);
       if (payLoad === null) {
         reject(10);
@@ -170,7 +200,6 @@ const keyServerBuiltin = {
       }
 
       let errorCode = 0;
-      let method = "GET";
 
       xmlReq = new XMLHttpRequest();
 
@@ -182,6 +211,7 @@ const keyServerBuiltin = {
               EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
               reject(1);
             }
+            // TODO: other status???
             break;
 
           case EnigmailConstants.SEARCH_KEY:
@@ -191,7 +221,7 @@ const keyServerBuiltin = {
             else {
               resolve(xmlReq.responseText);
             }
-            break;
+            return;
 
           case EnigmailConstants.DOWNLOAD_KEY:
             if (xmlReq.status >= 400 && xmlReq.status < 500) {
@@ -213,6 +243,7 @@ const keyServerBuiltin = {
                 reject(4);
               }
             }
+            return;
         }
         resolve(-1);
       };
@@ -226,21 +257,9 @@ const keyServerBuiltin = {
         EnigmailLog.DEBUG("keyserver.jsm: accessHkp: loadEnd\n");
       };
 
-      let url = protocol + "://" + keySrv.host + ":" + keySrv.port;
-      if (actionFlag === EnigmailConstants.UPLOAD_KEY) {
-        url += "/pks/add";
-        method = "POST";
-      }
-      else if (actionFlag === EnigmailConstants.DOWNLOAD_KEY) {
-        if (keyId.indexOf("0x") !== 0) {
-          keyId = "0x" + keyId;
-        }
-        url += "/pks/lookup?search=" + keyId + "&op=get&options=mr";
-      }
-      else if (actionFlag === EnigmailConstants.SEARCH_KEY) {
-        url += "/pks/lookup?search=" + escape(keyId) + "&fingerprint=on&op=index&options=mr";
-      }
-
+      let {
+        url, method
+      } = this.createRequestUrl(keyserver, actionFlag, keyId);
 
       EnigmailLog.DEBUG(`keyserver.jsm: accessKeyServer: requesting ${url}\n`);
       xmlReq.open(method, url);
@@ -307,7 +326,15 @@ const keyServerBuiltin = {
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<...>
+
+   * @return:   Promise<Array of PubKeys>
+   *    PubKeys: Object with:
+   *      - keyId: String
+   *      - keyLen: String
+   *      - keyType: String
+   *      - created: String (YYYY-MM-DD)
+   *      - status: String: one of ''=valid, r=revoked, e=expired
+   *      - uid: Array of Strings with UIDs
    */
   search: async function(searchTerm, keyserver, listener = null) {
     let found = [];
@@ -351,6 +378,10 @@ const keyServerBuiltin = {
           case "uid":
             key.uid.push(EnigmailData.convertToUnicode(line[1].trim(), "utf-8"));
         }
+      }
+
+      if (key) {
+        found.push(key);
       }
     }
     catch (ex) {}
