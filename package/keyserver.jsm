@@ -52,7 +52,7 @@ function parseKeyserverUrl(keyserver) {
     throw Components.results.NS_ERROR_FAILURE;
   }
 
-  keyserver = keyserver.toLowerCase();
+  keyserver = keyserver.toLowerCase().trim();
   let protocol = "";
   if (keyserver.search(/^[a-zA-Z0-9_.-]+:\/\//) === 0) {
     protocol = keyserver.replace(/^([a-zA-Z0-9_.-]+)(:\/\/.*)/, "$1");
@@ -75,13 +75,13 @@ function parseKeyserverUrl(keyserver) {
       break;
   }
 
-  var m = keyserver.match(/^(.+)(:)(\d+)$/);
+  let m = keyserver.match(/^(.+)(:)(\d+)$/);
   if (m && m.length == 4) {
     keyserver = m[1];
     port = m[3];
   }
 
-  if (keyserver === "keys.mailvelope.com") {
+  if (keyserver.search(/^(keys.mailvelope.com|api.protonmail.ch)$/) === 0) {
     protocol = "hkps";
     port = ENIG_DEFAULT_HKPS_PORT;
   }
@@ -207,12 +207,15 @@ const keyServerBuiltin = {
         EnigmailLog.DEBUG("keyserver.jsm: onload(): status=" + xmlReq.status + "\n");
         switch (actionFlag) {
           case EnigmailConstants.UPLOAD_KEY:
+            EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
             if (xmlReq.status >= 400) {
-              EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
+
               reject(1);
             }
-            // TODO: other status???
-            break;
+            else {
+              resolve(0);
+            }
+            return;
 
           case EnigmailConstants.SEARCH_KEY:
             if (xmlReq.status >= 400) {
@@ -249,12 +252,12 @@ const keyServerBuiltin = {
       };
 
       xmlReq.onerror = function(e) {
-        EnigmailLog.DEBUG("keyserver.jsm: accessHkp: onerror: " + e + "\n");
+        EnigmailLog.DEBUG("keyserver.jsm: accessKeyServer: onerror: " + e + "\n");
         reject(5);
       };
 
       xmlReq.onloadend = function() {
-        EnigmailLog.DEBUG("keyserver.jsm: accessHkp: loadEnd\n");
+        EnigmailLog.DEBUG("keyserver.jsm: accessKeyServer: loadEnd\n");
       };
 
       let {
@@ -313,10 +316,10 @@ const keyServerBuiltin = {
   upload: async function(keyIDs, keyserver, listener = null) {
 
     try {
-      await this.accessKeyServer(EnigmailConstants.UPLOAD_KEY, keyserver, keyIDs, listener);
+      return await this.accessKeyServer(EnigmailConstants.UPLOAD_KEY, keyserver, keyIDs, listener);
     }
     catch (ex) {
-
+      return ex;
     }
   },
 
@@ -413,7 +416,7 @@ const EnigmailKeyServer = {
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<...>
+   * @return:   Promise<resultStatus>
    */
 
   upload: function(keyIDs, keyserver = null, listener) {
