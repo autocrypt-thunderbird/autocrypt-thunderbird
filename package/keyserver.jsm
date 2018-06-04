@@ -46,6 +46,15 @@ const ENIG_DEFAULT_LDAP_PORT = "389";
 */
 
 
+
+/**
+ * parse a keyserver specification and return host, protocol and port
+ *
+ * @param keyserver: String - name of keyserver with optional protocol and port.
+ *                       E.g. keys.gnupg.net, hkps://keys.gnupg.net:443
+ *
+ * @return Object: {port, host, protocol} (all Strings)
+ */
 function parseKeyserverUrl(keyserver) {
   if (keyserver.length > 1024) {
     // insane length of keyserver is forbidden
@@ -81,8 +90,12 @@ function parseKeyserverUrl(keyserver) {
     port = m[3];
   }
 
-  if (keyserver.search(/^(keys.mailvelope.com|api.protonmail.ch)$/) === 0) {
+  if (keyserver.search(/^(keys\.mailvelope\.com|api\.protonmail\.ch)$/) === 0) {
     protocol = "hkps";
+    port = ENIG_DEFAULT_HKPS_PORT;
+  }
+  if (keyserver.search(/^(keybase\.io)$/) === 0) {
+    protocol = "keybase";
     port = ENIG_DEFAULT_HKPS_PORT;
   }
 
@@ -93,16 +106,15 @@ function parseKeyserverUrl(keyserver) {
   };
 }
 
-const keyServerBuiltin = {
-  /**
-   * parse a keyserver specification and return host, protocol and port
-   *
-   * @param keyserver: String - name of keyserver with optional protocol and port.
-   *                       E.g. keys.gnupg.net, hkps://keys.gnupg.net:443
-   *
-   * @return Object: {port, host, protocol} (all Strings)
-   */
 
+/**
+ Object to handle HKP/HKPS requests via builtin XMLHttpRequest()
+ */
+const accessHkpInternal = {
+  /**
+   * Create the payload of hkp requests (upload only)
+   *
+   */
   buildHkpPayload: function(actionFlag, searchTerms) {
     let payLoad = null,
       keyData = "";
@@ -175,13 +187,13 @@ const keyServerBuiltin = {
    * @return:   Promise<Number (Status-ID)>
    */
   accessKeyServer: function(actionFlag, keyserver, keyId, listener) {
-    EnigmailLog.DEBUG(`keyserver.jsm: keyServerBuiltin: accessKeyServer(${keyserver})\n`);
+    EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal: accessKeyServer(${keyserver})\n`);
 
     return new Promise((resolve, reject) => {
       let xmlReq = null;
       if (listener && typeof(listener) === "object") {
         listener.onCancel = function() {
-          EnigmailLog.DEBUG(`keyserver.jsm: keyServerBuiltin: accessKeyServer - onCancel() called\n`);
+          EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal: accessKeyServer - onCancel() called\n`);
           if (xmlReq) {
             xmlReq.abort();
           }
@@ -393,26 +405,259 @@ const keyServerBuiltin = {
   }
 };
 
+/**
+ Object to handle KeyBase requests (search & download only)
+ */
+const accessKeyBase = {
+  /**
+   * return the URL and the HTTP access method for a given action
+   */
+  createRequestUrl: function(actionFlag, searchTerm) {
+    const method = "GET";
+
+    let url = "https://keybase.io/_/api/1.0/user/";
+
+    if (actionFlag === EnigmailConstants.UPLOAD_KEY) {
+      // not supported
+      throw Components.results.NS_ERROR_FAILURE;
+    }
+    else if (actionFlag === EnigmailConstants.DOWNLOAD_KEY) {
+      if (searchTerm.indexOf("0x") === 0) {
+        searchTerm = searchTerm.substr(0, 40);
+      }
+      url += "lookup.json?key_fingerprint=" + escape(searchTerm) + "&fields=public_keys";
+    }
+    else if (actionFlag === EnigmailConstants.SEARCH_KEY) {
+      url += "autocomplete.json?q=" + escape(searchTerm);
+    }
+
+    return {
+      url: url,
+      method: "GET"
+    };
+  },
+
+  /**
+   * Upload, search or download keys from a keyserver
+   * @param actionFlag:  Number  - Keyserver Action Flags: from EnigmailConstants
+   * @param keyId:      String  - space-separated list of search terms or key IDs
+   * @param listener:    optional Object implementing the KeySrvListener API (above)
+   *
+   * @return:   Promise<Number (Status-ID)>
+   */
+  accessKeyServer: function(actionFlag, keyId, listener) {
+    EnigmailLog.DEBUG(`keyserver.jsm: accessKeyBase: accessKeyServer()\n`);
+
+    return new Promise((resolve, reject) => {
+      let xmlReq = null;
+      if (listener && typeof(listener) === "object") {
+        listener.onCancel = function() {
+          EnigmailLog.DEBUG(`keyserver.jsm: accessKeyBase: accessKeyServer - onCancel() called\n`);
+          if (xmlReq) {
+            xmlReq.abort();
+          }
+          reject(-1);
+        };
+      }
+      if (actionFlag === EnigmailConstants.REFRESH_KEY) {
+        // we don't (need to) distinguish between refresh and download for our internal protocol
+        actionFlag = EnigmailConstants.DOWNLOAD_KEY;
+      }
+
+      let errorCode = 0;
+
+      xmlReq = new XMLHttpRequest();
+
+      xmlReq.onload = function _onLoad() {
+        EnigmailLog.DEBUG("keyserver.jsm: onload(): status=" + xmlReq.status + "\n");
+        switch (actionFlag) {
+          case EnigmailConstants.SEARCH_KEY:
+            if (xmlReq.status >= 400) {
+              reject(3);
+            }
+            else {
+              resolve(xmlReq.responseText);
+            }
+            return;
+
+          case EnigmailConstants.DOWNLOAD_KEY:
+            if (xmlReq.status >= 400 && xmlReq.status < 500) {
+              // key not found
+              resolve([]);
+            }
+            else if (xmlReq.status >= 500) {
+              EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
+              reject(3);
+            }
+            else {
+              try {
+                let resp = JSON.parse(xmlReq.responseText);
+                let imported = [];
+
+                if (resp.status.code === 0) {
+                  for (let hit in resp.them) {
+                    EnigmailLog.DEBUG(JSON.stringify(resp.them[hit].public_keys.primary) + "\n");
+
+                    if (resp.them[hit] !== null) {
+                      let errorMsgObj = {},
+                        importedKeysObj = {};
+                      let r = EnigmailKeyRing.importKey(null, false, resp.them[hit].public_keys.primary.bundle, "", errorMsgObj, importedKeysObj);
+                      if (r === 0) {
+                        imported.push(importedKeysObj.value);
+                      }
+                    }
+                  }
+                }
+                resolve(imported);
+              }
+              catch (ex) {
+                reject(4);
+              }
+            }
+            return;
+        }
+        resolve(-1);
+      };
+
+      xmlReq.onerror = function(e) {
+        EnigmailLog.DEBUG("keyserver.jsm: accessKeyBase: onerror: " + e + "\n");
+        reject(5);
+      };
+
+      xmlReq.onloadend = function() {
+        EnigmailLog.DEBUG("keyserver.jsm: accessKeyBase: loadEnd\n");
+      };
+
+      let {
+        url, method
+      } = this.createRequestUrl(actionFlag, keyId);
+
+      EnigmailLog.DEBUG(`keyserver.jsm: accessKeyBase: requesting ${url}\n`);
+      xmlReq.open(method, url);
+      xmlReq.send("");
+    });
+  },
+
+  /**
+   * Download keys from a keyserver
+   * @param keyIDs:      String  - space-separated list of search terms or key IDs
+   * @param keyserver:   (not used for keybase)
+   * @param listener:    optional Object implementing the KeySrvListener API (above)
+   *
+   * @return:   Promise<...>
+   */
+  download: async function(keyIDs, keyserver, listener = null) {
+    let keyIdArr = keyIDs.split(/ +/);
+    let downloadedArr = [];
+    let res = 0;
+
+    for (let i = 0; i < keyIdArr.length; i++) {
+      try {
+        let r = await this.accessKeyServer(EnigmailConstants.DOWNLOAD_KEY, keyIdArr[i], listener);
+        if (r.length > 0) {
+          downloadedArr = downloadedArr.concat(r);
+        }
+      }
+      catch (ex) {
+        res = ex;
+      }
+
+      if (listener && "onProgress" in listener) {
+        listener.onProgress(i / keyIdArr.length);
+      }
+    }
+
+    return {
+      result: res,
+      gotKeys: downloadedArr
+    };
+  },
+
+  /**
+   * Search for keys on a keyserver
+   * @param searchTerm:  String  - search term
+   * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
+   * @param listener:    optional Object implementing the KeySrvListener API (above)
+   *
+
+   * @return:   Promise<Array of PubKeys>
+   *    PubKeys: Object with:
+   *      - keyId: String
+   *      - keyLen: String
+   *      - keyType: String
+   *      - created: String (YYYY-MM-DD)
+   *      - status: String: one of ''=valid, r=revoked, e=expired
+   *      - uid: Array of Strings with UIDs
+   */
+  search: async function(searchTerm, keyserver, listener = null) {
+    let found = [];
+    let key = {};
+
+    try {
+      let r = await this.accessKeyServer(EnigmailConstants.SEARCH_KEY, searchTerm, listener);
+
+      let res = JSON.parse(r);
+      let completions = res.completions;
+
+      for (let hit in completions) {
+        if (completions[hit] && completions[hit].components.key_fingerprint !== undefined) {
+          let uid = completions[hit].components.username.val;
+          if ("full_name" in completions[hit].components) {
+            uid += " (" + completions[hit].components.full_name.val + ")";
+          }
+          let key = {
+            keyId: completions[hit].components.key_fingerprint.val.toUpperCase(),
+            keyLen: completions[hit].components.key_fingerprint.nbits.toString(),
+            keyType: completions[hit].components.key_fingerprint.algo.toString(),
+            created: 0, //date.toDateString(),
+            uid: [uid],
+            status: ""
+          };
+          found.push(key);
+        }
+      }
+    }
+    catch (ex) {}
+
+    return found;
+  },
+
+  upload: function() {
+    throw Components.results.NS_ERROR_FAILURE;
+  }
+};
+
+function getAccesType(keyserver) {
+  if (keyserver === null) {
+    keyserver = EnigmailKeyserverURIs.getDefaultKeyServer();
+  }
+
+  let srv = parseKeyserverUrl(keyserver);
+  if (srv.protocol === "keybase") {
+    return accessKeyBase;
+  }
+  else {
+    return accessHkpInternal;
+  }
+}
 
 const EnigmailKeyServer = {
   /**
    * Download keys from a keyserver
-   * @param keyIDs:      String  - space-separated list of search terms or key IDs
+   * @param keyIDs:      String  - space-separated list of FPRs or key IDs
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
    * @return:   Promise<...>
    */
   download: function(keyIDs, keyserver = null, listener) {
-    if (keyserver === null) {
-      keyserver = EnigmailKeyserverURIs.getDefaultKeyServer();
-    }
-    return keyServerBuiltin.download(keyIDs, keyserver, listener);
+    let acc = getAccessType(keyserver);
+    return acc.download(keyIDs, keyserver, listener);
   },
 
   /**
    * Upload keys to a keyserver
-   * @param keyIDs:      String  - space-separated list of search terms or key IDs
+   * @param keyIDs:      String  - space-separated list of key IDs or FPR
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
@@ -420,10 +665,8 @@ const EnigmailKeyServer = {
    */
 
   upload: function(keyIDs, keyserver = null, listener) {
-    if (keyserver === null) {
-      keyserver = EnigmailKeyserverURIs.getDefaultKeyServer();
-    }
-    return keyServerBuiltin.upload(keyIDs, keyserver, listener);
+    let acc = getAccessType(keyserver);
+    return acc.upload(keyIDs, keyserver, listener);
   },
 
   /**
@@ -434,11 +677,8 @@ const EnigmailKeyServer = {
    *
    * @return:   Promise<...>
    */
-
   search: function(searchString, keyserver = null, listener) {
-    if (keyserver === null) {
-      keyserver = EnigmailKeyserverURIs.getDefaultKeyServer();
-    }
-    return keyServerBuiltin.search(searchString, keyserver, listener);
+    let acc = getAccessType(keyserver);
+    return acc.search(searchString, keyserver, listener);
   }
 };
