@@ -10,7 +10,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
 
-testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false */
+testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false*/
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
@@ -187,8 +187,7 @@ test(withTestGpgHome(withEnigmail(function testAccessKeybase() {
     Assert.equal(res[2].keyId, "9876543210111111111BBBBBBBBCCCCCCCAAAAAA");
     Assert.equal(res[2].status, "");
 
-
-    return accessKeyBase.download("0x8439E17046977C46", "dummy")
+    return accessKeyBase.download("0x8439E17046977C46", "dummy");
   }).then(res => {
     Assert.equal(res.gotKeys.length, 1);
     Assert.equal(res.result, 0);

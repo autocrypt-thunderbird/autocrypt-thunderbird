@@ -627,7 +627,7 @@ const accessKeyBase = {
   }
 };
 
-function getAccesType(keyserver) {
+function getAccessType(keyserver) {
   if (keyserver === null) {
     keyserver = EnigmailKeyserverURIs.getDefaultKeyServer();
   }
