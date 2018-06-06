@@ -291,6 +291,7 @@ const accessHkpInternal = {
    * @return:   Promise<...>
    */
   download: async function(keyIDs, keyserver, listener = null) {
+    EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal.download(${keyIDs})\n`);
     let keyIdArr = keyIDs.split(/ +/);
     let downloadedArr = [];
     let res = 0;
@@ -299,6 +300,7 @@ const accessHkpInternal = {
       try {
         let r = await this.accessKeyServer(EnigmailConstants.DOWNLOAD_KEY, keyserver, keyIdArr[i], listener);
         if (r === 0) {
+          // TODO fixme: return imported keys, not input key IDs
           downloadedArr.push(keyIdArr[i]);
         }
       }
@@ -307,7 +309,7 @@ const accessHkpInternal = {
       }
 
       if (listener && "onProgress" in listener) {
-        listener.onProgress(i / keyIdArr.length);
+        listener.onProgress((i + 1) / keyIdArr.length * 100);
       }
     }
 
@@ -326,6 +328,7 @@ const accessHkpInternal = {
    * @return:   Promise<...>
    */
   upload: async function(keyIDs, keyserver, listener = null) {
+    EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal.upload(${keyIDs})\n`);
 
     try {
       return await this.accessKeyServer(EnigmailConstants.UPLOAD_KEY, keyserver, keyIDs, listener);
@@ -341,7 +344,6 @@ const accessHkpInternal = {
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
-
    * @return:   Promise<Array of PubKeys>
    *    PubKeys: Object with:
    *      - keyId: String
@@ -352,6 +354,7 @@ const accessHkpInternal = {
    *      - uid: Array of Strings with UIDs
    */
   search: async function(searchTerm, keyserver, listener = null) {
+    EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal.search(${searchTerm})\n`);
     let found = [];
     let key = null;
 
@@ -641,14 +644,16 @@ function getAccessType(keyserver) {
   }
 }
 
-const EnigmailKeyServer = {
+var EnigmailKeyServer = {
   /**
    * Download keys from a keyserver
    * @param keyIDs:      String  - space-separated list of FPRs or key IDs
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<...>
+   * @return:   Promise<Object>
+   *     Object: - result: Number           - result Code (0 = OK),
+   *             - gotKeys: Array of String - imported key FPR
    */
   download: function(keyIDs, keyserver = null, listener) {
     let acc = getAccessType(keyserver);
@@ -675,7 +680,14 @@ const EnigmailKeyServer = {
    * @param keyserver:    String  - keyserver URL (optionally incl. protocol)
    * @param listener:     optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<...>
+   * @return:   Promise<Array of PubKeys>
+   *    PubKeys: Object with:
+   *      - keyId: String
+   *      - keyLen: String
+   *      - keyType: String
+   *      - created: String (YYYY-MM-DD)
+   *      - status: String: one of ''=valid, r=revoked, e=expired
+   *      - uid: Array of Strings with UIDs
    */
   search: function(searchString, keyserver = null, listener) {
     let acc = getAccessType(keyserver);
