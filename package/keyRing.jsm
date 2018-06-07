@@ -324,7 +324,7 @@ var EnigmailKeyRing = {
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
     var command = EnigmailGpg.agentPath;
-    var args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
+    var args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
     importedKeysObj.value = "";
 
     var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
@@ -677,7 +677,7 @@ var EnigmailKeyRing = {
       }
     }
 
-    const args = EnigmailGpg.getStandardArgs(false).concat(["--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
+    const args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
 
     const exitCodeObj = {};
     const statusMsgObj = {};
@@ -728,7 +728,7 @@ var EnigmailKeyRing = {
 
     const args = EnigmailGpg.getStandardArgs(false).
     concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
-      "--batch", "--no-tty", "--status-fd", "1", "--attribute-fd", "2",
+      "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
       "--fixed-list-mode", "--list-keys", keyId
     ]);
 

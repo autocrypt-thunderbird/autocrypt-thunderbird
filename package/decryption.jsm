@@ -194,18 +194,20 @@ var EnigmailDecryption = {
 
     // possible STATUS Patterns (see GPG dod DETAILS.txt):
     // one of these should be set for a signature:
-    var goodsigPat = /GOODSIG (\w{16}) (.*)$/i;
-    var badsigPat = /BADSIG (\w{16}) (.*)$/i;
-    var expsigPat = /EXPSIG (\w{16}) (.*)$/i;
-    var expkeysigPat = /EXPKEYSIG (\w{16}) (.*)$/i;
-    var revkeysigPat = /REVKEYSIG (\w{16}) (.*)$/i;
-    var errsigPat = /ERRSIG (\w{16}) (.*)$/i;
+    var newsigPat = /^NEWSIG /i;
+    var trustedsigPat = /^TRUST_(FULLY|ULTIMATE) /i;
+    var goodsigPat = /^GOODSIG (\w{16}) (.*)$/i;
+    var badsigPat = /^BADSIG (\w{16}) (.*)$/i;
+    var expsigPat = /^EXPSIG (\w{16}) (.*)$/i;
+    var expkeysigPat = /^EXPKEYSIG (\w{16}) (.*)$/i;
+    var revkeysigPat = /^REVKEYSIG (\w{16}) (.*)$/i;
+    var errsigPat = /^ERRSIG (\w{16}) (.*)$/i;
     // additional infos for good signatures:
-    var validSigPat = /VALIDSIG (\w+) (.*) (\d+) (.*)/i;
+    var validSigPat = /^VALIDSIG (\w+) (.*) (\d+) (.*)/i;
     // hint for a certain key id:
-    var userIdHintPat = /USERID_HINT (\w{16}) (.*)$/i;
+    var userIdHintPat = /^USERID_HINT (\w{16}) (.*)$/i;
     // to find out for which recipients the email was encrypted:
-    var encToPat = /ENC_TO (\w{16}) (.*)$/i;
+    var encToPat = /^ENC_TO (\w{16}) (.*)$/i;
 
     var matches;
 
@@ -214,6 +216,7 @@ var EnigmailDecryption = {
     var sigKeyId = ""; // key of sender
     var sigUserId = ""; // user ID of sender
     var sigDetails = "";
+    var sigTrusted = false;
     var encToDetails = "";
     var encToArray = []; // collect ENC_TO lines here
 
@@ -237,6 +240,41 @@ var EnigmailDecryption = {
       //}
 
       // check for one of the possible SIG entries:
+
+      matches = errLines[j].match(newsigPat);
+      if (matches) {
+        if (signed) {
+          EnigmailLog.DEBUG("enigmailCommon.jsm: decryptMessageEnd: multiple SIGN entries - ignoring previous signature\n");
+        }
+        signed = true;
+        goodOrExpOrRevSignature = false;
+        sigKeyId = "";
+        sigUserId = "";
+        sigDetails = "";
+        sigTrusted = false;
+        continue;
+      }
+
+      matches = errLines[j].match(trustedsigPat);
+      if (matches) {
+        sigTrusted = true;
+        continue;
+      }
+
+      matches = errLines[j].match(validSigPat);
+      if (matches && (matches.length > 4)) {
+        if (matches[4].length == 40) {
+          // in case of several subkeys refer to the main key ID.
+          // Only works with PGP V4 keys (Fingerprint length ==40)
+          sigKeyId = matches[4].substr(-16);
+        }
+        if (matches && (matches.length > 2)) {
+          sigDetails = errLines[j].substr(9);
+          break;
+        }
+        continue;
+      }
+
       // GOODSIG entry
       matches = errLines[j].match(goodsigPat);
       if (matches && (matches.length > 2)) {
@@ -316,20 +354,8 @@ var EnigmailDecryption = {
 
     } // end loop of processing errLines
 
-    if (goodOrExpOrRevSignature) {
-      for (j = 0; j < errLines.length; j++) {
-        matches = errLines[j].match(validSigPat);
-        if (matches && (matches.length > 4)) {
-          if (matches[4].length == 40)
-          // in case of several subkeys refer to the main key ID.
-          // Only works with PGP V4 keys (Fingerprint length ==40)
-            sigKeyId = matches[4].substr(-16);
-        }
-        if (matches && (matches.length > 2)) {
-          sigDetails = errLines[j].substr(9);
-          break;
-        }
-      }
+    if (sigTrusted) {
+      retStatusObj.statusFlags |= EnigmailConstants.TRUSTED_IDENTITY;
     }
 
     if (sigUserId && sigKeyId && EnigmailPrefs.getPref("displaySecondaryUid")) {

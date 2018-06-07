@@ -29,7 +29,7 @@ const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAge
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 const MINIMUM_GPG_VERSION = "2.0.14";
-const GPG_BATCH_OPT_LIST = ["--batch", "--no-tty", "--status-fd", "2"];
+const GPG_BATCH_OPT_LIST = ["--batch", "--no-tty", "--no-verbose", "--status-fd", "2"];
 
 function pushTrimmedStr(arr, str, splitStr) {
   // Helper function for pushing a string without leading/trailing spaces
