@@ -221,7 +221,6 @@ const accessHkpInternal = {
           case EnigmailConstants.UPLOAD_KEY:
             EnigmailLog.DEBUG("keyserver.jsm: onload: " + xmlReq.responseText + "\n");
             if (xmlReq.status >= 400) {
-
               reject(1);
             }
             else {
@@ -230,7 +229,11 @@ const accessHkpInternal = {
             return;
 
           case EnigmailConstants.SEARCH_KEY:
-            if (xmlReq.status >= 400) {
+            if (xmlReq.status === 404) {
+              // key not found
+              resolve(0);
+            }
+            else if (xmlReq.status >= 400) {
               reject(3);
             }
             else {
@@ -248,11 +251,11 @@ const accessHkpInternal = {
               reject(3);
             }
             else {
-              let errorMsgObj = {};
-              let r = EnigmailKeyRing.importKey(null, false, xmlReq.responseText, "", errorMsgObj);
-
+              let errorMsgObj = {},
+                importedKeysObj = {};
+              let r = EnigmailKeyRing.importKey(null, false, xmlReq.responseText, "", errorMsgObj, importedKeysObj);
               if (r === 0) {
-                resolve(0);
+                resolve(importedKeysObj.value);
               }
               else {
                 reject(4);
@@ -299,9 +302,8 @@ const accessHkpInternal = {
     for (let i = 0; i < keyIdArr.length; i++) {
       try {
         let r = await this.accessKeyServer(EnigmailConstants.DOWNLOAD_KEY, keyserver, keyIdArr[i], listener);
-        if (r === 0) {
-          // TODO fixme: return imported keys, not input key IDs
-          downloadedArr.push(keyIdArr[i]);
+        if (Array.isArray(r)) {
+          downloadedArr = downloadedArr.concat(r);
         }
       }
       catch (ex) {
@@ -344,14 +346,16 @@ const accessHkpInternal = {
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<Array of PubKeys>
-   *    PubKeys: Object with:
-   *      - keyId: String
-   *      - keyLen: String
-   *      - keyType: String
-   *      - created: String (YYYY-MM-DD)
-   *      - status: String: one of ''=valid, r=revoked, e=expired
-   *      - uid: Array of Strings with UIDs
+   * @return:   Promise<Object>
+   *    - result: Number
+   *    - pubKeys: Array of Object:
+   *         PubKeys: Object with:
+   *           - keyId: String
+   *           - keyLen: String
+   *           - keyType: String
+   *           - created: String (YYYY-MM-DD)
+   *           - status: String: one of ''=valid, r=revoked, e=expired
+   *           - uid: Array of Strings with UIDs
    */
   search: async function(searchTerm, keyserver, listener = null) {
     EnigmailLog.DEBUG(`keyserver.jsm: accessHkpInternal.search(${searchTerm})\n`);
@@ -371,7 +375,10 @@ const accessHkpInternal = {
           case "info":
             if (line[1] !== "1") {
               // protocol version not supported
-              return [];
+              return {
+                result: 1,
+                pubKeys: found
+              };
             }
             break;
           case "pub":
@@ -402,9 +409,17 @@ const accessHkpInternal = {
         found.push(key);
       }
     }
-    catch (ex) {}
+    catch (ex) {
+      return {
+        result: ex,
+        pubKeys: found
+      };
+    }
 
-    return found;
+    return {
+      result: 0,
+      pubKeys: found
+    };
   }
 };
 
@@ -582,15 +597,17 @@ const accessKeyBase = {
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
    * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
+   * @return:   Promise<Object>
+   *    - result: Number
+   *    - pubKeys: Array of Object:
+   *         PubKeys: Object with:
+   *           - keyId: String
+   *           - keyLen: String
+   *           - keyType: String
+   *           - created: String (YYYY-MM-DD)
+   *           - status: String: one of ''=valid, r=revoked, e=expired
+   *           - uid: Array of Strings with UIDs
 
-   * @return:   Promise<Array of PubKeys>
-   *    PubKeys: Object with:
-   *      - keyId: String
-   *      - keyLen: String
-   *      - keyType: String
-   *      - created: String (YYYY-MM-DD)
-   *      - status: String: one of ''=valid, r=revoked, e=expired
-   *      - uid: Array of Strings with UIDs
    */
   search: async function(searchTerm, keyserver, listener = null) {
     let found = [];
@@ -620,9 +637,17 @@ const accessKeyBase = {
         }
       }
     }
-    catch (ex) {}
+    catch (ex) {
+      return {
+        result: ex,
+        pubKeys: found
+      };
+    }
 
-    return found;
+    return {
+      result: 0,
+      pubKeys: found
+    };
   },
 
   upload: function() {
@@ -680,14 +705,16 @@ var EnigmailKeyServer = {
    * @param keyserver:    String  - keyserver URL (optionally incl. protocol)
    * @param listener:     optional Object implementing the KeySrvListener API (above)
    *
-   * @return:   Promise<Array of PubKeys>
-   *    PubKeys: Object with:
-   *      - keyId: String
-   *      - keyLen: String
-   *      - keyType: String
-   *      - created: String (YYYY-MM-DD)
-   *      - status: String: one of ''=valid, r=revoked, e=expired
-   *      - uid: Array of Strings with UIDs
+   * @return:   Promise<Object>
+   *    - result: Number
+   *    - pubKeys: Array of Object:
+   *         PubKeys: Object with:
+   *           - keyId: String
+   *           - keyLen: String
+   *           - keyType: String
+   *           - created: String (YYYY-MM-DD)
+   *           - status: String: one of ''=valid, r=revoked, e=expired
+   *           - uid: Array of Strings with UIDs
    */
   search: function(searchString, keyserver = null, listener) {
     let acc = getAccessType(keyserver);

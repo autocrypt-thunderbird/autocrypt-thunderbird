@@ -35,7 +35,6 @@ const {
 const INPUT = 0;
 const RESULT = 1;
 
-var gDlList = [];
 var gProgressMeter;
 var gKeyServer = null;
 var gAllKeysSelected = 0;
@@ -64,7 +63,7 @@ function onLoad() {
     window.sizeToContent();
 
     EnigmailTimer.setTimeout(function _f() {
-      startDownload(searchList, false);
+      startDownload(searchList);
     }, 10);
   }
   else {
@@ -104,9 +103,9 @@ function onAccept() {
   let dlKeyList = [];
   var item = treeChildren.firstChild;
   while (item) {
-    var aRows = item.getElementsByAttribute("id", "indicator");
+    let aRows = item.getElementsByAttribute("id", "indicator");
     if (aRows.length) {
-      var elem = aRows[0];
+      let elem = aRows[0];
       if (elem.getAttribute("active") == "1") {
         dlKeyList.push(item.getAttribute("id"));
       }
@@ -117,7 +116,7 @@ function onAccept() {
   return startDownload(dlKeyList);
 }
 
-function startDownload(downloadKeys, displayResult = true) {
+function startDownload(downloadKeys) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: startDownload\n");
   if (downloadKeys.length > 0) {
     gProgressMeter.value = 0;
@@ -131,9 +130,7 @@ function startDownload(downloadKeys, displayResult = true) {
         DownloadListener.onCancel = null;
         if (res.result === 0 && res.gotKeys.length > 0) {
           window.arguments[RESULT].importedKeys = res.gotKeys;
-          if (displayResult) {
-            EnigmailDialog.keyImportDlg(window, res.gotKeys.length > 0 ? res.gotKeys : downloadKeys);
-          }
+          EnigmailDialog.keyImportDlg(window, res.gotKeys.length > 0 ? res.gotKeys : downloadKeys);
           closeDialog();
         }
       }).catch(
@@ -158,11 +155,17 @@ function executeSearch(searchKeys) {
       document.getElementById("progress.box").setAttribute("hidden", "true");
       document.getElementById("dialog.accept").removeAttribute("disabled");
 
-      if (res.length === 0) {
-        EnigmailDialog.info(window, getKeyNotFoundMsg());
+      if (res.pubKeys.length === 0) {
+        if (res.result !== 0) {
+          statusError();
+        }
+        else {
+          EnigmailDialog.info(window, getKeyNotFoundMsg());
+          closeDialog();
+        }
       }
       else {
-        populateList(res);
+        populateList(res.pubKeys);
       }
     }).catch(
     error => {
@@ -185,11 +188,6 @@ function onCancel() {
 
 
 function closeDialog() {
-  // TODO: is this still required?
-  // if (window.arguments[RESULT].importedKeys > 0) {
-  //   EnigmailKeyRing.clearCache();
-  // }
-
   document.getElementById("enigmailSearchKeyDlg").cancelDialog();
   window.close();
 }
@@ -201,7 +199,7 @@ function closeDialog() {
 function populateList(keyList) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: populateList\n");
 
-  var sortUsers = function(a, b) {
+  let sortUsers = function(a, b) {
     if (a.uid[0] < b.uid[0]) {
       return -1;
     }
@@ -210,7 +208,7 @@ function populateList(keyList) {
     }
   };
 
-  var sortKeyIds = function(c, d) {
+  let sortKeyIds = function(c, d) {
     if (c.keyId < d.keyId) {
       return -1;
     }
@@ -326,10 +324,10 @@ function keySelectCallback(event) {
   if (col.value.id != "selectionCol")
     return;
 
-  var aRows = treeItem.getElementsByAttribute("id", "indicator");
+  let aRows = treeItem.getElementsByAttribute("id", "indicator");
 
   if (aRows.length > 0) {
-    var elem = aRows[0];
+    let elem = aRows[0];
     if (elem.getAttribute("active") == "1") {
       EnigSetActive(elem, 0);
     }

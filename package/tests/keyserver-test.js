@@ -96,6 +96,7 @@ test(withTestGpgHome(withEnigmail(function testAccessKeyServer() {
   accessHkpInternal.download("781617319CE311C4", "dummy").then(res => {
     Assert.equal(res.gotKeys.length, 1);
     Assert.equal(res.result, 0);
+    Assert.equal(res.gotKeys[0], "65537E212DC19025AD38EDB2781617319CE311C4");
 
     let o = EnigmailKeyRing.getKeyById("0x781617319CE311C4");
     Assert.notEqual(o, null);
@@ -106,13 +107,14 @@ test(withTestGpgHome(withEnigmail(function testAccessKeyServer() {
 
     return accessHkpInternal.search("anything", "dummy");
   }).then(res => {
-    Assert.equal(res.length, 3);
-    Assert.equal(res[0].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0003AAAA00010001");
-    Assert.equal(res[1].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0004AAAA00010001");
-    Assert.equal(res[1].created, "2017-12-30");
-    Assert.equal(res[1].uid[1], "User Three <test-3@enigmail-test.net>");
-    Assert.equal(res[2].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0005AAAA00010001");
-    Assert.equal(res[2].status, "r");
+    Assert.equal(res.result, 0);
+    Assert.equal(res.pubKeys.length, 3);
+    Assert.equal(res.pubKeys[0].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0003AAAA00010001");
+    Assert.equal(res.pubKeys[1].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0004AAAA00010001");
+    Assert.equal(res.pubKeys[1].created, "2017-12-30");
+    Assert.equal(res.pubKeys[1].uid[1], "User Three <test-3@enigmail-test.net>");
+    Assert.equal(res.pubKeys[2].keyId, "CCCCCCCCCCCCCCCCCCCCCCCC0005AAAA00010001");
+    Assert.equal(res.pubKeys[2].status, "r");
 
     return accessHkpInternal.upload("0x781617319CE311C4", "dummy");
   }).then(res => {
@@ -179,13 +181,14 @@ test(withTestGpgHome(withEnigmail(function testAccessKeybase() {
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
   accessKeyBase.search("anything", "dummy").then(res => {
-    Assert.equal(res.length, 3);
-    Assert.equal(res[0].keyId, "1234567890ABCDEF1234567890ABCDEF12345678");
-    Assert.equal(res[1].keyId, "ABCDEF0123456780000000000000000012345678");
-    Assert.equal(res[1].created, "");
-    Assert.equal(res[1].uid[0], "devtiger (Dev Tiger)");
-    Assert.equal(res[2].keyId, "9876543210111111111BBBBBBBBCCCCCCCAAAAAA");
-    Assert.equal(res[2].status, "");
+    Assert.equal(res.result, 0);
+    Assert.equal(res.pubKeys.length, 3);
+    Assert.equal(res.pubKeys[0].keyId, "1234567890ABCDEF1234567890ABCDEF12345678");
+    Assert.equal(res.pubKeys[1].keyId, "ABCDEF0123456780000000000000000012345678");
+    Assert.equal(res.pubKeys[1].created, "");
+    Assert.equal(res.pubKeys[1].uid[0], "devtiger (Dev Tiger)");
+    Assert.equal(res.pubKeys[2].keyId, "9876543210111111111BBBBBBBBCCCCCCCAAAAAA");
+    Assert.equal(res.pubKeys[2].status, "");
 
     return accessKeyBase.download("0x8439E17046977C46", "dummy");
   }).then(res => {
