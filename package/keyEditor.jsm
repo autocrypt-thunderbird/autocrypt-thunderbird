@@ -251,7 +251,7 @@ function editKey(parent, needPassphrase, userId, keyId, editCmd, inputData, call
 
   var statusFlags = {};
 
-  args = args.concat(["--no-tty", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]);
+  args = args.concat(["--no-tty", "--no-verbose", "--status-fd", "1", "--logger-fd", "1", "--command-fd", "0"]);
   if (userId) args = args.concat(["-u", userId]);
   var editCmdArr;
   if (typeof(editCmd) == "string") {

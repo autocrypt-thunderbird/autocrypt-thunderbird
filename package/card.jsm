@@ -21,7 +21,7 @@ var EnigmailCard = {
   getCardStatus: function(exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("card.jsm: EnigmailCard.getCardStatus\n");
     const args = EnigmailGpg.getStandardArgs(false).
-    concat(["--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
+    concat(["--no-verbose", "--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
     const statusMsgObj = {};
     const statusFlagsObj = {};
 

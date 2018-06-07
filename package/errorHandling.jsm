@@ -45,8 +45,6 @@ const gStatusFlags = {
   ERROR: EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED,
   DECRYPTION_FAILED: EnigmailConstants.DECRYPTION_FAILED,
   DECRYPTION_OKAY: EnigmailConstants.DECRYPTION_OKAY,
-  TRUST_FULLY: EnigmailConstants.TRUSTED_IDENTITY,
-  TRUST_ULTIMATE: EnigmailConstants.TRUSTED_IDENTITY,
   CARDCTRL: EnigmailConstants.CARDCTRL,
   SC_OP_FAILURE: EnigmailConstants.SC_OP_FAILURE,
   UNKNOWN_ALGO: EnigmailConstants.UNKNOWN_ALGO,
