@@ -94,11 +94,14 @@ function getRandomKeyId(randomNumber) {
 function refreshKeyIfReady(keyserver, readyToRefresh, keyId) {
   if (readyToRefresh) {
     EnigmailLog.DEBUG("keyRefreshService.jsm: refreshing key ID " + keyId + "\n");
-    keyserver.refresh(keyId);
+    return keyserver.download(keyId);
+  }
+  else {
+    return Promise.resolve(0);
   }
 }
 
-function refreshWith(keyserver, timer, readyToRefresh) {
+async function refreshWith(keyserver, timer, readyToRefresh) {
   const keyId = getRandomKeyId(EnigmailRNG.generateRandomUint32());
   const keyIdsExist = keyId !== null;
   const validKeyserversExist = EnigmailKeyserverURIs.validKeyserversExist();
@@ -107,7 +110,7 @@ function refreshWith(keyserver, timer, readyToRefresh) {
   if (keyIdsExist && validKeyserversExist) {
     if (ioService && (!ioService.offline)) {
       // don't try to refresh if we are offline
-      refreshKeyIfReady(keyserver, readyToRefresh, keyId);
+      await refreshKeyIfReady(keyserver, readyToRefresh, keyId);
     }
     else {
       EnigmailLog.DEBUG("keyRefreshService.jsm: offline - not refreshing any key\n");

@@ -135,23 +135,30 @@ test(withTestGpgHome(withEnigmail(withKeys(function refreshesKeyOnlyIfWaitTimeHa
       }
     };
 
+    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
     const keyserver = {
       refreshWasCalled: false,
-      refresh: function(keyId) {
+      download: function(keyId) {
         Assert.equal(keyId, expectedKeyId);
         keyserver.refreshWasCalled = true;
       }
     };
 
-    refreshWith(keyserver, timer, false);
+    refreshWith(keyserver, timer, false).then(res => {
+      Assert.equal(keyserver.refreshWasCalled, false, "keyserver.refresh was called and shouldn't have been");
+      Assert.equal(timer.initWithCallbackWasCalled, true, "timer.initWithCallback was not called");
+      inspector.exitNestedEventLoop();
+    });
+    inspector.enterNestedEventLoop(0);
 
-    Assert.equal(keyserver.refreshWasCalled, false, "keyserver.refresh was called and shouldn't have been");
-    Assert.equal(timer.initWithCallbackWasCalled, true, "timer.initWithCallback was not called");
+    refreshWith(keyserver, timer, true).then(res => {
+      Assert.equal(keyserver.refreshWasCalled, true, "keyserver.refresh was not called");
+      Assert.equal(timer.initWithCallbackWasCalled, true, "timer.initWithCallback was not called");
+      inspector.exitNestedEventLoop();
+    });
+    inspector.enterNestedEventLoop(0);
 
-    refreshWith(keyserver, timer, true);
-
-    Assert.equal(keyserver.refreshWasCalled, true, "keyserver.refresh was not called");
-    Assert.equal(timer.initWithCallbackWasCalled, true, "timer.initWithCallback was not called");
   });
 }))));
 
