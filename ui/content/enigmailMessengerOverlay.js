@@ -1017,9 +1017,8 @@ Enigmail.msg = {
 
     if (importOnly) {
       // Import public key
-      exitCode = EnigmailKeyRing.importKey(window, true, msgText, "",
-        errorMsgObj);
-
+      this.importKeyFromMsgBody(msgText);
+      return;
     }
     else {
 
@@ -1328,6 +1327,64 @@ Enigmail.msg = {
     EnigmailLog.ERROR("enigmailMessengerOverlay.js: no node found to replace message display\n");
 
     return;
+  },
+
+  importKeyFromMsgBody: function(msgData) {
+    let beginIndexObj = {};
+    let endIndexObj = {};
+    let indentStrObj = {};
+    let blockType = EnigmailArmor.locateArmoredBlock(msgData, 0, "", beginIndexObj, endIndexObj, indentStrObj);
+    if (!blockType || blockType !== "PUBLIC KEY BLOCK") return;
+
+    let keyData = msgData.substring(beginIndexObj.value, endIndexObj.value);
+
+    let errorMsgObj = {};
+    let preview = EnigmailKey.getKeyListFromKeyBlock(keyData, errorMsgObj);
+    if (errorMsgObj.value === "") {
+      this.importKeyDataWithConfirmation(preview, keyData);
+    }
+    else {
+      EnigmailDialog.alert(window, EnigmailLocale.getString("previewFailed") + "\n" + errorMsgObj.value);
+    }
+  },
+
+  importKeyDataWithConfirmation: function(preview, keyData) {
+    let exitStatus = -1,
+      errorMsgObj = {};
+    if (preview.length > 0) {
+      if (preview.length == 1) {
+        exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
+      }
+      else {
+        exitStatus = EnigmailDialog.confirmDlg(window,
+          EnigmailLocale.getString("doImportMultiple", [
+            preview.map(function(a) {
+              return "\t" + a.name + " (" + a.id + ")";
+            }).
+            join("\n")
+          ]));
+      }
+
+      if (exitStatus) {
+        try {
+          exitStatus = EnigmailKeyRing.importKey(window, false, keyData, "", errorMsgObj);
+        }
+        catch (ex) {}
+
+        if (exitStatus === 0) {
+          var keyList = preview.map(function(a) {
+            return a.id;
+          });
+          EnigmailDialog.keyImportDlg(window, keyList);
+        }
+        else {
+          EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
+        }
+      }
+    }
+    else {
+      EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
+    }
   },
 
   /**
@@ -2109,40 +2166,7 @@ Enigmail.msg = {
       }
 
       if (errorMsgObj.value === "") {
-        if (preview.length > 0) {
-          if (preview.length == 1) {
-            exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
-          }
-          else {
-            exitStatus = EnigmailDialog.confirmDlg(window,
-              EnigmailLocale.getString("doImportMultiple", [
-                preview.map(function(a) {
-                  return "\t" + a.name + " (" + a.id + ")";
-                }).
-                join("\n")
-              ]));
-          }
-
-          if (exitStatus) {
-            try {
-              exitStatus = EnigmailKeyRing.importKey(parent, false, callbackArg.data, "", errorMsgObj);
-            }
-            catch (ex) {}
-
-            if (exitStatus === 0) {
-              var keyList = preview.map(function(a) {
-                return a.id;
-              });
-              EnigmailDialog.keyImportDlg(window, keyList);
-            }
-            else {
-              EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
-            }
-          }
-        }
-        else {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound") + "\n" + errorMsgObj.value);
-        }
+        this.importKeyDataWithConfirmation(preview, callbackArg.data);
       }
       else {
         EnigmailDialog.alert(window, EnigmailLocale.getString("previewFailed") + "\n" + errorMsgObj.value);
@@ -2328,7 +2352,8 @@ Enigmail.msg = {
     // handline keys embedded in message body
 
     if (Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.INLINE_KEY) {
-      return Enigmail.msg.messageDecrypt(true, false);
+      //return Enigmail.msg.messageDecrypt(true, false);
+      return Enigmail.msg.messageImport();
     }
 
     imported = this.importAttachedKeys();
