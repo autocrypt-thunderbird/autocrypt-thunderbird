@@ -48,12 +48,12 @@ test(withPreferences(function buildUrisFromKeyservers_withMixOfProtocols() {
 
   const keyserverUris = buildKeyserverUris();
 
-  Assert.equal(keyserverUris[0],"hkp://keyserver.1:11371");
-  Assert.equal(keyserverUris[1],"hkps://keyserver.2:443");
-  Assert.equal(keyserverUris[2],"hkps://keyserver.3:443");
-  Assert.equal(keyserverUris[3],"hkp://keyserver.3:11371");
-  Assert.equal(keyserverUris[4],"hkps://keyserver.4:443");
-  Assert.equal(keyserverUris[5],"ldap://keyserver.5:389");
+  Assert.equal(keyserverUris[0], "hkp://keyserver.1:11371");
+  Assert.equal(keyserverUris[1], "hkps://keyserver.2:443");
+  Assert.equal(keyserverUris[2], "hkps://keyserver.3:443");
+  Assert.equal(keyserverUris[3], "hkp://keyserver.3:11371");
+  Assert.equal(keyserverUris[4], "hkps://keyserver.4:443");
+  Assert.equal(keyserverUris[5], "ldap://keyserver.5:389");
 
 }));
 
@@ -64,8 +64,8 @@ test(withPreferences(function should_UseCorrectCorrespondingHkpsAddressForHkpPoo
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 2);
-    Assert.equal(keyserverUris[0],"hkps://hkps.pool.sks-keyservers.net:443");
-    Assert.equal(keyserverUris[1],"hkp://pool.sks-keyservers.net:11371");
+    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
+    Assert.equal(keyserverUris[1], "hkp://pool.sks-keyservers.net:11371");
   });
 }));
 
@@ -76,30 +76,30 @@ test(withPreferences(function should_UseCorrectCorrespondingHkpsAddressForHkpPoo
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 2);
-    Assert.equal(keyserverUris[0],"hkps.pool.sks-keyservers.net");
-    Assert.equal(keyserverUris[1],"hkp://pool.sks-keyservers.net:11371");
+    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
+    Assert.equal(keyserverUris[1], "hkp://pool.sks-keyservers.net:11371");
   });
 }));
 
-test(withPreferences(function should_AddProtocolAndPortForHkpsPoolServers_IfNotDos(){
+test(withPreferences(function should_AddProtocolAndPortForHkpsPoolServers_IfNotDos() {
   TestHelper.resetting(EnigmailOS, "isDosLike", false, function() {
     setupKeyserverPrefs("hkps.pool.sks-keyservers.net", false);
 
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 1);
-    Assert.equal(keyserverUris[0],"hkps://hkps.pool.sks-keyservers.net:443");
+    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
   });
 }));
 
-test(withPreferences(function shouldNot_AddProtocolAndPortForForHkpsPoolServers_IfDos(){
+test(withPreferences(function shouldNot_AddProtocolAndPortForForHkpsPoolServers_IfDos() {
   TestHelper.resetting(EnigmailOS, "isDosLike", true, function() {
     setupKeyserverPrefs("hkps.pool.sks-keyservers.net", false);
 
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 1);
-    Assert.equal(keyserverUris[0],"hkps.pool.sks-keyservers.net");
+    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
   });
 }));
 

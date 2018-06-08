@@ -16,8 +16,8 @@ const Cu = Components.utils;
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-const getExecution = EnigmailLazy.loader("enigmail/execution.jsm", "EnigmailExecution");
+// Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+// const getExecution = EnigmailLazy.loader("enigmail/execution.jsm", "EnigmailExecution");
 
 let operatingSystem = null;
 
@@ -56,9 +56,9 @@ var EnigmailOS = {
   isDosLike: isDosLike(),
 
   /**
-   * isWin32 identifies whether the running system is 32 bit Windows machine
+   * isWin32 identifies whether the running system is a Windows (32 or 64 bit) machine
    *
-   * @return    Boolean   - True if local host is a 32 bit Windows machine. False otherwise.
+   * @return    Boolean   - True if local host is a Windows machine. False otherwise.
    */
   isWin32: isWin32(),
 
@@ -90,5 +90,14 @@ var EnigmailOS = {
     catch (ex) {}
 
     return retval;
+  },
+
+  getNullFile: function() {
+    if (this.isDosLike) {
+      return "NUL";
+    }
+    else {
+      return "/dev/null";
+    }
   }
 };
