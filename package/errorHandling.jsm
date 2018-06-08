@@ -23,6 +23,8 @@ Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy:
 
 const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");
+const getEnigmailFiles = EnigmailLazy.loader("enigmail/files.jsm", "EnigmailFiles");
+const getEnigmailRNG = EnigmailLazy.loader("enigmail/rng.jsm", "EnigmailRNG");
 
 
 const gStatusFlags = {
@@ -606,5 +608,34 @@ var EnigmailErrorHandling = {
     }
 
     return reasonMsg;
+  },
+
+  /**
+   * Get a unique file to use for logging with --log-file
+   */
+  getTempLogFile: function() {
+    let logFile = getEnigmailFiles().getTempDirObj().clone();
+    logFile.normalize();
+    logFile.append("gpgOutput." + getEnigmailRNG().generateRandomString(6));
+    return logFile;
+  },
+
+
+  /**
+   * Append the content of a file (such as created via --log-file) to the
+   * debug log, and delete the file afterwards
+   *
+   * @param logFile: nsIFile object
+   */
+  appendLogFileToDebug: function(logFile) {
+    if (logFile && logFile.exists() && logFile.isFile()) {
+      let logData = getEnigmailFiles().readFile(logFile);
+
+      EnigmailLog.DEBUG(`errorHandling.jsm: Process terminated. Human-readable output from gpg:\n-----\n${logData}-----\n`);
+      try {
+        logFile.remove(false);
+      }
+      catch (ex) {}
+    }
   }
 };

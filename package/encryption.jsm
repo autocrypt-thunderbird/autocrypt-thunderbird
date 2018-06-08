@@ -43,7 +43,8 @@ const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
 
 
 var EnigmailEncryption = {
-  getEncryptCommand: function(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj) {
+  getEncryptCommand: function(fromMailAddr, toMailAddr, bccMailAddr, hashAlgorithm, sendFlags, isAscii, errorMsgObj,
+    logFileObj) {
     EnigmailLog.DEBUG("encryption.jsm: getEncryptCommand: hashAlgorithm=" + hashAlgorithm + "\n");
 
     try {
@@ -91,6 +92,12 @@ var EnigmailEncryption = {
 
     if (signMsg && hashAlgorithm) {
       encryptArgs = encryptArgs.concat(["--digest-algo", hashAlgorithm]);
+    }
+
+    if (logFileObj) {
+      logFileObj.value = EnigmailErrorHandling.getTempLogFile();
+      encryptArgs.push("--log-file");
+      encryptArgs.push(EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(logFileObj.value)));
     }
 
     if (encryptMsg) {
@@ -264,11 +271,25 @@ var EnigmailEncryption = {
       return null;
     }
 
-    var encryptArgs = EnigmailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj);
+    let logFileObj = {};
+    let encryptArgs = EnigmailEncryption.getEncryptCommand(fromMailAddr, toMailAddr, bccMailAddr, hashAlgo, sendFlags, ENC_TYPE_MSG, errorMsgObj, logFileObj);
     if (!encryptArgs)
       return null;
 
     var signMsg = sendFlags & EnigmailConstants.SEND_SIGNED;
+    if (!listener) {
+      listener = {};
+    }
+    if ("done" in listener) {
+      listener.outerDone = listener.done;
+    }
+
+    listener.done = function(exitCode) {
+      EnigmailErrorHandling.appendLogFileToDebug(logFileObj.value);
+      if (this.outerDone) {
+        this.outerDone(exitCode);
+      }
+    };
 
     var proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, encryptArgs, signMsg, win, listener, statusFlagsObj);
 
