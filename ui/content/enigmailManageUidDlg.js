@@ -8,6 +8,8 @@
 
 /* global Components: false */
 
+const Ci = Components.interfaces;
+
 Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /* global EnigmailKeyEditor: false */
 Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
@@ -21,6 +23,9 @@ var gUserId;
 var gEnigmailUid;
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   window.arguments[1].refresh = false;
   reloadUidList();
   var keyId = gUserId + " - 0x" + window.arguments[0].keyId;

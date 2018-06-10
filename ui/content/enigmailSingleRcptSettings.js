@@ -20,6 +20,11 @@ const INPUT = 0;
 const RESULT = 1;
 
 function enigmailDlgOnLoad() {
+  const Ci = Components.interfaces;
+
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   var matchBegin = false;
   var matchEnd = false;
 

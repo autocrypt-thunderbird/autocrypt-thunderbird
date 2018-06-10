@@ -18,6 +18,9 @@ Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLoca
 Cu.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   var dlg = document.getElementById("enigmailMsgBox");
   dlg.getButton("help").setAttribute("hidden", "true");
   dlg.getButton("cancel").setAttribute("hidden", "true");

@@ -8,6 +8,8 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
+
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false*/
 Components.utils.import("chrome://enigmail/content/modules/pipeConsole.jsm"); /*global EnigmailConsole: false */
 Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
@@ -20,6 +22,8 @@ var gConsoleIntervalId;
 
 function consoleLoad() {
   EnigmailLog.DEBUG("enigmailConsole.js: consoleLoad\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   top.controllers.insertControllerAt(0, CommandController);
 

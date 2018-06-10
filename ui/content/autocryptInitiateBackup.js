@@ -20,6 +20,8 @@ var gAccountManager;
 var gCurrentIdentity = null;
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   gAccountList = document.getElementById("selectedAccount");
   gAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);

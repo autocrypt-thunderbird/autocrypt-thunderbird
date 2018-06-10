@@ -7,12 +7,17 @@
 "use strict";
 
 /* global EnigInitCommon: false, EnigmailLog: false, EnigGetFrame: false */
+/* global Components: false */
+
+const Ci = Components.interfaces;
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailGenericDisplay");
 
 function enigLoadPage() {
   EnigmailLog.DEBUG("enigmailGenricDisplay: enigLoadPage\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   var contentFrame = EnigGetFrame(window, "contentFrame");
   if (!contentFrame)

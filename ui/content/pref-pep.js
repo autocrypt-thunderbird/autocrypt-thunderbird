@@ -29,6 +29,8 @@ var gLookupKeys;
 var gJuniorMode;
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   gAccountList = document.getElementById("selectedAccount");
   gTrustedServer = document.getElementById("trustedServer");

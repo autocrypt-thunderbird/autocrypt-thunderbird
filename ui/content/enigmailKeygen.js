@@ -38,6 +38,12 @@ const KEYGEN_CANCELLED = "cancelled";
 
 function enigmailKeygenLoad() {
   EnigmailLog.DEBUG("enigmailKeygen.js: Load\n");
+  /* global Components: false */
+
+  const Ci = Components.interfaces;
+
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   gUserIdentityList = document.getElementById("userIdentity");
   gUserIdentityListPopup = document.getElementById("userIdentityPopup");

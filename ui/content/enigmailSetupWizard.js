@@ -60,6 +60,9 @@ var gPageStack = []; // required for correct stepping back
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: onLoad()\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
 
   fillIdentities('checkbox');
