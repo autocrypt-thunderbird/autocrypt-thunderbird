@@ -133,6 +133,8 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
 
 function prefOnLoad() {
   EnigmailLog.DEBUG("pref-enigmail.js: prefOnLoad()\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   GetEnigmailSvc();
   displayPrefs(false, true, false);

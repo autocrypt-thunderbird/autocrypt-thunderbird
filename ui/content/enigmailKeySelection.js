@@ -9,6 +9,7 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
 
 /* global EnigInitCommon: false, EnigmailTrust: false, EnigGetString: false, EnigmailCore: false, EnigmailLog: false */
 /* global EnigmailKeyRing: false, EnigGetPref: false, EnigGetTrustLabel: false, EnigSetActive: false, EnigAlert: false */
@@ -60,6 +61,9 @@ const EMPTY_UID = " -";
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailKeySelection.js: onLoad\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   gIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private") >= 0) {
     document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));

@@ -8,6 +8,8 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
+
 Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
 Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
@@ -30,6 +32,9 @@ function saveLogFile() {
 
 function enigLoadPage() {
   EnigmailLog.DEBUG("enigmailHelp.js: enigLoadPage\n");
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   EnigmailCore.getService();
 
   var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");

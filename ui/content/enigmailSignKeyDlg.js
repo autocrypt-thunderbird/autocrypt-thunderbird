@@ -9,6 +9,8 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
+
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("chrome://enigmail/content/modules/keyEditor.jsm");
 Components.utils.import("chrome://enigmail/content/modules/log.jsm");
@@ -22,6 +24,9 @@ var gLocalSignatureList = null;
 var gUidCount = null;
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   var key;
   var i;
 

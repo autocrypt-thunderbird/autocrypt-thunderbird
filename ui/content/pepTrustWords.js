@@ -7,6 +7,8 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
+
 Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
@@ -37,6 +39,9 @@ var gDialogMode = MODE_USER_USER;
     - dialogMode (0: user/user, 1: keySync)
 */
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   let argsObj = window.arguments[INPUT];
   let supportedLocale = argsObj.supportedLocale;
   gLocale = argsObj.locale;

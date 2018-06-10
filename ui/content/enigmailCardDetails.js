@@ -8,6 +8,7 @@
 
 "use strict";
 
+const Ci = Components.interfaces;
 
 Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
@@ -25,6 +26,9 @@ Components.utils.import("chrome://enigmail/content/modules/card.jsm"); /*global 
 var gCardData = {};
 
 function onLoad() {
+  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
+  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
+
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
     EnigmailEvents.dispatchEvent(failWithError, 0, EnigmailLocale.getString("accessError"));
