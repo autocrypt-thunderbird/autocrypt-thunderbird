@@ -20,8 +20,8 @@ Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: fa
 var EnigmailCard = {
   getCardStatus: function(exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("card.jsm: EnigmailCard.getCardStatus\n");
-    const args = EnigmailGpg.getStandardArgs(false).
-    concat(["--no-verbose", "--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"]);
+    const GPG_ADDITIONAL_OPTIONS=["--no-verbose", "--status-fd", "2", "--fixed-list-mode", "--with-colons", "--card-status"];
+    const args = EnigmailGpg.getStandardArgs(false).concat(GPG_ADDITIONAL_OPTIONS);
     const statusMsgObj = {};
     const statusFlagsObj = {};
 
