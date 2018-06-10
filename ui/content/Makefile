@@ -33,6 +33,7 @@ UIFILES = \
 	enigmailConsole.xul \
 	enigmailConsole.js \
 	enigmailConsole.htm \
+	enigmailCustToolOverlay.js \
 	enigmailCustToolOverlay.xul \
 	enigmailDispPhoto.js \
 	enigmailDispPhoto.xul \

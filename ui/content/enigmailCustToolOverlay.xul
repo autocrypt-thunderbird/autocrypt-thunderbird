@@ -10,7 +10,7 @@
 -->
 
 <!-- Variant for Mac OS -->
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<!-- ?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"? -->
 
 <overlay id="enigCustToolOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -19,6 +19,7 @@
     <!-- Variant for Linux/Windows -->
     <link rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
 
-    <!-- no content required, only needed to load the Enigmail CSS -->
+    <!-- Variant for macOS -->
+    <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCustToolOverlay.js"/>
 
 </overlay>
