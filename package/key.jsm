@@ -173,7 +173,7 @@ var EnigmailKey = {
             break;
           case "userid":
             if (!key.name) {
-              key.name = m.packets[i].userid;
+              key.name = m.packets[i].userid.replace(/[\r\n]+/g, " ");
             }
             break;
           case "signature":
