@@ -129,6 +129,13 @@ Enigmail.msg = {
   composeStartup: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
+    function loadOverlay(targetWindow, srcUrl) {
+      let {
+        Overlays
+      } = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+
+      Overlays.loadOverlays("Enigmail", targetWindow, [srcUrl]);
+    }
 
     function addSecurityListener(itemId, func) {
       let s = document.getElementById(itemId);
@@ -146,15 +153,13 @@ Enigmail.msg = {
     if (sb) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
       EnigmailTimer.setTimeout(function _f() {
-        if (sb && sb.contentDocument && ("loadOverlay" in sb.contentDocument)) {
-          sb.contentDocument.loadOverlay("chrome://enigmail/content/ui/enigmailAbContactsPanel.xul", null);
-        }
+        loadOverlay(sb.contentDocument.defaultView, "chrome://enigmail/content/ui/enigmailAbContactsPanel.xul");
       }, 2000);
     }
 
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
-      event.target.loadOverlay("chrome://enigmail/content/ui/enigmailCustToolOverlay.xul", null);
+      loadOverlay(event.target.defaultView, "chrome://enigmail/content/ui/enigmailCustToolOverlay.xul");
     }, false);
 
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);

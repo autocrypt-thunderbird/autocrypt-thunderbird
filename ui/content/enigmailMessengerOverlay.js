@@ -114,7 +114,11 @@ Enigmail.msg = {
 
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
-      event.target.loadOverlay("chrome://enigmail/content/ui/enigmailCustToolOverlay.xul", null);
+      let {
+        Overlays
+      } = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+
+      Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailCustToolOverlay.xul"]);
     }, false);
 
     Enigmail.msg.messagePane = document.getElementById("messagepane");
