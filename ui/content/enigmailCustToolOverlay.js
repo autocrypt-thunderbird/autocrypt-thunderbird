@@ -10,7 +10,6 @@
 
 var Enigmail = {
   onLoad: function() {
-    // required for macOS only
     const Ci = Components.interfaces;
 
     let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);

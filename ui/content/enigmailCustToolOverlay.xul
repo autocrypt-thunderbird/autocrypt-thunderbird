@@ -9,9 +9,6 @@
   Toolbar window so that they are displayed correctly
 -->
 
-<!-- Variant for Mac OS -->
-<!-- ?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"? -->
-
 <overlay id="enigCustToolOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -22,4 +19,5 @@
     <!-- Variant for macOS -->
     <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCustToolOverlay.js"/>
 
+    <vbox id="enigmail-dummy" collapsed="true"/>
 </overlay>
