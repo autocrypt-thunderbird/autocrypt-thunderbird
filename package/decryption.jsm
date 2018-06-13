@@ -102,7 +102,7 @@ var EnigmailDecryption = {
       var fromAddr = win.gFolderDisplay.selectedMessage.author;
       try {
         fromAddr = EnigmailFuncs.stripEmail(fromAddr);
-        if (fromAddr.search(/@.*[\(\)]/) >= 0) {
+        if (fromAddr.search(/[a-zA-Z0-9]@.*[\(\)]/) >= 0) {
           fromAddr = false;
         }
       }
