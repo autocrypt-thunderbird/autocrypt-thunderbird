@@ -865,7 +865,7 @@
 <!ENTITY enigmail.pepPref.enableEncryption.label     "Enable privacy protection">
 <!ENTITY enigmail.pepPref.passiveMode.label          "Attach my key to outgoing messages">
 <!ENTITY enigmail.pepPref.protectedSubject.label     "Enable protected message subjects">
-<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message looses security through a reply or forwarding">
+<!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Show a warning when a message loses security through a reply or forwarding">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP Compatibility">
 <!ENTITY enigmail.pepPref.autoKeyLookup.label        "Lookup keys on server automatically">
 <!ENTITY enigmail.pepPref.credits.label              "Credits">
