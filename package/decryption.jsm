@@ -284,11 +284,10 @@ var EnigmailDecryption = {
         if (matches[4].length == 40) {
           // in case of several subkeys refer to the main key ID.
           // Only works with PGP V4 keys (Fingerprint length ==40)
-          sigKeyId = matches[4].substr(-16);
+          sigKeyId = matches[4];
         }
         if (matches && (matches.length > 2)) {
           sigDetails = errLines[j].substr(9);
-          break;
         }
         continue;
       }
