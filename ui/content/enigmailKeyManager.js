@@ -35,6 +35,7 @@ Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdl
 Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 Cu.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 Cu.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
+Cu.import("chrome://enigmail/content/modules/webKey.jsm"); /*global EnigmailWks: false */
 
 
 const INPUT = 0;
@@ -1006,7 +1007,7 @@ function enigmailSearchKey() {
 
 
 function enigmailUploadKeys() {
-  enigmailKeyServerAccess(EnigmailConstants.UPLOAD_KEY, enigmailUploadKeysCb);
+  accessKeyServer(EnigmailConstants.UPLOAD_KEY, enigmailUploadKeysCb);
 }
 
 function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
@@ -1022,23 +1023,32 @@ function enigmailUploadKeysCb(exitCode, errorMsg, msgBox) {
 }
 
 function enigmailUploadToWkd() {
-  enigmailKeyServerAccess(EnigmailConstants.UPLOAD_WKD, enigmailUploadToWkdCb);
-}
+  let selKeyList = getSelectedKeys();
+  let keyList = [];
+  for (let i = 0; i < selKeyList.length; i++) {
+    keyList.push(gKeyList[selKeyList[i]]);
+  }
 
-function enigmailUploadToWkdCb(exitCode, errorMsg, msgBox) {
-  if (msgBox) {
-    if (exitCode !== 0) {
-      EnigAlert(EnigGetString("sendKeysFailed") + "\n" + errorMsg);
+  EnigmailWks.wksUpload(keyList, window).then(result => {
+    if (result.length > 0) {
+      EnigmailDialog.info(window, EnigmailLocale.getString("sendKeysOk"));
     }
-  }
-  else {
-    return (EnigGetString(exitCode === 0 ? "sendKeysOk" : "sendKeysFailed"));
-  }
-  return "";
+    else {
+      if (keyList.length === 1) {
+        EnigmailDialog.alert(window, EnigmailLocale.getString("sendKeysFailed") + "\n\n" +
+          EnigmailLocale.getString("noWksIdentity", keyList[0].userId));
+      }
+      else {
+        EnigmailDialog.alert(window, EnigmailLocale.getString("wksUpload.noKeySupported"));
+      }
+    }
+  }).catch(error => {
+    EnigmailDialog.alert(window.EnigmailLocale.getString("sendKeysFailed") + "\n" + error);
+  });
 }
 
 function enigmailReceiveKey() {
-  enigmailKeyServerAccess(EnigmailConstants.DOWNLOAD_KEY, enigmailReceiveKeyCb);
+  accessKeyServer(EnigmailConstants.DOWNLOAD_KEY, enigmailReceiveKeyCb);
 }
 
 function userAcceptsWarning(warningMessage) {
@@ -1072,7 +1082,7 @@ function userAcceptsRefreshWarning() {
 
 function enigmailRefreshAllKeys() {
   if (userAcceptsRefreshWarning() === true) {
-    enigmailKeyServerAccess(EnigmailConstants.REFRESH_KEY, enigmailReceiveKeyCb);
+    accessKeyServer(EnigmailConstants.REFRESH_KEY, enigmailReceiveKeyCb);
   }
 }
 
@@ -1312,33 +1322,92 @@ function determineHiddenKeys(keyObj, showInvalidKeys, showUntrustedKeys, showOth
 //
 // ----- keyserver related functionality ----
 //
-function enigmailKeyServerAccess(accessType, callbackFunc) {
+function accessKeyServer(accessType, callbackFunc) {
 
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;
 
-  var resultObj = {};
-  var selKeyList = getSelectedKeys();
-  if (accessType != EnigmailConstants.REFRESH_KEY && selKeyList.length === 0) {
-    if (EnigConfirm(EnigGetString("refreshAllQuestion"), EnigGetString("keyMan.button.refreshAll"))) {
-      accessType = EnigmailConstants.REFRESH_KEY;
-      EnigAlertPref(EnigGetString("refreshKey.warn"), "warnRefreshAll");
+  const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+  if (ioService && ioService.offline) {
+    EnigmailDialog.alert(window, EnigmailLocale.getString("needOnline"));
+    return;
+  }
+
+  let inputObj = {};
+  let resultObj = {};
+  let selKeyList = getSelectedKeys();
+  let keyList = [];
+  for (let i = 0; i < selKeyList.length; i++) {
+    keyList.push(gKeyList[selKeyList[i]]);
+  }
+
+  if (accessType !== EnigmailConstants.REFRESH_KEY && selKeyList.length === 0) {
+    if (EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("refreshAllQuestion"), EnigmailLocale.getString("keyMan.button.refreshAll"))) {
+      accessType = EnigmailConstants.DOWNLOAD_KEY;
+      EnigmailDialog.alertPref(window, EnigmailLocale.getString("refreshKey.warn"), "warnRefreshAll");
     }
     else {
       return;
     }
   }
 
-  var keyList = [];
-  for (var i = 0; i < selKeyList.length; i++) {
-    keyList.push(gKeyList[selKeyList[i]]);
+  let keyServer = EnigmailPrefs.getPref("autoKeyServerSelection") ? EnigmailPrefs.getPref("keyserver").split(/[ ,;]/g)[0] : null;
+  if (!keyServer) {
+    switch (accessType) {
+      case EnigmailConstants.REFRESH_KEY:
+        inputObj.upload = false;
+        inputObj.keyId = "All keys";
+        break;
+      case EnigmailConstants.DOWNLOAD_KEY:
+        inputObj.upload = false;
+        inputObj.keyId = keyList.map(k => {
+          try {
+            return EnigmailFuncs.stripEmail(k.userId);
+          }
+          catch (x) {
+            return k.fpr;
+          }
+        }).join(", ");
+        break;
+      case EnigmailConstants.UPLOAD_KEY:
+        inputObj.upload = true;
+        inputObj.keyId = keyList.map(k => {
+          try {
+            return EnigmailFuncs.stripEmail(k.userId);
+          }
+          catch (x) {
+            return k.fpr;
+          }
+        }).join(", ");
+        break;
+      default:
+        inputObj.upload = true;
+        inputObj.keyId = "";
+    }
+
+    window.openDialog("chrome://enigmail/content/ui/enigmailKeyserverDlg.xul",
+      "", "dialog,modal,centerscreen", inputObj, resultObj);
+    keyServer = resultObj.value;
   }
 
-  EnigmailKeyServer.keyServerUpDownload(window, keyList, accessType, false, callbackFunc, resultObj);
+  if (keyServer.length === 0) return;
 
-  if (accessType != EnigmailConstants.UPLOAD_KEY && resultObj.result) {
-    refreshKeys();
+  if (accessType !== EnigmailConstants.REFRESH_KEY) {
+    inputObj.keyServer = keyServer;
+    inputObj.accessType = accessType;
+    inputObj.keyId = keyList.map(k => {
+      return k.fpr;
+    });
+    window.openDialog("chrome://enigmail/content/ui/enigRetrieveProgress.xul",
+      "", "dialog,modal,centerscreen", inputObj, resultObj);
+
+    if (resultObj.result) {
+      callbackFunc(resultObj.exitCode, resultObj.errorMsg, false);
+    }
+  }
+  else {
+    EnigmailKeyServer.refresh(keyServer);
   }
 }
 

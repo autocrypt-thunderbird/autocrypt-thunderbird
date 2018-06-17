@@ -94,9 +94,9 @@ test(withTestGpgHome(withEnigmail(function testAccessKeyServer() {
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
   accessHkpInternal.download("781617319CE311C4", "dummy").then(res => {
-    Assert.equal(res.gotKeys.length, 1);
+    Assert.equal(res.keyList.length, 1);
     Assert.equal(res.result, 0);
-    Assert.equal(res.gotKeys[0], "65537E212DC19025AD38EDB2781617319CE311C4");
+    Assert.equal(res.keyList[0], "65537E212DC19025AD38EDB2781617319CE311C4");
 
     let o = EnigmailKeyRing.getKeyById("0x781617319CE311C4");
     Assert.notEqual(o, null);
@@ -118,11 +118,11 @@ test(withTestGpgHome(withEnigmail(function testAccessKeyServer() {
 
     return accessHkpInternal.upload("0x781617319CE311C4", "dummy");
   }).then(res => {
-    Assert.equal(res, 5); // this is bound to fail ;-)
+    Assert.ok(false);
 
     inspector.exitNestedEventLoop();
   }).catch(res => {
-    Assert.ok(false);
+    Assert.equal(res.result, EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE); // this is bound to fail ;-)
     inspector.exitNestedEventLoop();
   });
 
@@ -192,7 +192,7 @@ test(withTestGpgHome(withEnigmail(function testAccessKeybase() {
 
     return accessKeyBase.download("0x8439E17046977C46", "dummy");
   }).then(res => {
-    Assert.equal(res.gotKeys.length, 1);
+    Assert.equal(res.keyList.length, 1);
     Assert.equal(res.result, 0);
 
     let o = EnigmailKeyRing.getKeyById("0x8439E17046977C46");

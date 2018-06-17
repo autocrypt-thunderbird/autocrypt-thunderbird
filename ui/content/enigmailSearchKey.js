@@ -130,15 +130,15 @@ function startDownload(downloadKeys) {
     EnigmailKeyServer.download(downloadKeys.join(" "), gKeyServer, DownloadListener).then(
       res => {
         DownloadListener.onCancel = null;
-        if (res.result === 0 && res.gotKeys.length > 0) {
-          window.arguments[RESULT].importedKeys = res.gotKeys;
-          EnigmailDialog.keyImportDlg(window, res.gotKeys.length > 0 ? res.gotKeys : downloadKeys);
+        if (res.result === 0 && res.keyList.length > 0) {
+          window.arguments[RESULT].importedKeys = res.keyList;
+          EnigmailDialog.keyImportDlg(window, res.keyList.length > 0 ? res.keyList : downloadKeys);
           closeDialog();
         }
       }).catch(
       error => {
         DownloadListener.onCancel = null;
-        statusError();
+        statusError(error);
         closeDialog();
       }
     );
@@ -159,7 +159,7 @@ function executeSearch(searchKeys) {
 
       if (res.pubKeys.length === 0) {
         if (res.result !== 0) {
-          statusError();
+          statusError(res);
         }
         else {
           EnigmailDialog.info(window, getKeyNotFoundMsg());
@@ -172,7 +172,7 @@ function executeSearch(searchKeys) {
     }).catch(
     error => {
       DownloadListener.onCancel = null;
-      statusError();
+      statusError(error);
     }
   );
 }
@@ -348,8 +348,8 @@ function getKeyNotFoundMsg() {
   return EnigmailLocale.getString("noKeyFound");
 }
 
-function statusError() {
+function statusError(errObj) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: statusError\n");
-  EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyserverConn", gKeyServer));
+  EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyserverConn", gKeyServer) + "\n\n" + errObj.errorDetails);
   closeDialog();
 }

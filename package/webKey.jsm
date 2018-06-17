@@ -143,6 +143,7 @@ var EnigmailWks = {
    * @return Promise<...>
    */
   wksUpload: function(keys, win, observer = null) {
+    EnigmailLog.DEBUG(`webKey.jsm: wksUpload(): keys = ${keys.length}\n`);
     let ids = getWkdIdentities(keys);
 
     if (observer === null) {
@@ -157,9 +158,10 @@ var EnigmailWks = {
     };
 
     if (!ids) throw "error";
+
     if (ids.senderIdentities.length === 0) {
       return new Promise(resolve => {
-        return [];
+        resolve([]);
       });
     }
 
@@ -178,7 +180,7 @@ var EnigmailWks = {
    */
 
   submitKey: function(ident, key, window, cb) {
-    EnigmailLog.DEBUG("webKey.jsm: submitKey: email = " + ident.email + "\n");
+    EnigmailLog.DEBUG("webKey.jsm: submitKey(): email = " + ident.email + "\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
       if (wks_client === null) {
         cb(false);
@@ -233,8 +235,9 @@ var EnigmailWks = {
    */
 
   confirmKey: function(ident, body, window, cb) {
-    var sanitized = body.replace(/\r?\n/g, "\r\n");
     EnigmailLog.DEBUG("webKey.jsm: confirmKey: ident=" + ident.email + "\n");
+
+    var sanitized = body.replace(/\r?\n/g, "\r\n");
     return EnigmailWks.getWksClientPathAsync(window, function(wks_client) {
       if (wks_client === null) {
         if (cb) {
@@ -317,6 +320,7 @@ function checkIfExists(path, execFileName) {
 
 
 function getWkdIdentities(keys) {
+  EnigmailLog.DEBUG(`webKey.jsm: getWkdIdentities(): keys = ${keys.length}\n`);
   let senderIdentities = [],
     notFound = [];
 
