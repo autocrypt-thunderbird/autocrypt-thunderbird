@@ -1541,33 +1541,15 @@ function keyUploadDo() {
 
   if (key !== null) {
     if (document.getElementById("keyUploadSks").getAttribute("checked") == "true") {
-      keyServerAccess(key, true);
+      EnigmailKeyServer.upload([key.fpr]).then(r => {
+        document.getElementById("wkdKeysUploaded").removeAttribute("hidden");
+      });
     }
 
     if (document.getElementById("keyUploadWks").getAttribute("checked") == "true") {
-      keyServerAccess(key, false);
+      EnigmailWks.wksUpload([key], window).then(r => {
+        document.getElementById("wkdKeysUploaded").removeAttribute("hidden");
+      });
     }
   }
-}
-
-function keyServerAccess(key, useHkp) {
-  let resultObj = {};
-  let accessType = 0;
-
-  if (useHkp) {
-    accessType = EnigmailConstants.UPLOAD_KEY;
-  }
-  else {
-    accessType = EnigmailConstants.UPLOAD_WKD;
-  }
-
-  let resultFunc = function(resultCode) {
-    if (resultCode === 0 && resultObj.fprList.length > 0) {
-      document.getElementById("wkdKeysUploaded").removeAttribute("hidden");
-    }
-  };
-
-  EnigmailKeyServer.keyServerUpDownload(window, [key], accessType, true, resultFunc, resultObj);
-
-  let x = resultObj;
 }

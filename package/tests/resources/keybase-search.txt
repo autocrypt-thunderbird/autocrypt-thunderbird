@@ -1,0 +1,110 @@
+{
+  "status": {
+    "code": 0,
+    "name": "OK"
+  },
+  "completions": [{
+    "total_score": 0.05982905982905983,
+    "components": {
+      "username": {
+        "val": "devstrike",
+        "score": 0.022222222222222223
+      },
+      "key_fingerprint": {
+        "val": "1234567890abcdef1234567890abcdef12345678",
+        "algo": 1,
+        "nbits": 4096,
+        "score": 0
+      },
+      "twitter": {
+        "val": "devstrike",
+        "score": 0.011111111111111112
+      },
+      "github": {
+        "val": "devstrike",
+        "score": 0.011111111111111112
+      }
+    },
+    "uid": "cdef1234567890abcdcdef1234567890",
+    "thumbnail": "https://example.com/uploads/12345678.jpg",
+    "is_followee": false
+  }, {
+    "total_score": 0.029090909090909098,
+    "components": {
+      "username": {
+        "val": "devtiger",
+        "score": 0.020000000000000004
+      },
+      "key_fingerprint": {
+        "val": "abcdef0123456780000000000000000012345678",
+        "algo": 1,
+        "nbits": 4096,
+        "score": 0
+      },
+      "full_name": {
+        "val": "Dev Tiger",
+        "score": 0.009090909090909092
+      },
+      "github": {
+        "val": "devtiger.enigmail",
+        "score": 0
+      }
+    },
+    "uid": "abcdef01234567800000000000000000",
+    "is_followee": false
+  },  {
+    "total_score": 0.02361111111111111,
+    "components": {
+      "username": {
+        "val": "dev_enig",
+        "score": 0
+      },
+      "key_fingerprint": {
+        "val": "9876543210111111111bbbbbbbbcccccccaaaaaa",
+        "algo": 1,
+        "nbits": 4096,
+        "score": 0
+      },
+      "full_name": {
+        "val": "Enigmail Test",
+        "score": 0
+      },
+      "twitter": {
+        "val": "_enigmail_na",
+        "score": 0.0125
+      },
+      "github": {
+        "val": "na_enigmail",
+        "score": 0.011111111111111112
+      }
+    },
+    "uid": "9876543210111111111bbbbbbbbccccc",
+    "is_followee": false
+  }, {
+    "total_score": 0.022222222222222223,
+    "components": {
+      "username": {
+        "val": "dummy1",
+        "score": 0.022222222222222223
+      }
+    },
+    "uid": "9876543210111111111bbbbbbbbcccc1",
+    "thumbnail": null,
+    "is_followee": false
+  }, {
+    "total_score": 0.005000000000000001,
+    "components": {
+      "username": {
+        "val": "dummy2",
+        "score": 0
+      },
+      "full_name": {
+        "val": "Test Dummy",
+        "score": 0.005000000000000001
+      }
+    },
+    "uid": "9876543210111111111bbbbbbbbcccc2",
+    "thumbnail": null,
+    "is_followee": false
+  }]
+}

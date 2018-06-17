@@ -166,6 +166,7 @@ zip -9 --must-match\
     chrome/content/modules/wkdLookup.jsm \
     chrome/content/modules/windows.jsm \
     chrome/content/modules/wksMimeHandler.jsm \
+    chrome/content/modules/xhrUtils.jsm \
     chrome/content/modules/zbase32.jsm \
     chrome/content/modules/all-modules.txt \
     chrome/content/am-enigprefs.xul

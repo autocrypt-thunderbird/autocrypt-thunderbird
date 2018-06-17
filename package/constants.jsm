@@ -136,6 +136,15 @@ var EnigmailConstants = {
   CARD_PIN_UNBLOCK: 2,
   CARD_ADMIN_PIN_CHANGE: 3,
 
+  /* Keyserver error codes (in keyserver.jsm) */
+  KEYSERVER_ERR_ABORTED: 1,
+  KEYSERVER_ERR_SERVER_ERROR: 2,
+  KEYSERVER_ERR_SECURITY_ERROR: 3,
+  KEYSERVER_ERR_CERTIFICATE_ERROR: 4,
+  KEYSERVER_ERR_SERVER_UNAVAILABLE: 5,
+  KEYSERVER_ERR_IMPORT_ERROR: 6,
+  KEYSERVER_ERR_UNKNOWN: 7,
+
   /* Bootstrapped Addon constants */
   APP_STARTUP: 1, // The application is starting up.
   APP_SHUTDOWN: 2, // The application is shutting down.

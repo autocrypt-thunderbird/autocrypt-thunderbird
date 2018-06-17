@@ -100,6 +100,7 @@ MODFILES = \
            wkdLookup.jsm \
            windows.jsm \
            wksMimeHandler.jsm \
+           xhrUtils.jsm \
            zbase32.jsm
 
 DATE_FMT = +%Y%m%d-%H%M
