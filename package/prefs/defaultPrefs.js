@@ -180,7 +180,7 @@ pref("extensions.enigmail.gpgLocaleEn", true);
 // pref("extensions.enigmail.usePGPMimeOption",1); -- OBSOLETE, see mail.identity.default.pgpMimeMode
 
 // Use gpg for keyserver operations (vs. Thunderbird)
-pref("extensions.enigmail.useGpgKeysTool", true);
+pref("extensions.enigmail.useGpgKeysTool", false);
 
 // show "conflicting rules" message (and remember selected state)
 pref("extensions.enigmail.warnOnRulesConflict", 0);
