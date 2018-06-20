@@ -28,7 +28,7 @@ dirs: $(DIRS)
 $(DIRS):
 	$(MAKE) -C $@
 
-xpi:
+xpi: $(DIRS)
 	$(srcdir)/util/genxpi $(XPIFILE) $(XPI_MODULE_VERS) $(DIST) $(srcdir) $(XPI_MODULE) $(ENABLE_LANG)
 
 check:

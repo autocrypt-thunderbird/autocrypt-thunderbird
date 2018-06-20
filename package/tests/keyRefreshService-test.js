@@ -221,12 +221,12 @@ test(withPreferences(function ifKeyserverListIsInvalid_checkAgainInAnHour() {
   });
 }));
 
-test(withLogFiles(withPreferences(function keyRefreshServiceIsTurnedOffByDefault() {
+test(withLogFiles(withPreferences(function keyRefreshServiceIsTurnedOnByDefault() {
   const keyRefreshStartMessage = "keyRefreshService.jsm: Started";
   const keyserver = {};
 
   EnigmailKeyRefreshService.start(keyserver);
-  assertLogDoesNotContain(keyRefreshStartMessage);
+  assertLogContains(keyRefreshStartMessage);
 })));
 
 test(withLogFiles(withPreferences(function keyRefreshServiceStartsWhenPreferenceIsOn() {

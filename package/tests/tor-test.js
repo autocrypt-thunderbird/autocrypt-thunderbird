@@ -56,17 +56,13 @@ test(function evaluateMeetsMinimumCurlSocksVersion() {
 });
 
 test(withEnigmail(function createHelperArgsForTorsocks1(enigmail) {
-  EnigmailGpg.setAgentPath({
-    path: "/usr/bin/gpg2"
-  });
+  EnigmailGpg.setAgentPath("/usr/bin/gpg2");
   const firstSet = createHelperArgs("torsocks", false);
   Assert.deepEqual(firstSet[0], "/usr/bin/gpg2");
 }));
 
 test(function createHelperArgsForTorsocks2() {
-  EnigmailGpg.setAgentPath({
-    path: "/usr/bin/gpg"
-  });
+  EnigmailGpg.setAgentPath("/usr/bin/gpg");
   const args = createHelperArgs("torsocks2", true);
 
   Assert.deepEqual(args[0], "--user");

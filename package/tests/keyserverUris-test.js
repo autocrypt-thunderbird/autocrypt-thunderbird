@@ -76,7 +76,7 @@ test(withPreferences(function should_UseCorrectCorrespondingHkpsAddressForHkpPoo
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 2);
-    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
+    Assert.equal(keyserverUris[0], "hkps.pool.sks-keyservers.net");
     Assert.equal(keyserverUris[1], "hkp://pool.sks-keyservers.net:11371");
   });
 }));
@@ -99,7 +99,7 @@ test(withPreferences(function shouldNot_AddProtocolAndPortForForHkpsPoolServers_
     const keyserverUris = buildKeyserverUris();
 
     Assert.equal(keyserverUris.length, 1);
-    Assert.equal(keyserverUris[0], "hkps://hkps.pool.sks-keyservers.net:443");
+    Assert.equal(keyserverUris[0], "hkps.pool.sks-keyservers.net");
   });
 }));
 

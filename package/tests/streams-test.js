@@ -53,7 +53,7 @@ test(function readFileChannel() {
   var stringListener = EnigmailStreams.newStringStreamListener(
     function compareResults(gotData) {
       Assert.equal(testString, gotData);
-      Assert.equal(md.exists(), true, "file was deleted:");
+      Assert.equal(md.exists(), false, "file was deleted:");
       do_test_finished();
     }
   );

@@ -112,7 +112,7 @@ function createHelperArgs(helper, addAuth) {
   if (addAuth) {
     args = ["--user", createRandomCredential(), "--pass", createRandomCredential()];
   }
-  args.push(EnigmailGpg.agentPath.path);
+  args.push(EnigmailGpg.agentPath);
   return args;
 }
 
