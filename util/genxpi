@@ -51,7 +51,7 @@ fi
 
 cd "$targetDir"
 
-find chrome/content/modules -name "*.js*" > chrome/content/modules/all-modules.txt
+find chrome/content/modules -name "*.js*" | sort > chrome/content/modules/all-modules.txt
 
 echo "Creating ${xpiFile} file"
 
