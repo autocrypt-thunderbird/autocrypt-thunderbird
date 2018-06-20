@@ -726,11 +726,11 @@ var EnigmailKeyRing = {
   getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
 
-    const args = EnigmailGpg.getStandardArgs(false).
-    concat(["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
+    const GPG_ADDITIONAL_OPTIONS=["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
       "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
       "--fixed-list-mode", "--list-keys", keyId
-    ]);
+    ];
+    const args = EnigmailGpg.getStandardArgs(false).concat(GPG_ADDITIONAL_OPTIONS);
 
     const photoDataObj = {};
     const outputTxt = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, photoDataObj);
@@ -1197,12 +1197,13 @@ var EnigmailKeyRing = {
 function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   let args = EnigmailGpg.getStandardArgs(true);
-
+  args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"]);
+  
   if (secretOnly) {
-    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
+    args = args.concat(["--list-secret-keys"]);
   }
   else {
-    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
+    args = args.concat(["--list-keys"]);
   }
 
   statusFlagsObj.value = 0;
@@ -1244,12 +1245,13 @@ function obtainKeyList(win, secretOnly, onlyKeys = null) {
     EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
     let args = EnigmailGpg.getStandardArgs(true);
+    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"];
 
     if (secretOnly) {
-      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-secret-keys"]);
+      args = args.concat(["--list-secret-keys"]);
     }
     else {
-      args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-keys"]);
+      args = args.concat(["--list-keys"]);
     }
 
     if (onlyKeys) {
