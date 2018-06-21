@@ -10,10 +10,11 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
 
-testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false*/
+testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false, accessGnuPG: false*/
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
+component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
 function setupKeyserverPrefs(keyservers, autoOn) {
   EnigmailPrefs.setPref("keyserver", keyservers);
@@ -205,5 +206,114 @@ test(withTestGpgHome(withEnigmail(function testAccessKeybase() {
     inspector.exitNestedEventLoop();
   });
 
+  inspector.enterNestedEventLoop(0);
+})));
+
+
+test(withTestGpgHome(withEnigmail(function testAccessGnuPG() {
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+
+  // overwrite accessKeyServer to mock it
+  accessGnuPG.accessKeyServer = function(actionFlag, keyserver, keyId, listener) {
+    return new Promise((resolve) => {
+      let retObj = {
+        exitCode: 0,
+        stdoutData: "",
+        stderrData: "",
+        errorMsg: "",
+        statusFlags: 0,
+        statusMsg: "",
+        blockSeparation: "",
+        isKilled: 0
+      };
+
+      switch (actionFlag) {
+        case EnigmailConstants.DOWNLOAD_KEY:
+          if (keyId == "ok") {
+            retObj.stderrData =
+              `[GNUPG:] KEY_CONSIDERED 8C140834F2D683E9A016D3098439E17046977C46 0
+[GNUPG:] KEY_CONSIDERED 8C140834F2D683E9A016D3098439E17046977C46 0
+[GNUPG:] IMPORT_OK 0 8C140834F2D683E9A016D3098439E17046977C46
+[GNUPG:] IMPORT_OK 0 ABCDEF0123456780000000000000000012345678
+[GNUPG:] KEY_CONSIDERED 8C140834F2D683E9A016D3098439E17046977C46 0
+[GNUPG:] IMPORT_RES 2 0 0 0 2 0 0 0 0 0 0 0 0 0 0`;
+            retObj.statusMsg = retObj.stderrData.replace(/^\[GNUPG: \] /mg, "");
+          }
+          break;
+        case EnigmailConstants.SEARCH_KEY:
+          if (keyId == "ok") {
+            retObj.stdoutData =
+              `info:1:3
+pub:CCCCCCCCCCCCCCCCCCCCCCCC0003AAAA00010001:1:2048:1516625442::
+uid:Test User <test.user@enigmail-test.net>:1516625444::
+pub:CCCCCCCCCCCCCCCCCCCCCCCC0004AAAA00010001:1:4096:1514659468::
+uid:User Two <test-2@enigmail-test.net>:1514659471::
+uid:User Three <test-3@enigmail-test.net>:1514679471::
+pub:CCCCCCCCCCCCCCCCCCCCCCCC0005AAAA00010001:1:4096:1510762768:1668442768:r
+uid:Revoked User <revoked-key@enigmail-test.net>:1510762768::
+uat::::
+uat::::`;
+          }
+          else {
+            retObj.stderrData = "[GNUPG:] FAILURE search-keys 167772380\n";
+          }
+          break;
+        case EnigmailConstants.UPLOAD_KEY:
+          if (keyId == "ok") {
+            retObj.stderrData = "[GNUPG:] EXPORTED ABCDEF0123456780000000000000000012345678\n";
+          }
+          else {
+            retObj.stderrData = "[GNUPG:] ERROR keyserver_send 167804953\n[GNUPG:] FAILURE send-keys 167804953\n";
+          }
+
+      }
+
+      resolve(retObj);
+    });
+  };
+
+  async function doTest() {
+    try {
+      let res = await accessGnuPG.download("ok", null, null);
+      Assert.equal(res.keyList.length, 2);
+      Assert.equal(res.keyList[1], "ABCDEF0123456780000000000000000012345678");
+      Assert.equal(res.result, 0);
+
+      res = await accessGnuPG.search("ok", null, null);
+      Assert.equal(res.pubKeys.length, 3);
+    }
+    catch (ex) {
+      Assert.ok(false);
+    }
+
+    try {
+      let res = await accessGnuPG.search("error", null, null);
+      Assert.ok(false);
+    }
+    catch (ex) {
+      Assert.equal(ex.result, EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE);
+      Assert.equal(ex.errorDetails, EnigmailLocale.getString("keyserver.error.unavailable"));
+    }
+
+    try {
+      let res = await accessGnuPG.upload("ok", null, null);
+      Assert.equal(res.keyList.length, 1);
+      Assert.equal(res.result, 0);
+
+      res = await accessGnuPG.search("ok", null, null);
+      Assert.equal(res.pubKeys.length, 3);
+
+      res = await accessGnuPG.search("error", null, null);
+      Assert.ok(false);
+    }
+    catch (ex) {
+      Assert.equal(ex.result, 5);
+    }
+
+    inspector.exitNestedEventLoop();
+  }
+
+  doTest();
   inspector.enterNestedEventLoop(0);
 })));
