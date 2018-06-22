@@ -1122,6 +1122,11 @@ Enigmail.hdrView = {
       }
       gFolderDisplay.selectedMessage.subject = subj;
       this.updateHdrBox("subject", subject); // this needs to be the unmodified subject
+
+      let tt = document.getElementById("threadTree");
+      if (tt) {
+        tt.treeBoxObject.invalidate();
+      }
     }
   },
 
