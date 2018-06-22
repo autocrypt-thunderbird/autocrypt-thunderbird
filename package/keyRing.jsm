@@ -726,7 +726,7 @@ var EnigmailKeyRing = {
   getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
     EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
 
-    const GPG_ADDITIONAL_OPTIONS=["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
+    const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
       "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
       "--fixed-list-mode", "--list-keys", keyId
     ];
@@ -1198,7 +1198,7 @@ function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
 
   let args = EnigmailGpg.getStandardArgs(true);
   args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"]);
-  
+
   if (secretOnly) {
     args = args.concat(["--list-secret-keys"]);
   }
@@ -1245,7 +1245,7 @@ function obtainKeyList(win, secretOnly, onlyKeys = null) {
     EnigmailLog.DEBUG("keyRing.jsm: obtainKeyList\n");
 
     let args = EnigmailGpg.getStandardArgs(true);
-    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"];
+    args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"]);
 
     if (secretOnly) {
       args = args.concat(["--list-secret-keys"]);

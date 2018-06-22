@@ -25,7 +25,7 @@ else
     STATIC_ANALYSIS_DIR=`dirname "$CURRENT_FILE"`
 
     for dir in $(find "$1" -type d); do
-      eslint "$dir"/*.js*
+      eslint --cache --ignore-pattern "*.json" "$dir"/*.js*
       if [ $? -ne 0 ]; then
         exit 1
       fi
