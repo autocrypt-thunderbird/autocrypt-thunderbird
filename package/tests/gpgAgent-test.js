@@ -163,8 +163,8 @@ test(withEnigmail(function resolveToolPathDefaultValues(enigmail) {
   withEnvironment({}, function(e) {
     resetting(EnigmailGpgAgent, 'agentPath', "/usr/bin/gpg-agent", function() {
       enigmail.environment = e;
-      var result = EnigmailGpgAgent.resolveToolPath("zip");
-      Assert.equal("zip", result.leafName.substr(0, 3));
+      var result = EnigmailGpgAgent.resolveToolPath("sort");
+      Assert.equal("sort", result.leafName.substr(0, 4));
     });
   });
 }));
