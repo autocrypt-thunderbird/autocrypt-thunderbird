@@ -303,6 +303,9 @@ PEPDecryptor.prototype = {
           mimePartNumber: this.mimePartNumber
         };
       }
+      else {
+        this.updateHeadersInMsgDb();
+      }
     }
 
     if (this.mimePartNumber === "1" &&
@@ -402,6 +405,19 @@ PEPDecryptor.prototype = {
     this.decryptedHeaders = r.newHeaders;
     if (r.startPos >= 0 && r.endPos > r.startPos) {
       this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
+    }
+  },
+
+  updateHeadersInMsgDb: function() {
+    if (this.mimePartNumber !== "1") return;
+    if (!this.uri) return;
+
+    if (this.decryptedHeaders && ("subject" in this.decryptedHeaders)) {
+      try {
+        let msgDbHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+        msgDbHdr.subject = EnigmailData.convertFromUnicode(this.decryptedHeaders.subject, "utf-8");
+      }
+      catch (x) {}
     }
   }
 };
