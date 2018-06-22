@@ -70,7 +70,7 @@ var EnigmailAutocrypt = {
         fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
       }
       catch (ex) {
-        reject("error");
+        reject("processAutocryptHeader error " + ex);
       }
       let foundTypes = {};
       let paramArr = [];
@@ -301,7 +301,7 @@ var EnigmailAutocrypt = {
         },
         function onError(error) {
           EnigmailLog.DEBUG("autocrypt.jsm: getOpenPGPKeyForEmail: could not open database\n");
-          reject("error");
+          reject("getOpenPGPKeyForEmail1 error " + error);
         }
       ).then(
         function _f() {
@@ -334,7 +334,7 @@ var EnigmailAutocrypt = {
       ).
       catch((err) => {
         conn.close();
-        reject("error");
+        reject("getOpenPGPKeyForEmail2 error " + err);
       });
     });
   },
