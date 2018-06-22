@@ -697,7 +697,7 @@ Questo assistente può guidarti attraverso il processo di configurazione.">
 
 <!-- wizard: install GnuPG step -->
 <!ENTITY enigmail.setupWiz.pgInstall.title           "GnuPG richiesto">
-<!ENTITY enigmail.setupWiz.pgInstall.desc            "Per utilizzare OpenPGP, GnuPG è richiesto come componente aggiuntivo per le operazioni di cifratura. 
+<!ENTITY enigmail.setupWiz.pgInstall.desc            "Per utilizzare OpenPGP, GnuPG è richiesto come componente aggiuntivo per le operazioni di cifratura.
 La procedura guidata ha provato a individuare GnuPG, ma non è riuscita a trovarlo.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc1    "Enigmail può scaricare GnuPG ed eseguire il programma di installazione al posto tuo.
 Se vuoi che ciò avvenga, fai clic sul pulsante 'Installa GnuPG' per scaricare e installare GnuPG.">
@@ -716,7 +716,7 @@ Se vuoi che ciò avvenga, fai clic sul pulsante 'Installa GnuPG' per scaricare e
 
 <!ENTITY enigmail.setupWiz.pgKeySel.title            "Selezione della chiave">
 <!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Crea una chiave per cifrare e firmare le email">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "Sembra che tu abbia già una chiave OpenPGP. Puoi utilizzare 
+<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "Sembra che tu abbia già una chiave OpenPGP. Puoi utilizzare
 una delle tue chiavi esistenti o creare una nuova coppia di chiavi.">
 <!ENTITY enigmail.setupWiz.pgKeySel.newKey           "Voglio creare una nuova coppia di chiavi per firmare e cifrare le mie email">
 <!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "Voglio usare una delle chiavi seguenti per firmare e cifrare le mie email:">
@@ -729,7 +729,7 @@ una delle tue chiavi esistenti o creare una nuova coppia di chiavi.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "La tua <html:b>chiave pubblica</html:b> serve <html:b> agli altri</html:b> per inviare a te messaggi cifrati. Puoi distribuirla a chiunque.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "La tua <html:b>chiave privata</html:b> serve <html:b>solo a te</html:b> per decifrare le email che ti arrivano per inviare messaggi firmati.
 Non dovresti fornirla a nessuno.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "La tua <html:b>chiave privata serve <html:b>solo a te per decifrare le email che ti arrivano per inviare messaggi firmati.</html:b> serve <html:b>solo a te</html:b> per decifrare questi messaggi e per inviare messaggi firmati.
+<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "La tua <html:b>chiave privata</html:b> serve <html:b>solo a te</html:b> per decifrare le email che ti arrivano per inviare messaggi firmati.
 Non dovresti fornirla a nessuno.
 Per proteggere la tua chiave privata, ti sarà richiesta una frase segreta nelle due finestre seguenti.">
 <!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "La <html:b>frase segreta</html:b> è una password per proteggere la tua chiave privata. Impedisce utilizzi impropri della tua chiave privata.">
@@ -826,7 +826,7 @@ chavi OpenPGP, su un nuovo computer. Ciò avviene in due fasi:
 <!ENTITY enigmail.exportWiz.pgExport.title           "Esportazione impostazioni di Enigmail">
 <!ENTITY enigmail.exportWiz.pgExport.exporting       "Salvataggio in corso. Potresti ricevere la richiesta delle frasi segrete delle tue chiavi.">
 <!ENTITY enigmail.exportWiz.pgExport.done            "Le tue chiavi OpenPGP e le impostazioni di Enigmail sono ora salvate.
-Trasferisci il file generato sul tuo nuovo computer, esegui Thunderbird 
+Trasferisci il file generato sul tuo nuovo computer, esegui Thunderbird
 e avvia la procedura guidata dal menu di Enigmail.">
 <!ENTITY enigmail.exportWiz.pgExport.failed          "Si è verificato un errore durante l'esportazione. Le impostazioni potrebbero non essere state esportate.">
 
