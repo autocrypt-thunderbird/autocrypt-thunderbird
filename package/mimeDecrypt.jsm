@@ -383,13 +383,6 @@ MimeDecryptHandler.prototype = {
     let spec = this.uri ? this.uri.spec : null;
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
 
-    // Allow some semi-safe variants of subparts if View > Message Body as == Plaintext
-    let acceptSubParts = (EnigmailPrefs.getPrefRoot().getIntPref("mailnews.display.html_as") === 1);
-    if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, acceptSubParts)) {
-      this.returnData("");
-      return;
-    }
-
     if (!this.isReloadingLastMessage()) {
       if (this.xferEncoding == ENCODING_BASE64) {
         this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
@@ -446,11 +439,16 @@ MimeDecryptHandler.prototype = {
         }
       }
 
-      this.displayStatus();
+      if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
+        this.pretendAttachment();
+      }
+      else {
+        this.displayStatus();
 
-      // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
-      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
-      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+        // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
+        this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
+        this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+      }
 
       this.returnData(this.decryptedData);
 
@@ -482,7 +480,22 @@ MimeDecryptHandler.prototype = {
       this.displayStatus();
       this.returnData(LAST_MSG.lastMessageData);
     }
+  },
 
+  pretendAttachment: function() {
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: pretendAttachment()\n");
+
+    let encPart = EnigmailLocale.getString("mimeDecrypt.encryptedPart.attachmentLabel");
+    let concealed = EnigmailLocale.getString("mimeDecrypt.encryptedPart.concealedData");
+    this.decryptedData =
+      `Content-Type: message/rfc822; name="${encPart}"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="${encPart}"
+
+Content-Type: text/html
+
+<p><i>${concealed}</i></p>
+`;
   },
 
   displayStatus: function() {
