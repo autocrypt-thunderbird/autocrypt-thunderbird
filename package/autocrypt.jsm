@@ -281,9 +281,10 @@ var EnigmailAutocrypt = {
 
   /**
    * Find an autocrypt OpenPGP key for a given list of email addresses
-   * @param emailAddr: Array of String - emai addresses
+   * @param emailAddr: Array of String - email addresses
    *
-   * @return Promise().resolve { fpr, keyData, lastAutocrypt}
+   * @return Promise(<Array of Object>)
+   *      Object: {fpr, keyData, lastAutocrypt}
    */
   getOpenPGPKeyForEmail: function(emailAddr) {
     EnigmailLog.DEBUG("autocrypt.jsm: getOpenPGPKeyForEmail(" + emailAddr.join(",") + ")\n");
@@ -334,7 +335,7 @@ var EnigmailAutocrypt = {
       ).
       catch((err) => {
         conn.close();
-        reject("getOpenPGPKeyForEmail2 error " + err);
+        reject("getOpenPGPKeyForEmail: error " + err);
       });
     });
   },

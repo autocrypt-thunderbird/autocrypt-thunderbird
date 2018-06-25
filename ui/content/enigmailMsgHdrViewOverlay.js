@@ -132,36 +132,6 @@ Enigmail.hdrView = {
     catch (ex) {}
   },
 
-  // Match the userId from gpg to the sender's from address
-  matchUidToSender: function(userId) {
-    if (!gFolderDisplay.selectedMessage) {
-      return userId;
-    }
-
-    var fromAddr = gFolderDisplay.selectedMessage.author;
-    try {
-      fromAddr = EnigmailFuncs.stripEmail(fromAddr);
-    }
-    catch (ex) {}
-
-    var userIdList = userId.split(/\n/);
-    try {
-      let i;
-      for (i = 0; i < userIdList.length; i++) {
-        if (fromAddr.toLowerCase() == EnigmailFuncs.stripEmail(userIdList[i]).toLowerCase()) {
-          userId = userIdList[i];
-          break;
-        }
-      }
-      if (i >= userIdList.length) userId = userIdList[0];
-    }
-    catch (ex) {
-      userId = userIdList[0];
-    }
-    return userId;
-  },
-
-
   setStatusText: function(txt) {
     let s = document.getElementById("enigmailStatusText");
     s.firstChild.data = txt;
@@ -187,11 +157,12 @@ Enigmail.hdrView = {
     if (!errorMsg) errorMsg = "";
 
     var replaceUid = null;
-    if (userId && (userId.indexOf("\n") >= 0)) {
-      replaceUid = this.matchUidToSender(userId);
+    if (keyId && gFolderDisplay.selectedMessage) {
+      replaceUid = EnigmailMsgRead.matchUidToSender(keyId, gFolderDisplay.selectedMessage);
     }
-    else {
-      replaceUid = userId;
+
+    if (!replaceUid) {
+      replaceUid = userId.replace(/\n.*$/gm, "");
     }
 
     if (Enigmail.msg.savedHeaders && "x-pgp-encoding-format" in Enigmail.msg.savedHeaders &&

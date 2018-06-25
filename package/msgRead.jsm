@@ -18,9 +18,12 @@ const Cu = Components.utils;
  * Message-reading related functions
  */
 
-Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
-Cu.import("chrome://enigmail/content/modules/versioning.jsm"); /*global EnigmailVersioning: false */
+const EnigmailPrefs = (Cu.import("chrome://enigmail/content/modules/prefs.jsm", {})).EnigmailPrefs;
+const EnigmailApp = (Cu.import("chrome://enigmail/content/modules/app.jsm", {})).EnigmailApp;
+const EnigmailVersioning = (Cu.import("chrome://enigmail/content/modules/versioning.jsm", {})).EnigmailVersioning;
+const EnigmailKeyRing = (Cu.import("chrome://enigmail/content/modules/keyRing.jsm", {})).EnigmailKeyRing;
+const EnigmailFuncs = (Cu.import("chrome://enigmail/content/modules/funcs.jsm", {})).EnigmailFuncs;
+const EnigmailAutocrypt = (Cu.import("chrome://enigmail/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
 
 const ExtraHeaders = ["autocrypt", "openpgp"];
 
@@ -258,6 +261,49 @@ var EnigmailMsgRead = {
 
     return text;
   },
+
+  /**
+   * Match the key to the sender's from address
+   *
+   * @param {String}  keyId:    signing key ID
+   * @param {String}  fromAddr: sender's email address
+   *
+   * @return Promise<String>: matching email address
+   */
+  matchUidToSender: function(keyId, fromAddr) {
+    if ((!fromAddr) || !keyId) {
+      return null;
+    }
+
+    try {
+      fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
+    }
+    catch (ex) {}
+
+    let keyObj = EnigmailKeyRing.getKeyById(keyId);
+    if (!keyObj) return null;
+
+    let userIdList = keyObj.userIds;
+
+    try {
+      for (let i = 0; i < userIdList.length; i++) {
+        if (fromAddr == EnigmailFuncs.stripEmail(userIdList[i].userId).toLowerCase()) {
+          return EnigmailFuncs.stripEmail(userIdList[i].userId);
+        }
+      }
+
+      // // uid not found, try Autocrypt keystore
+      // let acList = await EnigmailAutocrypt.getOpenPGPKeyForEmail([fromAddr]);
+      // for (let i = 0; i < acList.length; i++) {
+      //   if (acList[i].fpr == keyObj.fpr) {
+      //     return fromAddr;
+      //   }
+      // }
+    }
+    catch (ex) {}
+    return null;
+  },
+
 
   onShutdown: function(reason) {
     try {
