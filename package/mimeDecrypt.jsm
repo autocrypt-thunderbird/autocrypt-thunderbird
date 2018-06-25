@@ -132,7 +132,7 @@ MimeDecryptHandler.prototype = {
     this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
 
     if (uri) {
-      this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+      this.uri = uri.QueryInterface(Ci.nsIURI);
       EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
     }
 

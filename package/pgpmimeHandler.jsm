@@ -227,7 +227,7 @@ PgpMimeHandler.prototype = {
     this.contentHandler = throwErrors;
 
     if (uri) {
-      uri = uri.QueryInterface(Ci.nsIURI).clone();
+      uri = uri.QueryInterface(Ci.nsIURI);
     }
 
     let headerSink = EnigmailSingletons.messageReader;

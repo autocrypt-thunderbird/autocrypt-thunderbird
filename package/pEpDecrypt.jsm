@@ -188,7 +188,7 @@ PEPDecryptor.prototype = {
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     if (uri) {
-      this.uri = uri.QueryInterface(Ci.nsIURI).clone();
+      this.uri = uri.QueryInterface(Ci.nsIURI);
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
       this.backgroundJob = (this.uri.spec.search(/[&?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
