@@ -19,9 +19,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <notificationbox id="messagepanebox">
-    <vbox insertafter="msgHeaderView">
-      <vbox id="enigmailHdrBox"/> <!-- Enigmail header box is in here -->
-    </vbox>
+    <vbox id="enigmailHdrBox" insertatstart="true"/>  <!-- Enigmail header box is in here -->
   </notificationbox>
 
   <commandset id="mailToolbarItems">
