@@ -18,11 +18,9 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <notificationbox id="messagepanebox">
-    <vbox insertafter="msgHeaderView">
-      <vbox id="enigmailHdrBox"/> <!-- Enigmail header box is in here -->
-    </vbox>
-  </notificationbox>
+  <vbox id="messagesBox">
+    <vbox id="enigmailHdrBox" insertbefore="messagepanebox"/> <!-- Enigmail header box is in here -->
+  </vbox>
 
   <commandset id="mailToolbarItems">
     <command id="button_enigmail_decrypt"/>
