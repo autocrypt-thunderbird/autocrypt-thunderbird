@@ -288,22 +288,17 @@ async function insertXul(addonID, srcUrl, window, document) {
       // bring the node to be inserted into the document
       let nn = document.importNode(node, true);
 
-      if (nn.hasAttribute("insertatstart")) {
-        target.insertBefore(nn, target.firstChild);
+      let pn = insertX(nn, "insertafter");
+      if (pn) {
+        pn.parentNode.insertBefore(nn, pn.nextSibling);
       }
       else {
-        let pn = insertX(nn, "insertafter");
+        pn = insertX(nn, "insertbefore");
         if (pn) {
-          pn.parentNode.insertBefore(nn, pn.nextSibling);
+          pn.parentNode.insertBefore(nn, pn);
         }
         else {
-          pn = insertX(nn, "insertbefore");
-          if (pn) {
-            pn.parentNode.insertBefore(nn, pn);
-          }
-          else {
-            target.appendChild(nn);
-          }
+          target.appendChild(nn);
         }
       }
 
