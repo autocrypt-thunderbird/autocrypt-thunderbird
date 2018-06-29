@@ -8,7 +8,7 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
 
 testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false, accessGnuPG: false*/
 component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */

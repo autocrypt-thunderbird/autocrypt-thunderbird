@@ -7,7 +7,7 @@
 
 "use strict";
 
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper:false, resetting, withEnvironment, getKeyListEntryOfKey: false, gKeyListObj: true, withPreferences: false */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper:false, resetting, withEnvironment, gKeyListObj: true, withPreferences: false */
 
 testing("keyserverUris.jsm"); /*global isValidProtocol: false, validKeyserversExist: false, buildKeyserverUris: false */
 

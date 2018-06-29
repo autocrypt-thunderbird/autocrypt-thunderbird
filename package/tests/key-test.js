@@ -11,7 +11,7 @@
 "use strict";
 
 /*global EnigmailFiles: false */
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
 
 testing("key.jsm"); /*global EnigmailKey: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */

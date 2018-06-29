@@ -11,12 +11,12 @@
 "use strict";
 
 /*global EnigmailFiles: false */
-do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, getKeyListEntryOfKey: false, gKeyListObj: true */
+do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
 
 component("enigmail/trust.jsm"); /*global EnigmailTrust: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-/*global getUserIdList: false, createAndSortKeyList: false, Number: false */
+/*createAndSortKeyList: false, Number: false */
 
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
@@ -29,29 +29,6 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails(
   Assert.equal(importResult, 0, errorMsgObj);
   const keyDetails = EnigmailKeyRing.getValidUids("0xD535623BB60E9E71").join("\n");
   Assert.assertContains(keyDetails, "strike.devtest@gmail.com");
-})));
-
-test(withTestGpgHome(withEnigmail(function shouldGetKeyListEntryOfKey() {
-  const publicKey = do_get_file("resources/dev-strike.asc", false);
-  const importResult = EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
-  const keyDetails = getKeyListEntryOfKey("0xD535623BB60E9E71");
-
-
-  // Output from GnuPG varies sligtly between different versions (new output data is added
-  // at the end of the list). Therefore each line is only compared to the length provided below
-  let expectedListing = [
-    "pub:-:4096:1:781617319CE311C4:1430756251:1556986651::-:::scESC:",
-    "fpr:::::::::65537E212DC19025AD38EDB2781617319CE311C4:",
-    "uid:-::::1430756251::DB54FB278F6AE719DE0DE881B17D4C762F5752A9::anonymous strike <strike.devtest@gmail.com>:",
-    "sub:-:4096:1:D535623BB60E9E71:1430756251:1556986651:::::e:"
-  ];
-
-  let keyDetList = keyDetails.split(/\n\r?/);
-
-  for (let i = 0; i < expectedListing.length; i++) {
-    Assert.equal(keyDetList[i].substr(0, expectedListing[i].length), expectedListing[i]);
-  }
-
 })));
 
 
@@ -93,18 +70,6 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
 
   ka = EnigmailKeyRing.getKeyListById("0x9CE311C4 D535623BB60E9E71"); // the space is on purpose(!)
   Assert.equal(ka.length, 2);
-})));
-
-test(withTestGpgHome(withEnigmail(function shouldGetUserIdList() {
-  const publicKey = do_get_file("resources/dev-strike.asc", false);
-  const secretKey = do_get_file("resources/dev-strike.sec", false);
-  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
-  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
-  let l = null;
-  l = getUserIdList(false, {}, {}, {});
-  Assert.notEqual(l, null);
-  l = getUserIdList(true, {}, {}, {});
-  Assert.notEqual(l, null);
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldCleanupClearCache() {

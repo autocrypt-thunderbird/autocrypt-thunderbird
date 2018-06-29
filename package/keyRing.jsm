@@ -1192,46 +1192,6 @@ var EnigmailKeyRing = {
 /************************ INTERNAL FUNCTIONS ************************/
 
 /**
- * returns the output of --with-colons --list[-secret]-keys
- */
-function getUserIdList(secretOnly, exitCodeObj, statusFlagsObj, errorMsgObj) {
-
-  let args = EnigmailGpg.getStandardArgs(true);
-  args = args.concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons"]);
-
-  if (secretOnly) {
-    args = args.concat(["--list-secret-keys"]);
-  }
-  else {
-    args = args.concat(["--list-keys"]);
-  }
-
-  statusFlagsObj.value = 0;
-
-  const cmdErrorMsgObj = {};
-  let listText = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, statusFlagsObj, {}, cmdErrorMsgObj);
-
-  if (!(statusFlagsObj.value & EnigmailConstants.BAD_SIGNATURE)) {
-    // ignore exit code as recommended by GnuPG authors
-    exitCodeObj.value = 0;
-  }
-
-  if (exitCodeObj.value !== 0) {
-    errorMsgObj.value = EnigmailLocale.getString("badCommand");
-    if (cmdErrorMsgObj.value) {
-      errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
-      errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-    }
-
-    return "";
-  }
-
-  listText = listText.replace(/(\r\n|\r)/g, "\n");
-
-  return listText;
-}
-
-/**
  * Get key list from GnuPG. If the keys may be pre-cached already
  *
  * @param win        - Object      : parent window for displaying error messages
@@ -1329,68 +1289,6 @@ const sortFunctions = {
 function getSortFunction(type, keyListObj, sortDirection) {
   return (sortFunctions[type] || sortByUserId)(keyListObj, sortDirection);
 }
-
-
-/**
- * Return string with all colon-separated data of key list entry of given key.
- * - key may be pub or sub key.
- *
- * @param  String  keyId of 8 or 16 chars key with optionally leading 0x
- * @return String  entry of first found user IDs with keyId or null if none
- */
-function getKeyListEntryOfKey(keyId) {
-  keyId = keyId.replace(/^0x/, "");
-
-  let statusFlags = {};
-  let errorMsg = {};
-  let exitCodeObj = {};
-  let listText = getUserIdList(false, exitCodeObj, statusFlags, errorMsg);
-
-  // listText contains lines such as:
-  // tru::0:1407688184:1424970931:3:1:5
-  // pub:f:1024:17:D581C6F8EBB80E50:1107251639:::-:::scESC:
-  // fpr:::::::::492A198AEA5EBE5574A1CE00D581C6F8EBB80E50:
-  // uid:f::::1107251639::2D505D1F6E744365B3B35FF11F32A19779E3A417::Giosue Vitaglione <gvi@whitestein.com>:
-  // sub:f:2048:16:2223D7E0301A66C6:1107251647::::::e:
-
-  // search for key or subkey
-  let regexKey = new RegExp("^(pub|sub):[^:]*:[^:]*:[^:]*:[A-Fa-f0-9]*" + keyId + ":", "m");
-  let foundPos = listText.search(regexKey);
-  if (foundPos < 0) {
-    return null;
-  }
-
-  // find area of key entries in key list
-  // note: if subkey matches, key entry starts before
-  let regexPub = new RegExp("^pub:", "gm");
-  let startPos;
-
-  if (listText[foundPos] == "p") { // ^pub:
-    // KEY matches
-    startPos = foundPos;
-  }
-  else {
-    // SUBKEY matches
-    // search for pub entry right before sub entry
-    startPos = 0;
-    let match = regexPub.exec(listText.substr(0, foundPos));
-    while (match && match.index < foundPos) {
-      startPos = match.index;
-      match = regexPub.exec(listText);
-    }
-  }
-  // find end of entry (next pub entry or end):
-  let match = regexPub.exec(listText.substr(startPos + 1));
-  let res;
-  if (match && match.index) {
-    res = listText.substring(startPos, startPos + 1 + match.index);
-  }
-  else {
-    res = listText.substring(startPos);
-  }
-  return res;
-}
-
 
 /**
  * Load the key list into memory and return it sorted by a specified column
