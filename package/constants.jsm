@@ -121,11 +121,12 @@ var EnigmailConstants = {
   EXTRACT_SECRET_KEY: 0x01,
 
   /* Keyserver Action Flags */
-  SEARCH_KEY: 0x01,
-  DOWNLOAD_KEY: 0x02,
-  UPLOAD_KEY: 0x04,
-  REFRESH_KEY: 0x08,
-  UPLOAD_WKD: 0x10,
+  SEARCH_KEY: 1,
+  DOWNLOAD_KEY: 2,
+  UPLOAD_KEY: 3,
+  REFRESH_KEY: 4,
+  GET_SKS_CACERT: 5,
+  UPLOAD_WKD: 6,
 
   /* attachment handling */
 

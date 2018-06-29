@@ -33,6 +33,10 @@ const ENIG_DEFAULT_HKP_PORT = "11371";
 const ENIG_DEFAULT_HKPS_PORT = "443";
 const ENIG_DEFAULT_LDAP_PORT = "389";
 
+const SKS_CACERT_URL = "https://sks-keyservers.net/sks-keyservers.netCA.pem";
+const HKPS_POOL_HOST = "hkps.pool.sks-keyservers.net";
+const SKS_CACERT_SUBJECTNAME = "CN=sks-keyservers.net CA,O=sks-keyservers.net CA,ST=Oslo,C=NO";
+
 /**
  KeySrvListener API
  Object implementing:
@@ -102,6 +106,7 @@ function parseKeyserverUrl(keyserver) {
     case "hkp":
       port = ENIG_DEFAULT_HKP_PORT;
       break;
+    case "https":
     case "hkps":
       port = ENIG_DEFAULT_HKPS_PORT;
       break;
@@ -155,6 +160,7 @@ const accessHkpInternal = {
 
       case EnigmailConstants.DOWNLOAD_KEY:
       case EnigmailConstants.SEARCH_KEY:
+      case EnigmailConstants.GET_SKS_CACERT:
         return "";
     }
 
@@ -196,9 +202,13 @@ const accessHkpInternal = {
     else if (actionFlag === EnigmailConstants.SEARCH_KEY) {
       url += "/pks/lookup?search=" + escape(searchTerm) + "&fingerprint=on&op=index&options=mr";
     }
+    else if (actionFlag === EnigmailConstants.GET_SKS_CACERT) {
+      url = SKS_CACERT_URL;
+    }
 
     return {
       url: url,
+      host: keySrv.host,
       method: method
     };
   },
@@ -258,6 +268,7 @@ const accessHkpInternal = {
             return;
 
           case EnigmailConstants.SEARCH_KEY:
+          case EnigmailConstants.GET_SKS_CACERT:
             if (xmlReq.status === 404) {
               // key not found
               resolve("");
@@ -317,13 +328,62 @@ const accessHkpInternal = {
       };
 
       let {
-        url, method
+        url, host, method
       } = this.createRequestUrl(keyserver, actionFlag, keyId);
 
-      EnigmailLog.DEBUG(`keyserver.jsm: accessKeyServer: requesting ${url}\n`);
-      xmlReq.open(method, url);
-      xmlReq.send(payLoad);
+      if (host === HKPS_POOL_HOST && actionFlag !== EnigmailConstants.GET_SKS_CACERT) {
+        this.getSksCACert().then(r => {
+          EnigmailLog.DEBUG(`keyserver.jsm: accessKeyServer: getting ${url}\n`);
+          xmlReq.open(method, url);
+          xmlReq.send(payLoad);
+        });
+      }
+      else {
+        EnigmailLog.DEBUG(`keyserver.jsm: accessKeyServer: requesting ${url}\n`);
+        xmlReq.open(method, url);
+        xmlReq.send(payLoad);
+      }
     });
+  },
+
+  installSksCACert: async function() {
+    EnigmailLog.DEBUG(`keyserver.jsm: installSksCACert()\n`);
+    let certDb = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+    try {
+      let certTxt = await this.accessKeyServer(EnigmailConstants.GET_SKS_CACERT, "", "", null);
+      const BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
+      const END_CERT = "-----END CERTIFICATE-----";
+
+      certTxt = certTxt.replace(/[\r\n]/g, "");
+      let begin = certTxt.indexOf(BEGIN_CERT);
+      let end = certTxt.indexOf(END_CERT);
+      let certData = certTxt.substring(begin + BEGIN_CERT.length, end);
+      let x509cert = certDb.addCertFromBase64(certData, "C,C,C", "");
+      return x509cert;
+    }
+    catch (x) {
+      return null;
+    }
+  },
+
+  /**
+   * Get the CA certificate for the HKPS sks-keyserver pool
+   */
+  getSksCACert: async function() {
+    EnigmailLog.DEBUG(`keyserver.jsm: getSksCACert()\n`);
+    let certDb = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+    let cert = null;
+
+    let it = certDb.getCerts().getEnumerator();
+    while (it.hasMoreElements()) {
+      cert = it.getNext().QueryInterface(Ci.nsIX509Cert);
+      if (cert.subjectName === SKS_CACERT_SUBJECTNAME && cert.certType === Ci.nsIX509Cert.CA_CERT) {
+        return cert;
+      }
+    }
+
+    cert = await this.installSksCACert();
+    return cert;
   },
 
   /**
