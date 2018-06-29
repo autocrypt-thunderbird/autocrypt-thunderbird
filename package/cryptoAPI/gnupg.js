@@ -124,50 +124,48 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       errorMsg: "",
       keyData: ""
     };
+    let minimalKeyBlock = null;
 
-    if (!this.minimalKeyBlock) {
-      let args = EnigmailGpg.getStandardArgs(true);
-      args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", fpr]);
+    let args = EnigmailGpg.getStandardArgs(true);
+    args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", fpr]);
 
-      const statusObj = {};
-      const exitCodeObj = {};
-      let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
-      let exportOK = true;
-      let keyBlock = res.stdoutData;
+    const statusObj = {};
+    const exitCodeObj = {};
+    let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
+    let exportOK = true;
+    let keyBlock = res.stdoutData;
 
-      if (EnigmailGpg.getGpgFeature("export-result")) {
-        // GnuPG 2.1.10+
-        let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + fpr, "m");
-        if (res.stderrData.search(r) < 0) {
-          retObj.exitCode = 2;
-          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
-          exportOK = false;
-        }
+    if (EnigmailGpg.getGpgFeature("export-result")) {
+      // GnuPG 2.1.10+
+      let r = new RegExp("^\\[GNUPG:\\] EXPORTED " + fpr, "m");
+      if (res.stderrData.search(r) < 0) {
+        retObj.exitCode = 2;
+        retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+        exportOK = false;
       }
-      else {
-        // GnuPG older than 2.1.10
-        if (keyBlock.length < 50) {
-          retObj.exitCode = 2;
-          retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
-          exportOK = false;
-        }
-      }
-
-      if (exportOK) {
-        this.minimalKeyBlock = null;
-        let minKey = await this.getStrippedKey(keyBlock);
-        if (minKey) {
-          this.minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
-        }
-
-        if (!this.minimalKeyBlock) {
-          retObj.exitCode = 1;
-          retObj.errorMsg = EnigmailLocale.getString("failKeyNoSubkey");
-        }
+    }
+    else {
+      // GnuPG older than 2.1.10
+      if (keyBlock.length < 50) {
+        retObj.exitCode = 2;
+        retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
+        exportOK = false;
       }
     }
 
-    retObj.keyData = this.minimalKeyBlock;
+    if (exportOK) {
+      let minKey = await this.getStrippedKey(keyBlock);
+      if (minKey) {
+        minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
+      }
+
+      if (!minimalKeyBlock) {
+        retObj.exitCode = 1;
+        retObj.errorMsg = EnigmailLocale.getString("failKeyNoSubkey");
+      }
+    }
+
+    retObj.keyData = minimalKeyBlock;
     return retObj;
   }
 }

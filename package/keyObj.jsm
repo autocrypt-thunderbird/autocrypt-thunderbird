@@ -392,8 +392,11 @@ class EnigmailKeyObj {
   getMinimalPubKey() {
     EnigmailLog.DEBUG("keyObj.jsm: EnigmailKeyObj.getMinimalPubKey: " + this.keyId + "\n");
 
-    const cApi = EnigmailCryptoAPI();
-    return cApi.sync(cApi.getMinimalPubKey(this.fpr));
+    if (!this.minimalKeyBlock) {
+      const cApi = EnigmailCryptoAPI();
+      this.minimalKeyBlock = cApi.sync(cApi.getMinimalPubKey(this.fpr));
+    }
+    return this.minimalKeyBlock;
   }
 
   /**

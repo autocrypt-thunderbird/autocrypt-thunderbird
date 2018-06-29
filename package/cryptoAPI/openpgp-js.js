@@ -53,22 +53,37 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       let uid = await key.getPrimaryUser();
       if (!uid || !uid.user) return null;
 
-      let encSubkey = await key.getEncryptionKeyPacket();
-      let foundSubKey = null;
+      let signSubkeyPacket = await key.getSigningKeyPacket();
+      let encSubkeyPacket = await key.getEncryptionKeyPacket();
+      let encSubkey = null,
+        signSubkey = null;
 
       for (let i = 0; i < key.subKeys.length; i++) {
-        if (key.subKeys[i].subKey === encSubkey) {
-          foundSubKey = key.subKeys[i];
+        if (key.subKeys[i].subKey === encSubkeyPacket) {
+          encSubkey = key.subKeys[i];
           break;
         }
       }
+      if (!encSubkey) return null;
 
-      if (!foundSubKey) return null;
+      if (!signSubkeyPacket.keyid) {
+        for (let i = 0; i < key.subKeys.length; i++) {
+          if (key.subKeys[i].subKey === signSubkeyPacket) {
+            signSubkey = key.subKeys[i];
+            break;
+          }
+        }
+        if (!signSubkey) return null;
+      }
 
       let p = new openpgp.packet.List();
       p.push(key.primaryKey);
       p.concat(uid.user.toPacketlist());
-      p.concat(foundSubKey.toPacketlist());
+      if (signSubkey) {
+        EnigmailLog.DEBUG("openpgp-js.js: adding signing subkey packet\n");
+        p.concat(signSubkey.toPacketlist());
+      }
+      p.concat(encSubkey.toPacketlist());
 
       return p.write();
     }
