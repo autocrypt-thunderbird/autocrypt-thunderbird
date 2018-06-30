@@ -152,6 +152,10 @@ var EnigmailWkdLookup = {
 
   getWkdUrlFromEmail: function(email) {
     email = email.toLowerCase().trim();
+
+    let url = getSiteSpecificUrl(email);
+    if (url) return url;
+
     let at = email.indexOf("@");
 
     let domain = email.substr(at + 1);
@@ -168,7 +172,7 @@ var EnigmailWkdLookup = {
     let gotHash = ch.finish(false);
     let encodedHash = EnigmailZBase32.encode(gotHash);
 
-    let url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash;
+    url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash;
     return url;
   },
 
@@ -289,11 +293,16 @@ function importDownloadedKeys(keysArr) {
 
   let keyData = "";
   for (let k in keysArr) {
-    try {
-      keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keysArr[k]);
+    if (keysArr[k].search(/^-----BEGIN PGP PUBLIC KEY BLOCK-----/) < 0) {
+      try {
+        keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keysArr[k]);
+      }
+      catch (ex) {
+        EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: exeption=" + ex + "\n");
+      }
     }
-    catch (ex) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: exeption=" + ex + "\n");
+    else {
+      keyData += keysArr[k];
     }
   }
 
@@ -304,4 +313,23 @@ function importDownloadedKeys(keysArr) {
   }
 
   EnigmailKeyRing.importKey(null, false, keyData, "", {}, {});
+}
+
+
+function getSiteSpecificUrl(emailAddr) {
+  let domain = emailAddr.replace(/^.+@/, "");
+  let url = null;
+
+  switch (domain) {
+    case "posteo.de":
+    case "posteo.me":
+      url = "https://posteo.de/keys/" + escape(emailAddr);
+      break;
+    case "protonmail.ch":
+    case "protonmail.com":
+      url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
+      break;
+  }
+
+  return url;
 }
