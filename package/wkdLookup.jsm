@@ -201,9 +201,11 @@ var EnigmailWkdLookup = {
         },
         false);
 
+      let url = EnigmailWkdLookup.getWkdUrlFromEmail(email);
+      EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: requesting " + url + "\n");
       oReq.overrideMimeType("application/octet-stream");
       oReq.responseType = "arraybuffer";
-      oReq.open("GET", EnigmailWkdLookup.getWkdUrlFromEmail(email));
+      oReq.open("GET", url);
 
       oReq.send();
     });
