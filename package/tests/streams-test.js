@@ -14,6 +14,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("streams.jsm"); /*global EnigmailStreams: false */
 component("enigmail/files.jsm");
 
+let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
 function makeURI(aURL, aOriginCharset, aBaseURI) {
   var ioService = Components.classes["@mozilla.org/network/io-service;1"]
@@ -27,14 +28,14 @@ test(function stringChannelTest() {
 
   let uri = makeURI("dummy:none");
   var ch = EnigmailStreams.newStringChannel(uri, "text/plain", "UTF-8", testString);
-  do_test_pending();
   var stringListener = EnigmailStreams.newStringStreamListener(
     function compareResults(gotData) {
       Assert.equal(testString, gotData);
-      do_test_finished();
+      inspector.exitNestedEventLoop();
     }
   );
   ch.asyncOpen(stringListener, null);
+  inspector.enterNestedEventLoop(0);
 });
 
 
@@ -45,18 +46,19 @@ test(function readFileChannel() {
 
   var testString = "Hello world\n \x00what's next";
 
-  EnigmailFiles.writeFileContents(md, testString, null);
+  var f = EnigmailFiles.writeFileContents(md, testString, null);
+  Assert.ok(f, "file written");
 
   let uri = makeURI("dummy:none");
   var ch = EnigmailStreams.newFileChannel(uri, md, "application/octet-stream", true);
-  do_test_pending();
   var stringListener = EnigmailStreams.newStringStreamListener(
     function compareResults(gotData) {
       Assert.equal(testString, gotData);
-      Assert.equal(md.exists(), false, "file was deleted:");
-      do_test_finished();
+      Assert.ok(md.exists(), false, "file was deleted:");
+      inspector.exitNestedEventLoop();
     }
   );
   ch.asyncOpen(stringListener, null);
+  inspector.enterNestedEventLoop(0);
 
 });

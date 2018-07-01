@@ -12,11 +12,12 @@
 
 /*global EnigmailFiles: false */
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
+do_load_module("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm"); /*global appendKeyItems: false */
 
 component("enigmail/trust.jsm"); /*global EnigmailTrust: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
 
-/*createAndSortKeyList: false, Number: false */
+/*global createAndSortKeyList: false */
 
 testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
 
@@ -53,6 +54,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   // search for fingerprint
   k = EnigmailKeyRing.getKeyById("65537E212DC19025AD38EDB2781617319CE311C4");
   Assert.equal(k.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
+  Assert.equal(k._sigList, null);
 
   let s = k.signatures;
 
@@ -269,60 +271,7 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     "p1ovyC/fp5XjZaLHcyPAWAXKLBn4tb400iHp7byO85tF/H0OOI1K");
 
   Assert.equal(pubKey.keyData.length, 2972);
-
-
-
 })));
-
-test(function shouldCreateKeyListObject() {
-  // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-keys
-  let keyInfo = [
-    // user with trust level "o" (unknown)
-    "tru::1:1443339321:1451577200:3:1:5",
-    "pub:o:4096:1:DEF9FC808A3FF001:1388513885:1546188604::u:::scaESCA:",
-    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:o::::1389038412::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
-    "uid:o::::1389038405::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
-    "sub:o:4096:1:E2DEDFFB80C14584:1388513885:1546188604:::::e:"
-  ];
-
-  // from: "P:\Program Files (x86)\GNU\GnuPG\pub\gpg2.exe" --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-secret-keys
-  let secKeyInfo = [
-    "sec::4096:1:DEF9FC808A3FF001:1388513885:1546188604:::::::::",
-    "fpr:::::::::EA25EF48BF2001E41FAB0C1CDEF9FC808A3FF001:",
-    "uid:::::::44F73158EF0F47E4595B1FD8EC740519DE24B994::A User ID with CAPITAL letters <user1@enigmail-test.de>:",
-    "uid:::::::3FC8999BDFF08EF4210026D3F1C064C072517376::A second User ID with CAPITAL letters <user1@enigmail-test.com>:",
-    "ssb::4096:1:E2DEDFFB80C14584:1388513885::::::::::"
-  ];
-
-  createAndSortKeyList(keyInfo, secKeyInfo,
-    "validity", // sorted acc. to key validity
-    -1); // descending
-
-  let keyListObj = gKeyListObj;
-  Assert.notEqual(keyListObj, null);
-  Assert.notEqual(keyListObj.keySortList, null);
-  Assert.notEqual(keyListObj.keySortList.length, null);
-  Assert.equal(keyListObj.keySortList.length, 1);
-  Assert.equal(keyListObj.keySortList[0].userId, "a user id with capital letters <user1@enigmail-test.de>");
-  Assert.equal(keyListObj.keySortList[0].keyId, "DEF9FC808A3FF001");
-  Assert.notEqual(keyListObj.keyList, null);
-  Assert.equal(keyListObj.keyList[keyListObj.keySortList[0].keyNum].userId, "A User ID with CAPITAL letters <user1@enigmail-test.de>");
-
-  const TRUSTLEVELS_SORTED = EnigmailTrust.trustLevelsSorted();
-  let minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("?");
-  let details = {};
-  let key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
-  Assert.notEqual(key, null);
-  Assert.equal(key, "DEF9FC808A3FF001");
-
-  minTrustLevelIndex = TRUSTLEVELS_SORTED.indexOf("f");
-  details = {};
-  key = EnigmailKeyRing.getValidKeyForRecipient("user1@enigmail-test.de", minTrustLevelIndex, details);
-  Assert.equal(key, null);
-  Assert.notEqual(details.msg, null);
-});
-
 
 const KeyRingHelper = {
   loadTestKeyList: function() {
@@ -336,7 +285,14 @@ const KeyRingHelper = {
         testKeyList.push(row);
       }
     }
-    createAndSortKeyList(testKeyList, [],
+
+    let keyList = {
+      keys: [],
+      index: []
+    };
+    appendKeyItems(testKeyList, keyList);
+
+    createAndSortKeyList(keyList.keys,
       "validity", // sorted acc. to key validity
       -1); // descending
 
@@ -566,7 +522,15 @@ test(function shouldGetKeyValidityErrors() {
     // NO Key 3
   ];
 
-  createAndSortKeyList(keyInfo, secKeyInfo,
+  let keyList = {
+    keys: [],
+    index: []
+  };
+
+  appendKeyItems(keyInfo, keyList);
+  appendKeyItems(secKeyInfo, keyList);
+
+  createAndSortKeyList(keyList.keys,
     "validity", // sorted acc. to key validity
     -1); // descending
 

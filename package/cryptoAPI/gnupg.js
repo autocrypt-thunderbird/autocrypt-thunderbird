@@ -20,29 +20,17 @@ Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI
 /* global Cc: false, Cu: false, Ci: false */
 /* global getOpenPGP: false, EnigmailLog: false */
 
-const {
-  EnigmailGpg
-} = Cu.import("chrome://enigmail/content/modules/gpg.jsm");
-const {
-  EnigmailExecution
-} = Cu.import("chrome://enigmail/content/modules/execution.jsm");
-const {
-  EnigmailFiles
-} = Cu.import("chrome://enigmail/content/modules/files.jsm");
-const {
-  EnigmailConstants
-} = Cu.import("chrome://enigmail/content/modules/constants.jsm");
-const {
-  EnigmailTime
-} =
-Cu.import("chrome://enigmail/content/modules/time.jsm");
-const {
-  EnigmailData
-} = Cu.import("chrome://enigmail/content/modules/data.jsm");
-const {
-  EnigmailLocale
-} = Cu.import("chrome://enigmail/content/modules/locale.jsm");
+const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
+const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
+const {
+  obtainKeyList, createKeyObj
+} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
 /**
  * GnuPG implementation of CryptoAPI
@@ -60,6 +48,19 @@ const UID_ID = 7;
 const OWNERTRUST_ID = 8;
 const USERID_ID = 9;
 const SIG_TYPE_ID = 10;
+const KEY_USE_FOR_ID = 11;
+
+const ALGO_SYMBOL = {
+  1: "RSA",
+  2: "RSA",
+  3: "RSA",
+  16: "ELG",
+  17: "DSA",
+  18: "ECDH",
+  19: "ECDSA",
+  20: "ELG",
+  22: "EDDSA"
+};
 
 const UNKNOWN_SIGNATURE = "[User ID not found]";
 
@@ -70,12 +71,52 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
   }
 
   /**
+   * Get the list of all knwn keys (including their secret keys)
+   * @param {Array of String} onlyKeys: [optional] only load data for specified key IDs
+   *
+   * @return {Promise<Array of Object>}
+   */
+  async getKeys(onlyKeys = null) {
+    let keyList = await obtainKeyList(onlyKeys);
+    return keyList.keys;
+  }
+
+  /**
+   * Get groups defined in gpg.conf in the same structure as KeyObject
+   *
+   * @return {Array of KeyObject} with type = "grp"
+   */
+  getGroups() {
+    let groups = EnigmailGpg.getGpgGroups();
+
+    let r = [];
+    for (var i = 0; i < groups.length; i++) {
+
+      let keyObj = createKeyObj(["grp"]);
+      keyObj.keyTrust = "g";
+      keyObj.userId = EnigmailData.convertGpgToUnicode(groups[i].alias).replace(/\\e3A/g, ":");
+      keyObj.keyId = keyObj.userId;
+      var grpMembers = EnigmailData.convertGpgToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
+      for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
+        keyObj.userIds.push({
+          userId: grpMembers[grpIdx],
+          keyTrust: "q"
+        });
+      }
+      r.push(keyObj);
+    }
+
+    return r;
+  }
+
+
+  /**
    * Obtain signatures for a given set of key IDs.
    *
-   * @param keyId:            String  - space-separated list of key IDs
-   * @param ignoreUnknownUid: Boolean - if true, filter out unknown signer's UIDs
+   * @param {String}  keyId:            space-separated list of key IDs
+   * @param {Boolean} ignoreUnknownUid: if true, filter out unknown signer's UIDs
    *
-   * @return Promise<Array of Object> - see extractSignatures()
+   * @return {Promise<Array of Object>} - see extractSignatures()
    */
   async getKeySignatures(keyId, ignoreUnknownUid = false) {
     EnigmailLog.DEBUG(`gnupg.js: getKeySignatures: ${keyId}\n`);
@@ -109,15 +150,15 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    * Export the minimum key for the public key object:
    * public key, primary user ID, newest encryption subkey
    *
-   * @param fpr: String  - a single FPR
+   * @param {String} fpr: a single fingerprint
    *
-   * @return Promise<Object>:
+   * @return {Promise<Object>}:
    *    - exitCode (0 = success)
    *    - errorMsg (if exitCode != 0)
    *    - keyData: BASE64-encded string of key data
    */
   async getMinimalPubKey(fpr) {
-    EnigmailLog.DEBUG(`keyObj.jsm: EnigmailKeyObj.getMinimalPubKey: ${fpr}\n`);
+    EnigmailLog.DEBUG(`gnupg.js: EnigmailKeyObj.getMinimalPubKey: ${fpr}\n`);
 
     let retObj = {
       exitCode: 0,
@@ -179,11 +220,11 @@ function getGnuPGAPI() {
 /**
  * Return signatures for a given key list
  *
- * @param String gpgKeyList         Output from gpg such as produced by getKeySig()
- *                                  Only the first public key is processed!
- * @param Boolean ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
+ * @param {String} gpgKeyList         Output from gpg such as produced by getKeySig()
+ *                                    Only the first public key is processed!
+ * @param {Boolean} ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
  *
- * @return Array of Object:
+ * @return {Array of Object}:
  *     - uid
  *     - uidLabel
  *     - creationDate

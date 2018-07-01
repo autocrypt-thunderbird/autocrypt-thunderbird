@@ -19,6 +19,8 @@ const Ci = Components.interfaces;
 EnigInitCommon("enigmailKeySelection");
 Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+Components.utils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+
 
 const INPUT = 0;
 const RESULT = 1;
@@ -93,6 +95,8 @@ function refreshKeys() {
 
 function getKeyList(secretOnly, refresh) {
   EnigmailLog.DEBUG("enigmailMessengerOverlay.js: getKeyList\n");
+
+  const cApi = EnigmailCryptoAPI();
   let userList, keyList;
   try {
     var exitCodeObj = {};
@@ -117,7 +121,7 @@ function getKeyList(secretOnly, refresh) {
       }
 
       keyList = EnigmailFuncs.cloneObj(userList.keyList);
-      let grpList = EnigmailKeyRing.getGroups();
+      let grpList = cApi.getGroups();
 
       for (let i in grpList) {
         keyList.push(grpList[i]);

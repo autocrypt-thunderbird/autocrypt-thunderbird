@@ -83,19 +83,7 @@ class EnigmailKeyObj {
     this.ownerTrust = "";
     this.algoSym = "";
     this.keySize = "";
-    this.type = keyData.type;
-    if ("keyId" in keyData) this.keyId = keyData.keyId;
-    if ("expiryTime" in keyData) {
-      this.expiryTime = keyData.expiryTime;
-      this.expiry = EnigmailTime.getDateTime(keyData.expiryTime, true, false);
-    }
-    if ("created" in keyData) this.created = keyData.created;
-    if ("keyTrust" in keyData) this.keyTrust = keyData.keyTrust;
-    if ("keyUseFor" in keyData) this.keyUseFor = keyData.keyUseFor;
-    if ("ownerTrust" in keyData) this.ownerTrust = keyData.ownerTrust;
-    if ("algoSym" in keyData) this.algoSym = keyData.algoSym;
-    if ("keySize" in keyData) this.keySize = keyData.keySize;
-
+    this.userId = "";
     this.userIds = [];
     this.subKeys = [];
     this.fpr = "";
@@ -103,6 +91,23 @@ class EnigmailKeyObj {
     this.photoAvailable = false;
     this.secretAvailable = false;
     this._sigList = null;
+
+    this.type = keyData.type;
+    if ("keyId" in keyData) this.keyId = keyData.keyId;
+    if ("expiryTime" in keyData) {
+      this.expiryTime = keyData.expiryTime;
+      this.expiry = EnigmailTime.getDateTime(keyData.expiryTime, true, false);
+    }
+
+    const ATTRS = [
+      "created", "keyTrust", "keyUseFor", "ownerTrust", "algoSym", "keySize",
+      "userIds", "subKeys", "fpr", "secretAvailable", "photoAvailable", "userId"
+    ];
+    for (let i of ATTRS) {
+      if (i in keyData) {
+        this[i] = keyData[i];
+      }
+    }
   }
 
   /**
