@@ -250,12 +250,10 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
 
  * @param {String} keyId:       Key ID / fingerprint
  * @param {Number} photoNumber: number of the photo on the key, starting with 0
- * @param {Object} exitCodeObj: value holds exitCode (0 = success)
- * @param {Object} errorMsgObj: value holds errorMsg
  *
- * @return {nsIFile} object or null in case no data / error.
+ * @return {Promise<nsIFile>} object or null in case no data / error.
  */
-function getPhotoFileFromGnuPG(keyId, photoNumber, exitCodeObj, errorMsgObj) {
+async function getPhotoFileFromGnuPG(keyId, photoNumber) {
   EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}\n`);
 
   const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
@@ -264,17 +262,17 @@ function getPhotoFileFromGnuPG(keyId, photoNumber, exitCodeObj, errorMsgObj) {
   ];
   const args = EnigmailGpg.getStandardArgs(false).concat(GPG_ADDITIONAL_OPTIONS);
 
-  const photoDataObj = {};
-  const outputTxt = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, photoDataObj);
+  let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
+  let photoData = res.stderrData;
+  let outputTxt = res.stdoutData;
 
-  if (!outputTxt) {
-    exitCodeObj.value = -1;
+  if (!outputTxt || !photoData) {
     return null;
   }
 
   if (EnigmailOS.isDosLike && EnigmailGpg.getGpgFeature("windows-photoid-bug")) {
     // workaround for error in gpg
-    photoDataObj.value = photoDataObj.value.replace(/\r\n/g, "\n");
+    photoData = photoData.replace(/\r\n/g, "\n");
   }
 
   // [GNUPG:] ATTRIBUTE A053069284158FC1E6770BDB57C9EB602B0717E2 2985
@@ -299,13 +297,13 @@ function getPhotoFileFromGnuPG(keyId, photoNumber, exitCodeObj, errorMsgObj) {
   }
 
   if (foundPicture >= 0 && foundPicture === photoNumber) {
-    if (photoDataObj.value.search(/^gpg: /) === 0) {
+    if (photoData.search(/^gpg: /) === 0) {
       // skip disturbing gpg output
-      let i = photoDataObj.value.search(/\n/) + 1;
+      let i = photoData.search(/\n/) + 1;
       skipData += i;
     }
 
-    const pictureData = photoDataObj.value.substr(16 + skipData, imgSize);
+    const pictureData = photoData.substr(16 + skipData, imgSize);
     if (!pictureData.length) {
       return null;
     }
@@ -332,10 +330,7 @@ function getPhotoFileFromGnuPG(keyId, photoNumber, exitCodeObj, errorMsgObj) {
       extAppLauncher.deleteTemporaryFileOnExit(picFile);
       return picFile;
     }
-    catch (ex) {
-      exitCodeObj.value = -1;
-      return null;
-    }
+    catch (ex) {}
   }
   return null;
 }

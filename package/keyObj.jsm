@@ -436,6 +436,6 @@ class EnigmailKeyObj {
    */
   getPhotoFile(photoNumber) {
     const cApi = EnigmailCryptoAPI();
-    return cApi.getPhotoFile(this.fpr, photoNumber);
+    return cApi.sync(cApi.getPhotoFile(this.fpr, photoNumber));
   }
 }

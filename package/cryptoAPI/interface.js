@@ -124,7 +124,7 @@ class CryptoAPI {
    *
    * @return {nsIFile} object or null in case no data / error.
    */
-  getPhotoFile(keyId, photoNumber) {
+  async getPhotoFile(keyId, photoNumber) {
     return null;
   }
 }
