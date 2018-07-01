@@ -6,12 +6,12 @@
  */
 
 /****
-   Priavte sub-module to gnupg.js for handling key lists from GnuPG
-****/
+   Private sub-module to gnupg.js for handling key lists from GnuPG
+ ****/
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj"];
+var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj", "getPhotoFileFromGnuPG"];
 
 const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
 const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
@@ -20,7 +20,10 @@ const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").Enigm
 const EnigmailTrust = Cu.import("chrome://enigmail/content/modules/trust.jsm").EnigmailTrust;
 const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailOS = Cu.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
+// field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENTRY_ID = 0;
 const KEY_TRUST_ID = 1;
 const KEY_SIZE_ID = 2;
@@ -46,6 +49,14 @@ const ALGO_SYMBOL = {
   22: "EDDSA"
 };
 
+const NS_RDONLY = 0x01;
+const NS_WRONLY = 0x02;
+const NS_CREATE_FILE = 0x08;
+const NS_TRUNCATE = 0x20;
+const STANDARD_FILE_PERMS = 0x180; // equals 0600
+
+const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
+
 
 /**
  * Get key list from GnuPG.
@@ -56,7 +67,7 @@ const ALGO_SYMBOL = {
  * key objects as specifiedin EnigmailKeyObj.constructor
  */
 async function obtainKeyList(onlyKeys = null) {
-  EnigmailLog.DEBUG("gnupg.js: obtainKeyList()\n");
+  EnigmailLog.DEBUG("gnupg-keylist.jsm: obtainKeyList()\n");
 
   let secKeyList = [],
     pubKeyList = [];
@@ -76,7 +87,7 @@ async function obtainKeyList(onlyKeys = null) {
     index: []
   };
 
-  EnigmailLog.DEBUG(`gnupg.js: obtainKeyList: #lines: ${pubKeyList.length}\n`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: obtainKeyList: #lines: ${pubKeyList.length}\n`);
   if (pubKeyList.length > 0) {
     appendKeyItems(pubKeyList, keyList);
 
@@ -105,7 +116,7 @@ async function obtainKeyList(onlyKeys = null) {
  * no return value
  */
 function appendKeyItems(keyListString, keyList) {
-  EnigmailLog.DEBUG("gnupg.js: appendKeyItems(): " + keyListString[0] + "\n");
+  EnigmailLog.DEBUG("gnupg-keylist.jsm: appendKeyItems()\n");
   let keyObj = {};
   let uatNum = 0; // counter for photos (counts per key)
 
@@ -153,7 +164,6 @@ function appendKeyItems(keyListString, keyList) {
           }
         }
 
-        EnigmailLog.DEBUG(`gnupg.js: appendKeyItems: new user ID ${listRow[USERID_ID]}\n`);
         keyObj.userIds.push({
           userId: EnigmailData.convertGpgToUnicode(listRow[USERID_ID]),
           keyTrust: listRow[KEY_TRUST_ID],
@@ -220,7 +230,7 @@ function createKeyObj(lineArr) {
  * Handle secret keys for which gpg 2.0 does not create a public key record
  */
 function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
-  EnigmailLog.DEBUG("gnupg.js: appendUnkownSecretKey: keyId: " + keyId + "\n");
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: appendUnkownSecretKey: keyId: ${keyId}\n`);
 
   let keyListStr = [];
 
@@ -232,4 +242,100 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
   keyListStr[0] = keyListStr[0].replace(/^sec:/, "pub:");
 
   appendKeyItems(keyListStr, keyList);
+}
+
+
+/**
+ * Extract a photo ID from a key, store it as file and return the file object.
+
+ * @param {String} keyId:       Key ID / fingerprint
+ * @param {Number} photoNumber: number of the photo on the key, starting with 0
+ * @param {Object} exitCodeObj: value holds exitCode (0 = success)
+ * @param {Object} errorMsgObj: value holds errorMsg
+ *
+ * @return {nsIFile} object or null in case no data / error.
+ */
+function getPhotoFileFromGnuPG(keyId, photoNumber, exitCodeObj, errorMsgObj) {
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}\n`);
+
+  const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
+    "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
+    "--fixed-list-mode", "--list-keys", keyId
+  ];
+  const args = EnigmailGpg.getStandardArgs(false).concat(GPG_ADDITIONAL_OPTIONS);
+
+  const photoDataObj = {};
+  const outputTxt = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, photoDataObj);
+
+  if (!outputTxt) {
+    exitCodeObj.value = -1;
+    return null;
+  }
+
+  if (EnigmailOS.isDosLike && EnigmailGpg.getGpgFeature("windows-photoid-bug")) {
+    // workaround for error in gpg
+    photoDataObj.value = photoDataObj.value.replace(/\r\n/g, "\n");
+  }
+
+  // [GNUPG:] ATTRIBUTE A053069284158FC1E6770BDB57C9EB602B0717E2 2985
+  let foundPicture = -1;
+  let skipData = 0;
+  let imgSize = -1;
+  const statusLines = outputTxt.split(/[\n\r+]/);
+
+  for (let i = 0; i < statusLines.length; i++) {
+    const matches = statusLines[i].match(/\[GNUPG:\] ATTRIBUTE ([A-F\d]+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)/);
+    if (matches && matches[3] == "1") {
+      // attribute is an image
+      foundPicture++;
+      if (foundPicture === photoNumber) {
+        imgSize = Number(matches[2]);
+        break;
+      }
+      else {
+        skipData += Number(matches[2]);
+      }
+    }
+  }
+
+  if (foundPicture >= 0 && foundPicture === photoNumber) {
+    if (photoDataObj.value.search(/^gpg: /) === 0) {
+      // skip disturbing gpg output
+      let i = photoDataObj.value.search(/\n/) + 1;
+      skipData += i;
+    }
+
+    const pictureData = photoDataObj.value.substr(16 + skipData, imgSize);
+    if (!pictureData.length) {
+      return null;
+    }
+
+    try {
+      const flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
+      const picFile = EnigmailFiles.getTempDirObj();
+
+      picFile.append(keyId + ".jpg");
+      picFile.createUnique(picFile.NORMAL_FILE_TYPE, STANDARD_FILE_PERMS);
+
+      const fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
+      fileStream.init(picFile, flags, STANDARD_FILE_PERMS, 0);
+      if (fileStream.write(pictureData, pictureData.length) !== pictureData.length) {
+        fileStream.close();
+        throw Components.results.NS_ERROR_FAILURE;
+      }
+
+      fileStream.flush();
+      fileStream.close();
+
+      // delete picFile upon exit
+      let extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
+      extAppLauncher.deleteTemporaryFileOnExit(picFile);
+      return picFile;
+    }
+    catch (ex) {
+      exitCodeObj.value = -1;
+      return null;
+    }
+  }
+  return null;
 }

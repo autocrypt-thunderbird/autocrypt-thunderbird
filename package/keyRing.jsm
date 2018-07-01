@@ -21,7 +21,6 @@ Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles
 Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("chrome://enigmail/content/modules/trust.jsm"); /*global EnigmailTrust: false */
 Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
 Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
 Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
@@ -37,18 +36,7 @@ const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
 
-
-const NS_RDONLY = 0x01;
-const NS_WRONLY = 0x02;
-const NS_CREATE_FILE = 0x08;
-const NS_TRUNCATE = 0x20;
 const DEFAULT_FILE_PERMS = 0x180; // equals 0600
-
-const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID =
-  "@mozilla.org/network/file-output-stream;1";
-
-// field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
-
 
 let gKeygenProcess = null;
 let gKeyListObj = null;
@@ -658,100 +646,6 @@ var EnigmailKeyRing = {
     }
 
     return exitCode;
-  },
-
-  /**
-   * Extract a photo ID from a key, store it as file and return the file object.
-   * @keyId:       String  - Key ID
-   * @photoNumber: Number  - number of the photo on the key, starting with 0
-   * @exitCodeObj: Object  - value holds exitCode (0 = success)
-   * @errorMsgObj: Object  - value holds errorMsg
-   *
-   * @return: nsIFile object or null in case no data / error.
-   */
-  getPhotoFile: function(keyId, photoNumber, exitCodeObj, errorMsgObj) {
-    EnigmailLog.DEBUG("keyRing.js: EnigmailKeyRing.getPhotoFile, keyId=" + keyId + " photoNumber=" + photoNumber + "\n");
-
-    const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
-      "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
-      "--fixed-list-mode", "--list-keys", keyId
-    ];
-    const args = EnigmailGpg.getStandardArgs(false).concat(GPG_ADDITIONAL_OPTIONS);
-
-    const photoDataObj = {};
-    const outputTxt = EnigmailExecution.simpleExecCmd(EnigmailGpg.agentPath, args, exitCodeObj, photoDataObj);
-
-    if (!outputTxt) {
-      exitCodeObj.value = -1;
-      return null;
-    }
-
-    if (EnigmailOS.isDosLike && EnigmailGpg.getGpgFeature("windows-photoid-bug")) {
-      // workaround for error in gpg
-      photoDataObj.value = photoDataObj.value.replace(/\r\n/g, "\n");
-    }
-
-    // [GNUPG:] ATTRIBUTE A053069284158FC1E6770BDB57C9EB602B0717E2 2985
-    let foundPicture = -1;
-    let skipData = 0;
-    let imgSize = -1;
-    const statusLines = outputTxt.split(/[\n\r+]/);
-
-    for (let i = 0; i < statusLines.length; i++) {
-      const matches = statusLines[i].match(/\[GNUPG:\] ATTRIBUTE ([A-F\d]+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+) (\d+)/);
-      if (matches && matches[3] == "1") {
-        // attribute is an image
-        foundPicture++;
-        if (foundPicture === photoNumber) {
-          imgSize = Number(matches[2]);
-          break;
-        }
-        else {
-          skipData += Number(matches[2]);
-        }
-      }
-    }
-
-    if (foundPicture >= 0 && foundPicture === photoNumber) {
-      if (photoDataObj.value.search(/^gpg: /) === 0) {
-        // skip disturbing gpg output
-        let i = photoDataObj.value.search(/\n/) + 1;
-        skipData += i;
-      }
-
-      const pictureData = photoDataObj.value.substr(16 + skipData, imgSize);
-      if (!pictureData.length) {
-        return null;
-      }
-
-      try {
-        const flags = NS_WRONLY | NS_CREATE_FILE | NS_TRUNCATE;
-        const picFile = EnigmailFiles.getTempDirObj();
-
-        picFile.append(keyId + ".jpg");
-        picFile.createUnique(picFile.NORMAL_FILE_TYPE, DEFAULT_FILE_PERMS);
-
-        const fileStream = Cc[NS_LOCALFILEOUTPUTSTREAM_CONTRACTID].createInstance(Ci.nsIFileOutputStream);
-        fileStream.init(picFile, flags, DEFAULT_FILE_PERMS, 0);
-        if (fileStream.write(pictureData, pictureData.length) !== pictureData.length) {
-          fileStream.close();
-          throw Components.results.NS_ERROR_FAILURE;
-        }
-
-        fileStream.flush();
-        fileStream.close();
-
-        // delete picFile upon exit
-        let extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
-        extAppLauncher.deleteTemporaryFileOnExit(picFile);
-        return picFile;
-      }
-      catch (ex) {
-        exitCodeObj.value = -1;
-        return null;
-      }
-    }
-    return null;
   },
 
   isGeneratingKey: function() {

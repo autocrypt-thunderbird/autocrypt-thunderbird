@@ -29,7 +29,7 @@ const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").Eni
 const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 const {
-  obtainKeyList, createKeyObj
+  obtainKeyList, createKeyObj, getPhotoFileFromGnuPG
 } = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
 /**
@@ -208,6 +208,19 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
 
     retObj.keyData = minimalKeyBlock;
     return retObj;
+  }
+
+  /**
+   * Extract a photo ID from a key, store it as file and return the file object.
+   *
+   * @param {String} keyId:       Key ID / fingerprint
+   * @param {Number} photoNumber: number of the photo on the key, starting with 0
+   *
+   * @return {nsIFile} object or null in case no data / error.
+   */
+  getPhotoFile(keyId, photoNumber) {
+    let file = getPhotoFileFromGnuPG(keyId, photoNumber, {}, {});
+    return file;
   }
 }
 

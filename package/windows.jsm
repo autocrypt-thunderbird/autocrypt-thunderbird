@@ -429,15 +429,14 @@ var EnigmailWindows = {
     const enigmailSvc = EnigmailCore.getService(win);
     if (enigmailSvc) {
       if (!photoNumber) photoNumber = 0;
-
-      if (keyId.search(/^0x/) < 0) {
-        keyId = "0x" + keyId;
+      let keyObj = EnigmailKeyRing.getKeyById(keyId);
+      if (!keyObj) {
+        EnigmailWindows.alert(win, EnigmailLocale.getString("noPhotoAvailable"));
       }
 
-      let exitCodeObj = {};
-      let photoFile = EnigmailKeyRing.getPhotoFile(keyId, photoNumber, exitCodeObj, {});
+      let photoFile = keyObj.getPhotoFile(photoNumber);
 
-      if (photoFile && exitCodeObj.value === 0) {
+      if (photoFile) {
         if (!(photoFile.isFile() && photoFile.isReadable())) {
           EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoFile.path));
         }

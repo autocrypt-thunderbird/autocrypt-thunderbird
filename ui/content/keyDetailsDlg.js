@@ -91,7 +91,7 @@ function reloadData() {
     }
 
     if (keyObj.photoAvailable === true) {
-      let pFile = EnigmailKeyRing.getPhotoFile("0x" + gKeyId, 0, {}, {});
+      let pFile = keyObj.getPhotoFile(0);
 
       if (pFile && pFile.isFile() && pFile.isReadable()) {
         const photoUri = Cc["@mozilla.org/network/io-service;1"].

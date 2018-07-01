@@ -425,4 +425,17 @@ class EnigmailKeyObj {
         return this.keySize;
     }
   }
+
+
+  /**
+   * Get a file object holding the photo of a key
+   *
+   * @param {Number} photoNumber: number of the photo on the key, starting with 0
+   *
+   * @return {nsIFile} object or null in case no data / error.
+   */
+  getPhotoFile(photoNumber) {
+    const cApi = EnigmailCryptoAPI();
+    return cApi.getPhotoFile(this.fpr, photoNumber);
+  }
 }
