@@ -11,7 +11,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj", "getPhotoFileFromGnuPG"];
+var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj",
+  "getPhotoFileFromGnuPG", "extractSignatures"
+];
 
 const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
 const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
@@ -49,6 +51,8 @@ const ALGO_SYMBOL = {
   22: "EDDSA"
 };
 
+const UNKNOWN_SIGNATURE = "[User ID not found]";
+
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
 const NS_CREATE_FILE = 0x08;
@@ -56,7 +60,6 @@ const NS_TRUNCATE = 0x20;
 const STANDARD_FILE_PERMS = 0x180; // equals 0600
 
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
-
 
 /**
  * Get key list from GnuPG.
@@ -333,4 +336,86 @@ async function getPhotoFileFromGnuPG(keyId, photoNumber) {
     catch (ex) {}
   }
   return null;
+}
+
+
+/**
+ * Return signatures for a given key list
+ *
+ * @param {String} gpgKeyList         Output from gpg such as produced by getKeySig()
+ *                                    Only the first public key is processed!
+ * @param {Boolean} ignoreUnknownUid  true if unknown signer's UIDs should be filtered out
+ *
+ * @return {Array of Object}:
+ *     - uid
+ *     - uidLabel
+ *     - creationDate
+ *     - sigList: [uid, creationDate, signerKeyId, sigType ]
+ */
+
+function extractSignatures(gpgKeyList, ignoreUnknownUid) {
+  EnigmailLog.DEBUG("gnupg.js: extractSignatures\n");
+
+  var listObj = {};
+
+  let havePub = false;
+  let currUid = "",
+    keyId = "",
+    fpr = "";
+
+  const lineArr = gpgKeyList.split(/\n/);
+  for (let i = 0; i < lineArr.length; i++) {
+    // process lines such as:
+    //  tru::1:1395895453:1442881280:3:1:5
+    //  pub:f:4096:1:C1B875ED336XX959:2299509307:1546189300::f:::scaESCA:
+    //  fpr:::::::::102A1C8CC524A966849C33D7C8B157EA336XX959:
+    //  uid:f::::1388511201::67D5B96DC564598D4D4D9E0E89F5B83C9931A154::Joe Fox <joe@fox.com>:
+    //  sig:::1:C8B157EA336XX959:2299509307::::Joe Fox <joe@fox.com>:13x:::::2:
+    //  sub:e:2048:1:B214734F0F5C7041:1316219469:1199912694:::::e:
+    //  sub:f:2048:1:70E7A471DABE08B0:1316221524:1546189300:::::s:
+    const lineTokens = lineArr[i].split(/:/);
+    switch (lineTokens[ENTRY_ID]) {
+      case "pub":
+        if (havePub) {
+          return listObj;
+        }
+        havePub = true;
+        keyId = lineTokens[KEY_ID];
+        break;
+      case "fpr":
+        if (fpr === "") fpr = lineTokens[USERID_ID];
+        break;
+      case "uid":
+      case "uat":
+        currUid = lineTokens[UID_ID];
+        listObj[currUid] = {
+          userId: lineTokens[ENTRY_ID] == "uat" ? EnigmailLocale.getString("keyring.photo") : EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
+          rawUserId: lineTokens[USERID_ID],
+          keyId: keyId,
+          fpr: fpr,
+          created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+          sigList: []
+        };
+        break;
+      case "sig":
+        if (lineTokens[SIG_TYPE_ID].substr(0, 2).toLowerCase() !== "1f") {
+          // ignrore revoked signature
+
+          let sig = {
+            userId: EnigmailData.convertGpgToUnicode(lineTokens[USERID_ID]),
+            created: EnigmailTime.getDateTime(lineTokens[CREATED_ID], true, false),
+            signerKeyId: lineTokens[KEY_ID],
+            sigType: lineTokens[SIG_TYPE_ID],
+            sigKnown: lineTokens[USERID_ID] != UNKNOWN_SIGNATURE
+          };
+
+          if (!ignoreUnknownUid || sig.userId != UNKNOWN_SIGNATURE) {
+            listObj[currUid].sigList.push(sig);
+          }
+        }
+        break;
+    }
+  }
+
+  return listObj;
 }
