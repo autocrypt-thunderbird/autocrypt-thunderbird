@@ -329,6 +329,7 @@ function getSiteSpecificUrl(emailAddr) {
       break;
     case "protonmail.ch":
     case "protonmail.com":
+    case "pm.me":
       url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
       break;
   }
