@@ -226,7 +226,7 @@ test(withLogFiles(withPreferences(function keyRefreshServiceIsTurnedOnByDefault(
   const keyserver = {};
 
   EnigmailKeyRefreshService.start(keyserver);
-  assertLogDoesNotContain(keyRefreshStartMessage);
+  assertLogContains(keyRefreshStartMessage);
 })));
 
 test(withLogFiles(withPreferences(function keyRefreshServiceStartsWhenPreferenceIsOn() {
