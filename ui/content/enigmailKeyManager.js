@@ -878,8 +878,7 @@ function enigmailImportKeysFromFile() {
 
     if (exitStatus) {
       // import
-      var keyListObj = {};
-      var exitCode = EnigmailKeyRing.importKeyFromFile(inFile, errorMsgObj, keyListObj);
+      var exitCode = EnigmailKeyRing.importKeyFromFile(inFile, errorMsgObj);
       if (exitCode !== 0) {
         EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
       }

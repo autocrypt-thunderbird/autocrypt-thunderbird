@@ -32,6 +32,10 @@ const {
   obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures
 } = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
+const {
+  importKeysFromFile
+} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-key.jsm");
+
 /**
  * GnuPG implementation of CryptoAPI
  */
@@ -193,6 +197,23 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
   async getPhotoFile(keyId, photoNumber) {
     let file = await getPhotoFileFromGnuPG(keyId, photoNumber);
     return file;
+  }
+
+  /**
+   * Import key(s) from a file
+   *
+   * @param {nsIFile} inputFile:  the file holding the keys
+   *
+   * @return {Object} or null in case no data / error:
+   *   - {Number}          exitCode:        result code (0: OK)
+   *   - {Array of String) importedKeys:    imported fingerprints
+   *   - {String}          errorMsg:        human readable error message
+   *   - {Number}          importSum:       total number of processed keys
+   *   - {Number}          importUnchanged: number of unchanged keys
+   */
+  async importKeyFromFile(inputFile) {
+    let keys = await importKeysFromFile(inputFile);
+    return keys;
   }
 }
 

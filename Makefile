@@ -47,7 +47,7 @@ unit:
 test: eslint check unit
 
 clean:
-	rm -f build/$(XPIFILE)
+	rm -f build/$(XPIFILE) .eslintcache
 	for dir in $(DIRS); do \
 		if [ "$${dir}x" != "checkx" ]; then \
 		$(MAKE) -C $$dir clean; fi; \

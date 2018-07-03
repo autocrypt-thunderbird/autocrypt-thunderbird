@@ -523,8 +523,7 @@ function importKeyFiles() {
   disableNext(true);
 
   var errorMsgObj = {};
-  var keyListObj = {};
-  exitCode = EnigmailKeyRing.importKeyFromFile(gPubkeyFile.value, errorMsgObj, keyListObj);
+  exitCode = EnigmailKeyRing.importKeyFromFile(gPubkeyFile.value, errorMsgObj);
   if (exitCode !== 0) {
     EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
     return false;
@@ -534,7 +533,7 @@ function importKeyFiles() {
   if (document.getElementById("privateKeysFile").value.trim().length > 0) {
     EnigmailLog.DEBUG("enigmailSetupWizard.js: importKeyFiles - private Keys\n");
 
-    exitCode = EnigmailKeyRing.importKeyFromFile(gSeckeyFile.value, errorMsgObj, keyListObj);
+    exitCode = EnigmailKeyRing.importKeyFromFile(gSeckeyFile.value, errorMsgObj);
     if (exitCode !== 0) {
       EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
       return false;
@@ -1425,9 +1424,8 @@ function doImportSettings() {
 
   let tmpFile = tmpDir.clone();
   tmpFile.append("keyring.asc");
-  let errorMsgObj = {},
-    importedKeysObj = {};
-  EnigmailKeyRing.importKeyFromFile(tmpFile, errorMsgObj, importedKeysObj);
+  let errorMsgObj = {};
+  EnigmailKeyRing.importKeyFromFile(tmpFile, errorMsgObj);
   tmpFile = tmpDir.clone();
   tmpFile.append("ownertrust.txt");
   EnigmailKeyRing.importOwnerTrust(tmpFile, errorMsgObj);

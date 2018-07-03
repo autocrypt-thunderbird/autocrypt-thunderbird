@@ -32,7 +32,7 @@ function newEnigmail(f) {
 
 // testing: initialize
 test(function initializeWillPassEnvironmentIfAskedTo() {
-  EnigmailPrefs.setPref('keyRefreshOn', false);
+  EnigmailPrefs.setPref('keyRefreshOn', true);
   var window = JSUnit.createStubWindow();
   withEnvironment({
     "ENIGMAIL_PASS_ENV": "STUFF:BLARG",
@@ -46,7 +46,7 @@ test(function initializeWillPassEnvironmentIfAskedTo() {
 });
 
 test(function initializeWillNotPassEnvironmentsNotAskedTo() {
-  EnigmailPrefs.setPref('keyRefreshOn', false);
+  EnigmailPrefs.setPref('keyRefreshOn', true);
   var window = JSUnit.createStubWindow();
   var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
   environment.set("ENIGMAIL_PASS_ENV", "HOME");
@@ -58,7 +58,7 @@ test(function initializeWillNotPassEnvironmentsNotAskedTo() {
 });
 
 test(function initializeWillNotSetEmptyEnvironmentValue() {
-  EnigmailPrefs.setPref('keyRefreshOn', false);
+  EnigmailPrefs.setPref('keyRefreshOn', true);
   var window = JSUnit.createStubWindow();
   var environment = Cc["@mozilla.org/process/environment;1"].getService(nsIEnvironment);
   environment.set("APPDATA", "");

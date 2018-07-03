@@ -284,67 +284,23 @@ var EnigmailKeyRing = {
 
   importKeyFromFile: function(inputFile, errorMsgObj, importedKeysObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: fileName=" + inputFile.path + "\n");
-    var command = EnigmailGpg.agentPath;
-    var args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
-    importedKeysObj.value = "";
 
-    var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
-
-    args.push(fileName);
-
-    var statusFlagsObj = {};
-    var statusMsgObj = {};
-    var exitCodeObj = {};
-
-    var output = EnigmailExecution.execCmd(command, args, "", exitCodeObj, statusFlagsObj, statusMsgObj, errorMsgObj);
-    EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: error=" + errorMsgObj.value + "\n");
-
-    var statusMsg = statusMsgObj.value;
-
-    var keyList = [];
-    let importedKeys = [];
-    let importSum = 0;
-    let importUnchanged = 0;
-
-    // IMPORT_RES <count> <no_user_ids> <imported> 0 <unchanged>
-    if (statusMsg) {
-      let import_res = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+)/m);
-
-      if (import_res !== null) {
-        // Normal
-        importSum = parseInt(import_res[1], 10);
-        importUnchanged = parseInt(import_res[4], 10);
-        exitCodeObj.value = 0;
-        var statusLines = statusMsg.split(/\r?\n/);
-
-        for (let j = 0; j < statusLines.length; j++) {
-          var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
-          if (matches && (matches.length > 2)) {
-            if (typeof(keyList[matches[2]]) != "undefined") {
-              keyList[matches[2]] |= Number(matches[1]);
-            }
-            else
-              keyList[matches[2]] = Number(matches[1]);
-
-            importedKeys.push(matches[2]);
-            EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKeyFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
-          }
-        }
-
-        for (let j in keyList) {
-          importedKeysObj.value += j + ":" + keyList[j] + ";";
-        }
-      }
+    const cApi = EnigmailCryptoAPI();
+    let res = cApi.sync(cApi.importKeyFromFile(inputFile));
+    if (importedKeysObj) {
+      importedKeysObj.value = res.importedKeys.join(";");
     }
 
-    if (importedKeys.length > 0) {
-      EnigmailKeyRing.updateKeys(importedKeys);
+    if (!res) return 1;
+
+    if (res.importedKeys.length > 0) {
+      EnigmailKeyRing.updateKeys(res.importedKeys);
     }
-    else if (importSum > importUnchanged) {
+    else if (res.importSum > res.importUnchanged) {
       EnigmailKeyRing.clearCache();
     }
 
-    return exitCodeObj.value;
+    return res.exitCode;
   },
 
 

@@ -10,6 +10,7 @@ include $(DEPTH)/config/autoconf.mk
 MODFILES = \
 	gnupg.js \
 	gnupg-keylist.jsm \
+	gnupg-key.jsm \
 	openpgp-js.js \
 	interface.js	
 
