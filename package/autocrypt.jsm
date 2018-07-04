@@ -174,8 +174,9 @@ var EnigmailAutocrypt = {
 
       let conn;
 
-      new Promise((resolve, reject) => {
-        openDbConn(true, resolve, reject);
+      Sqlite.openConnection({
+        path: "enigmail.sqlite",
+        sharedMemoryCache: false
       }).then(
         function onConnection(connection) {
           conn = connection;
@@ -291,8 +292,9 @@ var EnigmailAutocrypt = {
     let conn;
 
     return new Promise((resolve, reject) => {
-      new Promise((resolve, reject) => {
-        openDbConn(true, resolve, reject);
+      Sqlite.openConnection({
+        path: "enigmail.sqlite",
+        sharedMemoryCache: false
       }).then(
         function onConnection(connection) {
           conn = connection;
@@ -948,24 +950,4 @@ function updateRuleForEmail(email, preferEncrypt) {
       EnigmailRules.saveRulesFile();
     }
   }
-}
-
-
-function openDbConn(retry, resolve, reject) {
-  Sqlite.openConnection({
-    path: "enigmail.sqlite",
-    sharedMemoryCache: false
-  }).then(conn => {
-    resolve(conn);
-  }).
-  catch(err => {
-    if (err === Components.results.NS_ERROR_STORAGE_BUSY && retry) {
-      EnigmailTimer.setTimeout(function _f() {
-        openDbConn(false);
-      }, 10 * 1000);
-    }
-    else {
-      reject(err);
-    }
-  });
 }
