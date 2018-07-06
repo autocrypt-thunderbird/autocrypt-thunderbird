@@ -522,8 +522,9 @@ function importKeyFiles() {
 
   disableNext(true);
 
-  var errorMsgObj = {};
-  exitCode = EnigmailKeyRing.importKeyFromFile(gPubkeyFile.value, errorMsgObj);
+  var errorMsgObj = {},
+    keyListObj = {};
+  exitCode = EnigmailKeyRing.importKeyFromFile(gPubkeyFile.value, errorMsgObj, keyListObj);
   if (exitCode !== 0) {
     EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
     return false;
