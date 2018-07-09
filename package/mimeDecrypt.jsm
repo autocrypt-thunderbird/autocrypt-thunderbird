@@ -64,14 +64,14 @@ var EnigmailMimeDecrypt = {
     let encPart = EnigmailLocale.getString("mimeDecrypt.encryptedPart.attachmentLabel");
     let concealed = EnigmailLocale.getString("mimeDecrypt.encryptedPart.concealedData");
     let retData =
-      `Content-Type: message/rfc822; name="${encPart}"
-  Content-Transfer-Encoding: 7bit
-  Content-Disposition: attachment; filename="${encPart}"
+      `Content-Type: message/rfc822; name="${encPart}.eml"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="${encPart}.eml"
 
-  Content-Type: text/html
+Content-Type: text/html
 
-  <p><i>${concealed}</i></p>
-  `;
+<p><i>${concealed}</i></p>
+`;
     return retData;
   },
 
@@ -81,7 +81,7 @@ var EnigmailMimeDecrypt = {
    * @param {String} decryptingMimePartNum: requested MIME part number
    * @param {Object} uri: nsIURI object of the decrypted message
    *
-   * @return {String}: prefix for message data 
+   * @return {String}: prefix for message data
    */
   pretendAttachment: function(decryptingMimePartNum, uri) {
     if (decryptingMimePartNum === "1" || !uri) return "";
@@ -439,7 +439,12 @@ MimeDecryptHandler.prototype = {
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
 
     if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
-      this.returnData(EnigmailMimeDecrypt.emptyAttachment());
+      if (this.uri.spec.search(/[&?]header=enigmailConvert/) < 0) {
+        this.returnData(EnigmailMimeDecrypt.emptyAttachment());
+      }
+      else {
+        throw "mimeDecrypt.jsm: Cannot decrypt messages with mixed (encrypted/non-encrypted) content";
+      }
       return;
     }
 
