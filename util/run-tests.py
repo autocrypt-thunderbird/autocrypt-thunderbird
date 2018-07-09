@@ -172,7 +172,7 @@ class OptionsEvaluator:
         if seed:
             random.seed(seed)
         else:
-            seed = random.randint(0, sys.maxint)
+            seed = random.randint(0, sys.maxsize)
             random.seed(seed)
             print("Seed used for random shuffle: %d" % seed)
         random.shuffle(tests)
