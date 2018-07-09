@@ -5,6 +5,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
+from __future__ import print_function
+
 import sys
 import os
 import subprocess
@@ -105,7 +107,7 @@ class TestRunner:
         elif str.startswith("Succeed: "):
             pass
         else:
-            print str
+            print(str)
 
     def write_to_log(self):
         def ret(str):
@@ -140,7 +142,7 @@ class TestRunner:
         test_name = os.path.basename(t)
         dir_name = os.path.dirname(t)
         tmp_file = t.replace(".js", "-loader.js")
-        print "running", t, test_name
+        print("running", t, test_name)
 
         self.reset_stats()
 
@@ -205,7 +207,7 @@ if __name__ == '__main__':
     tbpath = os.environ.get('TB_PATH', '/usr/bin/thunderbird')
     tests = OptionsEvaluator().evaluate()
     (ran, suc, fail) = TestRunner(tbpath, tests).run()
-    print "Ran " + str(ran) + " tests"
+    print("Ran " + str(ran) + " tests")
     if fail > 0:
-        print "  Had " + str(fail) + " failures"
+        print("  Had " + str(fail) + " failures")
         sys.exit(1)
