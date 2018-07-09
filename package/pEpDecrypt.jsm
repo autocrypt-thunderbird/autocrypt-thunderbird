@@ -27,6 +27,7 @@ Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStr
 Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
@@ -111,54 +112,64 @@ var EnigmailPEPDecrypt = {
     }
   },
 
-  getEmailsFromMessage: function(url) {
-    EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage:\n");
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+  getEmailAddrFromMessage: function(uri, mimePartNumber) {
+    EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailAddrFromMessage:\n");
     let addresses = {
       from: null,
       to: [],
       cc: []
     };
 
-    let s = EnigmailStreams.newStringStreamListener(
-      function analyzeData(data) {
-        EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage: got " + data.length + " bytes\n");
-
-        let i = data.search(/\n\r?\n/);
-        if (i < 0) i = data.length;
-
-        let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-        hdr.initialize(data.substr(0, i));
-
-        if (hdr.hasHeader("from")) {
-          addresses.from = hdr.getHeader("from")[0];
-        }
-        if (hdr.hasHeader("to")) {
-          addresses.to = hdr.getHeader("to");
-        }
-        if (hdr.hasHeader("cc")) {
-          addresses.cc = hdr.getHeader("cc");
-        }
-        if (hdr.hasHeader("reply-to")) {
-          addresses.replyTo = hdr.getHeader("reply-to");
-        }
-
-        if (inspector && inspector.eventLoopNestLevel > 0) {
-          // unblock the waiting lock
-          inspector.exitNestedEventLoop();
-        }
-      }
-    );
-
-    try {
-      var channel = EnigmailStreams.createChannel(url);
-      channel.asyncOpen(s, null);
-
-      // wait here for message parsing to terminate
-      inspector.enterNestedEventLoop(0);
+    if (mimePartNumber === "1") {
+      // quick version for regular mails
+      let dbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+      if (dbHdr.author) addresses.from = EnigmailFuncs.parseEmails(dbHdr.author)[0];
+      if (dbHdr.recipients) addresses.to = EnigmailFuncs.parseEmails(dbHdr.recipients);
+      if (dbHdr.ccList) addresses.cc = EnigmailFuncs.parseEmails(dbHdr.ccList);
     }
-    catch (e) {
-      EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailsFromMessage: exception " + e + "\n");
+    else {
+      // slow version for mixed messages
+      let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+      let s = EnigmailStreams.newStringStreamListener(
+        function analyzeData(data) {
+          EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailAddrFromMessage: got " + data.length + " bytes\n");
+
+          let i = data.search(/\n\r?\n/);
+          if (i < 0) i = data.length;
+
+          let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+          hdr.initialize(data.substr(0, i));
+
+          if (hdr.hasHeader("from")) {
+            addresses.from = hdr.getHeader("from")[0];
+          }
+          if (hdr.hasHeader("to")) {
+            addresses.to = hdr.getHeader("to");
+          }
+          if (hdr.hasHeader("cc")) {
+            addresses.cc = hdr.getHeader("cc");
+          }
+          if (hdr.hasHeader("reply-to")) {
+            addresses.replyTo = hdr.getHeader("reply-to");
+          }
+
+          if (inspector && inspector.eventLoopNestLevel > 0) {
+            // unblock the waiting lock
+            inspector.exitNestedEventLoop();
+          }
+        }
+      );
+
+      try {
+        var channel = EnigmailStreams.createChannel(uri.spec);
+        channel.asyncOpen(s, null);
+
+        // wait here for message parsing to terminate
+        inspector.enterNestedEventLoop(0);
+      }
+      catch (e) {
+        EnigmailLog.DEBUG("pEpDecrypt.jsm: getEmailAddrFromMessage: exception " + e + "\n");
+      }
     }
 
     return addresses;
@@ -255,7 +266,7 @@ PEPDecryptor.prototype = {
 
     let addresses;
     if (this.uri && (!this.backgroundJob) && (!this.requestingSubpart)) {
-      addresses = EnigmailPEPDecrypt.getEmailsFromMessage(this.uri.spec);
+      addresses = EnigmailPEPDecrypt.getEmailAddrFromMessage(this.uri, this.mimePartNumber);
     }
 
     let dec = EnigmailPEPDecrypt.decryptMessageData(true, this.sourceData, addresses, this.contentType);

@@ -85,7 +85,7 @@ var EnigmailFuncs = {
    * @param mailAddrs |string| - address-list as specified in RFC 2822, 3.4
    *                             separated by ","; encoded according to RFC 2047
    *
-   * @return |array| of object
+   * @return |array| of msgIAddressObject
    */
   parseEmails: function(mailAddrs, encoded = true) {
 
