@@ -809,7 +809,7 @@ CryptMessageIntoFolder.prototype = {
                   self.mime.headers.subject = [subject];
                 }
               }
-              else if (self.mime.headers.subject.join("") === "pEp") {
+              else if (self.mime.headers.subject.join("") === "p≡p") {
                 let subject = getPepSubject(data);
                 if (subject) {
                   self.mime.headers.subject = [subject];

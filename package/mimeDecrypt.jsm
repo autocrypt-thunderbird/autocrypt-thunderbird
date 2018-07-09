@@ -331,6 +331,7 @@ MimeDecryptHandler.prototype = {
     if (!this.uri) return false;
     if (!LAST_MSG.lastMessageURI) return false;
     if (("lastMessageData" in LAST_MSG) && LAST_MSG.lastMessageData === "") return false;
+    if (this.isUrlEnigmailConvert()) return false;
 
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
@@ -339,6 +340,12 @@ MimeDecryptHandler.prototype = {
     }
 
     return false;
+  },
+
+  isUrlEnigmailConvert: function() {
+    if (!this.uri) return false;
+
+    return (this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0);
   },
 
   onStopRequest: function(request, win, status) {
@@ -439,7 +446,7 @@ MimeDecryptHandler.prototype = {
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
 
     if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
-      if (this.uri.spec.search(/[&?]header=enigmailConvert/) < 0) {
+      if (!this.isUrlEnigmailConvert()) {
         this.returnData(EnigmailMimeDecrypt.emptyAttachment());
       }
       else {
@@ -496,7 +503,7 @@ MimeDecryptHandler.prototype = {
       let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
         !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
 
-      if (!(this.uri && this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0)) {
+      if (!this.isUrlEnigmailConvert()) {
         // don't return decrypted data if decryption failed (because it's likely an MDC error),
         // unless we are called for permanent decryption
         if (mdcError) {
@@ -652,13 +659,15 @@ MimeDecryptHandler.prototype = {
   },
 
   addWrapperToDecryptedResult: function() {
-    let wrapper = EnigmailMime.createBoundary();
+    if (!this.isUrlEnigmailConvert()) {
+      let wrapper = EnigmailMime.createBoundary();
 
-    this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
-      'Content-Disposition: inline\r\n\r\n' +
-      '--' + wrapper + '\r\n' +
-      this.decryptedData + '\r\n' +
-      '--' + wrapper + '--\r\n';
+      this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+        'Content-Disposition: inline\r\n\r\n' +
+        '--' + wrapper + '\r\n' +
+        this.decryptedData + '\r\n' +
+        '--' + wrapper + '--\r\n';
+    }
   },
 
   extractContentType: function(data) {

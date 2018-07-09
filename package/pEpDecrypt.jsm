@@ -234,7 +234,7 @@ PEPDecryptor.prototype = {
     let spec = this.uri ? this.uri.spec : null;
 
     if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec) || this.ignoreMessage) {
-      if (this.uri.spec.search(/[&?]header=enigmailConvert/) < 0) {
+      if (!this.isUrlEnigmailConvert()) {
         this.decryptedData = EnigmailMimeDecrypt.emptyAttachment();
       }
       else {
@@ -345,16 +345,24 @@ PEPDecryptor.prototype = {
     this.returnData();
   },
 
+  isUrlEnigmailConvert: function() {
+    if (!this.uri) return false;
+
+    return (this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0);
+  },
+
   addWrapperToDecryptedResult: function() {
-    let wrapper = EnigmailMime.createBoundary();
+    if (!this.isUrlEnigmailConvert()) {
+      let wrapper = EnigmailMime.createBoundary();
 
-    let head = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
-      'Content-Disposition: inline\r\n\r\n' +
-      '--' + wrapper + '\r\n';
+      let head = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+        'Content-Disposition: inline\r\n\r\n' +
+        '--' + wrapper + '\r\n';
 
-    this.decryptedData = head +
-      this.decryptedData + '\r\n' +
-      '--' + wrapper + '--\r\n';
+      this.decryptedData = head +
+        this.decryptedData + '\r\n' +
+        '--' + wrapper + '--\r\n';
+    }
   },
 
   returnData: function() {
@@ -407,6 +415,7 @@ PEPDecryptor.prototype = {
     if (!this.uri) return false;
     if (!LAST_MSG.lastMessageURI) return false;
     if (("lastMessageData" in LAST_MSG) && LAST_MSG.lastMessageData === "") return false;
+    if (this.isUrlEnigmailConvert()) return false;
 
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
