@@ -103,8 +103,6 @@ UIFILES = \
 	enigmailFilterEditorOverlay.js \
 	enigmailFilterListOverlay.xul \
 	enigmailFilterListOverlay.js \
-	enigmailMsgPrintOverlay.xul \
-	enigmailMsgPrintOverlay.js \
 	enigmailPrivacyOverlay.js \
 	enigmailPrivacyOverlay.xul \
 	enigmailSetupWizard.js \

@@ -110,8 +110,7 @@ const overlays = {
   "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB <= 52.x
 
   // Overlay for Account Manager
-  "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"],
-  "chrome://messenger/content/msgPrintEngine.xul": ["enigmailMsgPrintOverlay.xul"]
+  "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"]
 };
 
 const {
