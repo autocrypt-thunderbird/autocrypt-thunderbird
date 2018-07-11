@@ -3,7 +3,7 @@
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 "use strict";
@@ -13,7 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailTrust"];
 Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 
 // trust flags according to GPG documentation:
-// - http://www.gnupg.org/documentation/manuals/gnupg.pdf
+// - https://www.gnupg.org/documentation/manuals/gnupg.pdf
 // - sources: doc/DETAILS
 // In the order of trustworthy:
 //  ---------------------------------------------------------

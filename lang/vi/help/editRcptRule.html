@@ -1,1 +1,83 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head>  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>   <title>Trợ giúp Enigmail: Sửa đổi Quy Tắc của OpenPGP</title>   <style type="text/css">   /*<![CDATA[*/     dt  { font-weight: bold;  }   /*]]>*/   </style> </head> <body>   <h1>Trợ giúp Enigmail</h1>   <h3>Sử dụng Chỉnh sửa Quy tắc của Enigmail: Sửa đổi Quy Tắc của OpenPGP</h3>   <p>Trong Chỉnh sửa Quy tắc, bạn có thể điền rõ các mặc định cho mỗi người nhận để bật mã hóa lên, ký tên và PGP/MIME, và để xác định (các) khóa OpenPGP nào để sử dụng. Trong hộp thoại này, bạn có thể điền rõ các quy tắc cho một người nhận duy nhất, và cho một nhóm người nhận với các thuộc tính rất giống nhau.</p>   <dl>     <dt>Đặt Quy tắc của OpenPGP cho</dt>     <dd>Chứa các địa chỉ email của người nhận (không có tên, tức là chỉ cần một địa chỉ như <tt>somebody@email.domain</tt>). Bạn có thể điền rõ một số địa chỉ thư điện tử, phân biệt bằng dấu cách. Các địa chỉ điền rõ  ở đây có thể chỉ gồm có phần miền để thư gửi đến bất kỳ địa chỉ nào tại miền đó sẽ được so sánh, ví dụn như <tt>@email.domain sẽ </tt> cho phép so sánh với <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, v.v.</dd>     <dt>Áp dụng quy tắc nếu người nhận ...</dt>     <dd>       This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>OpenPGP Rules</em> field above.       <ul>         <li><em>Chính xác là</em>: với thiết lập này, các quy tắc sẽ chỉ kích hoạt ở những thư điện tử đến <tt>body@email.domain </tt> (chính xác, không so sánh chữ hoa/thường).</li>         <li><em>Chứa </em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào có chứa chuỗi được so sánh, ví dụ như <tt>anybody@email.domain</tt> hoặc <tt>body@email.domain.net</tt></li>         <li><em>Bắt đầu với</em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào bắt đầu với chuỗi được so sánh, ví dụ như <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>         <li><em>Kết thúc bằng</em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào kết thúc với chuỗi được so sánh, ví dụ như <tt>anybody@email.domain</tt> , <tt>somebody@email.domain </tt>.</li>       </ul>     </dd>     <dt>Tiếp tục với quy tắc kế tiếp cho địa chỉ trùng hợp</dt>     <dd>Bật chức năng này lên sẽ cho phép bạn xác định một quy tắc nhưng không phải điền rõ một KeyID trong trường <em>Sử dụng những khóa OpenPGP sau đây:</em>, để địa chỉ thư điện tử được dùng để kiếm một chiếc khóa ở thời điểm gửi. Ngoài ra, các quy tắc khác nữa cho cùng (các) địa chỉ cũng sẽ được xử lý.</dd>     <dt>Đừng kiểm soát thêm quy tắc nữa cho địa chỉ trùng hợp</dt>     <dd>Bật chức năng này lên ngưng xử lý bất kỳ quy tắc nào khác cho (các) địa chỉ trùng hợp nếu quy tắc này trùng hợp; nghĩa là xử lý quy tắc tiếp tục với người nhận kế tiếp.</dd>     <dt>Sử dụng các khóa OpenPGP sau đây:</dt>     <dd>Sử dụng nút <em>Chọn (các) Khóa..</em> để chọn các khóa của người nhận dùng để mã hóa. Như hành động bên trên, không có thêm quy tắc nào nữa cho (các) địa chỉ trùng hợp được xử lý.</dd>     <dt>Mặc định cho Ký tên</dt>     <dd>       Enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:       <ul>         <li><em>Không bao giờ</em>: tắt ký tên, ngay cả khi nó đã được bật lên trong cửa sổ viết tin nhắn (bác bỏ các giá trị khác)</li>         <li><em>Có, nếu được chọn từ trong Soạn Tin nhắn</em>: để việc ký tên như đã được điền rõ trong cửa sổ soạn tin nhắn</li>         <li><em>Luôn luôn</em>: bật ký tên lên, ngay cả nếu nó đã <span style="font-style: italic;">không</span> được bật lên trong cửa sổ soạn tin nhắn</li>       </ul>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.     </dd>     <dt>Mã hóa</dt>     <dd>Bật hoặc tắt việc mã hóa tin nhắn. Các thiết lập cho phép và ý nghĩa của chúng cũng giống như cho việc ký tên tin nhắn.</dd>     <dt>PGP/MIME</dt>     <dd>Bật hoặc tắt việc sử dụng PGP/MIME (RFC 3156) để mã hóa tin nhắn. Nếu PGP/MIME bị tắt, các tin nhắn được mã hoá bằng cách dùng "PGP trực tiếp". Các giá trị được cho phép và ý nghĩa của chúng cũng giống như cho việc ký tên tin nhắn.</dd>   </dl>   <p>Các quy tắc được xử lý theo thứ tự hiển thị trong danh sách trong <em>Chỉnh sửa Quy tắc của OpenPGP</em>. Bất cứ khi nào một quy tắc trùng hợp với một người nhận và chứa một ID khóa OpenPGP, ngoài việc sử dụng ID khóa được điền rõ, người nhận không được lưu ý đến nữa khi tiếp tục xử lý các quy tắc khác.</p>   <hr />   <p>Trợ Giúp thêm nữa có sẵn trên <a href="http://www.enigmail.net/documentation/pgprules_file.php" target="_blank">trang Thiết lập Từng-Người nhận của Enigmail</a></p> </body> </html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+ <html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+   <title>Trợ giúp Enigmail: Sửa đổi Quy Tắc của OpenPGP</title>
+   <style type="text/css">
+   /*<![CDATA[*/
+     dt  { font-weight: bold;  }
+   /*]]>*/
+   </style>
+ </head>
+
+ <body>
+   <h1>Trợ giúp Enigmail</h1>
+
+   <h3>Sử dụng Chỉnh sửa Quy tắc của Enigmail: Sửa đổi Quy Tắc của OpenPGP</h3>
+
+   <p>Trong Chỉnh sửa Quy tắc, bạn có thể điền rõ các mặc định cho mỗi người nhận để bật mã hóa lên, ký tên và PGP/MIME, và để xác định (các) khóa OpenPGP nào để sử dụng. Trong hộp thoại này, bạn có thể điền rõ các quy tắc cho một người nhận duy nhất, và cho một nhóm người nhận với các thuộc tính rất giống nhau.</p>
+
+   <dl>
+     <dt>Đặt Quy tắc của OpenPGP cho</dt>
+
+     <dd>Chứa các địa chỉ email của người nhận (không có tên, tức là chỉ cần một địa chỉ như <tt>somebody@email.domain</tt>). Bạn có thể điền rõ một số địa chỉ thư điện tử, phân biệt bằng dấu cách. Các địa chỉ điền rõ  ở đây có thể chỉ gồm có phần miền để thư gửi đến bất kỳ địa chỉ nào tại miền đó sẽ được so sánh, ví dụn như <tt>@email.domain sẽ </tt> cho phép so sánh với <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, v.v.</dd>
+
+     <dt>Áp dụng quy tắc nếu người nhận ...</dt>
+
+     <dd>
+       This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>OpenPGP Rules</em> field above.
+
+       <ul>
+         <li><em>Chính xác là</em>: với thiết lập này, các quy tắc sẽ chỉ kích hoạt ở những thư điện tử đến <tt>body@email.domain </tt> (chính xác, không so sánh chữ hoa/thường).</li>
+
+         <li><em>Chứa </em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào có chứa chuỗi được so sánh, ví dụ như <tt>anybody@email.domain</tt> hoặc <tt>body@email.domain.net</tt></li>
+
+         <li><em>Bắt đầu với</em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào bắt đầu với chuỗi được so sánh, ví dụ như <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>
+
+         <li><em>Kết thúc bằng</em>: với thiết lập này, bất kỳ địa chỉ thư điện tử nào kết thúc với chuỗi được so sánh, ví dụ như <tt>anybody@email.domain</tt> , <tt>somebody@email.domain </tt>.</li>
+       </ul>
+     </dd>
+
+     <dt>Tiếp tục với quy tắc kế tiếp cho địa chỉ trùng hợp</dt>
+
+     <dd>Bật chức năng này lên sẽ cho phép bạn xác định một quy tắc nhưng không phải điền rõ một KeyID trong trường <em>Sử dụng những khóa OpenPGP sau đây:</em>, để địa chỉ thư điện tử được dùng để kiếm một chiếc khóa ở thời điểm gửi. Ngoài ra, các quy tắc khác nữa cho cùng (các) địa chỉ cũng sẽ được xử lý.</dd>
+
+     <dt>Đừng kiểm soát thêm quy tắc nữa cho địa chỉ trùng hợp</dt>
+
+     <dd>Bật chức năng này lên ngưng xử lý bất kỳ quy tắc nào khác cho (các) địa chỉ trùng hợp nếu quy tắc này trùng hợp; nghĩa là xử lý quy tắc tiếp tục với người nhận kế tiếp.</dd>
+
+     <dt>Sử dụng các khóa OpenPGP sau đây:</dt>
+
+     <dd>Sử dụng nút <em>Chọn (các) Khóa..</em> để chọn các khóa của người nhận dùng để mã hóa. Như hành động bên trên, không có thêm quy tắc nào nữa cho (các) địa chỉ trùng hợp được xử lý.</dd>
+
+     <dt>Mặc định cho Ký tên</dt>
+
+     <dd>
+       Enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
+
+       <ul>
+         <li><em>Không bao giờ</em>: tắt ký tên, ngay cả khi nó đã được bật lên trong cửa sổ viết tin nhắn (bác bỏ các giá trị khác)</li>
+
+         <li><em>Có, nếu được chọn từ trong Soạn Tin nhắn</em>: để việc ký tên như đã được điền rõ trong cửa sổ soạn tin nhắn</li>
+
+         <li><em>Luôn luôn</em>: bật ký tên lên, ngay cả nếu nó đã <span style="font-style: italic;">không</span> được bật lên trong cửa sổ soạn tin nhắn</li>
+       </ul>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.
+     </dd>
+
+     <dt>Mã hóa</dt>
+
+     <dd>Bật hoặc tắt việc mã hóa tin nhắn. Các thiết lập cho phép và ý nghĩa của chúng cũng giống như cho việc ký tên tin nhắn.</dd>
+
+     <dt>PGP/MIME</dt>
+
+     <dd>Bật hoặc tắt việc sử dụng PGP/MIME (RFC 3156) để mã hóa tin nhắn. Nếu PGP/MIME bị tắt, các tin nhắn được mã hoá bằng cách dùng "PGP trực tiếp". Các giá trị được cho phép và ý nghĩa của chúng cũng giống như cho việc ký tên tin nhắn.</dd>
+   </dl>
+
+   <p>Các quy tắc được xử lý theo thứ tự hiển thị trong danh sách trong <em>Chỉnh sửa Quy tắc của OpenPGP</em>. Bất cứ khi nào một quy tắc trùng hợp với một người nhận và chứa một ID khóa OpenPGP, ngoài việc sử dụng ID khóa được điền rõ, người nhận không được lưu ý đến nữa khi tiếp tục xử lý các quy tắc khác.</p>
+   <hr />
+
+   <p>Trợ Giúp thêm nữa có sẵn trên <a href="https://www.enigmail.net/documentation/pgprules_file.php" target="_blank">trang Thiết lập Từng-Người nhận của Enigmail</a></p>
+ </body>
+ </html>

@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
-<!ENTITY enigmail.about.license           "Enigmail est un logiciel à code source ouvert proposé en vertu de la <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>license public Mozilla 2.0</html:a>.">
+<!ENTITY enigmail.about.license           "Enigmail est un logiciel à code source ouvert proposé en vertu de la <html:a href='https://mozilla.org/MPL/2.0/' class='enigmailLink'>license public Mozilla 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Compte / ID utilisateur">
 <!ENTITY enigmail.keygenTitle.label       "Générer une clé OpenPGP">

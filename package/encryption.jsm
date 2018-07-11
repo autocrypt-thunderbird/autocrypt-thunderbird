@@ -3,7 +3,7 @@
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 
@@ -39,7 +39,7 @@ const ENC_TYPE_MSG = 0;
 const ENC_TYPE_ATTACH_BINARY = 1;
 const ENC_TYPE_ATTACH_ASCII = 2;
 
-const GPG_COMMENT_OPT = "Using GnuPG with %s - http://www.enigmail.net/";
+const GPG_COMMENT_OPT = "Using GnuPG with %s - https://www.enigmail.net/";
 
 
 var EnigmailEncryption = {

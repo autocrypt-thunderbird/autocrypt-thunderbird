@@ -69,7 +69,7 @@ cat > ${ENIGLANG}/install.rdf <<EOT
     <!-- Author of the package, replace with your name if you like -->
     <em:creator>Enigmail Team</em:creator>
 
-    <em:homepageURL>http://www.enigmail.net/langpack.html</em:homepageURL>
+    <em:homepageURL>https://www.enigmail.net/langpack.html</em:homepageURL>
 
     <!-- Front End Integration Hooks (used by Extension Manager)-->
     <em:optionsURL>chrome://enigmail/content/pref-enigmail.xul</em:optionsURL>

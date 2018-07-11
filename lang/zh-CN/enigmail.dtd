@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "自动加密">
 
-<!ENTITY enigmail.about.license           "Enigmail 是依照 <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla 公共许可证 2.0</html> 授权的开源软件。">
+<!ENTITY enigmail.about.license           "Enigmail 是依照 <html:a href='https://mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla 公共许可证 2.0</html> 授权的开源软件。">
 
 <!ENTITY enigmail.keyUserId.label         "账户 / 个人标识">
 <!ENTITY enigmail.keygenTitle.label       "请指定您的备份数据所在的文件。">

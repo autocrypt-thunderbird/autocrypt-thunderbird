@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
-<!ENTITY enigmail.about.license           "Tha an còd aig Enigmail fosgailte agus ri fhaighinn fo cheadachas <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
+<!ENTITY enigmail.about.license           "Tha an còd aig Enigmail fosgailte agus ri fhaighinn fo cheadachas <html:a href='https://mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Cunntas / ID a’ chleachdaiche">
 <!ENTITY enigmail.keygenTitle.label       "Gin iuchair OpenPGP">

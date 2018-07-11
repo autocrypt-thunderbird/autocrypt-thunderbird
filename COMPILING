@@ -10,7 +10,7 @@ In order to build Enigmail you will need the following helper tools:
 - perl 5 or newer
 
 If you want to execute unit tests, you will also need:
-- eslint (installable via node.js / npm, see http://eslint.org)
+- eslint (installable via node.js / npm, see https://eslint.org)
 
 
 Building

@@ -2,7 +2,7 @@
 <!--
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 -->
 
 <overlay id="enigmailCheckLanguage"
@@ -24,7 +24,7 @@
         try {
           if (typeof(e) != "string") {
             var promptServ = Components.classes["@mozilla.org/embedcomp/prompt-service;1"].getService(Components.interfaces.nsIPromptService);
-            promptServ.alert(window, "Enigmail Alert", "The language of Enigmail does not correspond to the language of your application! Enigmail can therefore NOT work.\n\nPlease install a language pack for Enigmail, available from the 'Language Packs' page on the Enigmail homepage (http://www.enigmail.net/download/langpack.php).\n\n");
+            promptServ.alert(window, "Enigmail Alert", "The language of Enigmail does not correspond to the language of your application! Enigmail can therefore NOT work.\n\nPlease install a language pack for Enigmail, available from the 'Language Packs' page on the Enigmail homepage (https://www.enigmail.net/download/langpack.php).\n\n");
           }
         } catch (ex) {
           // whatever happens, mozilla must continue to start up...
