@@ -24,10 +24,9 @@ else
 
     STATIC_ANALYSIS_DIR=`dirname "$CURRENT_FILE"`
 
-    for dir in $(find "$1" -type d); do
-      eslint --cache "$dir"/*.js "$dir"/*.jsm
-      if [ $? -ne 0 ]; then
-        exit 1
-      fi
-    done
+    find "$1" -name "*.js" -exec eslint --quiet --cache {} +
+    find "$1" -name "*.jsm" -exec eslint --quiet --cache {} +
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
 fi
