@@ -273,6 +273,23 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
   Assert.equal(pubKey.keyData.length, 2972);
 })));
 
+
+test(withTestGpgHome(withEnigmail(function shouldExportKey() {
+  const publicKey = do_get_file("resources/dev-strike.asc", false);
+  const secretKey = do_get_file("resources/dev-strike.sec", false);
+  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
+  EnigmailKeyRing.getAllKeys();
+
+  let pub = EnigmailKeyRing.extractKey(false, "0x781617319CE311C4", null, {}, {}).replace(/\r\n/g, "\n");
+  Assert.equal(pub.substr(-50), "/H0OOI1K\n=CVNK\n-----END PGP PUBLIC KEY BLOCK-----\n");
+
+  let pubAndSec = EnigmailKeyRing.extractKey(true, "strike.devtest@gmail.com", null, {}, {}).replace(/\r\n/g, "\n");
+  Assert.equal(pubAndSec.substr(-37), "\n-----END PGP PRIVATE KEY BLOCK-----\n");
+  Assert.equal(pubAndSec.split(/\n/).length, 160);
+})));
+
+
 const KeyRingHelper = {
   loadTestKeyList: function() {
     const pkFile = do_get_file("resources/pub-keys.asc", false);

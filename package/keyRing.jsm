@@ -415,11 +415,23 @@ var EnigmailKeyRing = {
 
     if (includeSecretKey) {
 
-      const secKeyBlock = this.extractSecretKey(false, userId, exitCodeObj, cmdErrorMsgObj);
-      if (keyBlock.substr(-1, 1).search(/[\r\n]/) < 0) {
-        keyBlock += "\n";
-      }
-      keyBlock += secKeyBlock;
+      let keyList = userId.split(/[ ,\t]+/);
+      let secKeyBlock = keyList.map(uid => {
+        let keyObj = EnigmailKeyRing.getKeyById(uid);
+        if (keyObj) return keyObj.getSecretKey(false).keyData;
+
+        let k = EnigmailKeyRing.getKeysByUserId(uid);
+        if (k && k.length > 0) {
+          return k.map(keyObj => {
+            return keyObj.getSecretKey(false).keyData;
+          }).join("\n");
+        }
+        else {
+          return "";
+        }
+      }).join("\n");
+
+      keyBlock += "\n" + secKeyBlock;
     }
 
     if (outputFile) {
@@ -430,56 +442,6 @@ var EnigmailKeyRing = {
       return "";
     }
     return keyBlock;
-  },
-
-  /**
-   * Export secret key(s) to a file
-   *
-   * @param minimalKey  Boolean  - if true, reduce key to minimum required
-   * @param userId            String   - space or comma separated list of keys to export. Specification by
-   *                                     key ID, fingerprint, or userId
-   * @param exitCodeObj       Object   - o.value will contain exit code
-   * @param errorMsgObj       Object   - o.value will contain error message from GnuPG
-   *
-   * @return String
-   */
-  extractSecretKey: function(minimalKey, userId, exitCodeObj, errorMsgObj) {
-    let args = EnigmailGpg.getStandardArgs(true);
-
-    if (minimalKey) {
-      args.push("--export-options");
-      args.push("export-minimal,no-export-attributes");
-    }
-
-    args.push("-a");
-    args.push("--export-secret-keys");
-
-    if (userId) {
-      args = args.concat(userId.split(/[ ,\t]+/));
-    }
-
-    let cmdErrorMsgObj = {};
-    const secKeyBlock = EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, "", exitCodeObj, {}, {}, cmdErrorMsgObj);
-
-    if (secKeyBlock) {
-      exitCodeObj.value = 0;
-    }
-    else {
-      exitCodeObj.value = -1;
-    }
-
-    if (exitCodeObj.value !== 0) {
-      errorMsgObj.value = EnigmailLocale.getString("failKeyExtract");
-
-      if (cmdErrorMsgObj.value) {
-        errorMsgObj.value += "\n" + EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
-        errorMsgObj.value += "\n" + cmdErrorMsgObj.value;
-      }
-
-      return "";
-    }
-
-    return secKeyBlock;
   },
 
   /**

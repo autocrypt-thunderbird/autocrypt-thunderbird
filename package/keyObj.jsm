@@ -438,4 +438,17 @@ class EnigmailKeyObj {
     const cApi = EnigmailCryptoAPI();
     return cApi.sync(cApi.getPhotoFile(this.fpr, photoNumber));
   }
+
+  /**
+   * @param {Boolean} minimalKey  if true, reduce key to minimum required
+   *
+   * @return {Object}:
+   *   - {Number} exitCode:  result code (0: OK)
+   *   - {String} keyData:   ASCII armored key data material
+   *   - {String} errorMsg:  error message in case exitCode !== 0
+   */
+  getSecretKey(minimalKey) {
+    const cApi = EnigmailCryptoAPI();
+    return cApi.sync(cApi.extractSecretKey(this.fpr, minimalKey));
+  }
 }

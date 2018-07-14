@@ -11,7 +11,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["importKeysFromFile"];
+var EXPORTED_SYMBOLS = ["GnuPG_importKeyFromFile", "GnuPG_extractSecretKey"];
 
 const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
 const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -19,7 +19,7 @@ const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").Enigm
 const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 
-async function importKeysFromFile (inputFile) {
+async function GnuPG_importKeyFromFile(inputFile) {
   EnigmailLog.DEBUG("gnupg-key.jsm: importKeysFromFile: fileName=" + inputFile.path + "\n");
   var command = EnigmailGpg.agentPath;
   var args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
@@ -69,5 +69,43 @@ async function importKeysFromFile (inputFile) {
     importedKeys: importedKeys,
     importSum: importSum,
     importUnchanged: importUnchanged
+  };
+}
+
+
+async function GnuPG_extractSecretKey(userId, minimalKey) {
+  let args = EnigmailGpg.getStandardArgs(true);
+  let exitCode = -1,
+    errorMsg = "";
+
+  if (minimalKey) {
+    args.push("--export-options");
+    args.push("export-minimal,no-export-attributes");
+  }
+
+  args.push("-a");
+  args.push("--export-secret-keys");
+
+  if (userId) {
+    args = args.concat(userId.split(/[ ,\t]+/));
+  }
+
+  let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, "");
+
+  if (res.stdoutData) {
+    exitCode = 0;
+  }
+
+  if (exitCode !== 0) {
+    if (res.errorMsg) {
+      errorMsg = EnigmailFiles.formatCmdLine(EnigmailGpg.agentPath, args);
+      errorMsg += "\n" + res.errorMsg;
+    }
+  }
+
+  return {
+    keyData: res.stdoutData,
+    exitCode: exitCode,
+    errorMsg: errorMsg
   };
 }
