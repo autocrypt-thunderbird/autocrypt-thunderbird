@@ -9,8 +9,11 @@
 "use strict";
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+/* global setupTestAccounts: false, withTestGpgHome: false, withEnigmail: false, component: false */
 
 testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+component("enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
 
 const pubkey1 =
   `mQENBFdGIzkBCADKys5q0rYiTr/FYdoupmNAJ0o20XWuFp/V58qsnQAMcAY2pCB/ydx9Y7
@@ -82,6 +85,7 @@ y4+UejU/Yeny6VkBodA3bFyEYKWPoMDDgfdlZbzjv3qAN4Qq+ollo8K3gJgH0QONrUaRY8
 4/hil05T4EnUZiXdzPWvhMv5lEK+pTMlO8FbOG31+aB8rxCg+wp1ovyC/fp5XjZaLHcyPA
 WAXKLBn4tb400iHp7byO85tF/H0OOI1K`;
 
+setupTestAccounts("strike.devtest@gmail.com", "0x781617319CE311C4");
 
 /* global Sqlite */
 
@@ -163,3 +167,34 @@ test(function processHeader() {
   });
 
 });
+
+test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
+  const publicKey = do_get_file("resources/dev-strike.asc", false);
+  const secretKey = do_get_file("resources/dev-strike.sec", false);
+  EnigmailKeyRing.importKeyFromFile(publicKey, {}, {});
+  EnigmailKeyRing.importKeyFromFile(secretKey, {}, {});
+
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
+  let id = EnigmailStdlib.getIdentityForEmail("strike.devtest@gmail.com").identity;
+  Assert.equal(id.email, "strike.devtest@gmail.com");
+
+  EnigmailAutocrypt.createSetupMessage(id).then(res => {
+    Assert.ok(res);
+    Assert.equal(res.passwd.length, 44);
+    Assert.ok(res.msg.length > 9500);
+    Assert.equal(res.msg.substr(0, 100), "To: strike.devtest@gmail.com\r\nFrom: strike.devtest@gmail.com\r\nAutocrypt-Setup-Message: v1\r\nSubject: ");
+
+    return EnigmailAutocrypt.handleBackupMessage(res.passwd, res.msg, "strike.devtest@gmail.com");
+  }).then(res => {
+    Assert.ok(res);
+    Assert.equal(res.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
+
+    inspector.exitNestedEventLoop();
+  }).catch(err => {
+    Assert.equal(err, 0);
+    inspector.exitNestedEventLoop();
+  });
+  inspector.enterNestedEventLoop(0);
+
+})));

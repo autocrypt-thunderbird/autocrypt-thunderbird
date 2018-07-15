@@ -179,7 +179,7 @@ function withPreferences(func) {
  * - user4@enigmail-test.net - determine key be Email addresses
  */
 
-function setupTestAccounts() {
+function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 
   const UNITTEST_ACCT_NAME = "Enigmail Unit Test";
   const Cc = Components.classes;
@@ -227,7 +227,10 @@ function setupTestAccounts() {
     is.performingBiff = false;
     is.loginAtStartUp = false;
 
-    setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", "user1@enigmail-test.net", true, "ABCDEF0123456789");
+    if (primaryKeyId === null) primaryKeyId = "ABCDEF0123456789";
+    if (primaryEmail === null) primaryEmail = "user1@enigmail-test.net";
+
+    setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", primaryEmail, true, primaryKeyId);
     setIdentityData(ac, 2, "Enigmail Unit Test 2", "John Doe II.", "user2@enigmail-test.net", true);
     setIdentityData(ac, 3, "Enigmail Unit Test 3", "John Doe III.", "user3@enigmail-test.net", false);
     setIdentityData(ac, 4, "Enigmail Unit Test 4", "John Doe IV.", "user4@enigmail-test.net", true);
