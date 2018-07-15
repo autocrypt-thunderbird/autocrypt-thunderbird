@@ -64,6 +64,7 @@ zip -9 --must-match\
     chrome/content/modules/armor.jsm \
     chrome/content/modules/attachment.jsm \
     chrome/content/modules/autocrypt.jsm \
+    chrome/content/modules/autocryptSetup.jsm \
     chrome/content/modules/buildDate.jsm \
     chrome/content/modules/card.jsm \
     chrome/content/modules/clipboard.jsm \
