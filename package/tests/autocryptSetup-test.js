@@ -90,11 +90,11 @@ function copyMailToFolder(emlPath, folder) {
 
 // TODO/FIXME: To run this test, First you have to remove all the existing Accounts
 //
-// test(withTestGpgHome(withEnigmail(function getMsgHeader_noAccount_Test() {
+// test(withTestGpgHome(withEnigmail(function determinePreviousInstallType_noAccount_Test() {
 //
 //   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 //
-//   EnigmailAutocryptSetup.getMsgHeader().then((returnMsgValue) => {
+//   EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
 //     Assert.equal(returnMsgValue.value, 4);
 //     inspector.exitNestedEventLoop();
 //   }).catch(err => {
@@ -417,8 +417,8 @@ test(withTestGpgHome(withEnigmail(function checkHeadersTest() {
 
 })));
 
-//testing: getMsgHeader
-test(withTestGpgHome(withEnigmail(function getMsgHeaderTest() {
+//testing: determinePreviousInstallType
+test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
 
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
@@ -426,7 +426,7 @@ test(withTestGpgHome(withEnigmail(function getMsgHeaderTest() {
   const sourceFolder = MailHelper.createMailFolder("source-box");
   copyMailToFolder("resources/encrypted-email.eml", sourceFolder);
 
-  EnigmailAutocryptSetup.getMsgHeader().then((returnMsgValue) => {
+  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, 3);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -442,7 +442,7 @@ test(withTestGpgHome(withEnigmail(function getMsgHeaderTest() {
   copyMailToFolder("resources/encrypted-email-with-autocrypt.eml", autocryptFolder);
 
 
-  EnigmailAutocryptSetup.getMsgHeader().then((returnMsgValue) => {
+  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, 2);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -457,7 +457,7 @@ test(withTestGpgHome(withEnigmail(function getMsgHeaderTest() {
   const setupFolder = MailHelper.createMailFolder("setup-box");
   copyMailToFolder("resources/autocrypt-setup-message.eml", setupFolder);
 
-  EnigmailAutocryptSetup.getMsgHeader().then((returnMsgValue) => {
+  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, 1);
     inspector.exitNestedEventLoop();
   }).catch(err => {

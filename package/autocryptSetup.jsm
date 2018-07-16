@@ -40,15 +40,17 @@ var gFolderURIs = [];
 
 var EnigmailAutocryptSetup = {
   /**
-   * Identify the case at the time of installation, 1) Autocrypt Setup Message Found 2) Sent Message with Autocrypt header Found 3)None of the above
-   *
-   *
+   * Identify which type of setup the user had before Enigmail was (re-)installed
    *
    * @return Object with Headers(Optional), value : For each case assigned value,
+   *   1) Autocrypt Setup Message Found
+   *   2) Sent Message with Autocrypt header Found
+   *   3) None relevant header found
+   *   4) No configured account found
    */
-  getMsgHeader: function() {
+  determinePreviousInstallType: function() {
     return new Promise(async(resolve, reject) => {
-      EnigmailLog.DEBUG("autocryptSetup.jsm: getMsgHeader()\n");
+      EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType()\n");
 
       let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
       let folderService = Cc["@mozilla.org/mail/folder-lookup;1"].getService(nsIFolderLookupService);
@@ -82,7 +84,7 @@ var EnigmailAutocryptSetup = {
           msgObject = getMsgFolders(rootFolder);
         }
         catch (e) {
-          EnigmailLog.DEBUG("autocryptSetup.jsm: getMsgHeader() Error : " + e + "\n");
+          EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType() Error : " + e + "\n");
         }
 
         // Iterating through each non empty Folder Database in the Account
@@ -155,7 +157,7 @@ var EnigmailAutocryptSetup = {
   /**
    * Process the Autocrypt Setup Message
    *
-   * @param headerValue: Object - containing header and attachment of the latest Autocrypt Setup Message
+   * @param headerValue: Object - containing header and attachment of an Autocrypt Setup Message
    *
    */
 
@@ -232,7 +234,14 @@ var EnigmailAutocryptSetup = {
         keyLength = 4096,
         keyType = "RSA",
         passphrase = "",
-        generateObserver = new genKeyObserver();
+        generateObserver = {
+          keyId: null,
+          backupLocation: null,
+          _state: 0,
+
+          onDataAvailable: function(data) {},
+          onStopRequest: function(exitCode) {}
+        };
 
       try {
         let keygenRequest = await EnigmailKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
@@ -277,6 +286,15 @@ function createStreamListener(k) {
   };
 }
 
+/**
+ * get a list of all sub-folders, starting with rootFolder.
+ *
+ * @param {nsIMsgFolder} rootFolder
+ *
+ * @return Array{Object}:
+ *    - msgFolder {nsIMsgFolder}
+ *    - msgDatabase {nsIMsgDatabase}
+ */
 function getMsgFolders(rootFolder) {
 
   let msgFolders = [];
@@ -489,14 +507,3 @@ function getStreamedHeaders(msgURI, mms) {
     }
   });
 }
-
-function genKeyObserver() {}
-
-genKeyObserver.prototype = {
-  keyId: null,
-  backupLocation: null,
-  _state: 0,
-
-  onDataAvailable: function(data) {},
-  onStopRequest: function(exitCode) {}
-};

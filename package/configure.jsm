@@ -211,30 +211,30 @@ var EnigmailConfigure = {
     if (oldVer === "") {
       EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
 
-      let headerValue = await EnigmailAutocryptSetup.getMsgHeader();
+      let setupType = await EnigmailAutocryptSetup.determinePreviousInstallType();
 
-      if (headerValue.value == 1) {
+      if (setupType.value == 1) {
         if (EnigmailDialog.confirmDlg(null,
             EnigmailLocale.getString("acStartup.acMessageFound.desc"),
             EnigmailLocale.getString("acStartup.import.label"),
             EnigmailLocale.getString("dlg.button.cancel"))) {
-          EnigmailAutocryptSetup.performAutocryptSetup(headerValue);
+          EnigmailAutocryptSetup.performAutocryptSetup(setupType);
         }
       }
-      else if (headerValue.value == 2) {
+      else if (setupType.value == 2) {
         if (EnigmailDialog.confirmDlg(null,
             EnigmailLocale.getString("acStartup.acHeaderFound.desc"),
             EnigmailLocale.getString("acStartup.import.label"),
             EnigmailLocale.getString("dlg.button.cancel"))) {
-          EnigmailAutocryptSetup.processAutocryptHeader(headerValue);
+          EnigmailAutocryptSetup.processAutocryptHeader(setupType);
         }
       }
 
-      else if (headerValue.value == 3) {
-        EnigmailAutocryptSetup.startKeyGen(headerValue);
+      else if (setupType.value == 3) {
+        EnigmailAutocryptSetup.startKeyGen(setupType);
       }
 
-      else if (headerValue.value == 4) {
+      else if (setupType.value == 4) {
         // Code to be Added for Thunderbird where no accounts are added.
       }
 
