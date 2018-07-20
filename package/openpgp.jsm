@@ -178,7 +178,7 @@ var EnigmailOpenPGP = {
       let crcAsc = String.fromCharCode(crc >> 16) + String.fromCharCode(crc >> 8 & 0xFF) + String.fromCharCode(crc & 0xFF);
 
       let s = "-----BEGIN PGP " + hdr + "-----\n\n" +
-        btoa(str) + "\n" +
+        btoa(str).replace(/(.{72})/g, "$1\n") + "\n" +
         "=" + btoa(crcAsc) + "\n" +
         "-----END PGP " + hdr + "-----\n";
 
