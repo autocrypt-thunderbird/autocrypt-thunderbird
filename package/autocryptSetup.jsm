@@ -2,6 +2,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 "use strict";
 
 /*eslint no-loop-func: 0*/
@@ -26,6 +27,7 @@ Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDia
 Cu.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
 Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false*/
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false*/
+Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -42,11 +44,14 @@ var EnigmailAutocryptSetup = {
   /**
    * Identify which type of setup the user had before Enigmail was (re-)installed
    *
-   * @return Object with Headers(Optional), value : For each case assigned value,
-   *   1) Autocrypt Setup Message Found
-   *   2) Sent Message with Autocrypt header Found
-   *   3) None relevant header found
-   *   4) No configured account found
+   * @return Promise<Object> with:
+   *   - value : For each case assigned value,
+   *        1) Autocrypt Setup Message Found
+   *        2) Sent Message with Autocrypt header Found
+   *        3) None relevant header found
+   *        4) No configured account found
+   *   - header {nsIMsgDBHdr}      in case value === 1
+   *   - msgHeaders {Object} in case value === 2
    */
   determinePreviousInstallType: function() {
     return new Promise(async(resolve, reject) => {
@@ -60,7 +65,7 @@ var EnigmailAutocryptSetup = {
 
       var accounts = msgAccountManager.accounts;
 
-      let autocryptHeaders = [];
+      let msgHeaders = [];
       let autocryptSetupMessage = {};
 
       // If no account is configured
@@ -113,10 +118,10 @@ var EnigmailAutocryptSetup = {
 
             let headerObj = await getStreamedHeaders(msgURI, mms);
 
-            let checkHeaderValues = await checkHeaders(headerObj, msgHeader, msgAuthor, accountMsgServer, msgFolder, returnMsgValue, autocryptHeaders);
+            let checkHeaderValues = await checkHeaders(headerObj, msgHeader, msgAuthor, accountMsgServer, msgFolder, returnMsgValue, msgHeaders);
 
 
-            autocryptHeaders = checkHeaderValues.autocryptHeaders;
+            msgHeaders = checkHeaderValues.msgHeaders;
             returnMsgValue = checkHeaderValues.returnMsgValue;
 
             const currDateInSeconds = new Date().getTime() / 1000;
@@ -140,9 +145,9 @@ var EnigmailAutocryptSetup = {
       }
       else {
 
-        if (autocryptHeaders.length > 0) {
+        if (msgHeaders.length > 0) {
           returnMsgValue.value = 2;
-          returnMsgValue.autocryptheaders = autocryptHeaders;
+          returnMsgValue.msgHeaders = msgHeaders;
         }
 
         returnMsgValue.userName = msgAccountManager.defaultAccount.defaultIdentity.fullName;
@@ -163,7 +168,7 @@ var EnigmailAutocryptSetup = {
 
   performAutocryptSetup: function(headerValue, passwordWindow = null, confirmWindow = null) {
 
-    EnigmailLog.DEBUG("autocryptSetup.js: performAutocryptSetup()");
+    EnigmailLog.DEBUG("autocryptSetup.jsm: performAutocryptSetup()\n");
     if (headerValue.attachment.contentType.search(/^application\/autocrypt-setup$/i) === 0) {
       EnigmailAutocrypt.getSetupMessageData(headerValue.attachment.url).then(res => {
         let passwd = EnigmailWindows.autocryptSetupPasswd(passwordWindow, "input", res.passphraseFormat, res.passphraseHint);
@@ -178,7 +183,7 @@ var EnigmailAutocryptSetup = {
         EnigmailDialog.info(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.success", headerValue.header.author));
       }).
       catch(err => {
-        EnigmailLog.DEBUG("autocryptSetup.js: performAutocryptSetup got cancel status=" + err + "\n");
+        EnigmailLog.DEBUG("autocryptSetup.jsm: performAutocryptSetup got cancel status=" + err + "\n");
 
         switch (err) {
           case "getSetupMessageData":
@@ -206,14 +211,15 @@ var EnigmailAutocryptSetup = {
    */
 
   processAutocryptHeader: function(headerValue, win = null) {
-    EnigmailLog.DEBUG("autocryptSetup.js: processAutocryptHeader()");
+    EnigmailLog.DEBUG("autocryptSetup.jsm: processAutocryptHeader()\n");
 
     return new Promise(async(resolve, reject) => {
-      for (let i = 0; i < headerValue.autocryptheaders.length; i++) {
-        for (let j = 0; j < headerValue.autocryptheaders[i].msgData.length; j++) {
-          let success = await EnigmailAutocrypt.processAutocryptHeader(headerValue.autocryptheaders[i].fromAddr, [headerValue.autocryptheaders[i].msgData[j]], headerValue.autocryptheaders[i]
-            .date);
-          if (success != 0) {
+      for (let i = 0; i < headerValue.msgHeaders.length; i++) {
+        if (headerValue.msgHeaders[i].msgType === "Autocrypt") {
+          // FIXME
+          let success = await EnigmailAutocrypt.processAutocryptHeader(headerValue.msgHeaders[i].fromAddr, [headerValue.msgHeaders[i].msgData],
+            headerValue.msgHeaders[i].date);
+          if (success !== 0) {
             EnigmailDialog.alert(win, EnigmailLocale.getString("acStartup.acHeaderFound.failure"));
             resolve(1);
           }
@@ -227,7 +233,7 @@ var EnigmailAutocryptSetup = {
   startKeyGen: async function(headerValue) {
 
     return new Promise(async(resolve, reject) => {
-      EnigmailLog.DEBUG("autocryptSetup.js: startKeyGen()");
+      EnigmailLog.DEBUG("autocryptSetup.jsm: startKeyGen()\n");
       let userName = headerValue.userName,
         userEmail = headerValue.userEmail,
         expiry = 1825,
@@ -240,16 +246,16 @@ var EnigmailAutocryptSetup = {
           _state: 0,
 
           onDataAvailable: function(data) {},
-          onStopRequest: function(exitCode) {}
+          onStopRequest: function(exitCode) {
+            resolve(0);
+          }
         };
 
       try {
-        let keygenRequest = await EnigmailKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
-        keygenRequest.wait();
-        resolve(0);
+        let keygenRequest = EnigmailKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
       }
       catch (ex) {
-        EnigmailLog.DEBUG("autocryptSetup.js: startKeyGen() error : " + ex);
+        EnigmailLog.DEBUG("autocryptSetup.jsm: startKeyGen: error: " + ex.message);
         resolve(1);
       }
     });
@@ -271,7 +277,7 @@ function createStreamListener(k) {
         k(this._data);
       }
       catch (e) {
-        EnigmailLog.DEBUG("autocryptSetup.jsm: createStreamListener() : " + e + "\n");
+        EnigmailLog.DEBUG("autocryptSetup.jsm: createStreamListener: error: " + e + "\n");
       }
     },
 
@@ -409,7 +415,7 @@ function getStreamedMessage(msgFolder, msgHeader) {
   });
 }
 
-function checkHeaders(headerObj, msgHeader, msgAuthor, accountMsgServer, msgFolder, returnMsgValue, autocryptHeaders) {
+function checkHeaders(headerObj, msgHeader, msgAuthor, accountMsgServer, msgFolder, returnMsgValue, msgHeaders) {
   return new Promise(async(resolve, reject) => {
     if (headerObj['autocrypt-setup-message'] && msgHeader.author == msgHeader.recipients) {
 
@@ -426,40 +432,52 @@ function checkHeaders(headerObj, msgHeader, msgAuthor, accountMsgServer, msgFold
       }
 
     }
-    else if (headerObj.autocrypt && msgAuthor == accountMsgServer.username) {
-      if (autocryptHeaders.length == 0) {
+    else if (msgAuthor == accountMsgServer.username &&
+      (("autocrypt" in headerObj) ||  ("x-pep-version" in headerObj))) {
+
+      let msgType = ("x-pep-version" in headerObj) ? "pEp" : "Autocrypt";
+
+      let fromHeaderExist = null;
+      for (let j = 0; j < msgHeaders.length; j++) {
+        if (msgHeaders[j].fromAddr == msgAuthor) {
+          fromHeaderExist = msgHeaders[j];
+          break;
+        }
+      }
+      if (fromHeaderExist === null) {
+        let dateTime = new Date(0);
+        try {
+          dateTime = jsmime.headerparser.parseDateHeader(headerObj.date[0]);
+        }
+        catch (x) {}
+
         let addHeader = {
-          'fromAddr': msgAuthor,
-          'msgData': [headerObj.autocrypt],
-          'date': headerObj.date[0]
+          fromAddr: msgAuthor,
+          msgType: msgType,
+          msgData: headerObj.autocrypt,
+          date: headerObj.date[0],
+          dateTime: dateTime
         };
-        autocryptHeaders.push(addHeader);
+        msgHeaders.push(addHeader);
       }
       else {
-        let fromHeaderExist = 0;
-        for (let j = 0; j < autocryptHeaders.length; j++) {
-          if (autocryptHeaders[j].fromAddr == msgAuthor) {
-            if (!autocryptHeaders[j].msgData.includes(headerObj.autocrypt)) {
-              autocryptHeaders[j].msgData.push(headerObj.autocrypt);
-            }
-            fromHeaderExist++;
-            break;
-          }
+        let dateTime = new Date(0);
+        try {
+          dateTime = jsmime.headerparser.parseDateHeader(headerObj.date[0]);
         }
-        if (fromHeaderExist == 0) {
-          let addHeader = {
-            'fromAddr': msgAuthor,
-            'msgData': [headerObj.autocrypt],
-            'date': headerObj.date[0]
-          };
-          autocryptHeaders.push(addHeader);
+        catch (x) {}
+        if (dateTime > fromHeaderExist.dateTime) {
+          fromHeaderExist.msgData = headerObj.autocrypt;
+          fromHeaderExist.date = headerObj.date[0];
+          fromHeaderExist.msgType = msgType;
+          fromHeaderExist.dateTime = dateTime;
         }
       }
     }
 
     resolve({
       'returnMsgValue': returnMsgValue,
-      'autocryptHeaders': autocryptHeaders
+      'msgHeaders': msgHeaders
     });
   });
 }
@@ -496,14 +514,14 @@ function getStreamedHeaders(msgURI, mms) {
         }
         catch (e) {
           reject({});
-          EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders() Error : " + e + "\n");
+          EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
         }
         resolve(headerObj);
       }), null, false);
     }
     catch (e) {
       reject({});
-      EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders() Error : " + e + "\n");
+      EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
     }
   });
 }

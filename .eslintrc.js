@@ -34,6 +34,7 @@ module.exports = {
     "no-implied-eval": 2,
     "no-invalid-this": 2,
     "no-iterator": 2,
+    "no-irregular-whitespace": 0,
     "no-labels": 2,
     "no-lone-blocks": 2,
     "no-loop-func": 2,

@@ -97,7 +97,7 @@ class CryptoAPI {
   }
 
   /**
-   * Get the list of all knwn keys (including their secret keys)
+   * Get the list of all konwn keys (including their secret keys)
    * @param {Array of String} onlyKeys: [optional] only load data for specified key IDs
    *
    * @return {Promise<Array of Object>}
