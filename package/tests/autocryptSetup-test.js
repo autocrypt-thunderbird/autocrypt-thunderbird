@@ -86,7 +86,7 @@ function copyMailToFolder(emlPath, folder) {
 //   setupTestAccounts();
 // })));
 
-//testing: startKeyGen
+//testing: createAutocryptKey
 test(withTestGpgHome(withEnigmail(function keyGenTest() {
 
   EnigmailKeyRing.clearCache();
@@ -98,7 +98,7 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
   };
 
   EnigmailKeyRing.clearCache();
-  EnigmailAutocryptSetup.startKeyGen(headerValue).then((value) => {
+  EnigmailAutocryptSetup.createAutocryptKey(headerValue).then((value) => {
     let keys = EnigmailKeyRing.getAllSecretKeys();
     Assert.equal(value, 0);
     Assert.equal(keys.length, 1);
@@ -113,7 +113,7 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
   inspector.enterNestedEventLoop(0);
 })));
 
-//testing: startKeyGen_error_Test
+//testing: createAutocryptKey_error_Test
 test(withTestGpgHome(withEnigmail(function keyGen_error_Test() {
 
   EnigmailKeyRing.clearCache();
@@ -125,7 +125,7 @@ test(withTestGpgHome(withEnigmail(function keyGen_error_Test() {
   };
 
   EnigmailKeyRing.clearCache();
-  EnigmailAutocryptSetup.startKeyGen(headerValue).then((value) => {
+  EnigmailAutocryptSetup.createAutocryptKey(headerValue).then((value) => {
     Assert.equal(value, 1);
     inspector.exitNestedEventLoop();
   }).catch(res => {
@@ -264,8 +264,8 @@ test(withTestGpgHome(withEnigmail(function getStreamedHeadersTest() {
 
   getStreamedHeaders(msgURI, mms).then((value) => {
     Assert.notEqual(value, null);
-    Assert.equal(value.subject[0], "Encrypted email");
-    Assert.equal(value.date[0], "Tue, 09 Jun 2015 16:43:45 -0500");
+    Assert.equal(value.subject, "Encrypted email");
+    Assert.equal(value.date, "Tue, 09 Jun 2015 16:43:45 -0500");
     inspector.exitNestedEventLoop();
   }).catch(err => {
     Assert.ok(false);
@@ -359,7 +359,7 @@ test(withTestGpgHome(withEnigmail(function checkHeadersTest() {
     let returnValue = await checkHeaders(value, msgHeader2, msgAuthor, accountMsgServer, setupFolder, returnMsgValue, msgHeaders);
     Assert.notEqual(returnValue, null);
     Assert.equal(returnValue.returnMsgValue.value, 1);
-    Assert.equal(returnMsgValue.header.author, 'nobody');
+    Assert.equal(returnMsgValue.acSetupMessage.author, 'nobody');
     Assert.notEqual(returnMsgValue.attachment, null);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -471,7 +471,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetupTest() {
   getStreamedMessage(sourceFolder, msgheader).then((value) => {
     Assert.notEqual(value, null);
     let headervalue = {
-      'header': msgheader,
+      'acSetupMessage': msgheader,
       'attachment': value
     };
 
@@ -530,7 +530,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetup_wrongPassword_T
   getStreamedMessage(sourceFolder, msgheader).then((value) => {
     Assert.notEqual(value, null);
     let headervalue = {
-      'header': msgheader,
+      'acSetupMessage': msgheader,
       'attachment': value
     };
 

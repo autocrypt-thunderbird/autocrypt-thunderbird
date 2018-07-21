@@ -231,7 +231,7 @@ var EnigmailConfigure = {
       }
 
       else if (setupType.value == 3) {
-        EnigmailAutocryptSetup.startKeyGen(setupType);
+        EnigmailAutocryptSetup.createAutocryptKey(setupType);
       }
 
       else if (setupType.value == 4) {
