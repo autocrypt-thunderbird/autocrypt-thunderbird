@@ -24,6 +24,7 @@ Cu.import("chrome://enigmail/content/modules/app.jsm");
 Cu.import("chrome://enigmail/content/modules/locale.jsm");
 Cu.import("chrome://enigmail/content/modules/dialog.jsm");
 Cu.import("chrome://enigmail/content/modules/windows.jsm");
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
 Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 Cu.import("chrome://enigmail/content/modules/installPep.jsm"); /* global EnigmailInstallPep: false */
@@ -213,7 +214,7 @@ var EnigmailConfigure = {
 
       let setupType = await EnigmailAutocryptSetup.determinePreviousInstallType();
 
-      if (setupType.value == 1) {
+      if (setupType.value === EnigmailConstants.AUTOSETUP_AC_SETUP_MSG) {
         if (EnigmailDialog.confirmDlg(null,
             EnigmailLocale.getString("acStartup.acMessageFound.desc"),
             EnigmailLocale.getString("acStartup.import.label"),
@@ -221,7 +222,7 @@ var EnigmailConfigure = {
           EnigmailAutocryptSetup.performAutocryptSetup(setupType);
         }
       }
-      else if (setupType.value == 2) {
+      else if (setupType.value === EnigmailConstants.AUTOSETUP_AC_HEADER) {
         if (EnigmailDialog.confirmDlg(null,
             EnigmailLocale.getString("acStartup.acHeaderFound.desc"),
             EnigmailLocale.getString("acStartup.import.label"),
@@ -229,16 +230,12 @@ var EnigmailConfigure = {
           EnigmailAutocryptSetup.processAutocryptHeader(setupType);
         }
       }
-
-      else if (setupType.value == 3) {
+      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_HEADER) {
         EnigmailAutocryptSetup.createAutocryptKey(setupType);
       }
-
-      else if (setupType.value == 4) {
+      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_ACCOUNT) {
         // Code to be Added for Thunderbird where no accounts are added.
       }
-
-
 
       if (EnigmailPrefs.getPref("juniorMode") === 0 || (!isPepInstallable())) {
         // start wizard if pEp Junior Mode is forced off or if pep cannot

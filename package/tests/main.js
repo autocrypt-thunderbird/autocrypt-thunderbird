@@ -21,6 +21,7 @@ function execTest(filename) {
     do_subtest(filename);
 }
 
+execTest("initialize.js");
 execTest("autocrypt-test.js");
 execTest("armor-test.js");
 execTest("data-test.js");

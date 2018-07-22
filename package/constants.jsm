@@ -146,6 +146,14 @@ var EnigmailConstants = {
   KEYSERVER_ERR_IMPORT_ERROR: 6,
   KEYSERVER_ERR_UNKNOWN: 7,
 
+  /* AutocryptSeup Setup Type */
+  AUTOSETUP_AC_SETUP_MSG: 1,
+  AUTOSETUP_AC_HEADER: 2,
+  AUTOSETUP_PEP_HEADER: 3,
+  AUTOSETUP_ENCRYPTED_MSG: 4,
+  AUTOSETUP_NO_HEADER: 5,
+  AUTOSETUP_NO_ACCOUNT: 6,
+
   /* Bootstrapped Addon constants */
   APP_STARTUP: 1, // The application is starting up.
   APP_SHUTDOWN: 2, // The application is shutting down.

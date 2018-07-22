@@ -65,6 +65,8 @@ test(withTestGpgHome(withEnigmail(function shouldCheckKeyExpiry() {
 
 test(function shouldCheckKeySpecs() {
   let a = EnigmailKeyUsability.getKeysSpecForIdentities();
+  Assert.equal(a.length, 3);
+  dump("%%%%% " + a.join(" ") + "\n");
   Assert.equal(a.join(" "), "ABCDEF0123456789 user2@enigmail-test.net user4@enigmail-test.net");
 });
 

@@ -182,6 +182,10 @@ function withPreferences(func) {
 function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 
   const UNITTEST_ACCT_NAME = "Enigmail Unit Test";
+  setupTestAccount(UNITTEST_ACCT_NAME, "dummy", primaryEmail, primaryKeyId);
+}
+
+function setupTestAccount(accountName, incomingServerUserName, primaryEmail = null, primaryKeyId = null) {
   const Cc = Components.classes;
   const Ci = Components.interfaces;
 
@@ -191,9 +195,7 @@ function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 
   function reportError() {
     return "Your profile is not set up correctly for Enigmail Unit Tests\n" +
-      "Please ensure that your profile contains exactly one Account of type POP3.\n" +
-      "The account name must be set to '" + UNITTEST_ACCT_NAME + "'.\n" +
-      "Alternatively, you can simply delete all accounts except for the Local Folders\n";
+      "Please ensure that your profile contains only one Accounts of type POP3.\n";
   }
 
   function setIdentityData(ac, idNumber, idName, fullName, email, useEnigmail, keyId) {
@@ -238,20 +240,20 @@ function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 
   for (let acct = 0; acct < accountManager.accounts.length; acct++) {
     let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
-    if (ac.incomingServer.type !== "none") {
-      if (ac.incomingServer.type !== "pop3" || ac.incomingServer.prettyName !== UNITTEST_ACCT_NAME) {
-        throw reportError();
-      }
+    if (ac.incomingServer.type !== "none" && ac.incomingServer.type !== "pop3") {
+      throw reportError();
     }
   }
 
   let configured = 0;
+  let gotAc = null;
 
   // try to configure existing account
   for (let acct = 0; acct < accountManager.accounts.length; acct++) {
     let ac = accountManager.accounts.queryElementAt(acct, Ci.nsIMsgAccount);
-    if (ac.incomingServer.type !== "none") {
+    if (ac.incomingServer.type === "pop3" && ac.incomingServer.prettyName === accountName) {
       setupAccount(ac);
+      gotAc = ac;
       ++configured;
     }
   }
@@ -259,11 +261,14 @@ function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
   // if no account existed, create new account
   if (configured === 0) {
     let ac = accountManager.createAccount();
-    let is = accountManager.createIncomingServer("dummy", "localhost", "pop3");
-    is.prettyName = UNITTEST_ACCT_NAME;
+    let is = accountManager.createIncomingServer(incomingServerUserName, "localhost", "pop3");
+    is.prettyName = accountName;
     ac.incomingServer = is;
+    gotAc = ac;
     setupAccount(ac);
   }
+
+  return gotAc;
 }
 
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */

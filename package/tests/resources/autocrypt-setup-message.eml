@@ -1,28 +1,11 @@
 Return-Path: <tester@enigmail.org>
-Received: from Khushils-MacBook-Air.local ([14.139.122.120])
-        by smtp.gmail.com with ESMTPSA id c14sm3869582pfn.185.2018.03.27.12.13.38
-        for <tester@enigmail.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 27 Mar 2018 12:13:40 -0700 (PDT)
-Message-ID: <5aba97e4.ce81a70a.fb9d7.7239@mx.google.com>
-X-Google-Original-Message-ID: zro4K8XGfrWod9eDImuDajI9wh9-enigmail
+Message-ID: <sifweprtzpeg@dummy.invalid>
 Date: Tue, 27 Mar 2018 12:13:40 -0700 (PDT)
-X-Google-Original-Date: Tue, 27 Mar 2018 19:14:19 GMT
 To: nobody
 From: nobody
 Autocrypt-Setup-Message: v1
 Subject: Autocrypt Setup Message
 Content-type: multipart/mixed; boundary="xyBPK0qmIew1Vw0cI32MOjAWBvzPwm7cK"
-X-Cyberoam-smtpxy-version: 1.0.6.3
-X-Cyberoam-AV-Policy: Default Rule
-X-CTCH-PVer:  0000001
-X-CTCH-Spam:  Unknown
-X-CTCH-VOD:  Unknown
-X-CTCH-Flags:  0
-X-CTCH-RefID:  str=0001.0A150205.5ABA97E3.006D,ss=1,re=0.000,recu=0.000,reip=0.000,vtr=str,vl=0,cl=1,cld=1,fgs=0
-X-CTCH-Score:  0.000
-X-CTCH-ScoreCust:  0.000
-X-CTCH-Rules:
 
 --xyBPK0qmIew1Vw0cI32MOjAWBvzPwm7cK
 Content-Type: text/plain

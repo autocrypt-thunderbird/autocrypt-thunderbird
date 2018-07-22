@@ -39,6 +39,16 @@ const MailHelper = {
     }
   },
 
+  deleteAllAccounts: function() {
+    let ac = MailServices.accounts.accounts;
+    for (let i = 0; i < ac.length; i++) {
+      let aAccount = ac.queryElementAt(i, Components.interfaces.nsIMsgAccount);
+      MailServices.accounts.removeAccount(aAccount, true);
+    }
+
+    MailHelper.initialized = false;
+  },
+
   getRootFolder: function() {
     MailHelper.init();
     return MailHelper.rootFolder;
