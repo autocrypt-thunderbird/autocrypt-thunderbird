@@ -510,7 +510,7 @@ function getStreamedHeaders(msgURI, mms) {
             acHeader = acHeader.replace(/keydata=/i, 'keydata="') + '"';
 
             let paramArr = EnigmailMime.getAllParameters(acHeader);
-            paramArr.keydata = paramArr.keydata.replace(/[\r\n\t ]/g, "")
+            paramArr.keydata = paramArr.keydata.replace(/[\r\n\t ]/g, "");
 
             headerObj.autocrypt = "";
             for (i in paramArr) {
