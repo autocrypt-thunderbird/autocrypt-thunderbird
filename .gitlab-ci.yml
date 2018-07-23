@@ -1,0 +1,54 @@
+image: node:latest
+
+build:
+  script:
+    - apt update -y -qq
+    - apt install zip -y -qq
+    - ./configure
+    - make
+
+lint:
+  before_script:
+    - npm install -g eslint
+  script:
+    - ./configure
+    - make eslint
+
+check:
+  script:
+    - ./configure
+    - make check
+
+test:
+  before_script:
+    - apt update -y -qq
+    - apt install thunderbird zip unzip xvfb libgtk-3-0 -y -qq
+    - which thunderbird
+    - mkdir -p ~/.thunderbird/test-profile/extensions tmp jsunit
+    - printf '%s/build/dist/' "$(pwd)" > "$HOME/.thunderbird/test-profile/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}"
+    - printf '%s/jsunit/' "$(pwd)" > "$HOME/.thunderbird/test-profile/extensions/jsunit@enigmail.net"
+    - printf 'user_pref("extensions.autoDisableScopes", 14);\n' > "$HOME/.thunderbird/test-profile/prefs.js"
+    - printf 'user_pref("browser.dom.window.dump.enabled", true);\n' >> "$HOME/.thunderbird/test-profile/prefs.js"
+    - wget -q https://www.enigmail.net/jsunit/jsunit-0.1.6.xpi
+    - cd jsunit; unzip ../jsunit-0.1.6.xpi; cd ..
+    - wget -q https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/60.0b10/linux-x86_64/en-US/thunderbird-60.0b10.tar.bz2
+    - tar -xjvf thunderbird-60.0b10.tar.bz2
+    - thunderbird --version
+    - thunderbird/thunderbird --version
+  script:
+    - export TMPDIR="$(pwd)/tmp"
+    - export XAUTHORITY="$(pwd)/tmp/.Xauthority"
+    - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
+    - ./configure --enable-tests --with-tb-path=`printf '%s/thunderbird/thunderbird' "$(pwd)"` --with-tb-args="--profile $HOME/.thunderbird/test-profile"
+    - make dirs xpi
+    - cat config/autoconf.mk
+    - ls ~/.thunderbird/test-profile/
+    - cat ~/.thunderbird/test-profile/prefs.js
+    - cat ~/.thunderbird/test-profile/extensions/*
+    - ls /builds/azul/enigmail/build/dist
+    - xvfb-run -a -f "$XAUTHORITY" $(which make) unit
+  artifacts:
+    paths:
+      - config
+      - tmp
+      - ~/.thunderbird/test-profile
