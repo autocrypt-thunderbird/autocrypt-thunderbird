@@ -13,3 +13,18 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestH
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
 MailHelper.deleteAllAccounts();
+
+component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+
+test(withTestGpgHome(function setupTest() {
+  let t = EnigmailFiles.getTempDirObj();
+  t.append(".gnupgTest");
+  Assert.ok(t.exists(), ".gnupg exists in tempDir");
+
+  t.append("gpg-agent.conf");
+  Assert.ok(t.exists(), ".gnupg/gpg-agent.conf exists in tempDir");
+
+  let cfg = EnigmailFiles.readFile(t);
+
+  Assert.ok(cfg.length > 10, "gpg-agent.conf is not empty");
+}));
