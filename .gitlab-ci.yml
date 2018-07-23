@@ -23,7 +23,7 @@ test:
   before_script:
     - export TBPROFILE="$(pwd)/tb-test-profile"
     - apt update -y -qq
-    - apt install thunderbird zip unzip xvfb libgtk-3-0 -y -qq
+    - apt install thunderbird gnupg2 zip unzip xvfb libgtk-3-0 -y -qq
     - which thunderbird
     - mkdir -p $TBPROFILE/extensions tmp jsunit
     - printf '%s/build/dist/' "$(pwd)" > "$TBPROFILE/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}"
