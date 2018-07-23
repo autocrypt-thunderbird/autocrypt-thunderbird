@@ -160,4 +160,14 @@ class CryptoAPI {
     return null;
   }
 
+  /**
+   *
+   * @param {byte} byteData    The encrypted data
+   *
+   * @return {String} - the name of the attached file
+   */
+
+  async getFileName(byteData) {
+    return null;
+  }
 }
