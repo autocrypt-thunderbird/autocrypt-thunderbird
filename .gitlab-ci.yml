@@ -50,7 +50,7 @@ test:
     - ls $TBPROFILE
     - cat $TBPROFILE/prefs.js
     - cat $TBPROFILE/extensions/*
-    - JS_TEST=encryption-test.js xvfb-run -a -f "$XAUTHORITY" $(which make) unit
+    - xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
       - config
