@@ -40,9 +40,9 @@ eslint:
 	static_analysis/eslint ui
 
 unit:
-	make -C ipc/tests
 	make -C package/tests
 	make -C ui/tests
+	make -C ipc/tests
 
 test: eslint check unit
 
