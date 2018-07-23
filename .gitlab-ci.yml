@@ -52,7 +52,7 @@ test:
     - cat $TBPROFILE/extensions/*
     - ls -l $(pwd)/package/tests/pinentry-auto
     - ls -l /bin/bash
-    - JS_TEST=initialize.js xvfb-run -a -f "$XAUTHORITY" $(which make) unit
+    - JS_TEST=encryption-test.js xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
       - config

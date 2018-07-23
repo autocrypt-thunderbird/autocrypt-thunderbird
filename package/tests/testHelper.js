@@ -113,7 +113,7 @@ var TestHelper = {
       if (workingDirectory.exists()) workingDirectory.remove(true);
     }
     catch (ex) {
-      // do nothing about it
+      JSUnit.assert.ok(false, "Could not remove GpgHome");
     }
   }
 };
