@@ -30,6 +30,9 @@ test:
     - printf '%s/jsunit/' "$(pwd)" > "$TBPROFILE/extensions/jsunit@enigmail.net"
     - printf 'user_pref("extensions.autoDisableScopes", 14);\n' > "$TBPROFILE/prefs.js"
     - printf 'user_pref("browser.dom.window.dump.enabled", true);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.update.autoUpdateDefault", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("app.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
     - wget -q https://www.enigmail.net/jsunit/jsunit-0.1.6.xpi
     - cd jsunit; unzip ../jsunit-0.1.6.xpi; cd ..
     - wget -q https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/60.0b10/linux-x86_64/en-US/thunderbird-60.0b10.tar.bz2
