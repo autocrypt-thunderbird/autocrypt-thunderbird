@@ -27,6 +27,7 @@ const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants
 const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
 const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailPassword = Cu.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
 
 const {
   obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures
@@ -235,6 +236,34 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       ret.errorMsg = EnigmailLocale.getString("failKeyExtract") + "\n" + ret.errorMsg;
     }
     return ret;
+  }
+
+  /**
+   *
+   * @param {byte} byteData    The encrypted data
+   *
+   * @return {String or null} - the name of the attached file
+   */
+
+  async getFileName(byteData) {
+    EnigmailLog.DEBUG(`gnupg.js: getFileName\n`);
+    const args = EnigmailGpg.getStandardArgs(true).
+    concat(EnigmailPassword.command()).
+    concat(["--decrypt"]);
+
+    let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, byteData + "\n");
+
+    const matches = res.stderrData.match(/^(\[GNUPG:\] PLAINTEXT [0-9]+ [0-9]+ )(.*)$/m);
+    if (matches && (matches.length > 2)) {
+      var filename = matches[2];
+      if (filename.indexOf(" ") > 0) {
+        filename = filename.replace(/ .*$/, "");
+      }
+      return EnigmailData.convertToUnicode(unescape(filename), "utf-8");
+    }
+    else {
+      return null;
+    }
   }
 }
 
