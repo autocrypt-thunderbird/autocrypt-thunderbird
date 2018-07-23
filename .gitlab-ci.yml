@@ -45,7 +45,6 @@ test:
     - ls ~/.thunderbird/test-profile/
     - cat ~/.thunderbird/test-profile/prefs.js
     - cat ~/.thunderbird/test-profile/extensions/*
-    - ls /builds/azul/enigmail/build/dist
     - xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
