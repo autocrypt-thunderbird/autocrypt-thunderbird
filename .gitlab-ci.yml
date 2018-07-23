@@ -33,11 +33,11 @@ test:
     - printf 'user_pref("extensions.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
     - printf 'user_pref("extensions.update.autoUpdateDefault", false);\n' >> "$TBPROFILE/prefs.js"
     - printf 'user_pref("app.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.enigmail.logDirectory", "%s");\n' $(pwd)/tmp >> "$TBPROFILE/prefs.js"
     - wget -q https://www.enigmail.net/jsunit/jsunit-0.1.6.xpi
     - cd jsunit; unzip ../jsunit-0.1.6.xpi; cd ..
     - wget -q https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/60.0b10/linux-x86_64/en-US/thunderbird-60.0b10.tar.bz2
     - tar -xjvf thunderbird-60.0b10.tar.bz2
-    - thunderbird --version
     - thunderbird/thunderbird --version
   script:
     - export TBPROFILE="$(pwd)/tb-test-profile"
@@ -50,8 +50,6 @@ test:
     - ls $TBPROFILE
     - cat $TBPROFILE/prefs.js
     - cat $TBPROFILE/extensions/*
-    - ls -l $(pwd)/package/tests/pinentry-auto
-    - ls -l /bin/bash
     - JS_TEST=encryption-test.js xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
