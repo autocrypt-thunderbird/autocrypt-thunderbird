@@ -26,6 +26,7 @@ Cu.import("chrome://enigmail/content/modules/zbase32.jsm"); /*global EnigmailZBa
 Cu.import("chrome://enigmail/content/modules/openpgp.jsm"); /*global EnigmailOpenPGP: false */
 Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
 Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+Cu.import("chrome://enigmail/content/modules/sqliteDb.jsm"); /* global EnigmailSqliteDb: false*/
 
 var EnigmailWkdLookup = {
 
@@ -120,10 +121,8 @@ var EnigmailWkdLookup = {
 
     let conn;
 
-    return Sqlite.openConnection({
-      path: "enigmail.sqlite",
-      sharedMemoryCache: false
-    }).then(function onConnection(connection) {
+    return EnigmailSqliteDb.openDatabase().
+    then(function onConnection(connection) {
       conn = connection;
       return checkDatabaseStructure(conn);
     }, function onError(error) {
