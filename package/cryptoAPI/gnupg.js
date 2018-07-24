@@ -28,6 +28,7 @@ const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").Eni
 const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailPassword = Cu.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
+const GnuPGDecryption = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm").GnuPGDecryption;
 
 const {
   obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures
@@ -264,6 +265,44 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
     else {
       return null;
     }
+  }
+
+  /**
+   *
+   * @param {Path} filePath    The signed file
+   * @param {Path} sigPath       The signature to verify
+   *
+   * @return {Promise<String>} - A message from the verification.
+   *
+   * Use Promise.catch to handle failed verifications.
+   * The message will be an error message in this case.
+   */
+
+  async verifyAttachment(filePath, sigPath) {
+    EnigmailLog.DEBUG(`gnupg.js: verifyAttachment\n`);
+    return Promise.new (function(resolve, reject) {
+      const args = EnigmailGpg.getStandardArgs(true).
+      concat(["--verify", sigPath, filePath]);
+      const promise = EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
+      promise.then(function(retObj){
+        const decrypted = {};
+        GnuPGDecryption.decryptMessageEnd(retObj.stderrData, retObj.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, decrypted);
+        if (retObj.exitCode === 0) {
+          const detailArr = decrypted.sigDetails.split(/ /);
+          const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
+          const msg1 = decrypted.errorMsg.split(/\n/)[0];
+          const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + decrypted.keyId, dateTime]);
+          const message = msg1 + "\n" + msg2;
+          resolve(message);
+        }
+        else {
+          reject(decrypted.errorMsg);
+        }
+      });
+      promise.catch(function(retObj){
+        reject(retObj.errorMsg);
+      });
+    });
   }
 }
 
