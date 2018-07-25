@@ -157,6 +157,38 @@ function withTestGpgHome(f) {
   };
 }
 
+
+/**
+ * Overwrite functions for the scope of a test, and re-set the original function
+ * after the test has completed
+ *
+ * @param {Array<Object>} overwriteArr:
+ *   - obj {Object}: target Object
+ *   - fn  {String}: function name
+ *   - new {Function}: new function
+ */
+function withOverwriteFuncs(overwriteArr, func) {
+  let origFuncs = [];
+  for (let f in overwriteArr) {
+    origFuncs.push({
+      obj: overwriteArr[f].obj,
+      fn: overwriteArr[f].fn,
+      origFunc: overwriteArr[f].obj[overwriteArr[f].fn]
+    });
+    overwriteArr[f].obj[overwriteArr[f].fn] = overwriteArr[f].new;
+  }
+
+  try {
+    func();
+  }
+  catch (x) {}
+
+  for (let i in origFuncs) {
+    origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
+  }
+}
+
+
 function withPreferences(func) {
   return function() {
     const keyRefreshPrefs = EnigmailPrefs.getPref("keyRefreshOn");
