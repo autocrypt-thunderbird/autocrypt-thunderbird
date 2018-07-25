@@ -43,13 +43,14 @@ test:
     - export TMPDIR="$(pwd)/tmp"
     - export XAUTHORITY="$(pwd)/tmp/.Xauthority"
     - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
-    - ./configure --enable-tests --with-tb-path=`printf '%s/thunderbird/thunderbird' "$(pwd)"` --with-tb-args="--profile $TBPROFILE"
+    - ./configure --enable-tests --with-tb-path=`printf '%s/thunderbird/thunderbird' "$(pwd)"` --with-tb-args="--headless --profile $TBPROFILE"
     - make dirs xpi
     - cat config/autoconf.mk
     - ls $TBPROFILE
     - cat $TBPROFILE/prefs.js
     - cat $TBPROFILE/extensions/*
-    - xvfb-run -a -f "$XAUTHORITY" $(which make) unit
+    - echo "User =" $USER
+    - USER=root xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
       - config
