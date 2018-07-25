@@ -1,4 +1,4 @@
-image: node:latest
+image: node:10-stretch
 
 build:
   script:
@@ -21,33 +21,36 @@ check:
 
 test:
   before_script:
+    - export TBPROFILE="$(pwd)/tb-test-profile"
     - apt update -y -qq
-    - apt install thunderbird zip unzip xvfb libgtk-3-0 -y -qq
-    - which thunderbird
-    - mkdir -p ~/.thunderbird/test-profile/extensions tmp jsunit
-    - printf '%s/build/dist/' "$(pwd)" > "$HOME/.thunderbird/test-profile/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}"
-    - printf '%s/jsunit/' "$(pwd)" > "$HOME/.thunderbird/test-profile/extensions/jsunit@enigmail.net"
-    - printf 'user_pref("extensions.autoDisableScopes", 14);\n' > "$HOME/.thunderbird/test-profile/prefs.js"
-    - printf 'user_pref("browser.dom.window.dump.enabled", true);\n' >> "$HOME/.thunderbird/test-profile/prefs.js"
-    - wget -q https://www.enigmail.net/jsunit/jsunit-0.1.6.xpi
-    - cd jsunit; unzip ../jsunit-0.1.6.xpi; cd ..
-    - wget -q https://download-installer.cdn.mozilla.net/pub/thunderbird/releases/60.0b10/linux-x86_64/en-US/thunderbird-60.0b10.tar.bz2
-    - tar -xjvf thunderbird-60.0b10.tar.bz2
-    - thunderbird --version
+    - apt install thunderbird gnupg zip unzip curl xvfb libgtk-3-0 -y -qq
+    - mkdir -p $TBPROFILE/extensions tmp jsunit
+    - printf '%s/build/dist/' "$(pwd)" > "$TBPROFILE/extensions/{847b3a00-7ab1-11d4-8f02-006008948af5}"
+    - printf 'user_pref("extensions.autoDisableScopes", 14);\n' > "$TBPROFILE/prefs.js"
+    - printf 'user_pref("browser.dom.window.dump.enabled", true);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.update.autoUpdateDefault", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.blocklist.enabled", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("app.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
+    - printf 'user_pref("extensions.enigmail.logDirectory", "%s");\n' $(pwd)/tmp >> "$TBPROFILE/prefs.js"
+    - curl -s -o "$TBPROFILE/extensions/jsunit@enigmail.net.xpi" https://www.enigmail.net/jsunit/jsunit-0.1.6.xpi
+    - export TBDOWNLOAD=$(curl -s 'https://download.mozilla.org/?product=thunderbird-beta-latest&os=linux64&lang=en-US' | sed -E 's/(.*href=")([^"]+)(".*)/\2/')
+    - curl -s -o thunderbird.tar.bz2 $TBDOWNLOAD
+    - tar -xjvf thunderbird.tar.bz2
     - thunderbird/thunderbird --version
   script:
+    - export TBPROFILE="$(pwd)/tb-test-profile"
     - export TMPDIR="$(pwd)/tmp"
     - export XAUTHORITY="$(pwd)/tmp/.Xauthority"
     - export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
-    - ./configure --enable-tests --with-tb-path=`printf '%s/thunderbird/thunderbird' "$(pwd)"` --with-tb-args="--profile $HOME/.thunderbird/test-profile"
+    - ./configure --enable-tests --with-tb-path=`printf '%s/thunderbird/thunderbird' "$(pwd)"` --with-tb-args="--headless --profile $TBPROFILE"
     - make dirs xpi
     - cat config/autoconf.mk
-    - ls ~/.thunderbird/test-profile/
-    - cat ~/.thunderbird/test-profile/prefs.js
-    - cat ~/.thunderbird/test-profile/extensions/*
-    - xvfb-run -a -f "$XAUTHORITY" $(which make) unit
+    - ls $TBPROFILE
+    - cat $TBPROFILE/prefs.js
+    - USER=root xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
       - config
       - tmp
-      - ~/.thunderbird/test-profile
+      - tb-test-profile

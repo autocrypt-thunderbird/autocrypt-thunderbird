@@ -282,11 +282,11 @@ test(withTestGpgHome(withEnigmail(function shouldExportKey() {
   EnigmailKeyRing.getAllKeys();
 
   let pub = EnigmailKeyRing.extractKey(false, "0x781617319CE311C4", null, {}, {}).replace(/\r\n/g, "\n");
-  Assert.equal(pub.substr(-50), "/H0OOI1K\n=CVNK\n-----END PGP PUBLIC KEY BLOCK-----\n");
+  Assert.equal(pub.substr(-50), "t1DRJA==\n=I9l9\n-----END PGP PUBLIC KEY BLOCK-----\n");
 
   let pubAndSec = EnigmailKeyRing.extractKey(true, "strike.devtest@gmail.com", null, {}, {}).replace(/\r\n/g, "\n");
   Assert.equal(pubAndSec.substr(-37), "\n-----END PGP PRIVATE KEY BLOCK-----\n");
-  Assert.equal(pubAndSec.split(/\n/).length, 160);
+  Assert.equal(pubAndSec.split(/\n/).length, 161);
 })));
 
 

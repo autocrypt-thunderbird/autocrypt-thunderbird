@@ -54,9 +54,11 @@ test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
 
 test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);
+  const secretKey = do_get_file("resources/dev-strike.sec", false);
   const errorMsgObj = {};
   const importedKeysObj = {};
   EnigmailKeyRing.importKeyFromFile(publicKey, errorMsgObj, importedKeysObj);
+  EnigmailKeyRing.importKeyFromFile(secretKey, errorMsgObj, importedKeysObj);
   const parentWindow = JSUnit.createStubWindow();
   const plainText = "Hello there!";
   const strikeAccount = "strike.devtest@gmail.com";
@@ -74,7 +76,7 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
     errorMsgObj
   );
   Assert.equal(0, exitCodeObj.value);
-  Assert.equal(0, errorMsgObj.value);
+  Assert.equal("", errorMsgObj.value);
   Assert.equal(true, (statusFlagObj.value & EnigmailConstants.END_ENCRYPTION) !== 0);
   const blockType = EnigmailArmor.locateArmoredBlock(encryptResult, 0, "", {}, {}, {});
   Assert.equal("MESSAGE", blockType);
@@ -84,12 +86,8 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
 })));
 
 test(withTestGpgHome(withEnigmail(function shouldGetErrorReason() {
-  let r = EnigmailEncryption.determineOwnKeyUsability(EnigmailConstants.SEND_SIGNED, "strike.devtest@gmail.com");
-  let expected = EnigmailLocale.getString("keyRing.noSecretKey", ["anonymous strike <strike.devtest@gmail.com>", "0x781617319CE311C4"]) + "\n";
-  Assert.equal(r.errorMsg, expected);
-
-  r = EnigmailEncryption.determineOwnKeyUsability(EnigmailConstants.SEND_SIGNED | EnigmailConstants.SEND_ENCRYPTED, "nobody@notfound.net");
-  expected = EnigmailLocale.getString("errorOwnKeyUnusable", "nobody@notfound.net");
+  let r = EnigmailEncryption.determineOwnKeyUsability(EnigmailConstants.SEND_SIGNED | EnigmailConstants.SEND_ENCRYPTED, "nobody@notfound.net");
+  let expected = EnigmailLocale.getString("errorOwnKeyUnusable", "nobody@notfound.net");
   Assert.equal(r.errorMsg, expected);
 
 })));

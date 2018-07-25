@@ -24,6 +24,7 @@ Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: f
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false*/
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
 Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
+Cu.import("chrome://enigmail/content/modules/sqliteDb.jsm"); /* global EnigmailSqliteDb: false*/
 Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
 Cu.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
 Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
@@ -174,10 +175,7 @@ var EnigmailAutocrypt = {
 
       let conn;
 
-      Sqlite.openConnection({
-        path: "enigmail.sqlite",
-        sharedMemoryCache: false
-      }).then(
+      EnigmailSqliteDb.openDatabase().then(
         function onConnection(connection) {
           conn = connection;
           return checkDatabaseStructure(conn);
@@ -292,10 +290,7 @@ var EnigmailAutocrypt = {
     let conn;
 
     return new Promise((resolve, reject) => {
-      Sqlite.openConnection({
-        path: "enigmail.sqlite",
-        sharedMemoryCache: false
-      }).then(
+      EnigmailSqliteDb.openDatabase().then(
         function onConnection(connection) {
           conn = connection;
           return checkDatabaseStructure(conn);

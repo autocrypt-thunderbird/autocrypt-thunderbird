@@ -157,6 +157,7 @@ zip -9 --must-match\
     chrome/content/modules/enigmailprocess_worker_win.js \
     chrome/content/modules/enigmailprocess_shared.js \
     chrome/content/modules/enigmailprocess_win.jsm \
+    chrome/content/modules/sqliteDb.jsm \
     chrome/content/modules/system.jsm \
     chrome/content/modules/time.jsm \
     chrome/content/modules/timer.jsm \

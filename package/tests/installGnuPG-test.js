@@ -17,7 +17,7 @@ testing("installGnuPG.jsm"); /*global EnigmailInstallGnuPG: false, Installer: fa
 test(function shouldCheckHashSum() {
   let inst = new Installer(null);
   inst.installerFile = do_get_file("resources/dev-strike.asc", false);
-  inst.hash = "041af0b00ea712bf5ebe349e5cceda148e0797539ee85acd8e06ac8921c6667d"; // SHA256 sum of installerFile
+  inst.hash = "918f29289544d619fde087c98c35c7b39ca46616f00578fd90574cb78f15a85b"; // SHA256 sum of installerFile
 
   Assert.ok(inst.checkHashSum());
 });

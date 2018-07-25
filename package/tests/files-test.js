@@ -69,16 +69,22 @@ test(function checkDirectory() {
 
   md.remove(false);
 
-  md.initWithPath("/does/not/exist");
-  Assert.equal(1, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
-  if (EnigmailOS.isDosLike) {
-    let envS = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-    let sysRoot = envS.get("SystemRoot");
-    md.initWithPath(sysRoot);
+  if (env.get("USER") !== "root") {
+    // these two test cases don't work as expected if the test is run with root permissions
+
+    md.initWithPath("/does/not/exist");
+    Assert.equal(1, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
+
+    if (EnigmailOS.isDosLike) {
+      let envS = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+      let sysRoot = envS.get("SystemRoot");
+      md.initWithPath(sysRoot);
+    }
+    else
+      md.initWithPath("/");
+
+    Assert.equal(2, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
   }
-  else
-    md.initWithPath("/");
-
-  Assert.equal(2, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
 });

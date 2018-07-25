@@ -87,6 +87,7 @@ MODFILES = \
            send.jsm \
            singletons.jsm \
            socks5Proxy.jsm \
+           sqliteDb.jsm \
            stdlib.jsm \
            streams.jsm \
            system.jsm \
