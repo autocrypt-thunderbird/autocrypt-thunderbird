@@ -105,7 +105,7 @@ var EnigmailKeyRing = {
    **/
 
   getAllSecretKeys: function(onlyValidKeys = false) {
-    this.getAllKeys(); // ensure keylist is loaded;
+    EnigmailLog.DEBUG("keyRing.jsm: getAllSecretKeys()\n");
 
     let res = [];
 

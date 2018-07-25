@@ -288,6 +288,7 @@ var EnigmailAutocryptSetup = {
 
           onDataAvailable: function(data) {},
           onStopRequest: function(exitCode) {
+            EnigmailLog.DEBUG("autocryptSetup.jsm: createAutocryptKey(): key generation complete\n");
             resolve(0);
           }
         };
