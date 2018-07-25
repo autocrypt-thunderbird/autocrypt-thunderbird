@@ -12,7 +12,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false, withEnigmail: false, withTestGpgHome: false, Cu: false*/
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
-testing("autocryptSetup.jsm"); /*global EnigmailAutocryptSetup: false, enigGenKeyObserver: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false */
+testing("autocryptSetup.jsm"); /*global EnigmailAutocryptSetup: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false */
 
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
@@ -108,8 +108,20 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
   };
 
   EnigmailKeyRing.clearCache();
+
+  EnigmailKeyRing._generateKey = EnigmailKeyRing.generateKey;
+
+  EnigmailKeyRing.generateKey = function(userName, comment, userEmail, expiry, keyLength, keyType, passphrase, generateObserver) {
+    let keyFile = do_get_file("resources/testing-domain.invalid.pub-sec", false);
+
+    let exitCode = EnigmailKeyRing.importKeyFromFile(keyFile, {}, {});
+    generateObserver.onStopRequest(exitCode);
+  };
+
   EnigmailAutocryptSetup.createAutocryptKey(headerValue).then((value) => {
     let keys = EnigmailKeyRing.getAllSecretKeys();
+
+    EnigmailKeyRing.generateKey = EnigmailKeyRing._generateKey;
     Assert.equal(value, 0);
     Assert.equal(keys.length, 1);
     Assert.equal(keys[0].userIds[0].userId, "Test Name <testing@domain.invalid>");

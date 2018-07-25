@@ -48,8 +48,6 @@ test:
     - cat config/autoconf.mk
     - ls $TBPROFILE
     - cat $TBPROFILE/prefs.js
-    - cat $TBPROFILE/extensions/*
-    - echo "User =" $USER
     - USER=root xvfb-run -a -f "$XAUTHORITY" $(which make) unit
   artifacts:
     paths:
