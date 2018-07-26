@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false */
-/*global dump: false */
+/*global Cu: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
+Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
+
 
 const pubkey1 =
   `mQENBFdGIzkBCADKys5q0rYiTr/FYdoupmNAJ0o20XWuFp/V58qsnQAMcAY2pCB/ydx9Y7
@@ -99,7 +101,7 @@ test(function prepareDb() {
   then(connection => {
     connection.execute("drop table autocrypt_keydata;").then(ok => {
       connection.close();
-      dump("dropped table\n");
+      //dump("dropped table\n");
       do_test_finished();
     }).catch(err => {
       do_test_finished();

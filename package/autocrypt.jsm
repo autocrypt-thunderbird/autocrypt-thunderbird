@@ -17,7 +17,6 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
