@@ -34,7 +34,7 @@
 
 <!ENTITY enigmail.preferences.label       "Enigmail-Einstellungen">
 
-<!ENTITY enigmail.passwordSettings.label   "Passphrase Ablaufzeit">
+<!ENTITY enigmail.passwordSettings.label   "Passphrasen-Ablaufzeit">
 <!ENTITY enigmail.userNoPassphrase.label   "Nie nach einer Passphrase fragen">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Aktivieren, wenn Ihr OpenPGP-Schlüssel nicht durch eine Passphrase geschützt ist.">
 <!ENTITY enigmail.expertUserMenus.label    "Experten-Optionen und -Menüs anzeigen">
@@ -864,7 +864,7 @@ Bitte übertragen Sie die generierte Datei auf Ihren neuen Rechner, starten Sie 
 <!ENTITY enigmail.pepPref.passiveMode.label          "Meinen Schlüssel an ausgehende Nachrichten anhängen">
 <!ENTITY enigmail.pepPref.protectedSubject.label     "Geschützte Nachritchtenbetreffe aktivieren">
 <!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Zeige eine Warnung, wenn eine verschlüsselte Nachricht unverschlüsselt beantwortet oder weitergeleitet wird">
-<!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP Kompatibilität">
+<!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP-Kompatibilität">
 <!ENTITY enigmail.pepPref.autoKeyLookup.label        "Schlüssel automatisch auf Servern nachschlagen">
 <!ENTITY enigmail.pepPref.credits.label              "Danksagung">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Dankeschön an">
@@ -882,7 +882,7 @@ Bitte übertragen Sie die generierte Datei auf Ihren neuen Rechner, starten Sie 
                                                       Wählen Sie unten das Konto dessen Schlüssel übertragen werden soll.
                                                       Es wird am folgenden Schirm ein Einrichtungspasswort angezeigt das auf dem anderen Gerät eingegeben werden muss um den Schlüssel und die dazugehörigen Einstellungen zu importieren.">
 
-<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Erstelle Einrichtungsnachricht für Konto">
+<!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Erstelle Einrichtungsnachricht für Konto:">
 <!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Code für Autocrypt-Einrichtungsnachricht">
 <!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "Die Einrichtungsnachricht wurden Ihnen selbst zugesandt.<html:br/><html:br/>Wecheln Sie nun zum anderen Gerät und öffnen Sie die Nachricht. Sie sollten um ein Passwort gefragt werden. Geben Sie dort die folgenden Ziffern ein:">
 <!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "Wenn dies abgeschlossen ist, ist das anderen Gerät bereit um Autocrypt zu nutzen.">

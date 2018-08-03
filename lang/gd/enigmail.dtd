@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
-<!ENTITY enigmail.about.license           "Tha an còd aig Enigmail fosgailte agus ri fhaighinn fo cheadachas <html:a href='https://mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
+<!ENTITY enigmail.about.license           "Tha an còd aig Enigmail fosgailte agus ri fhaighinn fo cheadachas <html:a href='http://www.mozilla.org/MPL/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Cunntas / ID a’ chleachdaiche">
 <!ENTITY enigmail.keygenTitle.label       "Gin iuchair OpenPGP">
@@ -510,7 +510,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.label            "Cuir iuchraichean poblach air a’ phost-d">
 <!ENTITY enigmail.keyMan.createMail.label          "Sgrìobh post-d dha na h-iuchraichean a thagh thu">
 <!ENTITY enigmail.keyMan.uploadToServer.label      "Luchdaich suas iuchraichean poblach">
-<!ENTITY enigmail.keyMan.uploadToWkd.label         "Luchdaich suas gu eòlaire Webkey an t-solaraiche agad">
+<!ENTITY enigmail.keyMan.uploadToWkd.label         "Luchdaich suas gu eòlaire Web Key an t-solaraiche agad">
 <!ENTITY enigmail.keyMan.copyToClipbrd.label       "Cuir lethbhreac dhe na h-iuchraichean poblach air an stòr-bhòrd">
 <!ENTITY enigmail.keyMan.ctxExportToFile.label     "Às-phortaich iuchraichean gu faidhle">
 <!ENTITY enigmail.keyMan.ctxUploadToServer.label   "Luchdaidh suas iuchraichean poblach gu frithealaiche iuchraichean">
@@ -781,7 +781,7 @@ a’ gabhail a-steach nan iuchraichean OpenPGP agad. Nì thu seo le dà cheum:
 <!-- wizard: final page -->
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Mòran taing">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Tha Enigmail deiseil ri cleachdadh a-nis.<html:br/><html:br/>Mòran taing airson Enigmail a chleachdadh.">
-<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "Mholamaid gun luchdaich thu suas an iuchair phoblach agad gu eòlaire Webkey an t-solaraiche puist-d agad ach an lorg ’s an cleachd càch i gu fèin-obrachail.
+<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "Mholamaid gun luchdaich thu suas an iuchair phoblach agad gu eòlaire Web Key an t-solaraiche puist-d agad ach an lorg ’s an cleachd càch i gu fèin-obrachail.
                                                         <html:br/>Dearbhaich an t-iarrtas a gheibh thu sa bhogsa a-steach agad mas e seo a tha thu ag iarraidh.">
 <!ENTITY enigmail.pgComplete.help.title              "Airson barrachd fiosrachaidh air Enigmail, tadhail air">
 

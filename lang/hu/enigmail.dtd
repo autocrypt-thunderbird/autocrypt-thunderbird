@@ -2,7 +2,7 @@
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "">
 
-<!ENTITY enigmail.about.license           "">
+<!ENTITY enigmail.about.license           "Az Enigmail szabad szoftver, amely a <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a> licenc alatt lett közreadva.">
 
 <!ENTITY enigmail.keyUserId.label         "Postafiók / Felhasználói azonosító">
 <!ENTITY enigmail.keygenTitle.label       "OpenPGP-kulcs készítése">
@@ -20,7 +20,7 @@
 <!ENTITY enigmail.keyGen.years.label      "év">
 <!ENTITY enigmail.keyGen.noExpiry.label   "A kulcs soha nem jár le">
 <!ENTITY enigmail.keyGen.keySize.label    "Kulcsméret">
-<!ENTITY enigmail.keyGen.console.label    "">
+<!ENTITY enigmail.keyGen.console.label    "Kulcskészítés">
 <!ENTITY enigmail.keyGen.keyType.label    "Kulcstípus">
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
@@ -34,7 +34,7 @@
 
 <!ENTITY enigmail.preferences.label       "Enigmail beállításai">
 
-<!ENTITY enigmail.passwordSettings.label   "">
+<!ENTITY enigmail.passwordSettings.label   "Jelmondat időkorlát">
 <!ENTITY enigmail.userNoPassphrase.label   "Ne kérjen jelmondatot">
 <!ENTITY enigmail.userNoPassphrase.tooltip "Kapcsolja be, ha az OpenPGP-kulcs nincs jelmondattal védve.">
 <!ENTITY enigmail.expertUserMenus.label    "Speciális beállítások és menük megjelenítése">
@@ -84,7 +84,7 @@
 <!ENTITY enigmail.keySel.label           "Kulcsválasztás">
 <!ENTITY enigmail.pgpMime.label          "PGP/MIME">
 <!ENTITY enigmail.advanced.label         "Speciális">
-<!ENTITY enigmail.transferSettings.label "">
+<!ENTITY enigmail.transferSettings.label "Átviteli beállítások">
 
 <!ENTITY enigmail.basicPrefs.label       "Alapvető beállítások">
 
@@ -346,10 +346,10 @@
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Használja a postafiók e-mail címét az OpenPGP-kulcs azonosítására">
 <!ENTITY enigmail.amPrefUseKeyId.label              "Adott OpenPGP-kulcsazonosító használata (0x1234ABCD):">
 <!ENTITY enigmail.amPrefSelectKey.label             "Kulcs kiválasztása…">
-<!ENTITY enigmail.amPrefMsgComp.label               "">
+<!ENTITY enigmail.amPrefMsgComp.label               "Levélírás">
 <!ENTITY enigmail.amPrefDefaultEncrypt.label        "Levélírás alapvető beállításai">
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail titkosítás és aláírás beállításai">
-<!ENTITY enigmail.encDlgProtocol.label              "">
+<!ENTITY enigmail.encDlgProtocol.label              "Titkosítás és aláírás beállításai">
 <!ENTITY enigmail.encDlgEncrypt.label               "Üzenet titkosítása">
 <!ENTITY enigmail.encDlgEncrypt.accesskey           "t">
 <!ENTITY enigmail.encDlgSign.label                  "Üzenet aláírása">
@@ -850,10 +850,10 @@ a Thunderbird levelezőklienst, és az Enigmail menüből válassza ki a Beáll�
 <!ENTITY enigmail.pEp.trustWordsDlg.title             "">
 <!ENTITY enigmail.pEp.trustWordsDlg.overallDesc       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.keySyncDesc       "">
-<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
+<!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "Saját kulcs ujjlenyomata:">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Ujjlenyomat">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">
@@ -863,13 +863,13 @@ a Thunderbird levelezőklienst, és az Enigmail menüből válassza ki a Beáll�
 <!ENTITY enigmail.pepHandshake.SuggestionTitle       "">
 <!ENTITY enigmail.pepHandshake.explanation           "">
 
-<!ENTITY enigmail.pepPrepHandshake.desc              "">
+<!ENTITY enigmail.pepPrepHandshake.desc              "Adatok betöltése, kérem várjon…">
 
 <!ENTITY enigmail.pepPref.window.title               "">
-<!ENTITY enigmail.pepPref.accountTab.label           "">
+<!ENTITY enigmail.pepPref.accountTab.label           "Fiók">
 <!ENTITY enigmail.pepPref.compatTab.label            "Kompatibilitás">
-<!ENTITY enigmail.pepPref.aboutTab.label             "">
-<!ENTITY enigmail.pepPref.accountSecurity.desc       "">
+<!ENTITY enigmail.pepPref.aboutTab.label             "Névjegy">
+<!ENTITY enigmail.pepPref.accountSecurity.desc       "Fiók biztonság">
 <!ENTITY enigmail.pepPref.storeSecurely.title        "">
 <!ENTITY enigmail.pepPref.storeSecurely.label        "">
 <!ENTITY enigmail.pepPref.enableEncryption.label     "Magánszféra védelmének engedélyezése">

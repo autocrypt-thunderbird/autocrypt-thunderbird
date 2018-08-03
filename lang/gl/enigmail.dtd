@@ -27,9 +27,9 @@
 
 <!ENTITY enigmail.keyUpload.label         "Comprobación sempre que o seu provedor de correo electrónico é compatíbel">
 <!ENTITY enigmail.keyUpload.desc          "">
-<!ENTITY enigmail.keyUpload.sks.label     "">
+<!ENTITY enigmail.keyUpload.sks.label     "Subir aos servidores de chaves OpenPGP globais">
 <!ENTITY enigmail.keyUpload.sks.desc      "">
-<!ENTITY enigmail.keyUpload.wks.label     "">
+<!ENTITY enigmail.keyUpload.wks.label     "Subir ao servidor de chaves do seu provedor de correo electrónico">
 <!ENTITY enigmail.keyAttachAuto.label     "Anexar sempre a miña chave pública">
 
 <!ENTITY enigmail.preferences.label       "Preferencias de Enigmail">
@@ -60,7 +60,7 @@
 
 
 <!ENTITY enigmail.maxIdleMinutesHead.label "Lembrar a frase secreta durante">
-<!ENTITY enigmail.maxIdleMinutesTail.label "">
+<!ENTITY enigmail.maxIdleMinutesTail.label "minutos de inactividade (antes de necesitar introducila de novo)">
 <!ENTITY enigmail.maxIdleMinutes.tooltip   "Gardar na memoria as frases secretas durante un tempo limitado.">
 
 <!ENTITY enigmail.resetPrefsButton.label "Restabelecer">
@@ -771,9 +771,9 @@ pode deixarse en branco se o primeiro ficheiro xa contén as dúas.">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "Subir chave pública">
-<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "">
+<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publique a súa chave pública en internet">
 <!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Anexar a súa chave pública">
-<!ENTITY enigmail.attachAuto.desc                    "">
+<!ENTITY enigmail.attachAuto.desc                    "Cando está activado, a súa chave pública anéxase automaticamente aos correos">
 
 <!-- wizard: import settings from previous installation -->
 <!ENTITY enigmail.setupWiz.pgImportSettings.title    "Importar axustes dunha instalación anterior">
@@ -791,7 +791,7 @@ OpenPGP a outro computador. Isto faise en dous pasos:
 <!ENTITY enigmail.setupWiz.pgComplete.title          "Grazas">
 <!ENTITY enigmail.setupWiz.pgComplete.desc           "Xa pode usar Enigmail.<html:br></html:br><html:br></html:br>Grazas por usar Enigmail.">
 <!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "">
-<!ENTITY enigmail.pgComplete.help.title              "">
+<!ENTITY enigmail.pgComplete.help.title              "Para obter máis información sobre o uso do Enigmail, visite">
 
 <!-- wizard: manual setup page -->
 <!ENTITY enigmail.setupWiz.pgExpert.title            "Manual de configuración de Enigmail">
@@ -878,7 +878,7 @@ Transfira o ficheiro xerado ao novo computador, inicie o Thunderbird
 <!ENTITY enigmail.pepPref.credits.label              "Créditos">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Grazas a">
 
-<!ENTITY enigmail.acPreferEncrypt.label              "">
+<!ENTITY enigmail.acPreferEncrypt.label              "Preferir correos electrónicos cifrados das persoas coas que intercambia correo">
 <!ENTITY enigmail.enableAutocrypt.label              "Activar Autocrypt">
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Código de instalación do Autocrypt">

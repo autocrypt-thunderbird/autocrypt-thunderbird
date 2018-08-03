@@ -77,7 +77,7 @@
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail ondersteunt twee manieren om uw sleutels en instellingen over te brengen naar een ander apparaat.<html:br/><html:br/>
 ‘Autocrypt-sleuteloverbrenging’ vereist dat het e-mailprogramma op het andere apparaat compatibel is met Autocrypt.
-Hoewel dit de eenvoudigere oplossing is, ondersteunt slechts een beperkt aantal programma’s op dit moment deze standaard.<html:br/><html:br/>De andere manier is via ‘het maken en terugzetten van een reservekopie’ van uw instellingen.
+Hoewel dit de eenvoudigere oplossing is, ondersteunen slechts een paar applicaties op dit moment deze standaard.<html:br/><html:br/>De andere manier is via ‘het maken en terugzetten van een reservekopie’ van uw instellingen.
 Dit creëert een zipbestand met alle benodigde informatie en sleutels, dat u naar uw nieuwe apparaat kunt kopiëren.
 Enigmail kan deze instellingen direct importeren; voor andere e-mailprogramma’s kan het zipbestand uitgepakt worden en handmatig worden verwerkt.">
 
@@ -872,23 +872,23 @@ Hiervoor heeft u een intrekkingscertificaat nodig.
 <!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Een waarschuwing tonen als een bericht beveiliging verliest door het te beantwoorden of door te sturen">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP-compatibiliteit">
 <!ENTITY enigmail.pepPref.autoKeyLookup.label        "Sleutels automatisch op server opzoeken">
-<!ENTITY enigmail.pepPref.credits.label              "Credits">
+<!ENTITY enigmail.pepPref.credits.label              "Bijdragers">
 <!ENTITY enigmail.pepPref.thanksTo.label             "Met dank aan">
 
-<!ENTITY enigmail.acPreferEncrypt.label              "Verkies versleutelde e-mailberichten van de mensen met wie u e-mailt">
+<!ENTITY enigmail.acPreferEncrypt.label              "Voorkeur voor versleutelde e-mailberichten van de mensen met wie je e-mailt">
 <!ENTITY enigmail.enableAutocrypt.label              "Autocrypt inschakelen">
 
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Autocrypt-instellingscode">
-<!ENTITY enigmail.acSetupPasswd.password             "Instellingecode:">
+<!ENTITY enigmail.acSetupPasswd.password             "Instellingscode:">
 
 <!ENTITY enigmail.acKeyTransfer.window.title         "Autocrypt-sleuteloverdracht">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "Sleuteloverdracht initiëren">
-<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Als u een ander apparaat hebt dat Autocrypt-enabled is, kunt u uw sleutel naar het andere apparaat overzetten via het ‘Autocrypt-instellingsbericht’.
-Zo’n bericht maakt het mogelijk dat uw andere apparaat met een paar klikken net als Enigmail versleutelde e-mailberichten kan versturen en ontvangen.<html:br/><html:br/>
-Selecteer hieronder de account waarvoor uw uw sleutel wilt overzetten.
-Er wordt een instellingscode (wachtwoord) getoond op het volgende scherm, die u op het andere apparaat moet invoeren om uw sleutel en overige instellingen te importeren.">
+<!ENTITY enigmail.acKeyTransfer.welcome.desc         "Als je een ander apparaat hebt waar Autocrypt is ingeschakeld, kan je je sleutel naar het andere apparaat overzetten via het ‘Autocrypt-instellingsbericht’.
+Zo’n bericht maakt het mogelijk dat je andere apparaat met een paar klikken net als Enigmail versleutelde e-mailberichten kan versturen en ontvangen.<html:br/><html:br/>
+Selecteer hieronder de account waarvoor je je sleutel wilt overzetten.
+Er wordt een instellingscode (wachtwoord) getoond op het volgende scherm, die je op het andere apparaat moet invoeren om je sleutel en overige instellingen te importeren.">
 
 <!ENTITY enigmail.acKeyTransfer.selectAccount.label  "Instellingsbericht creëren voor account:">
 <!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Code voor Autocrypt-instellingsbericht:">
-<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "Het instellingsbericht is naar uzelf verzonden.<html:br/><html:br/>Schakel over naar het nieuwe apparaat en open het bericht. Als het goed is, wordt u gevraagd om de instellingscode. Type de volgende cijfers in op de prompt:">
+<!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "Het instellingsbericht is naar jezelf verzonden.<html:br/><html:br/>Schakel over naar het nieuwe apparaat en open het bericht. Als het goed is, word je gevraagd om de instellingscode. Type de volgende cijfers in op de prompt:">
 <!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "Als u klaar bent, is het andere apparaat klaar om Autocrypt te gebruiken.">
