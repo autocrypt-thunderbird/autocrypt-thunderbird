@@ -61,7 +61,7 @@
       </grid>
       <groupbox id="alsoknown" flex="1">
         <caption label="&enigmail.keyDetails.alsoKnown.label;:"/>
-        <listbox id="additionalUid" rows="3" flex="1"/>
+        <richlistbox id="additionalUid" style="height: 4em;" flex="1"/>
       </groupbox>
     </vbox>
     <vbox flex="1" align="end">

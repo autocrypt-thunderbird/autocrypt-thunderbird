@@ -187,11 +187,13 @@ function prepareDialog(secretOnly) {
     }
   }
   var dialogMsgList = document.getElementById("dialogMsgList");
-  if (dialogMsgList) {
+  var dialogMsgListRows = document.getElementById("dialogMsgListRows");
+  if (dialogMsgListRows) {
     // clear the list (otherwise it grows with each loaded missing key)
-    while (dialogMsgList.getRowCount() > 0) {
-      dialogMsgList.removeIndexAt(0);
+    while (dialogMsgListRows.firstChild) {
+      dialogMsgListRows.removeChild(dialogMsgListRows.firstChild);
     }
+
     // fill the list according to the error messages
     if (window.arguments[INPUT].errArray && window.arguments[INPUT].errArray.length > 0) {
       var array = window.arguments[INPUT].errArray;
@@ -212,16 +214,15 @@ function prepareDialog(secretOnly) {
             msg = "???";
             break;
         }
-        var row = document.createElement('listitem');
-        var cell = document.createElement('listcell');
-        cell.setAttribute('label', array[detIdx].addr + ":");
+        var row = document.createElement('row');
+        var cell = document.createElement('label');
+        cell.setAttribute('value', array[detIdx].addr + ":");
         row.appendChild(cell);
-        cell = document.createElement('listcell');
-        cell.setAttribute('label', msg);
+        cell = document.createElement('label');
+        cell.setAttribute('value', msg);
         row.appendChild(cell);
-        dialogMsgList.appendChild(row);
+        dialogMsgListRows.appendChild(row);
       }
-      dialogMsgList.setAttribute("rows", (array.length < 3 ? array.length : 3));
       dialogMsgList.removeAttribute("collapsed");
     }
     else {

@@ -148,12 +148,11 @@ function reloadData() {
 function createUidData(listNode, keyDetails) {
   for (let i = 1; i < keyDetails.userIds.length; i++) {
     if (keyDetails.userIds[i].type === "uid") {
-      let item = document.createElement("listitem");
+      let item = listNode.appendItem(keyDetails.userIds[i].userId);
       item.setAttribute("label", keyDetails.userIds[i].userId);
       if ("dre".search(keyDetails.userIds[i].keyTrust) >= 0) {
-        item.setAttribute("disabled", "true");
+        item.setAttribute("class", "enigmailDisabled");
       }
-      listNode.appendChild(item);
     }
   }
 }

@@ -82,7 +82,7 @@
             </radiogroup>
           </hbox>
           <hbox align="start">
-            <listbox flex="1" id="encryptionList" style="height:50px" aria-labelledby="actionType.actionUseKey"/>
+            <richlistbox flex="1" id="encryptionList" style="height:50px" aria-labelledby="actionType.actionUseKey"/>
             <button label="&enigmail.selKeysButton.label;"
                     id="encryptionListButton"
                     accesskey="&enigmail.selKeysButton.accesskey;"

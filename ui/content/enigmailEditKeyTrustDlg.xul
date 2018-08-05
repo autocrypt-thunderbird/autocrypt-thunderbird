@@ -29,7 +29,7 @@
   <vbox orient="vertical">
     <hbox>
       <label value="&enigmail.keyTrust.trustKey.label;" control="keyIdList"/>
-      <listbox flex="1" id="keyIdList" style="height:60px"/>
+      <richlistbox flex="1" id="keyIdList" style="height:60px"/>
     </hbox>
     <separator/>
     <vbox>

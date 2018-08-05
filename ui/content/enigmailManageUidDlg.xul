@@ -30,7 +30,7 @@
     </hbox>
     <separator/>
     <label value="&enigmail.manageUidDlg.availableUid.label;" control="uidList"/>
-    <listbox flex="1" id="uidList" style="height:100px"
+    <richlistbox flex="1" id="uidList" style="height:100px"
              seltype="single"
              onselect="uidSelectCb()"
              ondblclick="handleDblClick()"/>
