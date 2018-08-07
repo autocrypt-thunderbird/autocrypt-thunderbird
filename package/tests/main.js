@@ -54,6 +54,7 @@ execTest("keyRefreshService-test.js");
 execTest("tor-test.js");
 execTest("versioning-test.js");
 execTest("rng-test.js");
+execTest("dns-test.js");
 execTest("filters-test.js");
 execTest("webKey-test.js");
 execTest("openpgpjs-test.js");

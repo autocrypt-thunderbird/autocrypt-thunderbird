@@ -36,6 +36,7 @@ MODFILES = \
            errorHandling.jsm \
            events.jsm \
            execution.jsm \
+           dns.jsm \
            funcs.jsm \
            files.jsm \
            filters.jsm \

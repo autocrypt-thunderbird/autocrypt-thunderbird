@@ -78,6 +78,7 @@ zip -9 --must-match\
     chrome/content/modules/cryptoAPI/openpgp-js.js \
     chrome/content/modules/cryptoAPI/interface.js \
     chrome/content/modules/data.jsm \
+    chrome/content/modules/dns.jsm \
     chrome/content/modules/decryption.jsm \
     chrome/content/modules/persistentCrypto.jsm \
     chrome/content/modules/dialog.jsm \
