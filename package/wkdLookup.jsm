@@ -325,6 +325,7 @@ function getSiteSpecificUrl(emailAddr) {
     case "posteo.af":
     case "posteo.at":
     case "posteo.be":
+    case "posteo.biz":
     case "posteo.ch":
     case "posteo.cl":
     case "posteo.co":
@@ -371,7 +372,7 @@ function getSiteSpecificUrl(emailAddr) {
     case "posteo.tn":
     case "posteo.uk":
     case "posteo.us":
-      url = "https://posteo.de/keys/" + escape(emailAddr);
+      url = "https://api.posteo.de/v1/public-keys/" + escape(emailAddr) + "?type=open_pgp";
       break;
     case "protonmail.ch":
     case "protonmail.com":
