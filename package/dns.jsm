@@ -225,8 +225,8 @@ class NsLookupHandler extends GenericHandler {
     if (lines[3].search(/: NXDOMAIN/) > 0) return [];
 
     if (this.recordType.toUpperCase() === "MX") {
-      let reg = new RegExp("^" + this.hostName.toLowerCase() + "(.* )([^ \t]+)\\.$");
-      for (let i = 3; i < lines.length; i++) {
+      let reg = new RegExp("^" + this.hostName.toLowerCase() + "(.* )([^ \t]+.*[^\.])\\.?$");
+      for (let i = 2; i < lines.length; i++) {
         let m = lines[i].match(reg);
 
         if (m && m.length >= 3) hosts.push(m[2]);

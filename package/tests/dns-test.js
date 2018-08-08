@@ -52,6 +52,7 @@ test(function testNsLookup() {
   let a = h.getCmdArgs();
   Assert.equal(a.join(" "), "-type=MX enigmail.net", "nslookup parameters don't match");
 
+  // Unix test
   let stdoutData =
     `Server:		172.17.28.1
 Address:	172.17.28.1#53
@@ -79,6 +80,32 @@ Authoritative answers can be found from:
 
   let srv = h.parseResult(stdoutData);
   Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
+
+  stdoutData =
+    `Server:  UnKnown
+Address:  172.17.28.1
+
+enigmail.net\tMX preference = 10, mail exchanger = mx2.mail.hostpoint.ch
+enigmail.net\tMX preference = 10, mail exchanger = mx1.mail.hostpoint.ch
+
+(root)	nameserver = c.root-servers.net
+(root)	nameserver = a.root-servers.net
+(root)	nameserver = f.root-servers.net
+(root)	nameserver = e.root-servers.net
+(root)	nameserver = b.root-servers.net
+(root)	nameserver = h.root-servers.net
+(root)	nameserver = j.root-servers.net
+(root)	nameserver = g.root-servers.net
+(root)	nameserver = k.root-servers.net
+(root)	nameserver = m.root-servers.net
+(root)	nameserver = l.root-servers.net
+(root)	nameserver = d.root-servers.net
+(root)	nameserver = i.root-servers.net
+`;
+
+  srv = h.parseResult(stdoutData);
+  Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
+
 });
 
 test(function testExecute() {
