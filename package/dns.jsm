@@ -23,6 +23,7 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
+const EnigmailCore = Cu.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailOS = Cu.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 const subprocess = Cu.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
@@ -48,6 +49,7 @@ var EnigmailDns = {
    *
    */
   lookup: async function(recordType, queryName) {
+    EnigmailLog.DEBUG(`dns.jsm: lookup(${recordType}, ${queryName})\n`);
     if (!determineResolver()) return null;
 
     let dnsHandler = new gHandler(gResolverExecutable);
@@ -66,11 +68,17 @@ function determineResolver() {
     gHandler = GenericHandler;
     if (EnigmailOS.isWin32) {
       gResolverExecutable = EnigmailFiles.resolvePathWithEnv("nslookup");
-      if (gResolverExecutable) gHandler = NsLookupHandler;
+      if (gResolverExecutable) {
+        EnigmailLog.DEBUG(`dns.jsm: determineResolver: executable = ${gResolverExecutable.path}\n`);
+        gHandler = NsLookupHandler;
+      }
     }
     else {
       determineLinuxResolver();
     }
+
+    if (!gResolverExecutable) EnigmailLog.DEBUG(`dns.jsm: determineResolver: no executable found\n`);
+
   }
 
   return gHandler !== GenericHandler;
@@ -78,6 +86,7 @@ function determineResolver() {
 
 
 function determineLinuxResolver() {
+  EnigmailLog.DEBUG(`dns.jsm: determineLinuxResolver()\n`);
   const services = [{
     exe: "dig",
     class: DigHandler
@@ -95,6 +104,8 @@ function determineLinuxResolver() {
   for (let i of services) {
     gResolverExecutable = EnigmailFiles.resolvePathWithEnv(i.exe);
     if (gResolverExecutable) {
+      EnigmailLog.DEBUG(`dns.jsm: determineLinuxResolver: found ${i.class.handlerType}\n`);
+
       gHandler = i.class;
       return;
     }
@@ -115,6 +126,7 @@ class GenericHandler {
 
   execute(recordType, hostName) {
     return new Promise((resolve, reject) => {
+
       this.recordType = recordType;
       this.hostName = hostName;
       let args = this.getCmdArgs();
@@ -128,19 +140,34 @@ class GenericHandler {
         stderrData = "";
       let self = this;
 
+      EnigmailLog.DEBUG(`dns.jsm: execute(): launching ${EnigmailFiles.formatCmdLine(this._handlerFile, args)}\n`);
+
       subprocess.call({
         command: this._handlerFile,
         arguments: args,
-        environment: ["LC_ALL=C"],
+        environment: EnigmailCore.getEnvList(),
         charset: null,
         stdout: function(data) {
+          //EnigmailLog.DEBUG(`dns.jsm: execute.stdout: got data ${data}\n`);
           stdoutData += data;
         },
         stderr: function(data) {
+          //EnigmailLog.DEBUG(`dns.jsm: execute.stderr: got data ${data}\n`);
           stderrData += data;
         },
         done: function(result) {
-          resolve(self.parseResult(stdoutData));
+          EnigmailLog.DEBUG(`dns.jsm: execute.done(${result.exitCode})\n`);
+          try {
+            if (result.exitCode === 0) {
+              resolve(self.parseResult(stdoutData));
+            }
+            else {
+              resolve([]);
+            }
+          }
+          catch (ex) {
+            reject(ex);
+          }
         },
         mergeStderr: false
       });
@@ -222,7 +249,7 @@ class NsLookupHandler extends GenericHandler {
     let hosts = [];
     let lines = stdoutData.split(/[\r\n]+/);
 
-    if (lines[3].search(/: NXDOMAIN/) > 0) return [];
+    if (lines.length > 3 && lines[3].search(/: NXDOMAIN/) > 0) return [];
 
     if (this.recordType.toUpperCase() === "MX") {
       let reg = new RegExp("^" + this.hostName.toLowerCase() + "(.* )([^ \t]+.*[^\.])\\.?$");
