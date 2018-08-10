@@ -14,7 +14,7 @@ testing("dns.jsm");
 
 /*global EnigmailDns: false, gHandler: true, gResolverExecutable: true */
 
-/*global DigHandler: false, HostHandler: false, NsLookupHandler: false, GenericHandler: false */
+/*global DigHandler: false, HostHandler: false, NsLookupHandler: false, NsLookupHandler_Windows: false, GenericHandler: false */
 
 test(function testDig() {
   let h = new DigHandler(null);
@@ -28,6 +28,12 @@ test(function testDig() {
 
   let srv = h.parseResult(stdoutData);
   Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
+
+  h.recordType = "SRV";
+  stdoutData = "10 100 4711 t1.enigmail.net.\n10 100 4712 t2.enigmail.net.\n";
+
+  srv = h.parseResult(stdoutData);
+  Assert.equal(srv.join("|"), "t1.enigmail.net:4711|t2.enigmail.net:4712");
 });
 
 test(function testHost() {
@@ -42,6 +48,13 @@ test(function testHost() {
 
   let srv = h.parseResult(stdoutData);
   Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
+
+  h.recordType = "SRV";
+  stdoutData = "enigmail.net has SRV record 10 100 4711 t1.enigmail.net.\nenigmail.net has SRV record 10 100 4712 t2.enigmail.net.\n";
+
+  srv = h.parseResult(stdoutData);
+  Assert.equal(srv.join("|"), "t1.enigmail.net:4711|t2.enigmail.net:4712");
+
 });
 
 test(function testNsLookup() {
@@ -52,7 +65,6 @@ test(function testNsLookup() {
   let a = h.getCmdArgs();
   Assert.equal(a.join(" "), "-type=MX enigmail.net", "nslookup parameters don't match");
 
-  // Unix test
   let stdoutData =
     `Server:		172.17.28.1
 Address:	172.17.28.1#53
@@ -65,23 +77,39 @@ Authoritative answers can be found from:
 .	nameserver = h.root-servers.net.
 .	nameserver = g.root-servers.net.
 .	nameserver = d.root-servers.net.
-.	nameserver = c.root-servers.net.
-.	nameserver = i.root-servers.net.
-.	nameserver = l.root-servers.net.
-.	nameserver = k.root-servers.net.
-.	nameserver = e.root-servers.net.
-.	nameserver = m.root-servers.net.
-.	nameserver = f.root-servers.net.
-.	nameserver = b.root-servers.net.
-.	nameserver = j.root-servers.net.
-.	nameserver = a.root-servers.net.
-
 `;
 
   let srv = h.parseResult(stdoutData);
   Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
 
+  h.recordType = "SRV";
   stdoutData =
+    `Server:		172.17.28.1
+Address:	172.17.28.1#53
+
+Non-authoritative answer:
+_http._tcp.enigmail.net	service = 10 100 4711 t1.enigmail.net.
+_http._tcp.enigmail.net	service = 10 100 4712 t2.enigmail.net.
+
+Authoritative answers can be found from:
+enigmail.net	nameserver = example1.invalid.
+enigmail.net	nameserver = example1.invalid.
+`;
+
+  srv = h.parseResult(stdoutData);
+  Assert.equal(srv.join("|"), "t1.enigmail.net:4711|t2.enigmail.net:4712");
+});
+
+
+test(function testNsLookupWin() {
+  let h = new NsLookupHandler_Windows(null);
+  h.recordType = "MX";
+  h.hostName = "enigmail.net";
+
+  let a = h.getCmdArgs();
+  Assert.equal(a.join(" "), "-type=MX enigmail.net", "nslookup parameters don't match");
+
+  let stdoutData =
     `Server:  UnKnown
 Address:  172.17.28.1
 
@@ -90,24 +118,35 @@ enigmail.net\tMX preference = 10, mail exchanger = mx1.mail.hostpoint.ch
 
 (root)	nameserver = c.root-servers.net
 (root)	nameserver = a.root-servers.net
-(root)	nameserver = f.root-servers.net
-(root)	nameserver = e.root-servers.net
-(root)	nameserver = b.root-servers.net
-(root)	nameserver = h.root-servers.net
-(root)	nameserver = j.root-servers.net
-(root)	nameserver = g.root-servers.net
-(root)	nameserver = k.root-servers.net
-(root)	nameserver = m.root-servers.net
-(root)	nameserver = l.root-servers.net
-(root)	nameserver = d.root-servers.net
+`;
+
+  let srv = h.parseResult(stdoutData);
+  Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
+
+  h.recordType = "SRV";
+  stdoutData =
+    `Server:  UnKnown
+Address:  172.17.28.1
+
+wkd.enigmail.org	SRV service location:
+\tpriority       = 100
+\tweight         = 100
+\tport           = 4711
+\tsvr hostname   = t1.enigmail.net
+wkd.enigmail.org	SRV service location:
+\tpriority       = 100
+\tweight         = 100
+\tport           = 4712
+\tsvr hostname   = t2.enigmail.net
+
 (root)	nameserver = i.root-servers.net
+(root)	nameserver = h.root-servers.net
+(root)	nameserver = k.root-servers.net
 `;
 
   srv = h.parseResult(stdoutData);
-  Assert.equal(srv.join("|"), "mx2.mail.hostpoint.ch|mx1.mail.hostpoint.ch");
-
+  Assert.equal(srv.join("|"), "t1.enigmail.net:4711|t2.enigmail.net:4712");
 });
-
 test(function testExecute() {
   class TestHandler extends GenericHandler {
     constructor() {

@@ -52,6 +52,13 @@ var EnigmailDns = {
     EnigmailLog.DEBUG(`dns.jsm: lookup(${recordType}, ${queryName})\n`);
     if (!determineResolver()) return null;
 
+    switch (recordType.toUpperCase()) {
+      case "MX":
+      case "SRV":
+        break;
+      default:
+        throw Components.results.NS_ERROR_NOT_IMPLEMENTED;
+    }
     let dnsHandler = new gHandler(gResolverExecutable);
     return dnsHandler.execute(recordType, queryName);
   }
@@ -70,7 +77,7 @@ function determineResolver() {
       gResolverExecutable = EnigmailFiles.resolvePathWithEnv("nslookup");
       if (gResolverExecutable) {
         EnigmailLog.DEBUG(`dns.jsm: determineResolver: executable = ${gResolverExecutable.path}\n`);
-        gHandler = NsLookupHandler;
+        gHandler = NsLookupHandler_Windows;
       }
     }
     else {
@@ -112,7 +119,9 @@ function determineLinuxResolver() {
   }
 }
 
-
+/**
+ * Base class for executing DNS requests
+ */
 class GenericHandler {
   constructor(handlerFile) {
     this._handlerFile = handlerFile;
@@ -127,7 +136,7 @@ class GenericHandler {
   execute(recordType, hostName) {
     return new Promise((resolve, reject) => {
 
-      this.recordType = recordType;
+      this.recordType = recordType.toUpperCase();
       this.hostName = hostName;
       let args = this.getCmdArgs();
 
@@ -179,7 +188,9 @@ class GenericHandler {
   }
 }
 
-
+/**
+ * Handler class for "dig" and "kdig"
+ */
 class DigHandler extends GenericHandler {
   constructor(handlerFile) {
     super(handlerFile);
@@ -194,18 +205,28 @@ class DigHandler extends GenericHandler {
     let hosts = [];
     let lines = stdoutData.split(/[\r\n]+/);
 
-    if (this.recordType.toUpperCase() === "MX") {
+    if (this.recordType === "MX") {
       for (let i = 0; i < lines.length; i++) {
         let m = lines[i].match(/^(\d+ )(.*)\./);
 
         if (m && m.length >= 3) hosts.push(m[2]);
       }
     }
+    else if (this.recordType === "SRV") {
+      for (let i = 0; i < lines.length; i++) {
+        let m = lines[i].match(/^(\d+) (\d+) (\d+) ([^ ]+)\.$/);
+
+        if (m && m.length >= 5) hosts.push(m[4] + ":" + m[3]);
+      }
+    }
 
     return hosts;
   }
-
 }
+
+/**
+ * Handler class for "host"
+ */
 
 class HostHandler extends GenericHandler {
   constructor(handlerFile) {
@@ -223,17 +244,28 @@ class HostHandler extends GenericHandler {
     let hosts = [];
     let lines = stdoutData.split(/[\r\n]+/);
 
-    if (this.recordType.toUpperCase() === "MX") {
+    if (this.recordType === "MX") {
       for (let i = 0; i < lines.length; i++) {
         let m = lines[i].match(/^(.* )([^ ]+)\.$/);
 
         if (m && m.length >= 3) hosts.push(m[2]);
       }
     }
+    else if (this.recordType === "SRV") {
+      for (let i = 0; i < lines.length; i++) {
+        let m = lines[i].match(/^(.*) (\d+) ([^ ]+)\.$/);
+
+        if (m && m.length >= 4) hosts.push(m[3] + ":" + m[2]);
+      }
+    }
 
     return hosts;
   }
 }
+
+/**
+ * Handler class for "nslookup" (on Linux/Unix)
+ */
 
 class NsLookupHandler extends GenericHandler {
   constructor(handlerFile) {
@@ -251,7 +283,7 @@ class NsLookupHandler extends GenericHandler {
 
     if (lines.length > 3 && lines[3].search(/: NXDOMAIN/) > 0) return [];
 
-    if (this.recordType.toUpperCase() === "MX") {
+    if (this.recordType === "MX") {
       let reg = new RegExp("^" + this.hostName.toLowerCase() + "(.* )([^ \t]+.*[^\.])\\.?$");
       for (let i = 2; i < lines.length; i++) {
         let m = lines[i].match(reg);
@@ -260,6 +292,60 @@ class NsLookupHandler extends GenericHandler {
         if (lines[i].length < 5) break;
       }
     }
+    else if (this.recordType === "SRV") {
+      for (let i = 2; i < lines.length; i++) {
+        let m = lines[i].match(/^(.*) (\d+) ([^ ]+)\.$/);
+
+        if (m && m.length >= 3) hosts.push(m[3] + ":" + m[2]);
+        if (lines[i].length < 5) break;
+      }
+    }
+
+    return hosts;
+  }
+}
+
+/**
+ * Handler class for "nslookup" on Windows
+ */
+
+class NsLookupHandler_Windows extends NsLookupHandler {
+
+  parseResult(stdoutData) {
+    let hosts = [];
+    let lines = stdoutData.split(/[\r\n]+/);
+
+    if (this.recordType === "MX") {
+      let reg = new RegExp("^" + this.hostName.toLowerCase() + "(.* )([^ \t]+.*[^\.])\\.?$");
+      for (let i = 2; i < lines.length; i++) {
+        let m = lines[i].match(reg);
+
+        if (m && m.length >= 3) hosts.push(m[2]);
+        if (lines[i].length < 5) break;
+      }
+    }
+    else if (this.recordType === "SRV") {
+      let svc = null;
+      for (let i = 2; i < lines.length; i++) {
+        if (lines[i].search(/SRV service location:$/) > 0) {
+          svc = null;
+          continue;
+        }
+
+        let m = lines[i].match(/^[\t ]+(port|svr hostname)([\t =]+)([^ \t]+)$/);
+
+        if (m && m.length >= 4) {
+          if (m[1] === "port" && svc === null) {
+            svc = m[3];
+          }
+          else if (m[1] === "svr hostname" && svc) {
+            hosts.push(m[3] + ":" + svc);
+          }
+        }
+        if (lines[i].length < 5) break;
+      }
+    }
+
     return hosts;
   }
 }
