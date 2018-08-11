@@ -204,7 +204,9 @@ var EnigmailWkdLookup = {
       EnigmailLog.DEBUG("wkdLookup.jsm: downloadWkdKey: requesting " + url + "\n");
       oReq.overrideMimeType("application/octet-stream");
       oReq.responseType = "arraybuffer";
-      oReq.open("GET", url);
+      // provide a presumably wrong user name and no password to avoid password dialog pop-ups
+      oReq.open("GET", url, true, "no-user", "");
+      oReq.withCredentials = false;
 
       oReq.send();
     });
