@@ -11,6 +11,16 @@ perlpath=$1
 tbpath=$2
 shift 2
 
+if [ "$OSTYPE" = "msys" ]; then
+  ## Special handling for Windows (msys): get native Windows path from msys path
+  cwd=$(pwd)
+
+  cd $(dirname ${perlpath})
+  plPath=$(pwd -W | sed 's/\//\\\\/g')
+  perlpath=$plPath\\\\$(basename ${perlpath})
+  cd $cwd
+fi
+
 PL_PATH=${perlpath} "${tbpath}" "$@" | tee ${TMPFILE}
 echo ""
 
@@ -34,4 +44,3 @@ else
 fi
 
 exit ${res}
-

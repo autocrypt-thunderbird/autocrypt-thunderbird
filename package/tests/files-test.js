@@ -56,7 +56,7 @@ test(function checkDirectory() {
   Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
 
   try {
-    md.permissions = 0;
+    md.permissions = 0x1C0;
     Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
   }
   catch (x) {
@@ -71,7 +71,7 @@ test(function checkDirectory() {
 
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
-  if (env.get("USER") !== "root") {
+  if (env.get("USER") !== "root" && (!EnigmailOS.isDosLike)) {
     // these two test cases don't work as expected if the test is run with root permissions
 
     md.initWithPath("/does/not/exist");

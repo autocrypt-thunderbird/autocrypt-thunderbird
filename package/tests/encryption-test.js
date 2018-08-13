@@ -45,7 +45,8 @@ test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
   Assert.equal("SIGNED MESSAGE", blockType);
 
   let r = EnigmailEncryption.determineOwnKeyUsability(EnigmailConstants.SEND_SIGNED, "strike.devtest@gmail.com");
-  Assert.equal(r.keyId, "65537E212DC19025AD38EDB2781617319CE311C4");
+  Assert.ok(r.keyId === "A3EC002971E33E6A7DAC481B7A1F45055AAFFACB" ||  
+    r.keyId === "65537E212DC19025AD38EDB2781617319CE311C4");
 
   EnigmailKeyRing.importKeyFromFile(revocationCert, errorMsgObj, importedKeysObj);
   r = EnigmailEncryption.determineOwnKeyUsability(EnigmailConstants.SEND_SIGNED, "0x65537E212DC19025AD38EDB2781617319CE311C4");

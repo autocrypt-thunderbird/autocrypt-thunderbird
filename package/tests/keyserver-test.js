@@ -104,7 +104,7 @@ test(withTestGpgHome(withEnigmail(function testAccessKeyServer() {
     Assert.equal(o.fpr, "65537E212DC19025AD38EDB2781617319CE311C4");
 
     let data = accessHkpInternal.buildHkpPayload(EnigmailConstants.UPLOAD_KEY, "0x781617319CE311C4", );
-    Assert.equal(data.substr(0, 75), "keytext=-----BEGIN%20PGP%20PUBLIC%20KEY%20BLOCK-----%0A%0AmQINBFVHm5sBEACs9");
+    Assert.equal(data.replace(/%0D%0A/g, "%0A").substr(0, 75), "keytext=-----BEGIN%20PGP%20PUBLIC%20KEY%20BLOCK-----%0A%0AmQINBFVHm5sBEACs9");
 
     return accessHkpInternal.search("anything", "dummy");
   }).then(res => {

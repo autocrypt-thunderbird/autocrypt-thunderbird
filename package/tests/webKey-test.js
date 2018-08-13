@@ -21,6 +21,15 @@ component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 component("enigmail/send.jsm"); /*global EnigmailSend: false */
 component("enigmail/log.jsm"); /*global EnigmailLog: false */
 
+function getWksPath() {
+  var wksClient = GPG_WKS_CLIENT;
+  if (EnigmailOS.isDosLike) {
+    wksClient += ".exe";
+  }
+
+  return wksClient;
+}
+
 test(function getWksPathInBinDir() {
   TestHelper.resetting(EnigmailGpgAgent, "gpgconfPath", "TEST_PATH", function() {
     TestHelper.resetting(EnigmailWks, "wksClientPath", null, function() {
@@ -42,7 +51,7 @@ test(function getWksPathInBinDir() {
         let win = JSUnit.createStubWindow();
         let handle = EnigmailWks.getWksClientPathAsync(win, function(ret) {
           let p = do_get_cwd().clone();
-          p.append(GPG_WKS_CLIENT);
+          p.append(getWksPath());
           Assert.equal(p.path, ret.path);
         });
 
@@ -75,7 +84,7 @@ test(function getWksPathInLibexecDir() {
         let win = JSUnit.createStubWindow();
         let handle = EnigmailWks.getWksClientPathAsync(win, function(ret) {
           let p = do_get_cwd().clone();
-          p.append(GPG_WKS_CLIENT);
+          p.append(getWksPath());
           Assert.equal(p.path, ret.path);
         });
 

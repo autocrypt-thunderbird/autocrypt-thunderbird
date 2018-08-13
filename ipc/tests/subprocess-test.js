@@ -99,9 +99,6 @@ function run_test() {
   );
 
   let len = gTestLines.join("").length;
-  if (isWindows) {
-    len -= gTestLines.length;
-  }
   Assert.equal(
     "Starting dump\nDumped " + len + " bytes\n",
     gResultStdErr.replace(/\r\n/g, "\n"),
@@ -134,7 +131,7 @@ function run_test() {
   });
 
   p.wait();
-  Assert.equal(gTestLines.join("").length + (isWindows ? 3 : 0) + 30, gResultData.length, "comparing result");
+  Assert.equal(gTestLines.join("").length + 30, gResultData.length, "comparing result");
 
 
   /////////////////////////////////////////////////////////////////

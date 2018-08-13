@@ -237,7 +237,7 @@ test(withStandardGpg(function returnsSuccessWithArgs_whenAbleToFindTorAndTorsock
         Assert.equal(helperProperties.args, torArgs);
 
         Assert.equal(socksProperties.command, "gpg");
-        Assert.equal(socksProperties.args, gpgArgs);
+        Assert.equal(socksProperties.args.replace(/socks5-hostname/, "socks5h"), gpgArgs);
       });
     });
   });
