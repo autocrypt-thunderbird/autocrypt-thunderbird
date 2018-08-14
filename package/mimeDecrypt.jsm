@@ -29,6 +29,7 @@ Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: 
 Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /*global GnuPGDecryption: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -492,7 +493,7 @@ MimeDecryptHandler.prototype = {
       this.proc.wait();
 
       this.returnStatus = {};
-      EnigmailDecryption.decryptMessageEnd(this.statusStr,
+      GnuPGDecryption.decryptMessageEnd(this.statusStr,
         this.exitCode,
         this.dataLength,
         false,

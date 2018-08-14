@@ -26,6 +26,7 @@ Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /* global GnuPGDecryption: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_PROTO = "application/pgp-signature";
@@ -558,7 +559,7 @@ MimeVerify.prototype = {
     //LOCAL_DEBUG("mimeVerify.jsm: "+this.statusStr+"\n");
 
     this.returnStatus = {};
-    EnigmailDecryption.decryptMessageEnd(this.statusStr,
+    GnuPGDecryption.decryptMessageEnd(this.statusStr,
       this.exitCode,
       this.dataLength,
       true, // verifyOnly

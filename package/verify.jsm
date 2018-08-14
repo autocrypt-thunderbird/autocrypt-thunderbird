@@ -19,8 +19,8 @@ Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: fa
 Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /*global GnuPGDecryption: false */
 
 const Ci = Components.interfaces;
 
@@ -45,7 +45,7 @@ var EnigmailVerifyAttachment = {
     proc.wait();
 
     const retObj = {};
-    EnigmailDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, retObj);
+    GnuPGDecryption.decryptMessageEnd(listener.stderrData, listener.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, retObj);
 
     if (listener.exitCode === 0) {
       const detailArr = retObj.sigDetails.split(/ /);
