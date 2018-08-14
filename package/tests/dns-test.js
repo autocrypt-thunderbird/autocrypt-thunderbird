@@ -156,6 +156,11 @@ test(function testExecute() {
       Assert.ok(plPath.length > 0, "PL_PATH length is > 0");
       if (plPath.length === 0) throw "perl path undefined";
 
+      var pl = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+      pl.initWithPath(plPath);
+      if (!pl.exists())
+        throw "Could not locate the perl executable";
+
       super(plPath);
       this.handlerType = "test";
     }

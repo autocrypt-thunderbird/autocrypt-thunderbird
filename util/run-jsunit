@@ -17,7 +17,7 @@ if [ "$OSTYPE" = "msys" ]; then
 
   cd $(dirname ${perlpath})
   plPath=$(pwd -W | sed 's/\//\\\\/g')
-  perlpath=$plPath\\\\$(basename ${perlpath})
+  perlpath=$plPath\\\\$(basename ${perlpath}).exe
   cd $cwd
 fi
 
