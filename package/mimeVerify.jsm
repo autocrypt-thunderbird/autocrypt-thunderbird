@@ -473,9 +473,10 @@ MimeVerify.prototype = {
       this.sigFile.createUnique(this.sigFile.NORMAL_FILE_TYPE, 0x180);
       EnigmailFiles.writeFileContents(this.sigFile, this.sigData, 0x180);
 
+      if (!EnigmailDecryption.isReady(win)) return;
+
       var statusFlagsObj = {};
       var errorMsgObj = {};
-
       this.proc = EnigmailDecryption.decryptMessageStart(win, true, true, this,
         statusFlagsObj, errorMsgObj,
         EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile)));

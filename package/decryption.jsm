@@ -62,21 +62,14 @@ function newStatusObject() {
 }
 
 var EnigmailDecryption = {
+  isReady: function(win) {
+    return (EnigmailCore.getService(win)) && (!EnigmailKeyRing.isGeneratingKey());
+  },
+
   decryptMessageStart: function(win, verifyOnly, noOutput, listener,
     statusFlagsObj, errorMsgObj, mimeSignatureFile,
     maxOutputLength) {
     EnigmailLog.DEBUG("decryption.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
-
-    if (!EnigmailCore.getService(win)) {
-      EnigmailLog.ERROR("decryption.jsm: decryptMessageStart: not yet initialized\n");
-      errorMsgObj.value = EnigmailLocale.getString("notInit");
-      return null;
-    }
-
-    if (EnigmailKeyRing.isGeneratingKey()) {
-      errorMsgObj.value = EnigmailLocale.getString("notComplete");
-      return null;
-    }
 
     let logFile = EnigmailErrorHandling.getTempLogFile();
     var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
@@ -241,6 +234,19 @@ var EnigmailDecryption = {
 
         return "";
       }
+    }
+
+    if (!EnigmailCore.getService(parent)) {
+      EnigmailLog.ERROR("decryption.jsm: decryptMessage: not yet initialized\n");
+      errorMsgObj.value = EnigmailLocale.getString("notInit");
+      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
+      return "";
+    }
+
+    if (EnigmailKeyRing.isGeneratingKey()) {
+      errorMsgObj.value = EnigmailLocale.getString("notComplete");
+      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
+      return "";
     }
 
     var startErrorMsgObj = {};

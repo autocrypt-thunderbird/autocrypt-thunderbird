@@ -461,13 +461,14 @@ MimeDecryptHandler.prototype = {
         this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
       }
 
-      var statusFlagsObj = {};
-      var errorMsgObj = {};
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       win = windowManager.getMostRecentWindow(null);
+      if (!EnigmailDecryption.isReady(win)) return;
 
-      var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
-      // to avoid DoS attack
+      // limit output to 100 times message size to avoid DoS attack
+      var maxOutput = this.outQueue.length * 100;
+      var statusFlagsObj = {};
+      var errorMsgObj = {};
       this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
         statusFlagsObj, errorMsgObj, null, maxOutput);
 
