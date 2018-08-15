@@ -78,29 +78,11 @@ var EnigmailDecryption = {
       return null;
     }
 
-    var args = EnigmailGpg.getStandardArgs(true);
-
     let logFile = EnigmailErrorHandling.getTempLogFile();
-    args.push("--log-file");
-    args.push(EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(logFile)));
-
     var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-    if (keyserver && keyserver !== "") {
-      keyserver = keyserver.trim();
-      args.push("--keyserver-options");
-      var keySrvArgs = "auto-key-retrieve";
-      var srvProxy = EnigmailHttpProxy.getHttpProxy(keyserver);
-      if (srvProxy) {
-        keySrvArgs += ",http-proxy=" + srvProxy;
-      }
-      args.push(keySrvArgs);
-      args.push("--keyserver");
-      args.push(keyserver);
-    }
-
-    if (EnigmailGpg.getGpgFeature("supports-sender") &&
-      win && win.gFolderDisplay && win.gFolderDisplay.selectedMessage) {
-      var fromAddr = win.gFolderDisplay.selectedMessage.author;
+    var fromAddr = false;
+    if (win && win.gFolderDisplay && win.gFolderDisplay.selectedMessage) {
+      fromAddr = win.gFolderDisplay.selectedMessage.author;
       try {
         fromAddr = EnigmailFuncs.stripEmail(fromAddr);
         if (fromAddr.search(/[a-zA-Z0-9]@.*[\(\)]/) >= 0) {
@@ -110,29 +92,16 @@ var EnigmailDecryption = {
       catch (ex) {
         fromAddr = false;
       }
-      if (fromAddr) {
-        args.push("--sender");
-        args.push(fromAddr.toLowerCase());
-      }
     }
-
-    if (noOutput) {
-      args.push("--verify");
-
-      if (mimeSignatureFile) {
-        args.push(mimeSignatureFile);
-        args.push("-");
-      }
-
-    }
-    else {
-      if (maxOutputLength) {
-        args.push("--max-output");
-        args.push(String(maxOutputLength));
-      }
-
-      args.push("--decrypt");
-    }
+    var args = GnuPGDecryption.getDecryptionArgs({
+      keyserver: keyserver,
+      keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
+      fromAddr: fromAddr,
+      noOutput: noOutput,
+      mimeSignatureFile: mimeSignatureFile,
+      maxOutputLength: maxOutputLength,
+      logFile: logFile
+    });
 
     if (!listener) {
       listener = {};

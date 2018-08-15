@@ -22,6 +22,8 @@ const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution
 const EnigmailErrorHandling = Cu.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
 const EnigmailKey = Cu.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
 const EnigmailKeyRing = Cu.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;
@@ -29,6 +31,58 @@ const STATUS_GOODSIG = EnigmailConstants.GOOD_SIGNATURE;
 
 var GnuPGDecryption = {
 
+  /*
+   * options:
+   *  - logFile (the actual file)
+   *  - keyserver
+   *  - keyserverProxy
+   *  - fromAddr
+   *  - noOutput
+   *  - mimeSignatureFile
+   *  - maxOutputLength
+   *
+   */
+  getDecryptionArgs: function(options) {
+    var args = EnigmailGpg.getStandardArgs(true);
+
+    args.push("--log-file");
+    args.push(EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(options.logFile)));
+
+    if (options.keyserver && options.keyserver !== "") {
+      var keyserver = options.keyserver.trim();
+      args.push("--keyserver-options");
+      var keySrvArgs = "auto-key-retrieve";
+      var srvProxy = options.keyserverProxy;
+      if (srvProxy) {
+        keySrvArgs += ",http-proxy=" + srvProxy;
+      }
+      args.push(keySrvArgs);
+      args.push("--keyserver");
+      args.push(keyserver);
+    }
+
+    if (EnigmailGpg.getGpgFeature("supports-sender") && options.fromAddr) {
+      args.push("--sender");
+      args.push(options.fromAddr.toLowerCase());
+    }
+
+    if (options.noOutput) {
+      args.push("--verify");
+      if (options.mimeSignatureFile) {
+        args.push(options.mimeSignatureFile);
+        args.push("-");
+      }
+    }
+    else {
+      if (options.maxOutputLength) {
+        args.push("--max-output");
+        args.push(String(options.maxOutputLength));
+      }
+    }
+
+    args.push("--decrypt");
+    return args;
+  },
   decryptMessageEnd: function(stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
     EnigmailLog.DEBUG("gnupg-decryption.jsm: decryptMessageEnd: uiFlags=" + uiFlags + ", verifyOnly=" + verifyOnly + ", noOutput=" + noOutput + "\n");
 
