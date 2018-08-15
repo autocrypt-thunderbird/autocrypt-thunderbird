@@ -8,7 +8,7 @@
 
 /**
  * This module provides DNS query functionality via subprocesses.
- * Supported record types: MX
+ * Supported record types: MX, SRV
  *
  * The following tools are currently supported:
  *   Windows:    nslookup
@@ -42,7 +42,7 @@ var EnigmailDns = {
   /**
    * Perform a DNS lookup
    *
-   * @param {String} recordType: The resource record type to query. Currently only MX is supported.
+   * @param {String} recordType: The resource record type to query. MX and SRV are currently supported.
    * @param {String} queryName:  The name to search for, e.g. "enigmail.net"
    *
    * @return {Promise<Array{String}>}: array of server(s) handling
