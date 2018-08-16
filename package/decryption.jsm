@@ -66,14 +66,8 @@ var EnigmailDecryption = {
     return (EnigmailCore.getService(win)) && (!EnigmailKeyRing.isGeneratingKey());
   },
 
-  decryptMessageStart: function(win, verifyOnly, noOutput, listener,
-    statusFlagsObj, errorMsgObj, mimeSignatureFile,
-    maxOutputLength) {
-    EnigmailLog.DEBUG("decryption.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
-
-    let logFile = EnigmailErrorHandling.getTempLogFile();
-    var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-    var fromAddr = false;
+  getFromAddr: function(win) {
+    var fromAddr;
     if (win && win.gFolderDisplay && win.gFolderDisplay.selectedMessage) {
       fromAddr = win.gFolderDisplay.selectedMessage.author;
       try {
@@ -86,6 +80,17 @@ var EnigmailDecryption = {
         fromAddr = false;
       }
     }
+    return fromAddr;
+  },
+
+  decryptMessageStart: function(win, verifyOnly, noOutput, listener,
+    statusFlagsObj, errorMsgObj, mimeSignatureFile,
+    maxOutputLength) {
+    EnigmailLog.DEBUG("decryption.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
+
+    let logFile = EnigmailErrorHandling.getTempLogFile();
+    var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+    var fromAddr = EnigmailDecryption.getFromAddr();
     var args = GnuPGDecryption.getDecryptionArgs({
       keyserver: keyserver,
       keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
