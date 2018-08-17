@@ -308,13 +308,14 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
 
   /**
    *
-   * @param {Path} filePath    The signed file
-   * @param {Path} sigPath       The signature to verify
+   * @param {String} encrypted     The encrypted data
+   * @param {Object} options       Decryption options
    *
-   * @return {Promise<String>} - A message from the verification.
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
    *
-   * Use Promise.catch to handle failed verifications.
-   * The message will be an error message in this case.
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
    */
 
   async decryptMime(encrypted, options) {
@@ -346,7 +347,47 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
         resolve(result);
       });
       promise.catch(function(retObj){
-        reject(retObj.errorMsg);
+        reject(retObj);
+      });
+    });
+  }
+
+  /**
+   *
+   * @param {String} signed        The signed data
+   * @param {Object} options       Decryption options
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async verifyMime(signed, options) {
+    EnigmailLog.DEBUG(`gnupg.js: verifyMime\n`);
+
+    options.logFile = EnigmailErrorHandling.getTempLogFile();
+
+    return Promise.new (function(resolve, reject) {
+      const args = GnuPGDecryption.getDecryptionArgs(options);
+      const promise = EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, signed);
+      promise.then(function(retObj){
+        EnigmailErrorHandling.appendLogFileToDebug(options.logFile);
+        if (retObj.statusFlags & EnigmailConstants.MISSING_PASSPHRASE) {
+          EnigmailLog.ERROR("decryption.jsm: decryptMessageStart: Error - no passphrase supplied\n");
+
+          reject(EnigmailLocale.getString("noPassphrase"));
+          return;
+        }
+        const result = {
+          exitCode: retObj.exitCode
+        };
+        GnuPGDecryption.decryptMessageEnd(retObj.stderrData, retObj.exitCode, retObj.stdoutData.length, true, true, EnigmailConstants.UI_PGP_MIME, result);
+        resolve(result);
+      });
+      promise.catch(function(retObj){
+        reject(retObj);
       });
     });
   }

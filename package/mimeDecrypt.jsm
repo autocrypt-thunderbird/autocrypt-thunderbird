@@ -31,7 +31,6 @@ Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailC
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 Cu.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
 Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /*global GnuPGDecryption: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";

@@ -26,7 +26,8 @@ Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /* global GnuPGDecryption: false */
+Cu.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_PROTO = "application/pgp-signature";
@@ -475,18 +476,25 @@ MimeVerify.prototype = {
 
       if (!EnigmailDecryption.isReady(win)) return;
 
-      var statusFlagsObj = {};
-      var errorMsgObj = {};
-      this.proc = EnigmailDecryption.decryptMessageStart(win, true, true, this,
-        statusFlagsObj, errorMsgObj,
-        EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile)));
 
-      if (this.pipe) {
-        EnigmailLog.DEBUG("mimeVerify.jsm: onStopRequest: closing pipe\n"); // always log this one
-        this.pipe.close();
-      }
-      else
-        this.closePipe = true;
+      let sigFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile));
+      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+      let options = {
+        keyserver: keyserver,
+        keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
+        fromAddr: EnigmailDecryption.getFromAddr(win),
+        noOutput: true,
+        mimeSignatureFile: sigFileName
+      };
+      const cApi = EnigmailCryptoAPI();
+      this.returnStatus = cApi.sync(cApi.verifyMime(this.signedData, options));
+
+      if (this.partiallySigned)
+        this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
+
+      this.displayStatus();
+
+      if (this.sigFile) this.sigFile.remove(false);
     }
   },
 
@@ -495,10 +503,10 @@ MimeVerify.prototype = {
     EnigmailLog.DEBUG("mimeVerify.jsm: returnData: " + data.length + " bytes\n");
 
     let m = data.match(/^(content-type: +)([\w/]+)/im);
-    if (m && m.length >= 3) {
-      let contentType = m[2];
-      if (contentType.search(/^text/i) === 0) {
-        // add multipart/mixed boundary to work around TB bug (empty forwarded message)
+if (m && m.length >= 3) {
+  let contentType = m[2];
+  if (contentType.search(/^text/i) === 0) {
+    // add multipart/mixed boundary to work around TB bug (empty forwarded message)
         let bound = EnigmailMime.createBoundary();
         data = 'Content-Type: multipart/mixed; boundary="' + bound + '"\n' +
           'Content-Disposition: inline\n\n--' +
@@ -523,57 +531,6 @@ MimeVerify.prototype = {
         EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
       }
     }
-  },
-
-  // API for decryptMessage Listener
-  stdin: function(pipe) {
-    LOCAL_DEBUG("mimeVerify.jsm: stdin\n");
-    if (this.signedData.length > 0) {
-      LOCAL_DEBUG("mimeVerify.jsm:  writing " + this.signedData.length + " bytes\n");
-
-      // ensure all lines end with CRLF as specified in RFC 3156, section 5
-      this.signedData = this.signedData.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
-
-      pipe.write(this.signedData);
-    }
-    if (this.closePipe) {
-      pipe.close();
-    }
-    else {
-      this.pipe = pipe;
-    }
-  },
-
-  stdout: function(s) {
-    LOCAL_DEBUG("mimeVerify.jsm: stdout:" + s.length + "\n");
-    this.dataLength += s.length;
-  },
-
-  stderr: function(s) {
-    LOCAL_DEBUG("mimeVerify.jsm: stderr\n");
-    this.statusStr += s;
-  },
-
-  done: function(exitCode) {
-    LOCAL_DEBUG("mimeVerify.jsm: done: " + exitCode + "\n");
-    this.exitCode = exitCode;
-    //LOCAL_DEBUG("mimeVerify.jsm: "+this.statusStr+"\n");
-
-    this.returnStatus = {};
-    GnuPGDecryption.decryptMessageEnd(this.statusStr,
-      this.exitCode,
-      this.dataLength,
-      true, // verifyOnly
-      true,
-      EnigmailConstants.UI_PGP_MIME,
-      this.returnStatus);
-
-    if (this.partiallySigned)
-      this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
-
-    this.displayStatus();
-
-    if (this.sigFile) this.sigFile.remove(false);
   },
 
   setMsgWindow: function(msgWindow, msgUriSpec) {
