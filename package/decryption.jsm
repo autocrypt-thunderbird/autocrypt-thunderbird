@@ -33,7 +33,7 @@ Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: fa
 Cu.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm"); /* global GnuPGDecryption: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;
@@ -82,53 +82,6 @@ var EnigmailDecryption = {
     }
     return fromAddr;
   },
-
-  decryptMessageStart: function(win, verifyOnly, noOutput, listener,
-    statusFlagsObj, errorMsgObj, mimeSignatureFile,
-    maxOutputLength) {
-    EnigmailLog.DEBUG("decryption.jsm: decryptMessageStart: verifyOnly=" + verifyOnly + "\n");
-
-    let logFile = EnigmailErrorHandling.getTempLogFile();
-    var keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-    var fromAddr = EnigmailDecryption.getFromAddr();
-    var args = GnuPGDecryption.getDecryptionArgs({
-      keyserver: keyserver,
-      keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-      fromAddr: fromAddr,
-      noOutput: noOutput,
-      mimeSignatureFile: mimeSignatureFile,
-      maxOutputLength: maxOutputLength,
-      logFile: logFile
-    });
-
-    if (!listener) {
-      listener = {};
-    }
-    if ("done" in listener) {
-      listener.outerDone = listener.done;
-    }
-
-    listener.done = function(exitCode) {
-      EnigmailErrorHandling.appendLogFileToDebug(logFile);
-      if (this.outerDone) {
-        this.outerDone(exitCode);
-      }
-    };
-
-    let proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath,
-      args, !verifyOnly, win,
-      listener, statusFlagsObj);
-
-    if (statusFlagsObj.value & EnigmailConstants.MISSING_PASSPHRASE) {
-      EnigmailLog.ERROR("decryption.jsm: decryptMessageStart: Error - no passphrase supplied\n");
-
-      errorMsgObj.value = EnigmailLocale.getString("noPassphrase");
-      return null;
-    }
-
-    return proc;
-  },
-
 
   /**
    *  Decrypts a PGP ciphertext and returns the the plaintext
@@ -254,58 +207,43 @@ var EnigmailDecryption = {
       return "";
     }
 
-    var startErrorMsgObj = {};
-    var noOutput = false;
+    // limit output to 100 times message size to avoid DoS attack
+    var maxOutput = pgpBlock.length * 100;
+    let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+    let options = {
+      keyserver: keyserver,
+      keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
+      fromAddr: EnigmailDecryption.getFromAddr(parent),
+      verifyOnly: verifyOnly,
+      noOutput: false,
+      maxOutputLength: maxOutput,
+      uiFlags: uiFlags
+    };
+    const cApi = EnigmailCryptoAPI();
+    let result = cApi.sync(cApi.decrypt(pgpBlock, options));
 
-    var listener = EnigmailExecution.newSimpleListener(
-      function _stdin(pipe) {
-        pipe.write(pgpBlock);
-        pipe.close();
-      });
-
-    var maxOutput = pgpBlock.length * 100; // limit output to 100 times message size
-    // to avoid DoS attack
-    var proc = EnigmailDecryption.decryptMessageStart(parent, verifyOnly, noOutput, listener,
-      statusFlagsObj, startErrorMsgObj,
-      null, maxOutput);
-
-    if (!proc) {
-      errorMsgObj.value = startErrorMsgObj.value;
-      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
-
-      return "";
-    }
-
-    // Wait for child to close
-    proc.wait();
-
-    var plainText = EnigmailData.getUnicodeData(listener.stdoutData);
-
-    var retStatusObj = {};
-    var exitCode = GnuPGDecryption.decryptMessageEnd(EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
-      plainText.length, verifyOnly, noOutput,
-      uiFlags, retStatusObj);
-    exitCodeObj.value = exitCode;
-    statusFlagsObj.value = retStatusObj.statusFlags;
-    errorMsgObj.value = retStatusObj.errorMsg;
+    var plainText = EnigmailData.getUnicodeData(result.decryptedData);
+    exitCodeObj.value = result.exitCode;
+    statusFlagsObj.value = result.statusFlags;
+    errorMsgObj.value = result.errorMsg;
 
     // do not return anything if gpg signales DECRYPTION_FAILED
     // (which could be possible in case of MDC errors)
     if ((uiFlags & EnigmailConstants.UI_IGNORE_MDC_ERROR) &&
-      (retStatusObj.statusFlags & EnigmailConstants.MISSING_MDC)) {
+      (result.statusFlags & EnigmailConstants.MISSING_MDC)) {
       EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: ignoring MDC error\n");
     }
-    else if (retStatusObj.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
+    else if (result.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
       plainText = "";
     }
 
-    userIdObj.value = retStatusObj.userId;
-    keyIdObj.value = retStatusObj.keyId;
-    sigDetailsObj.value = retStatusObj.sigDetails;
+    userIdObj.value = result.userId;
+    keyIdObj.value = result.keyId;
+    sigDetailsObj.value = result.sigDetails;
     if (encToDetailsObj) {
-      encToDetailsObj.value = retStatusObj.encToDetails;
+      encToDetailsObj.value = result.encToDetails;
     }
-    blockSeparationObj.value = retStatusObj.blockSeparation;
+    blockSeparationObj.value = result.blockSeparation;
 
     if ((head.search(/\S/) >= 0) ||
       (tail.search(/\S/) >= 0)) {

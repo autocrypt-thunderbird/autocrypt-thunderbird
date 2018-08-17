@@ -483,7 +483,6 @@ MimeVerify.prototype = {
         keyserver: keyserver,
         keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
         fromAddr: EnigmailDecryption.getFromAddr(win),
-        noOutput: true,
         mimeSignatureFile: sigFileName
       };
       const cApi = EnigmailCryptoAPI();

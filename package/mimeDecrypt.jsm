@@ -477,8 +477,6 @@ MimeDecryptHandler.prototype = {
         keyserver: keyserver,
         keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
         fromAddr: EnigmailDecryption.getFromAddr(win),
-        noOutput: false,
-        mimeSignatureFile: null,
         maxOutputLength: maxOutput
       };
       const cApi = EnigmailCryptoAPI();
