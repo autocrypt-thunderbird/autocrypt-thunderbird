@@ -281,29 +281,22 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
 
   async verifyAttachment(filePath, sigPath) {
     EnigmailLog.DEBUG(`gnupg.js: verifyAttachment\n`);
-    return Promise.new (function(resolve, reject) {
-      const args = EnigmailGpg.getStandardArgs(true).
-      concat(["--verify", sigPath, filePath]);
-      const promise = EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
-      promise.then(function(retObj){
-        const decrypted = {};
-        GnuPGDecryption.decryptMessageEnd(retObj.stderrData, retObj.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, decrypted);
-        if (retObj.exitCode === 0) {
-          const detailArr = decrypted.sigDetails.split(/ /);
-          const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
-          const msg1 = decrypted.errorMsg.split(/\n/)[0];
-          const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + decrypted.keyId, dateTime]);
-          const message = msg1 + "\n" + msg2;
-          resolve(message);
-        }
-        else {
-          reject(decrypted.errorMsg);
-        }
-      });
-      promise.catch(function(retObj){
-        reject(retObj.errorMsg);
-      });
-    });
+    const args = EnigmailGpg.getStandardArgs(true).
+    concat(["--verify", sigPath, filePath]);
+    let result = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
+    const decrypted = {};
+    GnuPGDecryption.decryptMessageEnd(result.stderrData, result.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, decrypted);
+    if (result.exitCode === 0) {
+      const detailArr = decrypted.sigDetails.split(/ /);
+      const dateTime = EnigmailTime.getDateTime(detailArr[2], true, true);
+      const msg1 = decrypted.errorMsg.split(/\n/)[0];
+      const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + decrypted.keyId, dateTime]);
+      const message = msg1 + "\n" + msg2;
+      return(message);
+    }
+    else {
+      throw(decrypted.errorMsg);
+    }
   }
 
   /**
