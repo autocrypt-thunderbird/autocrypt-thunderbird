@@ -2039,15 +2039,14 @@ Enigmail.msg = {
     outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     EnigmailFiles.writeUrlToFile(signatureAtt.url, outFile2);
 
-    var statusFlagsObj = {};
-    var errorMsgObj = {};
-    var r = EnigmailVerifyAttachment.attachment(window, outFile1, outFile2, statusFlagsObj, errorMsgObj);
-
-    if (r === 0)
-      EnigmailDialog.info(window, EnigmailLocale.getString("signature.verifiedOK", [EnigmailMsgRead.getAttachmentName(origAtt)]) + "\n\n" + errorMsgObj.value);
-    else
+    var promise = EnigmailVerifyAttachment.attachment(outFile1, outFile2);
+    promise.then(function(message) {
+      EnigmailDialog.info(window, EnigmailLocale.getString("signature.verifiedOK", [EnigmailMsgRead.getAttachmentName(origAtt)]) + "\n\n" + message);
+    });
+    promise.catch(function(err) {
       EnigmailDialog.alert(window, EnigmailLocale.getString("signature.verifyFailed", [EnigmailMsgRead.getAttachmentName(origAtt)]) + "\n\n" +
-        errorMsgObj.value);
+        err);
+    });
 
     outFile1.remove(false);
     outFile2.remove(false);

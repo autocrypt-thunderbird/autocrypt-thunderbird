@@ -11,9 +11,9 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
 testing("decryption.jsm"); /*global EnigmailDecryption: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: fales */
-component("enigmail/armor.jsm"); /*global EnigmailArmor: fales */
-component("enigmail/constants.jsm"); /*global EnigmailConstants: fales */
+component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+component("enigmail/armor.jsm"); /*global EnigmailArmor: false */
+component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 test(withTestGpgHome(withEnigmail(function shouldDecryptMessage() {
   let secretKeyFile = do_get_file("resources", false);

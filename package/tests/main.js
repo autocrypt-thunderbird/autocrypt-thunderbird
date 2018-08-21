@@ -28,6 +28,7 @@ execTest("armor-test.js");
 execTest("data-test.js");
 execTest("system-test.js");
 execTest("decryption-test.js");
+execTest("verify-test.js");
 execTest("persistentCrypto-test.js");
 execTest("errorHandling-test.js");
 execTest("encryption-test.js");

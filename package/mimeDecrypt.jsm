@@ -29,6 +29,8 @@ Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: 
 Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+Cu.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
+Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -460,45 +462,27 @@ MimeDecryptHandler.prototype = {
         this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
       }
 
-      var statusFlagsObj = {};
-      var errorMsgObj = {};
-      var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-      win = windowManager.getMostRecentWindow(null);
+      if (!EnigmailDecryption.isReady(win)) return;
 
-      var maxOutput = this.outQueue.length * 100; // limit output to 100 times message size
-      // to avoid DoS attack
-      this.proc = EnigmailDecryption.decryptMessageStart(win, false, false, this,
-        statusFlagsObj, errorMsgObj, null, maxOutput);
+      // limit output to 100 times message size to avoid DoS attack
+      let maxOutput = this.outQueue.length * 100;
+      let statusFlagsObj = {};
+      let errorMsgObj = {};
+      let listener = this;
 
-      if (!this.proc) return;
+      EnigmailLog.DEBUG("mimeDecryp.jsm: starting decryption\n");
 
-      if (this.bytesWritten === 0 && this.outQueue.length === 0) {
-        // write something to gpg such that the process doesn't get stuck
-        this.outQueue = "NO DATA\n";
-      }
-
-      if (this.pipe) {
-        this.pipe.write(this.outQueue);
-        this.bytesWritten += this.outQueue.length;
-        this.outQueue = "";
-        this.pipe.close();
-      }
-      else {
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: pipe not yet ready\n");
-        this.closePipe = true;
-      }
-
-      // wait here for this.proc to terminate
-      this.proc.wait();
-
-      this.returnStatus = {};
-      EnigmailDecryption.decryptMessageEnd(this.statusStr,
-        this.exitCode,
-        this.dataLength,
-        false,
-        false,
-        EnigmailConstants.UI_PGP_MIME,
-        this.returnStatus);
+      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+      let options = {
+        keyserver: keyserver,
+        keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
+        fromAddr: EnigmailDecryption.getFromAddr(win),
+        maxOutputLength: maxOutput
+      };
+      const cApi = EnigmailCryptoAPI();
+      this.returnStatus = cApi.sync(cApi.decryptMime(this.outQueue, options));
+      this.decryptedData = this.returnStatus.decryptedData;
+      this.handleResult();
 
       let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
         !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
@@ -592,38 +576,7 @@ MimeDecryptHandler.prototype = {
     LOCAL_DEBUG("mimeDecrypt.jsm: displayStatus done\n");
   },
 
-  // API for decryptMessage Listener
-  stdin: function(pipe) {
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: stdin()\n");
-
-    if (this.closePipe) {
-      if (this.outQueue.length > 0) {
-        pipe.write(this.outQueue);
-        this.bytesWritten += this.outQueue.length;
-        this.outQueue = "";
-      }
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: stdin: closing pipe\n");
-      pipe.close();
-      this.pipe = null;
-    }
-    else {
-      this.pipe = pipe;
-    }
-  },
-
-  stdout: function(s) {
-    // write data back to libmime
-    //LOCAL_DEBUG("mimeDecrypt.jsm: stdout:"+s.length+"\n");
-    this.dataLength += s.length;
-    this.decryptedData += s;
-  },
-
-  stderr: function(s) {
-    LOCAL_DEBUG("mimeDecrypt.jsm: stderr\n");
-    this.statusStr += s;
-  },
-
-  done: function(result) {
+  handleResult: function(result) {
     let exitCode = result.exitCode;
     LOCAL_DEBUG("mimeDecrypt.jsm: done: " + exitCode + "\n");
 
@@ -634,8 +587,6 @@ MimeDecryptHandler.prototype = {
     if (!this.decryptedData.endsWith("\n")) {
       this.decryptedData += "\r\n";
     }
-
-    var verifyData = this.decryptedData;
 
     try {
       this.extractEncryptedHeaders();

@@ -170,4 +170,19 @@ class CryptoAPI {
   async getFileName(byteData) {
     return null;
   }
+
+  /**
+   *
+   * @param {Path} filePath    The signed file
+   * @param {Path} sigPath       The signature to verify
+   *
+   * @return {Promise<String>} - A message from the verification.
+   *
+   * Use Promise.catch to handle failed verifications.
+   * The message will be an error message in this case.
+   */
+
+  async verifyAttachment(filePath, sigPath) {
+    return null;
+  }
 }
