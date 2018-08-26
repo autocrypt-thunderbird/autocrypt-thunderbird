@@ -292,10 +292,10 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       const msg1 = decrypted.errorMsg.split(/\n/)[0];
       const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + decrypted.keyId, dateTime]);
       const message = msg1 + "\n" + msg2;
-      return(message);
+      return (message);
     }
     else {
-      throw(decrypted.errorMsg);
+      throw (decrypted.errorMsg);
     }
   }
 
@@ -312,7 +312,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decrypt(encrypted, options) {
-    EnigmailLog.DEBUG(`gnupg.js: decrypt\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decrypt()\n`);
 
     options.logFile = EnigmailErrorHandling.getTempLogFile();
     const args = GnuPGDecryption.getDecryptionArgs(options);
@@ -321,7 +321,9 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
 
     if (res.statusFlags & EnigmailConstants.MISSING_PASSPHRASE) {
       EnigmailLog.ERROR("decryption.jsm: decryptMessageStart: Error - no passphrase supplied\n");
-      throw { errorMsg: EnigmailLocale.getString("noPassphrase") };
+      throw {
+        errorMsg: EnigmailLocale.getString("noPassphrase")
+      };
     }
 
     const result = {
@@ -346,7 +348,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decryptMime(encrypted, options) {
-    EnigmailLog.DEBUG(`gnupg.js: decryptMime\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decryptMime()\n`);
 
     // write something to gpg such that the process doesn't get stuck
     if (encrypted.length === 0) {
@@ -357,7 +359,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
     options.verifyOnly = false;
     options.uiFlags = EnigmailConstants.UI_PGP_MIME;
 
-    return GnuPGCryptoAPI.decrypt(encrypted, options);
+    return this.decrypt(encrypted, options);
   }
 
   /**
@@ -373,13 +375,13 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async verifyMime(signed, options) {
-    EnigmailLog.DEBUG(`gnupg.js: verifyMime\n`);
+    EnigmailLog.DEBUG(`gnupg.js: verifyMime()\n`);
 
     options.noOutput = true;
     options.verifyOnly = true;
     options.uiFlags = EnigmailConstants.UI_PGP_MIME;
 
-    return GnuPGCryptoAPI.decrypt(signed, options);
+    return this.decrypt(signed, options);
   }
 }
 

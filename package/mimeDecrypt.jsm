@@ -482,7 +482,7 @@ MimeDecryptHandler.prototype = {
       const cApi = EnigmailCryptoAPI();
       this.returnStatus = cApi.sync(cApi.decryptMime(this.outQueue, options));
       this.decryptedData = this.returnStatus.decryptedData;
-      this.handleResult();
+      this.handleResult(this.returnStatus.exitCode);
 
       let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
         !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
@@ -576,8 +576,7 @@ MimeDecryptHandler.prototype = {
     LOCAL_DEBUG("mimeDecrypt.jsm: displayStatus done\n");
   },
 
-  handleResult: function(result) {
-    let exitCode = result.exitCode;
+  handleResult: function(exitCode) {
     LOCAL_DEBUG("mimeDecrypt.jsm: done: " + exitCode + "\n");
 
     if (gDebugLogLevel > 4)
