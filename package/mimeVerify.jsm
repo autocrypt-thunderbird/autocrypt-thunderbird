@@ -45,6 +45,7 @@ function MimeVerify(protocol) {
   this.protocol = protocol;
   this.verifyEmbedded = false;
   this.partiallySigned = false;
+  this.exitCode = null;
   this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 }
 
@@ -118,7 +119,6 @@ MimeVerify.prototype = {
   msgWindow: null,
   msgUriSpec: null,
   statusDisplayed: false,
-  exitCode: null,
   window: null,
   inStream: null,
   sigFile: null,
@@ -487,6 +487,7 @@ MimeVerify.prototype = {
       };
       const cApi = EnigmailCryptoAPI();
       this.returnStatus = cApi.sync(cApi.verifyMime(this.signedData, options));
+      this.exitCode = this.returnStatus.exitCode;
 
       if (this.partiallySigned)
         this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
@@ -502,10 +503,10 @@ MimeVerify.prototype = {
     EnigmailLog.DEBUG("mimeVerify.jsm: returnData: " + data.length + " bytes\n");
 
     let m = data.match(/^(content-type: +)([\w/]+)/im);
-if (m && m.length >= 3) {
-  let contentType = m[2];
-  if (contentType.search(/^text/i) === 0) {
-    // add multipart/mixed boundary to work around TB bug (empty forwarded message)
+    if (m && m.length >= 3) {
+      let contentType = m[2];
+      if (contentType.search(/^text/i) === 0) {
+        // add multipart/mixed boundary to work around TB bug (empty forwarded message)
         let bound = EnigmailMime.createBoundary();
         data = 'Content-Type: multipart/mixed; boundary="' + bound + '"\n' +
           'Content-Disposition: inline\n\n--' +

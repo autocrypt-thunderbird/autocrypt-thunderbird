@@ -16,7 +16,7 @@ const Cu = Components.utils;
 Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 var EnigmailAttachment = {
-  getFileName: function(byteData) {
+  getFileName: function(parent, byteData) {
     const cApi = EnigmailCryptoAPI();
     return cApi.sync(cApi.getFileName(parent, byteData));
   }

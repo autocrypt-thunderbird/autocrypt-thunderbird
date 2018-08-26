@@ -38,6 +38,7 @@ var GnuPGDecryption = {
    *  - keyserverProxy
    *  - fromAddr
    *  - noOutput
+   *  - verifyOnly
    *  - mimeSignatureFile
    *  - maxOutputLength
    *
@@ -66,7 +67,7 @@ var GnuPGDecryption = {
       args.push(options.fromAddr.toLowerCase());
     }
 
-    if (options.noOutput) {
+    if (options.noOutput || options.verifyOnly) {
       args.push("--verify");
       if (options.mimeSignatureFile) {
         args.push(options.mimeSignatureFile);
@@ -78,9 +79,10 @@ var GnuPGDecryption = {
         args.push("--max-output");
         args.push(String(options.maxOutputLength));
       }
+
+      args.push("--decrypt");
     }
 
-    args.push("--decrypt");
     return args;
   },
   decryptMessageEnd: function(stderrStr, exitCode, outputLen, verifyOnly, noOutput, uiFlags, retStatusObj) {
