@@ -1011,7 +1011,7 @@ function resetUpdatedFields_test() {
         signMessage: false,
         wrappedJSObject: this
       },
-      subject: 'subject',
+      subject: 'subject'
     }
   };
 
