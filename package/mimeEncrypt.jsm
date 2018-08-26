@@ -27,15 +27,18 @@ Cu.import("chrome://enigmail/content/modules/encryption.jsm"); /*global Enigmail
 Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
 Cu.import("chrome://enigmail/content/modules/hash.jsm"); /*global EnigmailHash: false */
 Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Cu.import("chrome://enigmail/content/modules/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
-const PGPMIME_JS_ENCRYPT_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
-const PGPMIME_JS_ENCRYPT_CID = Components.ID("{1b040e64-e704-42b9-b05a-942e569afffc}");
+// our own contract IDs
+const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
+const PGPMIME_ENCRYPT_CONTRACTID = "@enigmail.net/compose/mimeencrypt;1";
+
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
-const kMsgComposeSecureCID = "{dd753201-9a23-4e08-957f-b3616bf7e012}";
+// S/MIME contract IDs
+const SMIME_ENCRYPT_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
+const kSmimeComposeSecureCID = "{dd753201-9a23-4e08-957f-b3616bf7e012}";
 
 const maxBufferLen = 102400;
 const MIME_SIGNED = 1;
@@ -43,13 +46,53 @@ const MIME_ENCRYPTED = 2;
 
 var gDebugLogLevel = 0;
 
-function PgpMimeEncrypt() {}
+function PgpMimeEncrypt(sMimeSecurityInfo) {
+  this.wrappedJSObject = this;
+
+  // nsIMsgSMIMECompFields
+  this.signMessage = false;
+  this.requireEncryptMessage = false;
+
+  // "securityInfo" variables
+  this.sendFlags = 0;
+  this.UIFlags = 0;
+  this.senderEmailAddr = "";
+  this.recipients = "";
+  this.bccRecipients = "";
+  this.originalSubject = null;
+
+  try {
+    if (sMimeSecurityInfo) {
+      if ("nsIMsgSMIMECompFields" in Ci) {
+        sMimeSecurityInfo = sMimeSecurityInfo.QueryInterface(Ci.nsIMsgSMIMECompFields);
+      }
+      this.signMessage = sMimeSecurityInfo.signMessage;
+      this.requireEncryptMessage = sMimeSecurityInfo.requireEncryptMessage;
+    }
+  }
+  catch (ex) {}
+}
 
 PgpMimeEncrypt.prototype = {
   classDescription: "Enigmail JS Encryption Handler",
-  classID: PGPMIME_JS_ENCRYPT_CID,
-  contractID: PGPMIME_JS_ENCRYPT_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIMsgComposeSecure, Ci.nsIStreamListener, Ci.nsIEnigScriptableMsgCompose]),
+  classID: PGPMIME_ENCRYPT_CID,
+  get contractID() {
+    if (Components.classesByID[kSmimeComposeSecureCID]) {
+      // hack needed for TB < 62: we overwrite the S/MIME encryption handler
+      return SMIME_ENCRYPT_CONTRACTID;
+    }
+    else {
+      return PGPMIME_ENCRYPT_CONTRACTID;
+    }
+  },
+  QueryInterface: XPCOMUtils.generateQI([
+    "nsIMsgComposeSecure",
+    "nsIStreamListener",
+    "nsIMsgSMIMECompFields" // TB < 63
+  ]),
+
+  signMessage: false,
+  requireEncryptMessage: false,
 
   // private variables
 
@@ -119,28 +162,27 @@ PgpMimeEncrypt.prototype = {
         }
       }
       else {
-        if (this.checkSMime) {
-          // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
-          this.smimeCompose = Components.classesByID[kMsgComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
-          this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
-        }
-
-        if (this.useSmime) return true;
-
-        var securityInfo = msgCompFields.securityInfo;
-        if (!securityInfo) return false;
-
-        try {
-          if (EnigmailMsgCompFields.isEnigmailCompField(securityInfo)) {
-            return (EnigmailMsgCompFields.getValue(securityInfo, "sendFlags") & (EnigmailConstants.SEND_SIGNED |
-              EnigmailConstants.SEND_ENCRYPTED |
-              EnigmailConstants.SEND_VERBATIM)) !== 0;
+        if (kSmimeComposeSecureCID in Components.classesByID) {
+          // TB < 63
+          if (this.checkSMime) {
+            // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
+            this.smimeCompose = Components.classesByID[kSmimeComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
+            this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
           }
-          else return false;
+
+          if (this.useSmime) return true;
+
+          let securityInfo = msgCompFields.securityInfo.wrappedJSObject;
+          if (!securityInfo) return false;
+
+          for (let prop of["sendFlags", "UIFlags", "senderEmailAddr", "recipients", "bccRecipients", "originalSubject"]) {
+            this[prop] = securityInfo[prop];
+          }
         }
-        catch (ex) {
-          return false;
-        }
+
+        return (this.sendFlags & (EnigmailConstants.SEND_SIGNED |
+          EnigmailConstants.SEND_ENCRYPTED |
+          EnigmailConstants.SEND_VERBATIM)) !== 0;
       }
     }
     catch (ex) {
@@ -181,16 +223,12 @@ PgpMimeEncrypt.prototype = {
       this.isDraft = isDraft;
 
       this.msgCompFields = msgCompFields;
-      var securityInfo = msgCompFields.securityInfo;
-      if (!securityInfo) throw Cr.NS_ERROR_FAILURE;
-
-      this.enigmailFlags = EnigmailMsgCompFields.getEnigmailValues(securityInfo);
       this.outStringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       this.win = windowManager.getMostRecentWindow(null);
 
-      if (this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) {
+      if (this.sendFlags & EnigmailConstants.SEND_VERBATIM) {
         this.recipientList = recipientList;
         this.msgIdentity = msgIdentity;
         this.msgCompFields = msgCompFields;
@@ -198,19 +236,19 @@ PgpMimeEncrypt.prototype = {
         return null;
       }
 
-      if (this.enigmailFlags.sendFlags & EnigmailConstants.SEND_PGP_MIME) {
+      if (this.sendFlags & EnigmailConstants.SEND_PGP_MIME) {
 
-        if (this.enigmailFlags.sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
+        if (this.sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
           // applies to encrypted and signed & encrypted
           this.cryptoMode = MIME_ENCRYPTED;
         }
-        else if (this.enigmailFlags.sendFlags & EnigmailConstants.SEND_SIGNED) {
+        else if (this.sendFlags & EnigmailConstants.SEND_SIGNED) {
           this.cryptoMode = MIME_SIGNED;
 
           let hashAlgoObj = {};
           if (EnigmailHash.determineAlgorithm(this.win,
-              this.enigmailFlags.UIFlags,
-              this.enigmailFlags.senderEmailAddr,
+              this.UIFlags,
+              this.senderEmailAddr,
               hashAlgoObj) === 0) {
             this.hashAlgorithm = hashAlgoObj.value;
           }
@@ -310,19 +348,19 @@ PgpMimeEncrypt.prototype = {
       }
     }
 
-    if (this.enigmailFlags.originalSubject && this.enigmailFlags.originalSubject.length > 0) {
-      allHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.enigmailFlags.originalSubject, {});
-      visibleHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.enigmailFlags.originalSubject, {});
+    if (this.originalSubject && this.originalSubject.length > 0) {
+      allHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.originalSubject, {});
+      visibleHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.originalSubject, {});
     }
 
     // special handling for references and in-reply-to
 
-    if (this.enigmailFlags.originalReferences && this.enigmailFlags.originalReferences.length > 0) {
-      allHdr += jsmime.headeremitter.emitStructuredHeader("references", this.enigmailFlags.originalReferences, {});
+    if (this.originalReferences && this.originalReferences.length > 0) {
+      allHdr += jsmime.headeremitter.emitStructuredHeader("references", this.originalReferences, {});
 
-      let bracket = this.enigmailFlags.originalReferences.lastIndexOf("<");
+      let bracket = this.originalReferences.lastIndexOf("<");
       if (bracket >= 0) {
-        allHdr += jsmime.headeremitter.emitStructuredHeader("in-reply-to", this.enigmailFlags.originalReferences.substr(bracket), {});
+        allHdr += jsmime.headeremitter.emitStructuredHeader("in-reply-to", this.originalReferences.substr(bracket), {});
       }
     }
 
@@ -340,7 +378,7 @@ PgpMimeEncrypt.prototype = {
     EnigmailLog.DEBUG("mimeEncrypt.js: encryptedHeaders\n");
     let subj = "";
 
-    if (this.enigmailFlags.sendFlags & EnigmailConstants.ENCRYPT_HEADERS) {
+    if (this.sendFlags & EnigmailConstants.ENCRYPT_HEADERS) {
       subj = jsmime.headeremitter.emitStructuredHeader("subject", EnigmailFuncs.getProtectedSubjectText(), {});
     }
 
@@ -407,7 +445,7 @@ PgpMimeEncrypt.prototype = {
       return;
     }
 
-    if ((this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+    if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
       this.flushOutput();
       return;
     }
@@ -416,12 +454,12 @@ PgpMimeEncrypt.prototype = {
     let statusFlagsObj = {};
     let errorMsgObj = {};
     let proc = EnigmailEncryption.encryptMessageStart(this.win,
-      this.enigmailFlags.UIFlags,
-      this.enigmailFlags.senderEmailAddr,
-      this.enigmailFlags.recipients,
-      this.enigmailFlags.bccRecipients,
+      this.UIFlags,
+      this.senderEmailAddr,
+      this.recipients,
+      this.bccRecipients,
       this.hashAlgorithm,
-      this.enigmailFlags.sendFlags,
+      this.sendFlags,
       this,
       statusFlagsObj,
       errorMsgObj);
@@ -480,11 +518,11 @@ PgpMimeEncrypt.prototype = {
     try {
       let line = buffer.substr(0, length);
       if (this.inputMode === 0) {
-        if ((this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
           line = EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", ""));
         }
 
-        if ((this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) === 0 ||
+        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) === 0 ||
           line.match(/^(From|To|Subject|Message-ID|Date|User-Agent|MIME-Version):/i) === null) {
           this.headerData += line;
         }
@@ -512,7 +550,7 @@ PgpMimeEncrypt.prototype = {
 
           this.writeToPipe(this.headerData);
           if (this.cryptoMode == MIME_SIGNED ||
-            (this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+            (this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
             this.writeOut(this.headerData);
           }
         }
@@ -531,7 +569,7 @@ PgpMimeEncrypt.prototype = {
         if (this.cryptoMode == MIME_SIGNED) {
           this.writeOut(line);
         }
-        else if ((this.enigmailFlags.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+        else if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
           this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", "")));
         }
       }
@@ -654,11 +692,11 @@ PgpMimeEncrypt.prototype = {
 
     let retStatusObj = {};
 
-    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.enigmailFlags.senderEmailAddr,
+    this.exitCode = EnigmailEncryption.encryptMessageEnd(this.senderEmailAddr,
       this.statusStr,
       exitCode,
-      this.enigmailFlags.UIFlags,
-      this.enigmailFlags.sendFlags,
+      this.UIFlags,
+      this.sendFlags,
       this.dataLength,
       retStatusObj);
 
@@ -680,10 +718,9 @@ PgpMimeEncrypt.prototype = {
       let securityInfo = this.msgCompFields.securityInfo;
       if (!securityInfo) throw Cr.NS_ERROR_FAILURE;
 
-      this.enigmailFlags = EnigmailMsgCompFields.getEnigmailValues(securityInfo);
       try {
-        originalSubject = this.enigmailFlags.originalSubject;
-        sendFlags = this.enigmailFlags.sendFlags;
+        originalSubject = this.originalSubject;
+        sendFlags = this.sendFlags;
       }
       catch (ex) {}
 
@@ -798,7 +835,13 @@ var EnigmailMimeEncrypt = {
   startup: function(reason) {
     initModule();
   },
-  shutdown: function(reason) {
+  shutdown: function(reason) {},
 
+  createMimeEncrypt: function(sMimeSecurityInfo) {
+    return new PgpMimeEncrypt(sMimeSecurityInfo);
+  },
+
+  isEnigmailCompField: function(obj) {
+    return obj instanceof PgpMimeEncrypt;
   }
 };

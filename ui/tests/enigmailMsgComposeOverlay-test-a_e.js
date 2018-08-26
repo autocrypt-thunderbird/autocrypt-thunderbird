@@ -14,11 +14,11 @@ var MailServices = {};
 var CommandUpdate_MsgCompose = {};
 var top = {};
 var EnigmailDialog = {
-  msgBox : function(){}
+  msgBox: function() {}
 };
 var AddAttachment;
 var AddAttachments;
-var EnigmailMsgCompFields = {};
+var EnigmailMimeEncrypt = {};
 var EnigmailPEPAdapter = {};
 var Recipients2CompFields = {};
 var MailUtils = {};
@@ -28,27 +28,27 @@ var EnigmailCore = {};
 var gSMFields;
 
 var EnigmailPrefs = {
-  getPref : (prop) => {
+  getPref: (prop) => {
     return 1;
   },
-  setPref : function(){}
+  setPref: function() {}
 };
 
 var EnigmailTimer = {
-  setTimeout : function(){}
+  setTimeout: function() {}
 };
 
 var gMsgCompose = {};
 
-function toggleEncryptMessage(){
+function toggleEncryptMessage() {
   Assert.ok(true);
 }
 
-function toggleSignMessage(){
+function toggleSignMessage() {
   Assert.ok(true);
 }
 
-var getCurrentIdentity = function(){
+var getCurrentIdentity = function() {
 
 };
 
@@ -57,22 +57,22 @@ var EnigmailFuncs = {
 };
 
 
-function addAttachment_test(){
+function addAttachment_test() {
 
-  AddAttachments = function(att){
+  AddAttachments = function(att) {
     Assert.equal(att[0], 'xyz');
   };
 
   Enigmail.msg.addAttachment('xyz');
 
-  AddAttachment = function(att){
+  AddAttachment = function(att) {
     Assert.equal(att, 'xyz');
   };
 
   Enigmail.msg.addAttachment('xyz');
 }
 
-function addRecipients_test(){
+function addRecipients_test() {
   let recList = [
     "user1@enigmail.net,",
     "user2@enigmail.net,"
@@ -80,7 +80,7 @@ function addRecipients_test(){
 
   let addrList = [];
 
-  EnigmailFuncs.stripEmail = function(val){
+  EnigmailFuncs.stripEmail = function(val) {
     return val;
   };
 
@@ -91,13 +91,13 @@ function addRecipients_test(){
 
 }
 
-function addressOnChange_test(){
+function addressOnChange_test() {
 
   Enigmail.msg.addrOnChangeTimer = false;
-  Enigmail.msg.fireSendFlags = function(){
+  Enigmail.msg.fireSendFlags = function() {
     Assert.ok(true);
   };
-  EnigmailTimer.setTimeout = function(callback, time){
+  EnigmailTimer.setTimeout = function(callback, time) {
     Assert.equal(time, 250);
     callback();
     Assert.equal(Enigmail.msg.addrOnChangeTimer, null);
@@ -109,37 +109,37 @@ function addressOnChange_test(){
   Assert.equal(Enigmail.msg.addrOnChangeTimer, true);
 }
 
-function allowAttachOwnKey_test(){
+function allowAttachOwnKey_test() {
 
   Enigmail.msg.identity = {};
 
-  Enigmail.msg.isEnigmailEnabled = function(){
+  Enigmail.msg.isEnigmailEnabled = function() {
     return false;
   };
   let ret = Enigmail.msg.allowAttachOwnKey();
   Assert.equal(ret, -1);
 
-  Enigmail.msg.isEnigmailEnabled = function(){
+  Enigmail.msg.isEnigmailEnabled = function() {
     return true;
   };
 
-  Enigmail.msg.identity.getIntAttribute = function(){
+  Enigmail.msg.identity.getIntAttribute = function() {
     return 0;
   };
   ret = Enigmail.msg.allowAttachOwnKey();
   Assert.equal(ret, 0);
 
-  Enigmail.msg.identity.getIntAttribute = function(){
+  Enigmail.msg.identity.getIntAttribute = function() {
     return 2;
   };
 
-  Enigmail.msg.identity.getCharAttribute = function(){
+  Enigmail.msg.identity.getCharAttribute = function() {
     return 'xyz';
   };
   ret = Enigmail.msg.allowAttachOwnKey();
   Assert.equal(ret, 0);
 
-  Enigmail.msg.identity.getCharAttribute = function(){
+  Enigmail.msg.identity.getCharAttribute = function() {
     return '02';
   };
   ret = Enigmail.msg.allowAttachOwnKey();
@@ -147,8 +147,8 @@ function allowAttachOwnKey_test(){
 
 }
 
-function attachKey_test(){
-  window.openDialog = function(xulFilePath, str1, options, inputObj, resultObj){
+function attachKey_test() {
+  window.openDialog = function(xulFilePath, str1, options, inputObj, resultObj) {
     Assert.equal(xulFilePath, "chrome://enigmail/content/ui/enigmailKeySelection.xul");
     Assert.equal(str1, '');
     Assert.equal(options, "dialog,modal,centerscreen,resizable");
@@ -156,7 +156,7 @@ function attachKey_test(){
     Assert.equal(inputObj.dialogHeader, EnigmailLocale.getString("keysToExport"));
   };
 
-  Enigmail.msg.extractAndAttachKey = function(){
+  Enigmail.msg.extractAndAttachKey = function() {
     Assert.ok(true);
   };
 
@@ -164,7 +164,7 @@ function attachKey_test(){
 
   Enigmail.msg.attachKey();
 
-  window.openDialog = function(xulFilePath, str1, options, inputObj, resultObj){
+  window.openDialog = function(xulFilePath, str1, options, inputObj, resultObj) {
     Assert.equal(inputObj.options, "multisel,allowexpired,nosending,trustallkeys");
   };
 
@@ -173,25 +173,25 @@ function attachKey_test(){
   Enigmail.msg.attachKey();
 }
 
-function attachOwnKey_test(){
+function attachOwnKey_test() {
 
   Enigmail.msg.attachOwnKeyObj.attachedKey = 'xy';
   Enigmail.msg.identity = {
-    getIntAttribute : function(){
+    getIntAttribute: function() {
       return 1;
     },
-    getCharAttribute : function(){
+    getCharAttribute: function() {
       return 'xyz';
     }
   };
 
-  Enigmail.msg.removeAttachedKey = function(){
+  Enigmail.msg.removeAttachedKey = function() {
     Assert.ok(true);
   };
 
   Enigmail.msg.attachOwnKey();
 
-  Enigmail.msg.removeAttachedKey = function(){
+  Enigmail.msg.removeAttachedKey = function() {
     Assert.ok(false);
   };
 
@@ -200,7 +200,7 @@ function attachOwnKey_test(){
 
   Enigmail.msg.attachOwnKeyObj.attachedKey = null;
 
-  Enigmail.msg.extractAndAttachKey = function(){
+  Enigmail.msg.extractAndAttachKey = function() {
     return 'key';
   };
 
@@ -210,7 +210,7 @@ function attachOwnKey_test(){
 
   Enigmail.msg.attachOwnKeyObj.attachedObj = null;
   Enigmail.msg.attachOwnKeyObj.attachedKey = null;
-  Enigmail.msg.extractAndAttachKey = function(){
+  Enigmail.msg.extractAndAttachKey = function() {
     return null;
   };
   Enigmail.msg.attachOwnKey();
@@ -219,46 +219,46 @@ function attachOwnKey_test(){
 
 }
 
-function attachPepKey_test(){
+function attachPepKey_test() {
 
   gMsgCompose.compFields = {};
 
   Enigmail.msg.identity = {
-    getBoolAttribute : function(){
+    getBoolAttribute: function() {
       Assert.ok(true);
       return true;
     }
   };
 
-  EnigmailPEPAdapter.getOwnIdentityForEmail = function(){
+  EnigmailPEPAdapter.getOwnIdentityForEmail = function() {
     Assert.ok(true);
     return null;
   };
 
   Enigmail.msg.attachPepKey();
 
-  EnigmailPEPAdapter.getOwnIdentityForEmail = function(){
+  EnigmailPEPAdapter.getOwnIdentityForEmail = function() {
     Assert.ok(true);
     return {
-      fpr : "001"
+      fpr: "001"
     };
   };
 
   Enigmail.msg.attachOwnKeyObj.attachedKey = "0x002";
 
-  Enigmail.msg.removeAttachedKey = function(){
+  Enigmail.msg.removeAttachedKey = function() {
     Assert.ok(true);
     Enigmail.msg.attachOwnKeyObj.attachedKey = null;
   };
 
-  Enigmail.msg.extractAndAttachKey = function(){
+  Enigmail.msg.extractAndAttachKey = function() {
     Assert.ok(true);
     return {
-      name : ''
+      name: ''
     };
   };
 
-  gMsgCompose.compFields.addAttachment = function(attachedObj){
+  gMsgCompose.compFields.addAttachment = function(attachedObj) {
     Assert.ok(true);
     Assert.equal(attachedObj.name, "pEpkey.asc");
   };
@@ -268,7 +268,7 @@ function attachPepKey_test(){
   Assert.equal(Enigmail.msg.attachOwnKeyObj.attachedKey, "0x001");
 }
 
-function checkProtectHeaders_test(){
+function checkProtectHeaders_test() {
 
   let ret = Enigmail.msg.checkProtectHeaders(0x0080);
   Assert.equal(ret, true);
@@ -286,11 +286,11 @@ function checkProtectHeaders_test(){
 
   Enigmail.msg.protectHeaders = false;
 
-  EnigmailDialog.msgBox = function(){
+  EnigmailDialog.msgBox = function() {
     return -1;
   };
 
-  EnigmailPrefs.getPref = function(){
+  EnigmailPrefs.getPref = function() {
     return 1;
   };
 
@@ -299,16 +299,16 @@ function checkProtectHeaders_test(){
 
   Enigmail.msg.protectHeaders = false;
 
-  EnigmailDialog.msgBox = function(){
+  EnigmailDialog.msgBox = function() {
     Assert.ok(true);
     return 0;
   };
 
-  Enigmail.msg.displayProtectHeadersStatus = function(){
+  Enigmail.msg.displayProtectHeadersStatus = function() {
     Assert.ok(true);
   };
 
-  EnigmailPrefs.setPref = function(prop, val){
+  EnigmailPrefs.setPref = function(prop, val) {
     Assert.equal(val, 2);
   };
 
@@ -318,15 +318,15 @@ function checkProtectHeaders_test(){
 
   Enigmail.msg.protectHeaders = false;
 
-  EnigmailDialog.msgBox = function(){
+  EnigmailDialog.msgBox = function() {
     return -2;
   };
 
-  Enigmail.msg.displayProtectHeadersStatus = function(){
+  Enigmail.msg.displayProtectHeadersStatus = function() {
     Assert.ok(true);
   };
 
-  EnigmailPrefs.setPref = function(prop, val){
+  EnigmailPrefs.setPref = function(prop, val) {
     Assert.equal(val, 0);
   };
 
@@ -336,40 +336,38 @@ function checkProtectHeaders_test(){
 
 }
 
-function compileFromAndTo_test(){
+function compileFromAndTo_test() {
   Enigmail.msg.composeBodyReady = {};
 
-  gMsgCompose.expandMailingLists = function(){
+  gMsgCompose.expandMailingLists = function() {
     Assert.ok(true);
   };
 
-  Recipients2CompFields = function(){
+  Recipients2CompFields = function() {
     Assert.ok(true);
   };
 
   gMsgCompose.compFields = {
-    to : ['user1@enigmail.net','user2@enigmail.net'],
-    cc : ['user3@enigmail.net','user4@enigmail.net'],
-    bcc : ['user5@enigmail.net','user6@enigmail.net']
+    to: ['user1@enigmail.net', 'user2@enigmail.net'],
+    cc: ['user3@enigmail.net', 'user4@enigmail.net'],
+    bcc: ['user5@enigmail.net', 'user6@enigmail.net']
   };
 
-  getCurrentIdentity = function(){
+  getCurrentIdentity = function() {
     Assert.ok(true);
     return {
-      email : 'user@enigmail.net',
-      fullName : 'User Name'
+      email: 'user@enigmail.net',
+      fullName: 'User Name'
     };
   };
 
-  EnigmailFuncs.parseEmails = function(emailAddr){
+  EnigmailFuncs.parseEmails = function(emailAddr) {
     Assert.ok(true);
-    return [
-      {
-        email : emailAddr[0]
-      }, {
-        email : emailAddr[1]
-      }
-    ];
+    return [{
+      email: emailAddr[0]
+    }, {
+      email: emailAddr[1]
+    }];
   };
 
   let ret = Enigmail.msg.compileFromAndTo();
@@ -378,9 +376,9 @@ function compileFromAndTo_test(){
   Assert.equal(ret.toAddrList.length, 6);
 
   gMsgCompose.compFields = {
-    to : ['user1@enigmail.net','user2@enigmail.net'],
-    cc : ['user3@enigmail.net','user4@enigmail.net'],
-    bcc : ['user5@enigmail.net','user6.enigmail.net']
+    to: ['user1@enigmail.net', 'user2@enigmail.net'],
+    cc: ['user3@enigmail.net', 'user4@enigmail.net'],
+    bcc: ['user5@enigmail.net', 'user6.enigmail.net']
   };
 
   ret = Enigmail.msg.compileFromAndTo();
@@ -388,10 +386,10 @@ function compileFromAndTo_test(){
 
 }
 
-function createEnigmailSecurityFields_test(){
+function createEnigmailSecurityFields_test() {
 
   gMsgCompose.compFields.securityInfo = '';
-  EnigmailMsgCompFields.createObject = function(){
+  EnigmailMimeEncrypt.createMimeEncrypt = function() {
     Assert.ok(true);
     return 'secureInformation';
   };
@@ -401,18 +399,18 @@ function createEnigmailSecurityFields_test(){
 
 }
 
-function delayedProcessFinalState_test(){
+function delayedProcessFinalState_test() {
 
-  Enigmail.msg.processFinalState = function(){
+  Enigmail.msg.processFinalState = function() {
     //Function Overriding
     Assert.ok(true);
   };
-  Enigmail.msg.updateStatusBar = function(){
+  Enigmail.msg.updateStatusBar = function() {
     //Function Overriding
     Assert.ok(true);
   };
 
-  EnigmailTimer.setTimeout = function(callback, val){
+  EnigmailTimer.setTimeout = function(callback, val) {
     //Function Overriding
     Assert.equal(val, 100);
     callback();
@@ -422,9 +420,9 @@ function delayedProcessFinalState_test(){
 
 }
 
-function displayPartialEncryptedWarning_test(){
+function displayPartialEncryptedWarning_test() {
 
-  Enigmail.msg.notifyUser = function(priority, msgText, messageId, detailsText){
+  Enigmail.msg.notifyUser = function(priority, msgText, messageId, detailsText) {
     Assert.equal(priority, 1);
     Assert.equal(detailsText, EnigmailLocale.getString("msgCompose.partiallyEncrypted.inlinePGP"));
     Assert.equal(msgText, EnigmailLocale.getString("msgCompose.partiallyEncrypted.short"));
@@ -434,14 +432,14 @@ function displayPartialEncryptedWarning_test(){
   Enigmail.msg.displayPartialEncryptedWarning();
 }
 
-function displayProtectHeadersStatus_test(){
-  document.getElementById = function(){
+function displayProtectHeadersStatus_test() {
+  document.getElementById = function() {
     return {
-      setAttribute : function(prop, val){
-        if(prop === "checked"){
+      setAttribute: function(prop, val) {
+        if (prop === "checked") {
           Assert.equal(val, "true");
         }
-        else if(prop === "tooltiptext"){
+        else if (prop === "tooltiptext") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.protectSubject.tooltip"));
         }
       }
@@ -452,13 +450,13 @@ function displayProtectHeadersStatus_test(){
 
   Enigmail.msg.displayProtectHeadersStatus();
 
-  document.getElementById = function(){
+  document.getElementById = function() {
     return {
-      setAttribute : function(prop, val){
+      setAttribute: function(prop, val) {
         Assert.equal(val, EnigmailLocale.getString("msgCompose.noSubjectProtection.tooltip"));
         Assert.equal(prop, "tooltiptext");
       },
-      removeAttribute : function(prop){
+      removeAttribute: function(prop) {
         Assert.equal(prop, "checked");
       }
     };
@@ -469,17 +467,17 @@ function displayProtectHeadersStatus_test(){
   Enigmail.msg.displayProtectHeadersStatus();
 }
 
-function displaySecuritySettings_test(){
+function displaySecuritySettings_test() {
 
-  Enigmail.msg.processFinalState = function(){
+  Enigmail.msg.processFinalState = function() {
     Assert.ok(true);
   };
 
-  Enigmail.msg.updateStatusBar = function(){
+  Enigmail.msg.updateStatusBar = function() {
     Assert.ok(true);
   };
 
-  window.openDialog = function(windowURL, str1, prop, param){
+  window.openDialog = function(windowURL, str1, prop, param) {
     param.resetDefaults = true;
   };
 
@@ -494,7 +492,7 @@ function displaySecuritySettings_test(){
   Assert.equal(Enigmail.msg.pgpmimeForced, null);
   Assert.equal(Enigmail.msg.finalSignDependsOnEncrypt, null);
 
-  window.openDialog = function(windowURL, str1, prop, param){
+  window.openDialog = function(windowURL, str1, prop, param) {
     param.resetDefaults = true;
     param.success = true;
   };
@@ -505,7 +503,7 @@ function displaySecuritySettings_test(){
   Assert.equal(Enigmail.msg.pgpmimeForced, EnigmailConstants.ENIG_UNDEF);
   Assert.equal(Enigmail.msg.finalSignDependsOnEncrypt, true);
 
-  window.openDialog = function(windowURL, str1, prop, param){
+  window.openDialog = function(windowURL, str1, prop, param) {
     param.resetDefaults = false;
     param.success = true;
     param.sign = 1;
@@ -530,10 +528,10 @@ function displaySecuritySettings_test(){
   Assert.equal(Enigmail.msg.dirty, 2);
 }
 
-function displaySMimeToolbar_test(){
+function displaySMimeToolbar_test() {
   document.getElementById = function() {
     return {
-      removeAttribute : function(){
+      removeAttribute: function() {
         Assert.ok(true);
       }
     };
@@ -548,7 +546,7 @@ function displaySMimeToolbar_test(){
   Enigmail.msg.statusPGPMime = null;
   document.getElementById = function() {
     return {
-      setAttribute : function(){
+      setAttribute: function() {
         Assert.ok(true);
       }
     };
@@ -558,7 +556,7 @@ function displaySMimeToolbar_test(){
 
 }
 
-function editorGetCharset_test(){
+function editorGetCharset_test() {
 
   Enigmail.msg.editor = {
     documentCharacterSet: 'xyz'
@@ -568,9 +566,9 @@ function editorGetCharset_test(){
   Assert.equal(Enigmail.msg.editor.documentCharacterSet, 'xyz');
 }
 
-function editorGetContentAs_test(){
+function editorGetContentAs_test() {
   Enigmail.msg.editor = {
-    outputToString : function(mimeType, flags){
+    outputToString: function(mimeType, flags) {
       Assert.equal(mimeType, 'mime');
       Assert.equal(flags, 'flags');
       return true;
@@ -586,7 +584,7 @@ function editorGetContentAs_test(){
 
 }
 
-function editorInsertAsQuotation_test(){
+function editorInsertAsQuotation_test() {
 
   Enigmail.msg.editor = null;
   let ret = Enigmail.msg.editorInsertAsQuotation();
@@ -601,23 +599,23 @@ function editorInsertAsQuotation_test(){
   // Assert.equal(ret, 1);
 }
 
-function editorSelectAll_test(){
+function editorSelectAll_test() {
   Enigmail.msg.editor = {
-    selectAll : function(){
+    selectAll: function() {
       Assert.ok(true);
     }
   };
   Enigmail.msg.editorSelectAll();
 }
 
-function enableUndoEncryption_test(){
+function enableUndoEncryption_test() {
 
-  document.getElementById = function(){
+  document.getElementById = function() {
     return {
-      removeAttribute : function(){
+      removeAttribute: function() {
         Assert.ok(true);
       },
-      setAttribute : function(){
+      setAttribute: function() {
         Assert.ok(true);
       }
     };

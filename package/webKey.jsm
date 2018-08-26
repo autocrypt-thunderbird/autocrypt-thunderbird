@@ -27,7 +27,7 @@ Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailE
 Cu.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
 Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
 Cu.import("chrome://enigmail/content/modules/send.jsm"); /*global EnigmailSend: false */
-Cu.import("chrome://enigmail/content/modules/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
+Cu.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
 Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
@@ -192,12 +192,12 @@ var EnigmailWks = {
           return;
         }
         EnigmailLog.DEBUG("webKey.jsm: submitKey: send " + listener.stdoutData + "\n");
-        let si = EnigmailMsgCompFields.createObject(null);
+        let si = EnigmailMimeEncrypt.createMimeEncrypt(null);
         let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
         let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
         if (subject !== null && to !== null) {
-          EnigmailMsgCompFields.setValue(si, "sendFlags", EnigmailConstants.SEND_VERBATIM);
+          si.sendFlags = EnigmailConstants.SEND_VERBATIM;
 
           if (!EnigmailSend.simpleSendMessage({
                 urls: [],
@@ -258,12 +258,12 @@ var EnigmailWks = {
         }
       }, function(ret) {
         try {
-          let si = EnigmailMsgCompFields.createObject(null);
+          let si = EnigmailMimeEncrypt.createMimeEncrypt(null);
           let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
           let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
           if (subject !== null && to !== null) {
-            EnigmailMsgCompFields.setValue(si, "sendFlags", EnigmailConstants.SEND_VERBATIM);
+            si.sendFlags = EnigmailConstants.SEND_VERBATIM;
 
             if (!EnigmailSend.simpleSendMessage({
                   urls: [],

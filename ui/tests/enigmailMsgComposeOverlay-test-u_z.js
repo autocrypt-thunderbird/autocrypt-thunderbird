@@ -14,12 +14,11 @@ var MailServices = {};
 var CommandUpdate_MsgCompose = {};
 var top = {};
 var EnigmailDialog = {
-  msgBox : function(){},
-  alertPref : function(){}
+  msgBox: function() {},
+  alertPref: function() {}
 };
 var AddAttachment;
 var AddAttachments;
-var EnigmailMsgCompFields = {};
 var EnigmailPEPAdapter = {};
 var Recipients2CompFields = {};
 var MailUtils = {};
@@ -29,27 +28,27 @@ var EnigmailCore = {};
 var gSMFields;
 
 var EnigmailPrefs = {
-  getPref : (prop) => {
+  getPref: (prop) => {
     return 1;
   },
-  setPref : function(){}
+  setPref: function() {}
 };
 
 var EnigmailTimer = {
-  setTimeout : function(){}
+  setTimeout: function() {}
 };
 
 var gMsgCompose = {};
 
-function toggleEncryptMessage(){
+function toggleEncryptMessage() {
   Assert.ok(true);
 }
 
-function toggleSignMessage(){
+function toggleSignMessage() {
   Assert.ok(true);
 }
 
-var getCurrentIdentity = function(){
+var getCurrentIdentity = function() {
 
 };
 
@@ -57,10 +56,10 @@ var EnigmailFuncs = {
 
 };
 
-function unsetAdditionalHeader_test(){
+function unsetAdditionalHeader_test() {
   gMsgCompose = {
-    compFields : {
-      deleteHeader : function(){
+    compFields: {
+      deleteHeader: function() {
         Assert.ok(true);
       }
     }
@@ -69,8 +68,8 @@ function unsetAdditionalHeader_test(){
   Enigmail.msg.unsetAdditionalHeader('hdr');
 
   gMsgCompose = {
-    compFields : {
-      otherRandomHeaders : 'hello'
+    compFields: {
+      otherRandomHeaders: 'hello'
     }
   };
 

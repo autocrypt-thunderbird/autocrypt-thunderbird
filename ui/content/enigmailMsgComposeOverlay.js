@@ -43,7 +43,7 @@ Components.utils.import("chrome://enigmail/content/modules/wkdLookup.jsm"); /*gl
 Components.utils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 Components.utils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
 Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global EnigmailMsgRead: false */
-Components.utils.import("chrome://enigmail/content/modules/msgCompFields.jsm"); /*global EnigmailMsgCompFields: false */
+Components.utils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
 Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
@@ -1249,10 +1249,10 @@ Enigmail.msg = {
     this.removeAttachedKey();
 
     // reset subject
-    if (EnigmailMsgCompFields.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-      let si = gMsgCompose.compFields.securityInfo;
-      if (EnigmailMsgCompFields.getValue(si, "originalSubject")) {
-        gMsgCompose.compFields.subject = EnigmailMsgCompFields.getValue(si, "originalSubject");
+    if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
+      let si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+      if (si.originalSubject) {
+        gMsgCompose.compFields.subject = si.originalSubject;
       }
     }
   },
@@ -3323,8 +3323,8 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
 
       try {
-        if (EnigmailMsgCompFields.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-          EnigmailMsgCompFields.setValue(gMsgCompose.compFields.securityInfo, 'sendFlags', 0);
+        if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
+          gMsgCompose.compFields.securityInfo.wrappedJSObject.sendFlags = 0;
         }
       }
       catch (ex) {}
@@ -3379,35 +3379,30 @@ Enigmail.msg = {
       }
     }
 
-    let newSecurityInfo;
+    let secInfo;
 
-    try {
-      if (EnigmailMsgCompFields.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-        newSecurityInfo = gMsgCompose.compFields.securityInfo;
-      }
-      else {
-        throw "dummy";
-      }
+    if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
+      secInfo = gMsgCompose.compFields.securityInfo.wrappedJSObject;
     }
-    catch (ex) {
+    else {
       try {
-        newSecurityInfo = EnigmailMsgCompFields.createObject(gMsgCompose.compFields.securityInfo);
-        if (newSecurityInfo) {
-          gMsgCompose.compFields.securityInfo = newSecurityInfo;
+        secInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
+        if (secInfo) {
+          gMsgCompose.compFields.securityInfo = secInfo;
         }
       }
-      catch (ex2) {
+      catch (ex) {
         EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraftMessage", ex);
         return false;
       }
     }
 
-    EnigmailMsgCompFields.setValue(gMsgCompose.compFields.securityInfo, 'sendFlags', sendFlags);
-    EnigmailMsgCompFields.setValue(newSecurityInfo, "UIFlags", 0);
-    EnigmailMsgCompFields.setValue(newSecurityInfo, "senderEmailAddr", fromAddr);
-    EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", fromAddr);
-    EnigmailMsgCompFields.setValue(newSecurityInfo, "bccRecipients", "");
-    EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", gMsgCompose.compFields.subject);
+    secInfo.sendFlags = sendFlags;
+    secInfo.UIFlags = 0;
+    secInfo.senderEmailAddr = fromAddr;
+    secInfo.recipients = fromAddr;
+    secInfo.bccRecipients = "";
+    secInfo.originalSubject = gMsgCompose.compFields.subject;
     this.dirty = true;
 
     if (this.protectHeaders) {
@@ -3418,7 +3413,7 @@ Enigmail.msg = {
   },
 
   createEnigmailSecurityFields: function(oldSecurityInfo) {
-    let newSecurityInfo = EnigmailMsgCompFields.createObject(gMsgCompose.compFields.securityInfo);
+    let newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
 
     if (!newSecurityInfo)
       throw Components.results.NS_ERROR_FAILURE;
@@ -3651,22 +3646,22 @@ Enigmail.msg = {
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
 
-    if (!EnigmailMsgCompFields.isEnigmailCompField(compFields.securityInfo)) {
+    if (!EnigmailMimeEncrypt.isEnigmailCompField(compFields.securityInfo)) {
       this.createEnigmailSecurityFields(compFields.securityInfo);
     }
 
-    let si = compFields.securityInfo;
-    EnigmailMsgCompFields.setValue(si, 'sendFlags', 0);
-    EnigmailMsgCompFields.setValue(si, "originalSubject", null);
+    let si = compFields.securityInfo.wrappedJSObject;
+    si.sendFlags = 0;
+    si.originalSubject = null;
 
     if (rating >= 6) {
       if (this.identity.getBoolAttribute("protectSubject")) {
-        EnigmailMsgCompFields.setValue(si, "originalSubject", compFields.subject);
+        si.originalSubject = compFields.subject;
         compFields.subject = "";
       }
 
       let encrypt = document.getElementById("enigmail-bc-pepEncrypt").getAttribute("encrypt");
-      EnigmailMsgCompFields.setValue(si, 'sendFlags', (encrypt === "true" ? EnigmailConstants.SEND_ENCRYPTED : 0));
+      si.sendFlags = (encrypt === "true" ? EnigmailConstants.SEND_ENCRYPTED : 0);
     }
     else {
       // attach own key
@@ -3818,27 +3813,22 @@ Enigmail.msg = {
       // make sure the sendFlags are reset before the message is processed
       // (it may have been set by a previously cancelled send operation!)
 
-      try {
-        if (EnigmailMsgCompFields.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-          EnigmailMsgCompFields.setValue(gMsgCompose.compFields.securityInfo, 'sendFlags', 0);
-          EnigmailMsgCompFields.setValue(gMsgCompose.compFields.securityInfo, "originalSubject", gMsgCompose.compFields.subject);
-        }
-        else if (!gMsgCompose.compFields.securityInfo) {
-          throw "dummy";
-        }
+      if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
+        gMsgCompose.compFields.securityInfo.sendFlags = 0;
+        gMsgCompose.compFields.securityInfo.originalSubject = gMsgCompose.compFields.subject;
       }
-      catch (ex) {
+      else {
         try {
-          newSecurityInfo = EnigmailMsgCompFields.createObject(gMsgCompose.compFields.securityInfo);
+          newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
           if (newSecurityInfo) {
-            EnigmailMsgCompFields.setValue(newSecurityInfo, 'sendFlags', 0);
-            EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", gMsgCompose.compFields.subject);
+            newSecurityInfo.sendFlags = 0;
+            newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
 
             gMsgCompose.compFields.securityInfo = newSecurityInfo;
           }
         }
-        catch (ex2) {
-          EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg", ex2);
+        catch (ex) {
+          EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg", ex);
         }
       }
     }
@@ -4132,20 +4122,13 @@ Enigmail.msg = {
 
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: oldSecurityInfo = " + oldSecurityInfo + "\n");
 
-        if (!oldSecurityInfo) {
-          try {
-            newSecurityInfo = oldSecurityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
-          }
-          catch (ex) {}
-        }
-
         if (!newSecurityInfo) {
-          this.createEnigmailSecurityFields(oldSecurityInfo);
-          newSecurityInfo = gMsgCompose.compFields.securityInfo;
+          this.createEnigmailSecurityFields(gMsgCompose.compFields.securityInfo);
+          newSecurityInfo = gMsgCompose.compFields.securityInfo.wrappedJSObject;
         }
 
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", gMsgCompose.compFields.subject);
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "originalReferences", gMsgCompose.compFields.references);
+        newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
+        newSecurityInfo.originalReferences = gMsgCompose.compFields.references;
 
         if (this.protectHeaders) {
           sendFlags |= EnigmailConstants.ENCRYPT_HEADERS;
@@ -4160,11 +4143,11 @@ Enigmail.msg = {
 
         }
 
-        EnigmailMsgCompFields.setValue(newSecurityInfo, 'sendFlags', sendFlags);
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "UIFlags", uiFlags);
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "senderEmailAddr", fromAddr);
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", toAddrStr);
-        EnigmailMsgCompFields.setValue(newSecurityInfo, "bccRecipients", bccAddrStr);
+        newSecurityInfo.sendFlags = sendFlags;
+        newSecurityInfo.UIFlags = uiFlags;
+        newSecurityInfo.senderEmailAddr = fromAddr;
+        newSecurityInfo.recipients = toAddrStr;
+        newSecurityInfo.bccRecipients = bccAddrStr;
 
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: securityInfo = " + newSecurityInfo + "\n");
 

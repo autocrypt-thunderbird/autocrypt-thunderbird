@@ -73,6 +73,7 @@ zip -9 --must-match\
     chrome/content/modules/constants.jsm \
     chrome/content/modules/cryptoAPI.jsm \
     chrome/content/modules/cryptoAPI/gnupg.js \
+    chrome/content/modules/cryptoAPI/gnupg-decryption.jsm \
     chrome/content/modules/cryptoAPI/gnupg-key.jsm \
     chrome/content/modules/cryptoAPI/gnupg-keylist.jsm \
     chrome/content/modules/cryptoAPI/openpgp-js.js \
@@ -119,7 +120,6 @@ zip -9 --must-match\
     chrome/content/modules/mimeDecrypt.jsm \
     chrome/content/modules/mimeEncrypt.jsm \
     chrome/content/modules/mimeVerify.jsm \
-    chrome/content/modules/msgCompFields.jsm \
     chrome/content/modules/msgRead.jsm \
     chrome/content/modules/os.jsm \
     chrome/content/modules/openpgp.jsm \
