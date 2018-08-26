@@ -394,6 +394,9 @@ MimeVerify.prototype = {
       this.returnData(this.signedData);
     }
 
+    // return if not verifying first mime part
+    if (this.mimePartNumber.length > 0 && this.mimePartNumber.search(/^1(\.1)?$/) < 0) return;
+
     if (this.uri) {
       // return if not decrypting currently displayed message (except if
       // printing, replying, etc)

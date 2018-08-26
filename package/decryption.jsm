@@ -108,7 +108,7 @@ var EnigmailDecryption = {
     blockSeparationObj, encToDetailsObj) {
     const esvc = EnigmailCore.getEnigmailService();
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: " + cipherText.length + " bytes, " + uiFlags + "\n");
+    EnigmailLog.DEBUG("decryption.jsm: decryptMessage(" + cipherText.length + " bytes, " + uiFlags + ")\n");
 
     if (!cipherText)
       return "";
@@ -118,7 +118,7 @@ var EnigmailDecryption = {
     var unverifiedEncryptedOK = uiFlags & EnigmailConstants.UI_UNVERIFIED_ENC_OK;
     var oldSignature = signatureObj.value;
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: oldSignature=" + oldSignature + "\n");
+    EnigmailLog.DEBUG("decryption.jsm: decryptMessage: oldSignature=" + oldSignature + "\n");
 
     signatureObj.value = "";
     exitCodeObj.value = -1;
@@ -155,7 +155,7 @@ var EnigmailDecryption = {
 
     // HACK to better support messages from Outlook: if there are empty lines, drop them
     if (pgpBlock.search(/MESSAGE-----\r?\n\r?\nVersion/) >= 0) {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: apply Outlook empty line workaround\n");
+      EnigmailLog.DEBUG("decryption.jsm: decryptMessage: apply Outlook empty line workaround\n");
       pgpBlock = pgpBlock.replace(/\r?\n\r?\n/g, "\n");
     }
 
@@ -231,7 +231,7 @@ var EnigmailDecryption = {
     // (which could be possible in case of MDC errors)
     if ((uiFlags & EnigmailConstants.UI_IGNORE_MDC_ERROR) &&
       (result.statusFlags & EnigmailConstants.MISSING_MDC)) {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: ignoring MDC error\n");
+      EnigmailLog.DEBUG("decryption.jsm: decryptMessage: ignoring MDC error\n");
     }
     else if (result.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
       plainText = "";
@@ -304,7 +304,7 @@ var EnigmailDecryption = {
           innerKeyBlock = innerKeyBlock.replace(/- -----/g, "-----");
 
           statusFlagsObj.value |= EnigmailConstants.INLINE_KEY;
-          EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptMessage: innerKeyBlock found\n");
+          EnigmailLog.DEBUG("decryption.jsm: decryptMessage: innerKeyBlock found\n");
         }
       }
 
@@ -348,7 +348,7 @@ var EnigmailDecryption = {
   },
 
   inlineInnerVerification: function(parent, uiFlags, text, statusObject) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.inlineInnerVerification\n");
+    EnigmailLog.DEBUG("decryption.jsm: inlineInnerVerification()\n");
 
     if (text && text.indexOf("-----BEGIN PGP SIGNED MESSAGE-----") === 0) {
       var status = newStatusObject();
@@ -374,7 +374,7 @@ var EnigmailDecryption = {
     exitCodeObj, statusFlagsObj, errorMsgObj) {
     const esvc = EnigmailCore.getEnigmailService();
 
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.decryptAttachment: parent=" + parent + ", outFileName=" + outFile.path + "\n");
+    EnigmailLog.DEBUG("decryption.jsm: decryptAttachment(parent=" + parent + ", outFileName=" + outFile.path + ")\n");
 
     let attachmentHead = byteData.substr(0, 200);
     if (attachmentHead.match(/-----BEGIN PGP \w{5,10} KEY BLOCK-----/)) {

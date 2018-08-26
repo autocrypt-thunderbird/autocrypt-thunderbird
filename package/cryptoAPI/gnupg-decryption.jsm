@@ -67,7 +67,7 @@ var GnuPGDecryption = {
       args.push(options.fromAddr.toLowerCase());
     }
 
-    if (options.noOutput || options.verifyOnly) {
+    if (options.noOutput) {
       args.push("--verify");
       if (options.mimeSignatureFile) {
         args.push(options.mimeSignatureFile);
