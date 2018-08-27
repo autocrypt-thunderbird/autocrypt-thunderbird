@@ -161,6 +161,7 @@ class CryptoAPI {
   }
 
   /**
+   * Determine the file name from OpenPGP data.
    *
    * @param {byte} byteData    The encrypted data
    *
@@ -172,6 +173,8 @@ class CryptoAPI {
   }
 
   /**
+   * Verify the detached signature of an attachment (or in other words,
+   * check the signature of a file, given the file and the signature).
    *
    * @param {Path} filePath    The signed file
    * @param {Path} sigPath       The signature to verify
@@ -185,4 +188,72 @@ class CryptoAPI {
   async verifyAttachment(filePath, sigPath) {
     return null;
   }
+
+  /**
+   * Decrypt an attachment.
+   *
+   * @param {Bytes}  encrypted     The encrypted data
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async decryptAttachment(encrypted) {
+    return null;
+  }
+
+  /**
+   * Generic function to decrypt and/or verify an OpenPGP message.
+   *
+   * @param {String} encrypted     The encrypted data
+   * @param {Object} options       Decryption options
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async decrypt(encrypted, options) {
+    return null;
+  }
+
+  /**
+   * Decrypt a PGP/MIME-encrypted message
+   *
+   * @param {String} encrypted     The encrypted data
+   * @param {Object} options       Decryption options
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async decryptMime(encrypted, options) {
+    return null;
+  }
+
+  /**
+   * Verify a PGP/MIME-signed message
+   *
+   * @param {String} signed        The signed data
+   * @param {Object} options       Decryption options
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async verifyMime(signed, options) {
+    return null;
+  }
+
 }

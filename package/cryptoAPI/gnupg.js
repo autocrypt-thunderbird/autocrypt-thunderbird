@@ -248,7 +248,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async getFileName(byteData) {
-    EnigmailLog.DEBUG(`gnupg.js: getFileName\n`);
+    EnigmailLog.DEBUG(`gnupg.js: getFileName()\n`);
     const args = EnigmailGpg.getStandardArgs(true).
     concat(EnigmailPassword.command()).
     concat(["--decrypt"]);
@@ -280,7 +280,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async verifyAttachment(filePath, sigPath) {
-    EnigmailLog.DEBUG(`gnupg.js: verifyAttachment\n`);
+    EnigmailLog.DEBUG(`gnupg.js: verifyAttachment()\n`);
     const args = EnigmailGpg.getStandardArgs(true).
     concat(["--verify", sigPath, filePath]);
     let result = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
@@ -312,7 +312,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decryptAttachment(encrypted) {
-    EnigmailLog.DEBUG(`gnupg.js: decryptAttachment\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decryptAttachment()\n`);
 
     let args = EnigmailGpg.getStandardArgs(true);
     args.push("--yes");
