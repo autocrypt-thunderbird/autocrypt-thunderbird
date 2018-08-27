@@ -299,6 +299,31 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
     }
   }
 
+
+  /**
+   *
+   * @param {Bytes}  encrypted     The encrypted data
+   *
+   * @return {Promise<Object>} - Return object with decryptedData and
+   * status information
+   *
+   * Use Promise.catch to handle failed decryption.
+   * retObj.errorMsg will be an error message in this case.
+   */
+
+  async decryptAttachment(encrypted) {
+    EnigmailLog.DEBUG(`gnupg.js: decryptAttachment\n`);
+
+    let args = EnigmailGpg.getStandardArgs(true);
+    args.push("--yes");
+    args = args.concat(EnigmailPassword.command());
+    args.push("-d");
+
+    let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, encrypted);
+    return res;
+  }
+
+
   /**
    *
    * @param {String} encrypted     The encrypted data
