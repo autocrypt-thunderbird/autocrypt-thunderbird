@@ -422,38 +422,13 @@ var EnigmailDecryption = {
 
     //var outFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
 
-    let args = EnigmailGpg.getStandardArgs(true);
-    args.push("--yes");
-    args = args.concat(EnigmailPassword.command());
-    args.push("-d");
+    const cApi = EnigmailCryptoAPI();
+    let result = cApi.sync(cApi.decryptAttachment(byteData));
 
-
-    statusFlagsObj.value = 0;
-
-    let listener = EnigmailExecution.newSimpleListener(
-      function _stdin(pipe) {
-        pipe.write(byteData);
-        pipe.close();
-      });
-
-
-    let proc = EnigmailExecution.execStart(EnigmailGpgAgent.agentPath, args, false, parent,
-      listener, statusFlagsObj);
-
-    if (!proc) {
-      return false;
-    }
-
-    // Wait for child STDOUT to close
-    proc.wait();
-
-    let statusMsgObj = {};
-    let cmdLineObj = {};
-
-    exitCodeObj.value = EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-
-    if (listener.stdoutData.length > 0) {
-      return EnigmailFiles.writeFileContents(outFile, listener.stdoutData);
+    exitCodeObj.value = result.exitCode;
+    statusFlagsObj.value = result.statusFlags;
+    if (result.stdoutData.length > 0) {
+      return EnigmailFiles.writeFileContents(outFile, result.stdoutData);
     }
 
     return false;
