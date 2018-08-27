@@ -71,7 +71,7 @@ test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
       Assert.ok("encryptedTo" in s);
       Assert.equal(mimePartNumber, "1");
     }
-  }
+  };
 
   let pgpMimeProxy = {
     QueryInterface: XPCOMUtils.generateQI(["nsIPgpMimeProxy"]),
