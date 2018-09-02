@@ -26,3 +26,4 @@ execTest("enigmailMsgComposeOverlay-test-f_h.js");
 execTest("enigmailMsgComposeOverlay-test-i_r.js");
 execTest("enigmailMsgComposeOverlay-test-s_t.js");
 execTest("enigmailMsgComposeOverlay-test-u_z.js");
+execTest("enigmailMsgComposeOverlay-test-enc.js");

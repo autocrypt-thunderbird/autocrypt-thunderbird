@@ -13,8 +13,14 @@ Components.utils.import("resource://gre/modules/osfile.jsm", osUtils);
 Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
 
 var TestHelper = {
+  getMyPath: function() {
+    let fn = Components.stack.filename.replace(/^.* -> file:\/\//, "");
+    let file = osUtils.FileUtils.File(fn);
+    return file.parent;
+  },
+
   loadDirectly: function(name) {
-    do_load_module("file://" + do_get_cwd().parent.path + "/" + name);
+    do_load_module("file://" + TestHelper.getMyPath().parent.path + "/" + name);
   },
 
   loadModule: function(name) {
@@ -81,7 +87,7 @@ var TestHelper = {
       file.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 384);
     }
 
-    var s = "pinentry-program " + do_get_cwd().path.replace(/\\/g, "/") + "/pinentry-auto";
+    var s = "pinentry-program " + TestHelper.getMyPath().path.replace(/\\/g, "/") + "/pinentry-auto";
     if (JSUnit.getOS() == "WINNT") {
       s += ".exe";
     }
