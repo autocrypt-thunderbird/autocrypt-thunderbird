@@ -1186,7 +1186,7 @@ var EnigmailpEp = {
         }
       }
 
-      let foundGnuPG = true;
+      let isGnuPGOK = true;
 
       let stderrData = "";
       let process = subprocess.call({
@@ -1206,9 +1206,13 @@ var EnigmailpEp = {
             stderrData += data;
 
             if (stderrData.length > 0) {
-              if (stderrData.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|UNSUPPORTED_GPG_VERSION|GPGME_INIT_FAILED|CANNOT_LOAD_GPGME)/) >= 0) {
-                foundGnuPG = false;
+              if (stderrData.search(/PEP_INIT_(CANNOT_DETERMINE_GPG_VERSION|GPGME_INIT_FAILED|CANNOT_LOAD_GPGME)/) >= 0) {
+                isGnuPGOK = false;
                 deferred.reject(makeError("GNUPG-UNAVAILABLE", null, "gpg not found"));
+              }
+              if (stderrData.search(/PEP_INIT_UNSUPPORTED_GPG_VERSION/) >= 0) {
+                isGnuPGOK = false;
+                deferred.reject(makeError("GNUPG-INCOMPATIBLE", null, "gpg version not supported"));
               }
             }
           }
@@ -1224,7 +1228,7 @@ var EnigmailpEp = {
 
       DEBUG_LOG("_startPepServer: JSON startup done");
 
-      if (!foundGnuPG) {
+      if (!isGnuPGOK) {
         return;
       }
 
