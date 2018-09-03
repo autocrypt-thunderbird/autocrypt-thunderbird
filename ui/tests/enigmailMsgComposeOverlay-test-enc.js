@@ -8,14 +8,13 @@
 "use strict";
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
-/* global component: false, test: false, withTestGpgHome: false, withEnigmail: false, do_get_file: false */
-
+/* global component: false, test: false, withTestGpgHome: false, withEnigmail: false, do_get_file: false, withOverwriteFuncs: false */
 var window = JSUnit.createStubWindow();
 var document = JSUnit.createDOMDocument();
 window.document = document;
 
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-/* global EnigmailMimeEncrypt: false */
+/* global EnigmailMimeEncrypt: false, XPCOMUtils: false */
 
 component("enigmail/constants.jsm"); /* global EnigmailConstants: false */
 component("enigmail/locale.jsm"); /* global EnigmailLocale: false */
@@ -26,80 +25,134 @@ var gMsgCompose, gWindowLocked, getCurrentIdentity;
 
 function Attachments2CompFields() {}
 
-test(withTestGpgHome(withEnigmail(function encryptMsg_test1() {
-  const secKey = do_get_file("../../package/tests/resources/dev-strike.sec", false);
-  const importedKeysObj = {};
-  const importResult = EnigmailKeyRing.importKeyFromFile(secKey, {}, importedKeysObj);
+function DetermineConvertibility() {
+  return Ci.nsIMsgCompConvertible.Yes;
+}
 
-  const DeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
-  Enigmail.msg.statusEncrypted = EnigmailConstants.ENIG_FINAL_YES;
-  Enigmail.msg.statusSigned = EnigmailConstants.ENIG_FINAL_YES;
-  Enigmail.msg.statusPGPMime = EnigmailConstants.ENIG_FINAL_FORCEYES;
+function TestEditor(editorContent) {
+  this._editorContent = editorContent;
+}
 
-  Enigmail.msg.juniorMode = false;
-  Enigmail.msg.sendPgpMime = true;
-  Enigmail.msg.protectHeaders = true;
-  let s = Enigmail.msg.getEncryptionFlags(DeliverMode.Now);
-  Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED |  EnigmailConstants.SEND_SIGNED);
+TestEditor.prototype = {
+  QueryInterface: XPCOMUtils.generateQI([
+    "nsIEditorMailSupport",
+    "nsIPlaintextEditor"
+  ]),
 
-  gWindowLocked = false;
-  gMsgCompose = {
-    compFields: Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields)
-  };
+  wrapWidth: 72,
+  documentCharacterSet: "utf-8",
+  rewrap: function() {
+    Assert.ok(false);
+  },
+  outputToString: function() {
+    return this._editorContent;
+  },
+  insertAsQuotation: function(data) {
+    this._editorContent = data;
+  },
+  insertTextWithQuotations: function(data) {
+    this._editorContent = data;
+  },
+  selectAll: function() {}
+};
 
-  gMsgCompose.compFields.securityInfo = EnigmailMimeEncrypt.createMimeEncrypt(null);
+test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
+  [{
+    obj: Enigmail.msg,
+    fn: "enableUndoEncryption",
+    new: function() {}
+  }],
+  function encryptMsg_test1() {
+    const secKey = do_get_file("../../package/tests/resources/dev-strike.sec", false);
+    const importedKeysObj = {};
+    const importResult = EnigmailKeyRing.importKeyFromFile(secKey, {}, importedKeysObj);
 
-  Enigmail.hlp = {
-    validKeysForAllRecipients: function(toAddrStr) {
-      Assert.equal(toAddrStr, "strike.devtest@gmail.com");
-      return ["0x65537E212DC19025AD38EDB2781617319CE311C4"];
-    },
-    getInvalidAddress: function(toAddrStr) {
-      Assert.equal(toAddrStr, "");
-      return [];
-    }
-  };
+    const DeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
+    Enigmail.msg.statusEncrypted = EnigmailConstants.ENIG_FINAL_YES;
+    Enigmail.msg.statusSigned = EnigmailConstants.ENIG_FINAL_YES;
+    Enigmail.msg.statusPGPMime = EnigmailConstants.ENIG_FINAL_FORCEYES;
 
-  getCurrentIdentity = function() {
-    return {
-      email: "strike.devtest@gmail.com",
-      getBoolAttribute: function(param) {
-        switch (param) {
-          case "enablePgp":
-            return true;
-        }
-        return false;
+    gMsgCompose = {
+      compFields: Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields),
+      editor: new TestEditor("This is a test message!"),
+      composeHTML: false
+    };
+
+    Enigmail.msg.juniorMode = false;
+    Enigmail.msg.sendPgpMime = true;
+    Enigmail.msg.protectHeaders = true;
+    Enigmail.msg.editor = gMsgCompose.editor;
+    let s = Enigmail.msg.getEncryptionFlags(DeliverMode.Now);
+    Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED |  EnigmailConstants.SEND_SIGNED);
+
+    gWindowLocked = false;
+
+    gMsgCompose.compFields.securityInfo = EnigmailMimeEncrypt.createMimeEncrypt(null);
+
+    Enigmail.hlp = {
+      validKeysForAllRecipients: function(toAddrStr) {
+        Assert.equal(toAddrStr, "strike.devtest@gmail.com");
+        return ["0x65537E212DC19025AD38EDB2781617319CE311C4"];
       },
-      getIntAttribute: function(param) {
-        switch (param) {
-          case "pgpKeyMode":
-            return 1;
-        }
-        return 0;
-      },
-      getCharAttribute: function(param) {
-        switch (param) {
-          case "pgpkeyId":
-            return "0x65537E212DC19025AD38EDB2781617319CE311C4";
-        }
-        return "";
-      },
-      setCharAttribute: function(param, value) {
-        switch (param) {
-          case "pgpkeyId":
-            Assert.equal(value, "0x65537E212DC19025AD38EDB2781617319CE311C4");
-            break;
-        }
+      getInvalidAddress: function(toAddrStr) {
+        Assert.equal(toAddrStr, "");
+        return [];
       }
     };
-  };
 
-  gMsgCompose.compFields.to = "strike.devtest@gmail.com";
-  gMsgCompose.compFields.from = "strike.devtest@gmail.com";
-  let r = Enigmail.msg.encryptMsg();
-  Assert.equal(r, true);
-  let si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+    getCurrentIdentity = function() {
+      return {
+        email: "strike.devtest@gmail.com",
+        getBoolAttribute: function(param) {
+          switch (param) {
+            case "enablePgp":
+              return true;
+          }
+          return false;
+        },
+        getIntAttribute: function(param) {
+          switch (param) {
+            case "pgpKeyMode":
+              return 1;
+          }
+          return 0;
+        },
+        getCharAttribute: function(param) {
+          switch (param) {
+            case "pgpkeyId":
+              return "0x65537E212DC19025AD38EDB2781617319CE311C4";
+          }
+          return "";
+        },
+        setCharAttribute: function(param, value) {
+          switch (param) {
+            case "pgpkeyId":
+              Assert.equal(value, "0x65537E212DC19025AD38EDB2781617319CE311C4");
+              break;
+          }
+        }
+      };
+    };
 
-  Assert.equal(si.recipients, "0x65537E212DC19025AD38EDB2781617319CE311C4", "recipients");
-  Assert.ok(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED, "sendFlags");
-})));
+    gMsgCompose.compFields.to = "strike.devtest@gmail.com";
+    gMsgCompose.compFields.from = "strike.devtest@gmail.com";
+    let r = Enigmail.msg.encryptMsg();
+    Assert.equal(r, true);
+    let si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+
+    Assert.equal(si.recipients, "0x65537E212DC19025AD38EDB2781617319CE311C4", "recipients");
+    Assert.ok(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_PGP_MIME, "sendFlags");
+
+    Enigmail.msg.statusPGPMime = EnigmailConstants.ENIG_FINAL_FORCENO;
+    Enigmail.msg.sendPgpMime = false;
+
+    //  debugger;
+    r = Enigmail.msg.encryptMsg();
+    Assert.equal(r, true);
+    si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+
+    Assert.equal(si.recipients, "", "recipients");
+    Assert.equal(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED, 0, "sendFlags");
+    Assert.equal(gMsgCompose.editor.outputToString().substr(0, 27), "-----BEGIN PGP MESSAGE-----");
+
+  }))));

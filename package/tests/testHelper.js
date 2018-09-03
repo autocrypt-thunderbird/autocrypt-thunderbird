@@ -175,23 +175,25 @@ function withTestGpgHome(f) {
  *   - new {Function}: new function
  */
 function withOverwriteFuncs(overwriteArr, func) {
-  let origFuncs = [];
-  for (let f in overwriteArr) {
-    origFuncs.push({
-      obj: overwriteArr[f].obj,
-      fn: overwriteArr[f].fn,
-      origFunc: overwriteArr[f].obj[overwriteArr[f].fn]
-    });
-    overwriteArr[f].obj[overwriteArr[f].fn] = overwriteArr[f].new;
-  }
+  return function() {
+    let origFuncs = [];
+    for (let f in overwriteArr) {
+      origFuncs.push({
+        obj: overwriteArr[f].obj,
+        fn: overwriteArr[f].fn,
+        origFunc: overwriteArr[f].obj[overwriteArr[f].fn]
+      });
+      overwriteArr[f].obj[overwriteArr[f].fn] = overwriteArr[f].new;
+    }
 
-  try {
-    func();
-  }
-  catch (x) {}
-
-  for (let i in origFuncs) {
-    origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
+    try {
+      func();
+    }
+    finally {
+      for (let i in origFuncs) {
+        origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
+      }
+    }
   }
 }
 

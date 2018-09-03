@@ -10,29 +10,4 @@
 // load testHelper.js from package/tests into the current scope
 do_load_module("file://" + do_get_cwd().parent.parent.path + "/package/tests/testHelper.js");
 
-/**
- * @param {Array<Object>} overwriteArr:
- - obj {Object}: target Object
- - fn  {String}: function name
- - new {Function}: new function
- */
-function withOverwriteFuncs(overwriteArr, callbackFunc) {
-  let origFuncs = [];
-  for (let f in overwriteArr) {
-    origFuncs.push({
-      obj: overwriteArr[f].obj,
-      fn: overwriteArr[f].fn,
-      origFunc: overwriteArr[f].obj[overwriteArr[f].fn]
-    });
-    overwriteArr[f].obj[overwriteArr[f].fn] = overwriteArr[f].new;
-  }
-
-  try {
-    callbackFunc();
-  }
-  catch (x) {}
-
-  for (let i in origFuncs) {
-    origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
-  }
-}
+// all functions from .../package/testHelper.js are available
