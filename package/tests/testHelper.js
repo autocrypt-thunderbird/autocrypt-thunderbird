@@ -194,7 +194,7 @@ function withOverwriteFuncs(overwriteArr, func) {
         origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
       }
     }
-  }
+  };
 }
 
 

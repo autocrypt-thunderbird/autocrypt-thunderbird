@@ -134,6 +134,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
       };
     };
 
+    // Create PGP/MIME message
     gMsgCompose.compFields.to = "strike.devtest@gmail.com";
     gMsgCompose.compFields.from = "strike.devtest@gmail.com";
     let r = Enigmail.msg.encryptMsg();
@@ -143,10 +144,10 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     Assert.equal(si.recipients, "0x65537E212DC19025AD38EDB2781617319CE311C4", "recipients");
     Assert.ok(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_PGP_MIME, "sendFlags");
 
+    // Create inline-PGP message
     Enigmail.msg.statusPGPMime = EnigmailConstants.ENIG_FINAL_FORCENO;
     Enigmail.msg.sendPgpMime = false;
 
-    //  debugger;
     r = Enigmail.msg.encryptMsg();
     Assert.equal(r, true);
     si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
