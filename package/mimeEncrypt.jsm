@@ -88,7 +88,7 @@ PgpMimeEncrypt.prototype = {
   QueryInterface: XPCOMUtils.generateQI([
     "nsIMsgComposeSecure",
     "nsIStreamListener",
-    "nsIMsgSMIMECompFields" // TB < 63
+    "nsIMsgSMIMECompFields" // TB < 64
   ]),
 
   signMessage: false,
@@ -163,7 +163,7 @@ PgpMimeEncrypt.prototype = {
       }
       else {
         if (kSmimeComposeSecureCID in Components.classesByID) {
-          // TB < 63
+          // TB < 64
           if (this.checkSMime) {
             // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
             this.smimeCompose = Components.classesByID[kSmimeComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
@@ -178,6 +178,10 @@ PgpMimeEncrypt.prototype = {
           for (let prop of["sendFlags", "UIFlags", "senderEmailAddr", "recipients", "bccRecipients", "originalSubject"]) {
             this[prop] = securityInfo[prop];
           }
+        }
+        else {
+          // TB >= 64: we are not called for S/MIME
+          this.disableSMimeCheck();
         }
 
         return (this.sendFlags & (EnigmailConstants.SEND_SIGNED |
@@ -715,9 +719,6 @@ PgpMimeEncrypt.prototype = {
     this.outQueue = "";
 
     if ((!this.isDraft) || self.msgIdentity.getBoolAttribute("autoEncryptDrafts")) {
-      let securityInfo = this.msgCompFields.securityInfo;
-      if (!securityInfo) throw Cr.NS_ERROR_FAILURE;
-
       try {
         originalSubject = this.originalSubject;
         sendFlags = this.sendFlags;

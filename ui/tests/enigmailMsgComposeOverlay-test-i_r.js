@@ -634,6 +634,9 @@ function pepMenuPopup_test() {
 
 function preferPgpOverSmime_test() {
   gMsgCompose.compFields.securityInfo = Components.classes["@mozilla.org/messenger-smime/composefields;1"].createInstance();
+  EnigmailMimeEncrypt.isEnigmailCompField = function(val) {
+    return false;
+  }
 
   let ret = Enigmail.msg.preferPgpOverSmime(0x0001);
   Assert.equal(ret, 1);

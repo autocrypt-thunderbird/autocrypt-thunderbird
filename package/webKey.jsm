@@ -204,7 +204,7 @@ var EnigmailWks = {
                 identity: ident,
                 to: to[1],
                 subject: subject[1],
-                securityInfo: si
+                composeSecure: si
               },
               listener.stdoutData,
               cb
@@ -270,7 +270,7 @@ var EnigmailWks = {
                   identity: ident,
                   to: to[1],
                   subject: subject[1],
-                  securityInfo: si
+                  composeSecure: si
                 },
                 listener.stdoutData,
                 cb

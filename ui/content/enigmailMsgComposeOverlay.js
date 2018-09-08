@@ -1244,13 +1244,40 @@ Enigmail.msg = {
     }
   },
 
+  getSecurityParams: function(compFields = null, doQueryInterface = false) {
+    if (!compFields) compFields = gMsgCompose.compFields;
+
+    if ("securityInfo" in compFields) {
+      if (doQueryInterface) {
+        return compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      }
+      else {
+        return compFields.securityInfo;
+      }
+    }
+    else {
+      return compFields.composeSecure;
+    }
+  },
+
+  setSecurityParams: function(newSecurityParams) {
+    if ("securityInfo" in gMsgCompose.compFields) {
+      // TB < 64
+      gMsgCompose.compFields.securityInfo = newSecurityParams;
+    }
+
+    else {
+      gMsgCompose.compFields.composeSecure = newSecurityParams;
+    }
+  },
+
 
   resetUpdatedFields: function() {
     this.removeAttachedKey();
 
     // reset subject
-    if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-      let si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+    if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
+      let si = Enigmail.msg.getSecurityParams().wrappedJSObject;
       if (si.originalSubject) {
         gMsgCompose.compFields.subject = si.originalSubject;
       }
@@ -2111,11 +2138,12 @@ Enigmail.msg = {
     if (toolbarTxt) {
       toolbarTxt.value = toolbarMsg;
 
-      if (gMsgCompose.compFields.securityInfo) {
-        let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      if (Enigmail.msg.getSecurityParams()) {
+        let si = Enigmail.msg.getSecurityParams(null, true);
+        let isSmime = !EnigmailMimeEncrypt.isEnigmailCompField(si);
 
         if (!doSign && !doEncrypt &&
-          !(gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+          !(isSmime &&
             (si.signMessage || si.requireEncryptMessage))) {
           toolbarTxt.setAttribute("class", "enigmailStrong");
         }
@@ -2830,10 +2858,12 @@ Enigmail.msg = {
    */
   preferPgpOverSmime: function(sendFlags) {
 
-    if (gMsgCompose.compFields.securityInfo instanceof Components.interfaces.nsIMsgSMIMECompFields &&
+    let si = Enigmail.msg.getSecurityParams(null, true);
+    let isSmime = !EnigmailMimeEncrypt.isEnigmailCompField(si);
+
+    if (isSmime &&
       (sendFlags & (EnigmailConstants.SEND_SIGNED | EnigmailConstants.SEND_ENCRYPTED))) {
 
-      let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
       if (si.requireEncryptMessage || si.signMessage) {
 
         if (sendFlags & EnigmailConstants.SAVE_MESSAGE) {
@@ -3323,8 +3353,8 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
 
       try {
-        if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-          gMsgCompose.compFields.securityInfo.wrappedJSObject.sendFlags = 0;
+        if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
+          Enigmail.msg.getSecurityParams().wrappedJSObject.sendFlags = 0;
         }
       }
       catch (ex) {}
@@ -3381,14 +3411,14 @@ Enigmail.msg = {
 
     let secInfo;
 
-    if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-      secInfo = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+    if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
+      secInfo = Enigmail.msg.getSecurityParams().wrappedJSObject;
     }
     else {
       try {
-        secInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
+        secInfo = EnigmailMimeEncrypt.createMimeEncrypt(Enigmail.msg.getSecurityParams());
         if (secInfo) {
-          gMsgCompose.compFields.securityInfo = secInfo;
+          Enigmail.msg.setSecurityParams(secInfo);
         }
       }
       catch (ex) {
@@ -3413,12 +3443,12 @@ Enigmail.msg = {
   },
 
   createEnigmailSecurityFields: function(oldSecurityInfo) {
-    let newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
+    let newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(Enigmail.msg.getSecurityParams());
 
     if (!newSecurityInfo)
       throw Components.results.NS_ERROR_FAILURE;
 
-    gMsgCompose.compFields.securityInfo = newSecurityInfo;
+    Enigmail.msg.setSecurityParams(newSecurityInfo);
   },
 
   isSendConfirmationRequired: function(sendFlags) {
@@ -3646,11 +3676,12 @@ Enigmail.msg = {
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptPepMessage: rating=" + rating + "\n");
 
-    if (!EnigmailMimeEncrypt.isEnigmailCompField(compFields.securityInfo)) {
-      this.createEnigmailSecurityFields(compFields.securityInfo);
+    let si = Enigmail.msg.getSecurityParams(compFields);
+    if (!EnigmailMimeEncrypt.isEnigmailCompField(si)) {
+      this.createEnigmailSecurityFields(si);
     }
 
-    let si = compFields.securityInfo.wrappedJSObject;
+    si = Enigmail.msg.getSecurityParams(compFields).wrappedJSObject;
     si.sendFlags = 0;
     si.originalSubject = null;
 
@@ -3692,7 +3723,7 @@ Enigmail.msg = {
     gSMFields.signMessage = (sendFlags & EnigmailConstants.SEND_SIGNED ? true : false);
     gSMFields.requireEncryptMessage = (sendFlags & EnigmailConstants.SEND_ENCRYPTED ? true : false);
 
-    gMsgCompose.compFields.securityInfo = gSMFields;
+    Enigmail.msg.setSecurityParams(gSMFields);
 
     let conf = this.isSendConfirmationRequired(sendFlags);
 
@@ -3769,18 +3800,20 @@ Enigmail.msg = {
       // make sure the sendFlags are reset before the message is processed
       // (it may have been set by a previously cancelled send operation!)
 
-      if (EnigmailMimeEncrypt.isEnigmailCompField(gMsgCompose.compFields.securityInfo)) {
-        gMsgCompose.compFields.securityInfo.sendFlags = 0;
-        gMsgCompose.compFields.securityInfo.originalSubject = gMsgCompose.compFields.subject;
+      let si = Enigmail.msg.getSecurityParams();
+
+      if (EnigmailMimeEncrypt.isEnigmailCompField(si)) {
+        si.sendFlags = 0;
+        si.originalSubject = gMsgCompose.compFields.subject;
       }
       else {
         try {
-          newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(gMsgCompose.compFields.securityInfo);
+          newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(si);
           if (newSecurityInfo) {
             newSecurityInfo.sendFlags = 0;
             newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
 
-            gMsgCompose.compFields.securityInfo = newSecurityInfo;
+            Enigmail.msg.setSecurityParams(newSecurityInfo);
           }
         }
         catch (ex) {
@@ -4058,13 +4091,13 @@ Enigmail.msg = {
   prepareSecurityInfo: function(sendFlags, uiFlags, rcpt, newSecurityInfo) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo(): Using PGP/MIME, flags=" + sendFlags + "\n");
 
-    let oldSecurityInfo = gMsgCompose.compFields.securityInfo;
+    let oldSecurityInfo = Enigmail.msg.getSecurityParams();
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo: oldSecurityInfo = " + oldSecurityInfo + "\n");
 
     if (!newSecurityInfo) {
-      this.createEnigmailSecurityFields(gMsgCompose.compFields.securityInfo);
-      newSecurityInfo = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+      this.createEnigmailSecurityFields(Enigmail.msg.getSecurityParams());
+      newSecurityInfo = Enigmail.msg.getSecurityParams().wrappedJSObject;
     }
 
     newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
@@ -5573,7 +5606,7 @@ Enigmail.composeStateListener = {
     }
 
     // ensure that securityInfo is set back to S/MIME flags (especially required if draft was saved)
-    if (gSMFields) gMsgCompose.compFields.securityInfo = gSMFields;
+    if (gSMFields) Enigmail.msg.setSecurityParams(gSMFields);
   },
 
   NotifyComposeBodyReady: function() {
@@ -5588,8 +5621,8 @@ Enigmail.composeStateListener = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
 
     if (Enigmail.msg.disableSmime) {
-      if (gMsgCompose && gMsgCompose.compFields && gMsgCompose.compFields.securityInfo) {
-        let si = gMsgCompose.compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
+      if (gMsgCompose && gMsgCompose.compFields && Enigmail.msg.getSecurityParams()) {
+        let si = Enigmail.msg.getSecurityParams(null, true);
         si.signMessage = false;
         si.requireEncryptMessage = false;
       }

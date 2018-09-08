@@ -94,7 +94,7 @@ var EnigmailSend = {
    *    - returnReceipt (optional) Boolean: ask for a receipt
    *    - receiptType (optional) Number: default: take from identity
    *    - requestDsn (optional) Boolean: request a Delivery Status Notification
-   *    - securityInfo (optional)
+   *    - composeSecure (optional) (contains securityInfo for TB < 64)
    *
    * @param body: complete message source
    * @param callbackFunc: function(Boolean) - return true if message was sent successfully
@@ -115,7 +115,14 @@ var EnigmailSend = {
     fields.returnReceipt = ("returnReceipt" in aParams) ? aParams.returnReceipt : identity.requestReturnReceipt;
     fields.receiptHeaderType = ("receiptType" in aParams) ? aParams.receiptType : identity.receiptHeaderType;
     fields.DSN = ("requestDsn" in aParams) ? aParams.requestDsn : identity.requestDSN;
-    if ("securityInfo" in aParams) fields.securityInfo = aParams.securityInfo;
+    if ("composeSecure" in aParams) {
+      if ("securityInfo" in fields) {
+        // TB < 64
+        fields.securityInfo = aParams.securityInfo;
+      }
+      else
+        fields.composeSecure = aParams.composeSecure;
+    }
 
     fields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
     body = "Message-Id: " + fields.messageId + "\r\n" + body;
