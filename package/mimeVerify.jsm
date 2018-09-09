@@ -16,7 +16,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
@@ -125,7 +125,7 @@ MimeVerify.prototype = {
   sigData: "",
   mimePartNumber: "",
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+  QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
 
   startStreaming: function(window, msgWindow, msgUriSpec) {
     LOCAL_DEBUG("mimeVerify.jsm: startStreaming\n");

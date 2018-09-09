@@ -18,8 +18,8 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm");
 Cu.import("chrome://enigmail/content/modules/dialog.jsm");
 Cu.import("chrome://enigmail/content/modules/log.jsm");
@@ -85,7 +85,7 @@ PgpMimeEncrypt.prototype = {
       return PGPMIME_ENCRYPT_CONTRACTID;
     }
   },
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: EnigmailTb60Compat.generateQI([
     "nsIMsgComposeSecure",
     "nsIStreamListener",
     "nsIMsgSMIMECompFields" // TB < 64

@@ -23,7 +23,7 @@ const Ci = Components.interfaces;
 const MIN_PORT_NUM = 15900;
 const MAX_PORT_NUM = 15991;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 
@@ -95,7 +95,7 @@ function createHttpResponse(statusCode, messageData) {
 
 PepListener.prototype = {
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIServerSocketListener]),
+  QueryInterface: EnigmailTb60Compat.generateQI(["nsIServerSocketListener"]),
 
   reader: {
     self: null,

@@ -9,7 +9,7 @@
 "use strict";
 
 /* global EnigmailData: false, EnigmailApp: false, EnigmailDialog: false, EnigmailTimer: false, EnigmailWindows: false, EnigmailTime: false */
-/* global EnigmailLocale: false, EnigmailLog: false, XPCOMUtils: false, EnigmailPrefs: false */
+/* global EnigmailLocale: false, EnigmailLog: false, EnigmailPrefs: false */
 
 /* globals from Thunderbird: */
 /* global ReloadMessage: false, gDBView: false, gSignatureStatus: false, gEncryptionStatus: false, showMessageReadSecurityInfo: false */
@@ -17,7 +17,7 @@
 /* global currentHeaderData: false, gViewAllHeaders: false, gExpandedHeaderList: false, goDoCommand: false, HandleSelectedAttachments: false */
 /* global statusFeedback: false, global displayAttachmentsForExpandedView: false, global gMessageListeners: false, global gExpandedHeaderView */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
 Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /* global EnigmailMsgRead: false */
@@ -1793,7 +1793,7 @@ Enigmail.msg = {
     var msgSvc = messenger.messageServiceFromURI(msgUriSpec);
 
     var listener = {
-      QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIStreamListener]),
+      QueryInterface: EnigmailTb60Compat.generateQI(["nsIStreamListener"]),
       onStartRequest: function() {
         this.data = "";
         this.inStream = Components.classes["@mozilla.org/scriptableinputstream;1"].

@@ -15,7 +15,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
@@ -69,7 +69,7 @@ PgpWkdHandler.prototype = {
   uri: null,
   backgroundJob: false,
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+  QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
 
   onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStartRequest\n"); // always log this one

@@ -1,5 +1,4 @@
 /*global Components: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,13 +14,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+
 
 const NS_ENIGCLINE_SERVICE_CID = Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
 const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
-
-const nsICommandLineHandler = Ci.nsICommandLineHandler;
-const nsIFactory = Ci.nsIFactory;
 
 function Handler() {}
 
@@ -29,7 +26,7 @@ Handler.prototype = {
   classDescription: "Enigmail Key Management CommandLine Service",
   classID: NS_ENIGCLINE_SERVICE_CID,
   contractID: NS_CLINE_SERVICE_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([nsICommandLineHandler, nsIFactory]),
+  QueryInterface: EnigmailTb60Compat.generateQI(["nsICommandLineHandler", "nsIFactory"]),
 
   // nsICommandLineHandler
   handle: function(cmdLine) {

@@ -14,7 +14,9 @@ var document = JSUnit.createDOMDocument();
 window.document = document;
 
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-/* global EnigmailMimeEncrypt: false, XPCOMUtils: false */
+/* global EnigmailMimeEncrypt: false */
+
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 
 component("enigmail/constants.jsm"); /* global EnigmailConstants: false */
 component("enigmail/locale.jsm"); /* global EnigmailLocale: false */
@@ -34,7 +36,7 @@ function TestEditor(editorContent) {
 }
 
 TestEditor.prototype = {
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: EnigmailTb60Compat.generateQI([
     "nsIEditorMailSupport",
     "nsIPlaintextEditor"
   ]),

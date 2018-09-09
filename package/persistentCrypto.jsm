@@ -14,7 +14,6 @@ const Cu = Components.utils;
 
 Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */

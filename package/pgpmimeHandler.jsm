@@ -23,7 +23,7 @@ Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
 var EXPORTED_SYMBOLS = ["EnigmailPgpmimeHander"];
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/mimeDecrypt.jsm"); /*global EnigmailMimeDecrypt: false */
@@ -146,7 +146,7 @@ PgpMimeHandler.prototype = {
   classDescription: "Enigmail JS Decryption Handler",
   classID: PGPMIME_JS_DECRYPTOR_CID,
   contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener]),
+  QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {

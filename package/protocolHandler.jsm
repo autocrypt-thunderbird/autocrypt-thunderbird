@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailCore: false, XPCOMUtils: false, EnigmailData: false, EnigmailLog: false */
+/*global Components: false, EnigmailCore: false, EnigmailData: false, EnigmailLog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,7 +14,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm");
 Cu.import("chrome://enigmail/content/modules/data.jsm");
 Cu.import("chrome://enigmail/content/modules/log.jsm");
@@ -50,7 +50,7 @@ EnigmailProtocolHandler.prototype = {
     nsIProtocolHandler.URI_NOAUTH |
     nsIProtocolHandler.URI_OPENING_EXECUTES_SCRIPT,
 
-  QueryInterface: XPCOMUtils.generateQI([nsIProtocolHandler]),
+  QueryInterface: EnigmailTb60Compat.generateQI([nsIProtocolHandler]),
 
   newURI: function(aSpec, originCharset, aBaseURI) {
     EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.newURI: aSpec='" + aSpec + "'\n");

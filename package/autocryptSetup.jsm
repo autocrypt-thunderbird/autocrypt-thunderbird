@@ -29,7 +29,7 @@ Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global Enigmail
 Cu.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
 Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false*/
 Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false*/
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 // Interfaces
@@ -310,7 +310,7 @@ function createStreamListener(k) {
     _data: "",
     _stream: null,
 
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
+    QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
     // nsIRequestObserver
     onStartRequest: function(aRequest, aContext) {},

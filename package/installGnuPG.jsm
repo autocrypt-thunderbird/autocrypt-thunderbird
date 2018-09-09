@@ -31,7 +31,7 @@ var EXPORTED_SYMBOLS = ["InstallGnuPG"];
 var Cu = Components.utils;
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
@@ -216,7 +216,7 @@ Installer.prototype = {
       // use runwAsync in order to get UAC approval on Windows 7 / 8 if required
 
       var obs = {
-        QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
+        QueryInterface: EnigmailTb60Compat.generateQI(["nsIObserver"]),
 
         observe: function(proc, aTopic, aData) {
           EnigmailLog.DEBUG("installGnuPG.jsm: installWindows.observe: topic='" + aTopic + "' \n");

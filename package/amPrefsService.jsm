@@ -16,7 +16,7 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 
 const CATEGORY = "mailnews-accountmanager-extensions";
 const CATEGORY_ENTRY = "enigmail-account-manager-extension";
@@ -55,7 +55,7 @@ EnigmailPrefService.prototype = {
   classID: Components.ID("{943b06a2-24d2-4d38-b0f0-a45f959e331a}"),
   classDescription: "Enigmail Account Manager Extension Service",
   contractID: PREF_SERVICE_NAME,
-  QueryInterface: XPCOMUtils.generateQI([Components.interfaces.nsIMsgAccountManagerExtension]),
+  QueryInterface: EnigmailTb60Compat.generateQI(["nsIMsgAccountManagerExtension"]),
 
   showPanel: function(server) {
     // show Enigmail panel for POP3, IMAP, NNTP and "movemail" (unix) account types

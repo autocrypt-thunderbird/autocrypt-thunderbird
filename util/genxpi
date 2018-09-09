@@ -160,6 +160,7 @@ zip -9 --must-match\
     chrome/content/modules/enigmailprocess_win.jsm \
     chrome/content/modules/sqliteDb.jsm \
     chrome/content/modules/system.jsm \
+    chrome/content/modules/tb60compat.jsm \
     chrome/content/modules/time.jsm \
     chrome/content/modules/timer.jsm \
     chrome/content/modules/tor.jsm \

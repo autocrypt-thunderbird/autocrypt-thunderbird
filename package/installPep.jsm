@@ -15,7 +15,6 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 Cu.importGlobalProperties(["XMLHttpRequest"]);
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
 Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */

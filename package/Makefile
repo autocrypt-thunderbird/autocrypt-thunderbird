@@ -91,6 +91,7 @@ MODFILES = \
            stdlib.jsm \
            streams.jsm \
            system.jsm \
+           tb60compat.jsm \
            time.jsm \
            timer.jsm \
            tor.jsm \

@@ -14,7 +14,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils:false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false*/
 Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 const getEnigmailPrefs = EnigmailLazy.loader("enigmail/prefs.jsm", "EnigmailPrefs");
@@ -51,7 +51,7 @@ function buildListener(hasFoundTor, isDoneChecking) {
       const response = createScriptableInputStream(inputStream).read(count);
       hasFoundTor(response.indexOf(EXPECTED_TOR_EXISTS_RESPONSE) !== -1);
     },
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIRequestObserver, Ci.nsIStreamListener])
+    QueryInterface: EnigmailTb60Compat.generateQI(["nsIRequestObserver", "nsIStreamListener"])
   };
   return listener;
 }
@@ -69,7 +69,7 @@ function filterWith(portPref) {
     applyFilter: function(proxyService, uri, proxyInfo) {
       return proxyService.newProxyInfo("socks", getEnigmailPrefs().getPref(TOR_IP_ADDR_PREF), port, CONNECTION_FLAGS, SECONDS_TO_WAIT_FOR_CONNECTION, failoverProxy);
     },
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsIProtocolProxyFilter])
+    QueryInterface: EnigmailTb60Compat.generateQI(["nsIProtocolProxyFilter"])
   };
 }
 

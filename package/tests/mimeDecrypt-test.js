@@ -31,7 +31,8 @@ component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
 component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
 component("enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /*global XPCOMUtils: false */
+Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+
 
 test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
   const secKey = do_get_file("resources/dev-strike.sec", false);
@@ -74,7 +75,7 @@ test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
   };
 
   let pgpMimeProxy = {
-    QueryInterface: XPCOMUtils.generateQI(["nsIPgpMimeProxy"]),
+    QueryInterface: EnigmailTb60Compat.generateQI(["nsIPgpMimeProxy"]),
     mimePart: "1",
     contentType: 'multipart/encrypted; protocol="application/pgp-encrypted"; boundary="DELIMITER"',
     outputDecryptedData: function(data, dataLen) {
@@ -86,7 +87,7 @@ test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
   let inputStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
 
   let testUri = {
-    QueryInterface: XPCOMUtils.generateQI(["nsIURI"]),
+    QueryInterface: EnigmailTb60Compat.generateQI(["nsIURI"]),
     schemeIs: function() {
       return true;
     },
