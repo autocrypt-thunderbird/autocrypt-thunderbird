@@ -21,9 +21,6 @@ var gKeyList = [];
 
 function onLoad() {
   // set current key trust if only one key is changed
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   var enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc)
     return;

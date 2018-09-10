@@ -22,6 +22,7 @@ component("enigmail/constants.jsm"); /* global EnigmailConstants: false */
 component("enigmail/locale.jsm"); /* global EnigmailLocale: false */
 component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
 
+const SECURITY_INFO = EnigmailTb60Compat.getSecurityField();
 
 var gMsgCompose, gWindowLocked, getCurrentIdentity;
 
@@ -89,7 +90,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
 
     gWindowLocked = false;
 
-    gMsgCompose.compFields.securityInfo = EnigmailMimeEncrypt.createMimeEncrypt(null);
+    gMsgCompose.compFields[SECURITY_INFO] = EnigmailMimeEncrypt.createMimeEncrypt(null);
 
     Enigmail.hlp = {
       validKeysForAllRecipients: function(toAddrStr) {
@@ -141,7 +142,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     gMsgCompose.compFields.from = "strike.devtest@gmail.com";
     let r = Enigmail.msg.encryptMsg();
     Assert.equal(r, true);
-    let si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+    let si = gMsgCompose.compFields[SECURITY_INFO].wrappedJSObject;
 
     Assert.equal(si.recipients, "0x65537E212DC19025AD38EDB2781617319CE311C4", "recipients");
     Assert.ok(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_PGP_MIME, "sendFlags");
@@ -152,7 +153,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
 
     r = Enigmail.msg.encryptMsg();
     Assert.equal(r, true);
-    si = gMsgCompose.compFields.securityInfo.wrappedJSObject;
+    si = gMsgCompose.compFields[SECURITY_INFO].wrappedJSObject;
 
     Assert.equal(si.recipients, "", "recipients");
     Assert.equal(si.sendFlags & EnigmailConstants.SEND_ENCRYPTED, 0, "sendFlags");

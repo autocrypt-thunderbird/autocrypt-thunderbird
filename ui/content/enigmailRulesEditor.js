@@ -27,9 +27,6 @@ var gSearchInput = null;
 var gNumRows = null;
 
 function enigmailDlgOnLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   var enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc)
     return;

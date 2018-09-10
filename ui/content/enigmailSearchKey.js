@@ -47,9 +47,6 @@ const DownloadListener = {
 };
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   window.arguments[RESULT].importedKeys = 0;
   gKeyServer = window.arguments[INPUT].keyserver;
   let searchList = window.arguments[INPUT].searchList;

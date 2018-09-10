@@ -22,8 +22,6 @@ var gConsoleIntervalId;
 
 function consoleLoad() {
   EnigmailLog.DEBUG("enigmailConsole.js: consoleLoad\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   top.controllers.insertControllerAt(0, CommandController);
 

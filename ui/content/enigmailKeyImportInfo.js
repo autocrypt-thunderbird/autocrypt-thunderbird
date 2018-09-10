@@ -17,9 +17,6 @@ Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /* global
 Components.utils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   var dlg = document.getElementById("enigmailKeyImportInfo");
 
   let i, keys;

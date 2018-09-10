@@ -16,10 +16,7 @@ Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* glob
 Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
 Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
 
-function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-}
+function onLoad() {}
 
 function onAccept() {
   var name = document.getElementById("addUid_name");

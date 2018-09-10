@@ -481,8 +481,15 @@ async function insertXul(addonID, srcUrl, window, document) {
  * @param {DOMWindow} targetWindow  DOM window to unload from
  */
 function unloadCSS(url, targetWindow) {
-  let domWindowUtils = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-    .getInterface(Ci.nsIDOMWindowUtils);
+  let domWindow = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor);
+  let domWindowUtils;
+  if ("windowUtils" in domWindow) {
+    // TB < 64
+    domWindowUtils = domWindow.windowUtils;
+  }
+  else {
+    domWindowUtils = domWindow.getInterface(Ci.nsIDOMWindowUtils);
+  }
   domWindowUtils.removeSheetUsingURIString(url, 1);
 }
 
@@ -497,8 +504,15 @@ function loadCss(addonID, url, targetWindow) {
   oconsole.log(`loadCss(${url})`);
 
   try {
-    let domWindowUtils = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIDOMWindowUtils);
+    let domWindow = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor);
+    let domWindowUtils;
+    if ("windowUtils" in domWindow) {
+      // TB < 64
+      domWindowUtils = domWindow.windowUtils;
+    }
+    else {
+      domWindowUtils = domWindow.getInterface(Ci.nsIDOMWindowUtils);
+    }
     domWindowUtils.loadSheetUsingURIString(url, 1);
     let document = targetWindow.document;
     let element = document.createElement("overlayed_css");

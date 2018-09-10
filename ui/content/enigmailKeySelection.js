@@ -63,8 +63,6 @@ const EMPTY_UID = " -";
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailKeySelection.js: onLoad\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   gIpcRequest = null;
   if (window.arguments[INPUT].options.indexOf("private") >= 0) {

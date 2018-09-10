@@ -24,8 +24,6 @@ const ENIG_RESULT = 1;
 
 function enigmailAttachDlgLoad() {
   EnigmailLog.DEBUG("enigmailAttachmentsDialog.js: Load\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   var dialog = document.getElementById("attachmentsDialog");
   dialog.setAttribute("title", EnigGetString("enigPrompt"));

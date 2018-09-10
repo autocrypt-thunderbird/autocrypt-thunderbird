@@ -23,8 +23,6 @@ var gAlertPopUpIsOpen = false;
  */
 function onLoad() {
   EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: onLoad()\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   reloadData();
 }

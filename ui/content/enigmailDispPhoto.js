@@ -31,8 +31,6 @@ function appendUid(uidStr) {
 }
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
   window.addEventListener("MozAfterPaint", resizeDlg, false);
 
   let key = EnigmailKeyRing.getKeyById(window.arguments[0].keyId);

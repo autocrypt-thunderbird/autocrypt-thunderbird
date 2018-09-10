@@ -39,9 +39,6 @@ var gDialogMode = MODE_USER_USER;
     - dialogMode (0: user/user, 1: keySync)
 */
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   let argsObj = window.arguments[INPUT];
   let supportedLocale = argsObj.supportedLocale;
   gLocale = argsObj.locale;

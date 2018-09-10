@@ -576,7 +576,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetupTest() {
 
 
   let keys = EnigmailKeyRing.getKeyById("B3A85460D9D9CC47");
-  Assert.notEqual(keys, null);
+  Assert.notEqual(keys, null, "keys must not be null");
   Assert.equal(keys.keyId, "B3A85460D9D9CC47");
 
   MailHelper.cleanMailFolder(MailHelper.getRootFolder());

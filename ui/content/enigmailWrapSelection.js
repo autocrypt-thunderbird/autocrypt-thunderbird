@@ -15,8 +15,6 @@ const Ci = Components.interfaces;
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailwrapSelection.js: onLoad\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   window.arguments[0].cancelled = true;
   window.arguments[0].Select = "";

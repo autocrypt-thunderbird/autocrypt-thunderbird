@@ -20,9 +20,6 @@ var gOpenPgpHeaderKeyId;
 var gOpenPgpSendKeyWithMsg;
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   gOpenPgpUrlName = document.getElementById("openpgpHeaderMode.url.name");
   gOpenPgpHeaderKeyId = document.getElementById("openpgpHeaderMode.keyId");
   gOpenPgpHeaderUrl = document.getElementById("openpgpHeaderMode.url");

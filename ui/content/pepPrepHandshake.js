@@ -30,9 +30,6 @@ Arguments:
 var isCancelled = false;
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   let argsObj = window.arguments[0];
   EnigmailPEPAdapter.getRatingsForEmails(argsObj.addresses).then(
     function _ok(identities) {

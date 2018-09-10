@@ -16,8 +16,6 @@ EnigInitCommon("enigmailGenericDisplay");
 
 function enigLoadPage() {
   EnigmailLog.DEBUG("enigmailGenricDisplay: enigLoadPage\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   var contentFrame = EnigGetFrame(window, "contentFrame");
   if (!contentFrame)

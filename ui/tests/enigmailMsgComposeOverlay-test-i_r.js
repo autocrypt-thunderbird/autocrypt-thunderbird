@@ -27,6 +27,8 @@ var EnigmailCore = {};
 
 var gSMFields;
 
+Cu.import("chrome://enigmail/content/modules/tb60Compat.jsm"); /* global EnigmailTb60Compat: false*/
+
 var EnigmailPrefs = {
   getPref: (prop) => {
     return 1;
@@ -633,7 +635,13 @@ function pepMenuPopup_test() {
 }
 
 function preferPgpOverSmime_test() {
-  gMsgCompose.compFields.securityInfo = Components.classes["@mozilla.org/messenger-smime/composefields;1"].createInstance();
+  let si = EnigmailTb60Compat.getSecurityField();
+  if (si == "securityInfo") {
+    gMsgCompose.compFields.securityInfo = Components.classes["@mozilla.org/messenger-smime/composefields;1"].createInstance();
+  }
+  else {
+    gMsgCompose.compFields.composeSecure = Cc["@mozilla.org/messengercompose/composesecure;1"].createInstance(Ci.nsIMsgComposeSecure);
+  }
   EnigmailMimeEncrypt.isEnigmailCompField = function(val) {
     return false;
   };
@@ -641,25 +649,25 @@ function preferPgpOverSmime_test() {
   let ret = Enigmail.msg.preferPgpOverSmime(0x0001);
   Assert.equal(ret, 1);
 
-  gMsgCompose.compFields.securityInfo.requireEncryptMessage = 1;
+  gMsgCompose.compFields[si].requireEncryptMessage = 1;
 
   Enigmail.msg.mimePreferOpenPGP = 2;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0203);
   Assert.equal(ret, 0);
 
-  gMsgCompose.compFields.securityInfo.requireEncryptMessage = 0;
-  gMsgCompose.compFields.securityInfo.signMessage = 1;
+  gMsgCompose.compFields[si].requireEncryptMessage = 0;
+  gMsgCompose.compFields[si].signMessage = 1;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0203);
   Assert.equal(ret, 0);
 
-  gMsgCompose.compFields.securityInfo.signMessage = 0;
+  gMsgCompose.compFields[si].signMessage = 0;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0203);
   Assert.equal(ret, 1);
 
-  gMsgCompose.compFields.securityInfo.signMessage = 1;
+  gMsgCompose.compFields[si].signMessage = 1;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0003);
   Assert.equal(ret, 2);
@@ -1008,15 +1016,18 @@ function replaceEditorText_test() {
 
 function resetUpdatedFields_test() {
 
+  let si = EnigmailTb60Compat.getSecurityField();
   gMsgCompose = {
     compFields: {
-      securityInfo: {
-        signMessage: false,
-        wrappedJSObject: this
-      },
       subject: 'subject'
     }
   };
+
+  gMsgCompose.compFields[si] = {
+    signMessage: false,
+    wrappedJSObject: this
+  };
+
 
   Enigmail.msg.removeAttachedKey = function() {
     Assert.ok(true);

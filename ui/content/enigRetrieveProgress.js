@@ -59,8 +59,6 @@ var gProgressListener = {
 function onLoad() {
   // Set global variables.
   EnigmailLog.DEBUG("enigRetrieveProgress: onLoad\n");
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
 
   var inArg = window.arguments[0];
   window.arguments[1].result = false;

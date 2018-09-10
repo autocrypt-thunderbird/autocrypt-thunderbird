@@ -22,9 +22,6 @@ const {
 
 
 function onLoad() {
-  let domWindowUtils = window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils);
-  domWindowUtils.loadSheetUsingURIString("chrome://enigmail/skin/enigmail.css", 1);
-
   window.arguments[1].value = "";
   let keyIdText = document.getElementById("keyIdText");
   let searchCollapser = document.getElementById("searchCollapser");
