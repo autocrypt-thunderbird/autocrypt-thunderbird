@@ -137,8 +137,8 @@ var GnuPGDecryption = {
 
     // possible STATUS Patterns (see GPG dod DETAILS.txt):
     // one of these should be set for a signature:
-    var newsigPat = /^NEWSIG /i;
-    var trustedsigPat = /^TRUST_(FULLY|ULTIMATE) /i;
+    var newsigPat = /^NEWSIG ?.*$/i;
+    var trustedsigPat = /^TRUST_(FULLY|ULTIMATE) ?.*$/i;
     var goodsigPat = /^GOODSIG (\w{16}) (.*)$/i;
     var badsigPat = /^BADSIG (\w{16}) (.*)$/i;
     var expsigPat = /^EXPSIG (\w{16}) (.*)$/i;
