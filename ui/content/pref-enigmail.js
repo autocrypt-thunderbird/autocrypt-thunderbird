@@ -492,8 +492,7 @@ function prefOnAccept() {
 
   // detect use of gpg-agent and warn if needed
   if (!EnigmailGpgAgent.isAgentTypeGpgAgent()) {
-    if ((document.getElementById("maxIdleMinutes").value > 0) &&
-      (!document.getElementById("enigmail_noPassphrase").checked)) {
+    if (document.getElementById("maxIdleMinutes").value > 0) {
       EnigAlertPref(EnigGetString("prefs.warnIdleTimeForUnknownAgent"), "warnGpgAgentAndIdleTime");
     }
   }
