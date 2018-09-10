@@ -549,9 +549,6 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetupTest() {
     var passwordWindow = JSUnit.createStubWindow();
     var confirmWindow = JSUnit.createStubWindow();
 
-    passwordWindow.document = JSUnit.createDOMDocument();
-    confirmWindow.document = JSUnit.createDOMDocument();
-
     var confirmWindowDocument = passwordWindow.document;
     var passwordWindowDocument = confirmWindow.document;
 
@@ -569,6 +566,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetupTest() {
     EnigmailAutocryptSetup.performAutocryptSetup(headervalue, passwordWindow, confirmWindow);
 
   }).catch(err => {
+    Assert.ok(false, `got exception: ${err}`);
     inspector.exitNestedEventLoop();
   });
 

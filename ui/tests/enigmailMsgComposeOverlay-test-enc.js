@@ -10,7 +10,19 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /* global component: false, test: false, withTestGpgHome: false, withEnigmail: false, do_get_file: false, withOverwriteFuncs: false */
 var window = JSUnit.createStubWindow();
-var document = JSUnit.createDOMDocument();
+var document = {
+  getElementById: function(elemId) {
+    if (elemId === "attachmentBucket") {
+      return {
+        hasChildNodes: function() {
+          return false;
+        }
+      };
+    }
+
+    return null;
+  }
+};
 window.document = document;
 
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
@@ -89,7 +101,6 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED |  EnigmailConstants.SEND_SIGNED);
 
     gWindowLocked = false;
-
     gMsgCompose.compFields[SECURITY_INFO] = EnigmailMimeEncrypt.createMimeEncrypt(null);
 
     Enigmail.hlp = {

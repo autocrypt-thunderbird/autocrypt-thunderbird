@@ -11,6 +11,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTb60Compat"];
 
+var gCompFields;
+
 var EnigmailTb60Compat = {
   generateQI: function(aCid) {
     if ("generateQI" in ChromeUtils) {
@@ -23,6 +25,9 @@ var EnigmailTb60Compat = {
   },
 
   getSecurityField: function() {
-    return ("securityInfo" in Ci.nsIMsgCompFields ? "securityInfo" : "composeSecure");
+    if (!gCompFields) {
+      gCompFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
+    }
+    return ("securityInfo" in gCompFields ? "securityInfo" : "composeSecure");
   }
 };

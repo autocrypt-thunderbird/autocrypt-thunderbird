@@ -636,11 +636,14 @@ function pepMenuPopup_test() {
 
 function preferPgpOverSmime_test() {
   let si = EnigmailTb60Compat.getSecurityField();
-  if (si == "securityInfo") {
-    gMsgCompose.compFields.securityInfo = Components.classes["@mozilla.org/messenger-smime/composefields;1"].createInstance();
+  let secField;
+  if (si === "securityInfo") {
+    secField = Components.classes["@mozilla.org/messenger-smime/composefields;1"].createInstance(Ci.nsIMsgSMIMECompFields);
+    gMsgCompose.compFields.securityInfo = secField;
   }
   else {
-    gMsgCompose.compFields.composeSecure = Cc["@mozilla.org/messengercompose/composesecure;1"].createInstance(Ci.nsIMsgComposeSecure);
+    secField = Cc["@mozilla.org/messengercompose/composesecure;1"].createInstance(Ci.nsIMsgComposeSecure);
+    gMsgCompose.compFields.composeSecure = secField;
   }
   EnigmailMimeEncrypt.isEnigmailCompField = function(val) {
     return false;
@@ -649,29 +652,26 @@ function preferPgpOverSmime_test() {
   let ret = Enigmail.msg.preferPgpOverSmime(0x0001);
   Assert.equal(ret, 1);
 
-  gMsgCompose.compFields[si].requireEncryptMessage = 1;
-
   Enigmail.msg.mimePreferOpenPGP = 2;
-
-  ret = Enigmail.msg.preferPgpOverSmime(0x0203);
-  Assert.equal(ret, 0);
-
-  gMsgCompose.compFields[si].requireEncryptMessage = 0;
-  gMsgCompose.compFields[si].signMessage = 1;
-
-  ret = Enigmail.msg.preferPgpOverSmime(0x0203);
-  Assert.equal(ret, 0);
-
-  gMsgCompose.compFields[si].signMessage = 0;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0203);
   Assert.equal(ret, 1);
 
-  gMsgCompose.compFields[si].signMessage = 1;
+  secField.requireEncryptMessage = 0;
+  secField.signMessage = 1;
+
+  ret = Enigmail.msg.preferPgpOverSmime(0x0203);
+  Assert.equal(ret, 0);
+
+  secField.signMessage = 0;
+
+  ret = Enigmail.msg.preferPgpOverSmime(0x0203);
+  Assert.equal(ret, 1);
+
+  secField.signMessage = 1;
 
   ret = Enigmail.msg.preferPgpOverSmime(0x0003);
   Assert.equal(ret, 2);
-
 }
 
 function processAccountSpecificDefaultOptions_test() {
@@ -1046,7 +1046,7 @@ function resetUpdatedFields_test() {
 
 function run_test() {
   window = JSUnit.createStubWindow();
-  window.document = JSUnit.createDOMDocument();
+  window.document = {};
   document = window.document;
 
   do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
