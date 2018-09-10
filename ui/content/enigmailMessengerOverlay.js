@@ -1,4 +1,4 @@
-/*global Components: false */
+/*global Components: false, Ci: false, Cc: false, Cu: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,43 +18,44 @@
 /* global statusFeedback: false, global displayAttachmentsForExpandedView: false, global gMessageListeners: false, global gExpandedHeaderView */
 
 Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
-Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
-Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /* global EnigmailMsgRead: false */
-Components.utils.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /* global EnigmailVerify: false */
-Components.utils.import("chrome://enigmail/content/modules/verify.jsm"); /* global EnigmailVerifyAttachment: false */
-Components.utils.import("chrome://enigmail/content/modules/fixExchangeMsg.jsm"); /* global EnigmailFixExchangeMsg: false */
-Components.utils.import("chrome://enigmail/content/modules/log.jsm");
-Components.utils.import("chrome://enigmail/content/modules/prefs.jsm");
-Components.utils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
-Components.utils.import("chrome://enigmail/content/modules/locale.jsm");
-Components.utils.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
-Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /* global EnigmailKey: false */
-Components.utils.import("chrome://enigmail/content/modules/data.jsm");
-Components.utils.import("chrome://enigmail/content/modules/app.jsm");
-Components.utils.import("chrome://enigmail/content/modules/dialog.jsm");
-Components.utils.import("chrome://enigmail/content/modules/timer.jsm");
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm");
-Components.utils.import("chrome://enigmail/content/modules/time.jsm");
-Components.utils.import("chrome://enigmail/content/modules/persistentCrypto.jsm"); /* global EnigmailPersistentCrypto: false */
-Components.utils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
-Components.utils.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
-Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
-Components.utils.import("chrome://enigmail/content/modules/attachment.jsm"); /*global EnigmailAttachment: false */
-Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
-Components.utils.import("chrome://enigmail/content/modules/keyUsability.jsm"); /*global EnigmailKeyUsability: false */
-Components.utils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
-Components.utils.import("chrome://enigmail/content/modules/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
-Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Components.utils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-Components.utils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Components.utils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
-Components.utils.import("chrome://enigmail/content/modules/webKey.jsm"); /*global EnigmailWks: false */
-Components.utils.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
-Components.utils.import("chrome://enigmail/content/modules/configure.jsm"); /*global EnigmailConfigure: false */
+Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+Cu.import("chrome://enigmail/content/modules/msgRead.jsm"); /* global EnigmailMsgRead: false */
+Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /* global EnigmailVerify: false */
+Cu.import("chrome://enigmail/content/modules/verify.jsm"); /* global EnigmailVerifyAttachment: false */
+Cu.import("chrome://enigmail/content/modules/fixExchangeMsg.jsm"); /* global EnigmailFixExchangeMsg: false */
+Cu.import("chrome://enigmail/content/modules/log.jsm");
+Cu.import("chrome://enigmail/content/modules/prefs.jsm");
+Cu.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
+Cu.import("chrome://enigmail/content/modules/locale.jsm");
+Cu.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
+Cu.import("chrome://enigmail/content/modules/key.jsm"); /* global EnigmailKey: false */
+Cu.import("chrome://enigmail/content/modules/data.jsm");
+Cu.import("chrome://enigmail/content/modules/app.jsm");
+Cu.import("chrome://enigmail/content/modules/dialog.jsm");
+Cu.import("chrome://enigmail/content/modules/timer.jsm");
+Cu.import("chrome://enigmail/content/modules/windows.jsm");
+Cu.import("chrome://enigmail/content/modules/time.jsm");
+Cu.import("chrome://enigmail/content/modules/persistentCrypto.jsm"); /* global EnigmailPersistentCrypto: false */
+Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+Cu.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
+Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+Cu.import("chrome://enigmail/content/modules/attachment.jsm"); /*global EnigmailAttachment: false */
+Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+Cu.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+Cu.import("chrome://enigmail/content/modules/keyUsability.jsm"); /*global EnigmailKeyUsability: false */
+Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+Cu.import("chrome://enigmail/content/modules/protocolHandler.jsm"); /*global EnigmailProtocolHandler: false */
+Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+Cu.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+Cu.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
+Cu.import("chrome://enigmail/content/modules/webKey.jsm"); /*global EnigmailWks: false */
+Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+Cu.import("chrome://enigmail/content/modules/configure.jsm"); /*global EnigmailConfigure: false */
+Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 
 if (!Enigmail) var Enigmail = {};
 
@@ -112,12 +113,18 @@ Enigmail.msg = {
       }
     }
 
+    let t = document.getElementById("tabmail");
+
+    t.addEventListener("pageshow", function(e) {
+      if (e.type === "pageshow" && e.target.URL === "about:preferences") {
+        let Overlays = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {}).Overlays;
+        Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailPrivacyOverlay.xul"]);
+      }
+    }, false);
+
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
-      let {
-        Overlays
-      } = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
-
+      let Overlays = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {}).Overlays;
       Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailCustToolOverlay.xul"]);
     }, false);
 
@@ -253,7 +260,7 @@ Enigmail.msg = {
   clearLastMessage: function() {
     const {
       EnigmailSingletons
-    } = Components.utils.import("chrome://enigmail/content/modules/singletons.jsm");
+    } = Cu.import("chrome://enigmail/content/modules/singletons.jsm");
     EnigmailSingletons.clearLastDecryptedMessage();
   },
 
@@ -873,8 +880,8 @@ Enigmail.msg = {
 
     if (foundIndex >= 0) {
       if (Enigmail.msg.savedHeaders["content-type"].search(/^text\/html/i) === 0) {
-        let p = Components.classes["@mozilla.org/parserutils;1"].createInstance(Components.interfaces.nsIParserUtils);
-        const de = Components.interfaces.nsIDocumentEncoder;
+        let p = Cc["@mozilla.org/parserutils;1"].createInstance(Ci.nsIParserUtils);
+        const de = Ci.nsIDocumentEncoder;
         msgText = p.convertToPlainText(topElement.innerHTML, de.OutputRaw | de.OutputBodyOnly, 0);
       }
       else {
@@ -1523,7 +1530,7 @@ Enigmail.msg = {
    */
   displayBuggyExchangeMail: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: displayBuggyExchangeMail\n");
-    let hdrs = Components.classes["@mozilla.org/messenger/mimeheaders;1"].createInstance(Components.interfaces.nsIMimeHeaders);
+    let hdrs = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     hdrs.initialize(this.buggyExchangeEmailContent);
     let ct = hdrs.extractHeader("content-type", true);
 
@@ -1763,7 +1770,7 @@ Enigmail.msg = {
       "",
       "chrome,dialog=no,all,centerscreen",
       1, messageList, statusFeedback,
-      printPreview, Components.interfaces.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
+      printPreview, Ci.nsIMsgPrintEngine.MNAB_PRINTPREVIEW_MSG,
       window);
 
     return;
@@ -1796,8 +1803,8 @@ Enigmail.msg = {
       QueryInterface: EnigmailTb60Compat.generateQI(["nsIStreamListener"]),
       onStartRequest: function() {
         this.data = "";
-        this.inStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
-        createInstance(Components.interfaces.nsIScriptableInputStream);
+        this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].
+        createInstance(Ci.nsIScriptableInputStream);
 
       },
       onDataAvailable: function(req, sup, stream, offset, count) {
@@ -2014,15 +2021,15 @@ Enigmail.msg = {
     // open
     var tmpDir = EnigmailFiles.getTempDir();
     var outFile1, outFile2;
-    outFile1 = Components.classes["@mozilla.org/file/local;1"].
-    createInstance(Components.interfaces.nsIFile);
+    outFile1 = Cc["@mozilla.org/file/local;1"].
+    createInstance(Ci.nsIFile);
     outFile1.initWithPath(tmpDir);
     if (!(outFile1.isDirectory() && outFile1.isWritable())) {
       EnigmailDialog.alert(window, EnigmailLocale.getString("noTempDir"));
       return;
     }
     outFile1.append(EnigmailMsgRead.getAttachmentName(origAtt));
-    outFile1.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+    outFile1.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     EnigmailFiles.writeUrlToFile(origAtt.url, outFile1);
 
     if (isEncrypted) {
@@ -2032,11 +2039,11 @@ Enigmail.msg = {
         EnigmailFiles.readBinaryFile(outFile1), {}, {}, {});
     }
 
-    outFile2 = Components.classes["@mozilla.org/file/local;1"].
-    createInstance(Components.interfaces.nsIFile);
+    outFile2 = Cc["@mozilla.org/file/local;1"].
+    createInstance(Ci.nsIFile);
     outFile2.initWithPath(tmpDir);
     outFile2.append(EnigmailMsgRead.getAttachmentName(signatureAtt));
-    outFile2.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+    outFile2.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
     EnigmailFiles.writeUrlToFile(signatureAtt.url, outFile2);
 
     var promise = EnigmailVerifyAttachment.attachment(outFile1, outFile2);
@@ -2068,7 +2075,7 @@ Enigmail.msg = {
     };
 
     var bufferListener = EnigmailStreams.newStringStreamListener(f);
-    var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
+    var ioServ = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
     var channel = EnigmailStreams.createChannelFromURI(msgUri);
@@ -2136,14 +2143,14 @@ Enigmail.msg = {
       // open
       var tmpDir = EnigmailFiles.getTempDir();
       try {
-        outFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
+        outFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
         outFile.initWithPath(tmpDir);
         if (!(outFile.isDirectory() && outFile.isWritable())) {
           errorMsgObj.value = EnigmailLocale.getString("noTempDir");
           return;
         }
         outFile.append(rawFileName);
-        outFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+        outFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
       }
       catch (ex) {
         errorMsgObj.value = EnigmailLocale.getString("noTempDir");
@@ -2216,15 +2223,15 @@ Enigmail.msg = {
       }
       else if ((statusFlagsObj.value & EnigmailConstants.DISPLAY_MESSAGE) ||
         (callbackArg.actionType == "openAttachment")) {
-        var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
+        var ioServ = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
         var outFileUri = ioServ.newFileURI(outFile);
         var fileExt = outFile.leafName.replace(/(.*\.)(\w+)$/, "$2");
         if (fileExt && !callbackArg.forceBrowser) {
-          var extAppLauncher = Components.classes["@mozilla.org/mime;1"].getService(Components.interfaces.nsPIExternalAppLauncher);
+          var extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
           extAppLauncher.deleteTemporaryFileOnExit(outFile);
 
           try {
-            var mimeService = Components.classes["@mozilla.org/mime;1"].getService(Components.interfaces.nsIMIMEService);
+            var mimeService = Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService);
             var fileMimeType = mimeService.getTypeFromFile(outFile);
             var fileMimeInfo = mimeService.getFromTypeAndExtension(fileMimeType, fileExt);
 
@@ -2270,8 +2277,8 @@ Enigmail.msg = {
     // if not, get the most recently used browser window
     if (!navWindow) {
       var wm;
-      wm = Components.classes["@mozilla.org/appshell/window-mediator;1"].getService(
-        Components.interfaces.nsIWindowMediator);
+      wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(
+        Ci.nsIWindowMediator);
       navWindow = wm.getMostRecentWindow("navigator:browser");
     }
 
@@ -2430,8 +2437,8 @@ Enigmail.msg = {
     try {
       var msg = gFolderDisplay.selectedMessage;
       if (!(!msg || !msg.folder)) {
-        var accMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].
-        getService(Components.interfaces.nsIMsgAccountManager);
+        var accMgr = Cc["@mozilla.org/messenger/account-manager;1"].
+        getService(Ci.nsIMsgAccountManager);
         var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
         let email = EnigmailFuncs.stripEmail(msgHdr.recipients);
         let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
