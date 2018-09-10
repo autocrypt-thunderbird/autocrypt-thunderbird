@@ -643,6 +643,9 @@ Enigmail.msg = {
     if (doSetSubject) {
       subject = EnigmailData.convertToUnicode(subject, "UTF-8");
       subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
+
+      if (subjElem.value == "Re: " + subject) return;
+
       gMsgCompose.compFields.subject = prefix + subject;
       subjElem.value = prefix + subject;
       if (typeof subjElem.oninput === "function") subjElem.oninput();
