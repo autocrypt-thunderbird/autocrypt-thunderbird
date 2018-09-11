@@ -268,7 +268,7 @@ Installer.prototype = {
     var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
       .createInstance(Components.interfaces.nsIFileInputStream);
     // open for reading
-    istream.init(this.installerFile, 0x01, 292, 0); // octal 0444 - octal literals are deprecated
+    istream.init(this.installerFile, 0x01, 0o444, 0);
 
     var ch = Components.classes["@mozilla.org/security/hash;1"]
       .createInstance(Components.interfaces.nsICryptoHash);

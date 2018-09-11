@@ -36,7 +36,7 @@ const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
 const getKeyUsability = EnigmailLazy.loader("enigmail/keyUsability.jsm", "EnigmailKeyUsability");
 
-const DEFAULT_FILE_PERMS = 0x180; // equals 0600
+const DEFAULT_FILE_PERMS = 0o600;
 
 let gKeygenProcess = null;
 let gKeyListObj = null;

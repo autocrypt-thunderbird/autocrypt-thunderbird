@@ -2029,7 +2029,7 @@ Enigmail.msg = {
       return;
     }
     outFile1.append(EnigmailMsgRead.getAttachmentName(origAtt));
-    outFile1.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+    outFile1.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
     EnigmailFiles.writeUrlToFile(origAtt.url, outFile1);
 
     if (isEncrypted) {
@@ -2043,7 +2043,7 @@ Enigmail.msg = {
     createInstance(Ci.nsIFile);
     outFile2.initWithPath(tmpDir);
     outFile2.append(EnigmailMsgRead.getAttachmentName(signatureAtt));
-    outFile2.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+    outFile2.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
     EnigmailFiles.writeUrlToFile(signatureAtt.url, outFile2);
 
     var promise = EnigmailVerifyAttachment.attachment(outFile1, outFile2);
@@ -2150,7 +2150,7 @@ Enigmail.msg = {
           return;
         }
         outFile.append(rawFileName);
-        outFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0800
+        outFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
       }
       catch (ex) {
         errorMsgObj.value = EnigmailLocale.getString("noTempDir");

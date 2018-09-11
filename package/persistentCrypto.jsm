@@ -315,7 +315,7 @@ CryptMessageIntoFolder.prototype = {
           //XXX Do we wanna use the tmp for this?
           var tempFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
           tempFile.append("message.eml");
-          tempFile.createUnique(0, 384); // == 0600, octal is deprecated
+          tempFile.createUnique(0, 0o600);
 
           // ensure that file gets deleted on exit, if something goes wrong ...
           var extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);

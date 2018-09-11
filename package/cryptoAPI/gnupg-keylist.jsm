@@ -57,7 +57,7 @@ const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
 const NS_CREATE_FILE = 0x08;
 const NS_TRUNCATE = 0x20;
-const STANDARD_FILE_PERMS = 0x180; // equals 0600
+const STANDARD_FILE_PERMS = 0o600;
 
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
 
