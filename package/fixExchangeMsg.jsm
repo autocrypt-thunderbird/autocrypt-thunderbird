@@ -315,7 +315,7 @@ var EnigmailFixExchangeMsg = {
     var self = this;
     var tempFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("TmpD", Ci.nsIFile);
     tempFile.append("message.eml");
-    tempFile.createUnique(0, 384); // octal 0600 - since octal is deprected in JS
+    tempFile.createUnique(0, 0o600);
 
     // ensure that file gets deleted on exit, if something goes wrong ...
     var extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);

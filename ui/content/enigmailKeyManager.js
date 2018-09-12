@@ -597,7 +597,7 @@ function enigCreateKeyMsg() {
   }
   catch (ex) {}
   tmpFile.append("key.asc");
-  tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0x180); // equals 0600
+  tmpFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
 
 
 
