@@ -23,6 +23,7 @@ const Cu = Components.utils;
   - expiry          - Expiry date as printable string
   - expiryTime      - Expiry time as seconds after 01/01/1970
   - created         - Key creation date as printable string
+  - keyCreated      - Key creation date/time as number
   - keyTrust        - key trust code as provided by GnuPG (calculated key validity)
   - keyUseFor       - key usage type as provided by GnuPG (key capabilities)
   - ownerTrust      - owner trust as provided by GnuPG
@@ -41,7 +42,8 @@ const Cu = Components.utils;
                     * keyId      - subkey ID (16 digits (8-byte))
                     * expiry     - Expiry date as printable string
                     * expiryTime - Expiry time as seconds after 01/01/1970
-                    * created    - Key creation date as printable string
+                    * created    - Subkey creation date as printable string
+                    * keyCreated - Subkey creation date/time as number
                     * keyTrust   - key trust code as provided by GnuPG
                     * keyUseFor  - key usage type as provided by GnuPG
                     * algoSym    - subkey algorithm type (String, e.g. RSA)
@@ -87,7 +89,7 @@ class EnigmailKeyObj {
     this.userIds = [];
     this.subKeys = [];
     this.fpr = "";
-    this.minimalKeyBlock = null;
+    this.minimalKeyBlock = [];
     this.photoAvailable = false;
     this.secretAvailable = false;
     this._sigList = null;
@@ -100,7 +102,7 @@ class EnigmailKeyObj {
     }
 
     const ATTRS = [
-      "created", "keyTrust", "keyUseFor", "ownerTrust", "algoSym", "keySize",
+      "created", "keyCreated", "keyTrust", "keyUseFor", "ownerTrust", "algoSym", "keySize",
       "userIds", "subKeys", "fpr", "secretAvailable", "photoAvailable", "userId"
     ];
     for (let i of ATTRS) {
@@ -386,7 +388,9 @@ class EnigmailKeyObj {
 
   /**
    * Export the minimum key for the public key object:
-   * public key, primary user ID, newest encryption subkey
+   * public key, desired UID, newest signing/encryption subkey
+   *
+   * @param {String} emailAddr: [optional] email address of UID to extract. Use primary UID if null .
    *
    * @return Object:
    *    - exitCode (0 = success)
@@ -394,14 +398,47 @@ class EnigmailKeyObj {
    *    - keyData: BASE64-encded string of key data
    */
 
-  getMinimalPubKey() {
+  getMinimalPubKey(emailAddr) {
     EnigmailLog.DEBUG("keyObj.jsm: EnigmailKeyObj.getMinimalPubKey: " + this.keyId + "\n");
 
-    if (!this.minimalKeyBlock) {
-      const cApi = EnigmailCryptoAPI();
-      this.minimalKeyBlock = cApi.sync(cApi.getMinimalPubKey(this.fpr));
+    if (!emailAddr) {
+      emailAddr = this.userId;
     }
-    return this.minimalKeyBlock;
+
+    try {
+      emailAddr = EnigmailFuncs.stripEmail(emailAddr.toLowerCase());
+    }
+    catch (x) {
+      emailAddr = emailAddr.toLowerCase();
+    }
+
+    let newestSigningKey = 0,
+      newestEncryptionKey = 0,
+      subkeysArr = null;
+
+    // search for valid subkeys
+    for (let sk in this.subKeys) {
+      if ("indDre".indexOf(this.subKeys[sk].keyTrust) < 0) {
+        if (this.subKeys[sk].keyUseFor.search(/[sS]/) >= 0) {
+          // found signing subkey
+          if (this.subKeys[sk].keyCreated > newestSigningKey) newestSigningKey = this.subKeys[sk].keyCreated;
+        }
+        if (this.subKeys[sk].keyUseFor.search(/[eE]/) >= 0) {
+          // found encryption subkey
+          if (this.subKeys[sk].keyCreated > newestEncryptionKey) newestEncryptionKey = this.subKeys[sk].keyCreated;
+        }
+      }
+    }
+
+    if (newestSigningKey > 0 && newestEncryptionKey > 0) {
+      subkeysArr = [newestEncryptionKey, newestSigningKey];
+    }
+
+    if (!(emailAddr in this.minimalKeyBlock)) {
+      const cApi = EnigmailCryptoAPI();
+      this.minimalKeyBlock[emailAddr] = cApi.sync(cApi.getMinimalPubKey(this.fpr, emailAddr, subkeysArr));
+    }
+    return this.minimalKeyBlock[emailAddr];
   }
 
   /**

@@ -129,14 +129,17 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    * Export the minimum key for the public key object:
    * public key, primary user ID, newest encryption subkey
    *
-   * @param {String} fpr: a single fingerprint
+   * @param {String} fpr:                a single FPR
+   * @param {String} email:              [optional] the email address of the desired user ID.
+   *                                     If the desired user ID cannot be found or is not valid, use the primary UID instead
+   * @param {Array<Number>} subkeyDates: [optional] remove subkeys with sepcific creation Dates
    *
    * @return {Promise<Object>}:
    *    - exitCode (0 = success)
    *    - errorMsg (if exitCode != 0)
    *    - keyData: BASE64-encded string of key data
    */
-  async getMinimalPubKey(fpr) {
+  async getMinimalPubKey(fpr, email, subkeyDates) {
     EnigmailLog.DEBUG(`gnupg.js: EnigmailKeyObj.getMinimalPubKey: ${fpr}\n`);
 
     let retObj = {
@@ -147,7 +150,23 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
     let minimalKeyBlock = null;
 
     let args = EnigmailGpg.getStandardArgs(true);
-    args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", fpr]);
+
+    if (EnigmailGpg.getGpgFeature("export-specific-uid")) {
+      // Use GnuPG filters if possible
+      let dropSubkeyFilter = "usage!~e && usage!~s";
+
+      if (subkeyDates && subkeyDates.length > 0) {
+        dropSubkeyFilter = subkeyDates.map(x => `key_created!=${x}`).join(" && ");
+      }
+      args = args.concat(["--export-options", "export-minimal,no-export-attributes",
+        "--export-filter", "keep-uid=" + (email ? "mbox=" + email : "primary=1"),
+        "--export-filter", "drop-subkey=" + dropSubkeyFilter,
+        "--export", fpr
+      ]);
+    }
+    else {
+      args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", fpr]);
+    }
 
     const statusObj = {};
     const exitCodeObj = {};
@@ -173,8 +192,14 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       }
     }
 
+    if (EnigmailGpg.getGpgFeature("export-specific-uid")) {
+      // // GnuPG 2.2.9+
+      retObj.keyData = btoa(keyBlock);
+      return retObj;
+    }
+
     if (exportOK) {
-      let minKey = await this.getStrippedKey(keyBlock);
+      let minKey = await this.getStrippedKey(keyBlock, email);
       if (minKey) {
         minimalKeyBlock = btoa(String.fromCharCode.apply(null, minKey));
       }

@@ -40,8 +40,16 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     this.api_name = "OpenPGP.js";
   }
 
-  async getStrippedKey(armoredKey) {
+  async getStrippedKey(armoredKey, emailAddr) {
     EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey()\n");
+
+    let searchUid = undefined;
+    if (emailAddr) {
+      if (emailAddr.search(/^<.{1,500}>$/) < 0) {
+        searchUid = `<${emailAddr}>`;
+      }
+      else searchUid = emailAddr;
+    }
 
     try {
       let openpgp = getOpenPGP().openpgp;
@@ -50,45 +58,48 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       if (!msg || msg.keys.length === 0) return null;
 
       let key = msg.keys[0];
-      let uid = await key.getPrimaryUser();
+      let uid = await key.getPrimaryUser(null, searchUid);
       if (!uid || !uid.user) return null;
 
-      let signSubkeyPacket = await key.getSigningKeyPacket();
-      let encSubkeyPacket = await key.getEncryptionKeyPacket();
-      let encSubkey = null,
-        signSubkey = null;
+      let signSubkey = await key.getSigningKey();
+      let encSubkey = await key.getEncryptionKey();
+      /*
+            let encSubkey = null,
+              signSubkey = null;
 
-      for (let i = 0; i < key.subKeys.length; i++) {
-        if (key.subKeys[i].subKey === encSubkeyPacket) {
-          encSubkey = key.subKeys[i];
-          break;
-        }
-      }
-      if (!encSubkey) return null;
+            for (let i = 0; i < key.subKeys.length; i++) {
+              if (key.subKeys[i].subKey === encSubkeyPacket) {
+                encSubkey = key.subKeys[i];
+                break;
+              }
+            }
+            if (!encSubkey) return null;
 
-      if (!signSubkeyPacket.keyid) {
-        for (let i = 0; i < key.subKeys.length; i++) {
-          if (key.subKeys[i].subKey === signSubkeyPacket) {
-            signSubkey = key.subKeys[i];
-            break;
-          }
-        }
-        if (!signSubkey) return null;
-      }
+            if (!signSubkeyPacket.keyid) {
+              for (let i = 0; i < key.subKeys.length; i++) {
+                if (key.subKeys[i].subKey === signSubkeyPacket) {
+                  signSubkey = key.subKeys[i];
+                  break;
+                }
+              }
+              if (!signSubkey) return null;
+            }
+      */
 
       let p = new openpgp.packet.List();
       p.push(key.primaryKey);
       p.concat(uid.user.toPacketlist());
-      if (signSubkey) {
-        EnigmailLog.DEBUG("openpgp-js.js: adding signing subkey packet\n");
+      if (key !== signSubkey) {
         p.concat(signSubkey.toPacketlist());
       }
-      p.concat(encSubkey.toPacketlist());
+      if (key !== encSubkey) {
+        p.concat(encSubkey.toPacketlist());
+      }
 
       return p.write();
     }
     catch (ex) {
-      EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n" + ex.stack + "\n");
     }
     return null;
   }

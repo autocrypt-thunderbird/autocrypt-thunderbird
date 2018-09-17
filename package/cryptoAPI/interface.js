@@ -64,16 +64,18 @@ class CryptoAPI {
 
   /**
    * Export the minimum key for the public key object:
-   * public key, primary user ID, newest encryption subkey
+   * public key, user ID, newest encryption subkey
    *
-   * @param {String} fpr: a single FPR
+   * @param {String} fpr  : a single FPR
+   * @param {String} email: [optional] the email address of the desired user ID.
+   *                        If the desired user ID cannot be found or is not valid, use the primary UID instead
    *
    * @return {Promise<Object>}:
    *    - exitCode (0 = success)
    *    - errorMsg (if exitCode != 0)
    *    - keyData: BASE64-encded string of key data
    */
-  async getMinimalPubKey(fpr) {
+  async getMinimalPubKey(fpr, email) {
     return {
       exitCode: -1,
       errorMsg: "",

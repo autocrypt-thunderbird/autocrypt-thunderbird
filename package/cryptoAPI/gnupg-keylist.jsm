@@ -185,6 +185,7 @@ function appendKeyItems(keyListString, keyList) {
           keySize: listRow[KEY_SIZE_ID],
           algoSym: ALGO_SYMBOL[listRow[KEY_ALGO_ID]],
           created: EnigmailTime.getDateTime(listRow[CREATED_ID], true, false),
+          keyCreated: Number(listRow[CREATED_ID]),
           type: "sub"
         });
         break;
@@ -212,6 +213,7 @@ function createKeyObj(lineArr) {
     keyObj.keyId = lineArr[KEY_ID];
     keyObj.expiryTime = Number(lineArr[EXPIRY_ID]);
     keyObj.created = EnigmailTime.getDateTime(lineArr[CREATED_ID], true, false);
+    keyObj.keyCreated = Number(lineArr[CREATED_ID]);
     keyObj.keyTrust = lineArr[KEY_TRUST_ID];
     keyObj.keyUseFor = lineArr[KEY_USE_FOR_ID];
     keyObj.ownerTrust = lineArr[OWNERTRUST_ID];

@@ -134,6 +134,7 @@ var EnigmailGpg = {
    supports-wkd         - does gpg support wkd (web key directory) (true for gpg >= 2.1.19)
    export-result        - does gpg print EXPORTED when exporting keys (true for gpg >= 2.1.10)
    decryption-info      - does gpg print DECRYPTION_INFO (true for gpg >= 2.0.19)
+   export-specific-uid  - does gpg support exporting a key with a specific UID (true for gpg >= 2.2.8)
 
    @return: depending on featureName - Boolean unless specified differently:
    (true if feature is available / false otherwise)
@@ -184,6 +185,8 @@ var EnigmailGpg = {
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.0.19");
       case "supports-wkd":
         return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.1.19");
+      case "export-specific-uid":
+        return EnigmailVersioning.greaterThanOrEqual(gpgVersion, "2.2.9");
     }
 
     return undefined;
