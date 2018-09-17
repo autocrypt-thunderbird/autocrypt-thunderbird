@@ -1086,7 +1086,7 @@ Enigmail.msg = {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.extractAndAttachKey", ex);
     }
     tmpFile.append("key.asc");
-    tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0x180); // equal 0600
+    tmpFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0o600);
 
     // save file
     var exitCodeObj = {};

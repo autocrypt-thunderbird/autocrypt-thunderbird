@@ -39,7 +39,7 @@ const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
 
-const DEFAULT_FILE_PERMS = 0x180; // equals 0600
+const DEFAULT_FILE_PERMS = 0o600;
 
 // Making this a var makes it possible to test windows things on linux
 var nsIWindowsRegKey = Ci.nsIWindowsRegKey;

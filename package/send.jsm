@@ -39,7 +39,7 @@ var EnigmailSend = {
     try {
       tmpFile = EnigmailFiles.getTempDirObj();
       tmpFile.append("message.eml");
-      tmpFile.createUnique(0, 384); // == 0600, octal is deprecated
+      tmpFile.createUnique(0, 0o600);
     }
     catch (ex) {
       return false;
