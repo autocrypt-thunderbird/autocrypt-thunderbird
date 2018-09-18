@@ -44,7 +44,7 @@ test(withTestGpgHome(withEnigmail(function shouldExportMinimalSubkey() {
 
   let minKey = keyObj.getMinimalPubKey("bob@somewhere.invalid");
   Assert.equal(minKey.exitCode, 0);
-  Assert.equal(minKey.keyData.substr(0, 50), "mQGNBFub08oBDACmb04i4u8xUV1ADbnbN5l83mpr70OyWVJb5E");
+  Assert.equal(minKey.keyData.substr(3, 50), "NBFub08oBDACmb04i4u8xUV1ADbnbN5l83mpr70OyWVJb5ElIc");
   Assert.equal(minKey.keyData.substr(-50, 50), "p9TFNKjguUrrGrVnmnmy/YoGTJWuGqrZy8kcC3LCjg0k2mV0M=");
 
   minKey = keyObj.getMinimalPubKey("does@not.exist");

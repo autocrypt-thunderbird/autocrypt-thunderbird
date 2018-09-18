@@ -262,9 +262,9 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
 
   Assert.equal(pubKey.exitCode, 0);
 
-  Assert.equal(pubKey.keyData.substr(0, 126),
-    "mQINBFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrW" +
-    "etJfAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya");
+  Assert.equal(pubKey.keyData.substr(3, 126),
+    "NBFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrWetJ" +
+    "fAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya8KT");
 
   Assert.equal(pubKey.keyData.substr(-52),
     "p1ovyC/fp5XjZaLHcyPAWAXKLBn4tb400iHp7byO85tF/H0OOI1K");
