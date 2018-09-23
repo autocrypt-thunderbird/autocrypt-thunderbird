@@ -59,7 +59,7 @@ Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 
 var Enigmail;
 if (!Enigmail) {
-  Enigmail = {};
+  var Enigmail = {};
 }
 
 Enigmail.getEnigmailSvc = function() {
