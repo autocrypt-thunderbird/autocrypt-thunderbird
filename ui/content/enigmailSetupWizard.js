@@ -42,7 +42,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 var gLastDirection = 0;
-var gWizardUserMode = "beginner";
+var gWizardUserMode = "NeedKey";
 var gEnigAccountMgr;
 var gPubkeyFile = {
   value: null
@@ -61,25 +61,10 @@ var gPageStack = []; // required for correct stepping back
 function onLoad() {
   EnigmailLog.DEBUG("enigmailSetupWizard.js: onLoad()\n");
 
-  gEnigAccountMgr = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
+  let wizard = getWizard();
+  wizard.goTo("pgWelcome");
 
-  fillIdentities('checkbox');
 
-  let winOptions = EnigGetWindowOptions();
-  if ("skipIntro" in winOptions) {
-    if (winOptions.skipIntro == "true") {
-      let wizard = getWizard();
-      wizard.goTo("pgWelcome");
-    }
-  }
-  else if ("doRestore" in winOptions) {
-    if (winOptions.doRestore == "true") {
-      let wizard = getWizard();
-
-      gWizardUserMode = "import";
-      wizard.goTo("pgImportSettings");
-    }
-  }
 }
 
 
@@ -162,33 +147,6 @@ function onNext() {
       case "pgWelcome":
         setNextPage(onAfterPgWelcome());
         break;
-      case "pgInstallGnuPG":
-        setNextPage(onAfterPgInstallGnuPG());
-        break;
-      case "pgSelectId":
-        setNextPage(onAfterPgSelectId());
-        break;
-      case "pgKeySel":
-        setNextPage(onAfterPgKeySel());
-        break;
-      case "pgNoKeyFound":
-        setNextPage(onAfterPgNoKeyFound());
-        break;
-      case "pgKeyImport":
-        setNextPage(onAfterPgKeyImport());
-        break;
-      case "pgKeyCreate":
-        setNextPage(onAfterPgKeyCreate());
-        break;
-      case "pgKeygen":
-        setNextPage(onAfterPgKeygen());
-        break;
-      case "pgRevocert":
-        setNextPage(onAfterPgRevocert());
-        break;
-      case "pgUpload":
-        setNextPage(onAfterPgUpload());
-        break;
     }
   }
   return enableNext;
@@ -203,129 +161,22 @@ function onAfterPgWelcome() {
 
   if (checkGnupgInstallation()) {
     let hasSecretKeys = checkSecretKeys();
-    switch (gWizardUserMode) {
-      case "beginner":
-        if (hasSecretKeys) {
-          loadKeys();
-          return "pgKeySel";
-        }
-        return "pgKeyCreate";
-      case "advanced":
-        if (countIdentities() > 1) {
-          return "pgSelectId";
-        }
-        else {
-          if (hasSecretKeys) {
-            loadKeys();
-            return "pgKeySel";
-          }
-          else {
-            return "pgNoKeyFound";
-          }
-        }
-      case "expert":
-        return "pgExpert";
-      case "import":
-        return "pgImportSettings";
+    if (hasSecretKeys) {
+      gWizardUserMode = "HasKeys";
     }
+    return "pgConfigureSettings";
   }
 
   return "pgInstallGnuPG";
 }
 
-function onAfterPgInstallGnuPG() {
-  let hasSecretKeys = checkSecretKeys();
-  switch (gWizardUserMode) {
-    case "beginner":
-      if (hasSecretKeys) {
-        loadKeys();
-        return "pgKeySel";
-      }
-      else {
-        return "pgKeyCreate";
-      }
-    case "advanced":
-      if (countIdentities() > 1) {
-        return "pgSelectId";
-      }
-      else {
-        if (hasSecretKeys) {
-          loadKeys();
-          return "pgKeySel";
-        }
-        else {
-          return "pgNoKeyFound";
-        }
-      }
-    case "expert":
-      return "pgExpert";
-  }
-
-  return null;
-}
-
-function onAfterPgSelectId() {
+function onShowConfigureSettings() {
   let hasSecretKeys = checkSecretKeys();
   if (hasSecretKeys) {
-    loadKeys();
-    return "pgKeySel";
-  }
-  else {
-    return "pgNoKeyFound";
-  }
-}
-
-function onAfterPgKeySel() {
-  if (gCreateNewKey) {
-    return "pgKeyCreate";
-  }
-  else {
-    if (gWizardUserMode == "advanced") {
-      return "pgUpload";
-    }
-    else {
-      return "pgComplete";
-    }
-  }
-}
-
-function onAfterPgNoKeyFound() {
-  if (gCreateNewKey) {
-    return "pgKeyCreate";
-  }
-  else {
-    return "pgKeyImport";
-  }
-}
-
-function onAfterPgKeyImport() {
-  return "pgKeySel";
-}
-
-function onAfterPgKeyCreate() {
-  if (checkPassphrase()) {
-    wizardAdjustPref();
-    return "pgKeygen";
+    gWizardUserMode = "HasKeys";
   }
 
-  return "";
-}
 
-function onAfterPgKeygen() {
-  return "pgRevocert";
-}
-
-function onAfterPgRevocert() {
-  if (gWizardUserMode == "advanced") {
-    return "pgUpload";
-  }
-  else {
-    return "pgComplete";
-  }
-}
-
-function onAfterPgUpload() {
-  return "pgComplete";
 }
 
 /**
