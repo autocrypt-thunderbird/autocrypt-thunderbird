@@ -115,12 +115,15 @@ Enigmail.msg = {
 
     let t = document.getElementById("tabmail");
 
-    t.addEventListener("pageshow", function(e) {
-      if (e.type === "pageshow" && e.target.URL === "about:preferences") {
-        let Overlays = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {}).Overlays;
-        Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailPrivacyOverlay.xul"]);
-      }
-    }, false);
+    if (t) {
+      // TB >= 63
+      t.addEventListener("pageshow", function(e) {
+        if (e.type === "pageshow" && e.target.URL === "about:preferences") {
+          let Overlays = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {}).Overlays;
+          Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailPrivacyOverlay.xul"]);
+        }
+      }, false);
+    }
 
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
@@ -2029,7 +2032,7 @@ Enigmail.msg = {
       return;
     }
     outFile1.append(EnigmailMsgRead.getAttachmentName(origAtt));
-    outFile1.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
+    outFile1.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0 o600);
     EnigmailFiles.writeUrlToFile(origAtt.url, outFile1);
 
     if (isEncrypted) {
@@ -2043,7 +2046,7 @@ Enigmail.msg = {
     createInstance(Ci.nsIFile);
     outFile2.initWithPath(tmpDir);
     outFile2.append(EnigmailMsgRead.getAttachmentName(signatureAtt));
-    outFile2.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
+    outFile2.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0 o600);
     EnigmailFiles.writeUrlToFile(signatureAtt.url, outFile2);
 
     var promise = EnigmailVerifyAttachment.attachment(outFile1, outFile2);
@@ -2150,7 +2153,7 @@ Enigmail.msg = {
           return;
         }
         outFile.append(rawFileName);
-        outFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0o600);
+        outFile.createUnique(Ci.nsIFile.NORMAL_FILE_TYPE, 0 o600);
       }
       catch (ex) {
         errorMsgObj.value = EnigmailLocale.getString("noTempDir");
