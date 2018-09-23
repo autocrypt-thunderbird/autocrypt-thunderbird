@@ -36,9 +36,12 @@ component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
 
 const SECURITY_INFO = EnigmailTb60Compat.getSecurityField();
 
-var gMsgCompose, gWindowLocked, getCurrentIdentity;
+var gMsgCompose,
+  gWindowLocked,
+  getCurrentIdentity;
 
-function Attachments2CompFields() {}
+function Attachments2CompFields() {
+}
 
 function DetermineConvertibility() {
   return Ci.nsIMsgCompConvertible.Yes;
@@ -78,7 +81,14 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     new: function() {}
   }],
   function encryptMsg_test1() {
-    const secKey = do_get_file("../../package/tests/resources/dev-strike.sec", false);
+    const isWin = (Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS === "WINNT");
+    let secKey;
+    if (!isWin) {
+      secKey = do_get_file("../../package/tests/resources/dev-strike.sec", false);
+    }
+    else {
+      secKey = do_get_file("..\\..\\package\\tests\\resources\\dev-strike.sec", false);
+    }
     const importedKeysObj = {};
     const importResult = EnigmailKeyRing.importKeyFromFile(secKey, {}, importedKeysObj);
 
@@ -98,7 +108,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     Enigmail.msg.protectHeaders = true;
     Enigmail.msg.editor = gMsgCompose.editor;
     let s = Enigmail.msg.getEncryptionFlags(DeliverMode.Now);
-    Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED |  EnigmailConstants.SEND_SIGNED);
+    Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_SIGNED);
 
     gWindowLocked = false;
     gMsgCompose.compFields[SECURITY_INFO] = EnigmailMimeEncrypt.createMimeEncrypt(null);
