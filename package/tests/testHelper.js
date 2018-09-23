@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, EnigmailFiles: false */
-/*global dump: false*/
+/*global dump: false, Cc: false, Ci: false*/
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,12 @@ Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
 
 var TestHelper = {
   getMyPath: function() {
+    let isWin = (Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS === "WINNT");
     let fn = Components.stack.filename.replace(/^.* -> file:\/\//, "");
+
+    if (isWin) {
+      fn = fn.replace(/\//g, "\\");
+    }
     let file = osUtils.FileUtils.File(fn);
     return file.parent;
   },
