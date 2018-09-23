@@ -42,14 +42,6 @@ const nsIMsgMessageService = Ci.nsIMsgMessageService;
 const nsIMsgFolder = Ci.nsIMsgFolder;
 
 var EnigmailAutocryptSetup = {
-
-  /**
-   * the determined setup type
-   */
-  determinedSetupType: {
-    value: EnigmailConstants.AUTOSETUP_NOT_INITIALIZED
-  },
-
   /**
    * Identify which type of setup the user had before Enigmail was (re-)installed
    *
@@ -59,8 +51,6 @@ var EnigmailAutocryptSetup = {
    *   - msgHeaders {Object}           in case value === 2
    */
   determinePreviousInstallType: function() {
-    let self = this;
-
     return new Promise(async(resolve, reject) => {
       EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType()\n");
 
@@ -77,8 +67,8 @@ var EnigmailAutocryptSetup = {
 
       // If no account, except Local Folders is configured
       if (accounts.length <= 1) {
-        self.determinedSetupType.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
-        resolve(0);
+        returnMsgValue.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
+        resolve(returnMsgValue);
       }
 
       // Iterating through each account
@@ -153,8 +143,7 @@ var EnigmailAutocryptSetup = {
       }
 
       if (returnMsgValue.acSetupMessage) {
-        self.determinedSetupType = returnMsgValue;
-        resolve(1);
+        resolve(returnMsgValue);
       }
       else {
         EnigmailLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}\n`);
@@ -187,7 +176,6 @@ var EnigmailAutocryptSetup = {
         returnMsgValue.userName = msgAccountManager.defaultAccount.defaultIdentity.fullName;
         returnMsgValue.userEmail = msgAccountManager.defaultAccount.defaultIdentity.email;
 
-        self.determinedSetupType = returnMsgValue;
         resolve(returnMsgValue);
       }
     });
