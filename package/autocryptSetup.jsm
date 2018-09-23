@@ -42,14 +42,6 @@ const nsIMsgMessageService = Ci.nsIMsgMessageService;
 const nsIMsgFolder = Ci.nsIMsgFolder;
 
 var EnigmailAutocryptSetup = {
-
-  /**
-   * the determined setup type
-   */
-  determinedSetupType: {
-    value: EnigmailConstants.AUTOSETUP_NOT_INITIALIZED
-  },
-
   /**
    * Identify which type of setup the user had before Enigmail was (re-)installed
    *
@@ -59,8 +51,6 @@ var EnigmailAutocryptSetup = {
    *   - msgHeaders {Object}           in case value === 2
    */
   determinePreviousInstallType: function() {
-    let self = this;
-
     return new Promise(async(resolve, reject) => {
       EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType()\n");
 
@@ -77,8 +67,8 @@ var EnigmailAutocryptSetup = {
 
       // If no account, except Local Folders is configured
       if (accounts.length <= 1) {
-        self.determinedSetupType.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
-        resolve(0);
+        returnMsgValue.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
+        resolve(returnMsgValue);
       }
 
       // Iterating through each account
@@ -86,15 +76,15 @@ var EnigmailAutocryptSetup = {
       for (var i = 0; i < accounts.length; i++) {
         var account = accounts.queryElementAt(i, Ci.nsIMsgAccount);
         var accountMsgServer = account.incomingServer;
-        EnigmailLog.DEBUG(`autocryptSetup.jsm: determinePreviousInstallType: scanning account "${accountMsgServer.prettyName}"\n`);
+        EnigmailLog.DEBUG(`autocryptSetup.jsm: determinePreviousInstallType: scanning account "${accountMsgServer.prettyName}"
+`);
 
 
         let msgFolderArr = [];
 
         try {
           getMsgFolders(account.incomingServer.rootFolder, msgFolderArr);
-        }
-        catch (e) {
+        } catch (e) {
           EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType() Error : " + e + "\n");
         }
 
@@ -109,7 +99,8 @@ var EnigmailAutocryptSetup = {
             continue;
           }
 
-          EnigmailLog.DEBUG(`autocryptSetup.jsm: determinePreviousInstallType: scanning folder "${msgFolder.name}"\n`);
+          EnigmailLog.DEBUG(`autocryptSetup.jsm: determinePreviousInstallType: scanning folder "${msgFolder.name}"
+`);
 
           let msgEnumerator = msgDatabase.ReverseEnumerateMessages();
 
@@ -121,8 +112,7 @@ var EnigmailAutocryptSetup = {
             let msgAuthor = "";
             try {
               msgAuthor = EnigmailFuncs.stripEmail(msgHeader.author);
-            }
-            catch (x) {}
+            } catch (x) {}
 
             // Listing all the headers in the message
 
@@ -153,16 +143,18 @@ var EnigmailAutocryptSetup = {
       }
 
       if (returnMsgValue.acSetupMessage) {
-        self.determinedSetupType = returnMsgValue;
-        resolve(1);
+        resolve(returnMsgValue);
       }
       else {
-        EnigmailLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}\n`);
+        EnigmailLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}
+`);
 
         // find newest message to know the protocol
         let latestMsg = null;
         for (let i = 0; i < msgHeaders.length; i++) {
-          if (!latestMsg) latestMsg = msgHeaders[i];
+          if (!latestMsg) {
+            latestMsg = msgHeaders[i];
+          }
 
           if (msgHeaders[i].dateTime > latestMsg.dateTime) {
             latestMsg = msgHeaders[i];
@@ -187,7 +179,6 @@ var EnigmailAutocryptSetup = {
         returnMsgValue.userName = msgAccountManager.defaultAccount.defaultIdentity.fullName;
         returnMsgValue.userEmail = msgAccountManager.defaultAccount.defaultIdentity.email;
 
-        self.determinedSetupType = returnMsgValue;
         resolve(returnMsgValue);
       }
     });
@@ -213,11 +204,9 @@ var EnigmailAutocryptSetup = {
         }
 
         return EnigmailAutocrypt.handleBackupMessage(passwd, res.attachmentData, headerValue.acSetupMessage.author);
-      }).
-      then(res => {
+      }).then(res => {
         EnigmailDialog.info(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.success", headerValue.acSetupMessage.author));
-      }).
-      catch(err => {
+      }).catch(err => {
         EnigmailLog.DEBUG("autocryptSetup.jsm: performAutocryptSetup got cancel status=" + err + "\n");
 
         switch (err) {
@@ -253,7 +242,9 @@ var EnigmailAutocryptSetup = {
       // find newest message to know the protocol
       let latestMsg = null;
       for (let i = 0; i < setupType.msgHeaders.length; i++) {
-        if (!latestMsg) latestMsg = setupType.msgHeaders[i];
+        if (!latestMsg) {
+          latestMsg = setupType.msgHeaders[i];
+        }
 
         if (setupType.msgHeaders[i].dateTime > latestMsg) {
           latestMsg = setupType.msgHeaders[i];
@@ -261,7 +252,8 @@ var EnigmailAutocryptSetup = {
       }
 
       let sysType = latestMsg.msgType;
-      EnigmailLog.DEBUG(`autocryptSetup.jsm: processAutocryptHeader: got type: ${sysType}\n`);
+      EnigmailLog.DEBUG(`autocryptSetup.jsm: processAutocryptHeader: got type: ${sysType}
+`);
 
 
       for (let i = 0; i < setupType.msgHeaders.length; i++) {
@@ -307,8 +299,7 @@ var EnigmailAutocryptSetup = {
 
       try {
         let keygenRequest = EnigmailKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("autocryptSetup.jsm: createAutocryptKey: error: " + ex.message);
         resolve(1);
       }
@@ -329,8 +320,7 @@ function createStreamListener(k) {
     onStopRequest: function(aRequest, aContext, aStatusCode) {
       try {
         k(this._data);
-      }
-      catch (e) {
+      } catch (e) {
         EnigmailLog.DEBUG("autocryptSetup.jsm: createStreamListener: error: " + e + "\n");
       }
     },
@@ -392,14 +382,17 @@ function streamListener(callback) {
     onStartHeaders: function() {},
     onEndHeaders: function() {},
     processHeaders: function(aHeaderNameEnumerator, aHeaderValueEnumerator, aDontCollectAddress) {
-      while (aHeaderNameEnumerator.hasMore())
+      while (aHeaderNameEnumerator.hasMore()) {
         this.mHeaders.push({
           name: aHeaderNameEnumerator.getNext().toLowerCase(),
           value: aHeaderValueEnumerator.getNext()
         });
+      }
     },
     handleAttachment: function(aContentType, aUrl, aDisplayName, aUri, aIsExternalAttachment) {
-      if (aContentType == "text/html") return;
+      if (aContentType == "text/html") {
+        return;
+      }
       this.mAttachments.push({
         contentType: aContentType,
         url: aUrl,
@@ -419,8 +412,9 @@ function streamListener(callback) {
     QueryInterface: function(aIID) {
       if (aIID.equals(Components.interfaces.nsIStreamListener) ||
         aIID.equals(Components.interfaces.nsIMsgHeaderSink) ||
-        aIID.equals(Components.interfaces.nsISupports))
+        aIID.equals(Components.interfaces.nsISupports)) {
         return this;
+      }
 
       throw Components.results.NS_NOINTERFACE;
     }
@@ -460,7 +454,7 @@ function checkHeaders(headerObj, msgHeader, msgAuthor, accountEmail, msgFolder, 
     }
     else if (msgAuthor == accountEmail &&
       (("autocrypt" in headerObj) ||
-        ("x-pep-version" in headerObj))) {
+      ("x-pep-version" in headerObj))) {
 
       let msgType = ("x-pep-version" in headerObj) ? "pEp" : "Autocrypt";
 
@@ -476,8 +470,7 @@ function checkHeaders(headerObj, msgHeader, msgAuthor, accountEmail, msgFolder, 
         let dateTime = new Date(0);
         try {
           dateTime = jsmime.headerparser.parseDateHeader(headerObj.date);
-        }
-        catch (x) {}
+        } catch (x) {}
 
         let addHeader = {
           fromAddr: msgAuthor,
@@ -492,8 +485,7 @@ function checkHeaders(headerObj, msgHeader, msgAuthor, accountEmail, msgFolder, 
         let dateTime = new Date(0);
         try {
           dateTime = jsmime.headerparser.parseDateHeader(headerObj.date);
-        }
-        catch (x) {}
+        } catch (x) {}
         if (dateTime > fromHeaderExist.dateTime) {
           fromHeaderExist.msgData = headerObj.autocrypt;
           fromHeaderExist.date = headerObj.date;
@@ -538,19 +530,19 @@ function getStreamedHeaders(msgURI, mms) {
 
             headerObj.autocrypt = "";
             for (i in paramArr) {
-              if (headerObj.autocrypt.length > 0) headerObj.autocrypt += "; ";
+              if (headerObj.autocrypt.length > 0) {
+                headerObj.autocrypt += "; ";
+              }
               headerObj.autocrypt += `${i}="${paramArr[i]}"`;
             }
           }
-        }
-        catch (e) {
+        } catch (e) {
           reject({});
           EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
         }
         resolve(headerObj);
       }), null, false);
-    }
-    catch (e) {
+    } catch (e) {
       reject({});
       EnigmailLog.DEBUG("autocryptSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
     }
