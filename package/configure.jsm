@@ -212,8 +212,36 @@ var EnigmailConfigure = {
     if (oldVer === "") {
       EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
 
-      let setupResult = await EnigmailAutocryptSetup.determinePreviousInstallType();
-      EnigmailWindows.openSetupWizard(win);
+      let setupType = await EnigmailAutocryptSetup.determinePreviousInstallType();
+
+      if (setupType.value === EnigmailConstants.AUTOSETUP_AC_SETUP_MSG) {
+        if (EnigmailDialog.confirmDlg(null,
+            EnigmailLocale.getString("acStartup.acMessageFound.desc"),
+            EnigmailLocale.getString("acStartup.import.label"),
+            EnigmailLocale.getString("dlg.button.cancel"))) {
+          EnigmailAutocryptSetup.performAutocryptSetup(setupType);
+        }
+      }
+      else if (setupType.value === EnigmailConstants.AUTOSETUP_AC_HEADER) {
+        if (EnigmailDialog.confirmDlg(null,
+            EnigmailLocale.getString("acStartup.acHeaderFound.desc"),
+            EnigmailLocale.getString("acStartup.import.label"),
+            EnigmailLocale.getString("dlg.button.cancel"))) {
+          EnigmailAutocryptSetup.processAutocryptHeader(setupType);
+        }
+      }
+      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_HEADER) {
+        EnigmailAutocryptSetup.createAutocryptKey(setupType);
+      }
+      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_ACCOUNT) {
+        // Code to be Added for Thunderbird where no accounts are added.
+      }
+
+      if (EnigmailPrefs.getPref("juniorMode") === 0 || (!isPepInstallable())) {
+        // start wizard if pEp Junior Mode is forced off or if pep cannot
+        // be installed/used
+        EnigmailWindows.openSetupWizard(win, false);
+      }
     }
     else {
       if (vc.compare(oldVer, "1.7a1pre") < 0) {
