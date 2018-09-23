@@ -57,8 +57,9 @@ Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdl
 Cu.import("chrome://enigmail/content/modules/configure.jsm"); /*global EnigmailConfigure: false */
 Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 
+var Enigmail
 if (!Enigmail) {
-  var Enigmail = {};
+  Enigmail = {};
 }
 
 Enigmail.getEnigmailSvc = function() {
