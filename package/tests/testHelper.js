@@ -18,7 +18,7 @@ var TestHelper = {
     let fn = Components.stack.filename.replace(/^.* -> file:\/\//, "");
 
     if (isWin) {
-      fn = fn.replace(/\//g, "\\");
+      fn = fn.replace(/\//g, "\\").replace(/^\\/, "");
     }
     let file = osUtils.FileUtils.File(fn);
     return file.parent;
@@ -39,8 +39,7 @@ var TestHelper = {
 
     try {
       Components.utils.import(modName);
-    }
-    catch (ex) {
+    } catch (ex) {
       dump("Error importing module: '" + modName + "'\n");
       dump(ex.message + "\n" + ex.stack);
       throw ex;
@@ -61,8 +60,7 @@ var TestHelper = {
     on[prop] = val;
     try {
       return f();
-    }
-    finally {
+    } finally {
       on[prop] = orgVal;
     }
   },
@@ -121,9 +119,10 @@ var TestHelper = {
     var workingDirectory = new osUtils.FileUtils.File(homedir);
 
     try {
-      if (workingDirectory.exists()) workingDirectory.remove(true);
-    }
-    catch (ex) {
+      if (workingDirectory.exists()) {
+        workingDirectory.remove(true);
+      }
+    } catch (ex) {
       // print a warning if GpgHome cannot be removed
       Assert.ok(true, "Could not remove GpgHome");
     }
@@ -149,8 +148,7 @@ function withEnvironment(vals, f) {
   }
   try {
     return f(environment);
-  }
-  finally {
+  } finally {
     for (let key in oldVals) {
       environment.set(key, oldVals[key]);
     }
@@ -162,8 +160,7 @@ function withTestGpgHome(f) {
     const homedir = initalizeGpgHome();
     try {
       f();
-    }
-    finally {
+    } finally {
       removeGpgHome(homedir);
     }
   };
@@ -193,8 +190,7 @@ function withOverwriteFuncs(overwriteArr, func) {
 
     try {
       func();
-    }
-    finally {
+    } finally {
       for (let i in origFuncs) {
         origFuncs[i].obj[origFuncs[i].fn] = origFuncs[i].origFunc;
       }
@@ -209,8 +205,7 @@ function withPreferences(func) {
     const keyserverPrefs = EnigmailPrefs.getPref("keyserver");
     try {
       func();
-    }
-    finally {
+    } finally {
       EnigmailPrefs.setPref("keyRefreshOn", keyRefreshPrefs);
       EnigmailPrefs.setPref("keyserver", keyserverPrefs);
     }
@@ -248,7 +243,9 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
 
     let id;
 
-    if (ac.identities.length < idNumber - 1) throw "error - cannot add Identity with gaps";
+    if (ac.identities.length < idNumber - 1) {
+      throw "error - cannot add Identity with gaps";
+    }
     else if (ac.identities.length === idNumber - 1) {
       id = accountManager.createIdentity();
       ac.addIdentity(id);
@@ -275,8 +272,12 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
     is.performingBiff = false;
     is.loginAtStartUp = false;
 
-    if (primaryKeyId === null) primaryKeyId = "ABCDEF0123456789";
-    if (primaryEmail === null) primaryEmail = "user1@enigmail-test.net";
+    if (primaryKeyId === null) {
+      primaryKeyId = "ABCDEF0123456789";
+    }
+    if (primaryEmail === null) {
+      primaryEmail = "user1@enigmail-test.net";
+    }
 
     setIdentityData(ac, 1, "Enigmail Unit Test 1", "John Doe I.", primaryEmail, true, primaryKeyId);
     setIdentityData(ac, 2, "Enigmail Unit Test 2", "John Doe II.", "user2@enigmail-test.net", true);
@@ -326,8 +327,7 @@ function withEnigmail(f) {
       const window = JSUnit.createStubWindow();
       enigmail.initialize(window, "");
       return f(EnigmailCore.getEnigmailService(), window);
-    }
-    finally {
+    } finally {
       shutdownGpgAgent();
       EnigmailCore.setEnigmailService(null);
     }
@@ -349,8 +349,7 @@ function shutdownGpgAgent() {
 
     try {
       subprocess.call(proc).wait();
-    }
-    catch (ex) {
+    } catch (ex) {
       Assert.ok(false, "Could not kill gpg-agent");
     }
   }
@@ -366,8 +365,7 @@ function withLogFiles(f) {
     try {
       EnigmailLog.setLogLevel(5);
       f();
-    }
-    finally {
+    } finally {
       EnigmailLog.onShutdown();
       EnigmailLog.createLogFiles();
     }

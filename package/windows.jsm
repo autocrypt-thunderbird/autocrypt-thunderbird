@@ -39,7 +39,7 @@ var EnigmailWindows = {
    *
    * no return value
    */
-  openSetupWizard: function(win, skipIntro) {
+  openSetupWizard: function(win, setupType) {
     EnigmailLog.DEBUG("windows.jsm: openSetupWizard()\n");
 
     if (!EnigmailStdlib.hasConfiguredAccounts()) {
@@ -47,11 +47,7 @@ var EnigmailWindows = {
       return;
     }
 
-    let param = "";
-    if (skipIntro) {
-      param = "?skipIntro=true";
-    }
-    win.open("chrome://enigmail/content/ui/enigmailSetupWizard.xul" + param,
+    win.open("chrome://enigmail/content/ui/enigmailSetupWizard.xul",
       "", "chrome,centerscreen,resizable");
   },
 
