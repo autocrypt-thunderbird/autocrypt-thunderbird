@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Edit OpenPGP Rule</title>
+  <title>Справка по Enigmail: Редактирование правил</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -12,72 +12,134 @@
   </style>
 </head>
 
-<body>
-  <h1>Enigmail Help</h1>
+<body lang="ru" xml:lang="ru">
+<h1>Справка по Enigmail</h1>
 
-  <h3>Using the Enigmail Rules Editor: Edit OpenPGP Rule</h3>
+<h3>Пользование редактором правил Enigmail</h3>
 
-  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this dialog, you can specify the rules for a single recipient, and for a group of recipients with very similar attributes.</p>
+<p>В редакторе правил можно указывать исходные значения настроек
+шифрования, подписи и PGP/MIME для каждого адресата, а также
+определять ключи, которые будут использоваться. В этом окне можно
+задавать правила для отдельных адресатов или групп адресатов со
+сходными атрибутами.</p>
+
+<dl>
+<dt>Установить правила Enigmail для адресата</dt>
+
+<dd>Содержит адреса электронной почты получателей (без имен, напр.,
+<tt>test@test.net</tt>). Можно указывать несколько адресов через
+пробел. Указанные здесь адреса могут состоять только из домена, так
+что подходить под правило будут любые адреса из этого домена, напр.,
+<tt>@test.net</tt> будет указывать на <tt>test@test</tt>,
+<tt>proba@test.net</tt> и т.д.</dd>
+
+<dt>Применить правило, если адресат ...</dt>
+
+<dd>Изменяет подбор адресов. Если вводится несколько адресов,
+настройка будет применяться к всем. Нижеприведенные примеры
+предполагают, что в поле <em>Установить правила Enigmail для
+адресата</em> введено <tt>test@test</tt>.
 
   <dl>
-    <dt>Set OpenPGP Rules for</dt>
 
-    <dd>Contains the email addresses of the recipients (without names, i.e. just an address like <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces. The address specified here can consist of only the domain section so that mail to any address at that domain will be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
+  <dt>представляет собой</dt>
 
-    <dt>Apply rule if recipient ...</dt>
+  <dd>правило применяется только для почты на адрес
+  <tt>test@test</tt> (точное соответствие, строчные и прописные
+  буквы эквивалентны)</dd>
 
-    <dd>
-      This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>OpenPGP Rules</em> field above.
+  <dt>содержит</dt>
 
-      <ul>
-        <li><em>Is exactly</em>: with this setting, the rule will only trigger on emails to <tt>body@email.domain</tt> (exact, case insensitive matching).</li>
+  <dd>правило применяется для любого адреса, содержащего эту строку,
+  напр., <tt>test@test</tt>, <tt>proba-test@test.net</tt></dd>
 
-        <li><em>Contains</em>: with this setting, any email address containing the string is matched, e.g. <tt>anybody@email.domain</tt> or <tt>body@email.domain.net</tt></li>
+  <dt>начинается на</dt>
 
-        <li><em>Begins with</em>: with this setting, any email address starting with the string is matched, e.g. <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>
+  <dd>правило применяется для адресов, начинающихся на эту строку,
+  напр., <tt>test@test.net</tt>, <tt>test@test-proba.net</tt></dd>
 
-        <li><em>Ends with</em>: with this setting, any email address ending with the string is matched, e.g. <tt>anybody@email.domain</tt> , <tt>somebody@email.domain</tt>.</li>
-      </ul>
-    </dd>
+  <dt>заканчивается на</dt>
 
-    <dt>Continue with the next rule for the matching address</dt>
+  <dd>правило применяется для адресов, заканчивающихся на эту строку,
+  напр., <tt>proba-test@test</tt>, <tt>protest@test</tt></dd>
 
-    <dd>Enabling this function will allow you to define a rule but not have to specify a KeyID in the <em>Use the following OpenPGP keys:</em> field, so that the email address is used to check for a key at the time of sending. Also, further rules for the same address(es) will be processed as well.</dd>
-
-    <dt>Do not check further rules for the matching address</dt>
-
-    <dd>Enabling this function stops processing any other rules for the matching address(es) if this rule is matched; i.e. rule processing continues with the next recipient.</dd>
-
-    <dt>Use the following OpenPGP keys:</dt>
-
-    <dd>Use the <em>Select Key(s)..</em> button to select the recipient keys to be used for encryption. As in the action above, no further rules for the matching address(es) are processed.</dd>
-
-    <dt>Default for Signing</dt>
-
-    <dd>
-      Enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
-
-      <ul>
-        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
-
-        <li><em>Yes, if selected from in Message Composition</em>: leave signing as specified in the message composition window</li>
-
-        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
-      </ul>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.
-    </dd>
-
-    <dt>Encryption</dt>
-
-    <dd>Enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
-
-    <dt>PGP/MIME</dt>
-
-    <dd>Enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning are the same as for message signing.</dd>
   </dl>
 
-  <p>The rules are processed in the order displayed in the list in the <em>OpenPGP Rules Editor</em>. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
-  <hr />
+</dd>
 
-  <p>Further help is available on the <a href="https://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>
+<dt>Продолжить со следующего правила для подошедшего адреса</dt>
+
+<dd>Это позволяет определять правило без указания идентификатора ключа
+в поле <em>Использовать следующие ключи:</em>, так что адрес
+электронной почты применяется для подбора ключа во время отправки.
+Кроме того, для тех же адресов будут обрабатываться дальнейшие
+правила.</dd>
+
+<dt>Не проверять дальнейшие правила для подошедшего адреса</dt>
+
+<dd>Для всех подошедших адресов обработка прекращается, т.е. процесс
+обработки переходит к следующему адресату.</dd>
+
+<dt>Использовать следующие ключи:</dt>
+
+<dd>Кнопкой <em>Выбрать ключи...</em> выбирают ключи, которыми будут
+шифроваться сообщения для адресата. Дальнейшие правила для подошедших
+адресов применяться не будут.</dd>
+
+<dt>Настройки по умолчанию для подписи</dt>
+
+<dd>Подписывать или не подписывать. Это поле наследует или
+переопределяет то, что указано в окне создания сообщения. Возможные
+значения:
+
+  <dl>
+
+  <dt>Никогда</dt>
+
+  <dd>Не подписывать, даже если задано в окне создания сообщения
+  (отменяет другие значения)</dd>
+
+  <dt>Да, если выбрано при составлении сообщения</dt>
+
+  <dd>Делать, как указано в окне создания сообщения.</dd>
+
+  <dt>Всегда</dt>
+
+  <dd>Подписывать, даже если это <em>не</em> указано в окне создания
+  сообщения</dd>
+
+  </dl>
+
+<p>Эти настройки применяются для всех подошедших правил. Если одно из
+правил отменяет подпись, сообщение не будет подписываться, даже если в
+других правилах будет указано <em>Всегда</em>.</p> 
+
+</dd>
+
+<dt>Шифрование</dt>
+
+<dd>Шифровать или не шифровать сообщение. Набор значений такой же, как
+для подписи.</dd> 
+
+<dt>PGP/MIME</dt>
+
+<dd>Включить или выключить кодирование сообщений в PGP/MIME (RFC
+3156). Если выключено, сообщения кодируются как «PGP в тексте». Набор
+значений такой же, как для подписи.</dd>
+
+</dl>
+
+<p>Правила обрабатываются в порядке, приведенном в списке. Когда
+правило соответствует адресату и содержит идентификатор ключа, то
+кроме использования данного ключа адресат больше не участвует в
+дальнейшей обработке правил.</p>
+
+<hr />
+
+<p><a
+href="https://www.enigmail.net/documentation/pgprules_file.php"
+target="_blank">Подробнее о правилах</a> можно прочесть на сайте
+Enigmail.</p>
+
 </body>
 </html>

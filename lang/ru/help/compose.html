@@ -3,8 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Message Composition</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <title>Справка по Enigmail: Создание сообщения</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,77 +12,111 @@
   </style>
 </head>
 
-<body>
-  <h1>Enigmail Help</h1>
+<body lang="ru" xml:lang="ru">
+<h1>Справка по Enigmail</h1>
 
-  <h3>Using Enigmail when composing messages</h3>
+<h3>Применение Enigmail при создании сообщения</h3>
 
-  <dl>
-    <dt>Enigmail menu in Mail/Compose window</dt>
+<dl>
+  <dt>Меню Enigmail в окне создания сообщения</dt>
 
-    <dd>
-      <dl>
-        <dt>Sign message</dt>
+  <dd>
+    <dl>
+      <dt>Подписать сообщение</dt>
 
-        <dd>Enable/Disable sending signed mail. User is notified, if signing fails.</dd>
+      <dd>Включить/выключить подпись при отправке сообщения.
+      Пользователь оповещается, если подписать не удается.</dd>
 
-        <dt>Encrypt message</dt>
-				<dd>
-					<p>Enable/Disable encryption to all recipient(s) before sending. User is notified, if encryption fails.</p>
+      <dt>Шифровать сообщение</dt>
 
-          <p>If <em>Display selection when necessary</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, a list of keys will pop up if there are addresses in the list of recipients for the message for whom you have no public key.</p>
+      <dd>
+      <p>Включить/выключить при отправке шифрование для всех адресатов.
+      Пользователь оповещается, если зашифровать не удается.</p>
 
-          <p>If <em>Never display OpenPGP key selection dialog</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, and there are addresses in the list of recipients for the message for whom you have no public key, the message will be sent unencrypted.</p>
-        </dd>
+      <p>Если в меню <strong>Настройки -&gt; Подбор ключа</strong>
+      установлен флаг <em>При необходимости показывать варианты</em>,
+      то в случаях, когда для каких-то адресов в списке получателей
+      у вас нет открытых ключей, будет выводиться список ключей.</p>
 
-        <dt>Use PGP/MIME for this message</dt>
+      <p>Если в меню <strong>Настройки -&gt; Подбор ключа</strong> установлен
+      флаг <em>Никогда не показывать окно выбора ключей</em> и для каких-то
+      адресов в списке получателей у вас нет открытых ключей, сообщение
+      будет отправлено незашифрованным.</p>
+      </dd>
 
-        <dd>
-          Enable/Disable the use of <a href="https://tools.ietf.org/html/rfc3156">PGP/MIME</a> for this message.
+      <dt>Применить для этого сообщения PGP/MIME</dt>
 
-          <p>If you know the recipient(s) can read mail using the PGP/MIME format, you should use it.</p>
+      <dd>Включить/выключить <a href="https://tools.ietf.org/html/rfc3156">
+      PGP/MIME</a> для этого сообщения.
 
-          <p>This feature is dependent on the settings in <strong>Preferences -&gt; PGP/MIME tab</strong> being set to <em>Allow to use PGP/MIME</em> or <em>Always use PGP/MIME</em>.</p>
-        </dd>
+      <p>Если вы знаете, что адресаты могут читать почту в этом формате, то
+      им нужно пользоваться.</p>
 
-        <dt>Default composition options</dt>
+      <p>Эта функция требует, чтобы в меню <strong>Настройки -&gt;
+      PGP/MIME</strong> было установлено <em>Разрешить применение PGP/MIME</em>
+      или <em>Всегда применять PGP/MIME</em>.</p>
+      </dd>
 
-        <dd>
-          <ul>
-            <li><strong>Signing/Encryption Options...</strong>: shortcut to <strong>Account Settings -&gt; OpenPGP Options.</strong></li>
+      <dt>Исходные параметры</dt>
 
-            <li><strong>Send options...</strong>: shortcut to <strong>Preferences -&gt; Send</strong> tab.</li>
+      <dd>
+      <ul>
+        <li><strong>Параметры шифрования/подписи...</strong>: сокращение
+        <strong>Параметры учетной записи -&gt; Параметры OpenPGP</strong>.</li>
 
-            <li><strong>Key selection options...</strong>: shortcut to <strong>Preferences -&gt; Key Selection</strong> tab.</li>
+        <li><strong>Параметры отправки...</strong>: сокращение
+        <strong>Настройки -&gt; Отправка</strong>.</li>
 
-            <li><strong>PGP/MIME options...</strong>: shortcut to <strong>Preferences -&gt; PGP/MIME</strong> tab.</li>
-          </ul>
-        </dd>
+        <li><strong>Параметры подбора ключей...</strong>: сокращение
+        <strong>Настройки -&gt; Подбор ключей</strong>.</li>
 
-        <dt>Undo encryption</dt>
+        <li><strong>Параметры PGP/MIME...</strong>
+        <strong>Настройки -&gt; PGP/MIME</strong>.</li>
+      </ul>
+      </dd>
 
-        <dd>
-          <p>If there is a failure when actually sending mail, such as the POP server not accepting the request, Enigmail will not know about it, and the encrypted message will continue to be displayed in the Compose window. Choosing this menu item will undo the encryption/signing, reverting the Compose window back to its original text.</p>
+      <dt>Отменить шифрование</dt>
 
-          <p><em>As a temporary fix, this option may also be used to decrypt the quoted text when replying to encrypted messages. Enigmail should automatically decrypt the quoted message, but if that fails for some reason, you can use this menu item to force it.</em></p>
-        </dd>
+      <dd>
+      <p>Когда при собственно отправке сообщения происходит сбой, например,
+      сервер POP не принимает запрос, в Enigmail информация об этом
+      не поступает и зашифрованное сообщение по-прежнему отображается в окне
+      создания сообщения. Этот пункт меню отменяет шифрование/подпись,
+      возвращая в окно сообщения первоначальный текст.</p>
 
-        <dt>Insert public key</dt>
+      <p><em>В качестве временной меры этот пункт можно применять также
+      для расшифрования зашифрованного текста при ответе на зашифрованные
+      сообщения. Цитируемое сообщение должно расшифровываться автоматически,
+      но если по какой-то причине этого не происходит, то этим пунктом меню
+      можно воспользоваться для принудительного расшифрования.</em></p>
+      </dd>
 
-        <dd>insert ASCII-armored public key block at the current cursor location in the Compose window. You will be prompted for the email addresses of the key(s) to be inserted. Keys inserted in this manner will automatically be recognized at the receiving end by Enigmail. After key insertion, you may still choose to sign/encrypt the mail as needed. Also, do not insert more than one key block in a message; just specify multiple email addresses, separated by commas or spaces, when prompted.</dd>
+      <dt>Вставить открытый ключ</dt>
 
-        <dt>Clear save passphrase</dt>
+        <dd>Вставить блок с открытыми ключами в оболочке ASCII в текущей
+        позиции курсора в окне создаваемого сообщения. Программа запросит
+        адреса электронной почты для вставляемых ключей. Вставленные таким
+        образом ключи автоматически распознаются Enigmail на принимающей
+        стороне. После вставки ключей сообщение можно шифровать и подписывать
+        по мере необходимости. Не вставляйте несколько блоков в сообщение;
+        вместо этого укажите несколько адресов, разделенных пробелами или
+        запятыми.</dd>
 
-        <dd>Clears cached passphrase. Useful if you have multiple passphrases.</dd>
+        <dt>Удалить запомненный пароль</dt>
 
-        <dt>Help</dt>
+        <dd>Удалить пароль из буфера. Полезно, когда у вас несколько
+        фраз-паролей.</dd>
 
-        <dd>Displays Help information from the website (this page).</dd>
+        <dt>Справка</dt>
+
+        <dd>Показать справку с сайта (эту страницу).</dd>
       </dl>
     </dd>
   </dl>
   <hr />
 
-  <p>Further help is available on the <a href="https://www.enigmail.net/support/">Enigmail Help web page</a></p>
+  <p>Другую помощь можно получить на <a
+  href="https://www.enigmail.net/support/">странице помощи сайта Enigmail</a>.
+  </p>
 </body>
 </html>

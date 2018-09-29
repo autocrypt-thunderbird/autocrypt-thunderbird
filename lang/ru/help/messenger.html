@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Enigmail Help: Message Reading</title>
+  <title>Справка по Enigmail: Чтение сообщений</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css">
   /*<![CDATA[*/
@@ -13,45 +13,79 @@
 </head>
 
 <body>
-  <h1>Enigmail Help</h1>
+<h1>Справка по Enigmail</h1>
+<h3>Применение Enigmail при чтении сообщений</h3>
 
-  <h3>Using Enigmail when reading messages</h3>
+<dl>
+<dt>Кнопка расшифрования в главном окне почты</dt>
 
-  <dl>
-    <dt>Decrypt button in main Mail window</dt>
+<dd>Эту кнопку можно применять в различных целях: для расшифрования,
+проверки, импорта открытых ключей. Обычно расшифрование и проверка
+проходят автоматически, хотя это можно отключить в настройках. Однако
+при сбоях обычно выдается краткое сообщение в строке состояния
+Enigmail. Если нажать на кнопку «Расшифровать», можно прочесть более
+подробное сообщение об ошибке, включающее вывод команды GnuPG.</dd>
 
-    <dd>This button can be used for several purposes: decrypt, verify, or import public keys. Normally decryption/verification happens automatically, although this can be disabled through a preference. However, if this fails, usually a short error message will appear in the Enigmail status line. If you click the Decrypt button, you will be able to see a more detailed error message, including the output from the GnuPG command.</dd>
+<dt>Пиктограммы карандаша и ключа в панели заголовка сообщения</dt>
 
-    <dt>Pen and Key icons in Message Header display</dt>
+<dd>Пиктограммы <em>карандаш</em> и <em>ключ</em> в панели заголовка
+сообщения указывают, подписано ли и зашифровано ли это сообщение, и
+верна ли подпись, т.е. не было ли изменено сообщение после подписания.
+Если сообщение было изменено, пиктограмма <em>карандаш</em> изменится
+на <em>сломанный карандаш</em>, чтобы показать, что подпись неверна.
+Щелчок правой кнопкой по пиктограммам вызывает меню с пунктами:
 
-    <dd>
-      The <em>Pen</em> and <em>Key</em> icons in the Message Header display indicate if the message you are reading was signed and/or encrypted and if the signature is good, i.e. the message has not been changed since it was signed. If the message has been changed, the <em>Pen</em> icon will change to a <em>Broken Pen</em> to indicate that the signature is bad. Right clicking on either the Pen or Key icons will bring up a menu with the following options:
+<ul>
+  <li><em>Информация Enigmail о защите</em> позволяет просмотреть
+    диагностические сообщения GnuPG.</li>
+  <li><em>Копировать информацию Enigmail о защите</em> копирует
+    диагностические сообщения GnuPG в буфер обмена для вставки в ответ
+    на сообщение и т.д.</li>
+  <li><em>Показать фотоидентификатор</em> позволяет просмотреть
+    фотоидентификатор лица, пославшего сообщение (этот пункт будет
+    активен, только если в открытом ключе есть
+    фотоидентификатор).</li>
+  <li><em>Информация о защите S/MIME</em> позволяет просмотреть
+    информацию о защите S/MIME.</li>
+</ul>
 
-      <ul>
-        <li><em>OpenPGP Security info</em>: allows you to view the output status from GnuPG for the message.</li>
+<p>Если у вас в файле <tt>gpg.conf</tt> не установлено
+<em>keyserver-options auto-key-retrieve</em> и вы читаете подписанное
+или зашифрованное сообщение, вы увидите пиктограмму <em>карандаш</em>
+на панели заголовков со <em>знаком вопроса</em>, в строке состояния
+Enigmail будет сказано: «Часть этого сообщения подписана; подробности
+по щелчку на карандаше». Сообщение в панели текста будет содержать все
+метки блока OpenPGP и блока подписи.</p>
 
-        <li><em>Copy OpenPGP Security info</em>: copies the output status from GnuPG to the clipboard; to paste into a reply message, etc.</li>
+<p>Это может появиться и если у вас в файле <tt>gpg.conf</tt>
+установлено <em>keyserver-options auto-key-retrieve</em>, но ключ не
+находится на сервере ключей.</p>
 
-        <li><em>View OpenPGP Photo ID</em>: allows you to view the <em>Photo ID</em> of the person who sent the message, if they have a photo embedded in their Public Key. (<em>This option will only be enabled if a Photo ID exists in their key.)</em></li>
+<p>Щелчок по <em>карандашу со знаком вопроса</em> вызовет окно, в
+котором будет сказано, что в вашей таблице ключей этого ключа нет.
+Нажатие на «OK» вызывает другое окно со списком серверов ключей, на
+которых можно получить открытый ключ.</p>
 
-        <li><em>S/MIME Security info</em>: allows you to view the S/MIME Security Info for the message.</li>
-      </ul>
+<p>Задать список серверов ключей можно в меню
+<strong>Enigmail -&gt; Настройки -&gt; Основное</strong>, там вводятся
+адреса серверов ключей, разделенные запятыми. <em>Первый сервер в
+списке будет применяться по умолчанию.</em></p>
+</dd>
 
-      <p>If you do not have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and you read a message which is signed or encrypted, you will see a <em>Pen</em> icon in the headers display area with a <em>Question mark</em> on it, the Enigmail status line in the headers area will say <em>Part of the message signed; click pen icon for details</em> and the message in the Message Pane will show all the OpenPGP message block indicators and the signature block.</p>
+<dt>Чтение зашифрованных вложений, импорт прикрепленных ключей</dt>
 
-      <p>You may also see this if you have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and the OpenPGP key is not available on the default keyserver.</p>
+<dd>Вложения с именами *.pgp, *.asc и *.gpg опознаются как файлы,
+предназначенные для Enigmail. В контекстном меню таких файлов
+добавляются два особых пункта: <em>Расшифровать и открыть</em> и
+<em>Расшифровать и сохранить</em>. Пользуйтесь ими, чтобы расшифровать
+вложение перед чтением или сохранением. Если вложение опознано как
+файл с ключами OpenPGP, вам предложат импортировать ключи в вашу
+таблицу ключей.</dd>
+</dl>
+<hr />
 
-      <p>Clicking on the <em>Pen and Question mark</em> icon will bring up a window advising that the key is unavailable in your keyring. Clicking on OK will bring up another window with a list of keyservers from which you can select to download the sender's public key from.</p>
-
-      <p>To configure the list of keyservers you wish to use, go to <strong>Enigmail -&gt; Preferences -&gt; Basic</strong> tab and enter the keyserver addresses in the <em>Keyserver(s):</em> box, separated by a comma. <em>The first keyserver in the list will be used as the default.</em></p>
-    </dd>
-
-    <dt>Opening encrypted attachments / importing attached OpenPGP keys</dt>
-
-    <dd>Attachments named *.pgp, *.asc and *.gpg are recognized as attachments that can be handled specially by Enigmail. Right clicking on such an attachment enables two special menu items in the context menu: <em>Decrypt and Open</em> and <em>Decrypt and Save</em>. Use these two menu items if you want Enigmail to decrypt an attachment before opening or saving it. If an attachment is recognized as an OpenPGP key file, you are offered to import the keys it into your keyrings.</dd>
-  </dl>
-  <hr />
-
-  <p>Further help is available on the <a href="https://www.enigmail.net/support/">Enigmail Help web page</a></p>
+<p>Другую помощь можно получить на <a
+href="https://www.enigmail.net/support/">странице помощи сайта Enigmail</a>.
+</p>
 </body>
 </html>
