@@ -862,7 +862,7 @@ Bitte übertragen Sie die generierte Datei auf Ihren neuen Rechner, starten Sie 
 <!ENTITY enigmail.pepPref.storeSecurely.label        "Nachrichten sicher speichern">
 <!ENTITY enigmail.pepPref.enableEncryption.label     "Privatsphäreschutz aktivieren">
 <!ENTITY enigmail.pepPref.passiveMode.label          "Meinen Schlüssel an ausgehende Nachrichten anhängen">
-<!ENTITY enigmail.pepPref.protectedSubject.label     "Geschützte Nachritchtenbetreffe aktivieren">
+<!ENTITY enigmail.pepPref.protectedSubject.label     "Geschützte Nachrichtenbetreffe aktivieren">
 <!ENTITY enigmail.pepPref.warnReducedSecurity.label  "Zeige eine Warnung, wenn eine verschlüsselte Nachricht unverschlüsselt beantwortet oder weitergeleitet wird">
 <!ENTITY enigmail.pepPref.openpgpCompatibility.label "OpenPGP-Kompatibilität">
 <!ENTITY enigmail.pepPref.autoKeyLookup.label        "Schlüssel automatisch auf Servern nachschlagen">

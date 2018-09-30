@@ -24,6 +24,7 @@ var {
   results: Cr
 } = Components;
 
+Cu.importGlobalProperties(["TextEncoder"]);
 Cu.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
 Cu.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
@@ -35,6 +36,19 @@ if (AppConstants.platform == "win") {
 else {
   XPCOMUtils.defineLazyModuleGetter(this, "SubprocessImpl",
     "chrome://enigmail/content/modules/enigmailprocess_unix.jsm");
+}
+
+function encodeEnvVar(name, value) {
+  if (typeof name === "string" && typeof value === "string") {
+    return `${name}=${value}`;
+  }
+
+  let encoder = new TextEncoder("utf-8");
+  function encode(val) {
+    return typeof val === "string" ? encoder.encode(val) : val;
+  }
+
+  return Uint8Array.of(...encode(name), ...encode("="), ...encode(value), 0);
 }
 
 /**
@@ -109,8 +123,8 @@ var SubprocessMain = {
         Object.assign(environment, options.environment);
       }
 
-      options.environment = Object.keys(environment)
-        .map(key => `${key}=${environment[key]}`);
+      options.environment = Object.entries(environment)
+        .map(([key, val]) => encodeEnvVar(key, val));
 
       options.arguments = Array.from(options.arguments || []);
 
