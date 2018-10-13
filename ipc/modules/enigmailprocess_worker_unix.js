@@ -349,7 +349,7 @@ class Process extends BaseProcess {
     let our_pipes = [];
     let their_pipes = new Map();
 
-    let pipe = input => {
+    let pipe = (input, id) => {
       let fds = ctypes.int.array(2)();
 
       let res = libc.pipe(fds);
@@ -364,10 +364,10 @@ class Process extends BaseProcess {
       }
 
       if (input) {
-        our_pipes.push(new InputPipe(this, fds[1]));
+        our_pipes[id] = new InputPipe(this, fds[1]);
       }
       else {
-        our_pipes.push(new OutputPipe(this, fds[1]));
+        our_pipes[id] = new OutputPipe(this, fds[1]);
       }
 
       libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
@@ -377,19 +377,20 @@ class Process extends BaseProcess {
       return fds[0];
     };
 
-    their_pipes.set(0, pipe(false));
-    their_pipes.set(1, pipe(true));
+    their_pipes.set(0, pipe(false, 0));
+    their_pipes.set(1, pipe(true, 1));
 
     if (stderr == "pipe") {
-      their_pipes.set(2, pipe(true));
+      their_pipes.set(2, pipe(true, 2));
     }
     else if (stderr == "stdout") {
       their_pipes.set(2, their_pipes.get(1));
     }
 
     // Create an additional pipe that we can use to monitor for process exit.
-    their_pipes.set(3, pipe(true));
-    this.fd = our_pipes.pop().fd;
+    their_pipes.set(3, pipe(true, 3));
+    this.fd = our_pipes[3].fd;
+    delete our_pipes[3];
 
     this.pipes = our_pipes;
 
@@ -638,7 +639,8 @@ io = {
     this.processes.set(process.id, process);
 
     for (let pipe of process.pipes) {
-      this.pipes.set(pipe.id, pipe);
+      if (pipe !== undefined)
+        this.pipes.set(pipe.id, pipe);
     }
   },
 
