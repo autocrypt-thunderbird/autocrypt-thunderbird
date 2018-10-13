@@ -348,7 +348,8 @@ var subprocess = {
       error => {
         resolved = -1;
         let errStr = formattedStack;
-        throw ("subprocess.jsm: launch error: " + errStr + JSON.stringify(error));
+        throw ("subprocess.jsm: launch error: " + errStr + 'error: ' +
+               error + "\n" + JSON.stringify(error));
       }
     );
 
