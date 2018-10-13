@@ -184,8 +184,8 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
 
   EnigmailAutocrypt.createSetupMessage(id).then(res => {
     Assert.ok(res);
-    Assert.equal(res.passwd.length, 44);
-    Assert.ok(res.msg.length > 9500);
+    Assert.equal(res.passwd.length, 44, "password length");
+    Assert.ok(res.msg.length > 5500, "message is long enough");
     Assert.equal(res.msg.substr(0, 100), "To: strike.devtest@gmail.com\r\nFrom: strike.devtest@gmail.com\r\nAutocrypt-Setup-Message: v1\r\nSubject: ");
 
     return EnigmailAutocrypt.handleBackupMessage(res.passwd, res.msg, "strike.devtest@gmail.com");
