@@ -510,9 +510,11 @@ var EnigmailFiles = {
         let entry = zipReader.getEntry(i);
 
         if (!EnigmailOS.isDosLike) {
+          i = i.replace(/\\/g, "/");
           t.initWithPath(t.path + "/" + i);
         }
         else {
+          i = i.replace(/\//g, "\\");
           t.initWithPath(t.path + "\\" + i);
         }
 
