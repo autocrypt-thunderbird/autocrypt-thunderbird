@@ -17,6 +17,7 @@ const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution
 const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailLocale;
 
 
 async function GnuPG_importKeyFromFile(inputFile) {
@@ -36,28 +37,38 @@ async function GnuPG_importKeyFromFile(inputFile) {
   let importSum = 0;
   let importUnchanged = 0;
 
-  // IMPORT_RES <count> <no_user_ids> <imported> 0 <unchanged>
+  // IMPORT_RES <count> <no_user_id> <imported> 0 <unchanged>
+  //    <n_uids> <n_subk> <n_sigs> <n_revoc> <sec_read> <sec_imported> <sec_dups> <not_imported>
   if (statusMsg) {
-    let import_res = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+)/m);
+    let import_res = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)/m);
 
     if (import_res !== null) {
-      // Normal
-      importSum = parseInt(import_res[1], 10);
-      importUnchanged = parseInt(import_res[4], 10);
-      res.exitCode = 0;
-      var statusLines = statusMsg.split(/\r?\n/);
+      let secCount = parseInt(import_res[9], 10); // number of secret keys found
+      let secImported = parseInt(import_res[10], 10); // number of secret keys imported
+      let secDups = parseInt(import_res[11], 10); // number of secret keys already on the keyring
 
-      for (let j = 0; j < statusLines.length; j++) {
-        var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
-        if (matches && (matches.length > 2)) {
-          if (typeof(keyList[matches[2]]) != "undefined") {
-            keyList[matches[2]] |= Number(matches[1]);
+      if (secCount !== secImported + secDups) {
+        res.errorMsg = EnigmailLocale.getString("import.secretKeyImportError");
+        res.exitCode = 1;
+      }
+      else {
+        importSum = parseInt(import_res[1], 10);
+        importUnchanged = parseInt(import_res[4], 10);
+        res.exitCode = 0;
+        var statusLines = statusMsg.split(/\r?\n/);
+
+        for (let j = 0; j < statusLines.length; j++) {
+          var matches = statusLines[j].match(/IMPORT_OK ([0-9]+) (\w+)/);
+          if (matches && (matches.length > 2)) {
+            if (typeof (keyList[matches[2]]) != "undefined") {
+              keyList[matches[2]] |= Number(matches[1]);
+            }
+            else
+              keyList[matches[2]] = Number(matches[1]);
+
+            importedKeys.push(matches[2]);
+            EnigmailLog.DEBUG("gnupg-key.jsm: importKeysFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
           }
-          else
-            keyList[matches[2]] = Number(matches[1]);
-
-          importedKeys.push(matches[2]);
-          EnigmailLog.DEBUG("gnupg-key.jsm: importKeysFromFile: imported " + matches[2] + ":" + matches[1] + "\n");
         }
       }
     }

@@ -243,13 +243,15 @@ var EnigmailKeyRing = {
         else {
           // prefer RSA or DSA over ECC (long-term: change this once ECC keys are widely supported)
           if (foundKey.algoSym === key.algoSym && foundKey.keySize === key.keySize) {
-            if (key.expiryTime > foundKey.expiryTime) foundKey = key;
+            if (key.expiryTime > foundKey.expiryTime)
+              foundKey = key;
           }
           else if (foundKey.algoSym.search(/^(DSA|RSA)$/) < 0 && key.algoSym.search(/^(DSA|RSA)$/) === 0) {
             foundKey = key;
           }
           else {
-            if (key.getVirtualKeySize() > foundKey.getVirtualKeySize()) foundKey = key;
+            if (key.getVirtualKeySize() > foundKey.getVirtualKeySize())
+              foundKey = key;
           }
         }
       }
@@ -362,7 +364,7 @@ var EnigmailKeyRing = {
             else if (thisTrust === maxTrustLevel) {
               r.push(keyObj.userIds[i].userId);
             }
-            // else do not add uid
+          // else do not add uid
           }
           else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
             // UID valid  OR  key not valid, but invalid keys allowed
@@ -482,8 +484,7 @@ var EnigmailKeyRing = {
     try {
       let trustData = EnigmailFiles.readFile(inputFile);
       EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     return exitCodeObj.value;
   },
@@ -545,6 +546,20 @@ var EnigmailKeyRing = {
 
     let exitCode = 1;
     if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
+      let importRes = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)/m);
+
+      if (importRes !== null) {
+        let secCount = parseInt(importRes[9], 10); // number of secret keys found
+        let secImported = parseInt(importRes[10], 10); // number of secret keys imported
+        let secDups = parseInt(importRes[11], 10); // number of secret keys already on the keyring
+
+        if (secCount !== secImported + secDups) {
+          EnigmailKeyRing.clearCache();
+          errorMsgObj.value = EnigmailLocale.getString("import.secretKeyImportError");
+          return 1;
+        }
+      }
+
       exitCode = 0;
       // Normal return
       if (statusMsg.search(/^IMPORT_OK /m) > -1) {
@@ -660,13 +675,11 @@ var EnigmailKeyRing = {
               EnigmailKeyRing.clearCache();
             }
             listener.onStopRequest(result.exitCode);
-          }
-          catch (ex) {}
+          } catch (ex) {}
         },
         mergeStderr: false
       });
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.ERROR("keyRing.jsm: generateKey: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
@@ -1036,12 +1049,12 @@ function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
 
       })
       .catch(e => {
-        EnigmailLog.ERROR(`keyRing.jsm: loadKeyList: error ${e}\n`);
+        EnigmailLog.ERROR(`keyRing.jsm: loadKeyList: error ${e}
+`);
         gLoadingKeys = false;
       });
     waitForKeyList();
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.ERROR("keyRing.jsm: loadKeyList: exception: " + ex.toString());
   }
 }
@@ -1107,8 +1120,10 @@ function deleteKeysFromCache(keyList) {
 function createAndSortKeyList(keyList, sortColumn, sortDirection, resetKeyCache) {
   EnigmailLog.DEBUG("keyRing.jsm: createAndSortKeyList()\n");
 
-  if (typeof sortColumn !== "string") sortColumn = "userid";
-  if (!sortDirection) sortDirection = 1;
+  if (typeof sortColumn !== "string")
+    sortColumn = "userid";
+  if (!sortDirection)
+    sortDirection = 1;
 
   if ((!("keyList" in gKeyListObj)) || (resetKeyCache)) {
     gKeyListObj.keyList = [];
@@ -1145,8 +1160,7 @@ function runKeyUsabilityCheck() {
       else {
         getKeyUsability().checkOwnertrust();
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.message + "\n" + ex.stack + "\n");
     }
 
@@ -1156,7 +1170,7 @@ function runKeyUsabilityCheck() {
 function waitForKeyList() {
   let mainThread = Services.tm.mainThread;
   while (gLoadingKeys)
-    mainThread.processNextEvent(true);
+  mainThread.processNextEvent(true);
 }
 
 
