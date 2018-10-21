@@ -19,17 +19,22 @@ var gEnigStringBundle = null;
 
 var EnigmailLocale = {
   get: function() {
-    return {
-      getCategory: function(whatever) {
-        // always return the application locale
-        try {
-          // TB < 64
-          return Cc["@mozilla.org/intl/localeservice;1"].getService(Ci.mozILocaleService).getAppLocaleAsBCP47();
-        } catch (x) {
-          return Cc["@mozilla.org/intl/localeservice;1"].getService(Ci.mozILocaleService).appLocalesAsBCP47[0];
+    try {
+      return Cc["@mozilla.org/intl/nslocaleservice;1"].getService(Ci.nsILocaleService).getApplicationLocale();
+    } catch (ex) {
+      return {
+        getCategory: function(whatever) {
+          // always return the application locale
+          try {
+            // TB < 64
+            return Cc["@mozilla.org/intl/localeservice;1"].getService(Ci.mozILocaleService).getAppLocaleAsBCP47();
+          } catch (x) {
+            let a = Cc["@mozilla.org/intl/localeservice;1"].getService(Ci.mozILocaleService).appLocalesAsBCP47;
+            return (a.length > 0 ? a[0] : "");
+          }
         }
-      }
-    };
+      };
+    }
   },
 
   /**
