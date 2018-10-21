@@ -430,7 +430,7 @@ var EnigmailPEPAdapter = {
             engine: "0.9.0"
           };
         }
-        else if (typeof(data) === "object") {
+        else if (typeof (data) === "object") {
           if ("api_version" in data) {
             gPepVersion = {
               api: data.api_version,
@@ -461,8 +461,7 @@ var EnigmailPEPAdapter = {
         }
 
         return EnigmailpEp.getGpgEnv();
-      }).
-      then(function _gotGpgEnv(gpgEnv) {
+      }).then(function _gotGpgEnv(gpgEnv) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG env '" + JSON.stringify(gpgEnv) + "'\n");
 
         let envStr = "";
@@ -470,10 +469,10 @@ var EnigmailPEPAdapter = {
 
           EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG path '" + gpgEnv.gnupg_path + "'\n");
 
-          if (typeof(gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
+          if (typeof (gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
             envStr += "GPG_AGENT_INFO=" + gpgEnv.gpg_agent_info + "\n";
           }
-          if (typeof(gpgEnv.gnupg_home) === "string" && gpgEnv.gnupg_home.length > 0) {
+          if (typeof (gpgEnv.gnupg_home) === "string" && gpgEnv.gnupg_home.length > 0) {
             envStr += "GNUPGHOME=" + gpgEnv.gnupg_home + "\n";
           }
 
@@ -500,8 +499,7 @@ var EnigmailPEPAdapter = {
 
         self.setOwnIdentities(0);
         deferred.resolve();
-      }).
-      catch(function failed(err) {
+      }).catch(function failed(err) {
         EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: error during pEp init:\n");
         EnigmailLog.DEBUG("   " + err.code + ": " + ("exception" in err && err.exception ? err.exception.toString() : err.message) + "\n");
 
@@ -517,8 +515,7 @@ var EnigmailPEPAdapter = {
         };
         deferred.resolve();
       });
-    }
-    catch (ex) {
+    } catch (ex) {
       deferred.resolve();
     }
 
@@ -535,8 +532,7 @@ var EnigmailPEPAdapter = {
       let ac = accountManager.accounts.queryElementAt(accountNum, Ci.nsIMsgAccount);
       try {
         id = ac.identities.queryElementAt(0, Ci.nsIMsgIdentity);
-      }
-      catch (ex) {
+      } catch (ex) {
         id = null;
       }
 
@@ -615,7 +611,7 @@ var EnigmailPEPAdapter = {
    */
   stripMsgHeadersFromEncryption: function(resObj) {
     let mimeStr = "";
-    if (Array.isArray(resObj) && typeof(resObj[0]) === "string") {
+    if (Array.isArray(resObj) && typeof (resObj[0]) === "string") {
       mimeStr = resObj[0];
     }
 
@@ -672,11 +668,11 @@ var EnigmailPEPAdapter = {
 
     EnigmailPEPAdapter.pep.outgoingMessageRating(from, to, "test").then(function _step2(res) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: SUCCESS\n");
-      if ((typeof(res) === "object") && ("result" in res)) {
+      if ((typeof (res) === "object") && ("result" in res)) {
         resultObj = res.result.outParams;
       }
       else
-        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof(res) + "\n");
+        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof (res) + "\n");
 
 
       if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -787,13 +783,12 @@ var EnigmailPEPAdapter = {
   },
 
   /**
-   * Update the last sent date for PGP/MIME messages. We only do this such that
-   * we don't unnecessarily process earlier inline-PGP messages
+   * Process PGP/MIME messages if needed
    */
   processPGPMIME: function(headerData) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME\n");
 
-    // placeholder for pEp-specific actions on PGP/MIME messages
+  // placeholder for pEp-specific actions on PGP/MIME messages
   },
 
   /**
@@ -815,17 +810,14 @@ var EnigmailPEPAdapter = {
           data = data.replace(/^From .*\r?\n/, "");
         }
 
-        EnigmailpEp.decryptMimeString(data).
-        then(function _ignore() {}).
-        catch(function _ignore() {});
+        EnigmailpEp.decryptMimeString(data).then(function _ignore() {}).catch(function _ignore() {});
       }
     );
 
     try {
       var channel = EnigmailStreams.createChannel(msgUri.spec);
       channel.asyncOpen(stream, null);
-    }
-    catch (e) {
+    } catch (e) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: exception " + e.toString() + "\n");
     }
   },
@@ -854,7 +846,7 @@ var EnigmailPEPAdapter = {
 
     let allEmails = "";
 
-    if (typeof(headerData) === "string") {
+    if (typeof (headerData) === "string") {
       allEmails = headerData;
     }
     else {
@@ -872,8 +864,7 @@ var EnigmailPEPAdapter = {
     let emailsInMessage = "";
     try {
       emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
-    }
-    catch (ex) {
+    } catch (ex) {
       deferred.reject("pepTrustWords.generalFailure");
       return deferred.promise;
     }
@@ -909,7 +900,7 @@ var EnigmailPEPAdapter = {
       return EnigmailPEPAdapter.pep.getIdentityRating(emailId);
 
     }).then(function _gotIdentityRating(data) {
-      if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
+      if ("result" in data && Array.isArray(data.result.outParams) && typeof (data.result.outParams[0]) === "object" &&
         "rating" in data.result.outParams[0]) {
         emailIdRating = data.result.outParams[0];
       }
@@ -964,8 +955,7 @@ var EnigmailPEPAdapter = {
   resetTrustForEmail: function(emailAddr) {
     let deferred = PromiseUtils.defer();
 
-    EnigmailPEPAdapter.getIdentityForEmail(emailAddr).
-    then(function _gotIdentityForEmail(data) {
+    EnigmailPEPAdapter.getIdentityForEmail(emailAddr).then(function _gotIdentityForEmail(data) {
       if (("result" in data) && typeof data.result === "object" && typeof data.result.outParams[0] === "object") {
         let emailId = data.result.outParams[0];
         EnigmailPEPAdapter.pep.resetIdentityTrust(emailId).then(
@@ -1018,7 +1008,7 @@ var EnigmailPEPAdapter = {
           }
         }).then(
         function _gotRating(data) {
-          if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
+          if ("result" in data && Array.isArray(data.result.outParams) && typeof (data.result.outParams[0]) === "object" &&
             "rating" in data.result.outParams[0]) {
             rating = data.result.outParams[0].rating;
           }
@@ -1156,8 +1146,7 @@ var EnigmailPEPAdapter = {
     for (let i in gJmObservers) {
       try {
         gJmObservers[i]();
-      }
-      catch (ex) {}
+      } catch (ex) {}
     }
   }
 };
