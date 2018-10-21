@@ -42,10 +42,13 @@
           <textbox id="email"/>
         </row>
         <row>
-          <hbox align="center">
+          <hbox align="start">
             <label value="&enigmail.keyserver.label;" control="selectedServer"/>
           </hbox>
-          <menulist id="selectedServer" editable="true"/>
+          <vbox>
+            <textbox id="enteredServerName" value="" multiline="false" readOnly="false"/>
+            <menulist id="selectedServer" oncommand="onSelectServer(this);"/>
+          </vbox>
         </row>
       </rows>
     </grid>
