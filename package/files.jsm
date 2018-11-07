@@ -513,6 +513,7 @@ var EnigmailFiles = {
           t.initWithPath(t.path + "/" + i);
         }
         else {
+          i = i.replace(/\//g, "\\");
           t.initWithPath(t.path + "\\" + i);
         }
 
