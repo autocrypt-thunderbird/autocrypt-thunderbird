@@ -17,8 +17,8 @@ Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI
   null, "UTF-8"); /* global OpenPGPjsCryptoAPI: false */
 
 /* globals loaded from openpgp-js.js: */
-/* global Cc: false, Cu: false, Ci: false */
-/* global getOpenPGP: false, EnigmailLog: false */
+  /* global Cc: false, Cu: false, Ci: false */
+  /* global getOpenPGP: false, EnigmailLog: false */
 
 const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
@@ -31,13 +31,9 @@ const EnigmailPassword = Cu.import("chrome://enigmail/content/modules/passwords.
 const EnigmailErrorHandling = Cu.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
 const GnuPGDecryption = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm").GnuPGDecryption;
 
-const {
-  obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures
-} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
+const {obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
-const {
-  GnuPG_importKeyFromFile, GnuPG_extractSecretKey
-} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-key.jsm");
+const {GnuPG_importKeyFromFile, GnuPG_extractSecretKey} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-key.jsm");
 
 /**
  * GnuPG implementation of CryptoAPI
@@ -98,10 +94,9 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    * @return {Promise<Array of Object>} - see extractSignatures()
    */
   async getKeySignatures(keyId, ignoreUnknownUid = false) {
-    EnigmailLog.DEBUG(`gnupg.js: getKeySignatures: ${keyId}\n`);
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).
-    concat(keyId.split(" "));
+    EnigmailLog.DEBUG(`gnupg.js: getKeySignatures: ${keyId}
+`);
+    const args = EnigmailGpg.getStandardArgs(true).concat(["--with-fingerprint", "--fixed-list-mode", "--with-colons", "--list-sig"]).concat(keyId.split(" "));
 
     let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, "");
 
@@ -140,7 +135,8 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    *    - keyData: BASE64-encded string of key data
    */
   async getMinimalPubKey(fpr, email, subkeyDates) {
-    EnigmailLog.DEBUG(`gnupg.js: EnigmailKeyObj.getMinimalPubKey: ${fpr}\n`);
+    EnigmailLog.DEBUG(`gnupg.js: EnigmailKeyObj.getMinimalPubKey: ${fpr}
+`);
 
     let retObj = {
       exitCode: 0,
@@ -193,11 +189,12 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
     }
 
     if (EnigmailGpg.getGpgFeature("export-specific-uid")) {
-      // // GnuPG 2.2.9+
+      // GnuPG 2.2.9+
       retObj.keyData = btoa(keyBlock);
       return retObj;
     }
 
+    // GnuPG < 2.2.9
     if (exportOK) {
       let minKey = await this.getStrippedKey(keyBlock, email);
       if (minKey) {
@@ -273,10 +270,9 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async getFileName(byteData) {
-    EnigmailLog.DEBUG(`gnupg.js: getFileName()\n`);
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(EnigmailPassword.command()).
-    concat(["--decrypt"]);
+    EnigmailLog.DEBUG(`gnupg.js: getFileName()
+`);
+    const args = EnigmailGpg.getStandardArgs(true).concat(EnigmailPassword.command()).concat(["--decrypt"]);
 
     let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, byteData + "\n");
 
@@ -305,9 +301,9 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async verifyAttachment(filePath, sigPath) {
-    EnigmailLog.DEBUG(`gnupg.js: verifyAttachment()\n`);
-    const args = EnigmailGpg.getStandardArgs(true).
-    concat(["--verify", sigPath, filePath]);
+    EnigmailLog.DEBUG(`gnupg.js: verifyAttachment()
+`);
+    const args = EnigmailGpg.getStandardArgs(true).concat(["--verify", sigPath, filePath]);
     let result = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args);
     const decrypted = {};
     GnuPGDecryption.decryptMessageEnd(result.stderrData, result.exitCode, 1, true, true, EnigmailConstants.UI_INTERACTIVE, decrypted);
@@ -337,7 +333,8 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decryptAttachment(encrypted) {
-    EnigmailLog.DEBUG(`gnupg.js: decryptAttachment()\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decryptAttachment()
+`);
 
     let args = EnigmailGpg.getStandardArgs(true);
     args.push("--yes");
@@ -362,7 +359,8 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decrypt(encrypted, options) {
-    EnigmailLog.DEBUG(`gnupg.js: decrypt()\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decrypt()
+`);
 
     options.logFile = EnigmailErrorHandling.getTempLogFile();
     const args = GnuPGDecryption.getDecryptionArgs(options);
@@ -398,7 +396,8 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async decryptMime(encrypted, options) {
-    EnigmailLog.DEBUG(`gnupg.js: decryptMime()\n`);
+    EnigmailLog.DEBUG(`gnupg.js: decryptMime()
+`);
 
     // write something to gpg such that the process doesn't get stuck
     if (encrypted.length === 0) {
@@ -425,7 +424,8 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
    */
 
   async verifyMime(signed, options) {
-    EnigmailLog.DEBUG(`gnupg.js: verifyMime()\n`);
+    EnigmailLog.DEBUG(`gnupg.js: verifyMime()
+`);
 
     options.noOutput = true;
     options.verifyOnly = true;

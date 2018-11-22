@@ -48,8 +48,7 @@ Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: fals
 
 try {
   Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
-}
-catch (ex) {}
+} catch (ex) {}
 
 
 if (!Enigmail) var Enigmail = {};
@@ -130,9 +129,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
     function loadOverlay(targetWindow, srcUrl) {
-      let {
-        Overlays
-      } = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+      let {Overlays} = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
 
       Overlays.loadOverlays("Enigmail", targetWindow, [srcUrl]);
     }
@@ -200,9 +197,9 @@ Enigmail.msg = {
 
   delayedProcessFinalState: function() {
     EnigmailTimer.setTimeout(function _f() {
-        Enigmail.msg.processFinalState();
-        Enigmail.msg.updateStatusBar();
-      },
+      Enigmail.msg.processFinalState();
+      Enigmail.msg.updateStatusBar();
+    },
       100);
   },
 
@@ -234,7 +231,8 @@ Enigmail.msg = {
       //this.encryptForced = EnigmailConstants.ENIG_FINAL_FORCENO;
       this.setFinalSendMode('final-encryptNo');
 
-      if (!gSMFields.signMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+      if (!gSMFields.signMessage)
+        this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
     }
     this.delayedProcessFinalState();
   },
@@ -249,7 +247,8 @@ Enigmail.msg = {
     else {
       this.setFinalSendMode('final-signNo');
 
-      if (!gSMFields.requireEncryptMessage) this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+      if (!gSMFields.requireEncryptMessage)
+        this.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
     }
     this.delayedProcessFinalState();
   },
@@ -274,8 +273,8 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityCallback: elementId=" + elementId + "\n");
 
     EnigmailTimer.setTimeout(function _f() {
-        Enigmail.msg.setIdentityDefaults();
-      },
+      Enigmail.msg.setIdentityDefaults();
+    },
       100);
   },
 
@@ -486,11 +485,11 @@ Enigmail.msg = {
     let draftId = gMsgCompose.compFields.draftId;
     let msgUri = null;
 
-    if (typeof(draftId) == "string" && draftId.length > 0) {
+    if (typeof (draftId) == "string" && draftId.length > 0) {
       // original message is draft
       msgUri = draftId.replace(/\?.*$/, "");
     }
-    else if (typeof(gMsgCompose.originalMsgURI) == "string" && gMsgCompose.originalMsgURI.length > 0) {
+    else if (typeof (gMsgCompose.originalMsgURI) == "string" && gMsgCompose.originalMsgURI.length > 0) {
       // original message is a "true" mail
       msgUri = gMsgCompose.originalMsgURI;
     }
@@ -530,13 +529,11 @@ Enigmail.msg = {
               if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject, false);
             }
           });
-        }
-        catch (ex) {
+        } catch (ex) {
           EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: excetion in getMimeTreeFromUrl\n");
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: got exception '" + ex.toString() + "'\n");
     }
 
@@ -594,15 +591,18 @@ Enigmail.msg = {
       Enigmail.msg.setFinalSendMode(sig);
       Enigmail.msg.setFinalSendMode(pgpMime);
 
-      if (stat.substr(4, 1) == "1") Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
-      if (stat.substr(5, 1) == "1") Enigmail.msg.draftSubjectEncrypted = true;
+      if (stat.substr(4, 1) == "1")
+        Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
+      if (stat.substr(5, 1) == "1")
+        Enigmail.msg.draftSubjectEncrypted = true;
     }
     else {
       // drafts from older versions of Enigmail
       var flags = Number(stat);
       if (flags & EnigmailConstants.SEND_SIGNED) Enigmail.msg.setFinalSendMode('final-signYes');
       if (flags & EnigmailConstants.SEND_ENCRYPTED) Enigmail.msg.setFinalSendMode('final-encryptYes');
-      if (flags & EnigmailConstants.SEND_ATTACHMENT) Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
+      if (flags & EnigmailConstants.SEND_ATTACHMENT)
+        Enigmail.msg.attachOwnKeyObj.appendAttachment = true;
     }
     Enigmail.msg.setOwnKeyStatus();
   },
@@ -625,7 +625,8 @@ Enigmail.msg = {
       case CT.ReplyToGroup:
       case CT.ReplyToSenderAndGroup:
       case CT.ReplyToList:
-        if (!subject.startsWith("Re: ")) prefix = "Re: ";
+        if (!subject.startsWith("Re: "))
+          prefix = "Re: ";
     }
 
     let doSetSubject = forceSetting;
@@ -749,10 +750,10 @@ Enigmail.msg = {
 
     var draftId = gMsgCompose.compFields.draftId;
 
-    if (EnigmailPrefs.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof(draftId) == "string" && draftId.length > 0)) {
+    if (EnigmailPrefs.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof (draftId) == "string" && draftId.length > 0)) {
       msgUri = this.getOriginalMsgUri();
 
-      if (typeof(draftId) == "string" && draftId.length > 0) {
+      if (typeof (draftId) == "string" && draftId.length > 0) {
         // original message is draft
         msgIsDraft = true;
       }
@@ -773,8 +774,8 @@ Enigmail.msg = {
             this.disableSmime = true;
           }
           else if (msgFlags & (EnigmailConstants.GOOD_SIGNATURE |
-              EnigmailConstants.BAD_SIGNATURE |
-              EnigmailConstants.UNVERIFIED_SIGNATURE)) {
+            EnigmailConstants.BAD_SIGNATURE |
+            EnigmailConstants.UNVERIFIED_SIGNATURE)) {
             this.setSendMode('sign');
           }
         }
@@ -804,16 +805,14 @@ Enigmail.msg = {
         try {
           // TB only
           UpdateAttachmentBucket(false);
-        }
-        catch (ex) {}
+        } catch (ex) {}
       }
     }
 
     try {
       // TB only
       UpdateAttachmentBucket(bucketList.hasChildNodes());
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     this.processFinalState();
     this.updateStatusBar();
@@ -839,7 +838,8 @@ Enigmail.msg = {
     var findFile = node.attachment.name.toLowerCase();
     var baseAttachment = null;
     while (relatedNode) {
-      if (relatedNode.attachment.name.toLowerCase() + ".sig" == findFile) baseAttachment = relatedNode.attachment;
+      if (relatedNode.attachment.name.toLowerCase() + ".sig" == findFile)
+        baseAttachment = relatedNode.attachment;
       relatedNode = relatedNode.nextSibling;
     }
     return baseAttachment;
@@ -855,8 +855,7 @@ Enigmail.msg = {
         this.determineSendFlags();
         this.processFinalState();
         this.updateStatusBar();
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags - ERROR: " + ex.toString() + "\n");
       }
     }.bind(Enigmail.msg), 1500);
@@ -886,9 +885,7 @@ Enigmail.msg = {
         }
         this.modifiedAttach = null;
       }
-
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.ERROR("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: could not delete all files:\n" + ex.toString() + "\n");
     }
 
@@ -1059,8 +1056,7 @@ Enigmail.msg = {
     try {
       if (resultObj.cancelled) return;
       this.extractAndAttachKey(resultObj.userList, true);
-    }
-    catch (ex) {
+    } catch (ex) {
       // cancel pressed -> do nothing
       return;
     }
@@ -1081,8 +1077,7 @@ Enigmail.msg = {
         EnigmailDialog.alert(window, EnigmailLocale.getString("noTempDir"));
         return null;
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.extractAndAttachKey", ex);
     }
     tmpFile.append("key.asc");
@@ -1120,14 +1115,13 @@ Enigmail.msg = {
     try {
       // TB only
       ChangeAttachmentBucketVisibility(false);
-    }
-    catch (ex) {}
+    } catch (ex) {}
     gContentChanged = true;
     return keyAttachment;
   },
 
   addAttachment: function(attachment) {
-    if (typeof(AddAttachment) == "undefined") {
+    if (typeof (AddAttachment) == "undefined") {
       // TB >= 24
       AddAttachments([attachment]);
     }
@@ -1198,8 +1192,7 @@ Enigmail.msg = {
             // delete encrypted file
             try {
               this.modifiedAttach[i].newFile.remove(false);
-            }
-            catch (ex) {}
+            } catch (ex) {}
 
             node = null; // next attachment please
           }
@@ -1241,14 +1234,14 @@ Enigmail.msg = {
         try {
           // TB only
           ChangeAttachmentBucketVisibility(true);
-        }
-        catch (ex) {}
+        } catch (ex) {}
       }
     }
   },
 
   getSecurityParams: function(compFields = null, doQueryInterface = false) {
-    if (!compFields) compFields = gMsgCompose.compFields;
+    if (!compFields)
+      compFields = gMsgCompose.compFields;
 
     if ("securityInfo" in compFields) {
       if (doQueryInterface) {
@@ -1268,7 +1261,6 @@ Enigmail.msg = {
       // TB < 64
       gMsgCompose.compFields.securityInfo = newSecurityParams;
     }
-
     else {
       gMsgCompose.compFields.composeSecure = newSecurityParams;
     }
@@ -1321,8 +1313,7 @@ Enigmail.msg = {
           msgfolder = null;
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       //EnigmailLog.DEBUG("failed to get the folder resource\n");
     }
     return msgfolder;
@@ -1337,8 +1328,7 @@ Enigmail.msg = {
     try {
       currentId = getCurrentIdentity();
       account = EnigmailFuncs.getAccountForIdentity(currentId);
-    }
-    catch (ex) {}
+    } catch (ex) {}
     window.openDialog("chrome://enigmail/content/ui/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
       account: account
@@ -1389,8 +1379,7 @@ Enigmail.msg = {
           return;
         }
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     switch (what) {
       case 'sign':
@@ -1398,7 +1387,7 @@ Enigmail.msg = {
         this.setSendMode(what);
         break;
 
-        // menu entries:
+      // menu entries:
       case 'final-signDefault':
       case 'final-signYes':
       case 'final-signNo':
@@ -1534,7 +1523,7 @@ Enigmail.msg = {
         this.pgpmimeForced = EnigmailConstants.ENIG_FORCE_SMIME;
         break;
 
-        // status bar buttons:
+      // status bar buttons:
         // - can only switch to force or not to force sign/enc
 
       case 'toggle-final-sign':
@@ -1600,8 +1589,8 @@ Enigmail.msg = {
     this.sendModeDirty = true;
 
     this.determineSendFlags();
-    //this.processFinalState();
-    //this.updateStatusBar();
+  //this.processFinalState();
+  //this.updateStatusBar();
   },
 
   /**
@@ -1645,33 +1634,33 @@ Enigmail.msg = {
       encReason = EnigmailLocale.getString("reasonManuallyForced");
     }
     else switch (this.encryptByRules) {
-      case EnigmailConstants.ENIG_NEVER:
-        encFinally = EnigmailConstants.ENIG_FINAL_NO;
-        encReason = EnigmailLocale.getString("reasonByRecipientRules");
-        break;
-      case EnigmailConstants.ENIG_UNDEF:
-        if (this.sendMode & ENCRYPT) {
-          encFinally = EnigmailConstants.ENIG_FINAL_YES;
-          if (pgpEnabled && this.getAccDefault("encrypt")) {
-            encReason = EnigmailLocale.getString("reasonEnabledByDefault");
-          }
-        }
-        else {
+        case EnigmailConstants.ENIG_NEVER:
           encFinally = EnigmailConstants.ENIG_FINAL_NO;
-        }
-        break;
-      case EnigmailConstants.ENIG_ALWAYS:
-        encFinally = EnigmailConstants.ENIG_FINAL_YES;
-        encReason = EnigmailLocale.getString("reasonByRecipientRules");
-        break;
-      case EnigmailConstants.ENIG_AUTO_ALWAYS:
-        encFinally = EnigmailConstants.ENIG_FINAL_YES;
-        encReason = EnigmailLocale.getString("reasonByAutoEncryption");
-        break;
-      case EnigmailConstants.ENIG_CONFLICT:
-        encFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
-        encReason = EnigmailLocale.getString("reasonByConflict");
-        break;
+          encReason = EnigmailLocale.getString("reasonByRecipientRules");
+          break;
+        case EnigmailConstants.ENIG_UNDEF:
+          if (this.sendMode & ENCRYPT) {
+            encFinally = EnigmailConstants.ENIG_FINAL_YES;
+            if (pgpEnabled && this.getAccDefault("encrypt")) {
+              encReason = EnigmailLocale.getString("reasonEnabledByDefault");
+            }
+          }
+          else {
+            encFinally = EnigmailConstants.ENIG_FINAL_NO;
+          }
+          break;
+        case EnigmailConstants.ENIG_ALWAYS:
+          encFinally = EnigmailConstants.ENIG_FINAL_YES;
+          encReason = EnigmailLocale.getString("reasonByRecipientRules");
+          break;
+        case EnigmailConstants.ENIG_AUTO_ALWAYS:
+          encFinally = EnigmailConstants.ENIG_FINAL_YES;
+          encReason = EnigmailLocale.getString("reasonByAutoEncryption");
+          break;
+        case EnigmailConstants.ENIG_CONFLICT:
+          encFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
+          encReason = EnigmailLocale.getString("reasonByConflict");
+          break;
     }
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js:   encrypt=" + ((this.sendMode & ENCRYPT) !== 0) + " encryptByRules=" + this.encryptByRules + " encFinally=" + encFinally + "\n");
     EnigmailLog.DEBUG("                                encReason=" + encReason + "\n");
@@ -1686,29 +1675,29 @@ Enigmail.msg = {
       signReason = EnigmailLocale.getString("reasonManuallyForced");
     }
     else switch (this.signByRules) {
-      case EnigmailConstants.ENIG_NEVER:
-        signFinally = EnigmailConstants.ENIG_FINAL_NO;
-        signReason = EnigmailLocale.getString("reasonByRecipientRules");
-        break;
-      case EnigmailConstants.ENIG_UNDEF:
-        if (this.sendMode & SIGN) {
-          signFinally = EnigmailConstants.ENIG_FINAL_YES;
-          if (pgpEnabled && this.getAccDefault("sign-pgp")) {
-            signReason = EnigmailLocale.getString("reasonEnabledByDefault");
-          }
-        }
-        else {
+        case EnigmailConstants.ENIG_NEVER:
           signFinally = EnigmailConstants.ENIG_FINAL_NO;
-        }
-        break;
-      case EnigmailConstants.ENIG_ALWAYS:
-        signFinally = EnigmailConstants.ENIG_FINAL_YES;
-        signReason = EnigmailLocale.getString("reasonByRecipientRules");
-        break;
-      case EnigmailConstants.ENIG_CONFLICT:
-        signFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
-        signReason = EnigmailLocale.getString("reasonByConflict");
-        break;
+          signReason = EnigmailLocale.getString("reasonByRecipientRules");
+          break;
+        case EnigmailConstants.ENIG_UNDEF:
+          if (this.sendMode & SIGN) {
+            signFinally = EnigmailConstants.ENIG_FINAL_YES;
+            if (pgpEnabled && this.getAccDefault("sign-pgp")) {
+              signReason = EnigmailLocale.getString("reasonEnabledByDefault");
+            }
+          }
+          else {
+            signFinally = EnigmailConstants.ENIG_FINAL_NO;
+          }
+          break;
+        case EnigmailConstants.ENIG_ALWAYS:
+          signFinally = EnigmailConstants.ENIG_FINAL_YES;
+          signReason = EnigmailLocale.getString("reasonByRecipientRules");
+          break;
+        case EnigmailConstants.ENIG_CONFLICT:
+          signFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
+          signReason = EnigmailLocale.getString("reasonByConflict");
+          break;
     }
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js:   signed=" + ((this.sendMode & SIGN) !== 0) + " signByRules=" + this.signByRules + " signFinally=" + signFinally + "\n");
     EnigmailLog.DEBUG("                                signReason=" + signReason + "\n");
@@ -1794,13 +1783,11 @@ Enigmail.msg = {
       // update the S/MIME GUI elements
       try {
         setSecuritySettings("1");
-      }
-      catch (ex) {}
+      } catch (ex) {}
 
       try {
         setSecuritySettings("2");
-      }
-      catch (ex) {}
+      } catch (ex) {}
     }
 
     // ------ 3. process final resulting protocol mode (inline-PGP / PGP/MIME / S/MIME) ------
@@ -1815,18 +1802,18 @@ Enigmail.msg = {
         pgpmimeFinally = EnigmailConstants.ENIG_FINAL_FORCEYES;
       }
       else switch (this.pgpmimeByRules) {
-        case EnigmailConstants.ENIG_NEVER:
-          pgpmimeFinally = EnigmailConstants.ENIG_FINAL_NO;
-          break;
-        case EnigmailConstants.ENIG_UNDEF:
-          pgpmimeFinally = ((this.sendPgpMime || (this.sendMode & EnigmailConstants.SEND_PGP_MIME)) ? EnigmailConstants.ENIG_FINAL_YES : EnigmailConstants.ENIG_FINAL_NO);
-          break;
-        case EnigmailConstants.ENIG_ALWAYS:
-          pgpmimeFinally = EnigmailConstants.ENIG_FINAL_YES;
-          break;
-        case EnigmailConstants.ENIG_CONFLICT:
-          pgpmimeFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
-          break;
+          case EnigmailConstants.ENIG_NEVER:
+            pgpmimeFinally = EnigmailConstants.ENIG_FINAL_NO;
+            break;
+          case EnigmailConstants.ENIG_UNDEF:
+            pgpmimeFinally = ((this.sendPgpMime || (this.sendMode & EnigmailConstants.SEND_PGP_MIME)) ? EnigmailConstants.ENIG_FINAL_YES : EnigmailConstants.ENIG_FINAL_NO);
+            break;
+          case EnigmailConstants.ENIG_ALWAYS:
+            pgpmimeFinally = EnigmailConstants.ENIG_FINAL_YES;
+            break;
+          case EnigmailConstants.ENIG_CONFLICT:
+            pgpmimeFinally = EnigmailConstants.ENIG_FINAL_CONFLICT;
+            break;
       }
       this.statusPGPMime = pgpmimeFinally;
     }
@@ -1879,7 +1866,7 @@ Enigmail.msg = {
       encryptSmime = true;
     }
     else if ((this.mimePreferOpenPGP === 1 && (this.autoPgpEncryption ||
-        this.encryptByRules === EnigmailConstants.ENIG_ALWAYS)) ||
+      this.encryptByRules === EnigmailConstants.ENIG_ALWAYS)) ||
       (this.encryptByRules === EnigmailConstants.ENIG_NEVER && encFinally !== EnigmailConstants.ENIG_FINAL_FORCEYES) ||
       (this.pgpmimeForced === EnigmailConstants.ENIG_NEVER || this.pgpmimeForced === EnigmailConstants.ENIG_ALWAYS) ||
       encFinally === EnigmailConstants.ENIG_FINAL_FORCENO) {
@@ -2147,7 +2134,7 @@ Enigmail.msg = {
 
         if (!doSign && !doEncrypt &&
           !(isSmime &&
-            (si.signMessage || si.requireEncryptMessage))) {
+          (si.signMessage || si.requireEncryptMessage))) {
           toolbarTxt.setAttribute("class", "enigmailStrong");
         }
         else {
@@ -2520,8 +2507,7 @@ Enigmail.msg = {
     let toAddr = [];
     try {
       toAddr = EnigmailFuncs.stripEmail(o.toAddrList.join(",")).split(/,/);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     if (o.toAddrList.length === 0) {
       EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));
@@ -2632,8 +2618,7 @@ Enigmail.msg = {
       else {
         msgConfirm = EnigmailLocale.getString("onlineSend", [msgStatus, EnigmailFuncs.stripEmail(toAddrStr).replace(/,/g, ", ")]);
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     // add list of keys
     if (sendFlags & ENCRYPT) {
@@ -2661,8 +2646,7 @@ Enigmail.msg = {
     for (var i = 0; i < recList.length; i++) {
       try {
         toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
-      }
-      catch (ex) {}
+      } catch (ex) {}
     }
   },
 
@@ -2678,7 +2662,7 @@ Enigmail.msg = {
     // 5: subject encrypted
 
     var draftStatus = "N" + this.encryptForced + this.signForced + this.pgpmimeForced +
-      (this.attachOwnKeyObj.appendAttachment ? "1" : "0") + (doEncrypt && this.protectHeaders ? "1" : "0");
+    (this.attachOwnKeyObj.appendAttachment ? "1" : "0") + (doEncrypt && this.protectHeaders ? "1" : "0");
 
     this.setAdditionalHeader("X-Enigmail-Draft-Status", draftStatus);
   },
@@ -2724,8 +2708,8 @@ Enigmail.msg = {
       }
     }
 
-    if (typeof(userIdValue) != "string") {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getSenderUserId: type of userIdValue=" + typeof(userIdValue) + "\n");
+    if (typeof (userIdValue) != "string") {
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getSenderUserId: type of userIdValue=" + typeof (userIdValue) + "\n");
       userIdValue = this.identity.email;
     }
 
@@ -2905,8 +2889,7 @@ Enigmail.msg = {
         .getNoCertAddresses(gMsgCompose.compFields,
           missingCount,
           emailAddresses);
-    }
-    catch (e) {
+    } catch (e) {
       return false;
     }
 
@@ -3115,8 +3098,8 @@ Enigmail.msg = {
     // start the dialog for user selected keys
     if (EnigmailPrefs.getPref("assignKeysManuallyAlways") ||
       (((testStatusFlagsObj.value & EnigmailConstants.INVALID_RECIPIENT) ||
-          toAddrStr.indexOf('@') >= 0) &&
-        EnigmailPrefs.getPref("assignKeysManuallyIfMissing")) ||
+      toAddrStr.indexOf('@') >= 0) &&
+      EnigmailPrefs.getPref("assignKeysManuallyIfMissing")) ||
       (details && details.errArray && details.errArray.length > 0)
     ) {
 
@@ -3212,8 +3195,7 @@ Enigmail.msg = {
         }
         testCipher = "ok";
         testExitCodeObj.value = 0;
-      }
-      catch (ex) {
+      } catch (ex) {
         // cancel pressed -> don't send mail
         return null;
       }
@@ -3293,8 +3275,7 @@ Enigmail.msg = {
               wrapresultObj.cancelled = true;
               return;
             }
-          }
-          catch (ex) {
+          } catch (ex) {
             // cancel pressed -> do not send, return instead.
             wrapresultObj.cancelled = true;
             return;
@@ -3336,8 +3317,7 @@ Enigmail.msg = {
         var newtext = wrapText.join("\n");
         this.replaceEditorText(newtext);
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Exception while wrapping=" + ex + "\n");
     }
 
@@ -3359,8 +3339,7 @@ Enigmail.msg = {
         if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
           Enigmail.msg.getSecurityParams().wrappedJSObject.sendFlags = 0;
         }
-      }
-      catch (ex) {}
+      } catch (ex) {}
 
       return true;
     }
@@ -3423,8 +3402,7 @@ Enigmail.msg = {
         if (secInfo) {
           Enigmail.msg.setSecurityParams(secInfo);
         }
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraftMessage", ex);
         return false;
       }
@@ -3489,9 +3467,9 @@ Enigmail.msg = {
       this.statusPGPMime !== EnigmailConstants.ENIG_FINAL_SMIME &&
       this.statusPGPMime !== EnigmailConstants.ENIG_FINAL_FORCESMIME &&
       (this.statusEncrypted == EnigmailConstants.ENIG_FINAL_YES ||
-        this.statusEncrypted == EnigmailConstants.ENIG_FINAL_FORCEYES ||
-        this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_YES ||
-        this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_FORCEYES)) {
+      this.statusEncrypted == EnigmailConstants.ENIG_FINAL_FORCEYES ||
+      this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_YES ||
+      this.statusEncryptedInStatusBar == EnigmailConstants.ENIG_FINAL_FORCEYES)) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.isSendConfirmationRequired: promised encryption did not succeed\n");
       if (!EnigmailDialog.confirmDlg(window,
           EnigmailLocale.getString("msgCompose.internalEncryptionError"),
@@ -3649,8 +3627,7 @@ Enigmail.msg = {
       else {
         EnigmailPEPAdapter.filter.ensureDecryptedCopyFilter(this.identity);
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     let rating = 0;
     if (this.pepEnabled()) {
@@ -3658,7 +3635,7 @@ Enigmail.msg = {
       if (o) {
         rating = EnigmailPEPAdapter.getOutgoingMessageRating(o.from, o.toAddrList);
 
-        let isDraft = (typeof(gMsgCompose.compFields.draftId) === "string" && gMsgCompose.compFields.draftId.length > 0);
+        let isDraft = (typeof (gMsgCompose.compFields.draftId) === "string" && gMsgCompose.compFields.draftId.length > 0);
 
         if (this.origPepRating !== null && !isDraft) {
           if (this.origPepRating >= 6 && rating < 6 && this.identity.getBoolAttribute("warnWeakReply")) {
@@ -3782,8 +3759,10 @@ Enigmail.msg = {
       gotSendFlags &= ~EnigmailConstants.SEND_SIGNED;
     }
 
-    if (gotSendFlags & EnigmailConstants.SEND_SIGNED) sendFlags |= EnigmailConstants.SEND_SIGNED;
-    if (gotSendFlags & EnigmailConstants.SEND_ENCRYPTED) sendFlags |= EnigmailConstants.SEND_ENCRYPTED;
+    if (gotSendFlags & EnigmailConstants.SEND_SIGNED)
+      sendFlags |= EnigmailConstants.SEND_SIGNED;
+    if (gotSendFlags & EnigmailConstants.SEND_ENCRYPTED)
+      sendFlags |= EnigmailConstants.SEND_ENCRYPTED;
 
     if (msgSendType === Ci.nsIMsgCompDeliverMode.Later) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.getEncryptionFlags: adding SEND_LATER\n");
@@ -3818,8 +3797,7 @@ Enigmail.msg = {
 
             Enigmail.msg.setSecurityParams(newSecurityInfo);
           }
-        }
-        catch (ex) {
+        } catch (ex) {
           EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.resetDirty", ex);
         }
       }
@@ -3898,8 +3876,7 @@ Enigmail.msg = {
       var bccLC = "";
       try {
         bccLC = EnigmailFuncs.stripEmail(msgCompFields.bcc).toLowerCase();
-      }
-      catch (ex) {}
+      } catch (ex) {}
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.determineMsgRecipients: BCC: " + bccLC + "\n");
 
       var selfBCC = this.identity.email && (this.identity.email.toLowerCase() == bccLC);
@@ -4144,9 +4121,7 @@ Enigmail.msg = {
     // EnigSend: Handle both plain and encrypted messages below
     var isOffline = (ioService && ioService.offline);
 
-    let {
-      sendFlags, gotSendFlags
-    } = this.getEncryptionFlags(msgSendType);
+    let {sendFlags, gotSendFlags} = this.getEncryptionFlags(msgSendType);
 
     if (this.statusPGPMime == EnigmailConstants.ENIG_FINAL_SMIME ||
       this.statusPGPMime == EnigmailConstants.ENIG_FINAL_FORCESMIME) {
@@ -4204,7 +4179,7 @@ Enigmail.msg = {
 
       // fill fromAddr, toAddrList, bcc etc
       let rcpt = this.determineMsgRecipients(sendFlags);
-      if (typeof(rcpt) === "boolean") {
+      if (typeof (rcpt) === "boolean") {
         return rcpt;
       }
       sendFlags = rcpt.sendFlags;
@@ -4304,19 +4279,17 @@ Enigmail.msg = {
 
       if (msgCompFields.characterSet != "ISO-2022-JP") {
         if ((usingPGPMime &&
-            ((sendFlags & (ENCRYPT | SIGN)))) || ((!usingPGPMime) && (sendFlags & ENCRYPT))) {
+          ((sendFlags & (ENCRYPT | SIGN)))) || ((!usingPGPMime) && (sendFlags & ENCRYPT))) {
           try {
             // make sure plaintext is not changed to 7bit
-            if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
+            if (typeof (msgCompFields.forceMsgEncoding) == "boolean") {
               msgCompFields.forceMsgEncoding = true;
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: enabled forceMsgEncoding\n");
             }
-          }
-          catch (ex) {}
+          } catch (ex) {}
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg", ex);
       let msg = EnigmailLocale.getString("signFailed");
       if (EnigmailCore.getEnigmailService() && EnigmailCore.getEnigmailService().initializationError) {
@@ -4380,8 +4353,7 @@ Enigmail.msg = {
           return false;
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptInline", ex);
     }
 
@@ -4392,15 +4364,13 @@ Enigmail.msg = {
           EnigmailPrefs.getPrefRoot().setBoolPref("mail.strictly_mime", false);
         }
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
 
     var sendFlowed;
     try {
       sendFlowed = this.getMailPref("mailnews.send_plaintext_flowed");
-    }
-    catch (ex) {
+    } catch (ex) {
       sendFlowed = true;
     }
     var encoderFlags = dce.OutputFormatted | dce.OutputLFLineBreak;
@@ -4428,8 +4398,7 @@ Enigmail.msg = {
               wrapper.rewrap(false);
             }
           }
-        }
-        catch (ex) {}
+        } catch (ex) {}
       }
       else {
         // plaintext: Wrapping code has been moved to superordinate function encryptMsg to enable interactive format switch
@@ -4445,7 +4414,8 @@ Enigmail.msg = {
     // (Do we need to set the nsIDocumentEncoder.* flags?)
     var origText = this.editorGetContentAs("text/plain",
       encoderFlags);
-    if (!origText) origText = "";
+    if (!origText)
+      origText = "";
 
     if (origText.length > 0) {
       // Sign/encrypt body text
@@ -4627,9 +4597,7 @@ Enigmail.msg = {
           prefValue = undefined;
           break;
       }
-
-    }
-    catch (ex) {
+    } catch (ex) {
       // Failed to get pref value
       EnigmailLog.ERROR("enigmailMsgComposeOverlay.js: Enigmail.msg.getMailPref: unknown prefName:" + prefName + " \n");
     }
@@ -4663,8 +4631,7 @@ Enigmail.msg = {
           EnigmailPrefs.getPrefRoot().setBoolPref("mail.warn_on_send_accel_key", false);
         }
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     return true;
   },
@@ -4715,8 +4682,7 @@ Enigmail.msg = {
 
         this.setAutocryptHeader();
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
     }
   },
@@ -4736,8 +4702,7 @@ Enigmail.msg = {
 
     try {
       fromMail = EnigmailFuncs.stripEmail(gMsgCompose.compFields.from);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     let key;
     if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
@@ -4751,7 +4716,7 @@ Enigmail.msg = {
       let srv = this.getCurrentIncomingServer();
       let prefMutual = (srv.getIntValue("acPreferEncrypt") > 0 ? "; prefer-encrypt=mutual" : "");
 
-      let k = key.getMinimalPubKey();
+      let k = key.getMinimalPubKey(fromMail);
       if (k.exitCode === 0) {
         let keyData = k.keyData.replace(/(.{72})/g, " $1\r\n");
         this.setAdditionalHeader('Autocrypt', 'addr=' + fromMail + prefMutual + '; keydata=\r\n' + keyData);
@@ -4769,11 +4734,10 @@ Enigmail.msg = {
     // SendLater will call handleSendMessageEvent when needed.
 
     try {
-      if (typeof(Sendlater3Composing.callEnigmail) === "function") {
+      if (typeof (Sendlater3Composing.callEnigmail) === "function") {
         return;
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     Enigmail.msg.handleSendMessageEvent(event);
   },
@@ -4798,8 +4762,7 @@ Enigmail.msg = {
           event.preventDefault();
           event.stopPropagation();
         }
-      }
-      catch (ex) {}
+      } catch (ex) {}
       bc.removeAttribute("disabled");
     }
     else {
@@ -4831,15 +4794,12 @@ Enigmail.msg = {
       ioServ = Components.classes[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
       if (!ioServ)
         return -1;
-
-    }
-    catch (ex) {
+    } catch (ex) {
       return -1;
     }
 
     var tmpDir = EnigmailFiles.getTempDir();
-    var extAppLauncher = Components.classes["@mozilla.org/mime;1"].
-    getService(Components.interfaces.nsPIExternalAppLauncher);
+    var extAppLauncher = Components.classes["@mozilla.org/mime;1"].getService(Components.interfaces.nsPIExternalAppLauncher);
 
     try {
       fileTemplate = Components.classes[LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsIFile);
@@ -4849,8 +4809,7 @@ Enigmail.msg = {
         return -1;
       }
       fileTemplate.append("encfile");
-    }
-    catch (ex) {
+    } catch (ex) {
       errorMsgObj.value = EnigmailLocale.getString("noTempDir");
       return -1;
     }
@@ -4879,8 +4838,7 @@ Enigmail.msg = {
           var origLocalFile = Components.classes[LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsIFile);
           origLocalFile.initWithPath(origFile.file.path);
           extAppLauncher.deleteTemporaryFileOnExit(origLocalFile);
-        }
-        catch (ex) {}
+        } catch (ex) {}
       }
 
       var newFile = fileTemplate.clone();
@@ -4891,8 +4849,7 @@ Enigmail.msg = {
           origFile.file, newFile,
           exitCodeObj, statusFlagsObj,
           errorMsgObj);
-      }
-      catch (ex) {}
+      } catch (ex) {}
 
       if (exitCodeObj.value !== 0) {
         return exitCodeObj.value;
@@ -5085,7 +5042,8 @@ Enigmail.msg = {
         cc: EnigmailFuncs.parseEmails(msgHdr.ccList)
       };
       let fromAddr = EnigmailFuncs.parseEmails(msgHdr.author);
-      if (fromAddr.length > 0) addresses.from = fromAddr[0];
+      if (fromAddr.length > 0)
+        addresses.from = fromAddr[0];
 
       let pEpResult = EnigmailPEPDecrypt.decryptMessageData(false, cipherText, addresses);
       if (pEpResult && pEpResult.longmsg.length > 0) {
@@ -5119,7 +5077,7 @@ Enigmail.msg = {
       if (statusLines && statusLines.length) {
         // Display only first ten lines of error message
         while (statusLines.length > 10)
-          statusLines.pop();
+        statusLines.pop();
 
         displayMsg = statusLines.join("\n");
 
@@ -5157,8 +5115,7 @@ Enigmail.msg = {
       }
     }
 
-    var clipBoard = Components.classes["@mozilla.org/widget/clipboard;1"].
-    getService(Components.interfaces.nsIClipboard);
+    var clipBoard = Components.classes["@mozilla.org/widget/clipboard;1"].getService(Components.interfaces.nsIClipboard);
     var data;
     if (clipBoard.supportsSelectionClipboard()) {
       // get the clipboard contents for selected text (X11)
@@ -5202,10 +5159,10 @@ Enigmail.msg = {
     var replyOnTop = 1;
     try {
       replyOnTop = this.identity.replyOnTop;
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
-    if (!indentStr || !quoteElement) replyOnTop = 1;
+    if (!indentStr || !quoteElement)
+      replyOnTop = 1;
 
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.decryptQuote: replyOnTop=" + replyOnTop + ", quoteElement=" + quoteElement + "\n");
 
@@ -5227,7 +5184,7 @@ Enigmail.msg = {
           break;
 
         case 2:
-          // Select quote
+        // Select quote
 
           if (head) {
             for (let cPos = 0; cPos < head.length; cPos++) {
@@ -5243,7 +5200,7 @@ Enigmail.msg = {
           break;
 
         default:
-          // Position at beginning of document
+        // Position at beginning of document
 
           if (this.editor) {
             this.editor.beginningOfDocument();
@@ -5272,18 +5229,17 @@ Enigmail.msg = {
         case CT.ReplyToSender:
         case CT.ReplyToGroup:
         case CT.ReplyToSenderAndGroup:
-        case CT.ReplyToList:
-          {
-            // if head contains at only a few line of text, we assume it's the
-            // header above the quote (e.g. XYZ wrote:) and the user's signature
+        case CT.ReplyToList: {
+          // if head contains at only a few line of text, we assume it's the
+          // header above the quote (e.g. XYZ wrote:) and the user's signature
 
-            let h = head.split(/\r?\n/);
-            hLines = -1;
+          let h = head.split(/\r?\n/);
+          hLines = -1;
 
-            for (let i = 0; i < h.length; i++) {
-              if (h[i].search(/[^\s>]/) >= 0) hLines++;
-            }
+          for (let i = 0; i < h.length; i++) {
+            if (h[i].search(/[^\s>]/) >= 0) hLines++;
           }
+        }
       }
     }
 
@@ -5307,8 +5263,7 @@ Enigmail.msg = {
       try {
         mailEditor = this.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
         mailEditor.insertTextWithQuotations(plainText);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.editorInsertText: no mail editor\n");
         this.editor.insertText(plainText);
       }
@@ -5321,8 +5276,7 @@ Enigmail.msg = {
       var mailEditor;
       try {
         mailEditor = this.editor.QueryInterface(Components.interfaces.nsIEditorMailSupport);
-      }
-      catch (ex) {}
+      } catch (ex) {}
 
       if (!mailEditor)
         return 0;
@@ -5444,14 +5398,12 @@ Enigmail.msg = {
             try {
               self.determineSendFlags();
               self.fireSearchKeys();
-            }
-            catch (x) {}
+            } catch (x) {}
             self.determineSendFlagId = null;
           },
           0);
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
   },
 
   /**
@@ -5476,9 +5428,9 @@ Enigmail.msg = {
       let self = this;
 
       this.searchKeysTimeout = EnigmailTimer.setTimeout(function _f() {
-          self.searchKeysTimeout = null;
-          Enigmail.msg.findMissingKeys();
-        },
+        self.searchKeysTimeout = null;
+        Enigmail.msg.findMissingKeys();
+      },
         5000); // 5 Seconds
     }
   },
@@ -5519,8 +5471,7 @@ Enigmail.msg = {
               return;
             }
 
-            EnigmailAutocrypt.importAutocryptKeys(lookupList).
-            then(foundKeys => {
+            EnigmailAutocrypt.importAutocryptKeys(lookupList).then(foundKeys => {
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: got " +
                 foundKeys.length + " autocrypt keys\n");
               if (foundKeys.length > 0) {
@@ -5528,27 +5479,23 @@ Enigmail.msg = {
               }
               resolve(foundKeys);
             });
-          }).
-          then((foundKeys) => {
+          }).then((foundKeys) => {
             if (EnigmailPrefs.getPref("autoWkdLookup") === 0) return;
             if (foundKeys.length >= lookupList.length) return;
 
-            EnigmailWkdLookup.findKeys(lookupList).
-            then((foundKeys) => {
+            EnigmailWkdLookup.findKeys(lookupList).then((foundKeys) => {
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: wkd got " +
                 foundKeys + "\n");
               if (foundKeys) {
                 self.determineSendFlags();
               }
             });
-          }).
-          catch(err => {
+          }).catch(err => {
             EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: error " + err + "\n");
           });
         }
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
   }
 };
 
@@ -5560,15 +5507,15 @@ Enigmail.composeStateListener = {
 
     try {
       Enigmail.msg.editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     if (!Enigmail.msg.editor)
       return;
 
     Enigmail.msg.fixMessageSubject();
 
-    function enigDocStateListener() {}
+    function enigDocStateListener() {
+    }
 
     enigDocStateListener.prototype = {
       QueryInterface: function(iid) {
@@ -5615,7 +5562,8 @@ Enigmail.composeStateListener = {
   NotifyComposeBodyReady: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
 
-    var isEmpty, isEditable;
+    var isEmpty,
+      isEditable;
 
     isEmpty = Enigmail.msg.editor.documentIsEmpty;
     isEditable = Enigmail.msg.editor.isDocumentEditable;
@@ -5645,8 +5593,8 @@ Enigmail.composeStateListener = {
 
     if (!Enigmail.msg.timeoutId && !Enigmail.msg.dirty) {
       Enigmail.msg.timeoutId = EnigmailTimer.setTimeout(function() {
-          Enigmail.msg.decryptQuote(false);
-        },
+        Enigmail.msg.decryptQuote(false);
+      },
         0);
     }
 
