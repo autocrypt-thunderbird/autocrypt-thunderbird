@@ -23,7 +23,7 @@ const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/files.jsm").
 async function GnuPG_importKeyFromFile(inputFile) {
   EnigmailLog.DEBUG("gnupg-key.jsm: importKeysFromFile: fileName=" + inputFile.path + "\n");
   var command = EnigmailGpg.agentPath;
-  var args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
+  var args = EnigmailGpg.getStandardArgs(false).concat(["--no-tty", "--batch", "--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
 
   var fileName = EnigmailFiles.getEscapedFilename((inputFile.QueryInterface(Ci.nsIFile)).path);
 
