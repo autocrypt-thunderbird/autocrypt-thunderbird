@@ -63,8 +63,7 @@ var EnigmailRules = {
     var domParser;
     try {
       domParser = new DOMParser();
-    }
-    catch (ex) {
+    } catch (ex) {
       domParser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
     }
     rulesListHolder.rulesList = domParser.parseFromString(contents, "text/xml");
@@ -80,8 +79,7 @@ var EnigmailRules = {
 
     try {
       domSerializer = new XMLSerializer();
-    }
-    catch (ex) {
+    } catch (ex) {
       domSerializer = Cc["@mozilla.org/xmlextras/xmlserializer;1"].createInstance(Ci.nsIDOMSerializer);
     }
 
@@ -97,8 +95,7 @@ var EnigmailRules = {
         // empty rule list -> delete rules file
         try {
           rulesFile.remove(false);
-        }
-        catch (ex) {}
+        } catch (ex) {}
         return true;
       }
     }
@@ -152,8 +149,7 @@ var EnigmailRules = {
     if (!rulesListHolder.rulesList) {
       try {
         domParser = new DOMParser();
-      }
-      catch (ex) {
+      } catch (ex) {
         domParser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
       }
 
@@ -239,8 +235,7 @@ var EnigmailRules = {
             if (nodeEmail.toLowerCase() === emailAddr) {
               return node;
             }
-          }
-          catch (ex) {
+          } catch (ex) {
             EnigmailLog.DEBUG("rules.jsm: getRuleByEmail(): ignore exception: " + ex.description + "\n");
           }
         }
@@ -322,8 +317,7 @@ var EnigmailRules = {
         let addr = null;
         try {
           addr = EnigmailFuncs.stripEmail(orig.toLowerCase());
-        }
-        catch (ex) {}
+        } catch (ex) {}
         if (addr) {
           let elem = {
             orig: orig,
@@ -335,7 +329,8 @@ var EnigmailRules = {
     }
     //this.DEBUG_EmailList("openList", openList);
     let addrKeysList = []; // NEW: list of found email addresses and their associated keys
-    let addrNoKeyList = []; // NEW: list of email addresses that have no key according to rules
+    let addrTempNotFound = []; // NEW: temporary list of email addresses
+    let addrNoKeyList = []; // NEW: final list of email addresses that have no key according to rules
 
     // process recipient rules
     let rulesListObj = {};
@@ -368,15 +363,43 @@ var EnigmailRules = {
               rule.encrypt = node.getAttribute("encrypt");
               rule.pgpMime = node.getAttribute("pgpMime");
               this.mapRuleToKeys(rule,
-                openList, flags, addrKeysList, addrNoKeyList);
+                openList, flags, addrKeysList, addrTempNotFound, false);
             }
-            // no negate rule handling (turned off in dialog)
-          }
-          catch (ex) {
+          // no negate rule handling (turned off in dialog)
+          } catch (ex) {
             EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
           }
         }
       }
+
+      // go again through the list to find autocrypt:// prefixed rules
+      for (let node = rulesList.firstChild.firstChild; node; node = node.nextSibling) {
+        if (node.tagName == "pgpRule") {
+          try {
+            let rule = {};
+            rule.email = node.getAttribute("email");
+            if (!rule.email) {
+              continue;
+            }
+            rule.negate = false;
+            if (node.getAttribute("negateRule")) {
+              rule.negate = Number(node.getAttribute("negateRule"));
+            }
+            if (!rule.negate) {
+              rule.keyId = node.getAttribute("keyId");
+              rule.sign = node.getAttribute("sign");
+              rule.encrypt = node.getAttribute("encrypt");
+              rule.pgpMime = node.getAttribute("pgpMime");
+              this.mapRuleToKeys(rule,
+                openList, flags, addrTempNotFound, addrNoKeyList, true);
+            }
+          // no negate rule handling (turned off in dialog)
+          } catch (ex) {
+            EnigmailLog.DEBUG("rules.jsm: mapAddrsToKeys(): ignore exception: " + ex.description + "\n");
+          }
+        }
+      }
+
     }
 
     // NOTE: here we have
@@ -407,9 +430,9 @@ var EnigmailRules = {
 
           if (!resultObj.negate) {
             this.mapRuleToKeys(resultObj,
-              openList, flags, addrKeysList, addrNoKeyList);
+              openList, flags, addrKeysList, addrNoKeyList, false);
           }
-          // no negate rule handling (turned off in dialog)
+        // no negate rule handling (turned off in dialog)
         }
       }
     }
@@ -427,7 +450,7 @@ var EnigmailRules = {
           matchedKeysObj.value += ", " + tmpList[idx].addr;
         }
       }
-      // sort key list and make it unique?
+    // sort key list and make it unique?
     }
 
     // return value of NEW interface:
@@ -462,7 +485,7 @@ var EnigmailRules = {
     return true;
   },
 
-  mapRuleToKeys: function(rule, openList, flags, addrKeysList, addrNoKeyList) {
+  mapRuleToKeys: function(rule, openList, flags, addrKeysList, addrNoKeyList, isAutocryptEmail = false) {
     //EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys() rule.email='" + rule.email + "'\n");
     let ruleList = rule.email.toLowerCase().split(/[ ,;]+/);
     for (let ruleIndex = 0; ruleIndex < ruleList.length; ++ruleIndex) {
@@ -470,14 +493,15 @@ var EnigmailRules = {
       //EnigmailLog.DEBUG("   process ruleElem: '" + ruleEmailElem + "'\n");
       for (let openIndex = 0; openIndex < openList.length; ++openIndex) {
         let addr = openList[openIndex].addr;
-        // search with { and } around because these are used a begin and end markers in the rules:
-        let idx = ('{' + addr + '}').indexOf(ruleEmailElem);
+        // search with { and } around because these are used as start and end markers in the rules:
+        let idx;
 
-        if (idx < 0) {
-          addr = EnigmailConstants.AC_RULE_PREFIX + addr;
+        if (isAutocryptEmail) {
+          idx = ('{' + EnigmailConstants.AC_RULE_PREFIX + addr + '}').indexOf(ruleEmailElem);
+        }
+        else {
           idx = ('{' + addr + '}').indexOf(ruleEmailElem);
         }
-
         if (idx >= 0) {
           if (ruleEmailElem == rule.email) {
             EnigmailLog.DEBUG("rules.jsm: mapRuleToKeys(): for '" + addr + "' ('" + openList[openIndex].orig +
