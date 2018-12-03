@@ -60,8 +60,8 @@ function enigmailDlgOnLoad() {
         var treeItem = document.createElement("treeitem");
         createRow(treeItem, userObj);
         treeChildren.appendChild(treeItem);
-        //}
-        //catch (ex) {}
+      //}
+      //catch (ex) {}
       }
       node = node.nextSibling;
     }
@@ -162,7 +162,7 @@ function getFirstNode() {
 
 function getCurrentNode() {
   var rulesTree = document.getElementById("rulesTree");
-  return rulesTree.contentView.getItemAtIndex(rulesTree.currentIndex);
+  return rulesTree.view.getItemAtIndex(rulesTree.currentIndex);
 }
 
 

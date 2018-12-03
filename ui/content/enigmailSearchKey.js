@@ -16,21 +16,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-const {
-  EnigmailTimer
-} = Cu.import("chrome://enigmail/content/modules/timer.jsm", {});
-const {
-  EnigmailKeyServer
-} = Cu.import("chrome://enigmail/content/modules/keyserver.jsm", {});
-const {
-  EnigmailDialog
-} = Cu.import("chrome://enigmail/content/modules/dialog.jsm", {});
-const {
-  EnigmailLog
-} = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
-const {
-  EnigmailLocale
-} = Cu.import("chrome://enigmail/content/modules/locale.jsm", {});
+const {EnigmailTimer} = Cu.import("chrome://enigmail/content/modules/timer.jsm", {});
+const {EnigmailKeyServer} = Cu.import("chrome://enigmail/content/modules/keyserver.jsm", {});
+const {EnigmailDialog} = Cu.import("chrome://enigmail/content/modules/dialog.jsm", {});
+const {EnigmailLog} = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
+const {EnigmailLocale} = Cu.import("chrome://enigmail/content/modules/locale.jsm", {});
 
 const INPUT = 0;
 const RESULT = 1;
@@ -295,7 +285,7 @@ function createListRow(keyId, subKey, userId, dateField, trustStatus) {
     // key invalid, mark it in grey
     for (var node = userRow.firstChild; node; node = node.nextSibling) {
       var attr = node.getAttribute("properties");
-      if (typeof(attr) == "string") {
+      if (typeof (attr) == "string") {
         node.setAttribute("properties", attr + " enigKeyInactive");
       }
       else {
@@ -318,7 +308,7 @@ function keySelectCallback(event) {
   Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
   if (row.value == -1) return;
 
-  let treeItem = Tree.contentView.getItemAtIndex(row.value);
+  let treeItem = Tree.view.getItemAtIndex(row.value);
   Tree.currentItem = treeItem;
   if (col.value.id != "selectionCol")
     return;

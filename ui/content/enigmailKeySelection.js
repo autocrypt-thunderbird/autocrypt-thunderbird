@@ -95,7 +95,8 @@ function getKeyList(secretOnly, refresh) {
   EnigmailLog.DEBUG("enigmailMessengerOverlay.js: getKeyList\n");
 
   const cApi = EnigmailCryptoAPI();
-  let userList, keyList;
+  let userList,
+    keyList;
   try {
     var exitCodeObj = {};
     var statusFlagsObj = {};
@@ -125,8 +126,7 @@ function getKeyList(secretOnly, refresh) {
         keyList.push(grpList[i]);
       }
     }
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.writeException("enigmailKeySelection.js: getKeyList", ex);
   }
 
@@ -238,7 +238,7 @@ function prepareDialog(secretOnly) {
     var sendSignedCheckbox = document.getElementById("enigmailUserSelSendSigned");
     sendSignedCheckbox.setAttribute("checked", "false");
   }
-  if ((window.arguments[INPUT].options.indexOf("rulesOption") < 0)) {
+  if ( (window.arguments[INPUT].options.indexOf("rulesOption") < 0) ) {
     var rulesOption = document.getElementById("enigmailKeySelectionDlg").getButton("extra1");
     rulesOption.setAttribute("hidden", "true");
   }
@@ -315,8 +315,7 @@ function buildList(refresh) {
 
   try {
     prepareDialog(secretOnly);
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("EXCEPTION: " + ex.toString() + "\n");
   }
 
@@ -325,11 +324,10 @@ function buildList(refresh) {
   var j;
   var toKeys = "";
   try {
-    if (typeof(window.arguments[INPUT].toKeys) == "string") {
+    if (typeof (window.arguments[INPUT].toKeys) == "string") {
       toKeys = window.arguments[INPUT].toKeys;
     }
-  }
-  catch (ex) {}
+  } catch (ex) {}
 
   var invalidAddr = "";
   try {
@@ -338,11 +336,10 @@ function buildList(refresh) {
     // However, that's confusing because with the after refreshing keys
     // with no change in the key set, different items are selected.
     // Thus, this is disabled until there is a reprocessing of validity.
-    if (typeof(window.arguments[INPUT].invalidAddr) == "string") {
+    if (typeof (window.arguments[INPUT].invalidAddr) == "string") {
       invalidAddr = " " + window.arguments[INPUT].invalidAddr + " ";
     }
-  }
-  catch (ex) {}
+  } catch (ex) {}
 
   // sort out PGP keys in toAddr
   var toAddrList = getToAddrList();
@@ -359,14 +356,15 @@ function buildList(refresh) {
   var now = d.valueOf() / 1000;
   var aValidUsers = [];
 
-  var mailAddr, escapedMailAddr;
+  var mailAddr,
+    escapedMailAddr;
   var s1;
   // Replace any non-text character c with \\c
   var escapeRegExp = new RegExp("([^a-zA-Z0-9])", "g");
 
   // delete "empty" entries
   for (i = 0; i < aUserList.length; i++) {
-    if (typeof(aUserList[i].userId) != "string") {
+    if (typeof (aUserList[i].userId) != "string") {
       aUserList.splice(i, 1);
     }
   }
@@ -414,10 +412,10 @@ function buildList(refresh) {
           aUserList[i].uidMatchInvalid = true; // found matching but invalid email
         }
         if (((!aUserList[i].keyTrust) ||
-            KEY_NOT_VALID.indexOf(aUserList[i].keyTrust) < 0) &&
+          KEY_NOT_VALID.indexOf(aUserList[i].keyTrust) < 0) &&
           aUserList[i].subkeyOK &&
           (aUserList[i].expiryTime <= 0 ||
-            (aUserList[i].expiryTime >= now))) {
+          (aUserList[i].expiryTime >= now))) {
           // key still valid
           aUserList[i].valid = true;
           escapedMailAddr = mailAddr.replace(escapeRegExp, "\\$1");
@@ -486,8 +484,7 @@ function buildList(refresh) {
         }
       }
     }
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.ERROR("enigmailKeySelection.js: ERROR in buildList: " + ex.toString() + "\n" + ex.stack + "\n");
   }
 
@@ -546,7 +543,8 @@ function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
   EnigmailLog.DEBUG("enigmailKeySelection.js: buildNotFoundKeys\n");
 
   gKeysNotFound = [];
-  let i, j;
+  let i,
+    j;
   for (i = 0; i < toAddrList.length; i++) {
     if (toAddrList[i].length > 0) {
       let found = false;
@@ -621,7 +619,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
 
   // process which row elements to make insensitive
   if (((userObj.keyTrust.length > 0) &&
-      (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0)) >= 0)) ||
+    (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0)) >= 0)) ||
     (!userObj.subkeyOK)) {
     // disabled/revoked/expired/invalid (sub)keys inactivate whole row
     userCol.setAttribute("properties", "enigKeyInactive");
@@ -735,8 +733,7 @@ function getToAddrList() {
   var toAddrList;
   try {
     toAddrList = EnigmailFuncs.stripEmail(window.arguments[INPUT].toAddr).split(/[ ,]+/);
-  }
-  catch (ex) {
+  } catch (ex) {
     toAddrList = [];
   }
   return toAddrList;
@@ -790,7 +787,7 @@ function userSelCallback(event) {
 
   if (row.value == -1)
     return;
-  var treeItem = Tree.contentView.getItemAtIndex(row.value);
+  var treeItem = Tree.view.getItemAtIndex(row.value);
   Tree.currentItem = treeItem;
   var aRows = treeItem.getElementsByAttribute("id", "indicator");
 
@@ -950,8 +947,7 @@ function onSearchInput() {
 function stripEmailFromKey(uid) {
   try {
     return EnigmailFuncs.stripEmail(uid).toLowerCase();
-  }
-  catch (ex) {
+  } catch (ex) {
     // remove quotes
     return EnigmailFuncs.stripEmail(uid.replace(/"/g, "")).toLowerCase();
   }

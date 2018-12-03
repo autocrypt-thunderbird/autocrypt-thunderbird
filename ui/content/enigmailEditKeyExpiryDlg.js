@@ -197,7 +197,7 @@ function enigmailKeySelCallback(event) {
     return;
 
 
-  var treeItem = treeList.contentView.getItemAtIndex(row.value);
+  var treeItem = treeList.view.getItemAtIndex(row.value);
   treeList.currentItem = treeItem;
   if (col.value.id != "selectionCol")
     return;
