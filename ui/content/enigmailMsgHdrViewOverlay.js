@@ -128,8 +128,7 @@ Enigmail.hdrView = {
       let bodyElement = document.getElementById("messagepane");
       enigMsgPane.setAttribute("collapsed", true);
       bodyElement.removeAttribute("collapsed");
-    }
-    catch (ex) {}
+    } catch (ex) {}
   },
 
   setStatusText: function(txt) {
@@ -154,7 +153,8 @@ Enigmail.hdrView = {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
     }
 
-    if (!errorMsg) errorMsg = "";
+    if (!errorMsg)
+      errorMsg = "";
 
     var replaceUid = null;
     if (keyId && gFolderDisplay.selectedMessage) {
@@ -198,7 +198,7 @@ Enigmail.hdrView = {
         errorLines[errorLines.length - 1] + "\n";
 
       while (errorLines.length > 20)
-        errorLines.pop();
+      errorLines.pop();
 
       errorMsg = errorLines.join("\n") + "\n...\n" + lastLines;
     }
@@ -248,11 +248,11 @@ Enigmail.hdrView = {
 
     if (!(statusFlags & EnigmailConstants.DECRYPTION_FAILED) &&
       ((!(statusFlags & (EnigmailConstants.DECRYPTION_INCOMPLETE |
-          EnigmailConstants.UNVERIFIED_SIGNATURE |
-          EnigmailConstants.DECRYPTION_FAILED |
-          EnigmailConstants.BAD_SIGNATURE))) ||
-        (statusFlags & EnigmailConstants.DISPLAY_MESSAGE) &&
-        !(statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE)) &&
+      EnigmailConstants.UNVERIFIED_SIGNATURE |
+      EnigmailConstants.DECRYPTION_FAILED |
+      EnigmailConstants.BAD_SIGNATURE))) ||
+      (statusFlags & EnigmailConstants.DISPLAY_MESSAGE) &&
+      !(statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE)) &&
       !(statusFlags & EnigmailConstants.IMPORTED_KEY)) {
       // normal exit / display message
       statusLine = errorMsg;
@@ -319,8 +319,8 @@ Enigmail.hdrView = {
         }
       }
       else if (statusFlags & (EnigmailConstants.BAD_SIGNATURE |
-          EnigmailConstants.EXPIRED_SIGNATURE |
-          EnigmailConstants.EXPIRED_KEY_SIGNATURE)) {
+        EnigmailConstants.EXPIRED_SIGNATURE |
+        EnigmailConstants.EXPIRED_KEY_SIGNATURE)) {
         statusInfo = EnigmailLocale.getString("unverifiedSig");
         statusLine = statusInfo + EnigmailLocale.getString("clickDetailsButton");
       }
@@ -454,8 +454,7 @@ Enigmail.hdrView = {
     let requestObj;
     try {
       requestObj = JSON.parse(jsonStr);
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: checkWksConfirmRequest parsing JSON failed\n");
       return;
     }
@@ -514,14 +513,12 @@ Enigmail.hdrView = {
     let fromEmail = "";
     try {
       fromEmail = EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue).toLowerCase();
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     let keys = EnigmailKeyRing.getKeysByUserId(fromEmail, true);
     if (keys.length > 0) return;
 
-    EnigmailAutocrypt.importAutocryptKeys([fromEmail]).
-    then(foundKeys => {
+    EnigmailAutocrypt.importAutocryptKeys([fromEmail]).then(foundKeys => {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: tryImportAutocryptHeader: got " +
         foundKeys.length + " autocrypt keys\n");
       if (foundKeys.length > 0) {
@@ -633,8 +630,8 @@ Enigmail.hdrView = {
       else if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
         (statusFlags & EnigmailConstants.TRUSTED_IDENTITY) &&
         !(statusFlags & (EnigmailConstants.REVOKED_KEY |
-          EnigmailConstants.EXPIRED_KEY_SIGNATURE |
-          EnigmailConstants.EXPIRED_SIGNATURE))) {
+        EnigmailConstants.EXPIRED_KEY_SIGNATURE |
+        EnigmailConstants.EXPIRED_SIGNATURE))) {
         // Display trusted good signature icon
         gSignedUINode.setAttribute("signed", "ok");
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
@@ -648,9 +645,9 @@ Enigmail.hdrView = {
         this.statusBar.setAttribute("signed", "unknown");
       }
       else if (statusFlags & (EnigmailConstants.REVOKED_KEY |
-          EnigmailConstants.EXPIRED_KEY_SIGNATURE |
-          EnigmailConstants.EXPIRED_SIGNATURE |
-          EnigmailConstants.GOOD_SIGNATURE)) {
+        EnigmailConstants.EXPIRED_KEY_SIGNATURE |
+        EnigmailConstants.EXPIRED_SIGNATURE |
+        EnigmailConstants.GOOD_SIGNATURE)) {
         // Display unverified signature icon
         gSignedUINode.setAttribute("signed", "unknown");
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureVerified");
@@ -682,9 +679,7 @@ Enigmail.hdrView = {
       if (secInfo.xtraStatus && secInfo.xtraStatus == "buggyMailFormat") {
         this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelBuggyMailFormat");
       }
-
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("displayStatusBar", ex);
     }
   },
@@ -695,7 +690,7 @@ Enigmail.hdrView = {
       if (Enigmail.msg.securityInfo) {
         if ((Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.NODATA) &&
           (Enigmail.msg.securityInfo.statusFlags &
-            (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED))) {
+          (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED))) {
           document.getElementById("enigmail_reloadMessage").removeAttribute("hidden");
         }
         else {
@@ -715,8 +710,7 @@ Enigmail.hdrView = {
       }
 
       this.setSenderStatus("signSenderKey", "editSenderKeyTrust", "showPhoto", "dispKeyDetails");
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.ERROR("error on displaying Security menu:\n" + ex.toString() + "\n");
     }
   },
@@ -756,7 +750,7 @@ Enigmail.hdrView = {
       if (Enigmail.msg.securityInfo.msgSigned) {
         signedMsg = true;
         if (!(Enigmail.msg.securityInfo.statusFlags &
-            (EnigmailConstants.REVOKED_KEY | EnigmailConstants.EXPIRED_KEY_SIGNATURE | EnigmailConstants.UNVERIFIED_SIGNATURE))) {
+          (EnigmailConstants.REVOKED_KEY | EnigmailConstants.EXPIRED_KEY_SIGNATURE | EnigmailConstants.UNVERIFIED_SIGNATURE))) {
           sign = true;
         }
         if (keyObj && keyObj.isOwnerTrustUseful()) {
@@ -821,8 +815,7 @@ Enigmail.hdrView = {
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
           Enigmail.hdrView.setWindowCallback();
-        }
-        catch (ex) {}
+        } catch (ex) {}
       },
 
       onEndHeaders: function _listener_onEndHeaders() {
@@ -832,8 +825,7 @@ Enigmail.hdrView = {
           Enigmail.hdrView.statusBarHide();
 
           this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
-        }
-        catch (ex) {}
+        } catch (ex) {}
       },
 
       beforeStartHeaders: function _listener_beforeStartHeaders() {
@@ -891,7 +883,7 @@ Enigmail.hdrView = {
 
   createRuleFromAddress: function(emailAddressNode) {
     if (emailAddressNode) {
-      if (typeof(findEmailNodeFromPopupNode) == "function") {
+      if (typeof (findEmailNodeFromPopupNode) == "function") {
         emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
       }
       EnigmailWindows.createNewRule(window, emailAddressNode.getAttribute("emailAddress"));
@@ -970,8 +962,8 @@ Enigmail.hdrView = {
         verifyMenu.setAttribute('disabled', true);
       }
       else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0])) {
-        if ((typeof(selectedAttachments[0].name) !== 'undefined' && selectedAttachments[0].name.match(/\.asc\.(gpg|pgp)$/i)) ||
-          (typeof(selectedAttachments[0].displayName) !== 'undefined' && selectedAttachments[0].displayName.match(/\.asc\.(gpg|pgp)$/i))) {
+        if ((typeof (selectedAttachments[0].name) !== 'undefined' && selectedAttachments[0].name.match(/\.asc\.(gpg|pgp)$/i)) ||
+          (typeof (selectedAttachments[0].displayName) !== 'undefined' && selectedAttachments[0].displayName.match(/\.asc\.(gpg|pgp)$/i))) {
           importMenu.removeAttribute('disabled');
         }
         else {
@@ -985,13 +977,12 @@ Enigmail.hdrView = {
         else {
           verifyMenu.setAttribute('disabled', true);
         }
-        if (typeof(selectedAttachments[0].displayName) == "undefined") {
+        if (typeof (selectedAttachments[0].displayName) == "undefined") {
           if (!selectedAttachments[0].name) {
             selectedAttachments[0].name = "message.pgp";
           }
         }
-        else
-        if (!selectedAttachments[0].displayName) {
+        else if (!selectedAttachments[0].displayName) {
           selectedAttachments[0].displayName = "message.pgp";
         }
       }
@@ -1059,9 +1050,9 @@ Enigmail.hdrView = {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.enigCanDetachAttachments\n");
 
     var canDetach = true;
-    if (Enigmail.msg.securityInfo && (typeof(Enigmail.msg.securityInfo.statusFlags) != "undefined")) {
+    if (Enigmail.msg.securityInfo && (typeof (Enigmail.msg.securityInfo.statusFlags) != "undefined")) {
       canDetach = ((Enigmail.msg.securityInfo.statusFlags &
-        (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED)) ? false : true);
+      (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED)) ? false : true);
     }
     return canDetach;
   },
@@ -1110,7 +1101,7 @@ Enigmail.hdrView = {
 
   displayPepStatus: function(rating, keyIDs, uri, persons) {
 
-    if (typeof(keyIDs) === "string") {
+    if (typeof (keyIDs) === "string") {
       keyIDs = keyIDs.split(/,/);
     }
 
@@ -1158,10 +1149,9 @@ Enigmail.hdrView = {
 
     for (let i = 0; i < nodes.length; i++) {
       if (nodes[i].getAttribute("hidden") !== "true" && nodes[i].getAttribute("emailAddress").toLowerCase() === emailAddress) {
-        EnigmailPEPAdapter.pep.getIdentityRating(person).
-        then(
+        EnigmailPEPAdapter.pep.getIdentityRating(person).then(
           cbObj => {
-            if ("result" in cbObj && Array.isArray(cbObj.result.outParams) && typeof(cbObj.result.outParams[0]) === "object") {
+            if ("result" in cbObj && Array.isArray(cbObj.result.outParams) && typeof (cbObj.result.outParams[0]) === "object") {
               if ("rating" in cbObj.result.outParams[0]) {
                 let rating = EnigmailPEPAdapter.calculateColorFromRating(cbObj.result.outParams[0].rating);
                 let setClass = EnigmailPEPAdapter.getRatingClass(cbObj.result.outParams[0].rating);
@@ -1170,8 +1160,7 @@ Enigmail.hdrView = {
                 Enigmail.hdrView.pEpStatus.emailRatings[emailAddress] = rating;
               }
             }
-          }).
-        catch(function _err() {});
+          }).catch(function _err() {});
       }
     }
   },
@@ -1221,8 +1210,7 @@ Enigmail.hdrView = {
     let emailsInMessage = [];
     try {
       emailsInMessage = EnigmailFuncs.stripEmail(addrs).toLowerCase().split(/,/);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     if (emailsInMessage.length === 0) {
       EnigmailDialog.info(window, EnigmailLocale.getString("handshakeDlg.error.noPeers"));
@@ -1289,22 +1277,20 @@ Enigmail.hdrView = {
 
   verifyPepTrustWords: function(emailAddressNode) {
     if (emailAddressNode) {
-      if (typeof(findEmailNodeFromPopupNode) == "function") {
+      if (typeof (findEmailNodeFromPopupNode) == "function") {
         emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
       }
       let emailAddr = emailAddressNode.getAttribute("emailAddress");
 
-      EnigmailWindows.verifyPepTrustWords(window, emailAddr, currentHeaderData).
-      then(function _done() {
+      EnigmailWindows.verifyPepTrustWords(window, emailAddr, currentHeaderData).then(function _done() {
         gDBView.reloadMessageWithAllParts();
-      }).
-      catch(function _err() {});
+      }).catch(function _err() {});
     }
   },
 
   revokePepTrust: function(emailAddressNode) {
     if (emailAddressNode) {
-      if (typeof(findEmailNodeFromPopupNode) == "function") {
+      if (typeof (findEmailNodeFromPopupNode) == "function") {
         emailAddressNode = findEmailNodeFromPopupNode(emailAddressNode, 'emailAddressPopup');
       }
       let emailAddr = emailAddressNode.getAttribute("emailAddress");
@@ -1313,11 +1299,9 @@ Enigmail.hdrView = {
           EnigmailLocale.getString("pepRevokeTrust.question", emailAddr),
           EnigmailLocale.getString("pepRevokeTrust.doRevoke"),
           EnigmailLocale.getString("dlg.button.close"))) {
-        EnigmailPEPAdapter.resetTrustForEmail(emailAddr).
-        then(function _done() {
+        EnigmailPEPAdapter.resetTrustForEmail(emailAddr).then(function _done() {
           gDBView.reloadMessageWithAllParts();
-        }).
-        catch(function _err() {});
+        }).catch(function _err() {});
       }
     }
   },
@@ -1348,8 +1332,7 @@ Enigmail.hdrView = {
         let messenger = Components.classes["@mozilla.org/messenger;1"].getService(Components.interfaces.nsIMessenger);
         let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
         msgSvc.GetUrlForUri(msgUriSpec, currUrl, null);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
         currUrl.value = {
           host: "invalid",
@@ -1494,8 +1477,7 @@ Enigmail.hdrView = {
             if ("encryptedTo" in o) {
               encToDetails = o.encryptedTo;
             }
-          }
-          catch (x) {}
+          } catch (x) {}
         }
 
         Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
@@ -1531,8 +1513,7 @@ Enigmail.hdrView = {
           try {
             let o = JSON.parse(processData);
             Enigmail.hdrView.displayPepStatus(o.rating, o.fpr, uri, o.persons);
-          }
-          catch (x) {}
+          } catch (x) {}
           return;
       }
     },
@@ -1546,13 +1527,12 @@ Enigmail.hdrView = {
 
       try {
         hdr = JSON.parse(headerData);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: modifyMessageHeaders: - no headers to display\n");
         return;
       }
 
-      if (typeof(hdr) !== "object") return;
+      if (typeof (hdr) !== "object") return;
       if (!this.displaySubPart(mimePartNumber, uriSpec)) return;
 
       let msg = gFolderDisplay.selectedMessage;
@@ -1564,35 +1544,35 @@ Enigmail.hdrView = {
       if ("date" in hdr) {
         msg.date = Date.parse(hdr.date) * 1000;
       }
+    /*
+          if ("newsgroups" in hdr) {
+            updateHdrBox("newsgroups", hdr.newsgroups);
+          }
 
-      if ("newsgroups" in hdr) {
-        updateHdrBox("newsgroups", hdr.newsgroups);
-      }
+          if ("followup-to" in hdr) {
+            updateHdrBox("followup-to", hdr["followup-to"]);
+          }
 
-      if ("followup-to" in hdr) {
-        updateHdrBox("followup-to", hdr["followup-to"]);
-      }
+          if ("from" in hdr) {
+            gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, hdr.from);
+            msg.setStringProperty("Enigmail-From", hdr.from);
+          }
 
-      if ("from" in hdr) {
-        gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, hdr.from);
-        msg.setStringProperty("Enigmail-From", hdr.from);
-      }
+          if ("to" in hdr) {
+            gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, hdr.to);
+            msg.setStringProperty("Enigmail-To", hdr.to);
+          }
 
-      if ("to" in hdr) {
-        gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, hdr.to);
-        msg.setStringProperty("Enigmail-To", hdr.to);
-      }
+          if ("cc" in hdr) {
+            gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, hdr.cc);
+            msg.setStringProperty("Enigmail-Cc", hdr.cc);
+          }
 
-      if ("cc" in hdr) {
-        gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, hdr.cc);
-        msg.setStringProperty("Enigmail-Cc", hdr.cc);
-      }
-
-      if ("reply-to" in hdr) {
-        gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
-        msg.setStringProperty("Enigmail-ReplyTo", hdr["reply-to"]);
-      }
-
+          if ("reply-to" in hdr) {
+            gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
+            msg.setStringProperty("Enigmail-ReplyTo", hdr["reply-to"]);
+          }
+    */
     },
 
     handleSMimeMessage: function(uri) {
