@@ -329,7 +329,6 @@ var EnigmailRules = {
     }
     //this.DEBUG_EmailList("openList", openList);
     let addrKeysList = []; // NEW: list of found email addresses and their associated keys
-    let addrTempNotFound = []; // NEW: temporary list of email addresses
     let addrNoKeyList = []; // NEW: final list of email addresses that have no key according to rules
 
     // process recipient rules
@@ -363,7 +362,7 @@ var EnigmailRules = {
               rule.encrypt = node.getAttribute("encrypt");
               rule.pgpMime = node.getAttribute("pgpMime");
               this.mapRuleToKeys(rule,
-                openList, flags, addrKeysList, addrTempNotFound, false);
+                openList, flags, addrKeysList, addrNoKeyList, false);
             }
           // no negate rule handling (turned off in dialog)
           } catch (ex) {
@@ -391,7 +390,7 @@ var EnigmailRules = {
               rule.encrypt = node.getAttribute("encrypt");
               rule.pgpMime = node.getAttribute("pgpMime");
               this.mapRuleToKeys(rule,
-                openList, flags, addrTempNotFound, addrNoKeyList, true);
+                openList, flags, addrKeysList, addrNoKeyList, true);
             }
           // no negate rule handling (turned off in dialog)
           } catch (ex) {
