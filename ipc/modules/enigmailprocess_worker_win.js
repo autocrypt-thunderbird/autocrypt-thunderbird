@@ -14,9 +14,9 @@ importScripts("chrome://enigmail/content/modules/enigmailprocess_shared.js",
   "chrome://enigmail/content/modules/enigmailprocess_shared_win.js",
   "chrome://enigmail/content/modules/enigmailprocess_worker_common.js");
 
-/* global ctypes: false, libc: false, unix: false, SubprocessConstants: false */
-/* global debug: false */
-/* eslint no-console: 0 */
+/* global ctypes: false, libc: false, unix: false, SubprocessConstants: false, user32: false */
+  /* global debug: false */
+  /* eslint no-console: 0 */
 
 const POLL_TIMEOUT = 5000;
 
@@ -80,10 +80,7 @@ class Pipe extends BasePipe {
       return this.closedPromise;
     }
 
-    for (let {
-        reject
-      }
-      of this.pending) {
+    for (let {reject} of this.pending) {
       let error = new Error("File closed");
       error.errorCode = SubprocessConstants.ERROR_END_OF_FILE;
       reject(error);
@@ -162,7 +159,9 @@ class InputPipe extends Pipe {
 
     return new Promise((resolve, reject) => {
       this.pending.push({
-        resolve, reject, length
+        resolve,
+        reject,
+        length
       });
       this.readNext();
     });
@@ -210,9 +209,7 @@ class InputPipe extends Pipe {
       let buffer = this.buffer;
       this.buffer = null;
 
-      let {
-        resolve
-      } = this.shiftPending();
+      let {resolve} = this.shiftPending();
 
       if (read == buffer.byteLength) {
         resolve(buffer);
@@ -260,7 +257,9 @@ class OutputPipe extends Pipe {
 
     return new Promise((resolve, reject) => {
       this.pending.push({
-        resolve, reject, buffer
+        resolve,
+        reject,
+        buffer
       });
       this.writeNext();
     });
@@ -304,9 +303,7 @@ class OutputPipe extends Pipe {
       this.onError();
     }
     else if (written > 0) {
-      let {
-        resolve
-      } = this.shiftPending();
+      let {resolve} = this.shiftPending();
 
       this.buffer = null;
       resolve(written);
@@ -370,9 +367,7 @@ class Process extends BaseProcess {
    * @returns {win32.Handle[]}
    *          The array of file handles belonging to the spawned process.
    */
-  initPipes({
-    stderr
-  }) {
+  initPipes({stderr}) {
     let our_pipes = [];
     let their_pipes = [];
 
@@ -465,7 +460,7 @@ class Process extends BaseProcess {
 
     let escaped = str.replace(/(\\*)("|$)/g, (m0, m1, m2) => {
       if (m2) {
-        m2 = `\\${m2}`;
+        m2 = `${m2}`;
       }
       return `${m1}${m1}${m2}`;
     });
@@ -474,9 +469,7 @@ class Process extends BaseProcess {
   }
 
   spawn(options) {
-    let {
-      command, arguments: args
-    } = options;
+    let {command, arguments: args} = options;
 
     if (/\\cmd\.exe$/i.test(command) && args.length == 3 && /^(\/S)?\/C$/i.test(args[1])) {
       // cmd.exe is insane and requires special treatment.
@@ -573,6 +566,11 @@ class Process extends BaseProcess {
       }
       throw new Error(errorMessage);
     }
+
+    // Allow child processes to obtain focus via Alt-Tab
+    try {
+      user32.AllowSetForegroundWindow(procInfo.dwProcessId);
+    } catch (x) {}
 
     this.handle = win32.Handle(procInfo.hProcess);
     this.pid = procInfo.dwProcessId;
@@ -729,8 +727,7 @@ io = {
       if (result < handlers.length) {
         try {
           handlers[result].onReady();
-        }
-        catch (e) {
+        } catch (e) {
           console.error(e);
           debug(`Worker error: ${e} :: ${e.stack}`);
           handlers[result].onError();

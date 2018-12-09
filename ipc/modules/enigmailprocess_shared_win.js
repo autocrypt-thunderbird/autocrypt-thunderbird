@@ -491,6 +491,13 @@ var libc = new Library("libc", LIBC_CHOICES, {
   ]
 });
 
+var user32 = new Library("user32", ["user32.dll"], {
+  AllowSetForegroundWindow: [
+    win32.WINAPI,
+    win32.BOOL,
+    win32.DWORD /* dwProcessId */
+  ]
+});
 
 let nextNamedPipeId = 0;
 
@@ -507,7 +514,8 @@ win32.createPipe = function(secAttr, readFlags = 0, writeFlags = 0, size = 0) {
   }
 
   let pid = libc.GetCurrentProcessId();
-  let pipeName = String.raw `\\.\Pipe\SubProcessPipe.${pid}.${nextNamedPipeId++}`;
+  const pipePrefix = "\\\\.\\Pipe\\SubProcessPipe";
+  let pipeName = String.raw `${pipePrefix}.${pid}.${nextNamedPipeId++}`;
 
   let readHandle = libc.CreateNamedPipeW(
     pipeName, readFlags,
@@ -543,8 +551,7 @@ win32.createThreadAttributeList = function(handles) {
     void libc.InitializeProcThreadAttributeList;
     void libc.DeleteProcThreadAttributeList;
     void libc.UpdateProcThreadAttribute;
-  }
-  catch (e) {
+  } catch (e) {
     // This is only supported in Windows Vista and later.
     return null;
   }
