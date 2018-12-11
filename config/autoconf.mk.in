@@ -1,5 +1,7 @@
 # @configure_input@
 
+XPI_MODULE_VERS = @PACKAGE_VERSION@
+
 PERL = @PERL@
 PYTHON = @PYTHON@
 
