@@ -16,7 +16,6 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
 Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
@@ -159,20 +158,6 @@ var EnigmailWkdLookup = {
 
     let domain = email.substr(at + 1);
     let user = email.substr(0, at);
-
-    try {
-      let servers = await EnigmailDns.lookup("SRV", `_openpgpkey._tcp.${domain}`);
-      if (servers && servers.length > 0) {
-        // ensure that the found server is a sub-domain of the queried domain
-        // section 3.1 of Web Key Service Draft 06
-
-        servers[0] = servers[0].toLowerCase();
-        let r = "\\." + domain.replace(/\./g, "\\.") + "$";
-        if (servers[0].search(r) > 0 || servers[0] === domain) {
-          domain = servers[0];
-        }
-      }
-    } catch (ex) {}
 
     var converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"].createInstance(Ci.nsIScriptableUnicodeConverter);
     converter.charset = "UTF-8";
