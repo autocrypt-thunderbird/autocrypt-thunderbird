@@ -47,7 +47,7 @@ Components.utils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*
 Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
-  Components.utils.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
+  Components.utils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
 } catch (ex) {}
 
 

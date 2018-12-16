@@ -19,7 +19,7 @@ Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor
 Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 Cu.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
-Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
+Cu.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
 Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
@@ -140,8 +140,7 @@ var EnigmailPersistentCrypto = {
             examineEncryptedParts: false,
             partsOnDemand: false
           });
-        }
-        catch (ex) {
+        } catch (ex) {
           reject("msgHdrToMimeMessage failed");
         }
         return;
@@ -287,8 +286,7 @@ CryptMessageIntoFolder.prototype = {
             var scriptInput = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance();
             try {
               msg = NetUtil.readInputStreamToString(stream, messageSize);
-            }
-            catch (ex) {
+            } catch (ex) {
               EnigmailLog.DEBUG("persistentCrypto.jsm: failed to get plain data: " + ex + "\n");
               // Uhm,.. What to do? Ok let's give mimeToString a chance.
               msg = self.mimeToString(self.mime, true);
@@ -360,12 +358,10 @@ CryptMessageIntoFolder.prototype = {
                 EnigmailLog.DEBUG("persistentCrypto.jsm: Error copying message: " + statusCode + "\n");
                 try {
                   tempFile.remove(false);
-                }
-                catch (ex) {
+                } catch (ex) {
                   try {
                     fileSpec.remove(false);
-                  }
-                  catch (e2) {
+                  } catch (e2) {
                     EnigmailLog.DEBUG("persistentCrypto.jsm: Could not delete temp file\n");
                   }
                 }
@@ -380,12 +376,10 @@ CryptMessageIntoFolder.prototype = {
 
               try {
                 tempFile.remove(false);
-              }
-              catch (ex) {
+              } catch (ex) {
                 try {
                   fileSpec.remove(false);
-                }
-                catch (e2) {
+                } catch (e2) {
                   EnigmailLog.DEBUG("persistentCrypto.jsm: Could not delete temp file\n");
                 }
               }
@@ -400,8 +394,7 @@ CryptMessageIntoFolder.prototype = {
             if (self.mime.headers.subject) {
               self.hdr.subject = self.mime.headers.subject.join();
             }
-          }
-          catch (ex) {}
+          } catch (ex) {}
 
           copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(self.destFolder, false), self.hdr,
             false, 0, "", copyListener, null);
@@ -412,9 +405,7 @@ CryptMessageIntoFolder.prototype = {
           self.resolve(false);
         }
       );
-
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("persistentCrypto.jsm: messageParseCallback: caught error " + ex.toString() + "\n");
       self.resolve(false);
     }
@@ -439,8 +430,7 @@ CryptMessageIntoFolder.prototype = {
         statusFlagsObj,
         errorMsgObj
       );
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("persistentCrypto.jsm: Encryption failed: " + ex + "\n");
       return null;
     }
@@ -512,8 +502,7 @@ CryptMessageIntoFolder.prototype = {
 
           var channel = EnigmailStreams.createChannelFromURI(msgUri);
           channel.asyncOpen(bufferListener, msgUri);
-        }
-        catch (ex) {
+        } catch (ex) {
           reject(o);
         }
       }
@@ -552,7 +541,8 @@ CryptMessageIntoFolder.prototype = {
                 // try to get original file name if file does not contain suffix
                 if (strippedName.indexOf(".") < 0) {
                   let s = EnigmailAttachment.getFileName(null, o.data);
-                  if (s) o.name = s;
+                  if (s)
+                    o.name = s;
                 }
 
                 pipe.write(o.data);
@@ -651,7 +641,7 @@ CryptMessageIntoFolder.prototype = {
       mime.parts[0].parts[2].name = "ignore.txt";
       this.decryptionTasks.push(p);
     }
-    else if (typeof(mime.body) == "string") {
+    else if (typeof (mime.body) == "string") {
       EnigmailLog.DEBUG("    body size: " + mime.body.length + "\n");
     }
 
@@ -691,8 +681,7 @@ CryptMessageIntoFolder.prototype = {
         EnigmailLog.DEBUG("persistentCrypto.jsm: isBrokenByExchange: found message broken by MS-Exchange\n");
         return true;
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     return false;
   },
@@ -710,8 +699,7 @@ CryptMessageIntoFolder.prototype = {
       if (ct.toLowerCase() == "multipart/encrypted" && pt == "application/pgp-encrypted") {
         return true;
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       //EnigmailLog.DEBUG("persistentCrypto.jsm: isPgpMime:"+ex+"\n");
     }
     return false;
@@ -731,8 +719,7 @@ CryptMessageIntoFolder.prototype = {
       if (ct.toLowerCase() == "application/pkcs7-mime" && pt == "enveloped-data") {
         return true;
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("persistentCrypto.jsm: isSMime:" + ex + "\n");
     }
     return false;
@@ -817,7 +804,8 @@ CryptMessageIntoFolder.prototype = {
             }
 
             let boundary = getBoundary(getHeaderValue(mime, 'content-type'));
-            if (!boundary) boundary = EnigmailMime.createBoundary();
+            if (!boundary)
+              boundary = EnigmailMime.createBoundary();
 
             // append relevant headers
             mime.headers['content-type'] = "multipart/mixed; boundary=\"" + boundary + "\"";
@@ -833,13 +821,11 @@ CryptMessageIntoFolder.prototype = {
                   EnigmailLog.DEBUG("persistentCrypto.jsm: getUnstructuredHeader: hdr=" + hdr + "\n");
                   let hdrVal = m.getUnstructuredHeader(hdr.toLowerCase());
                   o.data += hdr + ": " + hdrVal + "\r\n";
-                }
-                catch (ex) {
+                } catch (ex) {
                   try {
                     let hdrVal = m.getRawHeader(hdr.toLowerCase());
                     o.data += hdr + ": " + hdrVal + "\r\n";
-                  }
-                  catch (ex) {
+                  } catch (ex) {
                     EnigmailLog.DEBUG("persistentCrypto.jsm: getUnstructuredHeader: exception " + ex.toString() + "\n");
                   }
                 }
@@ -861,8 +847,7 @@ CryptMessageIntoFolder.prototype = {
         try {
           var channel = EnigmailStreams.createChannel(url);
           channel.asyncOpen(s, null);
-        }
-        catch (e) {
+        } catch (e) {
           EnigmailLog.DEBUG("persistentCrypto.jsm: decryptPGPMIME: exception " + e.toString() + "\n");
         }
       }
@@ -893,7 +878,7 @@ CryptMessageIntoFolder.prototype = {
       signatureObj.value = "";
 
       const uiFlags = EnigmailConstants.UI_INTERACTIVE | EnigmailConstants.UI_UNVERIFIED_ENC_OK |
-        EnigmailConstants.UI_IGNORE_MDC_ERROR;
+      EnigmailConstants.UI_IGNORE_MDC_ERROR;
 
       var plaintexts = [];
       var blocks = EnigmailArmor.locateArmoredBlocks(mime.body);
@@ -1060,7 +1045,7 @@ CryptMessageIntoFolder.prototype = {
    ******/
 
   mimeToString: function(mime, topLevel) {
-    EnigmailLog.DEBUG("persistentCrypto.jsm: mimeToString: part: '" + mime.partName + "', is of type '" + typeof(mime) + "'\n");
+    EnigmailLog.DEBUG("persistentCrypto.jsm: mimeToString: part: '" + mime.partName + "', is of type '" + typeof (mime) + "'\n");
 
     let ct = getContentType(getHeaderValue(mime, 'content-type'));
 
@@ -1239,8 +1224,7 @@ function getHeaderValue(mimeStruct, header) {
     else {
       return "";
     }
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getHeaderValue: header not present\n");
     return "";
   }
@@ -1282,8 +1266,7 @@ function getContentType(shdr) {
   try {
     shdr = String(shdr);
     return shdr.match(/([A-z-]+\/[A-z-]+)/)[1].toLowerCase();
-  }
-  catch (e) {
+  } catch (e) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getContentType: " + e + "\n");
     return null;
   }
@@ -1294,8 +1277,7 @@ function getBoundary(shdr) {
   try {
     shdr = String(shdr);
     return EnigmailMime.getBoundary(shdr);
-  }
-  catch (e) {
+  } catch (e) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getBoundary: " + e + "\n");
     return null;
   }
@@ -1305,8 +1287,7 @@ function getCharset(shdr) {
   try {
     shdr = String(shdr);
     return EnigmailMime.getParameter(shdr, 'charset').toLowerCase();
-  }
-  catch (e) {
+  } catch (e) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getCharset: " + e + "\n");
     return null;
   }
@@ -1316,8 +1297,7 @@ function getProtocol(shdr) {
   try {
     shdr = String(shdr);
     return EnigmailMime.getProtocol(shdr).toLowerCase();
-  }
-  catch (e) {
+  } catch (e) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getProtocol: " + e + "\n");
     return "";
   }
@@ -1327,8 +1307,7 @@ function getSMimeProtocol(shdr) {
   try {
     shdr = String(shdr);
     return shdr.match(/smime-type="?([A-z0-9'()+_,-./:=?]+)"?/)[1].toLowerCase();
-  }
-  catch (e) {
+  } catch (e) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getSMimeProtocol: " + e + "\n");
     return "";
   }
@@ -1353,8 +1332,7 @@ function getPepSubject(mimeString) {
             this.firstPlainText = true;
           }
         }
-      }
-      catch (ex) {
+      } catch (ex) {
         this.ct = "";
       }
     },
@@ -1383,8 +1361,7 @@ function getPepSubject(mimeString) {
   try {
     let p = new jsmime.MimeParser(emitter, opt);
     p.deliverData(mimeString);
-  }
-  catch (ex) {}
+  } catch (ex) {}
 
   return subject;
 }
@@ -1399,8 +1376,7 @@ function deleteOriginalMail(msgHdr) {
     try {
       EnigmailLog.DEBUG("persistentCrypto.jsm: deleting original message " + msgHdr.messageKey + "\n");
       EnigmailStdlib.msgHdrsDelete([msgHdr]);
-    }
-    catch (e) {
+    } catch (e) {
       EnigmailLog.DEBUG("persistentCrypto.jsm: deletion failed. Error: " + e.toString() + "\n");
     }
   };

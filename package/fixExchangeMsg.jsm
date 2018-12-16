@@ -13,7 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
 const Cu = Components.utils;
 
-Cu.import("resource:///modules/MailUtils.js"); /*global MailUtils: false */
+Cu.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
 Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
@@ -145,8 +145,7 @@ var EnigmailFixExchangeMsg = {
         try {
           let channel = EnigmailStreams.createChannel(url);
           channel.asyncOpen(s, null);
-        }
-        catch (e) {
+        } catch (e) {
           EnigmailLog.DEBUG("fixExchangeMsg.jsm: getMessageBody: exception " + e + "\n");
         }
       }
@@ -305,8 +304,7 @@ var EnigmailFixExchangeMsg = {
       "Content-Type: application/pgp-encrypted\r\n" +
       "Content-Description: PGP/MIME version identification\r\n\r\n" +
       "Version: 1\r\n\r\n" +
-      bodyData.substring(encData, match.index).
-    replace(/^Content-Type: +application\/pgp-encrypted/im,
+      bodyData.substring(encData, match.index).replace(/^Content-Type: +application\/pgp-encrypted/im,
         "Content-Type: application/octet-stream") +
       "--" + boundary + "--\r\n";
   },
