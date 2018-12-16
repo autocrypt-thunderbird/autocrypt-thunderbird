@@ -63,8 +63,8 @@ function appendUid(uidList, uidObj, uidNum) {
 
 function reloadUidList() {
   var uidList = document.getElementById("uidList");
-  while (uidList.getRowCount() > 0) {
-    uidList.removeItemAt(0);
+  while (uidList.firstChild) {
+    uidList.removeChild(uidList.firstChild);
   }
 
   var enigmailSvc = EnigmailCore.getService();

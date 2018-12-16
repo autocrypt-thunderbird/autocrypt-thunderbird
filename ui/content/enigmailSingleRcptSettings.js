@@ -57,7 +57,7 @@ function enigmailDlgOnLoad() {
   window.arguments[RESULT].cancelled = true;
 
   var action = "";
-  if (typeof(window.arguments[INPUT].keyId) == "object") {
+  if (typeof (window.arguments[INPUT].keyId) == "object") {
     switch (window.arguments[INPUT].keyId.join("")) {
       case ".":
         enigSetKeys("");
@@ -84,19 +84,19 @@ function enigmailDlgOnLoad() {
   actionType.selectedItem = document.getElementById("actionType." + action);
   enigEnableKeySel(action == "actionUseKey");
 
-  if (typeof(window.arguments[INPUT].sign) == "number") {
+  if (typeof (window.arguments[INPUT].sign) == "number") {
     document.getElementById("sign").selectedIndex = window.arguments[INPUT].sign;
   }
   else {
     document.getElementById("sign").selectedIndex = 1;
   }
-  if (typeof(window.arguments[INPUT].encrypt) == "number") {
+  if (typeof (window.arguments[INPUT].encrypt) == "number") {
     document.getElementById("encrypt").selectedIndex = window.arguments[INPUT].encrypt;
   }
   else {
     document.getElementById("encrypt").selectedIndex = 1;
   }
-  if (typeof(window.arguments[INPUT].pgpmime) == "number") {
+  if (typeof (window.arguments[INPUT].pgpmime) == "number") {
     document.getElementById("pgpmime").selectedIndex = window.arguments[INPUT].pgpmime;
   }
   else {
@@ -223,8 +223,7 @@ function enigmailDlgKeySelection() {
   window.openDialog("chrome://enigmail/content/ui/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   try {
     if (resultObj.cancelled) return;
-  }
-  catch (ex) {
+  } catch (ex) {
     // cancel pressed -> do nothing
     return;
   }
@@ -233,8 +232,8 @@ function enigmailDlgKeySelection() {
 
 function enigSetKeys(keyList) {
   var encryptionList = document.getElementById("encryptionList");
-  while (encryptionList.getRowCount() > 0) {
-    encryptionList.removeItemAt(0);
+  while (encryptionList.firstChild) {
+    encryptionList.removeChild(encryptionList.firstChild);
   }
   if ((keyList.length === 0) || (keyList.length == 1 && keyList[0].length === 0)) {
     encryptionList.appendItem(EnigGetString("noKeyToUse"), "");

@@ -1551,8 +1551,8 @@ Enigmail.msg = {
 
       if (attachmentList) {
         // delete all keys from attachment list
-        while (attachmentList.itemCount > 0) {
-          attachmentList.removeItemAt(0);
+        while (attachmentList.firstChild) {
+          attachmentList.removeChild(attachmentList.firstChild);
         }
 
         // build new attachment list

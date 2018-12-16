@@ -791,9 +791,9 @@ Enigmail.msg = {
       while (node) {
         if (node.attachment.contentType == "application/pgp-signature") {
           if (!this.findRelatedAttachment(bucketList, node)) {
-            node = bucketList.removeItemAt(nodeNumber);
             // Let's release the attachment object held by the node else it won't go away until the window is destroyed
             node.attachment = null;
+            node = bucketList.removeChild(node);
           }
         }
         else {
@@ -1185,7 +1185,7 @@ Enigmail.msg = {
               node.attachment.contentType = this.modifiedAttach[i].origCType;
             }
             else {
-              node = bucketList.removeItemAt(nodeNumber);
+              node = bucketList.removeChild(node);
               // Let's release the attachment object held by the node else it won't go away until the window is destroyed
               node.attachment = null;
             }
@@ -1219,7 +1219,7 @@ Enigmail.msg = {
       while (node) {
         ++nodeNumber;
         if (node.attachment.url == this.attachOwnKeyObj.attachedObj.url) {
-          node = bucketList.removeItemAt(nodeNumber);
+          node = bucketList.removeChild(node);
           // Let's release the attachment object held by the node else it won't go away until the window is destroyed
           node.attachment = null;
           this.attachOwnKeyObj.attachedObj = null;
