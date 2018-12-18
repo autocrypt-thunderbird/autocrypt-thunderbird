@@ -134,10 +134,10 @@
 
     <vbox id="progressBox" collapsed="true">
       <label id="downloadLabel" value="&enigmail.setupWiz.pgInstall.downloadLabel;" control="progressBar"/>
-      <progressmeter id="downloadProgress" mode="determined" value="0"/>
+      <html:progress id="downloadProgress" style=":indeterminate" max="100" value="0"/>
       <label value=""/>
       <label id="installLabel" value="&enigmail.setupWiz.pgInstall.installLabel;" collapsed="true"/>
-      <progressmeter id="installProgress" mode="undetermined" collapsed="true"/>
+      <html:progress id="installProgress" style=":indeterminate; visibility:collapsed" max="100"/>
       <label value=""/>
       <label id="installComplete" value="&enigmail.setupWiz.pgInstall.installDone;" collapsed="true"/>
     </vbox>
@@ -304,7 +304,7 @@
       </hbox>
       <label id="passphraseErrorRepeat" hidden="true" value="&enigmail.setupWiz.pgKeyCreate.passErrorRepeat;" class="passphraseError"/>
       <description>&enigmail.setupWiz.pgKeyCreate.passQuality;</description>
-      <progressmeter id="passphraseQuality" mode="determined" value="0"/>
+      <html:progress id="passphraseQuality" max="100" value="0"/>
     </vbox>
 
     <separator/>
@@ -381,7 +381,7 @@
 
       <description>&enigmail.keygen.desc;</description>
       <groupbox>
-        <progressmeter id="keygenProgress" mode="determined" value="0"/>
+        <html:progress id="keygenProgress" max="100" value="0"/>
       </groupbox>
 
       <separator/>
@@ -429,7 +429,7 @@
           <hbox align="center">
             <label value="&enigmail.keyUpload.label;"/>
             <spacer width="5px"/>
-            <progressmeter mode="undetermined"/>
+            <html:progress style=":indeterminate"/>
           </hbox>
           <checkbox label="&enigmail.keyUpload.wks.label;" checked="true" id="keyUploadWks"/>
         </deck>

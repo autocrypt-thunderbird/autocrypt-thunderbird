@@ -25,6 +25,7 @@
 <window id="enigmailKeyManager"
         title="&enigmail.keyMan.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="enigmailKeyManagerLoad();"
         height="450"
         width="700"
@@ -474,6 +475,6 @@
 
   <hbox id="statusLine">
     <label id="statusText" value=" "/>
-    <progressmeter id="progressBar" mode="undetermined" value="0" collapsed="true"/>
+    <html:progress id="progressBar" style=":indeterminate; visibility:collapsed"/>
   </hbox>
 </window>

@@ -160,7 +160,7 @@
   <description>&enigmail.keygen.desc;</description>
 
   <groupbox>
-    <progressmeter id="keygenProgress" mode="determined" value="0"/>
+    <html:progress id="keygenProgress" max="100" value="0"/>
   </groupbox>
 
 </groupbox>

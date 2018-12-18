@@ -31,7 +31,7 @@ var gAllKeysSelected = 0;
 
 const DownloadListener = {
   onProgress: function(percentComplete) {
-    gProgressMeter.value = percentComplete;
+    gProgressMeter.setAttribue("value", percentComplete);
   },
   onCancel: null
 };
@@ -41,8 +41,7 @@ function onLoad() {
   gKeyServer = window.arguments[INPUT].keyserver;
   let searchList = window.arguments[INPUT].searchList;
   gProgressMeter = document.getElementById("dialog.progress");
-
-  gProgressMeter.mode = "undetermined";
+  gProgressMeter.removeAttribute("value");
 
   if (searchList.length == 1 &&
     searchList[0].search(/^0x[A-Fa-f0-9]{8,16}$/) === 0) {
@@ -108,8 +107,8 @@ function onAccept() {
 function startDownload(downloadKeys) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: startDownload\n");
   if (downloadKeys.length > 0) {
-    gProgressMeter.value = 0;
-    gProgressMeter.mode = "determined";
+    gProgressMeter.setAttribute("value", "0");
+    //gProgressMeter.mode = "determined";
     document.getElementById("progress.box").removeAttribute("hidden");
     document.getElementById("selall-button").setAttribute("hidden", "true");
     document.getElementById("dialog.accept").setAttribute("disabled", "true");

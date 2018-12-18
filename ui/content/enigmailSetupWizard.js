@@ -405,7 +405,7 @@ function installGnuPG() {
     },
 
     onError: function(errorMessage) {
-      if (typeof(errorMessage) == "object") {
+      if (typeof (errorMessage) == "object") {
         var s = EnigGetString("errorType." + errorMessage.type);
         if (errorMessage.type.startsWith("Security")) {
           s += "\n" + EnigGetString("setupWizard.downloadForbidden");
@@ -440,7 +440,7 @@ function installGnuPG() {
         downloadProgress.setAttribute("value", percentComplete);
       }
       else {
-        downloadProgress.setAttribute("mode", "undetermined");
+        downloadProgress.removeAttribute("value");
       }
     },
 
@@ -448,7 +448,7 @@ function installGnuPG() {
       gDownoadObj = null;
       downloadProgress.setAttribute("value", 100);
       installLabel.removeAttribute("collapsed");
-      installProgress.removeAttribute("collapsed");
+      installProgress.style.visibility = "visible";
     },
 
 
@@ -458,12 +458,11 @@ function installGnuPG() {
       progressBox.setAttribute("collapsed", "true");
       downloadProgress.setAttribute("value", 0);
       installLabel.setAttribute("collapsed", "true");
-      installProgress.setAttribute("collapsed", "true");
+      installProgress.style.visibility = "collapse";
     },
 
     onLoaded: function() {
       installProgress.setAttribute("value", 100);
-      installProgress.setAttribute("mode", "determined");
 
       document.getElementById("installComplete").removeAttribute("collapsed");
 
@@ -566,8 +565,7 @@ function setKeyTrustNextKey(keyList, index) {
   let keyType;
   try {
     keyType = Number(aKey[1]);
-  }
-  catch (ex) {
+  } catch (ex) {
     keyType = 0;
   }
 
@@ -684,13 +682,13 @@ function checkPassphraseQuality(txtBox) {
   var qualityRes = EnigmailPasswordCheck.checkQuality(txtBox.value);
 
   if (qualityRes.valid) {
-    gPassPhraseQuality.value = qualityRes.complexity;
+    gPassPhraseQuality.setAttribute("value", qualityRes.complexity);
   }
   else if (txtBox.value.length > 0) {
-    gPassPhraseQuality.value = (qualityRes.complexity / 2);
+    gPassPhraseQuality.setAttribute("value", (qualityRes.complexity / 2));
   }
   else {
-    gPassPhraseQuality.value = 0;
+    gPassPhraseQuality.setAttribute("value", 0);
   }
 
   checkPassphrasesEqual();
@@ -830,7 +828,8 @@ function enigGetSvc(resetCheck) {
   // Lazy initialization of enigmail JS component (for efficiency)
   // variant of GetEnigmailSvc function
 
-  if (resetCheck) gEnigmailSvc = null;
+  if (resetCheck)
+    gEnigmailSvc = null;
 
   if (gEnigmailSvc) {
     return gEnigmailSvc.initialized ? gEnigmailSvc : null;
@@ -838,8 +837,7 @@ function enigGetSvc(resetCheck) {
 
   try {
     gEnigmailSvc = getCore().createInstance();
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.ERROR("enigmailWizard.js: Error in instantiating EnigmailService\n");
     return null;
   }
@@ -856,11 +854,8 @@ function enigGetSvc(resetCheck) {
       try {
         // Reset alert count to default value
         EnigmailPrefs.getPrefBranch().clearUserPref("initAlert");
-      }
-      catch (ex) {}
-
-    }
-    catch (ex) {
+      } catch (ex) {}
+    } catch (ex) {
 
       return null;
     }
@@ -953,9 +948,10 @@ function wizardGenKey() {
       }
       gAllData = gAllData.replace(/[\r\n]*\[GNUPG:\] GOOD_PASSPHRASE/g, "").replace(/([\r\n]*\[GNUPG:\] PROGRESS primegen )(.)( \d+ \d+)/g, "$2");
       var progMeter = document.getElementById("keygenProgress");
-      var progValue = Number(progMeter.value);
+      var progValue = Number(progMeter.getAttribute("value"));
       progValue += (1 + (100 - progValue) / 200);
-      if (progValue >= 95) progValue = 10;
+      if (progValue >= 95)
+        progValue = 10;
       progMeter.setAttribute("value", progValue);
     }
   };
@@ -970,8 +966,7 @@ function wizardGenKey() {
       "RSA",
       EnigmailData.convertFromUnicode(passphrase),
       listener);
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("enigmailSetupWizard.js: genKey - generateKey() failed with " + ex.toString() + "\n" + ex.stack + "\n");
   }
 
@@ -1216,13 +1211,13 @@ function applyWizardSettings() {
 }
 
 function applyMozSetting(preference, newVal) {
-  if (typeof(newVal) == "boolean") {
+  if (typeof (newVal) == "boolean") {
     EnigmailPrefs.getPrefRoot().setBoolPref(preference, newVal);
   }
-  else if (typeof(newVal) == "number") {
+  else if (typeof (newVal) == "number") {
     EnigmailPrefs.getPrefRoot().setIntPref(preference, newVal);
   }
-  else if (typeof(newVal) == "string") {
+  else if (typeof (newVal) == "string") {
     EnigmailPrefs.getPrefRoot().setCharPref(preference, newVal);
   }
 }
@@ -1315,7 +1310,8 @@ function getServersForIdentity(accMgr, identity) {
 
 function ensureGpgHomeDir() {
   let homeDirPath = EnigmailGpgAgent.getGpgHomeDir();
-  if (!homeDirPath) throw "no gpghome dir";
+  if (!homeDirPath)
+    throw "no gpghome dir";
 
   let homeDir = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
   homeDir.initWithPath(homeDirPath);
@@ -1371,8 +1367,7 @@ function doImportSettings() {
   let zipR;
   try {
     zipR = EnigmailFiles.openZipFile(importFile);
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings - openZipFile() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     EnigAlert(EnigGetString("setupWizard.invalidSettingsFile"));
     return false;
@@ -1381,8 +1376,7 @@ function doImportSettings() {
   let cfg;
   try {
     cfg = ensureGpgHomeDir();
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings - ensureGpgHomeDir() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     return false;
   }
@@ -1447,8 +1441,7 @@ function doImportSettings() {
 
     try {
       if (doCfgFile) tmpFile.moveTo(cfg.homeDir, "gpg.conf");
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("enigmailSetupWizard.js: importSettings: Error with gpg.conf " + ex.toString() + "\n");
     }
   }

@@ -35,7 +35,7 @@ var gProgressListener = {
   },
 
   onStart: function() {
-    gDialog.progress.setAttribute("mode", "undetermined");
+    gDialog.progress.removeAttribute("value");
   },
 
   onStop: function() {
@@ -43,15 +43,13 @@ var gProgressListener = {
     // Indicate completion in status area.
 
     // Put progress meter at 100%.
-    gDialog.progress.setAttribute("value", 100);
-    gDialog.progress.setAttribute("mode", "normal");
+    gDialog.progress.setAttribute("value", "100");
 
     window.close();
   },
 
   onProgress: function(percentage) {
     gDialog.progress.setAttribute("value", percentage);
-    gDialog.progress.setAttribute("mode", "normal");
   }
 };
 
@@ -160,9 +158,7 @@ function onUnload() {
     try {
       msgProgress.unregisterListener(gProgressListener);
       msgProgress = null;
-    }
-
-    catch (exception) {}
+    } catch (exception) {}
   }
 }
 
@@ -174,7 +170,8 @@ function onCancel() {
 }
 
 function processEnd(resultStatus, details) {
-  EnigmailLog.DEBUG(`enigmailRetrieveProgress.js: processEnd(): resultStatus=${resultStatus}\n`);
+  EnigmailLog.DEBUG(`enigmailRetrieveProgress.js: processEnd(): resultStatus=${resultStatus}
+`);
 
   let returnObj = window.arguments[1];
   let inArg = window.arguments[0];

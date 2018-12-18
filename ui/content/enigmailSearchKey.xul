@@ -18,6 +18,7 @@
 <dialog id="enigmailSearchKeyDlg"
         title="&enigmail.searchKeyDlg.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="return onLoad();"
         ondialogaccept="return onAccept();"
         ondialogcancel="onCancel();"
@@ -70,7 +71,7 @@
 
   <hbox id="progress.box">
     <label value="&enigmail.progress.label;:" control="dialog.progress"/>
-    <progressmeter id="dialog.progress" mode="undetermined" value="0"/>
+    <html:progress id="dialog.progress" style=":indeterminate; visibility:collapsed" max="100"/>
   </hbox>
 
     <vbox align="start">
