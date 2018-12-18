@@ -73,6 +73,10 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       keyObj.keyId = keyObj.userId;
       var grpMembers = EnigmailData.convertGpgToUnicode(groups[i].keylist).replace(/\\e3A/g, ":").split(/[,;]/);
       for (var grpIdx = 0; grpIdx < grpMembers.length; grpIdx++) {
+        if (!("userIds" in keyObj)) {
+          keyObj.userIds = [];
+        }
+
         keyObj.userIds.push({
           userId: grpMembers[grpIdx],
           keyTrust: "q"
