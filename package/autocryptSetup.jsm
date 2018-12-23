@@ -78,7 +78,8 @@ var EnigmailAutocryptSetup = {
       // If no account, except Local Folders is configured
       if (accounts.length <= 1) {
         self.determinedSetupType.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
-        resolve(0);
+        resolve(self.determinedSetupType);
+        return;
       }
 
       // Iterating through each account
@@ -154,7 +155,7 @@ var EnigmailAutocryptSetup = {
 
       if (returnMsgValue.acSetupMessage) {
         self.determinedSetupType = returnMsgValue;
-        resolve(1);
+        resolve(self.determinedSetupType);
       }
       else {
         EnigmailLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}
