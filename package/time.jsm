@@ -57,8 +57,7 @@ var EnigmailTime = {
 
       try {
         return new Intl.DateTimeFormat(useLocale, options).format(dat);
-      }
-      catch (ex) {
+      } catch (ex) {
         return new Intl.DateTimeFormat("en-US", options).format(dat);
       }
     }

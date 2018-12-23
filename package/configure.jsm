@@ -111,8 +111,7 @@ function replaceKeyIdWithFpr() {
         }
       }
     }
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailDialog.alert("config upgrade: error" + ex.toString());
   }
 }
@@ -161,8 +160,7 @@ function setAutocryptForOldAccounts() {
         ac.incomingServer.setIntValue("acPreferEncrypt", 1);
       }
     }
-  }
-  catch (ex) {}
+  } catch (ex) {}
 }
 
 
@@ -184,8 +182,7 @@ function displayUpgradeInfo() {
   EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
   try {
     EnigmailWindows.openMailTab("chrome://enigmail/content/ui/upgradeInfo.html");
-  }
-  catch (ex) {}
+  } catch (ex) {}
 }
 
 
@@ -212,35 +209,15 @@ var EnigmailConfigure = {
     if (oldVer === "") {
       EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
 
-      let setupType = await EnigmailAutocryptSetup.determinePreviousInstallType();
+      let setupResult = await EnigmailAutocryptSetup.determinePreviousInstallType();
 
-      if (setupType.value === EnigmailConstants.AUTOSETUP_AC_SETUP_MSG) {
-        if (EnigmailDialog.confirmDlg(null,
-            EnigmailLocale.getString("acStartup.acMessageFound.desc"),
-            EnigmailLocale.getString("acStartup.import.label"),
-            EnigmailLocale.getString("dlg.button.cancel"))) {
-          EnigmailAutocryptSetup.performAutocryptSetup(setupType);
-        }
-      }
-      else if (setupType.value === EnigmailConstants.AUTOSETUP_AC_HEADER) {
-        if (EnigmailDialog.confirmDlg(null,
-            EnigmailLocale.getString("acStartup.acHeaderFound.desc"),
-            EnigmailLocale.getString("acStartup.import.label"),
-            EnigmailLocale.getString("dlg.button.cancel"))) {
-          EnigmailAutocryptSetup.processAutocryptHeader(setupType);
-        }
-      }
-      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_HEADER) {
-        EnigmailAutocryptSetup.createAutocryptKey(setupType);
-      }
-      else if (setupType.value == EnigmailConstants.AUTOSETUP_NO_ACCOUNT) {
-        // Code to be Added for Thunderbird where no accounts are added.
-      }
-
-      if (EnigmailPrefs.getPref("juniorMode") === 0 || (!isPepInstallable())) {
-        // start wizard if pEp Junior Mode is forced off or if pep cannot
-        // be installed/used
-        EnigmailWindows.openSetupWizard(win, false);
+      switch (EnigmailAutocryptSetup.value) {
+        case EnigmailConstants.AUTOSETUP_NOT_INITIALIZED:
+        case EnigmailConstants.AUTOSETUP_NO_ACCOUNT:
+        case EnigmailConstants.AUTOSETUP_PEP_HEADER:
+          break;
+        default:
+          EnigmailWindows.openSetupWizard(win);
       }
     }
     else {
