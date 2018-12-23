@@ -90,7 +90,8 @@ async function obtainKeyList(onlyKeys = null) {
     index: []
   };
 
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: obtainKeyList: #lines: ${pubKeyList.length}\n`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: obtainKeyList: #lines: ${pubKeyList.length}
+`);
   if (pubKeyList.length > 0) {
     appendKeyItems(pubKeyList, keyList);
 
@@ -159,7 +160,7 @@ function appendKeyItems(keyListString, keyList) {
         if (listRow[USERID_ID].length === 0) {
           listRow[USERID_ID] = "-";
         }
-        if (typeof(keyObj.userId) !== "string") {
+        if (typeof (keyObj.userId) !== "string") {
           keyObj.userId = EnigmailData.convertGpgToUnicode(listRow[USERID_ID]);
           if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST_ID]) < TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
@@ -225,6 +226,11 @@ function createKeyObj(lineArr) {
     keyObj.userId = null;
     keyObj.photoAvailable = false;
   }
+  else if (lineArr[ENTRY_ID] === "grp") {
+    keyObj.keyUseFor = "G";
+    keyObj.userIds = [];
+    keyObj.subKeys = [];
+  }
   keyObj.type = lineArr[ENTRY_ID];
 
   return keyObj;
@@ -235,7 +241,8 @@ function createKeyObj(lineArr) {
  * Handle secret keys for which gpg 2.0 does not create a public key record
  */
 function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: appendUnkownSecretKey: keyId: ${keyId}\n`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: appendUnkownSecretKey: keyId: ${keyId}
+`);
 
   let keyListStr = [];
 
@@ -259,7 +266,8 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
  * @return {Promise<nsIFile>} object or null in case no data / error.
  */
 async function getPhotoFileFromGnuPG(keyId, photoNumber) {
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}\n`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}
+`);
 
   const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
     "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
@@ -334,8 +342,7 @@ async function getPhotoFileFromGnuPG(keyId, photoNumber) {
       let extAppLauncher = Cc["@mozilla.org/mime;1"].getService(Ci.nsPIExternalAppLauncher);
       extAppLauncher.deleteTemporaryFileOnExit(picFile);
       return picFile;
-    }
-    catch (ex) {}
+    } catch (ex) {}
   }
   return null;
 }
@@ -385,7 +392,8 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
         keyId = lineTokens[KEY_ID];
         break;
       case "fpr":
-        if (fpr === "") fpr = lineTokens[USERID_ID];
+        if (fpr === "")
+          fpr = lineTokens[USERID_ID];
         break;
       case "uid":
       case "uat":
