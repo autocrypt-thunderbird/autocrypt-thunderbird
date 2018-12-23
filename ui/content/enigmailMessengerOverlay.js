@@ -122,7 +122,7 @@ Enigmail.msg = {
       t.addEventListener("pageshow", function(e) {
         if (e.type === "pageshow" && e.target.URL === "about:preferences") {
           let Overlays = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {}).Overlays;
-          Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://enigmail/content/ui/enigmailPrivacyOverlay.xul"]);
+          Overlays.loadOverlays("Enigmail", e.target.defaultView, ["chrome://enigmail/content/ui/enigmailPrivacyOverlay.xul"]);
         }
       }, false);
     }
