@@ -121,7 +121,9 @@ UIFILES = \
 	pepPrepHandshake.xul \
 	pepPrepHandshake.js \
 	pepTrustWords.xul \
-	pepTrustWords.js
+	pepTrustWords.js \
+	setupWizard2.js \
+	setupWizard2.xul
 	
 all: deploy
 

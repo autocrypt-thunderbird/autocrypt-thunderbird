@@ -187,6 +187,17 @@ function displayUpgradeInfo() {
 
 
 var EnigmailConfigure = {
+  /**
+   * configureEnigmail: main function for configuring Enigmail during the first run
+   * this method is called from core.jsm if Enigmail has not been set up before
+   * (determined via checking the configuredVersion in the preferences)
+   *
+   * @param {nsIWindow} win:                 The parent window. Null if no parent window available
+   * @param {Boolean}   startingPreferences: if true, called while switching to new preferences
+   *                        (to avoid re-check for preferences)
+   *
+   * @return {Promise<null>} 
+  */
   configureEnigmail: async function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
 

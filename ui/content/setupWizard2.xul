@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+<!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+%utilDTD;
+]>
+
+
+<dialog id="setupWizard2" title="Setup Enigmail" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="onLoad();" buttons="cancel" ondialogaccept="return onAccept();" oncancel="return onCancel();" minwidth="460px" minheight="500px">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizard2.js" />
+
+  <html:div id="searchingGnuPG">
+    <html:p>Looking for GnuPG ... <html:b id="foundGnuPG" style="visibility: hidden">OK</html:b></html:p>
+  </html:div>
+
+  <html:div id="requireGnuPG" style="margin:auto; visibility: collapse">
+    <html:p>
+      &enigmail.setupWiz.pgInstall.desc;
+    </html:p>
+
+    <html:div id="installBox" style="visibility: collapse">
+      <html:p>
+        &enigmail.setupWiz.pgInstall.installDesc1;
+      </html:p>
+      <html:p>
+        &enigmail.setupWiz.pgInstall.installDesc2;
+      </html:p>
+      <html:p>
+        <html:button type="button" id="btnInstallGnupg" onclick="installGnuPG()">&enigmail.setupWiz.pgInstall.installButton;</html:button>
+        <html:button type="button" id="btnLocateGnuPG" onclick="locateGpg()">&enigmail.setupWiz.pgInstall.locateButton;</html:button>
+      </html:p>
+    </html:div>
+
+    <html:div id="findGpgBox" style="visibility: collapse">
+      <html:p>
+        &enigmail.setupWiz.pgInstall.locateDesc;
+      </html:p>
+      <html:p>
+        <html:button onclick="locateGpg()">&enigmail.setupWiz.pgInstall.locateButton;</html:button>
+      </html:p>
+    </html:div>
+
+    <html:div id="progressBox" style="visibility: collapse">
+      <html:p>
+        &enigmail.setupWiz.pgInstall.downloadLabel;
+      </html:p>
+      <html:progress id="downloadProgress" style="width: 100%;" max="100" value="0"/>
+      <html:p/>
+      <html:div id="installProgressBox" style="visibility: collapse">
+        <html:p id="installLabel">
+          &enigmail.setupWiz.pgInstall.installLabel;
+        </html:p>
+        <html:progress id="installProgress" style="width: 100%; :indeterminate;" max="100"/>
+      </html:div>
+    </html:div>
+
+  </html:div>
+
+  <html:div id="determineInstall" style="margin:auto; visibility: collapse">
+    <html:p style="text-align: center;">Checking your setup ...
+      <image class="enigmailWheel enigmailSpinning"/>
+    </html:p>
+  </html:div>
+
+  <html:div id="previousInstall_ac" style="visibility: collapse;">
+    <html:p>Found Autocrypt</html:p>
+  </html:div>
+
+  <html:div id="previousInstall_pEp" style="visibility: collapse;">
+    <html:p>Found pEp</html:p>
+  </html:div>
+
+  <html:div id="previousInstall_encrypted" style="visibility: collapse;">
+    <html:p>Found encrypted messages</html:p>
+  </html:div>
+
+  <html:div id="previousInstall_none" style="visibility: collapse;">
+    <html:p>Found no encrypted</html:p>
+  </html:div>
+
+</dialog>
