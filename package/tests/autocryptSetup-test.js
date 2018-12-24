@@ -16,7 +16,7 @@ testing("autocryptSetup.jsm"); /*global EnigmailAutocryptSetup: false, getMsgFol
 
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-component("/modules/mailServices.js"); /*global MailServices: false */
+component("/modules/MailServices.jsm"); /*global MailServices: false */
 component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
 
 

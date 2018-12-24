@@ -8,7 +8,7 @@
 
 "use strict";
 
-component("/modules/mailServices.js"); /*global MailServices: false */
+component("/modules/MailServices.jsm"); /*global MailServices: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 component("/modules/iteratorUtils.jsm");
 

@@ -35,7 +35,7 @@ const {
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource:///modules/mailServices.js");
+Cu.import("resource:///modules/MailServices.jsm");
 // That one doesn't belong to MailServices.
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",
   "@mozilla.org/intl/scriptabledateformat;1");

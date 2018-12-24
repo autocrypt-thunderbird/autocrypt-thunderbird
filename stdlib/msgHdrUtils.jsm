@@ -46,7 +46,7 @@ Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for toXPCOMArray
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/mailServices.js");
+Cu.import("resource:///modules/MailServices.jsm");
 
 Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
 Cu.import("chrome://enigmail/content/modules/log.jsm");

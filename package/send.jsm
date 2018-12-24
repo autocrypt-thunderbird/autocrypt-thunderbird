@@ -20,7 +20,7 @@ Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdl
 Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
 Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("resource:///modules/mailServices.js"); /*global MailServices: false */
+Cu.import("resource:///modules/MailServices.jsm"); /*global MailServices: false */
 
 var EnigmailSend = {
   /**

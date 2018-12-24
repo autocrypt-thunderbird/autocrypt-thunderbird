@@ -27,7 +27,7 @@ const {
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI, defineLazyServiceGetter
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/mailServices.js");
+Cu.import("resource:///modules/MailServices.jsm");
 
 Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
 Cu.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
