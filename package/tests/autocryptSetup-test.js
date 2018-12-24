@@ -473,7 +473,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
   inspector.enterNestedEventLoop(0);
 
   EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
-    Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_AC_HEADER);
+    Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_NO_HEADER);
     inspector.exitNestedEventLoop();
   }).catch(err => {
     Assert.ok(false);
@@ -502,8 +502,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
 
   MailHelper.cleanMailFolder(MailHelper.getRootFolder());
 
-  const setupFolder = MailHelper.createMailFolder("setup-box");
-  copyMailToFolder("resources/autocrypt-setup-message.eml", setupFolder).then(() => {
+  copyMailToFolder("resources/autocrypt-setup-message.eml", inbox).then(() => {
     inspector.exitNestedEventLoop(0);
   });
   inspector.enterNestedEventLoop(0);

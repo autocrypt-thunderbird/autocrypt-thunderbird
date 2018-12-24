@@ -81,7 +81,7 @@
   </html:div>
 
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
-    <html:p>Found pEp</html:p>
+    <html:p>It looks like you were using pEp</html:p>
   </html:div>
 
   <html:div id="previousInstall_encrypted" style="visibility: collapse;">
