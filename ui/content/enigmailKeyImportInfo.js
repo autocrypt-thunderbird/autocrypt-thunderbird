@@ -8,13 +8,13 @@
 
 const Ci = Components.interfaces;
 
-Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
-Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
-Components.utils.import("chrome://enigmail/content/modules/events.jsm"); /* global EnigmailEvents: false */
-Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-Components.utils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/events.jsm"); /* global EnigmailEvents: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
 
 function onLoad() {
   var dlg = document.getElementById("enigmailKeyImportInfo");

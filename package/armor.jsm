@@ -11,8 +11,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailArmor"];
 
-Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
 
 const Ci = Components.interfaces;
 

@@ -14,13 +14,13 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("resource://gre/modules/Services.jsm"); /*global Services: false */
-Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("resource:///modules/MailServices.jsm"); /*global MailServices: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+ChromeUtils.import("resource://gre/modules/Services.jsm"); /*global Services: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+ChromeUtils.import("resource:///modules/MailServices.jsm"); /*global MailServices: false */
 
 var EnigmailSend = {
   /**

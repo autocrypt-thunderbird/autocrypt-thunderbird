@@ -12,11 +12,11 @@ var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
 
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/buildDate.jsm"); /* global EnigmailBuildDate: false */
-Cu.import("chrome://enigmail/content/modules/app.jsm"); /* global EnigmailApp: false */
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/buildDate.jsm"); /* global EnigmailBuildDate: false */
+ChromeUtils.import("chrome://enigmail/content/modules/app.jsm"); /* global EnigmailApp: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /* global EnigmailGpgAgent: false */
 
 function getEnigmailVersion() {
   let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate + ")";

@@ -12,9 +12,9 @@ var EXPORTED_SYMBOLS = ["EnigmailVerifyAttachment"];
 
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 const Ci = Components.interfaces;
 

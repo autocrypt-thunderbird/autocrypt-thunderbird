@@ -67,12 +67,12 @@ const Cu = Components.utils;
      * getVirtualKeySize
 */
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 class EnigmailKeyObj {
   constructor(keyData) {

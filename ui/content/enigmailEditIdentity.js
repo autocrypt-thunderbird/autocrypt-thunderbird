@@ -9,11 +9,11 @@
 
 "use strict";
 
-Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
-Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
-Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 
 if (!Enigmail) var Enigmail = {};
 

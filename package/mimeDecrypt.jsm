@@ -18,19 +18,19 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
-Cu.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
+ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";

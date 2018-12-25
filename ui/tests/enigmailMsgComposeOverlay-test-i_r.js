@@ -27,7 +27,7 @@ var EnigmailCore = {};
 
 var gSMFields;
 
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false*/
 
 var EnigmailPrefs = {
   getPref: (prop) => {

@@ -15,15 +15,15 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-Cu.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-Cu.importGlobalProperties(["TextDecoder"]);
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+Components.utils.importGlobalProperties(["TextDecoder"]);
 
 const {
   OS
-} = Cu.import("resource://gre/modules/osfile.jsm", {});
+} = ChromeUtils.import("resource://gre/modules/osfile.jsm", {});
 
 const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams");
 const lazyLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");

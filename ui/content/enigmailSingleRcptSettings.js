@@ -11,7 +11,7 @@
 
 "use strict";
 
-Components.utils.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailSingleRcptSettings");

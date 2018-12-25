@@ -17,20 +17,20 @@ const Cu = Components.utils;
 
 /*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
 
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/prefs.jsm");
-Cu.import("chrome://enigmail/content/modules/timer.jsm");
-Cu.import("chrome://enigmail/content/modules/app.jsm");
-Cu.import("chrome://enigmail/content/modules/locale.jsm");
-Cu.import("chrome://enigmail/content/modules/dialog.jsm");
-Cu.import("chrome://enigmail/content/modules/windows.jsm");
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
-Cu.import("chrome://enigmail/content/modules/installPep.jsm"); /* global EnigmailInstallPep: false */
-Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-Cu.import("chrome://enigmail/content/modules/autocryptSetup.jsm"); /* global EnigmailAutocryptSetup: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/app.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/installPep.jsm"); /* global EnigmailInstallPep: false */
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/autocryptSetup.jsm"); /* global EnigmailAutocryptSetup: false */
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;

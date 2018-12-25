@@ -15,19 +15,19 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/lazy.jsm");
-Cu.import("chrome://enigmail/content/modules/locale.jsm");
-Cu.import("chrome://enigmail/content/modules/core.jsm");
-Cu.import("chrome://enigmail/content/modules/persistentCrypto.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
-Cu.import("chrome://enigmail/content/modules/streams.jsm"); /* global EnigmailStreams: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/persistentCrypto.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
+ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /* global EnigmailStreams: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false */
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");

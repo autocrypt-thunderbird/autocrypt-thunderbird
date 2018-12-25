@@ -13,11 +13,11 @@ var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
 const Cu = Components.utils;
 
-Cu.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
 
 const EC = EnigmailCore;
 

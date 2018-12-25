@@ -15,11 +15,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/locale.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/windows.jsm");
-Cu.import("chrome://enigmail/content/modules/prefs.jsm");
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;

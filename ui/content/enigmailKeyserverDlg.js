@@ -10,9 +10,9 @@
 const Cu = Components.utils;
 const Ci = Components.interfaces;
 
-const {EnigmailLocale} = Cu.import("chrome://enigmail/content/modules/locale.jsm");
-const {EnigmailPrefs} = Cu.import("chrome://enigmail/content/modules/prefs.jsm");
-const {EnigmailDialog} = Cu.import("chrome://enigmail/content/modules/dialog.jsm");
+const {EnigmailLocale} = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+const {EnigmailPrefs} = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
+const {EnigmailDialog} = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
 
 
 function onLoad() {

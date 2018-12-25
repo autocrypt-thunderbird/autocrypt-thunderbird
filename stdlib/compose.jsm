@@ -24,14 +24,14 @@ const {
   results: Cr
 } = Components;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI, defineLazyServiceGetter
-Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/MailServices.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI, defineLazyServiceGetter
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource:///modules/MailServices.jsm");
 
-Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
-Cu.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 
 /**
  * Use the mailnews component to stream a message, and process it in a way

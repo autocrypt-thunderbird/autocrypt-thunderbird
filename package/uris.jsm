@@ -12,8 +12,8 @@ var EXPORTED_SYMBOLS = ["EnigmailURIs"];
 
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 
 const messageIdList = {};
 const encryptedUris = [];

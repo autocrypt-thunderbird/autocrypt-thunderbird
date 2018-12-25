@@ -18,8 +18,8 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 
 // load all modules lazily to avoid possible cross-reference errors
 const getEnigmailConsole = EnigmailLazy.loader("enigmail/pipeConsole.jsm", "EnigmailConsole");

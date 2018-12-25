@@ -9,10 +9,10 @@
 
 const Ci = Components.interfaces;
 
-Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
-Components.utils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
-Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 
 const INPUT = 0;
 const CLOSE_WIN = "close";

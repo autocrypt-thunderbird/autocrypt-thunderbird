@@ -13,12 +13,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
-Cu.import("chrome://enigmail/content/modules/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyserver.jsm"); /*global EnigmailKeyServer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ONE_HOUR_IN_MILLISEC = 60 * 60 * 1000;

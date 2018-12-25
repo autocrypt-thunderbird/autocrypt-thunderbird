@@ -17,8 +17,8 @@ EnigInitCommon("enigmailRulesEditor");
 const Cu = Components.utils;
 const Ci = Components.interfaces;
 
-Cu.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 
 const INPUT = 0;
 const RESULT = 1;

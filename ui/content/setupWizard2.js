@@ -6,18 +6,18 @@
 
 "use strict";
 
-const EnigmailAutocryptSetup = Cu.import("chrome://enigmail/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
-const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailApp = Cu.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
-const EnigmailPrefs = Cu.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailTimer = Cu.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
-const EnigmailLazy = Cu.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
-const EnigmailOS = Cu.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-const EnigmailDialog = Cu.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const InstallGnuPG = Cu.import("chrome://enigmail/content/modules/installGnuPG.jsm").InstallGnuPG;
+const EnigmailAutocryptSetup = ChromeUtils.import("chrome://enigmail/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const InstallGnuPG = ChromeUtils.import("chrome://enigmail/content/modules/installGnuPG.jsm").InstallGnuPG;
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 var gEnigmailSvc = null;

@@ -18,14 +18,14 @@ var gCurrentApi = null;
 
 const {
   Services
-} = Cu.import("resource://gre/modules/Services.jsm");
+} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 
 function EnigmailCryptoAPI() {
   if (!gCurrentApi) {
     const {
       getGnuPGAPI
-    } = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg.js");
+    } = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg.js");
 
     gCurrentApi = getGnuPGAPI();
   }

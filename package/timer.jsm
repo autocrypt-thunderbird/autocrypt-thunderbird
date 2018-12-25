@@ -10,7 +10,7 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
-Components.utils.import("resource://gre/modules/Timer.jsm"); /* global setTimeout: false, clearTimeout: false */
+ChromeUtils.import("resource://gre/modules/Timer.jsm"); /* global setTimeout: false, clearTimeout: false */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;

@@ -18,17 +18,17 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
-Cu.import("chrome://enigmail/content/modules/funcs.jsm");
-Cu.import("chrome://enigmail/content/modules/dialog.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false */
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("chrome://enigmail/content/modules/hash.jsm"); /*global EnigmailHash: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm"); /*global EnigmailHash: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");

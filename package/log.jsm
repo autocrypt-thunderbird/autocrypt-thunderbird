@@ -14,9 +14,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/pipeConsole.jsm");
-Cu.import("chrome://enigmail/content/modules/files.jsm");
-Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";

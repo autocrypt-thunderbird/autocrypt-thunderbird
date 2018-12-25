@@ -14,29 +14,29 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/pEp.jsm"); /*global EnigmailpEp: false */
-Cu.import("chrome://enigmail/content/modules/pEpListener.jsm"); /*global EnigmailpEpListener: false */
-Cu.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-Cu.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("chrome://enigmail/content/modules/addrbook.jsm"); /*global EnigmailAddrbook: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Cu.import("chrome://enigmail/content/modules/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
-Cu.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
-Cu.import("chrome://enigmail/content/modules/installPep.jsm"); /*global EnigmailInstallPep: false */
-Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("chrome://enigmail/content/modules/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
-Cu.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
-Cu.import("chrome://enigmail/content/modules/filters.jsm"); /*global EnigmailFilters: false */
-Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-Cu.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEp.jsm"); /*global EnigmailpEp: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpListener.jsm"); /*global EnigmailpEpListener: false */
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+ChromeUtils.import("chrome://enigmail/content/modules/addrbook.jsm"); /*global EnigmailAddrbook: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpFilter.jsm"); /*global EnigmailPEPFilter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
+ChromeUtils.import("chrome://enigmail/content/modules/installPep.jsm"); /*global EnigmailInstallPep: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/pEpKeySync.jsm"); /*global EnigmailPEPKeySync: false */
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/filters.jsm"); /*global EnigmailFilters: false */
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+ChromeUtils.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 const getInstallGnuPG = EnigmailLazy.loader("enigmail/installGnuPG.jsm", "InstallGnuPG");

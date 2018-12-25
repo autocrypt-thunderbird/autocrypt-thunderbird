@@ -13,18 +13,18 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailAutocryptSetup"];
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false*/
-Cu.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
-Cu.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
-Cu.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false*/
-Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false*/
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false*/
-Cu.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
-Cu.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false*/
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
-Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /* global EnigmailAutocrypt: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;

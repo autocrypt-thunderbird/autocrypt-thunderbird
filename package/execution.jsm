@@ -15,14 +15,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/data.jsm");
-Cu.import("chrome://enigmail/content/modules/files.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/subprocess.jsm");
-Cu.import("chrome://enigmail/content/modules/errorHandling.jsm");
-Cu.import("chrome://enigmail/content/modules/core.jsm");
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 
 const loadOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
 

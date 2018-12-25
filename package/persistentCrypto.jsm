@@ -12,31 +12,31 @@ var EXPORTED_SYMBOLS = ["EnigmailPersistentCrypto"];
 
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
-Cu.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
-Cu.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
-Cu.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
-Cu.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
-Cu.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
-Cu.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Cu.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Cu.import("chrome://enigmail/content/modules/attachment.jsm"); /*global EnigmailAttachment: false */
-Cu.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-Cu.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false*/
-Cu.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false*/
-Cu.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+ChromeUtils.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
+ChromeUtils.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
+ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/attachment.jsm"); /*global EnigmailAttachment: false */
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false*/
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
-Cu.import("chrome://enigmail/content/modules/glodaMime.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/glodaMime.jsm");
 
 const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");

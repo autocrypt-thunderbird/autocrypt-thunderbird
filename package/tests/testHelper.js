@@ -9,8 +9,8 @@
 "use strict";
 
 const osUtils = {};
-Components.utils.import("resource://gre/modules/osfile.jsm", osUtils);
-Components.utils.import("resource://gre/modules/FileUtils.jsm", osUtils);
+ChromeUtils.import("resource://gre/modules/osfile.jsm", osUtils);
+ChromeUtils.import("resource://gre/modules/FileUtils.jsm", osUtils);
 
 var TestHelper = {
   getMyPath: function() {
@@ -38,7 +38,7 @@ var TestHelper = {
     }
 
     try {
-      Components.utils.import(modName);
+      ChromeUtils.import(modName);
     } catch (ex) {
       dump("Error importing module: '" + modName + "'\n");
       dump(ex.message + "\n" + ex.stack);
@@ -318,7 +318,7 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
   return gotAc;
 }
 
-Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 
 function withEnigmail(f) {
   return function() {
@@ -335,8 +335,8 @@ function withEnigmail(f) {
 }
 
 function shutdownGpgAgent() {
-  const EnigmailGpgAgent = Components.utils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
-  const subprocess = Components.utils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
+  const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+  const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
 
   if (EnigmailGpgAgent.gpgconfPath) {
     const proc = {
@@ -358,8 +358,8 @@ function shutdownGpgAgent() {
 
 CustomAssert.registerExtraAssertionsOn(Assert);
 
-Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
 function withLogFiles(f) {
   return function() {
     try {

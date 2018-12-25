@@ -24,10 +24,10 @@ var {
   results: Cr
 } = Components;
 
-Cu.importGlobalProperties(["TextEncoder"]);
-Cu.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-Cu.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+Components.utils.importGlobalProperties(["TextEncoder"]);
+ChromeUtils.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
 
 if (AppConstants.platform == "win") {
   XPCOMUtils.defineLazyModuleGetter(this, "SubprocessImpl",

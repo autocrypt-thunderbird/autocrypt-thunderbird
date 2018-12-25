@@ -16,11 +16,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-const {EnigmailTimer} = Cu.import("chrome://enigmail/content/modules/timer.jsm", {});
-const {EnigmailKeyServer} = Cu.import("chrome://enigmail/content/modules/keyserver.jsm", {});
-const {EnigmailDialog} = Cu.import("chrome://enigmail/content/modules/dialog.jsm", {});
-const {EnigmailLog} = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
-const {EnigmailLocale} = Cu.import("chrome://enigmail/content/modules/locale.jsm", {});
+const {EnigmailTimer} = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm", {});
+const {EnigmailKeyServer} = ChromeUtils.import("chrome://enigmail/content/modules/keyserver.jsm", {});
+const {EnigmailDialog} = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm", {});
+const {EnigmailLog} = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm", {});
+const {EnigmailLocale} = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm", {});
 
 const INPUT = 0;
 const RESULT = 1;

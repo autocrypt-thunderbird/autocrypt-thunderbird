@@ -5,7 +5,7 @@
 
 /*
  * Import into a JS component using
- * 'Components.utils.import("chrome://enigmail/content/modules/subprocess.jsm");'
+ * 'ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm");'
  *
  * This object allows to start a process, and read/write data to/from it
  * using stdin/stdout/stderr streams.
@@ -116,9 +116,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/enigmailprocess_main.jsm"); /* global SubprocessMain: false */
-Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-Cu.import("resource://gre/modules/Task.jsm"); /* global Task: false */
+ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_main.jsm"); /* global SubprocessMain: false */
+ChromeUtils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
+ChromeUtils.import("resource://gre/modules/Task.jsm"); /* global Task: false */
 
 var EXPORTED_SYMBOLS = ["subprocess"];
 

@@ -17,9 +17,9 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-const Sqlite = Cu.import("resource://gre/modules/Sqlite.jsm").Sqlite;
-const EnigmailTimer = Cu.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const Sqlite = ChromeUtils.import("resource://gre/modules/Sqlite.jsm").Sqlite;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 
 
 var EnigmailSqliteDb = {

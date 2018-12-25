@@ -10,11 +10,11 @@
 
 const Ci = Components.interfaces;
 
-Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false*/
-Components.utils.import("chrome://enigmail/content/modules/pipeConsole.jsm"); /*global EnigmailConsole: false */
-Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm"); /*global EnigmailConsole: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */
 
 /* global goUpdateCommand: false */
 

@@ -8,10 +8,10 @@
 
 "use strict";
 
-Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("chrome://enigmail/content/modules/overlays.jsm"); /*global Overlays: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm"); /*global Overlays: false */
 
 if (!Enigmail) var Enigmail = {};
 

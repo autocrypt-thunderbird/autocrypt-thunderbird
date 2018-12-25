@@ -19,11 +19,11 @@ const Cu = Components.utils;
 
 try {
   // TB with omnijar
-  Cu.import("resource:///modules/gloda/utils.js");
+  ChromeUtils.import("resource:///modules/gloda/utils.js");
 }
 catch (ex) {
   // "old style" TB
-  Cu.import("resource://app/modules/gloda/utils.js");
+  ChromeUtils.import("resource://app/modules/gloda/utils.js");
 }
 
 // We don't define the exported symbol here - that is on purpose

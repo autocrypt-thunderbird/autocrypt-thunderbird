@@ -22,12 +22,12 @@ var {
 
 var EXPORTED_SYMBOLS = ["SubprocessImpl"];
 
-Cu.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
-Cu.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
-Cu.import("resource://gre/modules/osfile.jsm"); /* global OS: false */
-Cu.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-Cu.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+ChromeUtils.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
+ChromeUtils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
+ChromeUtils.import("resource://gre/modules/osfile.jsm"); /* global OS: false */
+ChromeUtils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
 
 XPCOMUtils.defineLazyServiceGetter(this, "env", "@mozilla.org/process/environment;1",
   "nsIEnvironment"); /* global env: false */

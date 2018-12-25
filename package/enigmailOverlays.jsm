@@ -45,9 +45,9 @@ const APP_SHUTDOWN = 2;
 
 const {
   Services
-} = Cu.import("resource://gre/modules/Services.jsm", {});
+} = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
+Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 // the following constants need to be customized for each addon
 const BASE_PATH = "chrome://enigmail/content/ui/";
@@ -115,10 +115,10 @@ const overlays = {
 
 const {
   EnigmailLog
-} = Cu.import("chrome://enigmail/content/modules/log.jsm", {});
+} = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm", {});
 const {
   Overlays
-} = Cu.import("chrome://enigmail/content/modules/overlays.jsm", {});
+} = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm", {});
 
 function DEBUG_LOG(str) {
   EnigmailLog.DEBUG(str);

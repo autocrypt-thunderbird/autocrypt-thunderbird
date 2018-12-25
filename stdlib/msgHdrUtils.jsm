@@ -41,15 +41,15 @@ const nsMsgFolderFlags_Inbox = 0x00001000;
 
 const PR_WRONLY = 0x02;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for defineLazyServiceGetter
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for toXPCOMArray
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/MailServices.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for defineLazyServiceGetter
+ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource:///modules/gloda/utils.js");
+ChromeUtils.import("resource:///modules/iteratorUtils.jsm"); // for toXPCOMArray
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource:///modules/MailServices.jsm");
 
-Cu.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 
 // Adding a messenger lazy getter to the MailServices even though it's not a service
 XPCOMUtils.defineLazyGetter(MailServices, "messenger", function() {

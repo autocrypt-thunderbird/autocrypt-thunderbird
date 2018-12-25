@@ -12,10 +12,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
-Cu.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
+ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/events.jsm"); /*global EnigmailEvents: false */
 
 function onLoad() {
   var dlg = document.getElementById("enigmailMsgBox");

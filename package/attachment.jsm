@@ -13,7 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailAttachment"];
 
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 
 var EnigmailAttachment = {
   getFileName: function(parent, byteData) {

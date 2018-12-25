@@ -12,11 +12,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
-Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
-Cu.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
-Cu.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-Cu.import("chrome://enigmail/content/modules/timer.jsm"); /* global EnigmailTimer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /* global EnigmailTimer: false */
 
 /*
 Arguments:

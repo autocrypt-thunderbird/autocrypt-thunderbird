@@ -16,38 +16,38 @@
 /*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false, getCurrentAccountKey: false */
 /*global Sendlater3Composing: false, MailServices: false */
 
-Components.utils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Components.utils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-Components.utils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Components.utils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-Components.utils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
-Components.utils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
-Components.utils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-Components.utils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-Components.utils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-Components.utils.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
-Components.utils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
-Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
-Components.utils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-Components.utils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-Components.utils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
-Components.utils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Components.utils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
-Components.utils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
-Components.utils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false */
-Components.utils.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
-Components.utils.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
-Components.utils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
-Components.utils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
-Components.utils.import("chrome://enigmail/content/modules/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
-Components.utils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-Components.utils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-Components.utils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global EnigmailMsgRead: false */
-Components.utils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
-Components.utils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+ChromeUtils.import("chrome://enigmail/content/modules/app.jsm"); /*global EnigmailApp: false */
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
+ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
+ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false */
+ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
+ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm"); /*global EnigmailClipboard: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+ChromeUtils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm"); /*global EnigmailPEPDecrypt: false */
+ChromeUtils.import("chrome://enigmail/content/modules/wkdLookup.jsm"); /*global EnigmailWkdLookup: false */
+ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
+ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global EnigmailMsgRead: false */
+ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
+ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
 try {
-  Components.utils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+  ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
 } catch (ex) {}
 
 
@@ -129,7 +129,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
 
     function loadOverlay(targetWindow, srcUrl) {
-      let {Overlays} = Components.utils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+      let {Overlays} = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm", {});
 
       Overlays.loadOverlays("Enigmail", targetWindow, [srcUrl]);
     }

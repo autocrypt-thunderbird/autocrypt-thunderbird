@@ -14,7 +14,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
-Cu.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
+ChromeUtils.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 
 
 const pubkey1 =

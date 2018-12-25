@@ -13,13 +13,13 @@ var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/locale.jsm");
-Cu.import("chrome://enigmail/content/modules/data.jsm");
-Cu.import("chrome://enigmail/content/modules/core.jsm");
-Cu.import("chrome://enigmail/content/modules/system.jsm"); /* global EnigmailSystem: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/system.jsm"); /* global EnigmailSystem: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");

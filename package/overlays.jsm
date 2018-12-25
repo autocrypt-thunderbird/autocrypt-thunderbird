@@ -32,10 +32,10 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-Cu.import("resource://gre/modules/Console.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/Console.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
+Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 let oconsole = new ConsoleAPI({
   prefix: "Overlays.jsm",

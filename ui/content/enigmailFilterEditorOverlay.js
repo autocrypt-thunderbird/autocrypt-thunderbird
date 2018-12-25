@@ -11,7 +11,7 @@
 /* global gActionListOrdered: false, checkActionsReorder: true */
 /* global nsMsgFilterAction: false, gFilterActionStrings: false, gFilterActionList: true */
 
-Components.utils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
 
 
 var EnigmailFilterEditor = {

@@ -11,7 +11,7 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-Cu.importGlobalProperties(["XMLHttpRequest"]);
+Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 var gAllModules = [];
 
@@ -23,16 +23,16 @@ function startup(data, reason) {
   try {
     const {
       EnigmailApp
-    } = Cu.import("chrome://enigmail/content/modules/app.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm", {});
     const {
       EnigmailCore
-    } = Cu.import("chrome://enigmail/content/modules/core.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm", {});
     const {
       EnigmailAmPrefsService
-    } = Cu.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
     const {
       EnigmailPgpmimeHander
-    } = Cu.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
 
     loadListOfModules();
 
@@ -50,35 +50,35 @@ function shutdown(data, reason) {
   try {
     const {
       EnigmailMsgRead
-    } = Cu.import("chrome://enigmail/content/modules/msgRead.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm", {});
     EnigmailMsgRead.onShutdown(reason);
 
     const {
       subprocess
-    } = Cu.import("chrome://enigmail/content/modules/subprocess.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm", {});
     subprocess.onShutdown();
 
     if (reason === APP_SHUTDOWN) return;
 
     const {
       EnigmailCore
-    } = Cu.import("chrome://enigmail/content/modules/core.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm", {});
     const {
       EnigmailAmPrefsService
-    } = Cu.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
     const {
       EnigmailPgpmimeHander
-    } = Cu.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
     const {
       EnigmailOverlays
-    } = Cu.import("chrome://enigmail/content/modules/enigmailOverlays.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/enigmailOverlays.jsm", {});
     const {
       EnigmailWindows
-    } = Cu.import("chrome://enigmail/content/modules/windows.jsm", {});
+    } = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm", {});
 
     const {
       Services
-    } = Components.utils.import("resource://gre/modules/Services.jsm", {});
+    } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
 
     shutdownModule(EnigmailWindows, reason);
     shutdownModule(EnigmailOverlays, reason);
@@ -149,7 +149,7 @@ function logException(exc) {
   try {
     const {
       Services
-    } = Cu.import("resource://gre/modules/Services.jsm");
+    } = ChromeUtils.import("resource://gre/modules/Services.jsm");
     Services.console.logStringMessage(exc.toString() + "\n" + exc.stack);
   }
   catch (x) {}

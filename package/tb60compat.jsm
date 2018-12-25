@@ -19,7 +19,7 @@ var EnigmailTb60Compat = {
       return ChromeUtils.generateQI(aCid);
     }
     else {
-      let XPCOMUtils = Cu.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
+      let XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
       return XPCOMUtils.generateQI(aCid);
     }
   },

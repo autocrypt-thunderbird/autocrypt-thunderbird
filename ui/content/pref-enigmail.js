@@ -25,9 +25,9 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/configBackup.jsm"); /* global EnigmailConfigBackup: false */
-Cu.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-Cu.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm"); /* global EnigmailConfigBackup: false */
+ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
+ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 

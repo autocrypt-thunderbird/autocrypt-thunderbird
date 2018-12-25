@@ -19,9 +19,9 @@ var {
 
 // const {
 //   Services
-// } = Cu.import("resource://gre/modules/Services.jsm", {}); /* global Services: false */
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-Cu.importGlobalProperties(["TextDecoder", "TextEncoder"]);
+// } = ChromeUtils.import("resource://gre/modules/Services.jsm", {}); /* global Services: false */
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
+Components.utils.importGlobalProperties(["TextDecoder", "TextEncoder"]);
 
 XPCOMUtils.defineLazyModuleGetter(this, "AsyncShutdown",
   "resource://gre/modules/AsyncShutdown.jsm"); /* global AsyncShutdown: false */

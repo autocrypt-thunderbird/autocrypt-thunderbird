@@ -16,7 +16,7 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 
 const CATEGORY = "mailnews-accountmanager-extensions";
 const CATEGORY_ENTRY = "enigmail-account-manager-extension";

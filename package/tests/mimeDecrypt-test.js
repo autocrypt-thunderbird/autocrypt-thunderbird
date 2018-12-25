@@ -31,7 +31,7 @@ component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
 component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
 component("enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 
 
 test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {

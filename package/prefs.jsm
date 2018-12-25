@@ -14,11 +14,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-Cu.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
 const {
   Services
-} = Cu.import("resource://gre/modules/Services.jsm");
+} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
 

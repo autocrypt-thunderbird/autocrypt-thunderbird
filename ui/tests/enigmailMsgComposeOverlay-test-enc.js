@@ -28,7 +28,7 @@ window.document = document;
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
 /* global EnigmailMimeEncrypt: false */
 
-Cu.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 
 component("enigmail/constants.jsm"); /* global EnigmailConstants: false */
 component("enigmail/locale.jsm"); /* global EnigmailLocale: false */

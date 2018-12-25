@@ -11,7 +11,7 @@ var EXPORTED_SYMBOLS = ["EnigmailClipboard"];
 
 // Import the Services module for future use, if we're not in
 // a browser window where it's already loaded.
-Components.utils.import('resource://gre/modules/Services.jsm');
+ChromeUtils.import('resource://gre/modules/Services.jsm');
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;

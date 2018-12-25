@@ -14,7 +14,7 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/locale.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 
 const DATE_2DIGIT = "2-digit";
 const DATE_4DIGIT = "numeric";

@@ -14,14 +14,14 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("chrome://enigmail/content/modules/funcs.jsm");
-Cu.import("chrome://enigmail/content/modules/log.jsm");
-Cu.import("chrome://enigmail/content/modules/os.jsm");
-Cu.import("chrome://enigmail/content/modules/files.jsm");
-Cu.import("chrome://enigmail/content/modules/app.jsm");
-Cu.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-Cu.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-Cu.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
+ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/os.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/app.jsm");
+ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
+ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;

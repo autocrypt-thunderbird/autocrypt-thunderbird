@@ -18,12 +18,12 @@ const Cu = Components.utils;
  * Message-reading related functions
  */
 
-const EnigmailPrefs = (Cu.import("chrome://enigmail/content/modules/prefs.jsm", {})).EnigmailPrefs;
-const EnigmailApp = (Cu.import("chrome://enigmail/content/modules/app.jsm", {})).EnigmailApp;
-const EnigmailVersioning = (Cu.import("chrome://enigmail/content/modules/versioning.jsm", {})).EnigmailVersioning;
-const EnigmailKeyRing = (Cu.import("chrome://enigmail/content/modules/keyRing.jsm", {})).EnigmailKeyRing;
-const EnigmailFuncs = (Cu.import("chrome://enigmail/content/modules/funcs.jsm", {})).EnigmailFuncs;
-const EnigmailAutocrypt = (Cu.import("chrome://enigmail/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
+const EnigmailPrefs = (ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm", {})).EnigmailPrefs;
+const EnigmailApp = (ChromeUtils.import("chrome://enigmail/content/modules/app.jsm", {})).EnigmailApp;
+const EnigmailVersioning = (ChromeUtils.import("chrome://enigmail/content/modules/versioning.jsm", {})).EnigmailVersioning;
+const EnigmailKeyRing = (ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm", {})).EnigmailKeyRing;
+const EnigmailFuncs = (ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm", {})).EnigmailFuncs;
+const EnigmailAutocrypt = (ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
 
 const ExtraHeaders = ["autocrypt", "openpgp"];
 

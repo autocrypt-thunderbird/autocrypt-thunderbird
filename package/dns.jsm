@@ -23,11 +23,11 @@ const Cu = Components.utils;
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
-const EnigmailCore = Cu.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailOS = Cu.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-const subprocess = Cu.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 const RESTYPE_WIN_NLSOOKUP = 1;
 const RESTYPE_UNIX_NLSOOKUP = 2;

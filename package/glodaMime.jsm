@@ -24,11 +24,11 @@ const Cu = Components.utils;
 /*global MsgHdrToMimeMessage: false */
 try {
   // TB with omnijar
-  Cu.import("resource:///modules/gloda/mimemsg.js");
+  ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 }
 catch (ex) {
   // "old style" TB
-  Cu.import("resource://app/modules/gloda/mimemsg.js");
+  ChromeUtils.import("resource://app/modules/gloda/mimemsg.js");
 }
 
 // The original naming is inconsistent with JS standards for classes vs functions
