@@ -35,11 +35,9 @@ var EnigmailMsgRead = {
     let r = EnigmailPrefs.getPrefRoot();
 
     // is the Mozilla Platform number >= 59?
-    let isPlatform59 = EnigmailVersioning.greaterThanOrEqual(EnigmailApp.getPlatformVersion(), "59.0a1");
+    const PREF_NAME = "mailnews.headers.extraAddonHeaders";
 
-    let prefName = (isPlatform59 ? "mailnews.headers.extraAddonHeaders" : "mailnews.headers.extraExpandedHeaders");
-
-    let hdr = r.getCharPref(prefName);
+    let hdr = r.getCharPref(PREF_NAME);
 
     if (hdr !== "*") { // do nothing if extraAddonHeaders is "*" (all headers)
       for (let h of ExtraHeaders) {
@@ -50,29 +48,8 @@ var EnigmailMsgRead = {
         }
       }
 
-      r.setCharPref(prefName, hdr);
+      r.setCharPref(PREF_NAME, hdr);
     }
-
-    if (isPlatform59) {
-      this.cleanupOldPref();
-    }
-  },
-
-  /**
-   * Clean up extraExpandedHeaders after upgrading to TB 59 and newer, or upon shutdown.
-   */
-  cleanupOldPref: function() {
-    let r = EnigmailPrefs.getPrefRoot();
-
-    let hdr = r.getCharPref("mailnews.headers.extraExpandedHeaders");
-    for (let h of ExtraHeaders) {
-      let sr = new RegExp("\\b" + h + "\\b", "i");
-      if (hdr.search(h) >= 0) {
-        hdr = hdr.replace(sr, " ");
-      }
-    }
-
-    r.setCharPref("mailnews.headers.extraExpandedHeaders", hdr.trim());
   },
 
   /**
@@ -302,16 +279,5 @@ var EnigmailMsgRead = {
     }
     catch (ex) {}
     return null;
-  },
-
-
-  onShutdown: function(reason) {
-    try {
-      let isPlatform59 = EnigmailVersioning.greaterThanOrEqual(EnigmailApp.getPlatformVersion(), "59.0a1");
-      if (isPlatform59) return;
-
-      EnigmailMsgRead.cleanupOldPref();
-    }
-    catch (ex) {}
   }
 };
