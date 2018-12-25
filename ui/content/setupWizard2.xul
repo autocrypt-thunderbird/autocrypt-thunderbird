@@ -81,7 +81,10 @@
   </html:div>
 
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
-    <html:p>It looks like you were using pEp</html:p>
+    <html:p>
+      We determined that you are using Pretty Easy Privacy (p≡p).
+      Please export your keys from your existing device and import them here.
+    </html:p>
   </html:div>
 
   <html:div id="previousInstall_encrypted" style="visibility: collapse;">
@@ -89,7 +92,10 @@
   </html:div>
 
   <html:div id="previousInstall_none" style="visibility: collapse;">
-    <html:p>Found no encrypted</html:p>
+    <html:p>
+      We could not find any encrypted emails in your accounts.
+      We will automatically create keys and configure Enigmail accordingly.
+    </html:p>
   </html:div>
 
 </dialog>
