@@ -16,7 +16,7 @@ testing("rules.jsm");
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/files.jsm"); /*global EnigmailFiles: false */
 
-ChromeUtils.importGlobalProperties(["XMLHttpRequest"]);
+Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 
 /*
