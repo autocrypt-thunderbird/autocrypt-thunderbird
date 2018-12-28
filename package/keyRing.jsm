@@ -151,6 +151,8 @@ var EnigmailKeyRing = {
     EnigmailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
     let s;
 
+    if (! keyId) return null;
+
     if (keyId.search(/^0x/) === 0) {
       keyId = keyId.substr(2);
     }
@@ -364,7 +366,7 @@ var EnigmailKeyRing = {
             else if (thisTrust === maxTrustLevel) {
               r.push(keyObj.userIds[i].userId);
             }
-          // else do not add uid
+            // else do not add uid
           }
           else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
             // UID valid  OR  key not valid, but invalid keys allowed
@@ -417,7 +419,15 @@ var EnigmailKeyRing = {
 
     if (includeSecretKey) {
 
-      let keyList = userId.split(/[ ,\t]+/);
+      let keyList;
+      if (userId) {
+        keyList = userId.split(/[ ,\t]+/);
+      }
+      else {
+        keyList = this.getAllSecretKeys().map(keyObj => {
+          return keyObj.keyId;
+        });
+      }
       let secKeyBlock = keyList.map(uid => {
         let keyObj = EnigmailKeyRing.getKeyById(uid);
         if (keyObj) return keyObj.getSecretKey(false).keyData;
@@ -484,7 +494,8 @@ var EnigmailKeyRing = {
     try {
       let trustData = EnigmailFiles.readFile(inputFile);
       EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
-    } catch (ex) {}
+    }
+    catch (ex) {}
 
     return exitCodeObj.value;
   },
@@ -675,11 +686,13 @@ var EnigmailKeyRing = {
               EnigmailKeyRing.clearCache();
             }
             listener.onStopRequest(result.exitCode);
-          } catch (ex) {}
+          }
+          catch (ex) {}
         },
         mergeStderr: false
       });
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.ERROR("keyRing.jsm: generateKey: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
@@ -1054,7 +1067,8 @@ function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
         gLoadingKeys = false;
       });
     waitForKeyList();
-  } catch (ex) {
+  }
+  catch (ex) {
     EnigmailLog.ERROR("keyRing.jsm: loadKeyList: exception: " + ex.toString());
   }
 }
@@ -1160,7 +1174,8 @@ function runKeyUsabilityCheck() {
       else {
         getKeyUsability().checkOwnertrust();
       }
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.message + "\n" + ex.stack + "\n");
     }
 
@@ -1170,7 +1185,7 @@ function runKeyUsabilityCheck() {
 function waitForKeyList() {
   let mainThread = Services.tm.mainThread;
   while (gLoadingKeys)
-  mainThread.processNextEvent(true);
+    mainThread.processNextEvent(true);
 }
 
 
