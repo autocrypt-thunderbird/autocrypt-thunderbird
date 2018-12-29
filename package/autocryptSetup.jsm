@@ -62,7 +62,9 @@ var EnigmailAutocryptSetup = {
    */
   determinePreviousInstallType: function() {
     let self = this;
-    gDeterminedSetupType = null;
+    gDeterminedSetupType = {
+      value: EnigmailConstants.AUTOSETUP_NOT_INITIALIZED
+    };
 
     return new Promise(async (resolve, reject) => {
       EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType()\n");
