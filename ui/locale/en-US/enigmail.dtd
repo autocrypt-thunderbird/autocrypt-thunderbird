@@ -87,6 +87,7 @@
 <!ENTITY enigmail.basicPrefs.label       "Basic Settings">
 
 <!ENTITY enigmail.moreOptions.label       "More Options">
+<!ENTITY enigmail.general.okLabel         "OK">
 
 <!ENTITY enigmail.useNonDefaultComment.label "Add Enigmail comment in OpenPGP signature">
 
@@ -114,6 +115,9 @@
 
 <!ENTITY enigmail.decryptbutton.label     "Decrypt">
 <!ENTITY enigmail.decryptbutton.tip       "Decrypt or verify the message with Enigmail">
+
+<!ENTITY enigmail.doneButton.label        "Done">
+<!ENTITY enigmail.doneButton.accesskey    "D">
 
 <!ENTITY enigmail.messengermenu.accesskey "a">
 
@@ -888,3 +892,11 @@
 <!ENTITY enigmail.acKeyTransfer.displayPasswd.title  "Code for Autocrypt Setup Message">
 <!ENTITY enigmail.acKeyTransfer.msgCreated.desc      "The setup message has been sent to yourself.<html:br/><html:br/>Please switch to the other device now and open the message. You should be prompted for a setup code. Please type the following digits into the prompt:">
 <!ENTITY enigmail.acKeyTransfer.switchDevice.desc    "Once you're done, your other device will be ready to use Autocrypt.">
+
+<!ENTITY enigmail.importSetup.dlgTitle               "Restore Settings and Keys">
+<!ENTITY enigmail.importSetup.topDesc                "Using this dialog, you can restore your settings and keys from an existing Enigmail installation. To create a backup of your settings and keys, use the 'Transfer Settings' tab in the Enigmail preferences.">
+<!ENTITY enigmail.importSetup.specifyImportFile      "Please specify the backup file to use for restoring your settings and keys:">
+<!ENTITY enigmail.importSetup.startRestoreLabel      "Start Restoring">
+<!ENTITY enigmail.importSetup.importingKeys          "Importing keys in GnuPG. This may take a while ...">
+<!ENTITY enigmail.importSetup.restoringGnupgSettings "Restoring GnuPG settings ...">
+<!ENTITY enigmail.importSetup.restoringEnigmail      "Restoring Enigmail settings ...">

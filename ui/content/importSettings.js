@@ -6,28 +6,16 @@
 
 "use strict";
 
-const EnigmailAutocryptSetup = ChromeUtils.import("chrome://enigmail/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
-const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
-const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
-const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
-const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const InstallGnuPG = ChromeUtils.import("chrome://enigmail/content/modules/installGnuPG.jsm").InstallGnuPG;
 const EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
 const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 
-
-const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 var gImportFile = null;
 var gImportInProgress = false;
-
-// TODO: Need to localize dialog
 
 function onLoad() {
   let dlg = document.getElementById("importSettingsDialog");
@@ -49,7 +37,7 @@ function browseFile() {
 
   gImportFile.normalize();
   if (!gImportFile.isFile()) {
-    EnigmailDialog.alert(Window, "Importfile is not a regular file!\n");
+    EnigmailDialog.alert(window, EnigmailLocale.getString("importSettings.errorNoFile"));
     return;
   }
 
@@ -233,7 +221,8 @@ function closeWindow() {
 
 function onCancel() {
   if (gImportInProgress) {
-    let r = EnigmailDialog.confirmDlg(window, "Import in progress. Do you really want to cancel?", "Abort import", "Continue");
+    let r = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("importSettings.cancelWhileInProgress"),
+      EnigmailLocale.getString("importSettings.button.abortImport"), EnigmailLocale.getString("dlg.button.continue"));
     if (r) {
       gImportInProgress = false;
     }
