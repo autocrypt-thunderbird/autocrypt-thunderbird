@@ -303,9 +303,7 @@ function backupPrefs() {
 
 
 function restorePrefs() {
-
-  window.open("chrome://enigmail/content/ui/enigmailSetupWizard.xul?doRestore=true",
-    "", "chrome,centerscreen,resizable,modal");
+  EnigmailWindows.openImportSettings(window);
 }
 
 function disableManually(disable) {

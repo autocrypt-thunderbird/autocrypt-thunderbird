@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+<!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+%utilDTD;
+]>
+
+<!-- TODO: Need to localize dialog -->
+
+<dialog id="importSettingsDialog" title="Import Settings"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  buttons="accept,cancel"
+  buttonlabelaccept="Done"
+  onload="onLoad();"
+  ondialogcancel="return onCancel();"
+  minwidth="460px" minheight="300px">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/importSettings.js" />
+
+  <html:div>
+    <html:p>Please specify the file to import:</html:p>
+    <html:p>
+      <html:input type="text" id="importFileName" readonly="true" size="30"/>
+      <html:button type="button" id="btnBrowse" onclick="browseFile()">Browse ...</html:button>
+    </html:p>
+  </html:div>
+
+  <html:p>
+    <html:button type="button" id="btnStartImport" disabled="true" onclick="startImport()">Start Restoring</html:button>
+  </html:p>
+
+  <html:div style="margin:auto">
+    <html:p id="importingKeys" style="visibility: collapse">
+      Importing keys to GnuPG. This may take a while
+      <image id="spinningWheel" class="enigmailWheel enigmailSpinning"/>
+      <html:b id="importingKeysOK" style="visibility: hidden">OK</html:b>
+    </html:p>
+  </html:div>
+
+  <html:p id="restoreGnuPGSettings" style="visibility: collapse">
+    Restoring GnuPG settings ... <html:b id="restoreGnuPGSettingsOK" style="visibility: hidden">OK</html:b>
+  </html:p>
+
+  <html:p id="restoreEnigmailPrefs" style="visibility: collapse">
+    Restoring Enigmail settings ... <html:b id="restoreEnigmailPrefsOK" style="visibility: hidden">OK</html:b>
+  </html:p>
+
+</dialog>

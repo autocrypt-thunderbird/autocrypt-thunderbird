@@ -18,8 +18,9 @@
 %utilDTD;
 ]>
 
+<!-- TODO: Need to localize dialog -->
 
-<dialog id="setupWizard2" title="Setup Enigmail" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="onLoad();" buttons="cancel" ondialogaccept="return onAccept();" oncancel="return onCancel();" minwidth="460px" minheight="500px">
+<dialog id="setupWizard2" title="Setup Enigmail" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="onLoad();" buttons="cancel" ondialogaccept="return onAccept();" ondialogcancel="return onCancel();" minwidth="460px" minheight="400px">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizard2.js" />
 
@@ -76,8 +77,18 @@
     </html:p>
   </html:div>
 
+
+  <html:div id="previousInstall_acSetup" style="visibility: collapse;">
+    <html:p>Found Autocrypt Setup Message. Click on the 'Start Setup' button below to initiate the setup procedure.</html:p>
+    <html:button type="button" id="btnInitiateAcSetup" onclick="importAcSetup()">Start Setup</html:button>
+  </html:div>
+
   <html:div id="previousInstall_ac" style="visibility: collapse;">
-    <html:p>Found Autocrypt</html:p>
+    <html:p>Found Autocrypt without Setup Message.
+      We recommend that you create an Autocrypt Setup Message on your existing device
+      and then click on "Rescan Inbox". Alternatively, you can export your settings and keys from
+      a previous Enigmail installation, and restore these settings here.
+    </html:p>
   </html:div>
 
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
@@ -97,5 +108,10 @@
       We will automatically create keys and configure Enigmail accordingly.
     </html:p>
   </html:div>
+
+  <html:p>
+    <html:button type="button" id="btnRescanInbox" style="visibility: collapse;" onclick="rescanInbox()">Rescan Inbox</html:button>
+    <html:button type="button" id="btnImportSettings" style="visibility: collapse;" onclick="importSettings()">Restore Settings and Keys</html:button>
+  </html:p>
 
 </dialog>

@@ -209,6 +209,19 @@ var EnigmailWindows = {
   },
 
   /**
+   * Display the OpenPGP key manager window
+   *
+   * no return value
+   */
+  openImportSettings: function(win) {
+    EnigmailCore.getService(win);
+
+    EnigmailWindows.openWin("",
+      "chrome://enigmail/content/ui/importSettings.xul",
+      "chrome,dialog,centerscreen,resizable,modal");
+  },
+
+  /**
    * If the Key Manager is open, dispatch an event to tell the key
    * manager to refresh the displayed keys
    */

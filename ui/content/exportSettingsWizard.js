@@ -75,6 +75,7 @@ function doExport(tmpDir) {
 
   EnigmailKeyRing.extractKey(true, null, keyRingFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
+    EnigmailLog.DEBUG("importExportWizard: error in exporting keys\n");
     EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
@@ -83,6 +84,7 @@ function doExport(tmpDir) {
   otFile.append("ownertrust.txt");
   EnigmailKeyRing.extractOwnerTrust(otFile, exitCodeObj, errorMsgObj);
   if (exitCodeObj.value !== 0) {
+    EnigmailLog.DEBUG("importExportWizard: error in exporting ownertrust\n");
     EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
@@ -90,29 +92,35 @@ function doExport(tmpDir) {
   let prefsFile = tmpDir.clone();
   prefsFile.append("prefs.json");
   if (EnigmailConfigBackup.backupPrefs(prefsFile) !== 0) {
+    EnigmailLog.DEBUG("importExportWizard: error in exporting prefs.json\n");
     EnigmailDialog.alert(window, EnigmailLocale.getString("dataExportError"));
     return false;
   }
 
-  let homeDir = EnigmailGpgAgent.getGpgHomeDir();
-  let gpgConfgFile = null;
-  let zipW = EnigmailFiles.createZipFile(gWorkFile.file);
+  try {
+    let homeDir = EnigmailGpgAgent.getGpgHomeDir();
+    let gpgConfgFile = null;
+    let zipW = EnigmailFiles.createZipFile(gWorkFile.file);
 
-  zipW.addEntryFile("keyring.asc", Ci.nsIZipWriter.COMPRESSION_DEFAULT, keyRingFile, false);
-  zipW.addEntryFile("ownertrust.txt", Ci.nsIZipWriter.COMPRESSION_DEFAULT, otFile, false);
-  zipW.addEntryFile("prefs.json", Ci.nsIZipWriter.COMPRESSION_DEFAULT, prefsFile, false);
+    zipW.addEntryFile("keyring.asc", Ci.nsIZipWriter.COMPRESSION_DEFAULT, keyRingFile, false);
+    zipW.addEntryFile("ownertrust.txt", Ci.nsIZipWriter.COMPRESSION_DEFAULT, otFile, false);
+    zipW.addEntryFile("prefs.json", Ci.nsIZipWriter.COMPRESSION_DEFAULT, prefsFile, false);
 
-  if (homeDir) {
-    gpgConfgFile = new osUtils.FileUtils.File(homeDir);
-    gpgConfgFile.append("gpg.conf");
+    if (homeDir) {
+      gpgConfgFile = new osUtils.FileUtils.File(homeDir);
+      gpgConfgFile.append("gpg.conf");
+    }
+
+    if (gpgConfgFile && gpgConfgFile.exists()) {
+      zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
+    }
+    zipW.close();
+
+    tmpDir.remove(true);
   }
-
-  if (gpgConfgFile && gpgConfgFile.exists()) {
-    zipW.addEntryFile("gpg.conf", Ci.nsIZipWriter.COMPRESSION_DEFAULT, gpgConfgFile, false);
+  catch(ex) {
+    EnigmailLog.ERROR(`importExportWizard: error while creating ZIP file ${ex.toString()}\n`);
   }
-  zipW.close();
-
-  tmpDir.remove(true);
   document.getElementById("doneMessage").removeAttribute("hidden");
 
   return true;
@@ -151,7 +159,9 @@ function startExport() {
   try {
     retVal = doExport(tmpDir);
   }
-  catch (ex) {}
+  catch (ex) {
+    EnigmailLog.ERROR(`exportSettingsWizard.js: Exception during export: ${ex.toString()} at\n${ex.stack}\n`);
+  }
 
   // stop spinning the wheel
   document.getElementById("spinningWheel").setAttribute("hidden", "true");

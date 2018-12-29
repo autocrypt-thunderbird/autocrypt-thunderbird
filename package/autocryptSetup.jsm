@@ -62,6 +62,7 @@ var EnigmailAutocryptSetup = {
    */
   determinePreviousInstallType: function() {
     let self = this;
+    gDeterminedSetupType = null;
 
     return new Promise(async (resolve, reject) => {
       EnigmailLog.DEBUG("autocryptSetup.jsm: determinePreviousInstallType()\n");
@@ -209,26 +210,37 @@ var EnigmailAutocryptSetup = {
   /**
    * Process the Autocrypt Setup Message
    *
-   * @param headerValue: Object - containing header and attachment of an Autocrypt Setup Message
+   * @param {Object} headerValue: contains header and attachment of an Autocrypt Setup Message
+   * @param {nsIWindow} passwordWindow: parent window for password dialog
+   * @param {nsIWindow} confirmWindow:  parent window for confirmation dialog
+   *        (note: split into 2 parent windows for unit tests)
    *
+   * @return {Promise<Number>}: Import result.
+   *                  1: imported OK
+   *                  0: no Autocrypt setup message
+   *                 -1: import not OK (wrong password, canceled etc.)
    */
 
-  performAutocryptSetup: function(headerValue, passwordWindow = null, confirmWindow = null) {
-
+  performAutocryptSetup: async function(headerValue, passwordWindow = null, confirmWindow = null) {
     EnigmailLog.DEBUG("autocryptSetup.jsm: performAutocryptSetup()\n");
+
+    let imported = 0;
     if (headerValue.attachment.contentType.search(/^application\/autocrypt-setup$/i) === 0) {
-      EnigmailAutocrypt.getSetupMessageData(headerValue.attachment.url).then(res => {
+      try {
+        let res = await EnigmailAutocrypt.getSetupMessageData(headerValue.attachment.url);
         let passwd = EnigmailWindows.autocryptSetupPasswd(passwordWindow, "input", res.passphraseFormat, res.passphraseHint);
 
         if ((!passwd) || passwd == "") {
           throw "noPasswd";
         }
 
-        return EnigmailAutocrypt.handleBackupMessage(passwd, res.attachmentData, headerValue.acSetupMessage.author);
-      }).then(res => {
+        await EnigmailAutocrypt.handleBackupMessage(passwd, res.attachmentData, headerValue.acSetupMessage.author);
         EnigmailDialog.info(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.success", headerValue.acSetupMessage.author));
-      }).catch(err => {
+        imported = 1;
+      }
+      catch (err) {
         EnigmailLog.DEBUG("autocryptSetup.jsm: performAutocryptSetup got cancel status=" + err + "\n");
+        imported = -1;
 
         switch (err) {
           case "getSetupMessageData":
@@ -244,18 +256,21 @@ var EnigmailAutocryptSetup = {
             EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.invalidKey"));
             break;
         }
-      });
+      }
     }
+
+    return imported;
   },
 
   /**
-   * Process accounts with Autocrypt or pEp headers
+   * Process accounts with Autocrypt headers
    *
-   * @param setupType: Object - containing Autocrypt or pEp headers from accounts
+   * @param {Object} setupType: containing Autocrypt headers from accounts
    *
+   * @return {Promise<Number>}: Result: 0: OK / 1: failure
    */
 
-  processAutocryptHeader: function(setupType, win = null) {
+  processAutocryptHeader: function(setupType) {
     EnigmailLog.DEBUG("autocryptSetup.jsm: processAutocryptHeader()\n");
 
     return new Promise(async (resolve, reject) => {
@@ -282,12 +297,10 @@ var EnigmailAutocryptSetup = {
           let success = await EnigmailAutocrypt.processAutocryptHeader(setupType.msgHeaders[i].fromAddr, [setupType.msgHeaders[i].msgData],
             setupType.msgHeaders[i].date);
           if (success !== 0) {
-            EnigmailDialog.alert(win, EnigmailLocale.getString("acStartup.acHeaderFound.failure"));
             resolve(1);
           }
         }
       }
-      EnigmailDialog.alert(win, EnigmailLocale.getString("acStartup.acHeaderFound.success"));
       resolve(0);
     });
   },

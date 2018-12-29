@@ -115,6 +115,8 @@ UIFILES = \
 	enigRetrieveProgress.js \
 	exportSettingsWizard.js \
 	exportSettingsWizard.xul \
+	importSettings.js \
+	importSettings.xul \
 	upgradeInfo.html \
 	pepHandshake.xul \
 	pepHandshake.js \

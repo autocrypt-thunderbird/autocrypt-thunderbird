@@ -18,14 +18,22 @@ const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"
 const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 const InstallGnuPG = ChromeUtils.import("chrome://enigmail/content/modules/installGnuPG.jsm").InstallGnuPG;
+const EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
+const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 var gEnigmailSvc = null;
 var gResolveInstall = null;
 var gDownoadObj = null;
+var gFoundSetupType = null;
 
+// TODO: Need to localize dialog
 
 function onLoad() {
+  // let the dialog be loaded asynchronously such that we can disply the dialog
+  // before we start working on it.
   EnigmailTimer.setTimeout(onLoadAsync, 1);
 }
 
@@ -40,15 +48,14 @@ function onLoadAsync() {
     }
   });
 
-  let setupType = null;
   let setupPromise = EnigmailAutocryptSetup.getDeterminedSetupType().then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got setupType ${r.value}\n`);
-    setupType = r;
+    gFoundSetupType = r;
   });
 
   Promise.all([installPromise, setupPromise]).then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: all promises completed\n`);
-    displayExistingEmails(setupType);
+    displayExistingEmails();
   });
 }
 
@@ -61,19 +68,19 @@ function onCancel() {
   return true;
 }
 
-function onAccept() {
-  return true;
-}
-
-function displayExistingEmails(setupType) {
+function displayExistingEmails() {
   let prevInstallElem = "previousInstall_none";
-  switch (setupType.value) {
+  let unhideButtons = [];
+  switch (gFoundSetupType.value) {
     case EnigmailConstants.AUTOSETUP_AC_SETUP_MSG:
+      prevInstallElem = "previousInstall_acSetup";
+      break;
     case EnigmailConstants.AUTOSETUP_AC_HEADER:
       prevInstallElem = "previousInstall_ac";
       break;
     case EnigmailConstants.AUTOSETUP_PEP_HEADER:
       prevInstallElem = "previousInstall_pEp";
+      unhideButtons = ["btnRescanInbox", "btnImportSettings"];
       break;
     case EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG:
       prevInstallElem = "previousInstall_encrypted";
@@ -81,6 +88,10 @@ function displayExistingEmails(setupType) {
   }
   document.getElementById("determineInstall").style.visibility = "collapse";
   document.getElementById(prevInstallElem).style.visibility = "visible";
+
+  for (let e of unhideButtons) {
+    document.getElementById(e).style.visibility = "visible";
+  }
 }
 
 /**
@@ -186,6 +197,7 @@ function installGnuPG() {
   let installProgress = document.getElementById("installProgress");
   let btnInstallGnupg = document.getElementById("btnInstallGnupg");
   let btnLocateGnuPG = document.getElementById("btnLocateGnuPG");
+  window.outerHeight += 100;
 
   btnInstallGnupg.setAttribute("disabled", true);
   btnLocateGnuPG.setAttribute("disabled", true);
@@ -244,6 +256,7 @@ function installGnuPG() {
 
 
     returnToDownload: function() {
+      window.outerHeight -= 100;
       btnInstallGnupg.removeAttribute("disabled");
       btnLocateGnuPG.removeAttribute("disabled");
       progressBox.style.visibility = "collapse";
@@ -256,6 +269,7 @@ function installGnuPG() {
       progressBox.style.visibility = "collapse";
       installProgressBox.style.visibility = "collapse";
       document.getElementById("installBox").style.visibility = "collapse";
+      window.outerHeight -= 100;
 
       let origPath = EnigmailPrefs.getPref("agentPath");
       EnigmailPrefs.setPref("agentPath", "");
@@ -271,5 +285,31 @@ function installGnuPG() {
         gResolveInstall(true);
       }
     }
+  });
+}
+
+
+/**
+ * Import Autocrypt Setup Messages
+ */
+function importAcSetup() {
+  let btnInitiateAcSetup = document.getElementById("btnInitiateAcSetup");
+  btnInitiateAcSetup.setAttribute("disabled", true);
+  EnigmailAutocryptSetup.performAutocryptSetup(gFoundSetupType).then(r => {
+    if (r > 0) {
+      EnigmailDialog.info(window, "Setup complete");
+      window.close();
+    }
+  });
+}
+
+/**
+ * Actively re-scan the inbox to find (for example) a new Autocrypt Setup Message
+ */
+function rescanInbox() {
+  EnigmailAutocryptSetup.determinePreviousInstallType().then(r => {
+    EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got rescanInbox ${r.value}\n`);
+    gFoundSetupType = r;
+    displayExistingEmails();
   });
 }
