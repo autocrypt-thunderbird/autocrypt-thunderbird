@@ -6,7 +6,7 @@
 
 "use strict";
 
-const EnigmailAutocryptSetup = ChromeUtils.import("chrome://enigmail/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
+const EnigmailAutoSetup = ChromeUtils.import("chrome://enigmail/content/modules/autoSetup.jsm").EnigmailAutoSetup;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
 const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
@@ -21,20 +21,29 @@ const InstallGnuPG = ChromeUtils.import("chrome://enigmail/content/modules/insta
 const EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
 const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
-
+const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
+const EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
+const EnigmailInstallPep = ChromeUtils.import("chrome://enigmail/content/modules/installPep.jsm").EnigmailInstallPep;
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
+
 var gEnigmailSvc = null;
 var gResolveInstall = null;
 var gDownoadObj = null;
 var gFoundSetupType = null;
+var gPepAvailable = null;
 
 // TODO: Need to localize dialog
 
 function onLoad() {
+
+  let dlg = document.getElementById("setupWizardDlg");
+  dlg.getButton("accept").setAttribute("disabled", "true");
+
   // let the dialog be loaded asynchronously such that we can disply the dialog
   // before we start working on it.
   EnigmailTimer.setTimeout(onLoadAsync, 1);
+
 }
 
 function onLoadAsync() {
@@ -48,12 +57,14 @@ function onLoadAsync() {
     }
   });
 
-  let setupPromise = EnigmailAutocryptSetup.getDeterminedSetupType().then(r => {
+  let pepPromise = checkPepAvailability();
+
+  let setupPromise = EnigmailAutoSetup.getDeterminedSetupType().then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got setupType ${r.value}\n`);
     gFoundSetupType = r;
   });
 
-  Promise.all([installPromise, setupPromise]).then(r => {
+  Promise.all([installPromise, pepPromise, setupPromise]).then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: all promises completed\n`);
     displayExistingEmails();
   });
@@ -73,18 +84,40 @@ function displayExistingEmails() {
   let unhideButtons = [];
   switch (gFoundSetupType.value) {
     case EnigmailConstants.AUTOSETUP_AC_SETUP_MSG:
+      // found Autocrypt Setup Message
       prevInstallElem = "previousInstall_acSetup";
       break;
     case EnigmailConstants.AUTOSETUP_AC_HEADER:
+      // found Autocrypt messages
       prevInstallElem = "previousInstall_ac";
-      break;
-    case EnigmailConstants.AUTOSETUP_PEP_HEADER:
-      prevInstallElem = "previousInstall_pEp";
       unhideButtons = ["btnRescanInbox", "btnImportSettings"];
       break;
-    case EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG:
-      prevInstallElem = "previousInstall_encrypted";
+    case EnigmailConstants.AUTOSETUP_PEP_HEADER:
+      // found pEp encrypted messages
+      if (gPepAvailable) {
+        prevInstallElem = "previousInstall_pEp";
+        unhideButtons = ["btnImportKeys"];
+      }
+      else {
+        gFoundSetupType.value = EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG;
+        displayExistingEmails();
+        return;
+      }
+      installPepIfNeeded();
+      enableDoneButton();
       break;
+    case EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG:
+      // encrypted messages without pEp or Autocrypt found
+      prevInstallElem = "previousInstall_encrypted";
+      unhideButtons = ["btnImportKeys"];
+      enableDoneButton();
+      break;
+    default:
+      // no encrypted messages found
+      enableDoneButton();
+      if (gPepAvailable) {
+        installPepIfNeeded();
+      }
   }
   document.getElementById("determineInstall").style.visibility = "collapse";
   document.getElementById(prevInstallElem).style.visibility = "visible";
@@ -118,6 +151,28 @@ function checkGnupgInstallation() {
   });
 }
 
+/**
+ * Determine if pEp is avaliable, and if it is not available,
+ * whether it can be downaloaded and installed. This does not
+ * trigger installation.
+ */
+async function checkPepAvailability() {
+  if (await EnigmailPEPAdapter.isPepAvailable(false)) {
+    gPepAvailable = true;
+  }
+  else {
+    gPepAvailable = await EnigmailInstallPep.isPepInstallerAvailable();
+  }
+
+  return gPepAvailable;
+}
+
+/**
+ * Try to access pEp, such that it will be installed if it's not available
+ */
+function installPepIfNeeded() {
+  EnigmailPEPAdapter.isPepAvailable(true);
+}
 
 /**
  * Try to initialize Enigmail (which will determine the location of GnuPG)
@@ -295,7 +350,7 @@ function installGnuPG() {
 function importAcSetup() {
   let btnInitiateAcSetup = document.getElementById("btnInitiateAcSetup");
   btnInitiateAcSetup.setAttribute("disabled", true);
-  EnigmailAutocryptSetup.performAutocryptSetup(gFoundSetupType).then(r => {
+  EnigmailAutoSetup.performAutocryptSetup(gFoundSetupType).then(r => {
     if (r > 0) {
       EnigmailDialog.info(window, "Setup complete");
       window.close();
@@ -307,9 +362,30 @@ function importAcSetup() {
  * Actively re-scan the inbox to find (for example) a new Autocrypt Setup Message
  */
 function rescanInbox() {
-  EnigmailAutocryptSetup.determinePreviousInstallType().then(r => {
+  EnigmailAutoSetup.determinePreviousInstallType().then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got rescanInbox ${r.value}\n`);
     gFoundSetupType = r;
     displayExistingEmails();
   });
+}
+
+/**
+ * open the "Restore Settings and Keys" wizard
+ */
+function importSettings() {
+  EnigmailWindows.openImportSettings(window);
+}
+
+
+function enableDoneButton() {
+  let dlg = document.getElementById("setupWizardDlg");
+  dlg.getButton("cancel").setAttribute("collapsed", "true");
+  dlg.getButton("accept").removeAttribute("disabled");
+}
+
+function onAccept() {
+  if (! gPepAvailable) {
+    EnigmailAutoSetup.createKeyForAllAccounts();
+  }
+  return true;
 }

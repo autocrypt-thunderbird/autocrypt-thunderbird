@@ -20,9 +20,21 @@
 
 <!-- TODO: Need to localize dialog -->
 
-<dialog id="setupWizard2" title="Setup Enigmail" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="onLoad();" buttons="cancel" ondialogaccept="return onAccept();" ondialogcancel="return onCancel();" minwidth="460px" minheight="400px">
+<dialog id="setupWizardDlg"
+  title="Setup Enigmail"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  onload="onLoad();"
+  buttons="accept,cancel"
+  buttonaccesskeyaccept="&enigmail.doneButton.accesskey;"
+  buttonlabelaccept="&enigmail.doneButton.label;"
+  ondialogaccept="return onAccept();"
+  ondialogcancel="return onCancel();"
+  minwidth="460px"
+  minheight="400px">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizard2.js" />
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js"/>
 
   <html:div id="searchingGnuPG">
     <html:p>Looking for GnuPG ... <html:b id="foundGnuPG" style="visibility: hidden">OK</html:b></html:p>
@@ -94,7 +106,15 @@
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
     <html:p>
       We determined that you are using Pretty Easy Privacy (p≡p).
-      Please export your keys from your existing device and import them here.
+      <html:ul>
+        <html:li><html:p>
+          If you have another device running with p≡p, we recommend that you let the other device synchronize
+          with your PC here. In this case, just close the wiazard, and wait for the synchronization to start.
+        </html:p></html:li>
+        <html:li><html:p>
+          Alternatively, you can import your keys using the button below.
+        </html:p></html:li>
+      </html:ul>
     </html:p>
   </html:div>
 
@@ -104,13 +124,13 @@
 
   <html:div id="previousInstall_none" style="visibility: collapse;">
     <html:p>
-      We could not find any encrypted emails in your accounts.
-      We will automatically create keys and configure Enigmail accordingly.
+      Enigmail is now ready for use.
     </html:p>
   </html:div>
 
   <html:p>
     <html:button type="button" id="btnRescanInbox" style="visibility: collapse;" onclick="rescanInbox()">Rescan Inbox</html:button>
+    <html:button type="button" id="btnImportKeys" style="visibility: collapse;" onclick="EnigmailCommon_importKeysFromFile()">Import Keys</html:button>
     <html:button type="button" id="btnImportSettings" style="visibility: collapse;" onclick="importSettings()">Restore Settings and Keys</html:button>
   </html:p>
 

@@ -838,62 +838,6 @@ function enigmailExportKeys() {
   }
 }
 
-function enigmailImportKeysFromFile() {
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  var inFile = EnigFilePicker(EnigGetString("importKeyFile"),
-    "", false, "*.asc", "", [EnigGetString("gnupgFile"), "*.asc;*.gpg;*.pgp"]);
-  if (!inFile) return;
-
-  var errorMsgObj = {};
-  // preview
-  var preview = EnigmailKey.getKeyListFromKeyFile(inFile, errorMsgObj);
-
-  if (errorMsgObj.value && errorMsgObj.value.length > 0) {
-    EnigmailDialog.alert(window, errorMsgObj.value);
-    return;
-  }
-  var exitStatus = -1;
-
-  if (preview.length > 0) {
-    if (preview.length == 1) {
-      exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
-    }
-    else {
-      exitStatus = EnigmailDialog.confirmDlg(window,
-        EnigmailLocale.getString("doImportMultiple", [
-          preview.map(function(a) {
-            return "\t" + a.name + " (" + a.id + ")";
-          }).join("\n")
-        ]));
-    }
-
-    if (exitStatus) {
-      // import
-      var exitCode = EnigmailKeyRing.importKeyFromFile(inFile, errorMsgObj);
-      if (exitCode !== 0) {
-        EnigAlert(EnigGetString("importKeysFailed") + "\n\n" + errorMsgObj.value);
-      }
-      else {
-        var keyList = preview.map(function(a) {
-          return a.id;
-        });
-        EnigmailDialog.keyImportDlg(window, keyList);
-      }
-      refreshKeys();
-    }
-  }
-  else {
-    if (EnigmailKeyRing.getCacheEmpty()) {
-      refreshKeys();
-    }
-  }
-}
-
-
 function enigmailManageUids() {
   var keyList = getSelectedKeys();
   var inputObj = {

@@ -309,7 +309,7 @@ Installer.prototype = {
         }
 
         if (typeof(this.responseText) == "string") {
-          EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl.reqListener: got: " + this.responseText + "\n");
+          EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: got: " + this.responseText + "\n");
 
           try {
             let doc = JSON.parse(this.responseText);
@@ -320,7 +320,7 @@ Installer.prototype = {
             deferred.resolve();
           }
           catch (ex) {
-            EnigmailLog.DEBUG("installPep.jsm: getDownloadUrl.reqListener: exception: " + ex.toString() + "\n");
+            EnigmailLog.DEBUG("installGnuPG.jsm: getDownloadUrl.reqListener: exception: " + ex.toString() + "\n");
 
             onError({
               type: "Network"

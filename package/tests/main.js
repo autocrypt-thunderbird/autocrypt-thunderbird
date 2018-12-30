@@ -60,6 +60,6 @@ execTest("dns-test.js");
 execTest("filters-test.js");
 execTest("webKey-test.js");
 execTest("openpgpjs-test.js");
-execTest("autocryptSetup-test.js");
+execTest("autoSetup-test.js");
 
 // execTest("pep-test.js"); // not yet enabled

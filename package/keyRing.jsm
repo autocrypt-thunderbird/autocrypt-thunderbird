@@ -677,6 +677,13 @@ var EnigmailKeyRing = {
           pipe.close();
         },
         stderr: function(data) {
+          // extract key ID
+          if (data.search(/^\[GNUPG:\] KEY_CREATED/m)) {
+            let m = data.match(/^(\[GNUPG:\] KEY_CREATED [BPS] )([^ \r\n\t]+)$/m);
+            if (m && m.length > 2) {
+              listener.keyId = "0x" + m[2];
+            }
+          }
           listener.onDataAvailable(data);
         },
         done: function(result) {

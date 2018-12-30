@@ -35,6 +35,7 @@
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeyManager.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js" />
 
   <commandset id="tasksCommands"/>
 
@@ -84,7 +85,7 @@
         <menuitem label="&enigmail.keyMan.importFromFile.label;"
           id="importFromFile"
           accesskey="&enigmail.keyMan.importFromFile.accesskey;"
-          oncommand="enigmailImportKeysFromFile()"/>
+          oncommand="EnigmailCommon_importKeysFromFile()"/>
         <menuitem label="&enigmail.keyMan.exportToFile.label;"
           id="exportKey"
           observes="bcNoKey"

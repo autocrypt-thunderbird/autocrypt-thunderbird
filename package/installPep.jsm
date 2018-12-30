@@ -421,10 +421,10 @@ var EnigmailInstallPep = {
    *
    * @param manualInstall: Boolean: if true, ignore pEpAutoDownload option
    *
-   * @return true: installer for current platform is online available
-   *         false: otherwise
+   * @return {Promise<Boolean>}: true: installer for current platform is online available
+   *                             false: otherwise
    */
-  isPepInstallerAvailable: function(manualInstall = false) {
+  isPepInstallerAvailable: async function(manualInstall = false) {
     EnigmailLog.DEBUG("installPep.jsm: isPepInstallerAvailable()\n");
 
     if (!manualInstall) {
@@ -432,21 +432,14 @@ var EnigmailInstallPep = {
       if (!EnigmailPrefs.getPref("pEpAutoDownload")) return false;
     }
 
-    let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
     let urlObj = null;
-
     let i = new Installer(null);
 
-    i.getDownloadUrl(i, manualInstall ? INSTALL_MANUAL : INSTALL_AUTO).
-    then(function _gotUrl() {
+    try {
+      let r = await i.getDownloadUrl(i, manualInstall ? INSTALL_MANUAL : INSTALL_AUTO);
       urlObj = i.getUrlObj();
-      inspector.exitNestedEventLoop();
-    }).
-    catch(function _err(data) {
-      inspector.exitNestedEventLoop();
-    });
-
-    inspector.enterNestedEventLoop(0);
+    }
+    catch (err) {}
 
     return (urlObj ? urlObj.url !== null && urlObj.url !== "" : false);
   },

@@ -12,7 +12,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false, withEnigmail: false, withTestGpgHome: false, Cu: false*/
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
-testing("autocryptSetup.jsm"); /*global EnigmailAutocryptSetup: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false */
+testing("autoSetup.jsm"); /*global EnigmailAutoSetup: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false */
 
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
@@ -82,7 +82,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallType_noAccoun
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
   MailHelper.deleteAllAccounts();
-  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
+  EnigmailAutoSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_NO_ACCOUNT);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -102,10 +102,9 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
   EnigmailKeyRing.clearCache();
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
-  let headerValue = {
-    userName: 'Test Name',
-    userEmail: 'testing@domain.invalid'
-  };
+  const userName = 'Test Name';
+  const userEmail = 'testing@domain.invalid';
+  const KEY_ID = "0x4F128BD42AEA7F1D732123954C83EE00FF0245BE";
 
   EnigmailKeyRing.clearCache();
 
@@ -115,14 +114,15 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
     let keyFile = do_get_file("resources/testing-domain.invalid.pub-sec", false);
 
     let exitCode = EnigmailKeyRing.importKeyFromFile(keyFile, {}, {});
+    generateObserver.keyId = KEY_ID;
     generateObserver.onStopRequest(exitCode);
   };
 
-  EnigmailAutocryptSetup.createAutocryptKey(headerValue).then((value) => {
+  EnigmailAutoSetup.createAutocryptKey(userName, userEmail).then((value) => {
     let keys = EnigmailKeyRing.getAllSecretKeys();
 
     EnigmailKeyRing.generateKey = EnigmailKeyRing._generateKey;
-    Assert.equal(value, 0);
+    Assert.equal(value, KEY_ID);
     Assert.equal(keys.length, 1);
     Assert.equal(keys[0].userIds[0].userId, "Test Name <testing@domain.invalid>");
     Assert.equal(keys[0].keySize, "4096");
@@ -141,14 +141,9 @@ test(withTestGpgHome(withEnigmail(function keyGen_error_Test() {
   EnigmailKeyRing.clearCache();
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
-  let headerValue = {
-    userName: undefined,
-    userEmail: undefined
-  };
-
   EnigmailKeyRing.clearCache();
-  EnigmailAutocryptSetup.createAutocryptKey(headerValue).then((value) => {
-    Assert.equal(value, 1);
+  EnigmailAutoSetup.createAutocryptKey(undefined, undefined).then((value) => {
+    Assert.equal(value, null);
     inspector.exitNestedEventLoop();
   }).catch(res => {
     Assert.ok(false);
@@ -178,7 +173,7 @@ test(function processAutocryptHeaderTest() {
   var window = JSUnit.createStubWindow();
   EnigmailKeyRing.clearCache();
 
-  EnigmailAutocryptSetup.processAutocryptHeader(headerValue, window).then((value) => {
+  EnigmailAutoSetup.processAutocryptHeader(headerValue, window).then((value) => {
     Assert.equal(value, 0);
     return EnigmailAutocrypt.getOpenPGPKeyForEmail(["dev-tiger@test.notreal"]);
   }).then((keys) => {
@@ -214,7 +209,7 @@ test(function processAutocryptHeader_error_Test() {
   var window = JSUnit.createStubWindow();
   EnigmailKeyRing.clearCache();
 
-  EnigmailAutocryptSetup.processAutocryptHeader(headerValue, window).then((value) => {
+  EnigmailAutoSetup.processAutocryptHeader(headerValue, window).then((value) => {
     Assert.equal(value, 1);
     inspector.exitNestedEventLoop();
   });
@@ -454,7 +449,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
   });
   inspector.enterNestedEventLoop(0);
 
-  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
+  EnigmailAutoSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_NO_HEADER);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -472,7 +467,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
   });
   inspector.enterNestedEventLoop(0);
 
-  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
+  EnigmailAutoSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_NO_HEADER);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -490,7 +485,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
   });
   inspector.enterNestedEventLoop(0);
 
-  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
+  EnigmailAutoSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_PEP_HEADER);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -507,7 +502,7 @@ test(withTestGpgHome(withEnigmail(function determinePreviousInstallTypeTest() {
   });
   inspector.enterNestedEventLoop(0);
 
-  EnigmailAutocryptSetup.determinePreviousInstallType().then((returnMsgValue) => {
+  EnigmailAutoSetup.determinePreviousInstallType().then((returnMsgValue) => {
     Assert.equal(returnMsgValue.value, EnigmailConstants.AUTOSETUP_AC_SETUP_MSG);
     inspector.exitNestedEventLoop();
   }).catch(err => {
@@ -562,7 +557,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetupTest() {
       return null;
     };
 
-    EnigmailAutocryptSetup.performAutocryptSetup(headervalue, passwordWindow, confirmWindow);
+    EnigmailAutoSetup.performAutocryptSetup(headervalue, passwordWindow, confirmWindow);
 
   }).catch(err => {
     Assert.ok(false, `got exception: ${err}`);
@@ -625,7 +620,7 @@ test(withTestGpgHome(withEnigmail(function performAutocryptSetup_wrongPassword_T
       return null;
     };
 
-    EnigmailAutocryptSetup.performAutocryptSetup(headervalue, passwordWindow, confirmWindow);
+    EnigmailAutoSetup.performAutocryptSetup(headervalue, passwordWindow, confirmWindow);
 
   }).catch(err => {
     inspector.exitNestedEventLoop();

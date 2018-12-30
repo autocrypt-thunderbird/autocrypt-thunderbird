@@ -15,6 +15,7 @@ UIFILES = \
 	autocryptSetupPasswd.js \
 	columnOverlay.xul \
 	columnOverlay.js \
+	commonWorkflows.js \
 	enigmailCommon.js \
 	enigmailAbCardViewOverlay.xul \
 	enigmailAbContactsPanel.xul \

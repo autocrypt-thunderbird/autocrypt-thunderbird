@@ -172,11 +172,11 @@ var EnigmailPEPAdapter = {
   /**
    * Determine if the pEp JSON adapter is available at all
    *
-   * @param attemptInstall: Boolean - try to install pEp if possible
+   * @param {Boolean} attemptInstall: try to install pEp if possible
    *
-   * @return Boolean - true if pEp is available / false otherwise
+   * @return {Promise<Boolean>}: true if pEp is available / false otherwise
    */
-  isPepAvailable: function(attemptInstall = true) {
+  isPepAvailable: async function(attemptInstall = true) {
     if (gPepAvailable === null) {
       EnigmailLog.DEBUG("pEpAdapter: isPepAvailable()\n");
 
@@ -229,7 +229,7 @@ var EnigmailPEPAdapter = {
         }
       }
       else if (attemptInstall) {
-        this.installPep();
+        return await this.installPep();
       }
     }
 
@@ -240,30 +240,38 @@ var EnigmailPEPAdapter = {
   /**
    * try to download and install pEp (runs asynchronously!)
    *
-   * @param isManual: Boolean: is installation manually requested
+   * @param {Boolean} isManual: is installation manually requested
+   *
+   * @return {Promise<Boolean>}: pep successfully installed
    */
   installPep: function(isManual = false) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: installPep()\n");
 
     gAttemptedInstall = true;
     let self = this;
-    let progressListener = {
-      onError: function(err) {
-        EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: got error " + err.type + "\n");
-        gPepAvailable = false;
-      },
-      onInstalled: function() {
-        EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: installation completed\n");
-        gPepAvailable = null;
 
-        self.initialize();
-      },
-      stopPep: function() {
-        EnigmailpEp.shutdown();
-      }
-    };
+    return new Promise((resolve, reject) => {
+      let progressListener = {
+        onError: function(err) {
+          EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: got error " + err.type + "\n");
+          gPepAvailable = false;
+          resolve(false);
+        },
+        onInstalled: function() {
+          EnigmailLog.DEBUG("pEpAdapter.jsm: installPep: installation completed\n");
+          gPepAvailable = null;
 
-    EnigmailInstallPep.startInstaller(progressListener, isManual);
+          self.initialize().then(r => {
+            resolve(gPepAvailable);
+          });
+        },
+        stopPep: function() {
+          EnigmailpEp.shutdown();
+        }
+      };
+
+      EnigmailInstallPep.startInstaller(progressListener, isManual);
+    });
   },
 
   /**
@@ -430,7 +438,7 @@ var EnigmailPEPAdapter = {
             engine: "0.9.0"
           };
         }
-        else if (typeof (data) === "object") {
+        else if (typeof(data) === "object") {
           if ("api_version" in data) {
             gPepVersion = {
               api: data.api_version,
@@ -469,10 +477,10 @@ var EnigmailPEPAdapter = {
 
           EnigmailLog.DEBUG("pEpAdapter.jsm: initialize: got GnuPG path '" + gpgEnv.gnupg_path + "'\n");
 
-          if (typeof (gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
+          if (typeof(gpgEnv.gpg_agent_info) === "string" && gpgEnv.gpg_agent_info.length > 0) {
             envStr += "GPG_AGENT_INFO=" + gpgEnv.gpg_agent_info + "\n";
           }
-          if (typeof (gpgEnv.gnupg_home) === "string" && gpgEnv.gnupg_home.length > 0) {
+          if (typeof(gpgEnv.gnupg_home) === "string" && gpgEnv.gnupg_home.length > 0) {
             envStr += "GNUPGHOME=" + gpgEnv.gnupg_home + "\n";
           }
 
@@ -515,7 +523,8 @@ var EnigmailPEPAdapter = {
         };
         deferred.resolve();
       });
-    } catch (ex) {
+    }
+    catch (ex) {
       deferred.resolve();
     }
 
@@ -532,7 +541,8 @@ var EnigmailPEPAdapter = {
       let ac = accountManager.accounts.queryElementAt(accountNum, Ci.nsIMsgAccount);
       try {
         id = ac.identities.queryElementAt(0, Ci.nsIMsgIdentity);
-      } catch (ex) {
+      }
+      catch (ex) {
         id = null;
       }
 
@@ -611,7 +621,7 @@ var EnigmailPEPAdapter = {
    */
   stripMsgHeadersFromEncryption: function(resObj) {
     let mimeStr = "";
-    if (Array.isArray(resObj) && typeof (resObj[0]) === "string") {
+    if (Array.isArray(resObj) && typeof(resObj[0]) === "string") {
       mimeStr = resObj[0];
     }
 
@@ -668,11 +678,11 @@ var EnigmailPEPAdapter = {
 
     EnigmailPEPAdapter.pep.outgoingMessageRating(from, to, "test").then(function _step2(res) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: SUCCESS\n");
-      if ((typeof (res) === "object") && ("result" in res)) {
+      if ((typeof(res) === "object") && ("result" in res)) {
         resultObj = res.result.outParams;
       }
       else
-        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof (res) + "\n");
+        EnigmailLog.DEBUG("pEpAdapter.jsm: outgoingMessageRating: typeof res=" + typeof(res) + "\n");
 
 
       if (inspector && inspector.eventLoopNestLevel > 0) {
@@ -788,7 +798,7 @@ var EnigmailPEPAdapter = {
   processPGPMIME: function(headerData) {
     EnigmailLog.DEBUG("pEpAdapter.jsm: processPGPMIME\n");
 
-  // placeholder for pEp-specific actions on PGP/MIME messages
+    // placeholder for pEp-specific actions on PGP/MIME messages
   },
 
   /**
@@ -817,7 +827,8 @@ var EnigmailPEPAdapter = {
     try {
       var channel = EnigmailStreams.createChannel(msgUri.spec);
       channel.asyncOpen(stream, null);
-    } catch (e) {
+    }
+    catch (e) {
       EnigmailLog.DEBUG("pEpAdapter.jsm: processInlinePGP: exception " + e.toString() + "\n");
     }
   },
@@ -846,7 +857,7 @@ var EnigmailPEPAdapter = {
 
     let allEmails = "";
 
-    if (typeof (headerData) === "string") {
+    if (typeof(headerData) === "string") {
       allEmails = headerData;
     }
     else {
@@ -864,7 +875,8 @@ var EnigmailPEPAdapter = {
     let emailsInMessage = "";
     try {
       emailsInMessage = EnigmailFuncs.stripEmail(allEmails.toLowerCase()).split(/,/);
-    } catch (ex) {
+    }
+    catch (ex) {
       deferred.reject("pepTrustWords.generalFailure");
       return deferred.promise;
     }
@@ -900,7 +912,7 @@ var EnigmailPEPAdapter = {
       return EnigmailPEPAdapter.pep.getIdentityRating(emailId);
 
     }).then(function _gotIdentityRating(data) {
-      if ("result" in data && Array.isArray(data.result.outParams) && typeof (data.result.outParams[0]) === "object" &&
+      if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
         "rating" in data.result.outParams[0]) {
         emailIdRating = data.result.outParams[0];
       }
@@ -1008,7 +1020,7 @@ var EnigmailPEPAdapter = {
           }
         }).then(
         function _gotRating(data) {
-          if ("result" in data && Array.isArray(data.result.outParams) && typeof (data.result.outParams[0]) === "object" &&
+          if ("result" in data && Array.isArray(data.result.outParams) && typeof(data.result.outParams[0]) === "object" &&
             "rating" in data.result.outParams[0]) {
             rating = data.result.outParams[0].rating;
           }
@@ -1146,7 +1158,8 @@ var EnigmailPEPAdapter = {
     for (let i in gJmObservers) {
       try {
         gJmObservers[i]();
-      } catch (ex) {}
+      }
+      catch (ex) {}
     }
   }
 };

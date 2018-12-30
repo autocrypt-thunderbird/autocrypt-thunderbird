@@ -26,11 +26,9 @@ ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
-ChromeUtils.import("chrome://enigmail/content/modules/installPep.jsm"); /* global EnigmailInstallPep: false */
 ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
 ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/autocryptSetup.jsm"); /* global EnigmailAutocryptSetup: false */
+ChromeUtils.import("chrome://enigmail/content/modules/autoSetup.jsm"); /* global EnigmailAutoSetup: false */
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -164,20 +162,6 @@ function setAutocryptForOldAccounts() {
 }
 
 
-/**
- * Determine if pEp is avaliable, and if it is not available,
- * whether it can be downaloaded and installed. This does not
- * trigger installation.
- */
-
-function isPepInstallable() {
-  if (EnigmailPEPAdapter.isPepAvailable(false)) {
-    return true;
-  }
-
-  return EnigmailInstallPep.isPepInstallerAvailable();
-}
-
 function displayUpgradeInfo() {
   EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
   try {
@@ -196,7 +180,7 @@ var EnigmailConfigure = {
    * @param {Boolean}   startingPreferences: if true, called while switching to new preferences
    *                        (to avoid re-check for preferences)
    *
-   * @return {Promise<null>} 
+   * @return {Promise<null>}
   */
   configureEnigmail: async function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
@@ -218,16 +202,14 @@ var EnigmailConfigure = {
     let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
 
     if (oldVer === "") {
-      EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
+      let setupResult = await EnigmailAutoSetup.determinePreviousInstallType();
 
-      let setupResult = await EnigmailAutocryptSetup.determinePreviousInstallType();
-
-      switch (EnigmailAutocryptSetup.value) {
+      switch (EnigmailAutoSetup.value) {
         case EnigmailConstants.AUTOSETUP_NOT_INITIALIZED:
         case EnigmailConstants.AUTOSETUP_NO_ACCOUNT:
-        case EnigmailConstants.AUTOSETUP_PEP_HEADER:
           break;
         default:
+          EnigmailPrefs.setPref("configuredVersion", EnigmailApp.getVersion());
           EnigmailWindows.openSetupWizard(win);
       }
     }
