@@ -382,6 +382,30 @@ var EnigmailAutoSetup = {
         resolve(null);
       }
     });
+  },
+
+  /**
+   * Configure Enigmail to use existing keys
+   */
+  applyExistingKeys: function() {
+    let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
+    let identities = msgAccountManager.allIdentities;
+
+    for (let i = 0; i < identities.length; i++) {
+      let id = identities.queryElementAt(i, Ci.nsIMsgIdentity);
+
+      if (id && id.email) {
+        let keyObj = EnigmailKeyRing.getSecretKeyByEmail(id.email);
+        if (keyObj) {
+          EnigmailLog.DEBUG(`autoSetup.jsm: applyExistingKeys: found key ${keyObj.keyId}\n`);
+          id.setBoolAttribute("enablePgp", true);
+          id.setCharAttribute("pgpkeyId", "0x" + keyObj.fpr);
+          id.setIntAttribute("pgpKeyMode", 1);
+          id.setBoolAttribute("pgpMimeMode", true);
+          id.setBoolAttribute("pgpSignEncrypted", true);
+        }
+      }
+    }
   }
 };
 
