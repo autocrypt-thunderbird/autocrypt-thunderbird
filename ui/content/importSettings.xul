@@ -47,15 +47,15 @@
     <html:p id="importingKeys" style="visibility: collapse">
       &enigmail.importSetup.importingKeys; <html:span style="padding-left: 1em;"/>
       <image id="spinningWheel" class="enigmailWheel enigmailSpinning"/>
-      <html:b id="importingKeysOK" style="visibility: hidden">&enigmail.general.okLabel;</html:b>
+      <html:img id="importingKeysOK" class="enigmailOkSign" style="visibility: hidden"/>
     </html:p>
   </html:div>
 
   <html:p id="restoreGnuPGSettings" style="visibility: collapse">
-    &enigmail.importSetup.restoringGnupgSettings; <html:b id="restoreGnuPGSettingsOK" style="visibility: hidden">&enigmail.general.okLabel;</html:b>
+    &enigmail.importSetup.restoringGnupgSettings; <html:im id="restoreGnuPGSettingsOK" class="enigmailOkSign" style="visibility: hidden"/>
   </html:p>
 
   <html:p id="restoreEnigmailPrefs" style="visibility: collapse">
-    &enigmail.importSetup.restoringEnigmail; <html:b id="restoreEnigmailPrefsOK" style="visibility: hidden">&enigmail.general.okLabel;</html:b>
+    &enigmail.importSetup.restoringEnigmail; <html:img id="restoreEnigmailPrefsOK" class="enigmailOkSign" style="visibility: hidden"/>
   </html:p>
 </dialog>

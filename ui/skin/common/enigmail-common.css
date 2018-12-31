@@ -355,3 +355,12 @@ treechildren::-moz-tree-cell-text(STYLE) {}
   margin-bottom: 3px;
   color: red;
 }
+
+.enigmailOkSign {
+  max-height:100%;
+  box-sizing:border-box;
+  padding-left: 20px;
+  margin-left: 3px;
+  /*width of the image*/
+  background: url("chrome://enigmail/skin/ok-sign.svg") left top no-repeat;
+}

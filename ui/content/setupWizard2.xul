@@ -37,7 +37,8 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js"/>
 
   <html:div id="searchingGnuPG">
-    <html:p>Looking for GnuPG ... <html:b id="foundGnuPG" style="visibility: hidden">OK</html:b></html:p>
+    <html:p>Looking for GnuPG ... <html:img id="foundGnuPG" style="visibility: hidden" class="enigmailOkSign"/>
+    </html:p>
   </html:div>
 
   <html:div id="requireGnuPG" style="margin:auto; visibility: collapse">
@@ -119,7 +120,17 @@
   </html:div>
 
   <html:div id="previousInstall_encrypted" style="visibility: collapse;">
-    <html:p>Found encrypted messages</html:p>
+    <html:p>It looks like you have existing encrypted messages. We recommend that you import your keys from your existing setup.</html:p>
+  </html:div>
+
+  <html:div id="previousInstall_keysAvailable" style="visibility: collapse;">
+    <html:p>We found that you already have OpenPGP keys.
+      We recommend that we set up Enigmail for you such that you can continue to work with these keys.
+    </html:p>
+    <html:p>
+      <html:button type="button" id="btnApplyExistingKeys" onclick="applyExistingKeys()">Apply My Keys</html:button>
+      <html:span id="applyExistingKeysOK" style="visibility: hidden">... <html:img class="enigmailOkSign"/></html:span>
+    </html:p>
   </html:div>
 
   <html:div id="previousInstall_none" style="visibility: collapse;">

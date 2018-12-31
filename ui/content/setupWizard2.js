@@ -27,11 +27,17 @@ const EnigmailInstallPep = ChromeUtils.import("chrome://enigmail/content/modules
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 
+const FINAL_ACTION_DONOTHING = 0;
+const FINAL_ACTION_USEPEP = 1;
+const FINAL_ACTION_CREATEKEYS = 2;
+
 var gEnigmailSvc = null;
 var gResolveInstall = null;
 var gDownoadObj = null;
 var gFoundSetupType = null;
 var gPepAvailable = null;
+var gSecretKeys = [];
+var gFinalAction = FINAL_ACTION_DONOTHING;
 
 // TODO: Need to localize dialog
 
@@ -54,6 +60,7 @@ function onLoadAsync() {
       document.getElementById("findGpgBox").style.visibility = "collapse";
       document.getElementById("requireGnuPG").style.visibility = "collapse";
       document.getElementById("determineInstall").style.visibility = "visible";
+      gSecretKeys = EnigmailKeyRing.getAllSecretKeys(true);
     }
   });
 
@@ -82,42 +89,53 @@ function onCancel() {
 function displayExistingEmails() {
   let prevInstallElem = "previousInstall_none";
   let unhideButtons = [];
-  switch (gFoundSetupType.value) {
-    case EnigmailConstants.AUTOSETUP_AC_SETUP_MSG:
-      // found Autocrypt Setup Message
-      prevInstallElem = "previousInstall_acSetup";
-      break;
-    case EnigmailConstants.AUTOSETUP_AC_HEADER:
-      // found Autocrypt messages
-      prevInstallElem = "previousInstall_ac";
-      unhideButtons = ["btnRescanInbox", "btnImportSettings"];
-      break;
-    case EnigmailConstants.AUTOSETUP_PEP_HEADER:
-      // found pEp encrypted messages
-      if (gPepAvailable) {
-        prevInstallElem = "previousInstall_pEp";
-        unhideButtons = ["btnImportKeys"];
-      }
-      else {
-        gFoundSetupType.value = EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG;
-        displayExistingEmails();
-        return;
-      }
-      installPepIfNeeded();
-      enableDoneButton();
-      break;
-    case EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG:
-      // encrypted messages without pEp or Autocrypt found
-      prevInstallElem = "previousInstall_encrypted";
-      unhideButtons = ["btnImportKeys"];
-      enableDoneButton();
-      break;
-    default:
-      // no encrypted messages found
-      enableDoneButton();
-      if (gPepAvailable) {
+
+  if (gSecretKeys.length > 0) {
+    prevInstallElem = "previousInstall_keysAvailable";
+  }
+  else {
+    switch (gFoundSetupType.value) {
+      case EnigmailConstants.AUTOSETUP_AC_SETUP_MSG:
+        // found Autocrypt Setup Message
+        prevInstallElem = "previousInstall_acSetup";
+        break;
+      case EnigmailConstants.AUTOSETUP_AC_HEADER:
+        // found Autocrypt messages
+        prevInstallElem = "previousInstall_ac";
+        unhideButtons = ["btnRescanInbox", "btnImportSettings"];
+        break;
+      case EnigmailConstants.AUTOSETUP_PEP_HEADER:
+        // found pEp encrypted messages
+        if (gPepAvailable) {
+          prevInstallElem = "previousInstall_pEp";
+          unhideButtons = ["btnImportKeys"];
+        }
+        else {
+          gFoundSetupType.value = EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG;
+          displayExistingEmails();
+          return;
+        }
+        gFinalAction = FINAL_ACTION_USEPEP;
         installPepIfNeeded();
-      }
+        enableDoneButton();
+        break;
+      case EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG:
+        // encrypted messages without pEp or Autocrypt found
+        prevInstallElem = "previousInstall_encrypted";
+        unhideButtons = ["btnImportKeys"];
+        enableDoneButton();
+        break;
+      default:
+        // no encrypted messages found
+        enableDoneButton();
+        if (gPepAvailable) {
+          installPepIfNeeded();
+          gFinalAction = FINAL_ACTION_USEPEP;
+        }
+        else {
+          gFinalAction = FINAL_ACTION_CREATEKEYS;
+        }
+    }
   }
   document.getElementById("determineInstall").style.visibility = "collapse";
   document.getElementById(prevInstallElem).style.visibility = "visible";
@@ -384,8 +402,22 @@ function enableDoneButton() {
 }
 
 function onAccept() {
-  if (! gPepAvailable) {
+  if (gFinalAction === FINAL_ACTION_CREATEKEYS) {
     EnigmailAutoSetup.createKeyForAllAccounts();
   }
   return true;
+}
+
+function applyExistingKeys() {
+  if (gFoundSetupType.value === EnigmailConstants.AUTOSETUP_PEP_HEADER && gPepAvailable) {
+    installPepIfNeeded();
+  }
+  else {
+    EnigmailAutoSetup.applyExistingKeys();
+  }
+
+  document.getElementById("btnApplyExistingKeys").setAttribute("disabled", "true");
+  document.getElementById("applyExistingKeysOK").style.visibility = "visible";
+  document.getElementById("previousInstall_none").style.visibility = "visible";
+  enableDoneButton();
 }
