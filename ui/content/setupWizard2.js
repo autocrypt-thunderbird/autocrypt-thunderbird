@@ -27,6 +27,9 @@ const EnigmailInstallPep = ChromeUtils.import("chrome://enigmail/content/modules
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 
+/* Imported from commonWorkflows.js: */
+/* global EnigmailCommon_importKeysFromFile: false */
+
 const FINAL_ACTION_DONOTHING = 0;
 const FINAL_ACTION_USEPEP = 1;
 const FINAL_ACTION_CREATEKEYS = 2;
@@ -39,10 +42,8 @@ var gPepAvailable = null;
 var gSecretKeys = [];
 var gFinalAction = FINAL_ACTION_DONOTHING;
 
-// TODO: Need to localize dialog
-
 function onLoad() {
-
+  EnigmailLog.DEBUG(`setupWizard2.js: onLoad()\n`);
   let dlg = document.getElementById("setupWizardDlg");
   dlg.getButton("accept").setAttribute("disabled", "true");
 
@@ -67,30 +68,26 @@ function onLoadAsync() {
   let pepPromise = checkPepAvailability();
 
   let setupPromise = EnigmailAutoSetup.getDeterminedSetupType().then(r => {
-    EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got setupType ${r.value}\n`);
+    EnigmailLog.DEBUG(`setupWizard2.js: onLoadAsync: got setupType ${r.value}\n`);
     gFoundSetupType = r;
   });
 
   Promise.all([installPromise, pepPromise, setupPromise]).then(r => {
-    EnigmailLog.DEBUG(`setupWizard2.js: onLoad: all promises completed\n`);
     displayExistingEmails();
   });
 }
 
-function onCancel() {
-  if (gDownoadObj) {
-    gDownoadObj.abort();
-    gDownoadObj = null;
-  }
-
-  return true;
-}
-
+/**
+ * Main function to display the found case matching the user's setup
+ */
 function displayExistingEmails() {
+  EnigmailLog.DEBUG(`setupWizard2.js: displayExistingEmails(): found setup type ${gFoundSetupType.value}\n`);
   let prevInstallElem = "previousInstall_none";
   let unhideButtons = [];
 
   if (gSecretKeys.length > 0) {
+    // secret keys are already available
+    EnigmailLog.DEBUG(`setupWizard2.js: displayExistingEmails: found existing keys\n`);
     prevInstallElem = "previousInstall_keysAvailable";
   }
   else {
@@ -179,6 +176,7 @@ async function checkPepAvailability() {
     gPepAvailable = true;
   }
   else {
+    EnigmailPEPAdapter.resetPepAvailability();
     gPepAvailable = await EnigmailInstallPep.isPepInstallerAvailable();
   }
 
@@ -189,6 +187,8 @@ async function checkPepAvailability() {
  * Try to access pEp, such that it will be installed if it's not available
  */
 function installPepIfNeeded() {
+  EnigmailLog.DEBUG(`setupWizard2.js: installPepIfNeeded()\n`);
+  EnigmailPrefs.setPref("juniorMode", 2);
   EnigmailPEPAdapter.isPepAvailable(true);
 }
 
@@ -370,8 +370,8 @@ function importAcSetup() {
   btnInitiateAcSetup.setAttribute("disabled", true);
   EnigmailAutoSetup.performAutocryptSetup(gFoundSetupType).then(r => {
     if (r > 0) {
-      EnigmailDialog.info(window, "Setup complete");
-      window.close();
+      document.getElementById("previousInstall_none").style.visibility = "visible";
+      enableDoneButton();
     }
   });
 }
@@ -383,6 +383,11 @@ function rescanInbox() {
   EnigmailAutoSetup.determinePreviousInstallType().then(r => {
     EnigmailLog.DEBUG(`setupWizard2.js: onLoad: got rescanInbox ${r.value}\n`);
     gFoundSetupType = r;
+
+    for (let i of ["previousInstall_ac","btnRescanInbox", "btnImportSettings"]) {
+      document.getElementById(i).style.visibility = "collapse";
+    }
+
     displayExistingEmails();
   });
 }
@@ -401,6 +406,17 @@ function enableDoneButton() {
   dlg.getButton("accept").removeAttribute("disabled");
 }
 
+
+function onCancel() {
+  if (gDownoadObj) {
+    gDownoadObj.abort();
+    gDownoadObj = null;
+  }
+
+  return true;
+}
+
+
 function onAccept() {
   if (gFinalAction === FINAL_ACTION_CREATEKEYS) {
     EnigmailAutoSetup.createKeyForAllAccounts();
@@ -408,11 +424,17 @@ function onAccept() {
   return true;
 }
 
+function importKeysFromFile(){
+  EnigmailCommon_importKeysFromFile();
+  applyExistingKeys();
+}
+
 function applyExistingKeys() {
   if (gFoundSetupType.value === EnigmailConstants.AUTOSETUP_PEP_HEADER && gPepAvailable) {
     installPepIfNeeded();
   }
   else {
+    EnigmailPrefs.setPref("juniorMode", 0);
     EnigmailAutoSetup.applyExistingKeys();
   }
 
@@ -420,4 +442,12 @@ function applyExistingKeys() {
   document.getElementById("applyExistingKeysOK").style.visibility = "visible";
   document.getElementById("previousInstall_none").style.visibility = "visible";
   enableDoneButton();
+}
+
+function handleClick(event) {
+  if (event.target.hasAttribute("href")) {
+    let target = event.target;
+    event.stopPropagation();
+    EnigmailWindows.openMailTab(target.getAttribute("href"));
+  }
 }

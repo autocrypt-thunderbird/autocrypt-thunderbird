@@ -672,7 +672,7 @@
 <!ENTITY enigmail.setupWiz.pgIntro.title             "Welcome to the Enigmail Setup Wizard">
 <!ENTITY enigmail.setupWiz.pgIntro.desc              "It looks like you started Enigmail for the first time on this computer.
                                                       In order to use Enigmail, you need to first set it up properly.
-                                                      This assistant can guide you through the setup process.">
+                                                      This assistant will guide you through the setup process.">
 <!ENTITY enigmail.setupWiz.pgIntro.desc2             "Do you want to set up Enigmail now, or do you wish to do this later?">
 <!ENTITY enigmail.setupWiz.pgIntro.startNow          "Start setup now">
 <!ENTITY enigmail.setupWiz.pgIntro.startLater        "Configure Enigmail later">
@@ -796,7 +796,24 @@
 <!ENTITY enigmail.setupWiz.pgExpert.keyManager       "The Enigmail key manager is available from here">
 <!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "The expert Settings are available from here">
 
-
+<!ENTITY enigmail.setupWiz.searchingGnuPG            "Looking for GnuPG ...">
+<!ENTITY enigmail.setupWiz.checkingSetup             "Checking your existing setup ...">
+<!ENTITY enigmail.setupWiz.foundAcSetupMessage       "Found <enigmailLink href='https://autocrypt.org'>Autocrypt</enigmailLink> Setup Message. To initiate the Autocrypt setup procedure, click on the <html:em>Start Setup</html:em> button below.">
+<!ENTITY enigmail.setupWiz.startSetupButton          "Start Setup">
+<!ENTITY enigmail.setupWiz.foundAcNoSetupMsg         "We determined that you are using an <enigmailLink href='https://autocrypt.org'>Autocrypt-compliant</enigmailLink> email client, but we could not find any Autocrypt Setup Message.
+                                                      We recommend that you create an Autocrypt Setup Message on your existing device
+                                                      and then click on <html:em>Rescan Inbox</html:em>. Alternatively, you can export your settings and keys from
+                                                      an existing Enigmail installation, and restore these settings here.">
+<!ENTITY enigmail.setupWiz.usingPepMode              "We determined that you are using Pretty Easy Privacy (p≡p).">
+<!ENTITY enigmail.setupWiz.synchronizeWithPep        "If you have another device running with p≡p, we recommend that you let the other device synchronize
+                                                      with your PC here. In this case, just close the wiazard, and wait for the synchronization to start.">
+<!ENTITY enigmail.setupWiz.useImportKeys             "Alternatively, you can import your keys using the <html:em>Import Keys</html:em> button below.">
+<!ENTITY enigmail.setupWiz.existingEncryptedMsg      "We found that you have encrypted messages in your mail folders. We recommend that you export your keys on your existing device, and import them here. <html:em>(Hint: you may use the <html:b>Import Keys</html:b> multiple times, for example to import public and secret keys).</html:em>">
+<!ENTITY enigmail.setupWiz.existingKeysFound         "We found that you already have OpenPGP keys. We recommend that we set up Enigmail for you such that you can continue to work with these keys.">
+<!ENTITY enigmail.setupWiz.setupComplete             "Enigmail is now properly configured and ready to use. For further information about using Enigmail please visit <enigmailLink href='https://enigmail.net'>our homepage</enigmailLink>">
+<!ENTITY enigmail.setupWiz.applyExistingKeysBtn      "Apply my Keys">
+<!ENTITY enigmail.setupWiz.rescanInboxBtn            "Rescan Inbox">
+<!ENTITY enigmail.setupWiz.importKeysBtn             "Import Keys">
 
 <!ENTITY enigmail.advancedIdentityDlg.title          "Advanced Enigmail Identity Settings">
 <!ENTITY enigmail.amPrefPgp.sendKeyWithMsg.label     "Attach my public key to messages">

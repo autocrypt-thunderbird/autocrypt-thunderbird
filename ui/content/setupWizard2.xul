@@ -21,7 +21,7 @@
 <!-- TODO: Need to localize dialog -->
 
 <dialog id="setupWizardDlg"
-  title="Setup Enigmail"
+  title="&enigmail.setupWiz.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   xmlns:html="http://www.w3.org/1999/xhtml"
   onload="onLoad();"
@@ -30,18 +30,20 @@
   buttonlabelaccept="&enigmail.doneButton.label;"
   ondialogaccept="return onAccept();"
   ondialogcancel="return onCancel();"
+  onclick="handleClick(event)"
   minwidth="460px"
   minheight="400px">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizard2.js" />
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js"/>
 
-  <html:div id="searchingGnuPG">
-    <html:p>Looking for GnuPG ... <html:img id="foundGnuPG" style="visibility: hidden" class="enigmailOkSign"/>
+  <html:div id="searchingGnuPG" style="width: 440px">
+    <html:p>&enigmail.setupWiz.pgIntro.desc;</html:p>
+    <html:p>&enigmail.setupWiz.searchingGnuPG; <html:img aria-label="&enigmail.general.okLabel;" id="foundGnuPG" style="visibility: hidden" class="enigmailOkSign"/>
     </html:p>
   </html:div>
 
-  <html:div id="requireGnuPG" style="margin:auto; visibility: collapse">
+  <html:div id="requireGnuPG" style="width: 440px: margin:auto; visibility: collapse">
     <html:p>
       &enigmail.setupWiz.pgInstall.desc;
     </html:p>
@@ -59,7 +61,7 @@
       </html:p>
     </html:div>
 
-    <html:div id="findGpgBox" style="visibility: collapse">
+    <html:div id="findGpgBox" style="width: 440px; visibility: collapse">
       <html:p>
         &enigmail.setupWiz.pgInstall.locateDesc;
       </html:p>
@@ -68,7 +70,7 @@
       </html:p>
     </html:div>
 
-    <html:div id="progressBox" style="visibility: collapse">
+    <html:div id="progressBox" style="width: 440px; visibility: collapse">
       <html:p>
         &enigmail.setupWiz.pgInstall.downloadLabel;
       </html:p>
@@ -84,65 +86,58 @@
 
   </html:div>
 
-  <html:div id="determineInstall" style="margin:auto; visibility: collapse">
-    <html:p style="text-align: center;">Checking your setup ...
+  <html:div id="determineInstall" style="width: 440px; margin:auto; visibility: collapse">
+    <html:p style="text-align: center;">&enigmail.setupWiz.checkingSetup;
       <image class="enigmailWheel enigmailSpinning"/>
     </html:p>
   </html:div>
 
 
-  <html:div id="previousInstall_acSetup" style="visibility: collapse;">
-    <html:p>Found Autocrypt Setup Message. Click on the 'Start Setup' button below to initiate the setup procedure.</html:p>
-    <html:button type="button" id="btnInitiateAcSetup" onclick="importAcSetup()">Start Setup</html:button>
+  <html:div id="previousInstall_acSetup" style="width: 440px; visibility: collapse;">
+    <html:p>&enigmail.setupWiz.foundAcSetupMessage;</html:p>
+    <html:button type="button" id="btnInitiateAcSetup" onclick="importAcSetup()">&enigmail.setupWiz.startSetupButton;</html:button>
   </html:div>
 
   <html:div id="previousInstall_ac" style="visibility: collapse;">
-    <html:p>Found Autocrypt without Setup Message.
-      We recommend that you create an Autocrypt Setup Message on your existing device
-      and then click on "Rescan Inbox". Alternatively, you can export your settings and keys from
-      a previous Enigmail installation, and restore these settings here.
-    </html:p>
+    <html:p>&enigmail.setupWiz.foundAcNoSetupMsg;</html:p>
   </html:div>
 
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
     <html:p>
-      We determined that you are using Pretty Easy Privacy (p≡p).
+      &enigmail.setupWiz.usingPepMode;
       <html:ul>
         <html:li><html:p>
-          If you have another device running with p≡p, we recommend that you let the other device synchronize
-          with your PC here. In this case, just close the wiazard, and wait for the synchronization to start.
+          &enigmail.setupWiz.synchronizeWithPep;
         </html:p></html:li>
         <html:li><html:p>
-          Alternatively, you can import your keys using the button below.
+          &enigmail.setupWiz.useImportKeys;
         </html:p></html:li>
       </html:ul>
     </html:p>
   </html:div>
 
-  <html:div id="previousInstall_encrypted" style="visibility: collapse;">
-    <html:p>It looks like you have existing encrypted messages. We recommend that you import your keys from your existing setup.</html:p>
+  <html:div id="previousInstall_encrypted" style="width: 440px; visibility: collapse;">
+    <html:p>&enigmail.setupWiz.existingEncryptedMsg;</html:p>
   </html:div>
 
-  <html:div id="previousInstall_keysAvailable" style="visibility: collapse;">
-    <html:p>We found that you already have OpenPGP keys.
-      We recommend that we set up Enigmail for you such that you can continue to work with these keys.
+  <html:div id="previousInstall_keysAvailable" style="width: 440px; visibility: collapse;">
+    <html:p>&enigmail.setupWiz.existingKeysFound;
     </html:p>
     <html:p>
-      <html:button type="button" id="btnApplyExistingKeys" onclick="applyExistingKeys()">Apply My Keys</html:button>
-      <html:span id="applyExistingKeysOK" style="visibility: hidden">... <html:img class="enigmailOkSign"/></html:span>
+      <html:button type="button" id="btnApplyExistingKeys" onclick="applyExistingKeys()">&enigmail.setupWiz.applyExistingKeysBtn;</html:button>
+      <html:span id="applyExistingKeysOK" style="visibility: hidden">... <html:img aria-label="&enigmail.general.okLabel;" class="enigmailOkSign"/></html:span>
     </html:p>
   </html:div>
 
-  <html:div id="previousInstall_none" style="visibility: collapse;">
+  <html:div id="previousInstall_none" style="width: 440px; visibility: collapse;">
     <html:p>
-      Enigmail is now ready for use.
+      &enigmail.setupWiz.setupComplete;
     </html:p>
   </html:div>
 
   <html:p>
-    <html:button type="button" id="btnRescanInbox" style="visibility: collapse;" onclick="rescanInbox()">Rescan Inbox</html:button>
-    <html:button type="button" id="btnImportKeys" style="visibility: collapse;" onclick="EnigmailCommon_importKeysFromFile()">Import Keys</html:button>
-    <html:button type="button" id="btnImportSettings" style="visibility: collapse;" onclick="importSettings()">Restore Settings and Keys</html:button>
+    <html:button type="button" id="btnRescanInbox" style="visibility: collapse;" onclick="rescanInbox()">&enigmail.setupWiz.rescanInboxBtn;</html:button>
+    <html:button type="button" id="btnImportKeys" style="visibility: collapse;" onclick="importKeysFromFile()">&enigmail.setupWiz.importKeysBtn;</html:button>
+    <html:button type="button" id="btnImportSettings" style="visibility: collapse;" onclick="importSettings()">&enigmail.restorePrefsButton.label;</html:button>
   </html:p>
-
 </dialog>

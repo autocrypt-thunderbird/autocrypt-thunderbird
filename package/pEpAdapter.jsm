@@ -170,6 +170,13 @@ var EnigmailPEPAdapter = {
   },
 
   /**
+   * Reset the status of the pEp adapter, such that it may be checked again
+   */
+  resetPepAvailability: function() {
+    gPepAvailable = null;
+  },
+
+  /**
    * Determine if the pEp JSON adapter is available at all
    *
    * @param {Boolean} attemptInstall: try to install pEp if possible
