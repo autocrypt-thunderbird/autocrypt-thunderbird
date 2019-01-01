@@ -20,6 +20,7 @@ var TestHelper = {
     if (isWin) {
       fn = fn.replace(/\//g, "\\").replace(/^\\/, "");
     }
+    fn = fn.replace(/^file:\/\//, "");
     let file = osUtils.FileUtils.File(fn);
     return file.parent;
   },

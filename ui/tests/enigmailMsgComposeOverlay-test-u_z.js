@@ -21,7 +21,6 @@ var AddAttachment;
 var AddAttachments;
 var EnigmailPEPAdapter = {};
 var Recipients2CompFields = {};
-var MailUtils = {};
 var GetResourceFromUri = {};
 var EnigmailCore = {};
 

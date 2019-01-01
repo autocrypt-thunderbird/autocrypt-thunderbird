@@ -46,10 +46,6 @@ ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm"); /*global En
 ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm"); /*global EnigmailMimeEncrypt: false */
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 
-try {
-  ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
-} catch (ex) {}
-
 
 if (!Enigmail) var Enigmail = {};
 
@@ -1297,28 +1293,6 @@ Enigmail.msg = {
     this.editorSelectAll();
     this.editorInsertText(text);
   },
-
-
-  getMsgFolderFromUri: function(uri, checkFolderAttributes) {
-    let msgfolder = null;
-    if (typeof MailUtils != 'undefined') {
-      return MailUtils.getFolderForURI(uri, checkFolderAttributes);
-    }
-    try {
-      // Postbox, older versions of TB
-      let resource = GetResourceFromUri(uri);
-      msgfolder = resource.QueryInterface(Components.interfaces.nsIMsgFolder);
-      if (checkFolderAttributes) {
-        if (!(msgfolder && (msgfolder.parent || msgfolder.isServer))) {
-          msgfolder = null;
-        }
-      }
-    } catch (ex) {
-      //EnigmailLog.DEBUG("failed to get the folder resource\n");
-    }
-    return msgfolder;
-  },
-
 
   goAccountManager: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.goAccountManager:\n");

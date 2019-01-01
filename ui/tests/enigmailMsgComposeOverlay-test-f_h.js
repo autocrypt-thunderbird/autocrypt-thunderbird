@@ -21,7 +21,6 @@ var AddAttachments;
 var EnigmailMimeEncrypt = {};
 var EnigmailPEPAdapter = {};
 var Recipients2CompFields = {};
-var MailUtils = {};
 var GetResourceFromUri = {};
 var EnigmailCore = {};
 
@@ -432,36 +431,6 @@ function getMailPref_test() {
   };
 
   Enigmail.msg.getMailPref('xyz');
-
-}
-
-function getMsgFolderFromUri_test() {
-
-  MailUtils.getFolderForURI = function(uri, checkFolderAttributes) {
-    return uri;
-  };
-
-  let ret = Enigmail.msg.getMsgFolderFromUri('uri', 'attr');
-  Assert.equal(ret, 'uri');
-
-  GetResourceFromUri = function() {
-    return {
-      QueryInterface: function() {
-        return {
-          name: 'Folder Name',
-          isServer: false
-        };
-      }
-    };
-  };
-
-  MailUtils = undefined;
-
-  ret = Enigmail.msg.getMsgFolderFromUri('uri', 'attr');
-  Assert.equal(ret, null);
-
-  ret = Enigmail.msg.getMsgFolderFromUri('uri', null);
-  Assert.equal(ret.name, 'Folder Name');
 
 }
 
@@ -1200,7 +1169,6 @@ function run_test() {
   getEncryptionEnabled_test();
   getForceRecipientDlg_test();
   getMailPref_test();
-  getMsgFolderFromUri_test();
   getMsgHdr_test();
   getOriginalPepMsgRating_test();
   getPepMessageRating_test();

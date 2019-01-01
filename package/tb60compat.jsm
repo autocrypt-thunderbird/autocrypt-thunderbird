@@ -10,6 +10,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTb60Compat"];
 
+ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+
 var gCompFields;
 
 var EnigmailTb60Compat = {
@@ -29,5 +31,15 @@ var EnigmailTb60Compat = {
       gCompFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
     }
     return ("securityInfo" in gCompFields ? /* TB < 64 */ "securityInfo" : "composeSecure");
+  },
+
+  getExistingFolder: function(folderUri) {
+    if ("getExistingFolder" in MailUtils) {
+      // TB >= 65
+      return MailUtils.getExistingFolder(folderUri);
+    }
+    else {
+      return MailUtils.getFolderForURI(folderUri, false);
+    }
   }
 };

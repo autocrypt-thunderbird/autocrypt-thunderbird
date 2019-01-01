@@ -72,7 +72,7 @@ function initialize() {
     window = appShellSvc.hiddenDOMWindow;
     document = window.document;
 
-    Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/stdlib/openpgp-lib.js", null, "UTF-8");
+    Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/stdlib/openpgp-lib.js", window, "UTF-8");
 
     //this.openpgp = window.openpgp;
   }

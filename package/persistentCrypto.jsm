@@ -19,7 +19,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm"); /*global Enig
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
 ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
 ChromeUtils.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
-ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /*global EnigmailTb60Compat: false */
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
 ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
@@ -396,7 +396,7 @@ CryptMessageIntoFolder.prototype = {
             }
           } catch (ex) {}
 
-          copySvc.CopyFileMessage(fileSpec, MailUtils.getFolderForURI(self.destFolder, false), self.hdr,
+          copySvc.CopyFileMessage(fileSpec, EnigmailTb60Compat.getExistingFolder(self.destFolder), self.hdr,
             false, 0, "", copyListener, null);
         }
       ).catch(

@@ -13,7 +13,7 @@ var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
 const Cu = Components.utils;
 
-ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /*global EnigmailTb60Compat: false */
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
@@ -52,7 +52,7 @@ var EnigmailFixExchangeMsg = {
         self.brokenByApp = brokenByApp;
 
         if (destFolderUri) {
-          self.destFolder = MailUtils.getFolderForURI(destFolderUri, false);
+          self.destFolder = EnigmailTb60Compat.getExistingFolder(destFolderUri);
         }
 
 

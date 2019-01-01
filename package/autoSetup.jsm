@@ -198,8 +198,14 @@ var EnigmailAutoSetup = {
           }
         }
 
-        returnMsgValue.userName = msgAccountManager.defaultAccount.defaultIdentity.fullName;
-        returnMsgValue.userEmail = msgAccountManager.defaultAccount.defaultIdentity.email;
+        if (msgAccountManager.defaultAccount) {
+          returnMsgValue.userName = msgAccountManager.defaultAccount.defaultIdentity.fullName;
+          returnMsgValue.userEmail = msgAccountManager.defaultAccount.defaultIdentity.email;
+        }
+        else {
+          returnMsgValue.userName = undefined;
+          returnMsgValue.userEmail = undefined;
+        }
 
         gDeterminedSetupType = returnMsgValue;
         EnigmailLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: found type: ${returnMsgValue.value}\n`);
