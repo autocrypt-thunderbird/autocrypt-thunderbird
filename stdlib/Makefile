@@ -11,12 +11,15 @@ MODFILES = \
            compose.jsm \
            misc.jsm \
            msgHdrUtils.jsm \
-           openpgp-lib.js \
+           openpgp-lib.jsm \
            openpgp.worker.js
 
 all: deploy
 
-deploy: $(MODFILES)
+createlib: 
+	cat openpgp-lib-head.js openpgp-lib.js openpgp-lib-tail.js > openpgp-lib.jsm
+
+deploy: createlib $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules/stdlib $(MODFILES)
 
 
