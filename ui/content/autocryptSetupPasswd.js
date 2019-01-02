@@ -32,6 +32,12 @@ function onLoad() {
   if (gInputArgs.passwdType == "numeric9x4") {
     if ("initialPasswd" in gInputArgs) {
       document.getElementById("l1").value = gInputArgs.initialPasswd.substr(0, 2);
+      if (gInputArgs.initialPasswd.length === 44) {
+        for (let i = 1; i < 10; i++) {
+          let p = document.getElementById("l" + i);
+          p.value = gInputArgs.initialPasswd.substr((i - 1) * 5, 4);
+        }
+      }
     }
     if (gInputArgs.dlgMode === "input") {
       validate9x4Input();

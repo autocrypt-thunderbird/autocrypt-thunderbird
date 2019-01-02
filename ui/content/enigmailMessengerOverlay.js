@@ -2534,7 +2534,7 @@ Enigmail.msg = {
     }
   },
 
-  performAutocryptSetup: function() {
+  performAutocryptSetup: function(passwd = null) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: performAutocryptSetup()\n");
 
     if (("message-id" in currentHeaderData) && EnigmailAutocrypt.isSelfCreatedSetupMessage(currentHeaderData["message-id"].headerValue)) {
@@ -2557,7 +2557,7 @@ Enigmail.msg = {
     if (currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) === 0) {
 
       EnigmailAutocrypt.getSetupMessageData(currentAttachments[0].url).then(res => {
-        let passwd = EnigmailWindows.autocryptSetupPasswd(window, "input", res.passphraseFormat, res.passphraseHint);
+        passwd = EnigmailWindows.autocryptSetupPasswd(window, "input", res.passphraseFormat, passwd || res.passphraseHint);
 
         if ((!passwd) || passwd == "") {
           throw "noPasswd";
@@ -2576,7 +2576,7 @@ Enigmail.msg = {
           case "wrongPasswd":
             if (EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("autocrypt.importSetupKey.wrongPasswd"), EnigmailLocale.getString("dlg.button.retry"),
                 EnigmailLocale.getString("dlg.button.cancel"))) {
-              Enigmail.msg.performAutocryptSetup();
+              Enigmail.msg.performAutocryptSetup(passwd);
             }
             break;
           case "keyImportFailed":
