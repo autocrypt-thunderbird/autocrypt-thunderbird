@@ -3,6 +3,13 @@
  *
  */
 
+
+/*
+ * This bit of code embeds the openPGP-JS libary. This is the part that is added before
+ * the library code.
+ */
+
+
 var EXPORTED_SYMBOLS = ["getOpenPGPLibrary"];
 
 function getOpenPGPLibrary(window) {
@@ -25,3 +32,5 @@ function getOpenPGPLibrary(window) {
     table: function() {},
     warn: function() {}
   };
+
+/* OpenPGP-LS library code will be copied below this line */
