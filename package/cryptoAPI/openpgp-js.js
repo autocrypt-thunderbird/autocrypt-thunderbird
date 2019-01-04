@@ -53,9 +53,14 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
     try {
       let openpgp = getOpenPGP().openpgp;
-      let msg = openpgp.key.readArmored(armoredKey);
+      let msg = await openpgp.key.readArmored(armoredKey);
 
-      if (!msg || msg.keys.length === 0) return null;
+      if (!msg || msg.keys.length === 0) {
+        if (msg.err) {
+          EnigmailLog.writeException("openpgp-js.js", msg.err[0]);
+        }
+        return null;
+      }
 
       let key = msg.keys[0];
       let uid = await key.getPrimaryUser(null, searchUid);
