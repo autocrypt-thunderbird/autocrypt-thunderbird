@@ -1794,4 +1794,4 @@ let window = {};
 
 var TransformStream = window.TransformStream;
 var ReadableStream = window.ReadableStream;
-var WritableStream = window.ReadableStream;
+var WritableStream = window.WritableStream;

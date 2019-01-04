@@ -180,7 +180,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
   let id = EnigmailStdlib.getIdentityForEmail("strike.devtest@gmail.com").identity;
-  Assert.equal(id.email, "strike.devtest@gmail.com");
+  Assert.equal(id.email, "strike.devtest@gmail.com", "ID OK");
 
   EnigmailAutocrypt.createSetupMessage(id).then(res => {
     Assert.ok(res);
@@ -195,7 +195,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetKeyFunctions() {
 
     inspector.exitNestedEventLoop();
   }).catch(err => {
-    Assert.equal(err, 0);
+    Assert.equal(err, 0, "this should not happen");
     inspector.exitNestedEventLoop();
   });
   inspector.enterNestedEventLoop(0);

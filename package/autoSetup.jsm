@@ -263,6 +263,8 @@ var EnigmailAutoSetup = {
           case "keyImportFailed":
             EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.invalidKey"));
             break;
+          default:
+            EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("keyserver.error.unknown"));
         }
       }
     }

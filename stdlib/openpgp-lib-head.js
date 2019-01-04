@@ -29,29 +29,36 @@ Components.utils.importGlobalProperties(["atob",
   "XMLHttpRequest"
 ]);
 
+const {
+  TransformStream,
+  ReadableStream,
+  WritableStream
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/web-streams.jsm");
 
-function getOpenPGPLibrary() {
+function getOpenPGPLibrary(window) {
 
   /* Prerequisites required by openpgp-lib.js */
 
   let setTimeout = ChromeUtils.import("resource://gre/modules/Timer.jsm").setTimeout;
 
-  let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
-  let window = appShellSvc.hiddenDOMWindow;
+  if (!window) {
+    let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
+    window = appShellSvc.hiddenDOMWindow;
+  }
 
   let document = window.document;
   let navigator = window.navigator;
-/*
-  let TransformStream = (function(x, y) {
-    return window.TransformStream;
-  })();
+  /*
+    let TransformStream = (function(x, y) {
+      return window.TransformStream;
+    })();
 
-  let WritableStream = (function(x, y) {
-    return window.WritableStream;
-  })();
+    let WritableStream = (function(x, y) {
+      return window.WritableStream;
+    })();
 
-  //const ReadableStream = window.ReadableStream;
-*/
+    //const ReadableStream = window.ReadableStream;
+  */
 
   const console = {
     assert: function() {},

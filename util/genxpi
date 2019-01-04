@@ -145,6 +145,7 @@ zip -9 --must-match\
     chrome/content/modules/stdlib/msgHdrUtils.jsm \
     chrome/content/modules/stdlib/openpgp-lib.jsm \
     chrome/content/modules/stdlib/openpgp.worker.js \
+    chrome/content/modules/stdlib/web-streams.jsm \
     chrome/content/modules/stdlib.jsm \
     chrome/content/modules/streams.jsm \
     chrome/content/modules/subprocess.jsm \

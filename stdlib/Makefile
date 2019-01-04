@@ -12,7 +12,8 @@ MODFILES = \
            misc.jsm \
            msgHdrUtils.jsm \
            openpgp-lib.jsm \
-           openpgp.worker.js
+           openpgp.worker.js \
+           web-streams.jsm
 
 all: deploy
 
