@@ -10,9 +10,9 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailOS"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 

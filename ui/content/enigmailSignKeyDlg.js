@@ -9,7 +9,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm");

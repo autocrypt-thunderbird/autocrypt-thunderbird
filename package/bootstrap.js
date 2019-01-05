@@ -7,9 +7,9 @@
 
 
 /* global APP_SHUTDOWN: false */
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 

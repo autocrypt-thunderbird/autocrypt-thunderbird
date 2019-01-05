@@ -40,8 +40,8 @@ ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm"); /* global Promise
 ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
 ChromeUtils.import("chrome://enigmail/content/modules/xhrUtils.jsm"); /*global EnigmailXhrUtils: false */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 const EXEC_FILE_PERMS = 0x1C0; // 0700
 

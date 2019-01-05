@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailKey"];
 
-const Cu = Components.utils;
+
 
 const KEY_BLOCK_UNKNOWN = 0;
 const KEY_BLOCK_KEY = 1;

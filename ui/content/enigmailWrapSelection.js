@@ -11,7 +11,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 function onLoad() {
   EnigmailLog.DEBUG("enigmailwrapSelection.js: onLoad\n");

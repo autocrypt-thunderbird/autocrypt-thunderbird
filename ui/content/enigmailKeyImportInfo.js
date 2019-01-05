@@ -6,7 +6,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */

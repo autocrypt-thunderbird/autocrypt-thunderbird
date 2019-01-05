@@ -11,7 +11,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailFixExchangeMsg"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /*global EnigmailTb60Compat: false */
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
@@ -21,8 +21,8 @@ ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global En
 
 const EC = EnigmailCore;
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 

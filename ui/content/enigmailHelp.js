@@ -11,7 +11,7 @@
 /* global EnigmailLog: false */
 /* global Components: false */
 
-const Ci = Components.interfaces;
+
 
 /* global EnigInitCommon: false, EnigGetWindowOptions: false, EnigGetFrame: false, EnigGetHttpUri: false, EnigOpenUrlExternally: false */
 

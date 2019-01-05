@@ -40,7 +40,7 @@ function enigmailKeygenLoad() {
   EnigmailLog.DEBUG("enigmailKeygen.js: Load\n");
   /* global Components: false */
 
-  const Ci = Components.interfaces;
+  
 
   gUserIdentityList = document.getElementById("userIdentity");
   gUserIdentityListPopup = document.getElementById("userIdentityPopup");

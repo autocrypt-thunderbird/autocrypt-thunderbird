@@ -11,7 +11,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailAttachment"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
 

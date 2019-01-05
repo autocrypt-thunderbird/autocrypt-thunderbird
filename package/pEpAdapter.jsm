@@ -10,9 +10,9 @@
  */
 
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 ChromeUtils.import("chrome://enigmail/content/modules/pEp.jsm"); /*global EnigmailpEp: false */

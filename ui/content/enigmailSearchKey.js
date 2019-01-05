@@ -12,9 +12,9 @@
 /* from EnigmailCommon.js: */
 /* global EnigSetActive: false, ENIG_KEY_EXPIRED: false, ENIG_KEY_NOT_VALID: false */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 const {EnigmailTimer} = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm", {});
 const {EnigmailKeyServer} = ChromeUtils.import("chrome://enigmail/content/modules/keyserver.jsm", {});

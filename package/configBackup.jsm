@@ -9,9 +9,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailConfigBackup"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
 ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */

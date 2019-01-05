@@ -14,7 +14,7 @@ var EXPORTED_SYMBOLS = ["EnigmailArmor"];
 ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
 
-const Ci = Components.interfaces;
+
 
 // Locates STRing in TEXT occurring only at the beginning of a line
 function indexOfArmorDelimiter(text, str, offset) {

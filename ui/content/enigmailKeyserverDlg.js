@@ -7,8 +7,8 @@
 
 "use strict";
 
-const Cu = Components.utils;
-const Ci = Components.interfaces;
+
+
 
 const {EnigmailLocale} = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 const {EnigmailPrefs} = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");

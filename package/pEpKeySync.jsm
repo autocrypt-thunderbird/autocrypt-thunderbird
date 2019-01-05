@@ -7,9 +7,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPKeySync"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
 ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */

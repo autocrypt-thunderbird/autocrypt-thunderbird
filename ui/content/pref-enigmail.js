@@ -21,9 +21,9 @@
 
 "use strict";
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm"); /* global EnigmailConfigBackup: false */
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */

@@ -8,7 +8,7 @@
 
 /* global Components: false */
 
-const Ci = Components.interfaces;
+
 
 // modules:
 /* global EnigmailLocale: false, EnigmailWindows: false, EnigmailLog: false, EnigmailCore: false, EnigmailDialog: false */

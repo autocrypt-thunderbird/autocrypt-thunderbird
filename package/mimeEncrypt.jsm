@@ -13,10 +13,10 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailMimeEncrypt"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 const Cr = Components.results;
-const Cu = Components.utils;
+
 
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */

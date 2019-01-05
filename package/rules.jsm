@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailRules"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");

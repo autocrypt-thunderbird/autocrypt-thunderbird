@@ -15,9 +15,9 @@ var EXPORTED_SYMBOLS = ["EnigmailAddrbook"];
  *
  */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 const ABMANAGER = "@mozilla.org/abmanager;1";
 

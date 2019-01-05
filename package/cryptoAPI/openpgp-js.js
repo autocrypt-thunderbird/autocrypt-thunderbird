@@ -11,9 +11,9 @@
 var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 Components.utils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
 const {

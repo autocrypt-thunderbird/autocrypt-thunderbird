@@ -38,8 +38,8 @@ ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global Enigm
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 var gLastDirection = 0;
 var gWizardUserMode = "beginner";

@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailFiltersWrapper"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 var gNewMailListenerInitiated = false;
 var gEnigmailFilters = null;

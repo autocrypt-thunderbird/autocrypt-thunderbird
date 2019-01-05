@@ -14,8 +14,8 @@
 // Initialize enigmailCommon
 EnigInitCommon("enigmailRulesEditor");
 
-const Cu = Components.utils;
-const Ci = Components.interfaces;
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /*global EnigmailRules: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */

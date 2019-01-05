@@ -16,7 +16,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /* global 
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
 ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 
-const Ci = Components.interfaces;
+
 
 const CHANGE_PIN = 'P';
 const ADMIN_PIN = 'A';

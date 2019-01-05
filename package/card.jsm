@@ -11,7 +11,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailCard"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */

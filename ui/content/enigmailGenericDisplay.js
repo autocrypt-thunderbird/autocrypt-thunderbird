@@ -9,7 +9,7 @@
 /* global EnigInitCommon: false, EnigmailLog: false, EnigGetFrame: false */
 /* global Components: false */
 
-const Ci = Components.interfaces;
+
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailGenericDisplay");

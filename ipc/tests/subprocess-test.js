@@ -12,8 +12,8 @@
 
 ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /* global subprocess: false */
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 var gTestLines;
 var gResultData;

@@ -9,8 +9,8 @@
 
 var EXPORTED_SYMBOLS = ["GnuPGDecryption"];
 
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
 
 const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;

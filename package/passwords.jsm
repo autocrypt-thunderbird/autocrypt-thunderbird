@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailPassword"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */

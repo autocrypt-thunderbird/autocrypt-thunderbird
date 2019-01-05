@@ -10,7 +10,7 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailLazy"];
 
-const Cu = Components.utils;
+
 
 var EnigmailLazy = {
   loader: function(component, name) {

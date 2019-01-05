@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");

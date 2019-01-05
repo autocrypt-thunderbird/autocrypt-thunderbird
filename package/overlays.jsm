@@ -28,9 +28,9 @@
 
 var EXPORTED_SYMBOLS = ["Overlays"];
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 ChromeUtils.import("resource://gre/modules/Console.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");

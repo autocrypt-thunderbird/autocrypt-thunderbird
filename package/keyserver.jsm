@@ -9,9 +9,9 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */

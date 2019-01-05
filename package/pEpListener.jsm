@@ -16,9 +16,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailpEpListener"];
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 const MIN_PORT_NUM = 15900;
 const MAX_PORT_NUM = 15991;

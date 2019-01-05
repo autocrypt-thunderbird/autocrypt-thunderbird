@@ -76,6 +76,7 @@ module.exports = {
     "Components": true,
     "Cc": true,
     "Cu": true,
+    "Cr": true,
     "Ci": true
   }
 };

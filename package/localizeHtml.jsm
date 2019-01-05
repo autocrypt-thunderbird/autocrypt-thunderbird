@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /* global EnigmailLocale: false */
 ChromeUtils.import("chrome://enigmail/content/modules/buildDate.jsm"); /* global EnigmailBuildDate: false */

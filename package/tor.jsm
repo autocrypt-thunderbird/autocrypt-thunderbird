@@ -8,8 +8,8 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */

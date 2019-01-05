@@ -9,7 +9,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */

@@ -10,7 +10,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 EnigInitCommon("enigmailAdvancedIdentityDlg");
 

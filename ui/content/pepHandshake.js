@@ -8,9 +8,9 @@
 
 "use strict";
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /* global EnigmailPEPAdapter: false */
 ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /* global EnigmailDialog: false */

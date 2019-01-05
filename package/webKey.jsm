@@ -16,9 +16,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWks"];
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */

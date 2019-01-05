@@ -7,7 +7,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /*global EnigmailWindows: false */

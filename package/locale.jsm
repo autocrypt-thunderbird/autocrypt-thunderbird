@@ -12,8 +12,8 @@ var EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 var gEnigStringBundle = null;
 

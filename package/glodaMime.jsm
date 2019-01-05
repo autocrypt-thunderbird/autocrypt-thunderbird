@@ -19,7 +19,7 @@ var EXPORTED_SYMBOLS = ["msgHdrToMimeMessage",
   "MimeMessageAttachment"
 ];
 
-const Cu = Components.utils;
+
 
 /*global MsgHdrToMimeMessage: false */
 try {

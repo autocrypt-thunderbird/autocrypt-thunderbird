@@ -9,9 +9,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailSystem"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
 ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */

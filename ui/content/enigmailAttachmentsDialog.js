@@ -12,7 +12,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailAttachmentsDialog");

@@ -15,7 +15,7 @@
 
 var EXPORTED_SYMBOLS = ["GlodaUtils"];
 
-const Cu = Components.utils;
+
 
 try {
   // TB with omnijar

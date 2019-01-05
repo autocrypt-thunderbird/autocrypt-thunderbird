@@ -11,7 +11,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailGpgAgent"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("resource://gre/modules/ctypes.jsm"); /*global ctypes: false */
 ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
@@ -32,8 +32,8 @@ const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 const NS_LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";

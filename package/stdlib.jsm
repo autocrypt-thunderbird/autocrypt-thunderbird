@@ -14,9 +14,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailStdlib"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/stdlib/compose.jsm");
 /* global composeInIframe: false, getEditorForIframe,

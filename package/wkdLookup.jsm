@@ -12,9 +12,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWkdLookup"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/

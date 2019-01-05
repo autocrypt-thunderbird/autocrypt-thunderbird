@@ -9,9 +9,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailKeyObj"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 /**
  This module implements the EnigmailKeyObj class with the following members:

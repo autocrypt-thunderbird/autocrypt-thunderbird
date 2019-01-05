@@ -7,8 +7,8 @@
 /*global do_subtest: false, Components: false */
 
 function execTest(filename) {
-  const Cc = Components.classes;
-  const Ci = Components.interfaces;
+  
+  
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
   let testcases = env.get("JS_TEST");

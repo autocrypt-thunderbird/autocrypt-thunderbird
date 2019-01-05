@@ -8,7 +8,7 @@
 
 /* global Components: false */
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
 ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm"); /* global EnigmailKeyEditor: false */

@@ -10,7 +10,7 @@
 
 /* global EnigmailLog: false, EnigmailCore: false, EnigmailConstants: false */
 
-const Ci = Components.interfaces;
+
 
 function enigmailEncryptionDlgLoad() {
   EnigmailLog.DEBUG("enigmailEncryptionDlgLoad.js: Load\n");

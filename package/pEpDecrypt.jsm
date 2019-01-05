@@ -10,9 +10,9 @@
  */
 
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 const COLOR_UNDEF = -471142;
 

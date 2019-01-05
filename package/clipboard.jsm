@@ -13,8 +13,8 @@ var EXPORTED_SYMBOLS = ["EnigmailClipboard"];
 // a browser window where it's already loaded.
 ChromeUtils.import('resource://gre/modules/Services.jsm');
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
+
+
 
 // Create a constructor for the built-in supports-string class.
 const nsSupportsString = Components.Constructor("@mozilla.org/supports-string;1", "nsISupportsString");

@@ -14,7 +14,7 @@
 // enigmailCommon.js:
 /* global EnigSetActive: false, createCell */
 
-const Ci = Components.interfaces;
+
 
 var gAlertPopUpIsOpen = false;
 

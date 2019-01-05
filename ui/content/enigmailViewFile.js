@@ -8,7 +8,7 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
 ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */

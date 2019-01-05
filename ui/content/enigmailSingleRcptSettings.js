@@ -20,7 +20,7 @@ const INPUT = 0;
 const RESULT = 1;
 
 function enigmailDlgOnLoad() {
-  const Ci = Components.interfaces;
+  
 
   var matchBegin = false;
   var matchEnd = false;

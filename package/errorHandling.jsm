@@ -10,8 +10,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");

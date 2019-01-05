@@ -11,9 +11,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailFilters"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");

@@ -19,8 +19,8 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
+
+
 
 var gKeyId = null;
 var gUserId = null;

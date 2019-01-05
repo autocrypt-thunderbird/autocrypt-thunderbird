@@ -10,8 +10,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailMime"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */

@@ -228,8 +228,8 @@ function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 }
 
 function setupTestAccount(accountName, incomingServerUserName, primaryEmail = null, primaryKeyId = null) {
-  const Cc = Components.classes;
-  const Ci = Components.interfaces;
+  
+  
 
   // sanity check
   let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);

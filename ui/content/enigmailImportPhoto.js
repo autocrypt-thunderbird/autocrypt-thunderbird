@@ -8,7 +8,7 @@
 
 /* global Components: false */
 
-const Ci = Components.interfaces;
+
 
 function onLoad() {
   document.getElementById("photoImage").setAttribute("src", window.arguments[0].photoUri);

@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailPersistentCrypto"];
 
-const Cu = Components.utils;
+
 
 ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
@@ -42,8 +42,8 @@ const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAge
 const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 const STATUS_OK = 0;
 const STATUS_FAILURE = 1;

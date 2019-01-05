@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailMsgRead"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+
+
+
 
 /**
  * Message-reading related functions

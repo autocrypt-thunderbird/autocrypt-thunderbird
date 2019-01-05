@@ -28,9 +28,9 @@ var gLogFunction = null;
 var gShuttingDown = false;
 var gPepAdapterApiVer = "0.0.0";
 
-const Cu = Components.utils;
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
+
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */

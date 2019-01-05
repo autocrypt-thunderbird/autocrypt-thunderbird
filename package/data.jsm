@@ -11,8 +11,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailData"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+
+
 
 const SCRIPTABLEUNICODECONVERTER_CONTRACTID = "@mozilla.org/intl/scriptableunicodeconverter";
 
