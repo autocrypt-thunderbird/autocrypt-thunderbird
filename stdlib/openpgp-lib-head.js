@@ -35,30 +35,23 @@ const {
   WritableStream
 } = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/web-streams.jsm");
 
-function getOpenPGPLibrary(window) {
+function getOpenPGPLibrary() {
 
   /* Prerequisites required by openpgp-lib.js */
 
   let setTimeout = ChromeUtils.import("resource://gre/modules/Timer.jsm").setTimeout;
 
-  if (!window) {
-    let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
-    window = appShellSvc.hiddenDOMWindow;
-  }
+  let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
+  let userAgent = appShellSvc.hiddenDOMWindow.navigator.userAgent;
 
-  let document = window.document;
-  let navigator = window.navigator;
-  /*
-    let TransformStream = (function(x, y) {
-      return window.TransformStream;
-    })();
-
-    let WritableStream = (function(x, y) {
-      return window.WritableStream;
-    })();
-
-    //const ReadableStream = window.ReadableStream;
-  */
+  const window = {};
+  const document = {};
+  const navigator = {
+    userAgent: appShellSvc.hiddenDOMWindow.navigator.userAgent
+  };
+  window.document = document;
+  window.navigator = navigator;
+  window.crypto = crypto;
 
   const console = {
     assert: function() {},
