@@ -12,6 +12,9 @@
 
 var EXPORTED_SYMBOLS = ["getOpenPGPLibrary"];
 
+// Complete list of gobal prpoperties (as of TB 65), taken from
+// [mozilla-source]/js/xpconnect/src/Sandbox.cpp
+
 Components.utils.importGlobalProperties(["Blob",
   "CSS",
   "CSSRule",
