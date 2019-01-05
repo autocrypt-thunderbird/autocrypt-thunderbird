@@ -37,7 +37,6 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
 ];
 
 var gOpenPGPLib;
-var window;
 
 function initialize() {
   const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -46,12 +45,7 @@ function initialize() {
   EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
 
   try {
-    if (!window) {
-      let appShellSvc = Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService);
-      window = appShellSvc.hiddenDOMWindow;
-    }
-
-    gOpenPGPLib = getOpenPGPLibrary(null);
+    gOpenPGPLib = getOpenPGPLibrary();
 
     EnigmailLog.ERROR(`openpgp.jsm: openpgp: ${gOpenPGPLib}\n`);
   }
@@ -162,13 +156,6 @@ var EnigmailOpenPGP = {
         "-----END PGP " + hdr + "-----\n";
 
       return s;
-    },
-
-    getCrypto: function() {
-      if (!window) {
-        initialize();
-      }
-      return window.crypto;
     }
   }
 };

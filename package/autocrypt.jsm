@@ -12,10 +12,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailAutocrypt"];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
 const Cr = Components.results;
-const Cu = Components.utils;
+
+Components.utils.importGlobalProperties(["crypto"]); /* global crypto: false */
 
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
@@ -858,7 +857,6 @@ function getFprForKey(paramsArr) {
 
 function createBackupCode() {
   let bkpCode = "";
-  let crypto = EnigmailOpenPGP.enigmailFuncs.getCrypto();
 
   for (let i = 0; i < 9; i++) {
     if (i > 0) bkpCode += "-";
