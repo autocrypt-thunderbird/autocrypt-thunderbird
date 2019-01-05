@@ -12,21 +12,34 @@
 
 var EXPORTED_SYMBOLS = ["getOpenPGPLibrary"];
 
-Components.utils.importGlobalProperties(["atob",
-  "Blob",
-  "btoa",
-  "crypto",
+Components.utils.importGlobalProperties(["Blob",
   "CSS",
-  "fetch",
+  "CSSRule",
+  "ChromeUtils",
+  "DOMParser",
+  "Directory",
+  "Element",
+  "Event",
   "File",
-  "indexedDB",
+  "FileReader",
+  "FormData",
+  "InspectorUtils",
+  "MessageChannel",
+  "Node",
   "NodeFilter",
-  "rtcIdentityProvider",
+  "PromiseDebugging",
   "TextDecoder",
   "TextEncoder",
   "URL",
   "URLSearchParams",
-  "XMLHttpRequest"
+  "XMLHttpRequest",
+  "XMLSerializer",
+  "atob",
+  "btoa",
+  "caches",
+  "crypto",
+  "fetch",
+  "indexedDB"
 ]);
 
 const {
