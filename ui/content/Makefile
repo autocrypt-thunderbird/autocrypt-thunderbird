@@ -106,8 +106,6 @@ UIFILES = \
 	enigmailFilterListOverlay.js \
 	enigmailPrivacyOverlay.js \
 	enigmailPrivacyOverlay.xul \
-	enigmailSetupWizard.js \
-	enigmailSetupWizard.xul \
 	enigmailWrapSelection.xul \
 	enigmailWrapSelection.js \
 	enigmailViewFile.js \

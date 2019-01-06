@@ -10,11 +10,6 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailConfigure"];
 
-
-
-
-
-
 /*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
 
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");

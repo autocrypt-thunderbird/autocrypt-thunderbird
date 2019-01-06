@@ -39,8 +39,11 @@
 
   <html:div id="searchingGnuPG" style="width: 440px">
     <html:p>&enigmail.setupWiz.pgIntro.desc;</html:p>
-    <html:p>&enigmail.setupWiz.searchingGnuPG; <html:img aria-label="&enigmail.general.okLabel;" id="foundGnuPG" style="visibility: hidden" class="enigmailOkSign"/>
-    </html:p>
+    <html:div>
+      <html:p>&enigmail.setupWiz.searchingGnuPG;
+        <html:span aria-label="&enigmail.general.okLabel;" id="foundGnuPG" style="visibility: hidden" class="enigmailOkSign"/>
+      </html:p>
+    </html:div>
   </html:div>
 
   <html:div id="requireGnuPG" style="width: 440px: margin:auto; visibility: collapse">
@@ -125,12 +128,13 @@
     </html:p>
     <html:p>
       <html:button type="button" id="btnApplyExistingKeys" onclick="applyExistingKeys()">&enigmail.setupWiz.applyExistingKeysBtn;</html:button>
-      <html:span id="applyExistingKeysOK" style="visibility: hidden">... <html:img aria-label="&enigmail.general.okLabel;" class="enigmailOkSign"/></html:span>
+      <html:span id="applyExistingKeysOK" style="visibility: hidden">... <html:span aria-label="&enigmail.general.okLabel;" class="enigmailOkSign"/></html:span>
     </html:p>
   </html:div>
 
-  <html:div id="previousInstall_none" style="width: 440px; visibility: collapse;">
+  <html:div id="previousInstall_none" style="width: 440px; visibility: collapse; vertical-align: middle">
     <html:p>
+      <html:span class="enigmailOkSign" style="float: left"/>
       &enigmail.setupWiz.setupComplete;
     </html:p>
   </html:div>

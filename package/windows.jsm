@@ -47,7 +47,7 @@ var EnigmailWindows = {
       return;
     }
 
-    win.open("chrome://enigmail/content/ui/enigmailSetupWizard.xul",
+    win.open("chrome://enigmail/content/ui/setupWizard2.xul",
       "", "chrome,centerscreen,resizable");
   },
 
