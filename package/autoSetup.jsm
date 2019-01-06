@@ -24,6 +24,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global E
 ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
+const EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 
 // Interfaces
@@ -330,7 +331,7 @@ var EnigmailAutoSetup = {
     EnigmailTimer.setTimeout(async function _f() {
       let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
       let accounts = msgAccountManager.accounts;
-      let createdKeys = 0;
+      let createdKeys = [];
 
       for (let i = 0; i < accounts.length; i++) {
         let account = accounts.queryElementAt(i, Ci.nsIMsgAccount);
@@ -340,7 +341,8 @@ var EnigmailAutoSetup = {
           let keyId = await self.createAutocryptKey(id.fullName, id.email);
           EnigmailLog.DEBUG(`autoSetup.jsm: createKeyForAllAccounts: created key ${keyId}\n`);
           if (keyId) {
-            ++createdKeys;
+            let keyObj = EnigmailKeyRing.getKeyById(keyId);
+            if (keyObj) createdKeys.push(keyObj);
             id.setBoolAttribute("enablePgp", true);
             id.setCharAttribute("pgpkeyId", keyId);
             id.setIntAttribute("pgpKeyMode", 1);
@@ -350,7 +352,8 @@ var EnigmailAutoSetup = {
         }
       }
 
-      return createdKeys;
+      // upload created keys to WKD (if possible)
+      EnigmailWks.wksUpload(createdKeys, null);
     }, timeoutValue);
   },
 
