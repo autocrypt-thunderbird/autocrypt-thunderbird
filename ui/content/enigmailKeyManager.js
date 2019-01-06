@@ -1825,8 +1825,6 @@ var gKeyListView = {
    */
   getFilteredKeys: function() {
     let searchTxt = gSearchInput.value;
-    let nothingFoundElem = document.getElementById("nothingFound");
-    nothingFoundElem.hidePopup();
 
     if (!searchTxt || searchTxt.length === 0) {
       return this.showOrHideAllKeys();
@@ -1902,10 +1900,6 @@ var gKeyListView = {
         keyShowList.push(i);
         foundResult = true;
       }
-    }
-
-    if (!foundResult) {
-      nothingFoundElem.showPopup(gTreeChildren, -1, -1, "tooltip", "after_end", "");
     }
 
     return keyShowList;

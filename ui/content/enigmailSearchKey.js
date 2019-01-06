@@ -31,7 +31,7 @@ var gAllKeysSelected = 0;
 
 const DownloadListener = {
   onProgress: function(percentComplete) {
-    gProgressMeter.setAttribue("value", percentComplete);
+    gProgressMeter.setAttribute("value", percentComplete);
   },
   onCancel: null
 };
