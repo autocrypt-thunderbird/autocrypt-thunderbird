@@ -25,18 +25,9 @@
 <!ENTITY enigmail.keyGen.keyType.rsa      "RSA">
 <!ENTITY enigmail.keyGen.keyType.ecc      "ECC (Elliptic Curve)">
 
-<!ENTITY enigmail.keyUpload.label         "Checking whenever your email provider is supported">
-<!ENTITY enigmail.keyUpload.desc          "Publishing your public key on the Internet allows others to send you encrypted email without contacting you first.">
-<!ENTITY enigmail.keyUpload.sks.label     "Upload to the global OpenPGP keyservers">
-<!ENTITY enigmail.keyUpload.sks.desc      "Uploading your key to the global OpenPGP key servers allows users of legacy email apps to send you encrypted or signed messages. Keep in mind that everybody can read everything uploaded to these key servers (think of it like a phonebook). Do not upload your key if you want to keep the email address associated with it private.">
-<!ENTITY enigmail.keyUpload.wks.label     "Upload to the keyserver of your email provider">
-<!ENTITY enigmail.keyAttachAuto.label     "Always attach my public key">
-
 <!ENTITY enigmail.preferences.label       "Enigmail Preferences">
 
 <!ENTITY enigmail.passwordSettings.label   "Passphrase Timeout">
-<!ENTITY enigmail.userNoPassphrase.label   "Never ask for any passphrase">
-<!ENTITY enigmail.userNoPassphrase.tooltip "Activate if your OpenPGP key is not protected by a passphrase.">
 <!ENTITY enigmail.expertUserMenus.label    "Display Expert Settings and Menus">
 <!ENTITY enigmail.expertUser.tooltip       "Press if you want to see menu items and options for advanced users.">
 <!ENTITY enigmail.basicUserMenus.label     "Hide Expert Settings and Menus">
@@ -668,133 +659,22 @@
 <!ENTITY enigmail.cardPin.pinRepeat.label            "Repeat new PIN">
 
 <!-- wizard: welcome step -->
-<!ENTITY enigmail.setupWiz.title                     "Enigmail Setup Wizard">
-<!ENTITY enigmail.setupWiz.pgIntro.title             "Welcome to the Enigmail Setup Wizard">
+<!ENTITY enigmail.setupWiz.title                     "Enigmail Setup">
 <!ENTITY enigmail.setupWiz.pgIntro.desc              "It looks like you started Enigmail for the first time on this computer.
                                                       In order to use Enigmail, you need to first set it up properly.
                                                       This assistant will guide you through the setup process.">
-<!ENTITY enigmail.setupWiz.pgIntro.desc2             "Do you want to set up Enigmail now, or do you wish to do this later?">
-<!ENTITY enigmail.setupWiz.pgIntro.startNow          "Start setup now">
-<!ENTITY enigmail.setupWiz.pgIntro.startLater        "Configure Enigmail later">
-
-<!ENTITY enigmail.setupWiz.pgWelcome.title           "How would you like to Configure Enigmail?">
-<!ENTITY enigmail.setupWiz.pgWelcome.manualOrAuto    "Would you like to setup Enigmail manually, or do you need assistance in the setup process?">
-<!ENTITY enigmail.setupWiz.pgWelcome.beginnersMode   "I prefer a standard configuration (recommended for beginners)">
-<!ENTITY enigmail.setupWiz.pgWelcome.advancedMode    "I prefer an extended configuration (recommended for advanced users)">
-<!ENTITY enigmail.setupWiz.pgWelcome.manualMode      "I prefer a manual configuration (recommended for experts)">
-<!ENTITY enigmail.setupWiz.pgWelcome.importSettings  "I want to import my settings from a previous installation">
-
-<!-- wizard: select account IDs step -->
-<!ENTITY enigmail.setupWiz.pgSelectId.title          "Select Identities">
-<!ENTITY enigmail.setupWiz.pgSelectId.subtitle       "Select the accounts or identities you want Enigmail to work with">
-<!ENTITY enigmail.setupWiz.pgSelectId.desc2          "Would you like to set up Enigmail for all your email accounts / identities?">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectallIds   "I would like to enable Enigmail for all my accounts / identities">
-<!ENTITY enigmail.setupWiz.pgSelectId.selectedIds    "I would like to enable Enigmail only for the following identities:">
-<!ENTITY enigmail.setupWiz.pgSelectId.note           "<a class='enigmailStrong'>Note:</a> Enigmail will always verify signatures
-                                                      on emails for every account or identity, regardless of whether it is enabled or not">
-
 <!-- wizard: install GnuPG step -->
-<!ENTITY enigmail.setupWiz.pgInstall.title           "GnuPG Required">
 <!ENTITY enigmail.setupWiz.pgInstall.desc            "Enigmail requires GnuPG for doing the cryptographic work.
                                                       The wizard tried to locate the GnuPG executable, but it could not be found.">
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc1    "Enigmail can download GnuPG and launch the installer for you.
                                                       If you wish to do so, click on the 'Install GnuPG' button to download and install GnuPG.">
-
 <!ENTITY enigmail.setupWiz.pgInstall.installDesc2    "Alternatively, if you already installed GnuPG, use the 'Browse' button to specify the path to GnuPG manually.">
+
 <!ENTITY enigmail.setupWiz.pgInstall.locateDesc      "Please locate GnuPG using the Browse button.">
 <!ENTITY enigmail.setupWiz.pgInstall.installButton   "Install GnuPG ...">
 <!ENTITY enigmail.setupWiz.pgInstall.locateButton    "Browse ...">
 <!ENTITY enigmail.setupWiz.pgInstall.downloadLabel   "Downloading GnuPG ...">
 <!ENTITY enigmail.setupWiz.pgInstall.installLabel    "Starting the installer. Please follow the steps of the GnuPG installer wizard.">
-<!ENTITY enigmail.setupWiz.pgInstall.installDone     "Installation complete. Please proceed to the next page of the wizard to continue the setup process.">
-<!ENTITY enigmail.setupWiz.pgInstall.gnupgFound      "Valid GnuPG installation found.">
-
-
-<!-- wizard: key selection step -->
-
-<!ENTITY enigmail.setupWiz.pgKeySel.title            "Key Selection">
-<!ENTITY enigmail.setupWiz.pgKeySel.subtitle         "Create A Key To Sign And Encrypt Email">
-<!ENTITY enigmail.setupWiz.pgKeySel.desc2            "We have detected that you already have an OpenPGP key. You can either
-                                                      use one of your existing keys, or create a new key pair.">
-<!ENTITY enigmail.setupWiz.pgKeySel.newKey           "I want to create a new key pair for signing and encrypting my email">
-<!ENTITY enigmail.setupWiz.pgKeySel.useExistingKey   "I want to select one of the keys below for signing and encrypting my email:">
-
-
-<!-- wizard: key creation - password step -->
-<!ENTITY enigmail.setupWiz.pgKeyCreate.title         "Create Key">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.subtitle      "Create a new Key Pair">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descTwoKeys   "This dialog will create a pair of keys:">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descPub       "Your <html:b>public key</html:b> is <html:b>for others</html:b> to send you encrypted emails. You can distribute it to everybody.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec1      "Your <html:b>secret key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
-                                                      You should give it to nobody.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descSec2      "Your <html:b>secret key</html:b> is <html:b>for you</html:b> to decrypt these emails and to send signed emails.
-                                                      You should give it to nobody.
-                                                      To secure your secret key, you will be prompted for a passphrase in the following two dialogs.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.descPass      "Your <html:b>passphrase</html:b> is a password to protect your secret key. It prevents misuse of your secret key.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passContain   "The passphrase should contain several words and at least 8 characters, digits and punctuation marks. Umlauts (e.g. ä, é, ñ) and language-specific characters are <html:b>not</html:b> recommended.">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passRepeat    "Please confirm your passphrase by typing it again">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passQuality   "Passphrase quality:">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passError     "Passphrase should contain at least 8 characters">
-<!ENTITY enigmail.setupWiz.pgKeyCreate.passErrorRepeat "Passphrase entries do not match">
-
-<!-- wizard: no key found step -->
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.title2       "Create or Import OpenPGP Keys">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.desc2        "You don't seem to have any OpenPGP keys yet. Would you like to create a new key, or
-                                                      do you want to import keys from a file?">
-<!ENTITY enigmail.setupWiz.pgNoKeyFound.importKey    "I have existing public and secret keys that I would like to import">
-
-<!-- wizard: import key page -->
-<!ENTITY enigmail.setupWiz.pgKeyImport.title         "Import OpenPGP Keys">
-<!ENTITY enigmail.setupWiz.pgKeyImport.subtitle      "Specify the files to import">
-<!ENTITY enigmail.setupWiz.pgKeyImport.desc          "Please specify the files containing the public and the secret keys to
-                                                      import. The entry for secret keys can be left empty if the first file
-                                                      contains both secret and public keys.">
-<!ENTITY enigmail.setupWiz.pgKeyImport.pubkeyFile    "Public key file">
-<!ENTITY enigmail.setupWiz.pgKeyImport.seckeyFile    "Secret key file">
-
-<!-- wizard: key creation - key generation step -->
-
-<!ENTITY enigmail.setupWiz.pgKeygen.title            "Key Creation">
-<!ENTITY enigmail.setupWiz.pgKeygen.subtitle         "Your key is now being generated">
-<!ENTITY enigmail.setupWiz.pgKeygen.keyGenComplete   "Your Key is Generated">
-<!ENTITY enigmail.setupWiz.pgRevocert.title          "Revocation Certificate Creation">
-<!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "You can now create your revocation certificate">
-<!ENTITY enigmail.setupWiz.pgRevocert.desc           "In case your secret key gets lost or compromised, you might need to revoke your public key
-                                                      such that others don't continue to use your old key.
-                                                      For this purpose, you need a revocation certificate.
-                                                      <html:br/>You will be prompted to enter your password for this. Please transfer the certificate to a medium which can be stored away safely such as a CD or USB stick. If somebody gains access to this certificate they can use it to render your key unusable.">
-<!ENTITY enigmail.setupWiz.pgRevocert.button         "Create Revocation Certificate">
-
-<!-- wizard: key creation - key upload step -->
-<!ENTITY enigmail.setupWiz.pgUpload.title            "Upload Public Key">
-<!ENTITY enigmail.setupWiz.pgUpload.subtitle         "Publish your public key on the Internet">
-<!ENTITY enigmail.setupWiz.pgAttachAuto.title        "Attach your public key">
-<!ENTITY enigmail.attachAuto.desc                    "When enabled, your public key is automatically attached to your emails">
-
-<!-- wizard: import settings from previous installation -->
-<!ENTITY enigmail.setupWiz.pgImportSettings.title    "Import Settings from Previous Installation">
-<!ENTITY enigmail.setupWiz.pgImportSettings.desc     "Enigmail allows to transfer all its settings including your OpenPGP
-                                                      keys to a new computer. This is done in two steps:
-                                                      <html:ol>
-                                                        <html:li>export your data from your old computer using the backup wizard from the Enigmail Preferences</html:li>
-                                                        <html:li>import the data to your new computer using this wizard.</html:li>
-                                                      </html:ol>">
-<!ENTITY enigmail.setupWiz.pgImportSettings.fileName "Please specify the file that contains your backed up data:">
-<!ENTITY enigmail.setupWiz.pgImportSettings.importing "Importing keys and applying settings">
-<!ENTITY enigmail.setupWiz.pgImportSettings.error    "An error occurred during importing. Your settings could not be applied.">
-
-<!-- wizard: final page -->
-<!ENTITY enigmail.setupWiz.pgComplete.title          "Thank you">
-<!ENTITY enigmail.setupWiz.pgComplete.desc           "Enigmail is now ready to use.<html:br/><html:br/>Thank you for using Enigmail.">
-<!ENTITY enigmail.setupWiz.pgComplete.wkdUploaded    "We recommend that you upload your public key to the Web Key Directory of your email provider such that others can automatically find and use it.
-                                                        <html:br/>Please confirm the request that you will find in your inbox if you wish to do so.">
-<!ENTITY enigmail.pgComplete.help.title              "For further information about using Enigmail please visit">
-
-<!-- wizard: manual setup page -->
-<!ENTITY enigmail.setupWiz.pgExpert.title            "Manual Configuration of Enigmail">
-<!ENTITY enigmail.setupWiz.pgExpert.desc             "You have chosen not to use the Wizard to configure Enigmail.">
-<!ENTITY enigmail.setupWiz.pgExpert.keyManager       "The Enigmail key manager is available from here">
-<!ENTITY enigmail.setupWiz.pgExpert.expertSettings   "The expert Settings are available from here">
 
 <!ENTITY enigmail.setupWiz.searchingGnuPG            "Looking for GnuPG ...">
 <!ENTITY enigmail.setupWiz.checkingSetup             "Checking your existing setup ...">
