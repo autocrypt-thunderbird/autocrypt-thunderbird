@@ -745,6 +745,7 @@ Enigmail.msg = {
     }
 
     var draftId = gMsgCompose.compFields.draftId;
+    let selectedElement = document.activeElement;
 
     if (EnigmailPrefs.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof (draftId) == "string" && draftId.length > 0)) {
       msgUri = this.getOriginalMsgUri();
@@ -812,6 +813,7 @@ Enigmail.msg = {
 
     this.processFinalState();
     this.updateStatusBar();
+    if (selectedElement) selectedElement.focus();
   },
 
   getOriginalPepMsgRating: function() {
