@@ -1398,7 +1398,7 @@ Enigmail.hdrView = {
      * @param uriSpec:        String - the URI spec that is being displayed
      */
     displaySubPart: function(mimePartNumber, uriSpec) {
-      if (!mimePartNumber) return true;
+      if ((!mimePartNumber) || (!uriSpec)) return true;
       let part = EnigmailMime.getMimePartNumber(uriSpec);
 
       if (part.length === 0) {
