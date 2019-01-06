@@ -13,10 +13,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailMimeEncrypt"];
 
-
-
 const Cr = Components.results;
-
 
 ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
@@ -29,6 +26,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm"); /*global Enigm
 ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
@@ -712,6 +710,7 @@ PgpMimeEncrypt.prototype = {
   processPepEncryption: function() {
     EnigmailLog.DEBUG("mimeEncrypt.js: processPepEncryption:\n");
 
+    let requireEncryption = (this.sendFlags & EnigmailConstants.SEND_ENCRYPTED);
     let self = this;
     let resultObj = null;
     let originalSubject = null;
@@ -785,8 +784,13 @@ PgpMimeEncrypt.prototype = {
       }
     }
 
-    if (resultObj !== null) {
+    if (resultObj !== null && Array.isArray(resultObj) && typeof(resultObj[0]) === "string") {
       this.outQueue = EnigmailPEPAdapter.stripMsgHeadersFromEncryption(resultObj);
+    }
+    else if (requireEncryption) {
+      if (!EnigmailDialog.confirmDlg(this.win, EnigmailLocale.getString("signFailed"), EnigmailLocale.getString("msgCompose.button.sendUnencrypted"))) {
+        throw Cr.NS_ERROR_FAILURE;
+      }
     }
 
     if (this.outQueue === "") {
