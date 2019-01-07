@@ -106,8 +106,8 @@ enigmailLink {
 .enigMsgHdrView-flat-button {
   min-width: 1px !important;
   -moz-appearance: none !important;
-  color: black;
-  background-color: #DDDDDD;
+  color: black !important;
+  background-color: #DDDDDD !important;
 
   border: 2px solid transparent;
   margin-top: 2px !important;
@@ -119,7 +119,7 @@ enigmailLink {
 }
 
 .enigMsgHdrView-flat-button:hover {
-  background-color: #CCCCCC;
+  background-color: #CCCCCC !important;
 }
 
 .enigmailToolbar {
