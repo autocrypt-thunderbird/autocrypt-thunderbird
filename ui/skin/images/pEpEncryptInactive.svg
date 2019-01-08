@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="12.417831mm"
-   height="12.534203mm"
-   viewBox="0 0 12.417831 12.534203"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333331 4.2333335"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.0 r"
-   sodipodi:docname="Encryption Off.svg">
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="pEpEncryptInactive.svg">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -36,9 +36,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.039959"
-     inkscape:cx="23.466757"
-     inkscape:cy="23.686693"
+     inkscape:zoom="7.8064299"
+     inkscape:cx="7.162359"
+     inkscape:cy="23.686684"
      inkscape:document-units="mm"
      inkscape:current-layer="layer3"
      showgrid="false"
@@ -55,24 +55,25 @@
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0">
+     fit-margin-bottom="0"
+     units="px">
     <sodipodi:guide
-       position="-2.0023877,10.452477"
+       position="-2.0023849,10.452474"
        orientation="0,1"
        id="guide4590"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="-1.7344177,21.02744"
+       position="-1.7344149,21.027437"
        orientation="1,0"
        id="guide4592"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="-3.2960777,-0.33895922"
+       position="-3.2960749,-0.33896165"
        orientation="1,0"
        id="guide4628"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="15.017972,1.8615668"
+       position="15.017975,1.8615644"
        orientation="1,0"
        id="guide4630"
        inkscape:locked="false" />
@@ -85,7 +86,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -94,22 +95,27 @@
      id="layer2"
      inkscape:label="Layer 1"
      style="display:inline"
-     transform="translate(-175.15005,-199.30012)">
-    <path
-       sodipodi:nodetypes="scccccs"
-       style="fill:#9e9d98;stroke-width:0.26458332;fill-opacity:1"
-       d="m 181.35694,199.30047 c -2.06992,0.0173 -4.26081,0.8068 -6.20665,2.09739 -0.017,1.85512 0.86219,4.21112 1.61146,5.6169 0.89511,1.6794 2.71595,3.94923 4.54815,4.81956 1.91801,-0.72919 3.41213,-2.65547 4.61037,-5.02773 0.69584,-1.39353 1.65243,-3.51472 1.64759,-5.40441 -1.61804,-1.35445 -3.91082,-2.12093 -6.21092,-2.10171 z"
-       id="path4566"
-       inkscape:connector-curvature="0" />
-  </g>
+     transform="translate(-175.15005,-207.60099)" />
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Layer 3">
-    <path
-       inkscape:connector-curvature="0"
-       id="use8374"
-       d="M 3.6495997,0.42597444 1.4258366,5.1430621 9.0236912,4.4354989 6.1204458,6.7468721 7.2940987,8.7752197 10.691514,7.7374606"
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#fbfbfb;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+     inkscape:label="Layer 3"
+     transform="translate(2.7398929e-6,-8.3008667)">
+    <g
+       id="g1503"
+       transform="matrix(0.34090763,0,0,0.33774252,-1.8058425e-6,8.3008677)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4566"
+         d="m 181.35694,199.30047 c -2.06992,0.0173 -4.26081,0.8068 -6.20665,2.09739 -0.017,1.85512 0.86219,4.21112 1.61146,5.6169 0.89511,1.6794 2.71595,3.94923 4.54815,4.81956 1.91801,-0.72919 3.41213,-2.65547 4.61037,-5.02773 0.69584,-1.39353 1.65243,-3.51472 1.64759,-5.40441 -1.61804,-1.35445 -3.91082,-2.12093 -6.21092,-2.10171 z"
+         style="display:inline;fill:#9e9d98;fill-opacity:1;stroke-width:0.26458332"
+         sodipodi:nodetypes="scccccs"
+         transform="translate(-175.15005,-199.30012)" />
+      <path
+         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#fbfbfb;stroke-width:0.60000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+         d="M 3.6495997,0.42597444 1.4258366,5.1430621 9.0236912,4.4354989 6.1204458,6.7468721 7.2940987,8.7752197 10.691514,7.7374606"
+         id="use8374"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
 </svg>
