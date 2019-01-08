@@ -75,7 +75,7 @@ PgpMimeEncrypt.prototype = {
   classDescription: "Enigmail JS Encryption Handler",
   classID: PGPMIME_ENCRYPT_CID,
   get contractID() {
-    if (Components.classesByID[kSmimeComposeSecureCID]) {
+    if (Components.classesByID && Components.classesByID[kSmimeComposeSecureCID]) {
       // hack needed for TB < 62: we overwrite the S/MIME encryption handler
       return SMIME_ENCRYPT_CONTRACTID;
     }
@@ -160,7 +160,7 @@ PgpMimeEncrypt.prototype = {
         }
       }
       else {
-        if (kSmimeComposeSecureCID in Components.classesByID) {
+        if (Components.classesByID && kSmimeComposeSecureCID in Components.classesByID) {
           // TB < 64
           if (this.checkSMime) {
             // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
