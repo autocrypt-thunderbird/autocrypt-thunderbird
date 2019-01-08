@@ -504,28 +504,18 @@ function loadCss(addonID, url, targetWindow) {
   oconsole.log(`loadCss(${url})`);
 
   try {
-    let domWindow = targetWindow.QueryInterface(Ci.nsIInterfaceRequestor);
-    let domWindowUtils;
-    if ("windowUtils" in domWindow) {
-      // TB < 64
-      domWindowUtils = domWindow.windowUtils;
-    }
-    else {
-      domWindowUtils = domWindow.getInterface(Ci.nsIDOMWindowUtils);
-    }
-    domWindowUtils.loadSheetUsingURIString(url, 1);
     let document = targetWindow.document;
+
+    let link = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("type", "text/css");
+    link.setAttribute("href", url);
+    document.documentElement.appendChild(link);
+
     let element = document.createElement("overlayed_css");
     element.setAttribute("href", url);
     element.setAttribute("source", addonID);
-
-    let node = document.firstChild;
-    while (node && !node.tagName) {
-      node = node.nextSibling;
-    }
-    if (node) {
-      node.appendChild(element);
-    }
+    document.documentElement.appendChild(element);
   }
   catch (ex) {
     oconsole.error(`loadCss: Error with loading CSS ${url}:\n${ex.message}`);
