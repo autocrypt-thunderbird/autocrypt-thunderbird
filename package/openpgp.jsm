@@ -47,7 +47,7 @@ function initialize() {
   try {
     gOpenPGPLib = getOpenPGPLibrary();
 
-    EnigmailLog.ERROR(`openpgp.jsm: openpgp: ${gOpenPGPLib}\n`);
+    EnigmailLog.DEBUG(`openpgp.jsm: openpgp: ${gOpenPGPLib}\n`);
   }
   catch (ex) {
     EnigmailLog.ERROR("openpgp.jsm: initialize: error: " + ex.toString() + "\n");
