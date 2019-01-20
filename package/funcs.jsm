@@ -95,8 +95,7 @@ var EnigmailFuncs = {
         return hdr.parseEncodedHeader(mailAddrs, "utf-8");
       }
       return hdr.parseDecodedHeader(mailAddrs);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     return [];
   },
@@ -125,16 +124,13 @@ var EnigmailFuncs = {
         if (obj.getAttribute("advanced") == "true") {
           if (advancedUser) {
             obj.removeAttribute(attribute);
-          }
-          else {
+          } else {
             obj.setAttribute(attribute, "true");
           }
-        }
-        else if (obj.getAttribute("advanced") == "reverse") {
+        } else if (obj.getAttribute("advanced") == "reverse") {
           if (advancedUser) {
             obj.setAttribute(attribute, "true");
-          }
-          else {
+          } else {
             obj.removeAttribute(attribute);
           }
         }
@@ -165,8 +161,7 @@ var EnigmailFuncs = {
         sign = identity.getBoolAttribute("pgpAlwaysSign");
         identity.setBoolAttribute("pgpSignEncrypted", sign);
         identity.setBoolAttribute("pgpSignPlain", sign);
-      }
-      else {
+      } else {
         sign = identity.getIntAttribute("pgpSignMsg");
         identity.setBoolAttribute("pgpSignEncrypted", sign == 1);
         identity.setBoolAttribute("pgpSignPlain", sign > 0);
@@ -250,8 +245,7 @@ var EnigmailFuncs = {
           preface += '<blockquote type="cite" style="' + fontStyle + '">';
         }
         preface += '<pre wrap="">\n';
-      }
-      else if (citeLevel < oldCiteLevel) {
+      } else if (citeLevel < oldCiteLevel) {
         preface = '</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
@@ -263,8 +257,7 @@ var EnigmailFuncs = {
         preface += '<span class="moz-txt-citetags">' +
           gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
           '</span>';
-      }
-      else if (lines[i] == "-- ") {
+      } else if (lines[i] == "-- ") {
         preface += '<div class="moz-txt-sig">';
         isSignature = true;
       }
@@ -314,8 +307,7 @@ var EnigmailFuncs = {
   getProtectedSubjectText: function() {
     if (EnigmailPrefs.getPref("protectedSubjectText").length > 0) {
       return EnigmailData.convertToUnicode(EnigmailPrefs.getPref("protectedSubjectText"), "utf-8");
-    }
-    else {
+    } else {
       return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
     }
   },
@@ -336,19 +328,16 @@ var EnigmailFuncs = {
       for (let i in orig) {
         if (typeof orig[i] === "object") {
           newObj.push(this.cloneObj(orig[i]));
-        }
-        else {
+        } else {
           newObj.push(orig[i]);
         }
       }
-    }
-    else {
+    } else {
       newObj = {};
       for (let i in orig) {
         if (typeof orig[i] === "object") {
           newObj[i] = this.cloneObj(orig[i]);
-        }
-        else
+        } else
           newObj[i] = orig[i];
       }
     }
@@ -387,6 +376,28 @@ var EnigmailFuncs = {
     if (a2.length > a1.length) return -2;
     if (a2.length < a1.length) return 2;
     return 0;
+  },
+
+
+  /**
+   * Determine the total number of certificates in the X.509 certificates store
+   *
+   * @return {Number}: number of Certificates
+   */
+  getNumOfX509Certs: function() {
+
+    let certDb = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+    let certs = certDb.getCerts();
+
+    let e = certs.getEnumerator();
+    let nCerts = 0;
+
+    while (e.hasMoreElements()) {
+      nCerts++;
+      e.getNext();
+    }
+
+    return nCerts;
   },
 
   /**
