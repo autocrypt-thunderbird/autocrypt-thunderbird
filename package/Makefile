@@ -128,6 +128,7 @@ deploy: $(PREFFILES) $(MODFILES)
 clean:
 	$(DEPTH)/util/install -u $(DIST)/chrome/content/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules $(MODFILES)
+	$(DEPTH)/util/install -u $(DIST)/bootstrap.js
 
 .PHONY: dirs $(DIRS)
 

@@ -93,6 +93,14 @@ function handleErrorCode(c, errorNumber) {
     let errorCode = errNum & 0xFFFFFF;
 
     switch (errorCode) {
+      case 32870: // error no tty
+        if (sourceSystem === GPG_SOURCE_SYSTEM.GPG_ERR_SOURCE_PINENTRY) {
+          c.statusFlags |= EnigmailConstants.DISPLAY_MESSAGE;
+          c.retStatusObj.extendedStatus += "disp:get_passphrase ";
+          c.retStatusObj.statusMsg = EnigmailLocale.getString("errorHandling.pinentryCursesError") + "\n\n" + EnigmailLocale.getString("errorHandling.readFaq");
+          c.isError = true;
+        }
+        break;
       case 11: // bad Passphrase
       case 87: // bad PIN
         badPassphrase(c);
