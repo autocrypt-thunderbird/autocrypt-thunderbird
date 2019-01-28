@@ -86,8 +86,7 @@ var EnigmailKeyRing = {
         gKeyCheckDone = true;
         runKeyUsabilityCheck();
       }
-    }
-    else {
+    } else {
       if (sortColumn) {
         gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
       }
@@ -115,8 +114,7 @@ var EnigmailKeyRing = {
       for (let key of gKeyListObj.keyList) {
         if (key.secretAvailable) res.push(key);
       }
-    }
-    else {
+    } else {
       for (let key of gKeyListObj.keyList) {
         if (key.secretAvailable && key.keyUseFor.search(/D/) < 0) {
           // key is not disabled and _usable_ for encryption signing and certification
@@ -151,7 +149,7 @@ var EnigmailKeyRing = {
     EnigmailLog.DEBUG("keyRing.jsm: getKeyById: " + keyId + "\n");
     let s;
 
-    if (! keyId) return null;
+    if (!keyId) return null;
 
     if (keyId.search(/^0x/) === 0) {
       keyId = keyId.substr(2);
@@ -241,17 +239,14 @@ var EnigmailKeyRing = {
       if (key.secretAvailable && key.getEncryptionValidity().keyValid && key.getSigningValidity().keyValid) {
         if (!foundKey) {
           foundKey = key;
-        }
-        else {
+        } else {
           // prefer RSA or DSA over ECC (long-term: change this once ECC keys are widely supported)
           if (foundKey.algoSym === key.algoSym && foundKey.keySize === key.keySize) {
             if (key.expiryTime > foundKey.expiryTime)
               foundKey = key;
-          }
-          else if (foundKey.algoSym.search(/^(DSA|RSA)$/) < 0 && key.algoSym.search(/^(DSA|RSA)$/) === 0) {
+          } else if (foundKey.algoSym.search(/^(DSA|RSA)$/) < 0 && key.algoSym.search(/^(DSA|RSA)$/) === 0) {
             foundKey = key;
-          }
-          else {
+          } else {
             if (key.getVirtualKeySize() > foundKey.getVirtualKeySize())
               foundKey = key;
           }
@@ -272,8 +267,7 @@ var EnigmailKeyRing = {
     let keyArr;
     if (typeof keyIdList === "string") {
       keyArr = keyIdList.split(/ +/);
-    }
-    else {
+    } else {
       keyArr = keyIdList;
     }
 
@@ -299,8 +293,7 @@ var EnigmailKeyRing = {
 
     if (res.importedKeys.length > 0) {
       EnigmailKeyRing.updateKeys(res.importedKeys);
-    }
-    else if (res.importSum > res.importUnchanged) {
+    } else if (res.importSum > res.importUnchanged) {
       EnigmailKeyRing.clearCache();
     }
 
@@ -362,13 +355,11 @@ var EnigmailKeyRing = {
             if (thisTrust > maxTrustLevel) {
               r = [keyObj.userIds[i].userId];
               maxTrustLevel = thisTrust;
-            }
-            else if (thisTrust === maxTrustLevel) {
+            } else if (thisTrust === maxTrustLevel) {
               r.push(keyObj.userIds[i].userId);
             }
             // else do not add uid
-          }
-          else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
+          } else if (!EnigmailTrust.isInvalid(keyObj.userIds[i].keyTrust) || !hideInvalidUid) {
             // UID valid  OR  key not valid, but invalid keys allowed
             r.push(keyObj.userIds[i].userId);
           }
@@ -422,8 +413,7 @@ var EnigmailKeyRing = {
       let keyList;
       if (userId) {
         keyList = userId.split(/[ ,\t]+/);
-      }
-      else {
+      } else {
         keyList = this.getAllSecretKeys().map(keyObj => {
           return keyObj.keyId;
         });
@@ -437,8 +427,7 @@ var EnigmailKeyRing = {
           return k.map(keyObj => {
             return keyObj.getSecretKey(false).keyData;
           }).join("\n");
-        }
-        else {
+        } else {
           return "";
         }
       }).join("\n");
@@ -494,8 +483,7 @@ var EnigmailKeyRing = {
     try {
       let trustData = EnigmailFiles.readFile(inputFile);
       EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, trustData, exitCodeObj, {}, {}, errorMsgObj);
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     return exitCodeObj.value;
   },
@@ -654,8 +642,7 @@ var EnigmailKeyRing = {
 
     if (passphrase.length) {
       inputData += "Passphrase: " + passphrase + "\n";
-    }
-    else {
+    } else {
       if (EnigmailGpg.getGpgFeature("genkey-no-protection")) {
         inputData += "%echo no-protection\n";
         inputData += "%no-protection\n";
@@ -693,13 +680,11 @@ var EnigmailKeyRing = {
               EnigmailKeyRing.clearCache();
             }
             listener.onStopRequest(result.exitCode);
-          }
-          catch (ex) {}
+          } catch (ex) {}
         },
         mergeStderr: false
       });
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.ERROR("keyRing.jsm: generateKey: subprocess.call failed with '" + ex.toString() + "'\n");
       throw ex;
     }
@@ -773,8 +758,7 @@ var EnigmailKeyRing = {
       if (userId && (userId == emailAddr || userId.indexOf(embeddedEmailAddr) >= 0)) {
         if (keyTrustIndex < minTrustLevelIndex) {
           EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching key=" + keyObj.keyId + " found but not enough trust\n");
-        }
-        else {
+        } else {
           // key with enough trust level found
           EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
 
@@ -822,8 +806,7 @@ var EnigmailKeyRing = {
         if (subUserId && (subUserId == emailAddr || subUserId.indexOf(embeddedEmailAddr) >= 0)) {
           if (subUidTrustIndex < minTrustLevelIndex) {
             EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid=" + keyObj.keyId + " found but not enough trust\n");
-          }
-          else {
+          } else {
             // subkey with enough trust level found
             EnigmailLog.DEBUG("keyRing.jsm: getValidKeyForRecipient():  matching subUid in key=" + keyObj.keyId + " keyTrust=\"" + keyTrust + "\" found\n");
 
@@ -869,16 +852,17 @@ var EnigmailKeyRing = {
   /**
    *  Determine the key ID for a set of given addresses
    *
-   * @param addresses: Array of String - email addresses
-   * @param minTrustLevel: String      - f for Fully trusted keys / ? for any valid key
-   * @param details:  Object           - holds details for invalid keys:
-   *                                      - errArray: {
-   *                                       * addr: email addresses
-   *                                       * msg:  related error
+   * @param {Array<String>} addresses: email addresses
+   * @param {String} minTrustLevel:    f for Fully trusted keys / ? for any valid key
+   * @param {Object} details:          holds details for invalid keys:
+   *                                   - errArray: {
+   *                                       * addr {String}: email addresses
+   *                                       * msg {String}:  related error
    *                                       }
-   * @param resultingArray: Array of String - list of found key IDs
+   *                                   - keyMap {Object<String>}: map of email addr -> keyID
+   * @param {Array<String>} resultingArray: list of found key IDs
    *
-   * @return Boolean: true if at least one key missing; false otherwise
+   * @return {Boolean}: true if at least one key missing; false otherwise
    */
   getValidKeysForAllRecipients: function(addresses, minTrustLevel, details, resultingArray) {
 
@@ -888,37 +872,43 @@ var EnigmailKeyRing = {
     let keyMissing = false;
     if (details) {
       details.errArray = [];
+      details.keyMap = {};
     }
     for (let i = 0; i < addresses.length; i++) {
       let addr = addresses[i];
       // try to find current address in key list:
-      var found = false;
+      let keyId = null;
       var errMsg = null;
       if (addr.indexOf('@') >= 0) {
         // try email match:
         var addrErrDetails = {};
-        let keyId = this.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
+        let foundKeyId = this.getValidKeyForRecipient(addr, minTrustLevelIndex, addrErrDetails);
         if (details && addrErrDetails.msg) {
           errMsg = addrErrDetails.msg;
         }
-        if (keyId) {
-          found = true;
-          resultingArray.push("0x" + keyId.toUpperCase());
+        if (foundKeyId) {
+          keyId = "0x" + foundKeyId.toUpperCase();
+          resultingArray.push(keyId);
         }
-      }
-      else {
+      } else {
         // try key match:
         var keyObj = this.getKeyById(addr);
 
         if (keyObj) {
           // if found, check whether the trust level is enough
           if (TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust) >= minTrustLevelIndex) {
-            found = true;
-            resultingArray.push("0x" + keyObj.keyId.toUpperCase());
+            keyId = "0x" + keyObj.keyId.toUpperCase();
+            resultingArray.push(keyId);
           }
         }
       }
-      if (!found) {
+
+      if (keyId) {
+        if (details) {
+          details.keyMap[addr] = keyId;
+        }
+      }
+      else {
         // no key for this address found
         keyMissing = true;
         if (details) {
@@ -970,8 +960,7 @@ var EnigmailKeyRing = {
 
     if (gKeyListObj.keyList.length > 0) {
       loadKeyList(null, null, 1, uniqueKeys);
-    }
-    else {
+    } else {
       loadKeyList(null, null, 1);
     }
 
@@ -1074,8 +1063,7 @@ function loadKeyList(win, sortColumn, sortDirection, onlyKeys = null) {
         gLoadingKeys = false;
       });
     waitForKeyList();
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.ERROR("keyRing.jsm: loadKeyList: exception: " + ex.toString());
   }
 }
@@ -1177,12 +1165,10 @@ function runKeyUsabilityCheck() {
 
       if (msg && msg.length > 0) {
         getDialog().info(null, msg);
-      }
-      else {
+      } else {
         getKeyUsability().checkOwnertrust();
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.message + "\n" + ex.stack + "\n");
     }
 

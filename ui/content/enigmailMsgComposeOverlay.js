@@ -2819,12 +2819,14 @@ Enigmail.msg = {
     // process defaults
     const SIGN = EnigmailConstants.SEND_SIGNED;
     const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
-    var didRefreshKeyList = false; // return value to signal whether the key list was refreshed
+    let didRefreshKeyList = false; // return value to signal whether the key list was refreshed
 
     // get keys for to and cc addresses:
     // - matchedKeysObj will contain the keys and the remaining toAddrStr elements
-    var matchedKeysObj = {}; // returned value for matched keys
-    var flagsObj = {}; // returned value for flags
+    let matchedKeysObj = {}; // returned value for matched keys
+    let details = {};
+    let keyMap = {};
+    let flagsObj = {}; // returned value for flags
     if (!EnigmailRules.mapAddrsToKeys(toAddrStr,
         forceRecipientSettings, // true => start dialog for addrs without any key
         window,
@@ -2835,6 +2837,12 @@ Enigmail.msg = {
     if (matchedKeysObj.value) {
       toAddrStr = matchedKeysObj.value;
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.processRules(): after mapAddrsToKeys() toAddrStr=\"" + toAddrStr + "\"\n");
+
+      if (matchedKeysObj.addrKeysList) {
+        for (let i = 0; i < matchedKeysObj.addrKeysList.length; i++) {
+          keyMap[matchedKeysObj.addrKeysList[i].addr] = matchedKeysObj.addrKeysList[i].keys;
+        }
+      }
     }
     this.encryptByRules = flagsObj.encrypt;
     this.signByRules = flagsObj.sign;
@@ -2843,10 +2851,15 @@ Enigmail.msg = {
     // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
     // - check whether bcc is empty here? if (bccAddrStr.length === 0)
     if (toAddrStr.length > 0 && this.encryptByRules == EnigmailConstants.ENIG_UNDEF && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
-      var validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr);
+      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr, details);
       if (validKeyList) {
         this.encryptByRules = EnigmailConstants.ENIG_AUTO_ALWAYS;
         toAddrStr = validKeyList.join(", ");
+        for (let i in details.keyMap) {
+          if (i.search(/^0x[0-9A-F]+$/i) < 0) {
+            keyMap[i] = details.keyMap[i];
+          }
+        }
       }
     }
 
@@ -2930,7 +2943,8 @@ Enigmail.msg = {
       optSendFlags: optSendFlags,
       toAddr: toAddrStr,
       bccAddr: bccAddrStr,
-      didRefreshKeyList: didRefreshKeyList
+      didRefreshKeyList: didRefreshKeyList,
+      keyMap: keyMap
     };
   },
 

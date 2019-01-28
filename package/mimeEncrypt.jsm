@@ -369,11 +369,22 @@ PgpMimeEncrypt.prototype = {
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader + '";\r\n' +
       ' protected-headers="v1"\r\n' +
       allHdr + '\r\n' +
+      this.getAutocryptGossip() +
       "--" + this.encHeader + "\r\n";
+
+    
 
     this.writeToPipe(w);
 
     if (this.cryptoMode == MIME_SIGNED) this.writeOut(w);
+  },
+
+  getAutocryptGossip: function() {    
+    if (this.msgCompFields.hasHeader("autocrypt")) {
+
+    }
+
+    return "";
   },
 
   encryptedHeaders: function(isEightBit) {
