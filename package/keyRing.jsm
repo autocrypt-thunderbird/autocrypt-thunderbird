@@ -905,7 +905,7 @@ var EnigmailKeyRing = {
 
       if (keyId) {
         if (details) {
-          details.keyMap[addr] = keyId;
+          details.keyMap[addr.toLowerCase()] = keyId;
         }
       }
       else {

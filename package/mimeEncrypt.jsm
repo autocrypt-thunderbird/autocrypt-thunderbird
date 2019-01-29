@@ -26,6 +26,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm"); /*global Enigm
 ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
 ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
 ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm"); /*global EnigmailPEPAdapter: false */
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 // our own contract IDs
@@ -58,6 +59,7 @@ function PgpMimeEncrypt(sMimeSecurityInfo) {
   this.recipients = "";
   this.bccRecipients = "";
   this.originalSubject = null;
+  this.keyMap = {};
 
   try {
     if (sMimeSecurityInfo) {
@@ -173,7 +175,7 @@ PgpMimeEncrypt.prototype = {
           let securityInfo = msgCompFields.securityInfo.wrappedJSObject;
           if (!securityInfo) return false;
 
-          for (let prop of["sendFlags", "UIFlags", "senderEmailAddr", "recipients", "bccRecipients", "originalSubject"]) {
+          for (let prop of ["sendFlags", "UIFlags", "senderEmailAddr", "recipients", "bccRecipients", "originalSubject", "keyMap"]) {
             this[prop] = securityInfo[prop];
           }
         }
@@ -368,23 +370,31 @@ PgpMimeEncrypt.prototype = {
 
     let w = 'Content-Type: multipart/mixed; boundary="' + this.encHeader + '";\r\n' +
       ' protected-headers="v1"\r\n' +
-      allHdr + '\r\n' +
-      this.getAutocryptGossip() +
+      allHdr +
+      this.getAutocryptGossip() + '\r\n' +
       "--" + this.encHeader + "\r\n";
-
-    
 
     this.writeToPipe(w);
 
     if (this.cryptoMode == MIME_SIGNED) this.writeOut(w);
   },
 
-  getAutocryptGossip: function() {    
-    if (this.msgCompFields.hasHeader("autocrypt")) {
-
+  getAutocryptGossip: function() {
+    let gossip = "";
+    if (this.msgCompFields.hasHeader("autocrypt") && this.keyMap) {
+      for (let email in this.keyMap) {
+        let keyObj = EnigmailKeyRing.getKeyById(this.keyMap[email]);
+        if (keyObj) {
+          let k = keyObj.getMinimalPubKey(email);
+          if (k.exitCode === 0) {
+            let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ");
+            gossip += 'Autocrypt-Gossip: addr=' + email + '; keydata=\r\n' + keyData + "\r\n";
+          }
+        }
+      }
     }
 
-    return "";
+    return gossip;
   },
 
   encryptedHeaders: function(isEightBit) {
