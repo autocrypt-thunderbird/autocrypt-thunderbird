@@ -2957,15 +2957,16 @@ Enigmail.msg = {
 
     // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
     // - check whether bcc is empty here? if (bccAddrStr.length === 0)
-    if (toAddrStr.length > 0 && this.encryptByRules == EnigmailConstants.ENIG_UNDEF && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
-      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr, details);
-      if (validKeyList) {
+    let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrStr, details);
+    if (validKeyList) {
+      if (toAddrStr.length > 0 && this.encryptByRules == EnigmailConstants.ENIG_UNDEF && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
         this.encryptByRules = EnigmailConstants.ENIG_AUTO_ALWAYS;
         toAddrStr = validKeyList.join(", ");
-        for (let i in details.keyMap) {
-          if (i.search(/^0x[0-9A-F]+$/i) < 0) {
-            keyMap[i] = details.keyMap[i];
-          }
+      }
+
+      for (let i in details.keyMap) {
+        if (i.search(/^0x[0-9A-F]+$/i) < 0) {
+          keyMap[i] = details.keyMap[i];
         }
       }
     }
@@ -4762,7 +4763,7 @@ Enigmail.msg = {
 
       let k = key.getMinimalPubKey(fromMail);
       if (k.exitCode === 0) {
-        let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ");
+        let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
         this.setAdditionalHeader('Autocrypt', 'addr=' + fromMail + prefMutual + '; keydata=\r\n' + keyData);
       }
     }

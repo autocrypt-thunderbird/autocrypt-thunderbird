@@ -98,3 +98,30 @@ test(function compareMimePartLevel() {
   Assert.equal(e, 0);
 
 });
+
+test(function testGetOwnEmailAddresses() {
+  let r = EnigmailFuncs.getOwnEmailAddresses();
+
+  const expectedResult = [
+    "tester@enigmail.org",
+    "user2@enigmail-test.net",
+    "user3@enigmail-test.net",
+    "user4@enigmail-test.net"
+  ];
+
+  for (let i of expectedResult) {
+    Assert.ok(i in r, `${i} is not in own emails`);
+  }
+});
+
+test(function testGetNumberOfRecipients() {
+
+  let compFields = {
+    to: "tester@enigmail.org, another.tester@enigmail.org",
+    cc: "user4@enigmail-test.net, Peter <someone@somewhere.invalid>"
+  };
+
+  let n = EnigmailFuncs.getNumberOfRecipients(compFields);
+  Assert.equal(n, 2, "number of recipients");
+
+});

@@ -381,13 +381,16 @@ PgpMimeEncrypt.prototype = {
 
   getAutocryptGossip: function() {
     let gossip = "";
-    if (this.msgCompFields.hasHeader("autocrypt") && this.keyMap) {
+    if (this.cryptoMode == MIME_ENCRYPTED &&
+      this.msgCompFields.hasHeader("autocrypt") &&
+      this.keyMap &&
+      EnigmailFuncs.getNumberOfRecipients(this.msgCompFields) > 1) {
       for (let email in this.keyMap) {
         let keyObj = EnigmailKeyRing.getKeyById(this.keyMap[email]);
         if (keyObj) {
           let k = keyObj.getMinimalPubKey(email);
           if (k.exitCode === 0) {
-            let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ");
+            let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
             gossip += 'Autocrypt-Gossip: addr=' + email + '; keydata=\r\n' + keyData + "\r\n";
           }
         }

@@ -95,7 +95,8 @@ var EnigmailFuncs = {
         return hdr.parseEncodedHeader(mailAddrs, "utf-8");
       }
       return hdr.parseDecodedHeader(mailAddrs);
-    } catch (ex) {}
+    }
+    catch (ex) {}
 
     return [];
   },
@@ -124,13 +125,16 @@ var EnigmailFuncs = {
         if (obj.getAttribute("advanced") == "true") {
           if (advancedUser) {
             obj.removeAttribute(attribute);
-          } else {
+          }
+          else {
             obj.setAttribute(attribute, "true");
           }
-        } else if (obj.getAttribute("advanced") == "reverse") {
+        }
+        else if (obj.getAttribute("advanced") == "reverse") {
           if (advancedUser) {
             obj.setAttribute(attribute, "true");
-          } else {
+          }
+          else {
             obj.removeAttribute(attribute);
           }
         }
@@ -161,7 +165,8 @@ var EnigmailFuncs = {
         sign = identity.getBoolAttribute("pgpAlwaysSign");
         identity.setBoolAttribute("pgpSignEncrypted", sign);
         identity.setBoolAttribute("pgpSignPlain", sign);
-      } else {
+      }
+      else {
         sign = identity.getIntAttribute("pgpSignMsg");
         identity.setBoolAttribute("pgpSignEncrypted", sign == 1);
         identity.setBoolAttribute("pgpSignPlain", sign > 0);
@@ -245,7 +250,8 @@ var EnigmailFuncs = {
           preface += '<blockquote type="cite" style="' + fontStyle + '">';
         }
         preface += '<pre wrap="">\n';
-      } else if (citeLevel < oldCiteLevel) {
+      }
+      else if (citeLevel < oldCiteLevel) {
         preface = '</pre>';
         for (let j = 0; j < oldCiteLevel - citeLevel; j++)
           preface += "</blockquote>";
@@ -257,7 +263,8 @@ var EnigmailFuncs = {
         preface += '<span class="moz-txt-citetags">' +
           gTxtConverter.scanTXT(lines[i].substr(0, logLineStart.value), convFlags) +
           '</span>';
-      } else if (lines[i] == "-- ") {
+      }
+      else if (lines[i] == "-- ") {
         preface += '<div class="moz-txt-sig">';
         isSignature = true;
       }
@@ -307,7 +314,8 @@ var EnigmailFuncs = {
   getProtectedSubjectText: function() {
     if (EnigmailPrefs.getPref("protectedSubjectText").length > 0) {
       return EnigmailData.convertToUnicode(EnigmailPrefs.getPref("protectedSubjectText"), "utf-8");
-    } else {
+    }
+    else {
       return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
     }
   },
@@ -328,16 +336,19 @@ var EnigmailFuncs = {
       for (let i in orig) {
         if (typeof orig[i] === "object") {
           newObj.push(this.cloneObj(orig[i]));
-        } else {
+        }
+        else {
           newObj.push(orig[i]);
         }
       }
-    } else {
+    }
+    else {
       newObj = {};
       for (let i in orig) {
         if (typeof orig[i] === "object") {
           newObj[i] = this.cloneObj(orig[i]);
-        } else
+        }
+        else
           newObj[i] = orig[i];
       }
     }
@@ -416,8 +427,68 @@ var EnigmailFuncs = {
         }
       }
     }
-
     return null;
+  },
+
+  /**
+   * Strip extended email parts such as "+xyz" from "abc+xyz@gmail.com" for known domains
+   * Currently supported domains: gmail.com, googlemail.com
+   */
+  getBaseEmail: function(emailAddr) {
+    return emailAddr.replace(/\+.{1,999}@(gmail|googlemail).com$/i, "");
+  },
+
+  /**
+   * Get a list of all own email addresses, taken from all identities
+   * and all reply-to addresses
+   */
+  getOwnEmailAddresses: function() {
+    let ownEmails = {};
+
+    let am = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+
+    // Determine all sorts of own email addresses
+    for (let i = 0; i < am.allIdentities.length; i++) {
+      let id = am.allIdentities.queryElementAt(i, Ci.nsIMsgIdentity);
+      if (id.email && id.email.length > 0) ownEmails[this.getBaseEmail(id.email.toLowerCase())] = 1;
+      if (id.replyTo && id.replyTo.length > 0) {
+        try {
+          let replyEmails = this.stripEmail(id.replyTo).toLowerCase().split(/,/);
+          for (let j in replyEmails) {
+            ownEmails[this.getBaseEmail(replyEmails[j])] = 1;
+          }
+        }
+        catch (ex) {}
+      }
+    }
+
+    return ownEmails;
+  },
+
+  /**
+   * Determine the distinct number of non-self recipients of a message.
+   * Only To: and Cc: fields are considered.
+   */
+  getNumberOfRecipients: function(msgCompField) {
+    let recipients = {},
+      ownEmails = this.getOwnEmailAddresses();
+
+    let allAddr = (this.stripEmail(msgCompField.to) + "," + this.stripEmail(msgCompField.cc)).toLowerCase();
+    let emails = allAddr.split(/,+/);
+
+    for (let i = 0; i < emails.length; i++) {
+      let r = this.getBaseEmail(emails[i]);
+      if (r.length > 0 && !(r in ownEmails)) {
+        recipients[r] = 1;
+      }
+    }
+
+    let numRecipients = 0;
+    for (let i in recipients) {
+      ++numRecipients;
+    }
+
+    return numRecipients;
   },
 
   /**
