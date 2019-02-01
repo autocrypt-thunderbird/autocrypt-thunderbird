@@ -48,12 +48,13 @@ var EnigmailAutocrypt = {
    *
    * @param fromAddr:      String - Address of sender (From: header)
    * @param headerDataArr: Array of String: all instances of the Autocrypt: header found in the message
-   * @param dateSent:      String - Date: field of the message
+   * @param dateSent:      String - Date: field of the message (as readable string)
+   *                       Number - Date: field of the message in seconds
    * @param autoCryptEnabled: Boolean - if true, autocrypt is enabled for the context of the message
    *
    * @return Promise (success) - success: Number (0 = success, 1+ = failure)
    */
-  processAutocryptHeader: function(fromAddr, headerDataArr, dateSent, autoCryptEnabled = false) {
+  processAutocryptHeader: function(fromAddr, headerDataArr, dateSent, autoCryptEnabled = false, isGossip = false) {
     EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + fromAddr + "\n");
 
     return new Promise((resolve, reject) => {
@@ -148,10 +149,16 @@ var EnigmailAutocrypt = {
       }
 
       if (!("prefer-encrypt" in paramArr)) {
-        paramArr["prefer-encrypt"] = "nopreference";
+        paramArr["prefer-encrypt"] = isGossip ? "gossip" : "nopreference";
       }
 
-      let lastDate = jsmime.headerparser.parseDateHeader(dateSent);
+      let lastDate;
+      if (typeof dateSent === "string") {
+        lastDate = jsmime.headerparser.parseDateHeader(dateSent);
+      }
+      else {
+        lastDate = new Date(dateSent * 1000);
+      }
       let now = new Date();
       if (lastDate > now) {
         lastDate = now;
@@ -769,9 +776,11 @@ function updateUser(connection, paramsArr, resultRows, autoCryptEnabled) {
 
   let lastSeen = new Date(currData.getResultByName("last_seen"));
   let lastAutocrypt = new Date(currData.getResultByName("last_seen_autocrypt"));
+  let notGossip = (currData.getResultByName("state") !== "gossip");
 
-  if (lastSeen >= paramsArr.dateSent) {
-    EnigmailLog.DEBUG("autocrypt.jsm: updateUser: not a new latest message\n");
+  if (lastSeen >= paramsArr.dateSent ||
+    (paramsArr["prefer-encrypt"] === "gossip" && notGossip)) {
+    EnigmailLog.DEBUG("autocrypt.jsm: updateUser: not a relevant new latest message\n");
 
     EnigmailTimer.setTimeout(function _f() {
       deferred.resolve();

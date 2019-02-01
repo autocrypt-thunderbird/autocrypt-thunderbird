@@ -31,6 +31,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global 
 ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
 ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
 ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -589,6 +590,7 @@ MimeDecryptHandler.prototype = {
 
     try {
       this.extractEncryptedHeaders();
+      this.extractAutocryptGossip();
     }
     catch (ex) {}
 
@@ -708,7 +710,6 @@ MimeDecryptHandler.prototype = {
   },
 
   extractEncryptedHeaders: function() {
-
     let r = EnigmailMime.extractProtectedHeaders(this.decryptedData);
     if (!r) return;
 
@@ -716,7 +717,34 @@ MimeDecryptHandler.prototype = {
     if (r.startPos >= 0 && r.endPos > r.startPos) {
       this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
     }
+  },
 
+  extractAutocryptGossip: async function() {
+    let m = this.decryptedData.search(/^--/m);
+
+    let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+    hdr.initialize(this.decryptedData.substr(0, m));
+
+    let gossip = hdr.getHeader("autocrypt-gossip") || [];
+    EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
+
+    let msgDate = null;
+    try {
+      msgDate = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader.dateInSeconds;
+    }
+    catch (x) {}
+
+
+    for (let i in gossip) {
+      let addr = EnigmailMime.getParameter(gossip[i], "addr");
+      try {
+        let r = await EnigmailAutocrypt.processAutocryptHeader(addr, [gossip[i].replace(/ /g, "")], msgDate, true, true);
+        EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: r=${r}\n`);
+      }
+      catch (x) {
+        EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${x}\n`);
+      }
+    }
   }
 };
 
