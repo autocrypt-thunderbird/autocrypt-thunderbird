@@ -5528,7 +5528,7 @@ Enigmail.msg = {
               return;
             }
 
-            EnigmailAutocrypt.importAutocryptKeys(lookupList).then(foundKeys => {
+            EnigmailAutocrypt.importAutocryptKeys(lookupList, this.encryptForced === EnigmailConstants.ENIG_ALWAYS).then(foundKeys => {
               EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: findMissingKeys: got " +
                 foundKeys.length + " autocrypt keys\n");
               if (foundKeys.length > 0) {
