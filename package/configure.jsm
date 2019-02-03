@@ -24,6 +24,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global Enig
 ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
 ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 ChromeUtils.import("chrome://enigmail/content/modules/autoSetup.jsm"); /* global EnigmailAutoSetup: false */
+ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm"); /* global EnigmailSqliteDb: false*/
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -104,7 +105,8 @@ function replaceKeyIdWithFpr() {
         }
       }
     }
-  } catch (ex) {
+  }
+  catch (ex) {
     EnigmailDialog.alert("config upgrade: error" + ex.toString());
   }
 }
@@ -153,7 +155,8 @@ function setAutocryptForOldAccounts() {
         ac.incomingServer.setIntValue("acPreferEncrypt", 1);
       }
     }
-  } catch (ex) {}
+  }
+  catch (ex) {}
 }
 
 
@@ -161,7 +164,8 @@ function displayUpgradeInfo() {
   EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
   try {
     EnigmailWindows.openMailTab("chrome://enigmail/content/ui/upgradeInfo.html");
-  } catch (ex) {}
+  }
+  catch (ex) {}
 }
 
 
@@ -176,7 +180,7 @@ var EnigmailConfigure = {
    *                        (to avoid re-check for preferences)
    *
    * @return {Promise<null>}
-  */
+   */
   configureEnigmail: async function(win, startingPreferences) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
 

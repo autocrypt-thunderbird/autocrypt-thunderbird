@@ -38,6 +38,7 @@ const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "Enig
 const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.jsm", "EnigmailWksMimeHandler");
 const getEnigmailPEPAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPEPAdapter");
 const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
+const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
@@ -71,6 +72,7 @@ var EnigmailCore = {
     initializeLogging(env);
 
     getEnigmailLog().DEBUG("core.jsm: startup()\n");
+    getEnigmailSqlite().checkDatabaseStructure();
     getEnigmailPrefs().startup(reason);
 
     let self = this;

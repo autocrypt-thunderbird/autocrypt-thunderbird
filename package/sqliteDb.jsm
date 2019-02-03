@@ -6,8 +6,7 @@
 "use strict";
 
 /**
- *  Module for dealing with received Autocrypt headers, level 0
- *  See details at https://github.com/mailencrypt/autocrypt
+ *  Module that provides generic functions for the Enigmail SQLite database
  */
 
 var EXPORTED_SYMBOLS = ["EnigmailSqliteDb"];
@@ -34,12 +33,25 @@ var EnigmailSqliteDb = {
     return new Promise((resolve, reject) => {
       openDatabaseConn(resolve, reject, 100, Date.now() + 10000);
     });
+  },
+
+  checkDatabaseStructure: async function() {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure()\n`);
+    try {
+      let conn = await this.openDatabase();
+      await checkAutcryptTable(conn);
+      await checkWkdTable(conn);
+      EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: checkDatabaseStructure: ERROR: ${ex}\n`);
+    }
   }
 };
 
 
 /**
- * use a promise to open the autocrypt database.
+ * use a promise to open the Enigmail database.
  *
  * it's possible that there will be an NS_ERROR_STORAGE_BUSY
  * so we're willing to retry for a little while.
@@ -68,4 +80,94 @@ function openDatabaseConn(resolve, reject, waitms, maxtime) {
       openDatabaseConn(resolve, reject, waitms, maxtime);
     }, waitms);
   });
+}
+
+
+/**
+ * Ensure that the database structure matches the latest version
+ * (table is available)
+ *
+ * @param connection: Object - SQLite connection
+ *
+ * @return {Promise<Boolean>}
+ */
+async function checkAutcryptTable(connection) {
+  try {
+    let exists = await connection.tableExists("autocrypt_keydata");
+    EnigmailLog.DEBUG("sqliteDB.jsm: checkAutcryptTable - success\n");
+    if (!exists) {
+      await createAutocryptTable(connection);
+    }
+  }
+  catch (error) {
+    EnigmailLog.DEBUG("sqliteDB.jsm: checkAutcryptTable - error\n");
+    throw error;
+  }
+
+  return true;
+}
+/**
+ * Create the "autocrypt_keydata" table and the corresponding index
+ *
+ * @param connection: Object - SQLite connection
+ *
+ * @return {Promise}
+ */
+async function createAutocryptTable(connection) {
+  EnigmailLog.DEBUG("sqliteDB.jsm: createAutocryptTable()\n");
+
+  await connection.execute("create table autocrypt_keydata (" +
+    "email text not null, " + // email address of correspondent
+    "keydata text not null, " + // base64-encoded key as received
+    "fpr text, " + // fingerprint of key
+    "type text not null, " + // key type (1==OpenPGP, regular key. 1g == OpenPGP gossip)
+    "last_seen_autocrypt text, " +
+    "last_seen text not null, " +
+    "state text not null);"); // timestamp of last mail received for the email/type combination
+
+  EnigmailLog.DEBUG("sqliteDB.jsm: createAutocryptTable - index\n");
+  await connection.execute("create unique index autocrypt_keydata_i1 on autocrypt_keydata(email, type)");
+
+  return null;
+}
+
+
+
+/**
+ * Ensure that the database has the wkd_lookup_timestamp table.
+ *
+ * @param connection: Object - SQLite connection
+ *
+ * @return Promise
+ */
+async function checkWkdTable(connection) {
+  EnigmailLog.DEBUG("sqliteDB.jsm: checkWkdTable()\n");
+
+  try {
+    let exists = await connection.tableExists("wkd_lookup_timestamp");
+    EnigmailLog.DEBUG("sqliteDB.jsm: checkWkdTable - success\n");
+    if (!exists) {
+      await createWkdTable(connection);
+    }
+  }
+  catch (error) {
+    EnigmailLog.DEBUG("sqliteDB.jsm: checkWkdTable - error\n");
+    throw (error);
+  }
+}
+
+/**
+ * Create the "wkd_lookup_timestamp" table.
+ *
+ * @param connection: Object - SQLite connection
+ *
+ * @return Promise
+ */
+function createWkdTable(connection) {
+  EnigmailLog.DEBUG("sqliteDB.jsm: createWkdTable()\n");
+
+  return connection.execute(
+    "create table wkd_lookup_timestamp (" +
+    "email text not null primary key, " + // email address of correspondent
+    "last_seen integer);"); // timestamp of last mail received for the email/type combination
 }

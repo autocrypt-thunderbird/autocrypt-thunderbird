@@ -12,11 +12,6 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWkdLookup"];
 
-
-
-
-
-ChromeUtils.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
 ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
 ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
@@ -57,9 +52,9 @@ var EnigmailWkdLookup = {
       }
 
       Promise.all(emails.map(
-        function(mailAddr) {
-          return self.determineLastAttempt(mailAddr.trim().toLowerCase());
-        }))
+          function(mailAddr) {
+            return self.determineLastAttempt(mailAddr.trim().toLowerCase());
+          }))
         .then(function(checks) {
           let toCheck = [];
 
@@ -116,28 +111,25 @@ var EnigmailWkdLookup = {
    *
    * @return {Promise<Boolean>}: true if new WKD lookup required
    */
-  determineLastAttempt: function(email) {
+  determineLastAttempt: async function(email) {
     EnigmailLog.DEBUG("wkdLookup.jsm: determineLastAttempt(" + email + ")\n");
 
     let conn;
-
-    return EnigmailSqliteDb.openDatabase().then(function onConnection(connection) {
-      conn = connection;
-      return checkDatabaseStructure(conn);
-    }, function onError(error) {
+    try {
+      conn = await EnigmailSqliteDb.openDatabase();
+      let val = await timeForRecheck(conn, email);
+      conn.close();
+      return val;
+    }
+    catch (x) {
       EnigmailLog.DEBUG("wkdLookup.jsm: determineLastAttempt: could not open database\n");
-    }).then(function _f() {
-      return timeForRecheck(conn, email);
-    }).then(function _done(val) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: OK - closing connection\n");
-      conn.close();
-      return Promise.resolve(val);
-    }).catch(function _err(reason) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: error - closing connection: " + reason + "\n");
-      conn.close();
-      // in case something goes wrong we recheck anyway
-      return Promise.resolve(true);
-    });
+      if (conn) {
+        EnigmailLog.DEBUG("wkdLookup.jsm: error - closing connection: " + x + "\n");
+        conn.close();
+      }
+    }
+    // in case something goes wrong we recheck anyway
+    return true;
   },
 
   /**
@@ -206,7 +198,8 @@ var EnigmailWkdLookup = {
       if (!response.ok) {
         return null;
       }
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: error " + ex.toString() + "\n");
       return null;
     }
@@ -215,55 +208,14 @@ var EnigmailWkdLookup = {
       let keyData = EnigmailData.arrayBufferToString(await response.arrayBuffer());
       EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: got data for " + email + "\n");
       return keyData;
-    } catch (ex) {
+    }
+    catch (ex) {
       EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: error " + ex.toString() + "\n");
       return null;
     }
   }
 };
 
-
-/**
- * Ensure that the database has the wkd_lookup_timestamp table.
- *
- * @param connection: Object - SQLite connection
- *
- * @return Promise
- */
-function checkDatabaseStructure(connection) {
-  EnigmailLog.DEBUG("wkdLookup.jsm: checkDatabaseStructure\n");
-
-  return connection.tableExists("wkd_lookup_timestamp").then(
-    function onSuccess(exists) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: checkDatabaseStructure - success\n");
-      if (!exists) {
-        return createAutoKeyLocateTable(connection);
-      }
-      else {
-        return PromiseUtils.defer();
-      }
-    },
-    function onError(error) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: checkDatabaseStructure - error\n");
-      Promise.reject(error);
-    });
-}
-
-/**
- * Create the "wkd_lookup_timestamp" table.
- *
- * @param connection: Object - SQLite connection
- *
- * @return Promise
- */
-function createAutoKeyLocateTable(connection) {
-  EnigmailLog.DEBUG("wkdLookup.jsm: createAutoKeyLocateTable\n");
-
-  return connection.execute(
-    "create table wkd_lookup_timestamp (" +
-    "email text not null primary key, " + // email address of correspondent
-    "last_seen integer);"); // timestamp of last mail received for the email/type combination
-}
 
 /**
  * Check if enough time has passed since we looked-up the key for "email".
@@ -314,7 +266,8 @@ function importDownloadedKeys(keysArr) {
     if (keysArr[k].search(/^-----BEGIN PGP PUBLIC KEY BLOCK-----/) < 0) {
       try {
         keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keysArr[k]);
-      } catch (ex) {
+      }
+      catch (ex) {
         EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: exeption=" + ex + "\n");
       }
     }
@@ -411,7 +364,8 @@ async function getSiteSpecificUrl(emailAddr) {
         mxHosts.indexOf("mailsec.protonmail.ch") >= 0) {
         url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
       }
-    } catch (ex) {}
+    }
+    catch (ex) {}
   }
 
   return url;
