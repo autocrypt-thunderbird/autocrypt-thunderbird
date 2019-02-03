@@ -14,8 +14,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
 component("enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
+component("enigmail/sqliteDb.jsm"); /* global EnigmailSqliteDb: false */
 ChromeUtils.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
-
 
 const pubkey1 =
   `mQENBFdGIzkBCADKys5q0rYiTr/FYdoupmNAJ0o20XWuFp/V58qsnQAMcAY2pCB/ydx9Y7
@@ -92,23 +92,27 @@ setupTestAccounts("strike.devtest@gmail.com", "0x781617319CE311C4");
 /* global Sqlite */
 
 test(function prepareDb() {
+  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
+
   // Drop autocrypt_keydata table (if it exists)
-  do_test_pending();
-  Sqlite.openConnection({
-    path: "enigmail.sqlite",
-    sharedMemoryCache: false
-  }).
-  then(connection => {
-    connection.execute("drop table autocrypt_keydata;").then(ok => {
-      connection.close();
-      //dump("dropped table\n");
-      do_test_finished();
-    }).catch(err => {
-      connection.close();
-      do_test_finished();
+  async function doPreparation() {
+    let connection = await Sqlite.openConnection({
+      path: "enigmail.sqlite",
+      sharedMemoryCache: false
     });
-  });
-  JSUnit.waitForAsyncTest(); // wait until that's done before starting the next test
+    try {
+      await connection.execute("drop table autocrypt_keydata;");
+      connection.close();
+    }
+    catch (err) {
+      connection.close();
+    }
+    await EnigmailSqliteDb.checkDatabaseStructure();
+    inspector.exitNestedEventLoop(0);
+  }
+
+  doPreparation();
+  inspector.enterNestedEventLoop(0);
 });
 
 

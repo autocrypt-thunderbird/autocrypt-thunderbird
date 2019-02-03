@@ -37,14 +37,19 @@ var EnigmailSqliteDb = {
 
   checkDatabaseStructure: async function() {
     EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure()\n`);
+    let conn;
     try {
-      let conn = await this.openDatabase();
+      conn = await this.openDatabase();
       await checkAutcryptTable(conn);
       await checkWkdTable(conn);
+      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: checkDatabaseStructure: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
     }
   }
 };
