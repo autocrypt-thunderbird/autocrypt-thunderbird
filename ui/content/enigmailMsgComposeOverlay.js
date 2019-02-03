@@ -758,6 +758,12 @@ Enigmail.msg = {
     let selectedElement = document.activeElement;
 
     if (EnigmailPrefs.getPref("keepSettingsForReply") && (!(this.sendMode & ENCRYPT)) || (typeof(draftId) == "string" && draftId.length > 0)) {
+
+      /* global gEncryptedURIService: false */
+      if (gEncryptedURIService && gEncryptedURIService.isEncrypted(gMsgCompose.originalMsgURI)) {
+        // Enable S/MIME encryption if original is known as encrypted.
+        this.setFinalSendMode('final-encryptYes');
+      }
       msgUri = this.getOriginalMsgUri();
 
       if (typeof(draftId) == "string" && draftId.length > 0) {
