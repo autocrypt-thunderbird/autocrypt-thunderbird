@@ -88,7 +88,8 @@ const filterActionCopyDecrypt = {
   isValidForType: function(type, scope) {
     EnigmailLog.DEBUG("filters.jsm: filterActionCopyDecrypt.isValidForType(" + type + ")\n");
 
-    return true;
+    let r = true;
+    return r;
   },
 
   validateActionValue: function(value, folder, type) {

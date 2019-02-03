@@ -79,7 +79,7 @@ const filterActionCopyDecrypt = {
   },
 
   isValidForType: function(type, scope) {
-    return gEnigmailFilters ? gEnigmailFilters.copyDecrypt.isValidForType() : false;
+    return gEnigmailFilters ? gEnigmailFilters.copyDecrypt.isValidForType(type, scope) : false;
   },
 
   validateActionValue: function(value, folder, type) {
