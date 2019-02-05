@@ -251,7 +251,7 @@ var EnigmailAutocrypt = {
   /**
    * Import given key data and set the per-recipient rule accordingly
    *
-   * @param {String} keyData - String key data (BLOB)
+   * @param {String} keyData - String key data (BLOB, binary form)
    * @param {String} email - email address associated with key
    * @param {String} autocryptState - mutual or nopreference
    * @param {String} type - autocrypt header type (1 / 1g)
@@ -902,7 +902,7 @@ async function updateKeyIfNeeded(email, keydata, fpr, keyType, autocryptState) {
   }
 
   if (doImport) {
-    await EnigmailAutocrypt.applyKeyFromKeydata(keydata, email, autocryptState, keyType);
+    await EnigmailAutocrypt.applyKeyFromKeydata(atob(keydata), email, autocryptState, keyType);
   }
 
   return doImport;
