@@ -254,6 +254,11 @@ PEPDecryptor.prototype = {
         // only display the decrption/verification status if not background-Job
         this.decryptedHeaders = LAST_MSG.lastPepStatus.decryptedHeaders;
         this.mimePartNumber = LAST_MSG.lastPepStatus.mimePartNumber;
+        if (!LAST_MSG.lastPepStatus.dec) {
+          LAST_MSG.lastPepStatus.dec = {
+            persons: {}
+          };
+        }
 
         this.displayStatus(LAST_MSG.lastPepStatus.rating, LAST_MSG.lastPepStatus.fpr, LAST_MSG.lastPepStatus.dec.persons);
       }
