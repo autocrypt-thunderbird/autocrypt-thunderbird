@@ -103,9 +103,23 @@ async function checkAutcryptTable(connection) {
     if (!exists) {
       await createAutocryptTable(connection);
     }
+    else {
+      let hasKeyRingInserted = false;
+      await connection.execute("pragma table_info('autocrypt_keydata');", {},
+        function _onRow(row) {
+          let colname = row.getResultByName("name");
+          if (colname === "keyring_inserted") hasKeyRingInserted = true;
+        });
+      if (hasKeyRingInserted) return true;
+
+      await connection.execute("alter table autocrypt_keydata add keyring_inserted text default '0';", {},
+        function _onRow(row) {});
+      let EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+      EnigmailAutocrypt.updateAllImportedKeys();
+    }
   }
   catch (error) {
-    EnigmailLog.DEBUG("sqliteDB.jsm: checkAutcryptTable - error\n");
+    EnigmailLog.DEBUG(`sqliteDB.jsm: checkAutcryptTable - error ${error}\n`);
     throw error;
   }
 
@@ -176,3 +190,7 @@ function createWkdTable(connection) {
     "email text not null primary key, " + // email address of correspondent
     "last_seen integer);"); // timestamp of last mail received for the email/type combination
 }
+
+/*
+alter table autocrypt_keydata add keyring_inserted text default '0';
+*/

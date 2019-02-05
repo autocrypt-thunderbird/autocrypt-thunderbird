@@ -262,6 +262,7 @@ var EnigmailAutocrypt = {
                   };
 
                   EnigmailRules.insertOrUpdateRule(ruleObj);
+                  await this.setKeyImported(null, keyArr[i].email, keyArr[i].type);
                 }
               }
             }
@@ -274,6 +275,73 @@ var EnigmailAutocrypt = {
     }
 
     return importedKeys;
+  },
+
+  /**
+   * Update key in the Autocrypt database to mark it "imported in keyring"
+   */
+  setKeyImported: async function(connection, email, type) {
+    EnigmailLog.DEBUG(`autocrypt.jsm: setKeyImported(${email}, ${type})\n`);
+    try {
+      let conn = connection;
+      if (!conn) {
+        conn = await EnigmailSqliteDb.openDatabase();
+      }
+      let updateStr = "update autocrypt_keydata set keyring_inserted = '1' where email = :email and type = :type;";
+
+      let updateObj = {
+        email: email.toLowerCase(),
+        type: type
+      };
+
+      await new Promise((resolve, reject) =>
+        conn.executeTransaction(function _trx() {
+          conn.execute(updateStr, updateObj).then(r => {
+            resolve(r);
+          }).catch(err => {
+            EnigmailLog.DEBUG(`autocrypt.jsm: setKeyImported: error ${err}\n`);
+            reject(err);
+          });
+        }));
+
+      if (!connection) conn.close();
+    }
+    catch (err) {
+      EnigmailLog.DEBUG(`autocrypt.jsm: setKeyImported: error ${err}\n`);
+      throw err;
+    }
+  },
+
+  /**
+   * Go through all emails in the autocrypt store and determine which keys already
+   * have a per-recipient rule
+   */
+  updateAllImportedKeys: async function() {
+    EnigmailLog.DEBUG(`autocrypt.jsm: updateAllImportedKeys()\n`);
+    try {
+      let conn = await EnigmailSqliteDb.openDatabase();
+
+      let rows = [];
+      await conn.execute("select email, type from autocrypt_keydata where type = '1';", {},
+        function _onRow(record) {
+          rows.push(record.getResultByName("email"));
+        });
+
+      for (let i in rows) {
+        let r = EnigmailRules.getRuleByEmail(`autocrypt://${rows[i]}`);
+        if (r) {
+          await this.setKeyImported(conn, rows[i], "1");
+        }
+
+      }
+      EnigmailLog.DEBUG(`autocrypt.jsm: updateAllImportedKeys done\n`);
+
+      conn.close();
+    }
+    catch (err) {
+      EnigmailLog.DEBUG(`autocrypt.jsm: updateAllImportedKeys: error ${err}\n`);
+      throw err;
+    }
   },
 
   /**
