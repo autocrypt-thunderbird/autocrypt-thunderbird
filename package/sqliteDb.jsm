@@ -40,7 +40,7 @@ var EnigmailSqliteDb = {
     let conn;
     try {
       conn = await this.openDatabase();
-      await checkAutcryptTable(conn);
+      await checkAutocryptTable(conn);
       await checkWkdTable(conn);
       conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
@@ -96,10 +96,10 @@ function openDatabaseConn(resolve, reject, waitms, maxtime) {
  *
  * @return {Promise<Boolean>}
  */
-async function checkAutcryptTable(connection) {
+async function checkAutocryptTable(connection) {
   try {
     let exists = await connection.tableExists("autocrypt_keydata");
-    EnigmailLog.DEBUG("sqliteDB.jsm: checkAutcryptTable - success\n");
+    EnigmailLog.DEBUG("sqliteDB.jsm: checkAutocryptTable - success\n");
     if (!exists) {
       await createAutocryptTable(connection);
     }
@@ -119,7 +119,7 @@ async function checkAutcryptTable(connection) {
     }
   }
   catch (error) {
-    EnigmailLog.DEBUG(`sqliteDB.jsm: checkAutcryptTable - error ${error}\n`);
+    EnigmailLog.DEBUG(`sqliteDB.jsm: checkAutocryptTable - error ${error}\n`);
     throw error;
   }
 
@@ -142,7 +142,9 @@ async function createAutocryptTable(connection) {
     "type text not null, " + // key type (1==OpenPGP, regular key. 1g == OpenPGP gossip)
     "last_seen_autocrypt text, " +
     "last_seen text not null, " +
-    "state text not null);"); // timestamp of last mail received for the email/type combination
+    "state text not null," + // timestamp of last mail received for the email/type combination
+    "keyring_inserted text default '0');"
+  );
 
   EnigmailLog.DEBUG("sqliteDB.jsm: createAutocryptTable - index\n");
   await connection.execute("create unique index autocrypt_keydata_i1 on autocrypt_keydata(email, type)");
@@ -190,7 +192,3 @@ function createWkdTable(connection) {
     "email text not null primary key, " + // email address of correspondent
     "last_seen integer);"); // timestamp of last mail received for the email/type combination
 }
-
-/*
-alter table autocrypt_keydata add keyring_inserted text default '0';
-*/
