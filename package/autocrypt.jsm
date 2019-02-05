@@ -286,7 +286,7 @@ var EnigmailAutocrypt = {
           };
 
           EnigmailRules.insertOrUpdateRule(ruleObj);
-          await this.setKeyImported(null, email, type);
+          await this.setKeyImported(null, email);
         }
       }
     }
@@ -297,18 +297,17 @@ var EnigmailAutocrypt = {
   /**
    * Update key in the Autocrypt database to mark it "imported in keyring"
    */
-  setKeyImported: async function(connection, email, type) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: setKeyImported(${email}, ${type})\n`);
+  setKeyImported: async function(connection, email) {
+    EnigmailLog.DEBUG(`autocrypt.jsm: setKeyImported(${email})\n`);
     try {
       let conn = connection;
       if (!conn) {
         conn = await EnigmailSqliteDb.openDatabase();
       }
-      let updateStr = "update autocrypt_keydata set keyring_inserted = '1' where email = :email and type = :type;";
+      let updateStr = "update autocrypt_keydata set keyring_inserted = '1' where email = :email;";
 
       let updateObj = {
-        email: email.toLowerCase(),
-        type: type
+        email: email.toLowerCase()
       };
 
       await new Promise((resolve, reject) =>
