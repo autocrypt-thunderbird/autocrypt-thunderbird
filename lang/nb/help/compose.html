@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: Message Composition</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Help</h1>
+
+  <h3>Using Enigmail when composing messages</h3>
+
+  <dl>
+    <dt>Enigmail menu in Mail/Compose window</dt>
+
+    <dd>
+      <dl>
+        <dt>Sign message</dt>
+
+        <dd>Enable/Disable sending signed mail. User is notified, if signing fails.</dd>
+
+        <dt>Encrypt message</dt>
+				<dd>
+					<p>Enable/Disable encryption to all recipient(s) before sending. User is notified, if encryption fails.</p>
+
+          <p>If <em>Display selection when necessary</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, a list of keys will pop up if there are addresses in the list of recipients for the message for whom you have no public key.</p>
+
+          <p>If <em>Never display OpenPGP key selection dialog</em> is set in <strong>Preferences -&gt; Key Selection tab</strong>, and there are addresses in the list of recipients for the message for whom you have no public key, the message will be sent unencrypted.</p>
+        </dd>
+
+        <dt>Use PGP/MIME for this message</dt>
+
+        <dd>
+          Enable/Disable the use of <a href="https://tools.ietf.org/html/rfc3156">PGP/MIME</a> for this message.
+
+          <p>If you know the recipient(s) can read mail using the PGP/MIME format, you should use it.</p>
+
+          <p>This feature is dependent on the settings in <strong>Preferences -&gt; PGP/MIME tab</strong> being set to <em>Allow to use PGP/MIME</em> or <em>Always use PGP/MIME</em>.</p>
+        </dd>
+
+        <dt>Default composition options</dt>
+
+        <dd>
+          <ul>
+            <li><strong>Signing/Encryption Options...</strong>: shortcut to <strong>Account Settings -&gt; OpenPGP Options.</strong></li>
+
+            <li><strong>Send options...</strong>: shortcut to <strong>Preferences -&gt; Send</strong> tab.</li>
+
+            <li><strong>Key selection options...</strong>: shortcut to <strong>Preferences -&gt; Key Selection</strong> tab.</li>
+
+            <li><strong>PGP/MIME options...</strong>: shortcut to <strong>Preferences -&gt; PGP/MIME</strong> tab.</li>
+          </ul>
+        </dd>
+
+        <dt>Undo encryption</dt>
+
+        <dd>
+          <p>If there is a failure when actually sending mail, such as the POP server not accepting the request, Enigmail will not know about it, and the encrypted message will continue to be displayed in the Compose window. Choosing this menu item will undo the encryption/signing, reverting the Compose window back to its original text.</p>
+
+          <p><em>As a temporary fix, this option may also be used to decrypt the quoted text when replying to encrypted messages. Enigmail should automatically decrypt the quoted message, but if that fails for some reason, you can use this menu item to force it.</em></p>
+        </dd>
+
+        <dt>Insert public key</dt>
+
+        <dd>insert ASCII-armored public key block at the current cursor location in the Compose window. You will be prompted for the email addresses of the key(s) to be inserted. Keys inserted in this manner will automatically be recognized at the receiving end by Enigmail. After key insertion, you may still choose to sign/encrypt the mail as needed. Also, do not insert more than one key block in a message; just specify multiple email addresses, separated by commas or spaces, when prompted.</dd>
+
+        <dt>Clear save passphrase</dt>
+
+        <dd>Clears cached passphrase. Useful if you have multiple passphrases.</dd>
+
+        <dt>Help</dt>
+
+        <dd>Displays Help information from the website (this page).</dd>
+      </dl>
+    </dd>
+  </dl>
+  <hr />
+
+  <p>Further help is available on the <a href="https://www.enigmail.net/support/">Enigmail Help web page</a></p>
+</body>
+</html>

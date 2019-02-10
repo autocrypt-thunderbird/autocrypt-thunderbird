@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: Rules Editor</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css" xml:space="preserve">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Help</h1>
+
+  <h3>Using the Enigmail Rules Editor</h3>
+
+  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented on a single line:</p>
+
+  <dl>
+    <dt>Email</dt>
+
+    <dd>The e-mail(s) from the To:, Cc: and Bcc: fields to match. The matching works on <span style="font-style: italic;">substrings</span> (Further details can be found in the Edit Rule dialog)</dd>
+
+    <dt>OpenPGP Key(s)</dt>
+
+    <dd>a list of OpenPGP Key ID's to use for the recipient</dd>
+
+    <dt>Sign</dt>
+
+    <dd>
+      enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
+
+      <ul>
+        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
+
+        <li><em>Possible</em>: leave signing as specified in the message composition window</li>
+
+        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
+      </ul>
+
+      <p>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.</p>
+    </dd>
+
+    <dt>Encrypt</dt>
+
+    <dd>enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
+
+    <dt>PGP/MIME</dt>
+
+    <dd>enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning a re the same as for message signing.</dd>
+  </dl>
+
+  <p>The rules are processed in the order displayed in the list. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
+
+  <p><em>Note:</em> The rule editor is not yet complete. It is possible to write some more advanced rules by directly editing the rules file (these rules should then not be edited anymore in the rule editor). <a href="https://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Further information</a> for directly editing the file is available on the Enigmail Homepage</p>
+  <hr />
+
+  <p>Further help is available on the <a href="https://www.enigmail.net/support/" target="_blank">Enigmail Help web page</a></p>
+</body>
+</html>

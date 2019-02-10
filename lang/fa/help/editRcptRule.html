@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: Edit Per-Recipient Rule</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Help</h1>
+
+  <h3>Using the Enigmail Rules Editor: Edit Per-Recipient Rule</h3>
+
+  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. In this dialog, you can specify the rules for a single recipient, and for a group of recipients with very similar attributes.</p>
+
+  <dl>
+    <dt>Set Enigmail Rules for</dt>
+
+    <dd>Contains the email addresses of the recipients (without names, i.e. just an address like <tt>somebody@email.domain</tt>). You can specify several email addresses, separated by spaces. The address specified here can consist of only the domain section so that mail to any address at that domain will be matched, e.g. <tt>@email.domain will</tt> allow matching to <tt>body@email.domain</tt>, <tt>somebody@email.domain</tt>, <tt>anybody@email.domain</tt>, etc.</dd>
+
+    <dt>Apply rule if recipient ...</dt>
+
+    <dd>
+      This modifies the matching of the email addresses. If multiple addresses are entered, the setting will apply to all. The examples below are based on <tt>body@email.domain</tt> entered in the <em>Enigmail Rules</em> field above.
+
+      <ul>
+        <li><em>Is exactly</em>: with this setting, the rule will only trigger on emails to <tt>body@email.domain</tt> (exact, case insensitive matching).</li>
+
+        <li><em>Contains</em>: with this setting, any email address containing the string is matched, e.g. <tt>anybody@email.domain</tt> or <tt>body@email.domain.net</tt></li>
+
+        <li><em>Begins with</em>: with this setting, any email address starting with the string is matched, e.g. <tt>body@email.domain.net</tt>, <tt>body@email.domain-name.com</tt>.</li>
+
+        <li><em>Ends with</em>: with this setting, any email address ending with the string is matched, e.g. <tt>anybody@email.domain</tt> , <tt>somebody@email.domain</tt>.</li>
+      </ul>
+    </dd>
+
+    <dt>Continue with the next rule for the matching address</dt>
+
+    <dd>Enabling this function will allow you to define a rule but not have to specify a KeyID in the <em>Use the following OpenPGP keys:</em> field, so that the email address is used to check for a key at the time of sending. Also, further rules for the same address(es) will be processed as well.</dd>
+
+    <dt>Do not check further rules for the matching address</dt>
+
+    <dd>Enabling this function stops processing any other rules for the matching address(es) if this rule is matched; i.e. rule processing continues with the next recipient.</dd>
+
+    <dt>Use the following OpenPGP keys:</dt>
+
+    <dd>Use the <em>Select Key(s)..</em> button to select the recipient keys to be used for encryption. As in the action above, no further rules for the matching address(es) are processed.</dd>
+
+    <dt>Default for Signing</dt>
+
+    <dd>
+      Enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
+
+      <ul>
+        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
+
+        <li><em>Yes, if selected from in Message Composition</em>: leave signing as specified in the message composition window</li>
+
+        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
+      </ul>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.
+    </dd>
+
+    <dt>Encryption</dt>
+
+    <dd>Enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
+
+    <dt>PGP/MIME</dt>
+
+    <dd>Enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning are the same as for message signing.</dd>
+  </dl>
+
+  <p>The rules are processed in the order displayed in the list in the <em>Per-Recipient Rules Editor</em>. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
+  <hr />
+
+  <p>Further help is available on the <a href="https://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Enigmail Per-Recipient Settings page</a></p>
+</body>
+</html>

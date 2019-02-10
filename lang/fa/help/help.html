@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>Enigmail Help</title>
+</head>
+
+<body>
+<h1>Enigmail Help</h1>
+<h3>Using Enigmail when reading messages</h3>
+<ul>
+  <li><b>Decrypt button in main Mail window</b><br />
+    This button can be used for several purposes: decrypt, verify, or import public keys. Normally decryption/verification happens automatically, although this can be disabled through a preference. However, if this fails, usually a short error message will appear in the Enigmail status line. If you click the Decrypt button, you will be able to see a more detailed error message, including the output from the GnuPG command. </li>
+  <li><b>Pen and Key icons in Message Header display</b><br />
+    The <em>Pen</em> and <em>Key</em> icons in the Message Header display indicate if the message you are reading was signed and/or encrypted and if the signature is good, i.e. the message has not been changed since it was signed. If the message has been changed, the <em>Pen</em> icon will change to a <em>Broken Pen</em> to indicate that the signature is bad. Right clicking on either the Pen or Key icons will bring up a menu with the following options:
+      <ul>
+        <li><em>Enigmail Security info</em>: allows you to view the output status from GnuPG for the message.</li>
+        <li><em>Copy Enigmail Security info</em>: copies the output status from GnuPG to the clipboard; to paste into a reply message, etc.</li>
+        <li><em>View OpenPGP Photo ID</em>: allows you to view the <em>Photo ID</em> of the person who sent the message, if they have a photo embedded in their Public Key. (<em>This option will only be enabled if a Photo ID exists in their key.)</em></li>
+        <li><em>S/MIME Security info</em>: allows you to view the S/MIME Security Info for the message.</li>
+      </ul>
+      <p>If you do not have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and you read a message which is signed or encrypted, you will see a <em>Pen</em> icon in the headers display area with a <em>Question mark</em> on it, the Enigmail status line in the headers area will say <em>Part of the message signed; click pen icon for details</em> and the message in the Message Pane will show all the OpenPGP message block indicators and the signature block.</p>
+      <p>You may also see this if you have <em>keyserver-options auto-key-retrieve</em> set in your <tt>gpg.conf</tt> file and the OpenPGP key is not available on the default keyserver.</p>
+      <p>Clicking on the <em>Pen and Question mark</em> icon will bring up a window advising that the key is unavailable in your keyring. Clicking on OK will bring up another window with a list of keyservers from which you can select to download the sender's public key from.</p>
+      <p>To configure the list of keyservers you wish to use, go to <b>Enigmail -&gt; Preferences -&gt; Basic</b> tab and enter the keyserver addresses in the <em>Keyserver(s):</em> box, separated by a comma. <em>The first keyserver in the list will be used as the default.</em></p>
+  </li>
+  <li><b>Opening encrypted attachments / importing attached OpenPGP keys</b><br />
+    Attachments named *.pgp, *.asc and *.gpg are recognized as attachments that can be handled specially by Enigmail. Right clicking on such an attachment enables two special menu items in the context menu: <em>Decrypt and Open</em> and <em>Decrypt and Save</em>. Use these two menu items if you want Enigmail to decrypt an attachment before opening or saving it. If an attachment is recognized as an OpenPGP key file, you are offered to import the keys it into your keyrings. </li>
+</ul>
+<hr />
+<p> Further help is available on the <a href="https://www.enigmail.net/support/" target="_blank">Enigmail Help web page</a> <br />
+If you have questions or comments about enigmail, please send a message to the <a href="https://www.enigmail.net/support/list.php" target="_blank">Enigmail mailing list</a></p>
+<p>Enigmail is open source and licensed under the <a href="https://www.mozilla.org/MPL/2.0" target="_blank">Mozilla Public License 2.0</a></p>
+</body>
+</html>

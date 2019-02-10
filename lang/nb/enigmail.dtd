@@ -1,4 +1,4 @@
-<!ENTITY enigmail.label                   "Enigmail">
+<!ENTITY enigmail.label                   "Enigmal">
 <!ENTITY enigmail.pEp.label               "Enigmail/p≡p">
 <!ENTITY enigmail.autocrypt.label         "Autocrypt">
 
@@ -18,7 +18,7 @@
 <!ENTITY enigmail.keyGen.days.label       "dager">
 <!ENTITY enigmail.keyGen.months.label     "måneder">
 <!ENTITY enigmail.keyGen.years.label      "år">
-<!ENTITY enigmail.keyGen.noExpiry.label   "Nøkkelen utløper ikke">
+<!ENTITY enigmail.keyGen.noExpiry.label   "Nøkkel utløper ikke">
 <!ENTITY enigmail.keyGen.keySize.label    "Nøkkelstørrelse">
 <!ENTITY enigmail.keyGen.console.label    "Nøkkelgenerering">
 <!ENTITY enigmail.keyGen.keyType.label    "Nøkkeltype">
@@ -183,7 +183,7 @@
 <!ENTITY enigmail.pepEnableProtection.label         "Skru på beskyttelse">
 <!ENTITY enigmail.pepEnableProtection.accesskey     "E">
 
-<!ENTITY enigmail.pgpAccountSettings.label     "Signerings- og krypteringsvalg...">
+<!ENTITY enigmail.pgpAccountSettings.label     "Signering/krypteringsvalg…">
 <!ENTITY enigmail.sendOptionsMenu.label        "Sendingsvalg...">
 <!ENTITY enigmail.defaultKeySelOpts.label      "Nøkkelvalg...">
 <!ENTITY enigmail.usePgpMime.label             "Protokoll: PGP/MIME">
@@ -201,7 +201,7 @@
 <!ENTITY enigmail.signedsend.accesskey         "S">
 <!ENTITY enigmail.signedsend.key               "S">
 <!ENTITY enigmail.encryptedsend.accesskey      "E">
-<!ENTITY enigmail.encryptedsend.key            "P">
+<!ENTITY enigmail.encryptedsend.key            "E">
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "S">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey  "K">
@@ -302,7 +302,7 @@
 <!ENTITY enigmail.userSelSendEncrypted.accesskey    "E">
 <!ENTITY enigmail.displayNoLonger.label             "Ikke vis denne dialogen igjen om kryptering ikke kan gjennomføres">
 <!ENTITY enigmail.importMissingKeys.label           "Last ned manglende nøkler">
-<!ENTITY enigmail.importMissingKeys.accesskey       "I">
+<!ENTITY enigmail.importMissingKeys.accesskey       "D">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Prøv å importere manglende nøkler fra en nøkkeltjener">
 <!ENTITY enigmail.refreshKeys.label                 "Oppdater nøkkelliste">
 <!ENTITY enigmail.refreshKeys.accesskey             "R">
@@ -360,7 +360,7 @@
 <!ENTITY enigmail.encDlgSign.label                  "Signer melding">
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Bruk PGP/MIME">
-<!ENTITY enigmail.encDlgPgpMime.accesskey           "U">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
 <!ENTITY enigmail.encDlgInlinePgp.label             "Bruk Inline PGP">
 <!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY enigmail.encDlgSMime.label                 "Bruk S/MIME">
@@ -377,7 +377,7 @@
 
 <!ENTITY enigmail.progressText.label               "Fremdrift:">
 
-<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP-sikkerhet">
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP Sikkerhet">
 
 <!ENTITY enigmail.pgpSecurityInfo.label            "Enigmail sikkerhetsinformasjon ...">
 <!ENTITY enigmail.copySecurityInfo.label           "Kopier Enigmail sikkerhetsinformasjon">
@@ -427,7 +427,7 @@
 <!ENTITY enigmail.not.label                         "Ikke">
 
 <!ENTITY enigmail.rulesEditor.label                 "Enigmail - redigering av mottakerbestemte regler">
-<!ENTITY enigmail.email.label                       "Epost">
+<!ENTITY enigmail.email.label                       "E-post">
 <!ENTITY enigmail.pgpKeys.label                     "OpenPGP-nøkler">
 <!ENTITY enigmail.sign.label                        "Signer">
 <!ENTITY enigmail.encrypt.label                     "Krypter">
@@ -528,7 +528,7 @@
 <!ENTITY enigmail.keyMan.changePwd.label           "Endre passfrase">
 <!ENTITY enigmail.keyMan.delKey.label              "Slett nøkkel">
 <!ENTITY enigmail.keyMan.revokeKey.label           "Trekk tilbake nøkkel">
-<!ENTITY enigmail.keyMan.keyProps.label            "Nøkkelinstillinger">
+<!ENTITY enigmail.keyMan.keyProps.label            "Nøkkelegenskaper">
 <!ENTITY enigmail.keyMan.showAllKeys.label         "Vis alle nøkler som standard">
 <!ENTITY enigmail.keyMan.viewPhoto.label           "FotoID">
 <!ENTITY enigmail.keyMan.ctxViewPhoto.label        "Vis FotoID">

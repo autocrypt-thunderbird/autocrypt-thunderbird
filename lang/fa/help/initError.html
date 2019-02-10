@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Enigmail Help: How to Resolve Problems with Initializing Enigmail</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <style type="text/css">
+  /*<![CDATA[*/
+    dt  { font-weight: bold;  }
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <h1>Enigmail Help</h1>
+
+  <h3>How to Resolve Problems with Initializing Enigmail</h3>
+
+  <p>There are several reasons why initializing Enigmail does not succeed. The most common ones are described below;
+     for more information please visit the <a href="https://www.enigmail.net/support/" target="_blank">Enigmail Support page.</a></p>
+
+  <dl>
+    <dt>GnuPG could not be found</dt>
+    <dd>
+    <p>
+      In order for Enigmail to work, the tool <a href="https://www.gnupg.org/" target="_blank">GnuPG</a> needs to be installed.
+      If GnuPG cannot be found, then first make sure that the executable <tt>gpg.exe</tt> (on Windows; <tt>gpg</tt> on other platforms) is installed on your computer.
+      If GnuPG is installed, and Enigmail cannot find it, then you need to manually set the path to GnuPG in the Enigmail Preferences (menu <i>Enigmail</i> &gt; <i>Preferences</i>)
+    </p>
+
+    <dt>Enigmail Core Service failed to initialize</dt>
+
+    <dd>
+      <p>
+      Enigmail works only if it is built using the same build environment as Thunderbird or SeaMonkey was built. This means that you can use the official Enigmail releases only if you use the official releases of Thunderbird or SeaMonkey provided by <a href="www.mozilla.org">mozilla.org</a>.
+      </p>
+      <p>
+      If you use a Thunderbird or SeaMonkey version coming from some other source (e.g. the provider of your Linux distribution), or if you built the application yourself, you should either use an Enigmail version built by the same source, or build Enigmail yourself. For building Enigmail, refer to the <a href="https://www.enigmail.net/download/source.php">Source Code section</a> on the Enigmail home page. Please don't file any bug report concerning this problem, it is not solvable.
+      </p>
+    </dd>
+  </dl>
+
+  <p>Further help is available on the <a href="https://www.enigmail.net/support/troubles.php" target="_blank">Enigmail Support Web Site</a>.</p>
+</body>
+</html>

@@ -5,7 +5,7 @@
 <!ENTITY enigmail.about.license           "Enigmail har öppen källkod och är licensierad under <html:a href='https://www.mozilla.org/MPL/2.0/' class='enigmailLink'>Mozilla Public License 2.0</html:a>.">
 
 <!ENTITY enigmail.keyUserId.label         "Konto / Användar-ID">
-<!ENTITY enigmail.keygenTitle.label       "Generera OpenPGP-nyckel">
+<!ENTITY enigmail.keygenTitle.label       "Skapa OpenPGP-nyckel">
 <!ENTITY enigmail.useForSigning.label     "Använd genererad nyckel för den valda identiteten">
 <!ENTITY enigmail.keyNoPassphrase.label   "Ingen lösenfras">
 <!ENTITY enigmail.keyPassphrase.label     "Lösenfras">
@@ -18,7 +18,7 @@
 <!ENTITY enigmail.keyGen.days.label       "dagar">
 <!ENTITY enigmail.keyGen.months.label     "månader">
 <!ENTITY enigmail.keyGen.years.label      "år">
-<!ENTITY enigmail.keyGen.noExpiry.label   "Nyckel upphör inte att gälla">
+<!ENTITY enigmail.keyGen.noExpiry.label   "Nyckel upphör inte">
 <!ENTITY enigmail.keyGen.keySize.label    "Nyckelstorlek">
 <!ENTITY enigmail.keyGen.console.label    "Nyckelgenerering">
 <!ENTITY enigmail.keyGen.keyType.label    "Nyckeltyp">
@@ -137,7 +137,7 @@
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Senaste">
-<!ENTITY enigmail.recent.accesskey          "S">
+<!ENTITY enigmail.recent.accesskey          "R">
 
 <!ENTITY enigmail.prefs.label            "Inställningar">
 
@@ -156,24 +156,24 @@
 
 <!ENTITY enigmail.decryptverify.accesskey   "D">
 <!ENTITY enigmail.importpublickey.accesskey "I">
-<!ENTITY enigmail.reload.accesskey          "L">
-<!ENTITY enigmail.adminSmartCard.accesskey  "t">
+<!ENTITY enigmail.reload.accesskey          "A">
+<!ENTITY enigmail.adminSmartCard.accesskey  "M">
 
-<!ENTITY enigmail.autoDecrypt.accesskey     "k">
-<!ENTITY enigmail.debugMenu.accesskey       "e">
+<!ENTITY enigmail.autoDecrypt.accesskey     "A">
+<!ENTITY enigmail.debugMenu.accesskey       "V">
 
 <!ENTITY enigmail.clearPassphrase.accesskey "R">
-<!ENTITY enigmail.editRules.accesskey       "m">
-<!ENTITY enigmail.setupWiz.accesskey        "n">
+<!ENTITY enigmail.editRules.accesskey       "R">
+<!ENTITY enigmail.setupWiz.accesskey        "S">
 
 
-<!ENTITY enigmail.prefs.accesskey           "I">
+<!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey     "k">
 <!ENTITY enigmail.viewlog.accesskey         "V">
 
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "O">
-<!ENTITY enigmail.sendersKeyMenu.accesskey  "v">
+<!ENTITY enigmail.sendersKeyMenu.accesskey  "N">
 
 <!ENTITY enigmail.composetoolbar.desc         "Enigmail krypteringsinformation">
 
@@ -183,12 +183,12 @@
 <!ENTITY enigmail.pepEnableProtection.label         "Aktivera skydd">
 <!ENTITY enigmail.pepEnableProtection.accesskey     "A">
 
-<!ENTITY enigmail.pgpAccountSettings.label     "Signering/Kryptering alternativ...">
+<!ENTITY enigmail.pgpAccountSettings.label     "Inställningar Signering/Kryptering...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Skicka alternativ...">
 <!ENTITY enigmail.defaultKeySelOpts.label      "Nyckelval alternativ...">
 <!ENTITY enigmail.usePgpMime.label             "Protokoll: PGP/MIME">
 <!ENTITY enigmail.useInline.label              "Protokoll: Inline PGP">
-<!ENTITY enigmail.useSmime.label               " Protokoll: S/MIME ">
+<!ENTITY enigmail.useSmime.label               "Protokoll: S/MIME">
 
 <!ENTITY enigmail.tempTrustAllKeys.label       "Lita på nycklar från alla mottagare">
 <!ENTITY enigmail.undoencryption.label         "Ångra kryptering">
@@ -200,20 +200,20 @@
 
 <!ENTITY enigmail.signedsend.accesskey         "S">
 <!ENTITY enigmail.signedsend.key               "S">
-<!ENTITY enigmail.encryptedsend.accesskey      "K">
-<!ENTITY enigmail.encryptedsend.key            "K">
+<!ENTITY enigmail.encryptedsend.accesskey      "A">
+<!ENTITY enigmail.encryptedsend.key            "A">
 
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "S">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey  "N">
-<!ENTITY enigmail.pgpAccountSettings.accesskey "i">
-<!ENTITY enigmail.usePgpMime.accesskey         "G">
+<!ENTITY enigmail.pgpAccountSettings.accesskey "A">
+<!ENTITY enigmail.usePgpMime.accesskey         "k">
 <!ENTITY enigmail.useInline.accesskey          "I">
 <!ENTITY enigmail.useSmime.accesskey           "S">
 
-<!ENTITY enigmail.tempTrustAllKeys.accesskey   "L">
-<!ENTITY enigmail.undoencryption.accesskey     "Å">
-<!ENTITY enigmail.attachkey.accesskey          "B">
-<!ENTITY enigmail.attachmykey.accesskey        "m">
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "t">
+<!ENTITY enigmail.undoencryption.accesskey     "U">
+<!ENTITY enigmail.attachkey.accesskey          "A">
+<!ENTITY enigmail.attachmykey.accesskey        "M">
 
 
 <!-- account specific options -->
@@ -299,13 +299,13 @@
 <!ENTITY enigmail.userSelSendSigned.label           "Skicka signerad">
 <!ENTITY enigmail.userSelSendSigned.accesskey       "S">
 <!ENTITY enigmail.userSelSendEncrypted.label        "Skicka krypterad">
-<!ENTITY enigmail.userSelSendEncrypted.accesskey    "k">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "A">
 <!ENTITY enigmail.displayNoLonger.label             "Visa inte den här dialogrutan igen om kryptering inte är möjlig">
 <!ENTITY enigmail.importMissingKeys.label           "Ladda ner saknade nycklar">
-<!ENTITY enigmail.importMissingKeys.accesskey       "L">
+<!ENTITY enigmail.importMissingKeys.accesskey       "D">
 <!ENTITY enigmail.importMissingKeys.tooltip         "Försök att importera de saknade nycklarna från en nyckelserver">
 <!ENTITY enigmail.refreshKeys.label                 "Uppdatera nyckellista">
-<!ENTITY enigmail.refreshKeys.accesskey             "U">
+<!ENTITY enigmail.refreshKeys.accesskey             "R">
 <!ENTITY enigmail.send.label                        "Skicka">
 <!ENTITY enigmail.perRecipientsOption.label         "Skapa per-mottagare regler">
 
@@ -334,7 +334,7 @@
 <!ENTITY enigmail.ctxImportKey.label                "Importera OpenPGP nyckel">
 <!ENTITY enigmail.ctxVerifyAtt.label                "Verifiera signatur">
 <!ENTITY enigmail.ctxDecryptOpen.accesskey          "D">
-<!ENTITY enigmail.ctxDecryptSave.accesskey          "S">
+<!ENTITY enigmail.ctxDecryptSave.accesskey          "C">
 <!ENTITY enigmail.ctxImportKey.accesskey            "I">
 <!ENTITY enigmail.ctxVerifyAtt.accesskey            "V">
 <!ENTITY enigmail.detailsHdrButton.label            "Detaljer">
@@ -356,17 +356,17 @@
 <!ENTITY enigmail.encryptionDlg.label               "Enigmail Kryptering &amp; Signering inställningar">
 <!ENTITY enigmail.encDlgProtocol.label              "Standard för Kryptering/Signering">
 <!ENTITY enigmail.encDlgEncrypt.label               "Kryptera meddelande">
-<!ENTITY enigmail.encDlgEncrypt.accesskey           "K">
+<!ENTITY enigmail.encDlgEncrypt.accesskey           "A">
 <!ENTITY enigmail.encDlgSign.label                  "Signera meddelande">
 <!ENTITY enigmail.encDlgSign.accesskey              "S">
 <!ENTITY enigmail.encDlgPgpMime.label               "Använd PGP/MIME">
-<!ENTITY enigmail.encDlgPgpMime.accesskey           "A">
+<!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
 <!ENTITY enigmail.encDlgInlinePgp.label             "Använd Inline PGP">
 <!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY enigmail.encDlgSMime.label                 "Använd S/MIME">
 <!ENTITY enigmail.encDlgSMime.accesskey             "M">
 <!ENTITY enigmail.encDlgReset.label                 "Återställ till standard">
-<!ENTITY enigmail.encDlgReset.accesskey             "t">
+<!ENTITY enigmail.encDlgReset.accesskey             "R">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Skicka 'OpenPGP' header">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Skicka OpenPGP nyckel-ID">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "Skicka URL för nyckelhämtning:">
@@ -377,7 +377,7 @@
 
 <!ENTITY enigmail.progressText.label               "Utveckling:">
 
-<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP säkerhet">
+<!ENTITY enigmail.openPgpSecurity.label            "OpenPGP Säkerhet">
 
 <!ENTITY enigmail.pgpSecurityInfo.label            "Enigmail säkerhetsinfo ...">
 <!ENTITY enigmail.copySecurityInfo.label           "Kopiera Enigmail säkerhetsinfo">
@@ -390,7 +390,7 @@
 <!ENTITY enigmail.trustSenderKeyPopup.label        "Ställ in ägarförtroende hos avsändarens nyckel...">
 <!ENTITY enigmail.createRuleFromAddr.label         "Skapa Enigmail regel från adress...">
 <!ENTITY enigmail.keyManWindow.label               "OpenPGP nyckelhantering">
-<!ENTITY enigmail.keyManWindow.accesskey           "P">
+<!ENTITY enigmail.keyManWindow.accesskey           "y">
 
 <!ENTITY enigmail.singleRcptSettings.label          "Enigmail - Mottagarinställningar">
 
@@ -407,7 +407,7 @@
 <!ENTITY enigmail.nextRule.label                    "Fortsätt med nästa regel för matchande adress">
 <!ENTITY enigmail.nextAddress.label                 "Kontrollera inte ytterligare regler för matchande adress">
 <!ENTITY enigmail.useKeys.label                     "Använd följande OpenPGP nycklar:">
-<!ENTITY enigmail.selKeysButton.accesskey           "V">
+<!ENTITY enigmail.selKeysButton.accesskey           "S">
 <!ENTITY enigmail.setDefaultsFor.label              "Standardvärden för ...">
 <!ENTITY enigmail.encryption.label                  "Kryptering">
 <!ENTITY enigmail.signing.label                     "Signering">
@@ -432,18 +432,18 @@
 <!ENTITY enigmail.sign.label                        "Signera">
 <!ENTITY enigmail.encrypt.label                     "Kryptera">
 <!ENTITY enigmail.edit.label                        "Ändra">
-<!ENTITY enigmail.edit.accesskey                    "d">
+<!ENTITY enigmail.edit.accesskey                    "M">
 <!ENTITY enigmail.add.label                         "Lägg till">
-<!ENTITY enigmail.add.accesskey                     "L">
+<!ENTITY enigmail.add.accesskey                     "A">
 <!ENTITY enigmail.delete.label                      "Ta bort">
-<!ENTITY enigmail.delete.accesskey                  "T">
+<!ENTITY enigmail.delete.accesskey                  "A">
 <!ENTITY enigmail.moveUp.label                      "Flytta upp">
-<!ENTITY enigmail.moveUp.accesskey                  "u">
+<!ENTITY enigmail.moveUp.accesskey                  "U">
 <!ENTITY enigmail.moveDown.label                    "Flytta ner">
-<!ENTITY enigmail.moveDown.accesskey                "n">
+<!ENTITY enigmail.moveDown.accesskey                "D">
 <!ENTITY enigmail.searchRule.label                  "Visa regler för e-postadresser som innehåller:">
 <!ENTITY enigmail.clearSearch.label                 "Rensa">
-<!ENTITY enigmail.clearSearch.accesskey             "e">
+<!ENTITY enigmail.clearSearch.accesskey             "C">
 
 <!ENTITY enigmail.searchKeyDlg.label               "Ladda ner OpenPGP nycklar">
 <!ENTITY enigmail.searchKeyDlgCapt.label           "Hittade nycklar - välj om du vill importera">
@@ -496,11 +496,11 @@
 <!ENTITY enigmail.keyMan.keyserverMenu.label       "Nyckelserver">
 <!ENTITY enigmail.keyMan.generateMenu.label        "Skapa">
 
-<!ENTITY enigmail.keyMan.fileMenu.accesskey        "A">
-<!ENTITY enigmail.keyMan.editMenu.accesskey        "R">
+<!ENTITY enigmail.keyMan.fileMenu.accesskey        "H">
+<!ENTITY enigmail.keyMan.editMenu.accesskey        "A">
 <!ENTITY enigmail.keyMan.viewMenu.accesskey        "V">
 <!ENTITY enigmail.keyMan.keyserverMenu.accesskey   "N">
-<!ENTITY enigmail.keyMan.generateMenu.accesskey    "S">
+<!ENTITY enigmail.keyMan.generateMenu.accesskey    "k">
 
 <!ENTITY enigmail.keyMan.importFromFile.label      "Importera nycklar från fil">
 <!ENTITY enigmail.keyMan.importFromServer.label    "Sök efter nycklar">
@@ -549,34 +549,34 @@
 
 <!ENTITY enigmail.keyMan.filter.label              "Sök efter:">
 
-<!ENTITY enigmail.keyMan.close.accesskey             "ä">
+<!ENTITY enigmail.keyMan.close.accesskey             "C">
 <!ENTITY enigmail.keyMan.generate.accesskey          "N">
 <!ENTITY enigmail.keyMan.sign.accesskey              "S">
 <!ENTITY enigmail.keyMan.setTrust.accesskey          "t">
-<!ENTITY enigmail.keyMan.genRevoke.accesskey         "Å">
-<!ENTITY enigmail.keyMan.delKey.accesskey            "R">
-<!ENTITY enigmail.keyMan.revokeKey.accesskey         "Å">
+<!ENTITY enigmail.keyMan.genRevoke.accesskey         "R">
+<!ENTITY enigmail.keyMan.delKey.accesskey            "D">
+<!ENTITY enigmail.keyMan.revokeKey.accesskey         "R">
 <!ENTITY enigmail.keyMan.importFromFile.accesskey    "I">
-<!ENTITY enigmail.keyMan.exportToFile.accesskey      "E">
+<!ENTITY enigmail.keyMan.exportToFile.accesskey      "A">
 <!ENTITY enigmail.keyMan.importFromServer.accesskey  "S">
-<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "L">
-<!ENTITY enigmail.keyMan.reload.accesskey            "L">
-<!ENTITY enigmail.keyMan.addPhoto.accesskey          "f">
-<!ENTITY enigmail.keyMan.manageUid.accesskey         "H">
-<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "u">
-<!ENTITY enigmail.keyMan.changePwd.accesskey         "Ä">
-<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "o">
-<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "b">
+<!ENTITY enigmail.keyMan.uploadToServer.accesskey    "U">
+<!ENTITY enigmail.keyMan.reload.accesskey            "R">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
+<!ENTITY enigmail.keyMan.manageUid.accesskey         "M">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "A">
+<!ENTITY enigmail.keyMan.changePwd.accesskey         "P">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "O">
-<!ENTITY enigmail.keyMan.showPhoto.accesskey         "F">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "I">
 <!ENTITY enigmail.keyMan.importFromUrl.accesskey     "U">
-<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "K">
+<!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "N">
-<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "i">
+<!ENTITY enigmail.keyMan.showAllKeys.accesskey       "D">
 <!ENTITY enigmail.keyMan.enableKey.accesskey         "v">
-<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "U">
-<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "p">
+<!ENTITY enigmail.keyMan.refreshSelKeys.accesskey    "R">
+<!ENTITY enigmail.keyMan.refreshAllKeys.accesskey    "A">
 <!ENTITY enigmail.keyMan.selectAll.accesskey         "A">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
@@ -612,12 +612,12 @@
 <!ENTITY enigmail.keyDetails.usage.label             "Användning">
 <!ENTITY enigmail.keyDetails.fingerprint.label       "Fingeravtryck">
 <!ENTITY enigmail.keyDetails.selAction.label         "Välj åtgärd ...">
-<!ENTITY enigmail.keyDetails.selAction.accesskey     "V">
+<!ENTITY enigmail.keyDetails.selAction.accesskey     "S">
 <!ENTITY enigmail.keyDetails.change.label            "Ändra">
-<!ENTITY enigmail.keyDetails.signKey.label           "Intyga">
+<!ENTITY enigmail.keyDetails.signKey.label           "Certifiera">
 <!ENTITY enigmail.keyDetails.trustStatus.label       "Du lita på certifieringar">
 <!ENTITY enigmail.keyDetails.keyValidity.label       "Giltighet">
-<!ENTITY enigmail.keyDetails.alsoKnown.label         "Också känd som">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "Även känd som">
 
 <!ENTITY enigmail.cardDetails.title                  "OpenPGP SmartCard detaljer">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
@@ -651,7 +651,7 @@
 <!ENTITY enigmail.cardDetails.adminPin.accesskey     "P">
 <!ENTITY enigmail.cardDetails.genCardKey.accesskey   "k">
 <!ENTITY enigmail.cardDetails.cardMenu.accesskey     "S">
-<!ENTITY enigmail.cardDetails.editData.accesskey     "R">
+<!ENTITY enigmail.cardDetails.editData.accesskey     "A">
 
 <!ENTITY enigmail.genCardKey.title                   "Skapa OpenPGP-nyckel">
 <!ENTITY enigmail.genCardKey.backupKey.label         "Spara säkerhetskopia av nyckel utanför SmartCard">
@@ -813,7 +813,7 @@ OpenPGP-nycklar till en ny dator. Detta görs i två steg:
 <!ENTITY enigmail.msgViewColumn.tooltip              "Sortera efter OpenPGP status">
 <!ENTITY enigmail.addToRule.title                    "Lägg till nyckel till per-mottagare regel">
 <!ENTITY enigmail.addToRule.useRuleButton.label      "Lägg till nyckel till vald regel">
-<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "L">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label      "Skapa ny regel">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "k">
 
