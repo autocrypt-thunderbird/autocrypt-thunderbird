@@ -63,8 +63,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
       var prefValue;
       if (showDefault) {
         prefValue = EnigGetDefaultPref(prefName);
-      }
-      else {
+      } else {
         prefValue = EnigGetPref(prefName);
       }
 
@@ -78,8 +77,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
             }
             if (prefValue) {
               prefElement.setAttribute("checked", "true");
-            }
-            else {
+            } else {
               prefElement.removeAttribute("checked");
             }
           }
@@ -87,16 +85,13 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
             if (prefElement.getAttribute("invert") == "true") {
               if (prefElement.checked) {
                 EnigSetPref(prefName, false);
-              }
-              else {
+              } else {
                 EnigSetPref(prefName, true);
               }
-            }
-            else {
+            } else {
               if (prefElement.checked) {
                 EnigSetPref(prefName, true);
-              }
-              else {
+              } else {
                 EnigSetPref(prefName, false);
               }
             }
@@ -110,8 +105,7 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
           if (setPrefs) {
             try {
               EnigSetPref(prefName, 0 + prefElement.value);
-            }
-            catch (ex) {}
+            } catch (ex) {}
           }
           break;
 
@@ -143,8 +137,7 @@ function prefOnLoad() {
   var maxIdle = -1;
   if (!gEnigmailSvc) {
     maxIdle = EnigmailPrefs.getPref("maxIdleMinutes");
-  }
-  else {
+  } else {
     maxIdle = EnigmailGpgAgent.getMaxIdlePref(window);
   }
 
@@ -158,8 +151,7 @@ function prefOnLoad() {
       document.getElementById("basic").setAttribute("collapsed", true);
       document.getElementById("basicTab").setAttribute("collapsed", true);
       selectPrefTabPanel("sendingTab");
-    }
-    else {
+    } else {
       EnigCollapseAdvanced(document.getElementById("prefTabBox"), "collapsed", null);
       //EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
       enigShowUserModeButtons(gAdvancedMode);
@@ -169,8 +161,7 @@ function prefOnLoad() {
       selectPrefTabPanel(window.arguments[0].selectTab);
     }
 
-  }
-  else {
+  } else {
     enigShowUserModeButtons(gAdvancedMode);
   }
 
@@ -180,7 +171,6 @@ function prefOnLoad() {
   }
 
   document.getElementById("enigmail_protectHeaders").checked = (EnigGetPref("protectedHeaders") === 2);
-  document.getElementById("protectedSubjectText").setAttribute("placeholder", EnigGetString("msgCompose.encryptedSubjectStub"));
 
   // init "saved manual preferences" with current settings:
   gSavedManualPrefKeepSettingsForReply = EnigGetPref("keepSettingsForReply");
@@ -190,8 +180,7 @@ function prefOnLoad() {
   gEncryptionModel = EnigGetPref("encryptionModel");
   if (gEncryptionModel === 0) { // convenient encryption
     resetSendingPrefsConvenient();
-  }
-  else {
+  } else {
     resetSendingPrefsManually();
   }
 
@@ -199,23 +188,20 @@ function prefOnLoad() {
 
   try {
     gMimePartsValue = EnigmailPrefs.getPrefRoot().getBoolPref("mail.server.default.mime_parts_on_demand");
-  }
-  catch (ex) {
+  } catch (ex) {
     gMimePartsValue = true;
   }
 
   if (gMimePartsValue) {
     gMimePartsElement.setAttribute("checked", "true");
-  }
-  else {
+  } else {
     gMimePartsElement.removeAttribute("checked");
   }
 
   var overrideGpg = document.getElementById("enigOverrideGpg");
   if (EnigGetPref("agentPath")) {
     overrideGpg.checked = true;
-  }
-  else {
+  } else {
     overrideGpg.checked = false;
   }
   enigActivateDependent(overrideGpg, "enigmail_agentPath enigmail_browsePath");
@@ -238,8 +224,7 @@ function enigDetermineGpgPath() {
         // attempt to initialize Enigmail
         gEnigmailSvc.initialize(window, EnigGetVersion());
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
   }
 
   if (gEnigmailSvc.initialized && typeof(EnigmailGpgAgent.agentPath) == "object") {
@@ -247,8 +232,7 @@ function enigDetermineGpgPath() {
       var agentPath = "";
       if (EnigGetOS() == "WINNT") {
         agentPath = EnigGetFilePath(EnigmailGpgAgent.agentPath).replace(/\\\\/g, "\\");
-      }
-      else {
+      } else {
         agentPath = EnigmailGpgAgent.agentPath.path;
         // EnigGetFilePath(EnigmailGpgAgent.agentPath); // .replace(/\\\\/g, "\\");
       }
@@ -256,12 +240,10 @@ function enigDetermineGpgPath() {
         agentPath = agentPath.substring(0, 50) + "...";
       }
       document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgFound", agentPath));
-    }
-    catch (ex) {
+    } catch (ex) {
       document.getElementById("enigmailGpgPath").setAttribute("value", "error 2");
     }
-  }
-  else {
+  } else {
     document.getElementById("enigmailGpgPath").setAttribute("value", EnigGetString("prefs.gpgNotFound"));
   }
 }
@@ -288,8 +270,7 @@ function resetPrefs() {
   gEncryptionModel = EnigGetPref("encryptionModel");
   if (gEncryptionModel === 0) { // convenient encryption
     resetSendingPrefsConvenient();
-  }
-  else {
+  } else {
     resetSendingPrefsManually();
   }
 }
@@ -324,8 +305,7 @@ function disableManually(disable) {
     elem = document.getElementById(elems[i]);
     if (disable) {
       elem.setAttribute("disabled", "true");
-    }
-    else {
+    } else {
       elem.removeAttribute("disabled");
     }
   }
@@ -459,8 +439,7 @@ function prefOnAccept() {
 
   if (protectionUndecided && chk) {
     EnigSetPref("protectedHeaders", 2);
-  }
-  else if (!protectionUndecided) {
+  } else if (!protectionUndecided) {
     EnigSetPref("protectedHeaders", chk ? 2 : 0);
   }
 
@@ -470,19 +449,16 @@ function prefOnAccept() {
     if (!gEnigmailSvc) {
       try {
         gEnigmailSvc = getCore().createInstance();
-      }
-      catch (ex) {}
+      } catch (ex) {}
     }
 
     if (gEnigmailSvc.initialized) {
       try {
         gEnigmailSvc.reinitialize();
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigError(EnigGetString("invalidGpgPath"));
       }
-    }
-    else {
+    } else {
       gEnigmailSvc = null;
       GetEnigmailSvc();
     }
@@ -509,8 +485,7 @@ function enigActivateDependent(obj, dependentIds) {
   for (depId in idList) {
     if (obj.checked) {
       document.getElementById(idList[depId]).removeAttribute("disabled");
-    }
-    else {
+    } else {
       document.getElementById(idList[depId]).setAttribute("disabled", "true");
     }
   }
@@ -523,8 +498,7 @@ function enigShowUserModeButtons(expertUser) {
   if (!expertUser) {
     basicUserButton.setAttribute("hidden", true);
     advUserButton.removeAttribute("hidden");
-  }
-  else {
+  } else {
     advUserButton.setAttribute("hidden", true);
     basicUserButton.removeAttribute("hidden");
   }
@@ -538,8 +512,7 @@ function enigSwitchAdvancedMode(expertUser) {
 
   if (expertUser) {
     EnigSetPref("advancedUser", true);
-  }
-  else {
+  } else {
     EnigSetPref("advancedUser", false);
   }
 
@@ -548,8 +521,7 @@ function enigSwitchAdvancedMode(expertUser) {
     // Thunderbird
     //    EnigCollapseAdvanced(document.getElementById("enigPrefTabPanel"), "hidden", null);
     EnigCollapseAdvanced(prefTabBox, "collapsed", null);
-  }
-  else {
+  } else {
     // Seamonkey
     EnigCollapseAdvanced(document.getElementById("enigmailPrefsBox"), "hidden", null);
   }

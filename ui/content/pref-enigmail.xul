@@ -382,7 +382,7 @@
               <hbox>
                 <textbox id="protectedSubjectText"
                          tooltip="protectedSubjectText.tooltip"
-                         placeholder=""
+                         placeholder="&enigmail.protectedSubjectText.placeholder;"
                          size="40"/>
               </hbox>
             </hbox>

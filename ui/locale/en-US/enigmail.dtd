@@ -45,6 +45,8 @@
 <!ENTITY enigmail.protectHeadersPrefs.tooltip  "Remove subject and other sensitive headers from encrypted messages.">
 <!ENTITY enigmail.protectedSubjectText.label    "Subject text to protect encrypted messages">
 <!ENTITY enigmail.protectedSubjectText.tooltip  "Specify the subject that will be publicly visible instead of the real subject when sending encrypted messages">
+<!ENTITY enigmail.protectedSubjectText.placeholder "Encrypted Message">
+
 
 
 <!ENTITY enigmail.mime_parts_on_demand.label  "Only download attachments when opened (IMAP only)">
