@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["getGnuPGAPI"];
 
-const Services = Components.utils.import("resource://gre/modules/Services.jsm").Services;
+var Services = Components.utils.import("resource://gre/modules/Services.jsm").Services;
 
 // Load OpenPGP.js (including generic) API
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI/openpgp-js.js",

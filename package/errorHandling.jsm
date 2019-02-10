@@ -1,5 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailLocale: false, EnigmailData: false, EnigmailCore: false */
-/*jshint -W097 */
+
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,13 +9,10 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailErrorHandling"];
 
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailSystem = ChromeUtils.import("chrome://enigmail/content/modules/system.jsm").EnigmailSystem;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;

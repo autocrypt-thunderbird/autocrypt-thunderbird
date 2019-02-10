@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailLog: false, EnigmailDialog: false, EnigmailFuncs: false */
-/*jshint -W097 */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
@@ -17,9 +15,9 @@ const Cr = Components.results;
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm").EnigmailEncryption;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 const EnigmailHash = ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm").EnigmailHash;

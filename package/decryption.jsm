@@ -1,28 +1,21 @@
-/*global Components: false, EnigmailData: false, EnigmailLog: false, EnigmailPrefs: false, EnigmailLocale: false, EnigmailArmor: false, EnigmailExecution: false, EnigmailDialog: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-
 "use strict";
 
 var EXPORTED_SYMBOLS = ["EnigmailDecryption"];
 
-
-
-
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
 const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;

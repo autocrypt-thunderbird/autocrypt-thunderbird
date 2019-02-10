@@ -15,15 +15,15 @@ var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj",
   "getPhotoFileFromGnuPG", "extractSignatures"
 ];
 
-const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
-const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
-const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailTrust = Cu.import("chrome://enigmail/content/modules/trust.jsm").EnigmailTrust;
-const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailOS = Cu.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailTime = ChromeUtils.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailTrust = ChromeUtils.import("chrome://enigmail/content/modules/trust.jsm").EnigmailTrust;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 // field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
 const ENTRY_ID = 0;

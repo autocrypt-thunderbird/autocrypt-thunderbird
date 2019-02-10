@@ -97,7 +97,6 @@ zip -9 --must-match\
     chrome/content/modules/filters.jsm \
     chrome/content/modules/filtersWrapper.jsm \
     chrome/content/modules/fixExchangeMsg.jsm \
-    chrome/content/modules/glodaMime.jsm \
     chrome/content/modules/glodaUtils.jsm \
     chrome/content/modules/gpg.jsm \
     chrome/content/modules/hash.jsm \

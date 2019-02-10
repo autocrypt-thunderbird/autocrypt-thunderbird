@@ -14,8 +14,7 @@ TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
 testing("persistentCrypto.jsm"); /*global EnigmailPersistentCrypto: false, Promise: false */
 component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-/*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
-component("enigmail/glodaMime.jsm");
+/*global MsgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
 component("enigmail/streams.jsm"); /*global EnigmailStreams: false */
 
 const inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
@@ -88,7 +87,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
   const dispatchedHeader = MailHelper.fetchFirstMessageHeaderIn(targetFolder);
   Assert.ok(dispatchedHeader !== null);
   do_test_pending();
-  msgHdrToMimeMessage(
+  MsgHdrToMimeMessage(
     dispatchedHeader,
     null,
     function(header, mime) {
@@ -120,7 +119,7 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
   Assert.ok(dispatchedHeader !== null);
 
   do_test_pending();
-  msgHdrToMimeMessage(
+  MsgHdrToMimeMessage(
     dispatchedHeader,
     null,
     function(header, mime) {

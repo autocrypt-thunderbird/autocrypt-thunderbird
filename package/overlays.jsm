@@ -22,18 +22,12 @@
 
 /* eslint no-invalid-this: 0 */
 
-/* global ConsoleAPI: false, Services: false */
-
 "use strict";
 
 var EXPORTED_SYMBOLS = ["Overlays"];
 
-
-
-
-
-ChromeUtils.import("resource://gre/modules/Console.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+var ConsoleAPI = ChromeUtils.import("resource://gre/modules/Console.jsm").ConsoleAPI;
+const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 

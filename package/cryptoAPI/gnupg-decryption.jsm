@@ -9,21 +9,18 @@
 
 var EXPORTED_SYMBOLS = ["GnuPGDecryption"];
 
-
-
-
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailDialog = Cu.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailPrefs = Cu.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
-const EnigmailErrorHandling = Cu.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
-const EnigmailKey = Cu.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
-const EnigmailKeyRing = Cu.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailErrorHandling = ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
+const EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;

@@ -11,17 +11,9 @@
 var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
-
-
-
-
-Components.utils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-const {
-  EnigmailLog
-} = Cu.import("chrome://enigmail/content/modules/log.jsm");
-const {
-  EnigmailLazy
-} = Cu.import("chrome://enigmail/content/modules/lazy.jsm");
+var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLazy = Cu.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 
 const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
 
@@ -47,8 +39,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     if (emailAddr) {
       if (emailAddr.search(/^<.{1,500}>$/) < 0) {
         searchUid = `<${emailAddr}>`;
-      }
-      else searchUid = emailAddr;
+      } else searchUid = emailAddr;
     }
 
     try {
@@ -102,8 +93,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       }
 
       return p.write();
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n" + ex.stack + "\n");
     }
     return null;

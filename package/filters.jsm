@@ -1,25 +1,18 @@
-/*global Components: false, EnigmailPersistentCrypto: false, EnigmailCore: false, EnigmailLog: false, EnigmailLocale: false, EnigmailLazy: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-
 "use strict";
 
 var EXPORTED_SYMBOLS = ["EnigmailFilters"];
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/persistentCrypto.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailPersistentCrypto = ChromeUtils.import("chrome://enigmail/content/modules/persistentCrypto.jsm").EnigmailPersistentCrypto;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
@@ -28,7 +21,6 @@ const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
-
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
 

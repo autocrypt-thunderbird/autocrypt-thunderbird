@@ -13,11 +13,11 @@
 
 var EXPORTED_SYMBOLS = ["GnuPG_importKeyFromFile", "GnuPG_extractSecretKey"];
 
-const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailLocale;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailLocale;
 
 
 async function GnuPG_importKeyFromFile(inputFile) {

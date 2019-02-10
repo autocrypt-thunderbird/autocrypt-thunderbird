@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailLocale: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +8,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTime"];
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 const DATE_2DIGIT = "2-digit";
 const DATE_4DIGIT = "numeric";

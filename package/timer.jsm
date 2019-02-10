@@ -12,9 +12,6 @@ const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
 const setTimeout = ChromeUtils.import("resource://gre/modules/Timer.jsm").setTimeout;
 
-
-
-
 var EnigmailTimer = {
   /**
    * wait a defined number of miliseconds, then call a callback function

@@ -1,21 +1,17 @@
-/*global Components: false, EnigmailConsole: false, dump: false, EnigmailFiles: false*/
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+/* global dump: false */
+
 "use strict";
 
 var EXPORTED_SYMBOLS = ["EnigmailLog"];
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
+const EnigmailConsole = ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm").EnigmailConsole;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";

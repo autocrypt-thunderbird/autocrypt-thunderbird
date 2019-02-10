@@ -14,24 +14,65 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailStdlib"];
 
+const {
+  composeInIframe,
+  getEditorForIframe,
+  quoteMsgHdr,
+  citeString,
+  htmlToPlainText,
+  simpleWrap,
+  plainTextToHtml,
+  replyAllParams,
+  determineComposeHtml,
+  composeMessageTo,
+  getSignatureContentsForAccount
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/compose.jsm");
 
+const {
+  gIdentities,
+  fillIdentities,
+  getIdentities,
+  getDefaultIdentity,
+  getIdentityForEmail,
+  hasConfiguredAccounts,
+  range,
+  MixIn,
+  combine,
+  entries,
+  dateAsInMessageList,
+  escapeHtml,
+  sanitize,
+  parseMimeLine,
+  encodeUrlParameters,
+  decodeUrlParameters,
+  systemCharset,
+  isOSX,
+  isWindows,
+  isAccel
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
 
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/compose.jsm");
-/* global composeInIframe: false, getEditorForIframe,
- quoteMsgHdr: false, citeString, htmlToPlainText: false, simpleWrap, plainTextToHtml: false, replyAllParams,
- determineComposeHtml: false, composeMessageTo, getSignatureContentsForAccount: false */
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
-/* global gIdentities: false, fillIdentities: false, getIdentities: false, getDefaultIdentity: false, getIdentityForEmail,
- range: false, MixIn: false, combine: false, entries, NS_FAILED: false, NS_SUCCEEDED, dateAsInMessageList: false, escapeHtml: false, sanitize: false, parseMimeLine,
- encodeUrlParameters: false, decodeUrlParameters, systemCharset, isOSX: false, isWindows: false, isAccel: false
- hasConfiguredAccounts: false */
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
-/* global msgHdrToMessageBody: false, msgHdrToNeckoURL: false, msgHdrGetTags: false, msgUriToMsgHdr,
- msgHdrGetUri: false, msgHdrFromNeckoUrl: false, msgHdrSetTags: false, msgHdrIsDraft: false, msgHdrIsSent: false, msgHdrIsArchive: false, msgHdrIsInbox: false,
- msgHdrIsRss: false, msgHdrIsNntp: false, msgHdrIsJunk: false, msgHdrsMarkAsRead: false, msgHdrsArchive: false, msgHdrsDelete,
- getMail3Pane: false, msgHdrGetHeaders: false, msgHdrsModifyRaw */
+const {
+  msgHdrToMessageBody,
+  msgHdrToNeckoURL,
+  msgHdrGetTags,
+  msgUriToMsgHdr,
+  msgHdrGetUri,
+  msgHdrFromNeckoUrl,
+  msgHdrSetTags,
+  msgHdrIsDraft,
+  msgHdrIsSent,
+  msgHdrIsArchive,
+  msgHdrIsInbox,
+  msgHdrIsRss,
+  msgHdrIsNntp,
+  msgHdrIsJunk,
+  msgHdrsMarkAsRead,
+  msgHdrsArchive,
+  msgHdrsDelete,
+  getMail3Pane,
+  msgHdrGetHeaders,
+  msgHdrsModifyRaw
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
 
 var EnigmailStdlib = {
   // compose.jsm
@@ -58,8 +99,6 @@ var EnigmailStdlib = {
   'MixIn': MixIn,
   'combine': combine,
   'entries': entries,
-  'NS_FAILED': NS_FAILED,
-  'NS_SUCCEEDED': NS_SUCCEEDED,
   'dateAsInMessageList': dateAsInMessageList,
   'escapeHtml': escapeHtml,
   'sanitize': sanitize,

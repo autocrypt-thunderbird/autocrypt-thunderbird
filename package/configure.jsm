@@ -4,21 +4,17 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/*global Components: false */
-
 "use strict";
 
 var EXPORTED_SYMBOLS = ["EnigmailConfigure"];
 
-/*global EnigmailLog: false, EnigmailPrefs: false, EnigmailTimer: false, EnigmailApp: false, EnigmailLocale: false, EnigmailDialog: false, EnigmailWindows: false */
-
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/app.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailDialog=ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;

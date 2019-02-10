@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailLocale: false, EnigmailLog: false, EnigmailWindows: false, EnigmailPrefs: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,14 +9,10 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailDialog"];
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 
 const BUTTON_POS_0 = 1;

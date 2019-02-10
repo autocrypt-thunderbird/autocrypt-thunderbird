@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailLog: false, EnigmailOS: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,9 +8,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-
-
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 
 
 var gEnigStringBundle = null;

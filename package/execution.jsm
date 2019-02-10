@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailData: false, EnigmailFiles: false, EnigmailLog: false, subprocess: false, EnigmailErrorHandling: false, EnigmailCore: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,16 +9,12 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailExecution"];
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
+const EnigmailErrorHandling = ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 

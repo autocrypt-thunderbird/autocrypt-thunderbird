@@ -1,5 +1,3 @@
-/*global Components: false, EnigmailCore: false, EnigmailData: false, EnigmailLog: false */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,14 +8,10 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
 
-
-
-
-
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 const EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
