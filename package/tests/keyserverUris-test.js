@@ -9,10 +9,9 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper:false, resetting, withEnvironment, gKeyListObj: true, withPreferences: false */
 
-testing("keyserverUris.jsm"); /*global isValidProtocol: false, validKeyserversExist: false, buildKeyserverUris: false */
-
-component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
+testing("keyserverUris.jsm");
+/*global isValidProtocol: false, validKeyserversExist: false, buildKeyserverUris: false, 
+EnigmailPrefs: false, EnigmailOS: false */
 
 function setupKeyserverPrefs(keyservers, autoOn) {
   EnigmailPrefs.setPref("keyserver", keyservers);

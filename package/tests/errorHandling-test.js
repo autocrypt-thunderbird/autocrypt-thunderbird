@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false */
-/*global decryptionFailed: false, newContext: false, detectForgedInsets: false */
+/*global decryptionFailed: false, newContext: false, detectForgedInsets: false, Ci: false */
 /*global component: false */
 /*jshint -W097 */
 /*
@@ -12,9 +12,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withTestGpgHome: false */
 
-testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, Ci: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
-component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
+testing("errorHandling.jsm"); /*global EnigmailErrorHandling: false, EnigmailConstants: false, EnigmailLocale: false */
 
 test(function decryptionFailedWillSetDecryptionFailedFlag() {
   var context = {};

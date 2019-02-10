@@ -12,7 +12,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false */
 
 testing("filters.jsm"); /* global JsmimeEmitter: false, EnigmailFilters: false, processIncomingMail: false */
-component("enigmail/files.jsm"); /* global EnigmailFiles: false */
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 
 // testing: JsmimeEmitter
 test(function mimeEmitterBasicTest() {
@@ -82,8 +82,7 @@ test(function processIncomingMailTest() {
         Assert.equal(rawMessageData, testString);
         let ct = msg.headers.contentType.type;
         Assert.equal(ct, "text/plain");
-      }
-      catch (ex) {
+      } catch (ex) {
         Assert.equal(ex.toString(), "");
       }
       do_test_finished();

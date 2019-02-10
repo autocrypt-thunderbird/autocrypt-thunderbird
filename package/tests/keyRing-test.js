@@ -15,13 +15,9 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withE
 
 let GnuPGKeyList = {};
 do_load_module("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm", GnuPGKeyList); /*global appendKeyItems: false */
-
-component("enigmail/trust.jsm"); /*global EnigmailTrust: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
-
 /*global createAndSortKeyList: false */
 
-testing("keyRing.jsm"); /*global EnigmailKeyRing: false */
+testing("keyRing.jsm"); /*global EnigmailKeyRing: false, EnigmailTrust: false, EnigmailLocale: false */
 
 test(withTestGpgHome(withEnigmail(function shouldImportFromFileAndGetKeyDetails() {
   const publicKey = do_get_file("resources/dev-strike.asc", false);

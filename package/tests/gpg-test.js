@@ -11,14 +11,15 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false, withTestGpgHome: false, osUtils: false */
+/*global MINIMUM_GPG_VERSION: false */
 
 testing("gpg.jsm"); /*global EnigmailGpg: false, getGpgFeature: false, lazyEnv: true, usesDirmngr: false, dirmngrConfiguredWithTor: false */
-component("enigmail/execution.jsm"); /*global EnigmailExecution: false, MINIMUM_GPG_VERSION: false */
-component("enigmail/subprocess.jsm"); /*global subprocess: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
-component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-component("enigmail/versioning.jsm"); /*global EnigmailVersioning: false */
+const EnigmailExecution = component("enigmail/execution.jsm").EnigmailExecution;
+const subprocess = component("enigmail/subprocess.jsm").subprocess;
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
+const EnigmailOS = component("enigmail/os.jsm").EnigmailOS;
+const EnigmailGpgAgent = component("enigmail/gpgAgent.jsm").EnigmailGpgAgent;
+const EnigmailVersioning = component("enigmail/versioning.jsm").EnigmailVersioning;
 
 function withStubFormatCmdLine(f) {
   return function() {

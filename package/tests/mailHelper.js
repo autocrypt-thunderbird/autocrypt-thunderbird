@@ -1,5 +1,4 @@
 /*global do_load_module: false, do_get_cwd: false, component: false, do_get_file: false, Components: false  */
-/*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,17 +7,16 @@
 
 "use strict";
 
-component("/modules/MailServices.jsm"); /*global MailServices: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
-component("/modules/iteratorUtils.jsm");
+var MailServices = component("/modules/MailServices.jsm").MailServices;
+var EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
+//component("/modules/iteratorUtils.jsm");
 
 const MailHelper = {
   init: function() {
     if (!MailHelper.initialized) {
       try {
         MailServices.accounts.createLocalMailAccount();
-      }
-      catch (ex) {
+      } catch (ex) {
         // This will fail if someone already called this.
       }
 
@@ -81,8 +79,7 @@ const MailHelper = {
     let enumerator = msgDb.EnumerateMessages();
     if (enumerator.hasMoreElements()) {
       return enumerator.getNext().QueryInterface(Components.interfaces.nsIMsgDBHdr);
-    }
-    else
+    } else
       return null;
   }
 };

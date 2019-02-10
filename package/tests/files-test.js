@@ -11,8 +11,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false */
 
-testing("files.jsm");
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
+testing("files.jsm"); /* global EnigmailOS: false */
 
 // testing: readFile
 test(function readFileReturnsContentOfExistingFile() {
@@ -58,8 +57,7 @@ test(function checkDirectory() {
   try {
     md.permissions = 0x1C0;
     Assert.equal(0, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));
-  }
-  catch (x) {
+  } catch (x) {
     // don't try if permissions cannot be modified
   }
 
@@ -81,8 +79,7 @@ test(function checkDirectory() {
       let envS = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
       let sysRoot = envS.get("SystemRoot");
       md.initWithPath(sysRoot);
-    }
-    else
+    } else
       md.initWithPath("/");
 
     Assert.equal(2, EnigmailFiles.ensureWritableDirectory(md, 0x1C0));

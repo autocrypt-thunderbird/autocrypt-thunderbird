@@ -12,12 +12,10 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("rules.jsm");
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+testing("rules.jsm"); /* global EnigmailFiles: false */
+const EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
-
 
 /*
  we create our own DOMParser because the Mozill DOM parser is not ready
@@ -52,8 +50,7 @@ DOMParser.prototype = {
 
     try {
       f.remove(false);
-    }
-    catch (x) {}
+    } catch (x) {}
 
     return response;
   }
@@ -175,8 +172,7 @@ var EnigmailRulesTests = {
     if (typeof(arg3) === 'undefined') {
       expAddr = addr;
       expVal = arg2;
-    }
-    else {
+    } else {
       expAddr = arg2;
       expVal = arg3;
     }

@@ -10,11 +10,9 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withPreferences: false, resetting: false, withEnvironment: false, withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
 
-testing("keyserver.jsm"); /*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false, accessGnuPG: false*/
-component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+testing("keyserver.jsm");
+/*global false parseKeyserverUrl: false, accessHkpInternal: false, accessKeyBase: false, accessGnuPG: false
+EnigmailPrefs: false, EnigmailKeyRing: false, EnigmailConstants: false, EnigmailLocale: false */
 
 function setupKeyserverPrefs(keyservers, autoOn) {
   EnigmailPrefs.setPref("keyserver", keyservers);
@@ -143,8 +141,7 @@ test(function testKeybaseCreateRequestUrl() {
   try {
     accessKeyBase.createRequestUrl(EnigmailConstants.UPLOAD_KEY, "abc");
     Assert.ok(false);
-  }
-  catch (ex) {
+  } catch (ex) {
     Assert.ok(true);
   }
 });
@@ -254,16 +251,14 @@ pub:CCCCCCCCCCCCCCCCCCCCCCCC0005AAAA00010001:1:4096:1510762768:1668442768:r
 uid:Revoked User <revoked-key@enigmail-test.net>:1510762768::
 uat::::
 uat::::`;
-          }
-          else {
+          } else {
             retObj.stderrData = "[GNUPG:] FAILURE search-keys 167772380\n";
           }
           break;
         case EnigmailConstants.UPLOAD_KEY:
           if (keyId == "ok") {
             retObj.stderrData = "[GNUPG:] EXPORTED ABCDEF0123456780000000000000000012345678\n";
-          }
-          else {
+          } else {
             retObj.stderrData = "[GNUPG:] ERROR keyserver_send 167804953\n[GNUPG:] FAILURE send-keys 167804953\n";
           }
 
@@ -282,16 +277,14 @@ uat::::`;
 
       res = await accessGnuPG.search("ok", null, null);
       Assert.equal(res.pubKeys.length, 3);
-    }
-    catch (ex) {
+    } catch (ex) {
       Assert.ok(false);
     }
 
     try {
       let res = await accessGnuPG.search("error", null, null);
       Assert.ok(false);
-    }
-    catch (ex) {
+    } catch (ex) {
       Assert.equal(ex.result, EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE);
       Assert.equal(ex.errorDetails, EnigmailLocale.getString("keyserver.error.unavailable"));
     }
@@ -306,8 +299,7 @@ uat::::`;
 
       res = await accessGnuPG.search("error", null, null);
       Assert.ok(false);
-    }
-    catch (ex) {
+    } catch (ex) {
       Assert.equal(ex.result, 5);
     }
 

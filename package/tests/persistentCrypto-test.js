@@ -13,9 +13,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestH
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
 testing("persistentCrypto.jsm"); /*global EnigmailPersistentCrypto: false, Promise: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-/*global MsgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */
-component("enigmail/streams.jsm"); /*global EnigmailStreams: false */
+var EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
+/*global MsgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false, EnigmailStreams: false */
 
 const inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 

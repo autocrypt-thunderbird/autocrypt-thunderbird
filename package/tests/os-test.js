@@ -13,7 +13,7 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestH
 
 testing("os.jsm"); /*global EnigmailOS: false, operatingSystem: true, isMac: false, isDosLike: false, isWin32: false */
 
-component("enigmail/execution.jsm"); /*global EnigmailExecution: false */
+var EnigmailExecution = component("enigmail/execution.jsm").EnigmailExecution;
 
 function withOS(os, f) {
   return function() {

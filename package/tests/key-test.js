@@ -13,9 +13,7 @@
 /*global EnigmailFiles: false */
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
 
-testing("key.jsm"); /*global EnigmailKey: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
-component("enigmail/openpgp.jsm"); /*global EnigmailOpenPGP: false */
+testing("key.jsm"); /*global EnigmailKey: false,  EnigmailFiles: false, EnigmailOpenPGP: false */
 //EnigmailOpenPGP.initialize(); // make sure OpenPGP is initialized and available
 
 test(function shouldGetKeyDetails() {

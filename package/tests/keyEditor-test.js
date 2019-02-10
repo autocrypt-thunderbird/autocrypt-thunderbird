@@ -11,9 +11,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false */
 
-testing("keyEditor.jsm"); /*global editKey: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/time.jsm"); /*global EnigmailTime: false */
+testing("keyEditor.jsm"); /*global editKey: false, EnigmailKeyRing: False */
+var EnigmailTime = component("enigmail/time.jsm").EnigmailTime;
 
 test(withTestGpgHome(withEnigmail(function shouldEditKey() {
   importKeys();

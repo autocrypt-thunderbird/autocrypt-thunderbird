@@ -11,7 +11,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
 testing("pEp.jsm"); /*global EnigmailpEp: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: fales */
+var EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
 
 
 test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
@@ -24,7 +24,9 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
 
   do_test_pending();
   //EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", "Test message", 1).
-  EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", {"longmsg":"Test message"}, 1).
+  EnigmailpEp.encryptMessage("strike.devtest@gmail.com", ["strike.devtest@gmail.com"], "Hello", {
+    "longmsg": "Test message"
+  }, 1).
   then(function _encryptedMessage(a) {
     let txt = a.result[0].longmsg;
     Assert.equal("-----BEGIN PGP MESSAGE-----", txt.substr(0, 27));
@@ -45,7 +47,9 @@ test(withTestGpgHome(withEnigmail(function shouldEncryptMessage() {
   then(function _f(a) {
     Assert.equal(0, a.result[0].status);
 
-    return EnigmailpEp.getIdentity({ address: "strike.devtest@gmail.com"});
+    return EnigmailpEp.getIdentity({
+      address: "strike.devtest@gmail.com"
+    });
   }).
   then(function _f(a) {
     Assert.equal("65537E212DC19025AD38EDB2781617319CE311C4", a.result[0].fpr);

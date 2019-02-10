@@ -24,13 +24,10 @@ var overwriteEnigmailMime = {
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false */
-component("enigmail/files.jsm"); /* global EnigmailFiles: false */
-component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
-component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
-component("enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
-
-ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false, EnigmailSingletons: false */
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
+const EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 
 
 test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {

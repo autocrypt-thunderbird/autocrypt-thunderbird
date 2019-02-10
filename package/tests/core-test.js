@@ -13,10 +13,8 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("core.jsm");
-component("enigmail/prefs.jsm");
-//component("enigmail/core.jsm");
-component("enigmail/log.jsm"); /*global EnigmailLog: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+const EnigmailLog = component("enigmail/log.jsm").EnigmailLog;
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 
 function newEnigmail(f) {
   var oldEnigmail = EnigmailCore.getEnigmailService();
@@ -24,8 +22,7 @@ function newEnigmail(f) {
     var enigmail = new Enigmail();
     EnigmailCore.setEnigmailService(enigmail);
     f(enigmail);
-  }
-  finally {
+  } finally {
     EnigmailCore.setEnigmailService(oldEnigmail);
   }
 }

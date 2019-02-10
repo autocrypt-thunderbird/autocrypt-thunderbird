@@ -11,11 +11,8 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /* global setupTestAccounts: false, withTestGpgHome: false, withEnigmail: false, component: false */
 
-testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/stdlib.jsm"); /* global EnigmailStdlib: false */
-component("enigmail/sqliteDb.jsm"); /* global EnigmailSqliteDb: false */
-ChromeUtils.import("resource://gre/modules/Sqlite.jsm"); /* global Sqlite: false */
+testing("autocrypt.jsm"); /*global EnigmailAutocrypt: false, EnigmailKeyRing: false, EnigmailStdlib: false, EnigmailSqliteDb: false */
+const Sqlite = ChromeUtils.import("resource://gre/modules/Sqlite.jsm").Sqlite;
 
 const pubkey1 =
   `mQENBFdGIzkBCADKys5q0rYiTr/FYdoupmNAJ0o20XWuFp/V58qsnQAMcAY2pCB/ydx9Y7
@@ -103,8 +100,7 @@ test(function prepareDb() {
     try {
       await connection.execute("drop table autocrypt_keydata;");
       connection.close();
-    }
-    catch (err) {
+    } catch (err) {
       connection.close();
     }
     await EnigmailSqliteDb.checkDatabaseStructure();

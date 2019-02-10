@@ -10,11 +10,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
-testing("encryption.jsm"); /*global EnigmailEncryption: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/armor.jsm"); /*global EnigmailArmor: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
-component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
+testing("encryption.jsm"); /*global EnigmailEncryption: false, EnigmailLocale: false, EnigmailKeyRing: false, EnigmailConstants: false */
+const EnigmailArmor = component("enigmail/armor.jsm").EnigmailArmor;
 
 test(withTestGpgHome(withEnigmail(function shouldSignMessage() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);

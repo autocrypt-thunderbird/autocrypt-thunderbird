@@ -12,12 +12,9 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, addMacPaths: false, withEnigmail: false, withTestGpgHome: false, Cu: false*/
 TestHelper.loadDirectly("tests/mailHelper.js"); /*global MailHelper: false */
 
-testing("autoSetup.jsm"); /*global EnigmailAutoSetup: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false */
-
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/autocrypt.jsm"); /*global EnigmailAutocrypt: false */
-component("/modules/MailServices.jsm"); /*global MailServices: false */
-component("enigmail/constants.jsm"); /*global EnigmailConstants: false */
+testing("autoSetup.jsm");
+/*global EnigmailAutoSetup: false, getMsgFolders: false, getStreamedMessage: false, getStreamedHeaders: false, checkHeaders: false, 
+ EnigmailAutocrypt: false, EnigmailConstants: false, MailServices: false, EnigmailKeyRing: false*/
 
 
 const AC_HEADER =

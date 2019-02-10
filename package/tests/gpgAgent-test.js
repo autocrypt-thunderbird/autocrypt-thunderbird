@@ -13,9 +13,8 @@ do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false,
   withTestGpgHome: false, osUtils: false, EnigmailFiles */
 
-testing("gpgAgent.jsm"); /*global EnigmailGpgAgent: false, EnigmailOS: false, getHomedirFromParam: false */
-component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
+testing("gpgAgent.jsm"); /*global EnigmailGpgAgent: false, EnigmailOS: false, getHomedirFromParam: false, EnigmailPrefs: false */
+const EnigmailGpg = component("enigmail/gpg.jsm").EnigmailGpg;
 
 // testing: determineGpgHomeDir
 //   environment: GNUPGHOME
@@ -58,8 +57,7 @@ test(function determineGpgHomeDirReturnsRegistryValueForWindowsIfExists() {
     resetting(EnigmailOS, 'getWinRegistryString', function(a, b, c) {
       if (a === "Software\\GNU\\GNUPG" && b === "HomeDir" && c === "foo bar") {
         return "\\foo\\bar\\gnupg";
-      }
-      else {
+      } else {
         return "\\somewhere\\else";
       }
     }, function() {

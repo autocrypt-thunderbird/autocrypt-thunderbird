@@ -38,7 +38,7 @@ var TestHelper = {
     }
 
     try {
-      ChromeUtils.import(modName);
+      return ChromeUtils.import(modName);
     } catch (ex) {
       dump("Error importing module: '" + modName + "'\n");
       dump(ex.message + "\n" + ex.stack);

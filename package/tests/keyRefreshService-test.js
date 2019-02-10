@@ -10,20 +10,16 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, withEnigmail: false, withTestGpgHome: false, withLogFiles: false, assertLogContains: false, assertLogDoesNotContain: false, withPreferences: false */
 
-testing("keyRefreshService.jsm"); /*global EnigmailKeyRefreshService: false, calculateMaxTimeForRefreshInMilliseconds, HOURS_PER_WEEK_ENIGMAIL_IS_ON_PREF, calculateWaitTimeInMilliseconds, startWith, ONE_HOUR_IN_MILLISEC, refreshWith, refreshKey: false, getRandomKeyId: false, setupNextRefresh: false */
-
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/rng.jsm"); /*global EnigmailRNG: false */
-component("enigmail/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
+testing("keyRefreshService.jsm");
+/*global EnigmailKeyRefreshService: false, calculateMaxTimeForRefreshInMilliseconds, HOURS_PER_WEEK_ENIGMAIL_IS_ON_PREF, calculateWaitTimeInMilliseconds, startWith, ONE_HOUR_IN_MILLISEC, refreshWith, refreshKey: false, getRandomKeyId: false, setupNextRefresh: false,
+EnigmailKeyRing: false, EnigmailPrefs: false, EnigmailRNG: false, EnigmailKeyserverURIs: false */
 
 function withKeys(f) {
   return function() {
     try {
       EnigmailKeyRing.clearCache();
       f();
-    }
-    finally {
+    } finally {
       EnigmailKeyRing.clearCache();
     }
   };

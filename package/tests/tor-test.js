@@ -8,13 +8,9 @@
 "use strict";
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, assertContains: false, withEnigmail: false, withTestGpgHome: false, withEnvironment: false, resetting: false */
 
-testing("tor.jsm"); /*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false*/
-
-component("enigmail/rng.jsm"); /*global EnigmailRNG*/
-component("enigmail/gpg.jsm"); /*global EnigmailGpg: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
-component("enigmail/versioning.jsm"); /*global EnigmailVersioning: false */
+testing("tor.jsm");
+/*global createRandomCredential, EnigmailTor, torProperties, meetsOSConstraints, MINIMUM_CURL_SOCKS5H_VERSION, MINIMUM_CURL_SOCKS5_PROXY_VERSION, createHelperArgs, gpgProxyArgs, findTorExecutableHelper: false
+EnigmailRNG: false, EnigmailGpg: false, EnigmailFiles: false, EnigmailOS: false, EnigmailVersioning: false */
 
 let self = this; // eslint-disable-line no-invalid-this
 
@@ -25,8 +21,7 @@ function withStandardGpg(f) {
     };
     try {
       f();
-    }
-    finally {}
+    } finally {}
   };
 }
 
@@ -294,8 +289,7 @@ test(function testUsingTorsocksWithEnvironmentVariables() {
       return {
         path: "/usr/bin/torsocks"
       };
-    }
-    else {
+    } else {
       return null;
     }
   }, function() {
@@ -319,8 +313,7 @@ test(function testUsingTorsocksWithCommandArguments() {
       return {
         path: "/usr/bin/torsocks"
       };
-    }
-    else {
+    } else {
       return null;
     }
   }, function() {

@@ -12,14 +12,12 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 /*global TestHelper: false, withEnvironment: false, withEnigmail: false, component: false, withTestGpgHome: false, osUtils: false */
 
-testing("webKey.jsm"); /*global EnigmailWks: false, GPG_WKS_CLIENT: false */
-component("enigmail/execution.jsm"); /*global EnigmailExecution: false */
-component("enigmail/subprocess.jsm"); /*global subprocess: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
-component("enigmail/os.jsm"); /*global EnigmailOS: false */
-component("enigmail/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-component("enigmail/send.jsm"); /*global EnigmailSend: false */
-component("enigmail/log.jsm"); /*global EnigmailLog: false */
+testing("webKey.jsm");
+/*global EnigmailWks: false, GPG_WKS_CLIENT: false,
+ EnigmailExecution: false, EnigmailFiles: false, EnigmailGpgAgent: false, EnigmailSend: false,
+ EnigmailLog: false */
+const subprocess = component("enigmail/subprocess.jsm").subprocess;
+const EnigmailOS = component("enigmail/os.jsm").EnigmailOS;
 
 function getWksPath() {
   var wksClient = GPG_WKS_CLIENT;
@@ -38,8 +36,7 @@ test(function getWksPathInBinDir() {
 
         if (EnigmailOS.isDosLike) {
           listener.stdout("bindir:" + do_get_cwd().path + "\r\nlibexecdir:C:\\GnuPG\\lib\\exec\\dir\\test\r\n");
-        }
-        else {
+        } else {
           listener.stdout("bindir:" + do_get_cwd().path + "\nlibexecdir:/lib/exec/dir/test\n");
         }
         listener.done(0);
@@ -71,8 +68,7 @@ test(function getWksPathInLibexecDir() {
 
         if (EnigmailOS.isDosLike) {
           listener.stdout("libexecdir:" + do_get_cwd().path + "\r\nbindir:C:\\GnuPG\\bin\\dir\\test\r\n");
-        }
-        else {
+        } else {
           listener.stdout("libexecdir:" + do_get_cwd().path + "\nbindir:/bin/dir/test\n");
         }
         listener.done(0);

@@ -11,10 +11,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
-testing("keyUsability.jsm"); /*global EnigmailKeyUsability: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
-component("enigmail/prefs.jsm"); /*global EnigmailPrefs: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
+testing("keyUsability.jsm"); /*global EnigmailKeyUsability: false, EnigmailLocale: false, EnigmailPrefs: false */
+const EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
 
 /*global Math: false, Date: false, uniqueKeyList: false, DAY: false */
 

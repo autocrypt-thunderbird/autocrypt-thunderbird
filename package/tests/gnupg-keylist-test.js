@@ -13,13 +13,9 @@
 /*global EnigmailFiles: false */
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
-component("enigmail/trust.jsm"); /*global EnigmailTrust: false */
-component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
-
 /*createAndSortKeyList: false, Number: false */
 
-testing("cryptoAPI/gnupg-keylist.jsm");
-/*global appendKeyItems: false */
+testing("cryptoAPI/gnupg-keylist.jsm"); /*global appendKeyItems: false,  EnigmailTrust: false, EnigmailLocale: false */
 
 test(function shouldCreateKeyListObject() {
   // from: gpg2 --charset utf-8 --display-charset utf-8 --batch --no-tty --status-fd 2 --with-fingerprint --fixed-list-mode --with-colons --list-keys

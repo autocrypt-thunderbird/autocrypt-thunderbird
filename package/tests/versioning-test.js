@@ -9,8 +9,9 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global TestHelper: false, withEnigmail: false, withTestGpgHome: false */
 
-testing("versioning.jsm"); /*global EnigmailVersioning: false, greaterThanOrEqual: false, createVersionRequest:false, versionFoundMeetsMinimumVersionRequired:false, greaterThan: false, lessThan: false */
-component("enigmail/execution.jsm"); /*global EnigmailExecution:false */
+testing("versioning.jsm");
+/*global EnigmailVersioning: false, greaterThanOrEqual: false, createVersionRequest:false, versionFoundMeetsMinimumVersionRequired:false, greaterThan: false, lessThan: false,
+EnigmailExecution: false */
 
 test(function checkCurlVersionIsOver() {
   const curl749 = "curl 7.49.1 (x86_64-pc-linux-gnu) libcurl/7.49.1 OpenSSL/1.0.2h zlib/1.2.8 libidn/1.32 libssh2/1.7.0\n" +

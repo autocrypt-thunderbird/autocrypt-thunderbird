@@ -11,7 +11,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false */
 
 testing("verify.jsm"); /*global EnigmailVerifyAttachment: false */
-component("enigmail/keyRing.jsm"); /*global EnigmailKeyRing: false */
+const EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
 
 /* TODO: write higher level test based on actual message */
 

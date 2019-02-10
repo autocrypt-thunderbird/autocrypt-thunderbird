@@ -10,8 +10,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("log.jsm"); /*global EnigmailLog: false */
-component("enigmail/files.jsm"); /*global EnigmailFiles: false */
+testing("log.jsm"); /*global EnigmailLog: false, EnigmailFiles: false */
 
 test(function shouldCreateLogFile() {
   EnigmailLog.setLogDirectory(do_get_cwd().path);
@@ -22,8 +21,7 @@ test(function shouldCreateLogFile() {
   EnigmailFiles.initPath(localFile, filePath);
   try {
     Assert.equal(localFile.exists(), true);
-  }
-  finally {
+  } finally {
     EnigmailLog.onShutdown();
     if (localFile.exists()) {
       localFile.remove(false);

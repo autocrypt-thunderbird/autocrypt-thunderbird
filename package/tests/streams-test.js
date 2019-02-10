@@ -1,5 +1,5 @@
 /*global do_load_module: false, do_get_file: false, do_get_cwd: false, testing: false, test: false, Assert: false, resetting: false, JSUnit: false, do_test_pending: false, do_test_finished: false, component: false */
-/*global Components: false, EnigmailCore: false, Cc: false, Ci: false, EnigmailFiles: false, EnigmailLog: false, EnigmailPrefs: false */
+/*global Components: false, EnigmailCore: false, Cc: false, Ci: false, */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,8 +11,8 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("streams.jsm"); /*global EnigmailStreams: false */
-component("enigmail/files.jsm");
+testing("streams.jsm"); /*global EnigmailStreams: false,  EnigmailLog: false, EnigmailPrefs: false */
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 
 let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
 
