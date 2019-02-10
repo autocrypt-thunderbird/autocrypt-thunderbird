@@ -24,82 +24,62 @@ const {
   results: Cr
 } = Components;
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI, defineLazyServiceGetter
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
-ChromeUtils.import("resource:///modules/MailServices.jsm");
+//ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+const {
+  MsgHdrToMimeMessage,
+  MimeMessage, MimeContainer,
+  MimeBody, MimeUnknown,
+  MimeMessageAttachment
+} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+const {
+  gIdentities,
+  fillIdentities,
+  getIdentities,
+  getDefaultIdentity,
+  getIdentityForEmail,
+  hasConfiguredAccounts,
+  range,
+  MixIn,
+  combine,
+  entries,
+  dateAsInMessageList,
+  escapeHtml,
+  sanitize,
+  parseMimeLine,
+  encodeUrlParameters,
+  decodeUrlParameters,
+  systemCharset,
+  isOSX,
+  isWindows,
+  isAccel
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
 
-/**
- * Use the mailnews component to stream a message, and process it in a way
- *  that's suitable for quoting (strip signature, remove images, stuff like
- *  that).
- * @param {nsIMsgDBHdr} aMsgHdr The message header that you want to quote
- * @param {Function} k The continuation. This function will be passed quoted
- *  text suitable for insertion in an HTML editor. You can pass this to
- *  htmlToPlainText if you're running a plaintext editor.
- * @return
- */
-function quoteMsgHdr(aMsgHdr, k) {
-  let chunks = [];
-  // Everyone knows that nsICharsetConverterManager and nsIUnicodeDecoder
-  //  are not to be used from scriptable code, right? And the error you'll
-  //  get if you try to do so is really meaningful, and that you'll have no
-  //  trouble figuring out where the error comes from...
-  let unicodeConverter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
-    .createInstance(Ci.nsIScriptableUnicodeConverter);
-  unicodeConverter.charset = "UTF-8";
-  let listener = {
-    /**@ignore*/
-    setMimeHeaders: function() {},
+const {
+  msgHdrToMessageBody,
+  msgHdrToNeckoURL,
+  msgHdrGetTags,
+  msgUriToMsgHdr,
+  msgHdrGetUri,
+  msgHdrFromNeckoUrl,
+  msgHdrSetTags,
+  msgHdrIsDraft,
+  msgHdrIsSent,
+  msgHdrIsArchive,
+  msgHdrIsInbox,
+  msgHdrIsRss,
+  msgHdrIsNntp,
+  msgHdrIsJunk,
+  msgHdrsMarkAsRead,
+  msgHdrsArchive,
+  msgHdrsDelete,
+  getMail3Pane,
+  msgHdrGetHeaders,
+  msgHdrsModifyRaw
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 
-    /**@ignore*/
-    onStartRequest: function( /* nsIRequest */ aRequest, /* nsISupports */ aContext) {},
-
-    /**@ignore*/
-    onStopRequest: function( /* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
-      let data = chunks.join("");
-      k(data);
-    },
-
-    /**@ignore*/
-    onDataAvailable: function( /* nsIRequest */ aRequest, /* nsISupports */ aContext,
-      /* nsIInputStream */
-      aStream, /* int */ aOffset, /* int */ aCount) {
-      // Fortunately, we have in Gecko 2.0 a nice wrapper
-      let data = NetUtil.readInputStreamToString(aStream, aCount);
-      // Now each character of the string is actually to be understood as a byte
-      //  of a UTF-8 string.
-      // So charCodeAt is what we want here...
-      let array = [];
-      for (let i = 0; i < data.length; ++i)
-        array[i] = data.charCodeAt(i);
-      // Yay, good to go!
-      chunks.push(unicodeConverter.convertFromByteArray(array, array.length));
-    },
-
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
-      Ci.nsIMsgQuotingOutputStreamListener, Ci.nsIRequestObserver
-    ])
-  };
-  // Here's what we want to stream...
-  let msgUri = msgHdrGetUri(aMsgHdr);
-  /**
-   * Quote a particular message specified by its URI.
-   *
-   * @param charset optional parameter - if set, force the message to be
-   *                quoted using this particular charset
-   */
-  //   void quoteMessage(in string msgURI, in boolean quoteHeaders,
-  //                     in nsIMsgQuotingOutputStreamListener streamListener,
-  //                     in string charset, in boolean headersOnly);
-  let quoter = Cc["@mozilla.org/messengercompose/quoting;1"]
-    .createInstance(Ci.nsIMsgQuote);
-  quoter.quoteMessage(msgUri, false, listener, "", false, aMsgHdr);
-}
 
 function getEditorForIframe(aIframe) {
   let w = aIframe.contentWindow;

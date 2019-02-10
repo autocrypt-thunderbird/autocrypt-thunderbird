@@ -41,15 +41,43 @@ const nsMsgFolderFlags_Inbox = 0x00001000;
 
 const PR_WRONLY = 0x02;
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for defineLazyServiceGetter
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
-ChromeUtils.import("resource:///modules/gloda/utils.js");
-ChromeUtils.import("resource:///modules/iteratorUtils.jsm"); // for toXPCOMArray
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/MailServices.jsm");
+const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
+const {
+  MsgHdrToMimeMessage,
+  MimeMessage, MimeContainer,
+  MimeBody, MimeUnknown,
+  MimeMessageAttachment
+} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+const GlodaUtils = ChromeUtils.import("resource:///modules/gloda/utils.js").GlodaUtils;
+const {
+  fixIterator, toXPCOMArray, toArray
+} =ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
+const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
+const {
+  gIdentities,
+  fillIdentities,
+  getIdentities,
+  getDefaultIdentity,
+  getIdentityForEmail,
+  hasConfiguredAccounts,
+  range,
+  MixIn,
+  combine,
+  entries,
+  dateAsInMessageList,
+  escapeHtml,
+  sanitize,
+  parseMimeLine,
+  encodeUrlParameters,
+  decodeUrlParameters,
+  systemCharset,
+  isOSX,
+  isWindows,
+  isAccel
+} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 
 // Adding a messenger lazy getter to the MailServices even though it's not a service
 XPCOMUtils.defineLazyGetter(MailServices, "messenger", function() {

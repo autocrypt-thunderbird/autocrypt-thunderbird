@@ -32,15 +32,15 @@ const {
   interfaces: Ci,
   utils: Cu
 } = Components;
-ChromeUtils.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-ChromeUtils.import("resource:///modules/MailServices.jsm");
-// That one doesn't belong to MailServices.
+const fixIterator = ChromeUtils.import("resource:///modules/iteratorUtils.jsm").fixIterator;
+const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
+
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",
   "@mozilla.org/intl/scriptabledateformat;1");
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 
 let isOSX = ("nsILocalFileMac" in Ci);
 let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);

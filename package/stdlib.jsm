@@ -17,7 +17,6 @@ var EXPORTED_SYMBOLS = ["EnigmailStdlib"];
 const {
   composeInIframe,
   getEditorForIframe,
-  quoteMsgHdr,
   citeString,
   htmlToPlainText,
   simpleWrap,
@@ -78,7 +77,6 @@ var EnigmailStdlib = {
   // compose.jsm
   'composeInIframe': composeInIframe,
   'getEditorForIframe': getEditorForIframe,
-  'quoteMsgHdr': quoteMsgHdr,
   'citeString': citeString,
   'htmlToPlainText': htmlToPlainText,
   'simpleWrap': simpleWrap,
