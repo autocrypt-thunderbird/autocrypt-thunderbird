@@ -128,11 +128,11 @@
 <!ENTITY enigmail.editRules.label        "Chỉnh sửa quy tắc cho từng người nhận">
 
 <!ENTITY enigmail.decryptToFolder.label     "">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "y">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "">
-<!ENTITY enigmail.recent.accesskey          "">
+<!ENTITY enigmail.recent.accesskey          "C">
 
 <!ENTITY enigmail.prefs.label            "Tuỳ chỉnh">
 
@@ -164,7 +164,7 @@
 
 <!ENTITY enigmail.prefs.accesskey           "P">
 <!ENTITY enigmail.viewconsole.accesskey     "c">
-<!ENTITY enigmail.viewlog.accesskey         "">
+<!ENTITY enigmail.viewlog.accesskey         "g">
 
 <!ENTITY enigmail.help.accesskey            "H">
 <!ENTITY enigmail.about.accesskey           "b">
@@ -176,13 +176,13 @@
 <!ENTITY enigmail.encryptedsend.label         "Mã hoá tin nhắn">
 
 <!ENTITY enigmail.pepEnableProtection.label         "">
-<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "C">
 
 <!ENTITY enigmail.pgpAccountSettings.label     "Tuỳ chọn ký tên/mã hoá...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Tuỳ chọn gửi...">
 <!ENTITY enigmail.defaultKeySelOpts.label      "Tuỳ chọn lựa chọn khoá...">
-<!ENTITY enigmail.usePgpMime.label             "">
-<!ENTITY enigmail.useInline.label              "">
+<!ENTITY enigmail.usePgpMime.label             "Giao thức: PGP/MIME">
+<!ENTITY enigmail.useInline.label              "Giao thức: Inline PGP">
 <!ENTITY enigmail.useSmime.label               "">
 
 <!ENTITY enigmail.tempTrustAllKeys.label       "Tin tưởng khoá của toàn bộ người nhận">
@@ -201,9 +201,9 @@
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "S">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey  "K">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
-<!ENTITY enigmail.usePgpMime.accesskey         "">
-<!ENTITY enigmail.useInline.accesskey          "">
-<!ENTITY enigmail.useSmime.accesskey           "">
+<!ENTITY enigmail.usePgpMime.accesskey         "T">
+<!ENTITY enigmail.useInline.accesskey          "N">
+<!ENTITY enigmail.useSmime.accesskey           "S">
 
 <!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Tuỳ chọn ký tên/mã hoá...">
 <!ENTITY enigmail.amPrefDesc.label                  "Hỗ trợ cho việc mã hoá và ký tên tin nhắn OpenPGP được cung cấp bởi Enigmail. Bạn cần cài đặt GnuPG (gpg) để dùng tính năng này.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Bật hỗ trợ OpenPGP (Enigmail) cho danh tính này">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Dùng địa chỉ email của danh tính này để nhận diện khoá OpenPGP">
@@ -357,11 +357,11 @@
 <!ENTITY enigmail.encDlgPgpMime.label               "Dùng PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "P">
 <!ENTITY enigmail.encDlgInlinePgp.label             "">
-<!ENTITY enigmail.encDlgInlinePgp.accesskey         "">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "N">
 <!ENTITY enigmail.encDlgSMime.label                 "">
-<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "Q">
 <!ENTITY enigmail.encDlgReset.label                 "">
-<!ENTITY enigmail.encDlgReset.accesskey             "">
+<!ENTITY enigmail.encDlgReset.accesskey             "C">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Gửi đầu đề 'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "Gửi ID khoá OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "Gửi URL để lấy khoá:">
@@ -556,16 +556,16 @@
 <!ENTITY enigmail.keyMan.importFromServer.accesskey  "T">
 <!ENTITY enigmail.keyMan.uploadToServer.accesskey    "T">
 <!ENTITY enigmail.keyMan.reload.accesskey            "N">
-<!ENTITY enigmail.keyMan.addPhoto.accesskey          "">
+<!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "Q">
-<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "C">
 <!ENTITY enigmail.keyMan.changePwd.accesskey         "C">
-<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "">
-<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "">
+<!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">
+<!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "T">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "">
-<!ENTITY enigmail.keyMan.showPhoto.accesskey         "">
+<!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "N">
-<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "T">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "C">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.showAllKeys.accesskey       "H">
@@ -575,15 +575,15 @@
 <!ENTITY enigmail.keyMan.selectAll.accesskey         "t">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "G">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
-<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "T">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
-<!ENTITY enigmail.keyMan.keyDetails.key              "">
-<!ENTITY enigmail.keyMan.refreshKey.key              "">
+<!ENTITY enigmail.keyMan.keyDetails.key              "N">
+<!ENTITY enigmail.keyMan.refreshKey.key              "C">
 
-<!ENTITY enigmail.keySearch.selectAll.key            "">
+<!ENTITY enigmail.keySearch.selectAll.key            "A">
 
 <!ENTITY enigmail.manageUidDlg.title                 "Thay đổi ID Nguời dùng Chính ">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label     "Khóa để thay đổi:">
@@ -609,10 +609,10 @@
 <!ENTITY enigmail.keyDetails.selAction.label         "Chọn hành động...">
 <!ENTITY enigmail.keyDetails.selAction.accesskey     "C">
 <!ENTITY enigmail.keyDetails.change.label            "">
-<!ENTITY enigmail.keyDetails.signKey.label           "">
+<!ENTITY enigmail.keyDetails.signKey.label           "Chứng nhận">
 <!ENTITY enigmail.keyDetails.trustStatus.label       "">
-<!ENTITY enigmail.keyDetails.keyValidity.label       "">
-<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+<!ENTITY enigmail.keyDetails.keyValidity.label       "Hiệu lực">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "Cũng được biết đến như là">
 
 <!ENTITY enigmail.cardDetails.title                  "Chi tiết OpenGPG SmartCard">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "">
@@ -785,7 +785,7 @@ trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bấ
 <!ENTITY enigmail.msgViewColumn.tooltip              "">
 <!ENTITY enigmail.addToRule.title                    "">
 <!ENTITY enigmail.addToRule.useRuleButton.label      "">
-<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label      "">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "">
 
@@ -816,7 +816,7 @@ trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bấ
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "">
-<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "H">
 <!ENTITY enigmail.pEp.revokeTrust.label               "">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
 
@@ -826,7 +826,7 @@ trên thư điện tử cho tất cả các tài khoản hoặc danh tính, bấ
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Vân tay">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

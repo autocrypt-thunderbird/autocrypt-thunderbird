@@ -77,10 +77,10 @@
 <!ENTITY enigmail.pref.acSetupMessage.button "Inizia configurazione Autocrypt">
 
 <!ENTITY enigmail.pref.backupRestore.overallDesc "Enigmail supporta due metodi per trasferire le tue chiavi e le tue impostazioni su un altro dispositivo.<html:br/><html:br/>
- 'Autocrypt Key Transfer' richiede che il client email dell'altro dispositivo abbia il supporto ad Autocrypt.
-  Sebbene questa è la soluzione più semplice, al momento solo poche app supportano questo standard.<html:br/><html:br/>
- L'altro modo è di eseguire un 'Backup &amp; restore' delle tue impostazioni
-  Verrà creato un file ZIP con tutte le informazioni e le chiavi che dovrà essere copiato sul nuovo dispositivo.
+ 'Trasferimento chiave di Autocrypt' richiede che il client email dell'altro dispositivo abbia il supporto per Autocrypt.
+  Sebbene questa è la soluzione più semplice, al momento solo poche applicazioni supportano questo standard.<html:br/><html:br/>
+ L'altro modo è di eseguire un 'Backup e ripristino' delle tue impostazioni.
+  Sarà creato un file ZIP con tutte le informazioni e le chiavi che dovrà essere copiato sul nuovo dispositivo.
  Enigmail può importare direttamente queste impostazioni; con gli altri client email, il file ZIP dovrà essere scompattato e gestito manualmente.">
 
 <!ENTITY enigmail.backupRestore.desc       "Esporta (backup) e ripristina le tue impostazioni di Enigmail incluse le tue chiavi OpenPGP.">
@@ -880,7 +880,7 @@ e avvia la procedura guidata dal menu di Enigmail.">
 <!ENTITY enigmail.acSetupPasswd.dlgTitle             "Codice di configurazione Autocrypt">
 <!ENTITY enigmail.acSetupPasswd.password             "Codice di configurazione:">
 
-<!ENTITY enigmail.acKeyTransfer.window.title         "Trasferimento chiave con Autocrypt">
+<!ENTITY enigmail.acKeyTransfer.window.title         "Trasferimento chiave di Autocrypt">
 <!ENTITY enigmail.acKeyTransfer.welcome.title        "Inizia trasferimento chiave">
 <!ENTITY enigmail.acKeyTransfer.welcome.desc         "">
 

@@ -679,7 +679,16 @@ var EnigmailAutocrypt = {
     if (!o.keyValid) return false;
 
     return true;
+  },
+
+  /**
+   * 
+   */
+  deleteUser: async function(email) {
+    let conn = await EnigmailSqliteDb.openDatabase();
+    let rows = await findUserRecord(conn, [email], "1,1g");
   }
+
 };
 
 /**
@@ -689,7 +698,7 @@ var EnigmailAutocrypt = {
  * @param emails      Array of String - Email addresses to search
  * @param type:       String - types to search (in lowercase), separated by comma
  *
- * @return Promise
+ * @return {Promise<Array of Object>}
  */
 async function findUserRecord(connection, emails, type) {
   EnigmailLog.DEBUG("autocrypt.jsm: findUserRecord\n");
@@ -867,6 +876,7 @@ async function updateUser(connection, paramsArr, resultRows, autoCryptEnabled) {
 
   return;
 }
+
 
 /**
  * Determine if a key in the keyring should be replaced by a new (or updated) key

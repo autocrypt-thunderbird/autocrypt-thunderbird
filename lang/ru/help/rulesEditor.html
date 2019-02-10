@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Справка по Enigmail: Редактор правил</title>
+  <title>Enigmail Help: Rules Editor</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <style type="text/css" xml:space="preserve">
   /*<![CDATA[*/
@@ -13,86 +13,51 @@
 </head>
 
 <body>
-<h1>Справка по Enigmail</h1>
+  <h1>Enigmail Help</h1>
 
-<h3>Пользование редактором правил Enigmail</h3>
+  <h3>Using the Enigmail Rules Editor</h3>
 
-<p>В редакторе правил можно указывать исходные значения настроек
-шифрования, подписи и PGP/MIME для каждого адресата, а также
-определять ключи, которые будут использоваться. Каждое правило состоит
-из 5 полей и записывается в одну строку:</p>
-
-<dl>
-
-<dt>Адрес электронной почты</dt>
-
-<dd>Адреса, с которыми сопоставляются поля <em>Кому:</em>,
-<em>Копия:</em> и <em>Скрытая копия:</em>. Сопоставление проводится по
-<i>подстрокам</i> (подробности описаны в окне редактора правил).</dd>
-
-<dt>Ключи OpenPGP</dt>
-
-<dd>Список идентификаторов ключей, применяемых для адресата.</dd>
-
-<dt>Подпись</dt>
-
-<dd>Подписывать или не подписывать. Это поле наследует или
-переопределяет то, что указано в окне создания сообщения. Возможные
-значения:
+  <p>In the Rules Editor, you can specify defaults per recipient for enabling encryption, signing and PGP/MIME, and to define what OpenPGP key(s) to use. Each rule consists of 5 fields and is represented on a single line:</p>
 
   <dl>
+    <dt>Email</dt>
 
-  <dt>Никогда</dt>
+    <dd>The e-mail(s) from the To:, Cc: and Bcc: fields to match. The matching works on <span style="font-style: italic;">substrings</span> (Further details can be found in the Edit Rule dialog)</dd>
 
-  <dd>Не подписывать, даже если задано в окне создания сообщения
-  (отменяет другие значения)</dd>
+    <dt>OpenPGP Key(s)</dt>
 
-  <dt>Возможно</dt>
+    <dd>a list of OpenPGP Key ID's to use for the recipient</dd>
 
-  <dd>Делать, как указано в окне создания сообщения.</dd>
+    <dt>Sign</dt>
 
-  <dt>Всегда</dt>
+    <dd>
+      enable or disable message signing. This either uses or overrides what you have specified in the message composition window. The values are:
 
-  <dd>Подписывать, даже если это <em>не</em> указано в окне создания
-  сообщения</dd>
+      <ul>
+        <li><em>Never</em>: disable signing, even if it was enabled in the message composition window (overrules the other values)</li>
 
+        <li><em>Possible</em>: leave signing as specified in the message composition window</li>
+
+        <li><em>Always</em>: enable signing, even if it was <span style="font-style: italic;">not</span> enabled in the message composition window</li>
+      </ul>
+
+      <p>These signing settings are applied for all rules that match. If one of the rules disables signing, the message will not be signed, regardless of other rules that specify <em>Always</em>.</p>
+    </dd>
+
+    <dt>Encrypt</dt>
+
+    <dd>enable or disable message encryption. The allowed settings and their meaning are the same as for message signing.</dd>
+
+    <dt>PGP/MIME</dt>
+
+    <dd>enable or disable the use of the PGP/MIME (RFC 3156) message encoding. If PGP/MIME is disabled, the messages are encoded using "inline PGP". The allowed values and their meaning a re the same as for message signing.</dd>
   </dl>
 
-<p>Эти настройки применяются для всех подошедших правил. Если одно из
-правил отменяет подпись, сообщение не будет подписываться, даже если в
-других правилах будет указано <em>Всегда</em>.</p> 
+  <p>The rules are processed in the order displayed in the list. Whenever a rule matches a recipient and contains a OpenPGP Key ID, in addition to using the specified Key ID, the recipient is not considered anymore when processing further rules.</p>
 
-</dd>
+  <p><em>Note:</em> The rule editor is not yet complete. It is possible to write some more advanced rules by directly editing the rules file (these rules should then not be edited anymore in the rule editor). <a href="https://www.enigmail.net/documentation/pgprules_file.php" target="_blank">Further information</a> for directly editing the file is available on the Enigmail Homepage</p>
+  <hr />
 
-<dt>Шифрование</dt>
-
-<dd>Шифровать или не шифровать сообщение. Набор значений такой же, как
-для подписи.</dd> 
-
-<dt>PGP/MIME</dt>
-
-<dd>Включить или выключить кодирование сообщений в PGP/MIME (RFC
-3156). Если выключено, сообщения кодируются как «PGP в тексте». Набор
-значений такой же, как для подписи.</dd>
-
-</dl>
-
-<p>Правила обрабатываются в порядке, приведенном в списке. Когда
-правило соответствует адресату и содержит идентификатор ключа, то
-кроме использования данного ключа адресат больше не участвует в
-дальнейшей обработке правил.</p>
-
-<p><em>Замечание.</em> Редактор правил не полон. Более сложные правила
-можно писать непосредственно в файле правил (в этом случае правила не
-следует больше редактировать в редакторе правил). <a
-href="https://www.enigmail.net/documentation/pgprules_file.php"
-target="_blank">Подробнее о файле правил</a> можно прочесть на сайте
-Enigmail.</p>
-
-<hr />
-
-<p>Другую помощь можно получить на <a
-href="https://www.enigmail.net/support/">странице помощи сайта Enigmail</a>.
-</p>
+  <p>Further help is available on the <a href="https://www.enigmail.net/support/" target="_blank">Enigmail Help web page</a></p>
 </body>
 </html>

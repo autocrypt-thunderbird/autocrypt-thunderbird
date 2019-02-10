@@ -86,6 +86,8 @@ class='enigmailLink'>Общественной лицензии Mozilla 2.0</html
 автошифр</enigmailLink>)">
 <!ENTITY enigmail.pref.acSetupMessage.button "Начать настройку автошифра">
 
+<!ENTITY enigmail.pref.backupRestore.overallDesc "">
+
 <!ENTITY enigmail.backupRestore.desc       "Экспорт (резервное копирование)
 и восстановление настроек Enigmail, в том числе ключей.">
 
@@ -107,17 +109,17 @@ class='enigmailLink'>Общественной лицензии Mozilla 2.0</html
 <!ENTITY enigmail.keyservers.label        "Укажите серверы ключей">
 <!ENTITY enigmail.keyservers.sample2      "Пример: pool.sks-keyservers.net, pgp.mit.edu">
 
-<!ENTITY enigmail.searchForKey.example    "Пример: 'Имя Фамилия &lt;пользователь@example.com&gt;'">
+<!ENTITY enigmail.searchForKey.example    "Пример: 'Имя Фамилия <пользователь@example.com>'">
 <!ENTITY enigmail.searchForKey.desc1	    "'Имя Фамилия' выведет все ключи, содержащие строки 'Имя' ИЛИ 'Фамилия'">
 <!ENTITY enigmail.searchForKey.desc2      "'Имя+Фамилия' выведет все ключи, содержащие строки 'Имя' И 'Фамилия'">
 <!ENTITY enigmail.searchForKey.desc3      "'example.com' выведет все ключи, содержащие 'example.com', например, 'example@example.com'">
 <!ENTITY enigmail.searchForKey.label      "Искать ключ">
 
 <!ENTITY enigmail.doubleDashSeparator.label "Использовать '--' в качестве разделителя подписи">
-<!ENTITY enigmail.noHushMailSupport.label   "Использовать '&lt;' и '&gt;' для указания адресов электронной почты">
+<!ENTITY enigmail.noHushMailSupport.label   "Использовать '<' и '>' для указания адресов электронной почты">
 
 <!ENTITY enigmail.doubleDashSeparator.tooltip  "Строка '--' будет обозначать начало блока с подписью">
-<!ENTITY enigmail.noHushMailSupport.tooltip    "'&lt;' и '&gt;' будут указывать адреса электронной почты для GnuPG. Отключите, если у адресатов есть старые ключи в формате Hushmail.">
+<!ENTITY enigmail.noHushMailSupport.tooltip    "'<' и '>' будут указывать адреса электронной почты для GnuPG. Отключите, если у адресатов есть старые ключи в формате Hushmail.">
 <!ENTITY enigmail.mime_parts_on_demand.tooltip "Отключите эту настройку, если получаете сообщения в формате PGP/MIME в каталогах IMAP">
 <!ENTITY enigmail.disableSMIMEui.tooltip       "Удалить кнопку S/MIME из панели инструментов окна составления сообщения">
 
@@ -219,7 +221,6 @@ class='enigmailLink'>Общественной лицензии Mozilla 2.0</html
 <!ENTITY enigmail.undoencryption.accesskey     "О">
 <!ENTITY enigmail.attachkey.accesskey          "о">
 <!ENTITY enigmail.attachmykey.accesskey        "м">
-<!ENTITY enigmail.protectHeaders.accesskey     "т">
 
 
 <!-- account specific options -->
@@ -324,7 +325,7 @@ class='enigmailLink'>Общественной лицензии Mozilla 2.0</html
 <!ENTITY enigmail.perRecipientsOption.label         "Создать правила для адресата">
 
 <!ENTITY enigmail.enigmailAttachDesc.label          "В этом сообщении есть вложения. Вы хотите зашифровать/подписать их?">
-<!ENTITY enigmail.enigEncryptAttachNone.label       "Зашифровать/подписать текст сообщения, но не вложения">
+<!ENTITY enigmail.enigEncryptAttachNone.label           "Зашифровать/подписать текст сообщения, но не вложения">
 <!ENTITY enigmail.enigAttachNoneSign.label              "Подписать текст, но не вложения">
 <!ENTITY enigmail.enigAttachNoneEncrypt.label           "Шифровать текст, но не вложения">
 <!ENTITY enigmail.enigAttachNoneEncryptAndSign.label    "Шифровать и подписать текст, но не вложения">
@@ -443,7 +444,7 @@ href='https://autocrypt.org'>Автошифр</enigmailLink> - стандарт 
 пункт «Никогда» отменяет действие пункта «Всегда»)">
 <!ENTITY enigmail.ruleEmail.label                   "Установить правила Enigmail для адресата">
 <!ENTITY enigmail.ruleEmail.tooltip                 "Указывать только адреса, НЕ имена
-адресатов.\nНапр., запись «Какое-то Имя &lt;some.name@address.net&gt;» неверна.">
+адресатов.\nНапр., запись «Какое-то Имя <some.name@address.net>» неверна.">
 <!ENTITY enigmail.sepratationDesc.label             "(Адреса разделяются пробелами)">
 <!ENTITY enigmail.matchDescStart.label              "Применить правило, если адресат">
 <!ENTITY enigmail.matchDescEnd.label                "один из вышеуказанных адресов">

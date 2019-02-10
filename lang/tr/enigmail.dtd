@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "Alıcı başına kuralları düzenle">
 
 <!ENTITY enigmail.decryptToFolder.label     "">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "y">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "İmzalama/Şifreleme Ayarları...">
 <!ENTITY enigmail.amPrefDesc.label                  "Mesajları OpenPGP ile şifreleme ve imzalama Enigmail tarafından sunulmaktadır. Bu özelliği kullanmak için GnuPG (gpg) kurmuş olmalısınız.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Bu kimlik için OpenPGP desteğini (Enigmail) aç">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "OpenPGP anahtarını tanımlamak için bu kimliğin e-posta adresini kullan">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -612,7 +612,7 @@
 <!ENTITY enigmail.keyDetails.signKey.label           "">
 <!ENTITY enigmail.keyDetails.trustStatus.label       "">
 <!ENTITY enigmail.keyDetails.keyValidity.label       "">
-<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "Ayrıca şöyle bilinir">
 
 <!ENTITY enigmail.cardDetails.title                  "OpenPGP SmartCard Detayları">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
@@ -816,7 +816,7 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Parmakizi">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

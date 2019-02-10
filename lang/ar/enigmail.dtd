@@ -128,11 +128,11 @@
 <!ENTITY enigmail.editRules.label        "حرر قواعد المتلقين">
 
 <!ENTITY enigmail.decryptToFolder.label     "">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "ف">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "">
-<!ENTITY enigmail.recent.accesskey          "">
+<!ENTITY enigmail.recent.accesskey          "م">
 
 <!ENTITY enigmail.prefs.label            "التفضيلات">
 
@@ -164,7 +164,7 @@
 
 <!ENTITY enigmail.prefs.accesskey           "ف">
 <!ENTITY enigmail.viewconsole.accesskey     "ك">
-<!ENTITY enigmail.viewlog.accesskey         "">
+<!ENTITY enigmail.viewlog.accesskey         "ح">
 
 <!ENTITY enigmail.help.accesskey            "م">
 <!ENTITY enigmail.about.accesskey           "ع">
@@ -176,7 +176,7 @@
 <!ENTITY enigmail.encryptedsend.label         "عمِّ الرسالة">
 
 <!ENTITY enigmail.pepEnableProtection.label         "">
-<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "ح">
 
 <!ENTITY enigmail.pgpAccountSettings.label     "خيارات التوقيع/التعمية...">
 <!ENTITY enigmail.sendOptionsMenu.label        "خيارات الإرسال...">
@@ -201,11 +201,11 @@
 <!ENTITY enigmail.sendOptionsMenu.accesskey    "س">
 <!ENTITY enigmail.defaultKeySelOpts.accesskey  "ف">
 <!ENTITY enigmail.pgpAccountSettings.accesskey "ق">
-<!ENTITY enigmail.usePgpMime.accesskey         "">
-<!ENTITY enigmail.useInline.accesskey          "">
-<!ENTITY enigmail.useSmime.accesskey           "">
+<!ENTITY enigmail.usePgpMime.accesskey         "د">
+<!ENTITY enigmail.useInline.accesskey          "س">
+<!ENTITY enigmail.useSmime.accesskey           "S">
 
-<!ENTITY enigmail.tempTrustAllKeys.accesskey   "">
+<!ENTITY enigmail.tempTrustAllKeys.accesskey   "ث">
 <!ENTITY enigmail.undoencryption.accesskey     "ع">
 <!ENTITY enigmail.attachkey.accesskey          "ر">
 <!ENTITY enigmail.attachmykey.accesskey        "ي">
@@ -238,7 +238,7 @@
 <!ENTITY enigmail.keepCryptoSettingsForReply.tooltip "When possible, encrypt/sign responses to encrypted/signed email">
 
 <!ENTITY enigmail.autoSendEncryptedOption.label   "">
-<!ENTITY enigmail.autoSendEncryptedNever.label    "">
+<!ENTITY enigmail.autoSendEncryptedNever.label    "أبدًا">
 <!ENTITY enigmail.autoSendEncryptedNever.tooltip  "">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.label   "">
 <!ENTITY enigmail.autoSendEncryptedIfKeys.tooltip "">
@@ -250,9 +250,9 @@
 <!ENTITY enigmail.acceptedKeysAllUsable.tooltip   "">
 
 <!ENTITY enigmail.confirmBeforeSendingOption.label           "">
-<!ENTITY enigmail.confirmBeforeSendingNever.label            "">
+<!ENTITY enigmail.confirmBeforeSendingNever.label            "أبدًا">
 <!ENTITY enigmail.confirmBeforeSendingNever.tooltip          "">
-<!ENTITY enigmail.confirmBeforeSendingAlways.label           "">
+<!ENTITY enigmail.confirmBeforeSendingAlways.label           "دائمًا">
 <!ENTITY enigmail.confirmBeforeSendingAlways.tooltip         "">
 <!ENTITY enigmail.confirmBeforeSendingIfEncrypted.label      "">
 <!ENTITY enigmail.confirmBeforeSendingIfEncrypted.tooltip    "">
@@ -292,9 +292,9 @@
 <!ENTITY enigmail.keySelection.label                "الاختيار">
 <!ENTITY enigmail.keyId.label                       "معرِّف (ID) المفتاح">
 <!ENTITY enigmail.userSelSendSigned.label           "">
-<!ENTITY enigmail.userSelSendSigned.accesskey       "">
+<!ENTITY enigmail.userSelSendSigned.accesskey       "S">
 <!ENTITY enigmail.userSelSendEncrypted.label        "">
-<!ENTITY enigmail.userSelSendEncrypted.accesskey    "">
+<!ENTITY enigmail.userSelSendEncrypted.accesskey    "ح">
 <!ENTITY enigmail.displayNoLonger.label             "لا تعرض هذا التنويه مجددا في حال كون التعمية غير ممكنة">
 <!ENTITY enigmail.importMissingKeys.label           "نزِّل المفاتيح المطلوبة">
 <!ENTITY enigmail.importMissingKeys.accesskey       "م">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "خيارات التوقيع/التعمية...">
 <!ENTITY enigmail.amPrefDesc.label                  "يدعم Enigmail تعمية وتوقيع الرسائل باستخدام OpenPGP. ينبغي تنصيب GnuPG (gpg) لتستخدم هذه الخاصية.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "فعِّل دعم OpenPGP (Enigmail) لهذه الهوية">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "استخدم عنوان بريد هذه الهوية لتَعرُّف مفتاح OpenPGP">
@@ -357,11 +357,11 @@
 <!ENTITY enigmail.encDlgPgpMime.label               "استخدم PGP/MIME">
 <!ENTITY enigmail.encDlgPgpMime.accesskey           "خ">
 <!ENTITY enigmail.encDlgInlinePgp.label             "">
-<!ENTITY enigmail.encDlgInlinePgp.accesskey         "">
+<!ENTITY enigmail.encDlgInlinePgp.accesskey         "س">
 <!ENTITY enigmail.encDlgSMime.label                 "">
-<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "د">
 <!ENTITY enigmail.encDlgReset.label                 "">
-<!ENTITY enigmail.encDlgReset.accesskey             "">
+<!ENTITY enigmail.encDlgReset.accesskey             "م">
 <!ENTITY enigmail.amPrefPgpHeader.label             "ضع ترويسة  'OpenPGP'">
 <!ENTITY enigmail.amPrefPgpHeader.id.label          "ضع معرِّف مفتاح OpenPGP">
 <!ENTITY enigmail.amPrefPgpHeader.url.label         "ضع مسار جلب المفتاح:">
@@ -558,14 +558,14 @@
 <!ENTITY enigmail.keyMan.reload.accesskey            "ع">
 <!ENTITY enigmail.keyMan.addPhoto.accesskey          "P">
 <!ENTITY enigmail.keyMan.manageUid.accesskey         "د">
-<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "">
+<!ENTITY enigmail.keyMan.changeExpiry.accesskey      "ح">
 <!ENTITY enigmail.keyMan.changePwd.accesskey         "ة">
 <!ENTITY enigmail.keyMan.showInvalidKeys.accesskey   "D">
 <!ENTITY enigmail.keyMan.showUntrustedKeys.accesskey "U">
 <!ENTITY enigmail.keyMan.showOthersKeys.accesskey    "O">
 <!ENTITY enigmail.keyMan.showPhoto.accesskey         "P">
 <!ENTITY enigmail.keyMan.importFromClipbrd.accesskey "س">
-<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "">
+<!ENTITY enigmail.keyMan.importFromUrl.accesskey     "U">
 <!ENTITY enigmail.keyMan.copyToClipbrd.accesskey     "ن">
 <!ENTITY enigmail.keyMan.keyDetails.accesskey        "K">
 <!ENTITY enigmail.keyMan.showAllKeys.accesskey       "ظ">
@@ -575,15 +575,15 @@
 <!ENTITY enigmail.keyMan.selectAll.accesskey         "ك">
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "ل">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
-<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "م">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
-<!ENTITY enigmail.keyMan.keyDetails.key              "">
-<!ENTITY enigmail.keyMan.refreshKey.key              "">
+<!ENTITY enigmail.keyMan.keyDetails.key              "س">
+<!ENTITY enigmail.keyMan.refreshKey.key              "م">
 
-<!ENTITY enigmail.keySearch.selectAll.key            "">
+<!ENTITY enigmail.keySearch.selectAll.key            "A">
 
 <!ENTITY enigmail.manageUidDlg.title                 "غير هوية المستخدم الأساسية">
 <!ENTITY enigmail.manageUidDlg.affectedKey.label     "المفتاح الذي سيتغير:">
@@ -612,7 +612,7 @@
 <!ENTITY enigmail.keyDetails.signKey.label           "">
 <!ENTITY enigmail.keyDetails.trustStatus.label       "">
 <!ENTITY enigmail.keyDetails.keyValidity.label       "">
-<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "معروف كذلك باسم">
 
 <!ENTITY enigmail.cardDetails.title                  "تفاصيل OpenPGP SmartCard">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
@@ -782,7 +782,7 @@
 <!ENTITY enigmail.msgViewColumn.tooltip              "">
 <!ENTITY enigmail.addToRule.title                    "">
 <!ENTITY enigmail.addToRule.useRuleButton.label      "">
-<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "">
+<!ENTITY enigmail.addToRule.useRuleButton.accesskey  "A">
 <!ENTITY enigmail.addToRule.newRuleButton.label      "">
 <!ENTITY enigmail.addToRule.newRuleButton.accesskey  "">
 
@@ -806,7 +806,7 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "">
-<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "م">
 <!ENTITY enigmail.pEp.revokeTrust.label               "">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
 
@@ -816,7 +816,7 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "البصمة">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

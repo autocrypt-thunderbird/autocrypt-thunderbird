@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "받는 사람별 규칙 편집">
 
 <!ENTITY enigmail.decryptToFolder.label     "폴더에 복호화">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "y">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "최근">
@@ -176,7 +176,7 @@
 <!ENTITY enigmail.encryptedsend.label         "메시지 암호화">
 
 <!ENTITY enigmail.pepEnableProtection.label         "">
-<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "E">
 
 <!ENTITY enigmail.pgpAccountSettings.label     "서명/암호화 옵션...">
 <!ENTITY enigmail.sendOptionsMenu.label        "보내기 옵션...">
@@ -203,7 +203,7 @@
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
 <!ENTITY enigmail.usePgpMime.accesskey         "G">
 <!ENTITY enigmail.useInline.accesskey          "I">
-<!ENTITY enigmail.useSmime.accesskey           "">
+<!ENTITY enigmail.useSmime.accesskey           "S">
 
 <!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "메시지 수정">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "잠시 기다리세요.">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "서명/암호화 옵션...">
 <!ENTITY enigmail.amPrefDesc.label                  "OpenPGP 암호화와 서명 메시지 지원은 Enigmail이 지원하고 있습니다. 이 기능을 사용하려면 GnuPG (gpg)를 설치하셔야 합니다.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "이 신원에 대하여 OpenPGP 지원 (enigmail)을 활성화">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "OpenPGP 키 식별을 위해 이 신원의 전자 메일 주소를 사용">
@@ -359,7 +359,7 @@
 <!ENTITY enigmail.encDlgInlinePgp.label             "인라인PGP 형식 사용">
 <!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY enigmail.encDlgSMime.label                 "">
-<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "M">
 <!ENTITY enigmail.encDlgReset.label                 "기본값 복원">
 <!ENTITY enigmail.encDlgReset.accesskey             "R">
 <!ENTITY enigmail.amPrefPgpHeader.label             "'OpenPGP' 헤더 보내기">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -757,7 +757,7 @@
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
 <!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
-<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "취소 인증서 생성">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "">
@@ -824,7 +824,7 @@
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "">
-<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "H">
 <!ENTITY enigmail.pEp.revokeTrust.label               "">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
 
@@ -834,7 +834,7 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "지문">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

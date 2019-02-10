@@ -2,9 +2,11 @@ ar
 bg
 ca
 cs
+da
 de
 el
 es-ES
+fa
 fi
 fr
 gd
@@ -15,7 +17,7 @@ it
 ja
 ko
 lt
-nb-NO
+nb
 nl
 pl
 pt-BR
@@ -24,7 +26,7 @@ ru
 sk
 sl
 sq
-sv-SE
+sv
 tr
 vi
 zh-CN

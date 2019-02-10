@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "Editar Regras por Destinatário">
 
 <!ENTITY enigmail.decryptToFolder.label     "Decifrar para uma pasta">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "G">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Recentes">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "Reparar mensagem">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Aguarde, por favor...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Opções de Assinar/Cifrar...">
 <!ENTITY enigmail.amPrefDesc.label                  "O suporte para cifra e assinatura digital OpenPGP é fornecido pelo Enigmail. Deve ter o GnuPG (gpg) instalado para usar esta funcionalidade.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Ativar suporte OpenPGP (Enigmail) para esta identidade">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Usar endereço desta conta para identificar a chave OpenPGP">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "P">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "P">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -754,7 +754,7 @@ importar chaves de um ficheiro?">
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
 <!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
-<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "Criar um Certificado de Revogação">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "">

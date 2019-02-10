@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "Uredi pravila po primatelju">
 
 <!ENTITY enigmail.decryptToFolder.label     "Dekriptiraj u direktorij">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "y">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Nedavno">
@@ -176,7 +176,7 @@
 <!ENTITY enigmail.encryptedsend.label         "Enkriptiraj poruku">
 
 <!ENTITY enigmail.pepEnableProtection.label         "">
-<!ENTITY enigmail.pepEnableProtection.accesskey     "">
+<!ENTITY enigmail.pepEnableProtection.accesskey     "E">
 
 <!ENTITY enigmail.pgpAccountSettings.label     "Opcije potpisivanja/enkriptiranja...">
 <!ENTITY enigmail.sendOptionsMenu.label        "Opcije slanja...">
@@ -203,7 +203,7 @@
 <!ENTITY enigmail.pgpAccountSettings.accesskey "E">
 <!ENTITY enigmail.usePgpMime.accesskey         "G">
 <!ENTITY enigmail.useInline.accesskey          "I">
-<!ENTITY enigmail.useSmime.accesskey           "">
+<!ENTITY enigmail.useSmime.accesskey           "S">
 
 <!ENTITY enigmail.tempTrustAllKeys.accesskey   "T">
 <!ENTITY enigmail.undoencryption.accesskey     "U">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "Popravi poruku">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Molim čekajte...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Opcije potpisivanja/enkriptiranja...">
 <!ENTITY enigmail.amPrefDesc.label                  "Enigmail pruža podrška za OpenPGP enkripciju i potpisivanje poruka. Morate imati GnuPG (gpg) instaliran da bi koristili ovu značajku.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Omogući OpenPGP podršku (Enigmail) za ovaj identitet">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Koristi email adresu ovog identiteta za identificiranje OpenPGP ključa">
@@ -359,7 +359,7 @@
 <!ENTITY enigmail.encDlgInlinePgp.label             "Koristi Inline PGP">
 <!ENTITY enigmail.encDlgInlinePgp.accesskey         "I">
 <!ENTITY enigmail.encDlgSMime.label                 "">
-<!ENTITY enigmail.encDlgSMime.accesskey             "">
+<!ENTITY enigmail.encDlgSMime.accesskey             "M">
 <!ENTITY enigmail.encDlgReset.label                 "Postavi na zadano">
 <!ENTITY enigmail.encDlgReset.accesskey             "R">
 <!ENTITY enigmail.amPrefPgpHeader.label             "Pošalji 'OpenPGP' zaglavlje">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -773,7 +773,7 @@ Stvaranje ključa">
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
 <!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
-<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "Stvori certifikat za opoziv">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "">
@@ -862,7 +862,7 @@ Thunderbird i pokrenete Čarobnjak za postavljanje iz Enigmail izbornika.">
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "">
-<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "H">
 <!ENTITY enigmail.pEp.revokeTrust.label               "">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
 
@@ -872,7 +872,7 @@ Thunderbird i pokrenete Čarobnjak za postavljanje iz Enigmail izbornika.">
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Otisak prsta">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

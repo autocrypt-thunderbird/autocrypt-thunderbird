@@ -3,8 +3,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+  <title>Enigmail Help: Edit OpenPGP Rule</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <title>Справка по Enigmail: Определение предпочтений</title>
   <style type="text/css">
   /*<![CDATA[*/
     dt  { font-weight: bold;  }
@@ -12,55 +12,31 @@
   </style>
 </head>
 
-<body lang="ru" xml:lang="ru">
-<h1>Справка по Enigmail</h1>
+<body>
+  <h1>Enigmail Help</h1>
 
-<h3>Определение предпочтений шифрования</h3>
+  <h3>Defining Preferences to Send Encrypted</h3>
 
-<p>В настройках для отправки можно выбрать общую схему и предпочтения
-для шифрования.</p>
-
-<dl>
-<dt>Удобное шифрование</dt>
-<dd>При этих настройках письма шифруются без подтверждения, когда это
-возможно.
-<p>Это подходит, если вы хотите просто улучшить свою приватность,
-отправляя письма в зашифрованном виде, если это возможно.</p>
-<p>В результате сообщения будут отправляться, как письма в конвертах,
-а не открытки. В отличие от открыток, письма обычно скрывают свое
-содержимое при пересылке.</p>
-<p>Однако заметьте, что, как и с письмами, нельзя быть уверенным, что
-его никто не вскроет при пересылке (хотя для этого необходимы
-некоторые технические усилия).</p>
-<p>Конкретный риск состоит в том, что вы случайно воспользуетесь
-«поддельными ключами», которые получили откуда-то или от кого-то, кто
-утверждает, что ключи принадлежат лицу, которому вы хотите отправлять
-письма. Чтобы избежать этого, можно либо применять схему доверия PGP
-(см. ниже), либо всегда проверять отпечаток открытого ключа.</p>
-</dd>
-<dt>Ручное шифрование</dt>
-<dd>Этот вариант позволит вам указывать различные предпочтения по
-шифрованию по мере необходимости. Вы можете указать:
-<ul>
-<li>должны ли быть ответы на зашифрованные/подписанные сообщения также
-зашифрованы/подписаны;</li>
-<li>пользоваться ли схемой доверия PGP при одобрении ключей (это
-значит, что перед тем, как пользоваться ключом, либо вы, либо
-достаточное число людей, которым вы доверяете, должны подписать этот
-ключ);</li>
-<li>шифровать ли сообщения автоматически, если все ключи
-одобрены;</li>
-<li>в каких случаях запрашивать окончательное подтверждение перед
-отправкой письма.</li>
-</ul>
-</dd>
-</dl>
-<p>Если для вас важно, чтобы материалы, которые вы отправляете
-зашифрованными, не могли быть прочитаны другими лицами или
-организациями, вам следует выбрать ручное шифрование и по меньшей мере
-выбрать пункт, по которому ключи принимаются, только если вы или
-другие их подписали. Хотя эта схема снижает риск пользования
-поддельными ключами, она требует, чтобы вы активно подписывали ключи и
-проставляли доверие владельцам в окне управления ключами.</p>
+  <p>In the Sending Preferences you can choose the general model and preferences for encryption.</p>
+  <dl>
+<dt>Convenient Encryption</dt>
+  <dd>With these settings, emails are encrypted without confirmation whenever possible. 
+    <p>This setup is appropriate, if you just want to improve your privacy by sending emails encyrpted instead of unencrypted if that's possible.     
+    <p>The effect is like sending emails as letters instead of postcards. Unlike postcards, letters usually hide their contents while in transit.     
+<p>Note however that as with letters you can't be sure that nobody is opening the letter while it is in transit (although, some technical effort is necessary for that).
+<p>A concrete  risk is that you accidentally use &quot;faked keys&quot; you got from somewhere or somebody claiming that the key belongs to the person you want to send emails to. To avoid this risk, you can either use the trust model of PGP (see below) or you should always verify, whether the fingerprint of a public key is correct.</dd>
+  
+  <dt>Manual Encryption</dt>
+  <dd>This option allows you to specify the different preferences for encryption according to your needs. You can specify
+    <ul>
+   <li>whether replies to encrypted/signed emails should automatically also be encrypted/signed-</li>
+   <li>whether to use the trust model of OpenPGP to accept keys (this means that to use a key you either have to sign the key or have enough other people you trust having signed the key).</li>
+   <li>whether you want to automatically send emails encrypted if all keys are accepted.</li>
+   <li>whether and when you want to finally confirm sending an email.</li>
+  </ul>
+ </dd>
+  
+  If it is important for you that content you send encrypted can't be read by other people or organizations, you should use the manual preferences at least choose the option to accept keys only if you or other people signed them. While this model reduces the risk of using faked keys, it requires that you actively sign keys and declare owner trust using the key managament dialog.
+  
 </body>
 </html>

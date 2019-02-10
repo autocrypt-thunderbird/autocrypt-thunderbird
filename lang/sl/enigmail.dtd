@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "Uredi pravila za prejemnike">
 
 <!ENTITY enigmail.decryptToFolder.label     "Dešifriraj v mapo">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "U">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "Nedavne">
@@ -341,7 +341,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "Popravi sporočilo">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Počakajte ...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Nastavitve podpisovanja/šifriranja ...">
 <!ENTITY enigmail.amPrefDesc.label                  "Enigmail omogoča šifriranje in podpisovanje sporočil OpenPGP. Da bi lahko izkoriščali njegove funkcije, mora biti nameščen GnuPG (gpg).">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Vklopi podporo OpenPGP (Enigmail) za to identiteto">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Uporabi e-poštni naslov tega računa za identifikacijo ključa OpenPGP">
@@ -577,7 +577,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "P">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "k">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "v">
@@ -766,7 +766,7 @@ Da zavarujete svoj javni ključ, boste pozvani za geslo v naslednjih dveh pogovo
 <!ENTITY enigmail.setupWiz.pgRevocert.title          "">
 <!ENTITY enigmail.setupWiz.pgRevocert.subtitle       "">
 <!ENTITY enigmail.setupWiz.pgRevocert.desc           "">
-<!ENTITY enigmail.setupWiz.pgRevocert.button         "">
+<!ENTITY enigmail.setupWiz.pgRevocert.button         "Ustvari potrdilo za preklic">
 
 <!-- wizard: key creation - key upload step -->
 <!ENTITY enigmail.setupWiz.pgUpload.title            "">
@@ -839,7 +839,7 @@ Da zavarujete svoj javni ključ, boste pozvani za geslo v naslednjih dveh pogovo
 <!ENTITY enigmail.privacyPprefPane.juniorModeForceOn  "">
 
 <!ENTITY enigmail.pEp.verifyTrustwords.label          "">
-<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "">
+<!ENTITY enigmail.pEp.verifyTrustwords.accesskey      "P">
 <!ENTITY enigmail.pEp.revokeTrust.label               "">
 <!ENTITY enigmail.messeneger.pEpIcon.tootlip          "">
 
@@ -849,7 +849,7 @@ Da zavarujete svoj javni ključ, boste pozvani za geslo v naslednjih dveh pogovo
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Prstni odtis">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">

@@ -128,7 +128,7 @@
 <!ENTITY enigmail.editRules.label        "Upravit pravidla pro adresáty">
 
 <!ENTITY enigmail.decryptToFolder.label     "">
-<!ENTITY enigmail.decryptToFolder.accesskey "">
+<!ENTITY enigmail.decryptToFolder.accesskey "S">
 
 <!-- "recent" label for Folder selection submenu -->
 <!ENTITY enigmail.recent.label              "">
@@ -340,7 +340,7 @@
 <!ENTITY enigmail.exchangeGarbage.fixButton.label   "">
 <!ENTITY enigmail.exchangeGarbage.waitMessage       "Čekejte prosím ...">
 
-<!ENTITY enigmail.amPrefTitle.label                 "">
+<!ENTITY enigmail.amPrefTitle.label                 "Nastavení podepisování/šifrování...">
 <!ENTITY enigmail.amPrefDesc.label                  "Podporu podepisování a šifrování pomocí OpenPGP zajišťuje Enigmail. Potřebujete mít nainstalovaný GnuPG (gpg), abyste tuto funkci mohli použít.">
 <!ENTITY enigmail.amPrefEnablePgp.label             "Povolit podporu OpenPGP (Enigmail) pro tuto identitu">
 <!ENTITY enigmail.amPrefUseFromAddr.label           "Použít e-mailovou adresu této identity k určení klíče OpenPGP">
@@ -576,7 +576,7 @@
 <!ENTITY enigmail.keyMan.sendKeys.accesskey          "S">
 <!ENTITY enigmail.keyMan.createMail.accesskey        "C">
 <!ENTITY enigmail.keyMan.downloadContactKeys.accesskey "F">
-<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "">
+<!ENTITY enigmail.keyMan.initiateAcBackup.accesskey  "A">
 
 
 <!ENTITY enigmail.keyMan.selectAll.key               "A">
@@ -609,10 +609,10 @@
 <!ENTITY enigmail.keyDetails.selAction.label         "Vyberte akci ...">
 <!ENTITY enigmail.keyDetails.selAction.accesskey     "y">
 <!ENTITY enigmail.keyDetails.change.label            "">
-<!ENTITY enigmail.keyDetails.signKey.label           "">
+<!ENTITY enigmail.keyDetails.signKey.label           "Potvrdit">
 <!ENTITY enigmail.keyDetails.trustStatus.label       "">
 <!ENTITY enigmail.keyDetails.keyValidity.label       "">
-<!ENTITY enigmail.keyDetails.alsoKnown.label         "">
+<!ENTITY enigmail.keyDetails.alsoKnown.label         "Další identita">
 
 <!ENTITY enigmail.cardDetails.title                  "Podrobnosti OpenPGP SmartCard">
 <!ENTITY enigmail.cardDetails.cardMenu.label         "SmartCard">
@@ -816,7 +816,7 @@
 <!ENTITY enigmail.pEp.trustWordsDlg.myFingerprint     "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsShort   "">
 <!ENTITY enigmail.pEp.trustWordsDlg.trustwordsLong    "">
-<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "">
+<!ENTITY enigmail.pEp.trustWordsDlg.fingerprint       "Otisk prstu">
 
 <!ENTITY enigmail.pEp.trustWordsDlg.btnVerified       "">
 <!ENTITY enigmail.pEp.trustWordsDlg.btnMistrust       "">
