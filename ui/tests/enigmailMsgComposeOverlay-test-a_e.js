@@ -437,8 +437,7 @@ function displayProtectHeadersStatus_test() {
       setAttribute: function(prop, val) {
         if (prop === "checked") {
           Assert.equal(val, "true");
-        }
-        else if (prop === "tooltiptext") {
+        } else if (prop === "tooltiptext") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.protectSubject.tooltip"));
         }
       }
@@ -633,8 +632,6 @@ function run_test() {
   document = window.document;
 
   do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-  do_load_module("chrome://enigmail/content/modules/constants.jsm");
-  do_load_module("chrome://enigmail/content/modules/locale.jsm");
 
   //Overriding Problem
   //TODO Use testHelper

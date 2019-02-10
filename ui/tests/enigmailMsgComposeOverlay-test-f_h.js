@@ -354,11 +354,9 @@ function getForceRecipientDlg_test() {
   EnigmailPrefs.getPref = function(prop) {
     if (prop === "assignKeysByRules") {
       return true;
-    }
-    else if (prop === "assignKeysByEmailAddr") {
+    } else if (prop === "assignKeysByEmailAddr") {
       return false;
-    }
-    else if (prop === "assignKeysManuallyIfMissing") {
+    } else if (prop === "assignKeysManuallyIfMissing") {
       return false;
     }
 
@@ -371,11 +369,9 @@ function getForceRecipientDlg_test() {
   EnigmailPrefs.getPref = function(prop) {
     if (prop === "assignKeysByRules") {
       return true;
-    }
-    else if (prop === "assignKeysByEmailAddr") {
+    } else if (prop === "assignKeysByEmailAddr") {
       return true;
-    }
-    else if (prop === "assignKeysManuallyIfMissing") {
+    } else if (prop === "assignKeysManuallyIfMissing") {
       return false;
     }
 
@@ -702,8 +698,7 @@ function pepMenuPopup_test() {
         setAttribute: function(prop, val) {
           if (prop === "checked") {
             Assert.equal(val, "false");
-          }
-          else {
+          } else {
             Assert.equal(prop, "disabled");
             Assert.equal(val, "true");
           }
@@ -712,8 +707,7 @@ function pepMenuPopup_test() {
           Assert.equal(prop, "disabled");
         }
       };
-    }
-    else if (prop === "enigmail_composeMenu_pep_handshake") {
+    } else if (prop === "enigmail_composeMenu_pep_handshake") {
       return {
         setAttribute: function(prop, val) {
           Assert.ok(prop, "disabled");
@@ -723,8 +717,7 @@ function pepMenuPopup_test() {
           Assert.equal(prop, "disabled");
         }
       };
-    }
-    else if (prop === "enigmail-bc-pepEncrypt") {
+    } else if (prop === "enigmail-bc-pepEncrypt") {
       return {
         getAttribute: function() {
           Assert.ok(true);
@@ -863,8 +856,7 @@ function processAccountSpecificDefaultOptions_test() {
     //Function Overriding
     if (str === "sign") {
       return false;
-    }
-    else {
+    } else {
       return true;
     }
   };
@@ -899,8 +891,7 @@ function processFinalState_test() {
     //Function Overriding
     if (prop === "signIfEnc" || prop === "signIfNotEnc" || prop === "signIfNotEnc" || prop === "signIfEnc" || prop === "sign-pgp" || prop === "encrypt") {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   };
@@ -1097,8 +1088,7 @@ function replaceEditorText_test() {
     Assert.ok(true);
     if (val === "Enigmail" || val === "text") {
       Assert.ok(true);
-    }
-    else {
+    } else {
       Assert.ok(false);
     }
   };
@@ -1112,8 +1102,7 @@ function replaceEditorText_test() {
     Assert.ok(true);
     if (val === " " || val === "text") {
       Assert.ok(true);
-    }
-    else {
+    } else {
       Assert.ok(false);
     }
   };
@@ -1153,8 +1142,6 @@ function run_test() {
   document = window.document;
 
   do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-  do_load_module("chrome://enigmail/content/modules/constants.jsm");
-  do_load_module("chrome://enigmail/content/modules/locale.jsm");
 
   //Overriding Problem
   //TODO Use testHelper

@@ -85,8 +85,6 @@ function run_test() {
   document = window.document;
 
   do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-  do_load_module("chrome://enigmail/content/modules/constants.jsm");
-  do_load_module("chrome://enigmail/content/modules/locale.jsm");
 
   unsetAdditionalHeader_test();
 

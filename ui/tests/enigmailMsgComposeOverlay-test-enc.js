@@ -27,12 +27,10 @@ window.document = document;
 
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
 /* global EnigmailMimeEncrypt: false */
-
-ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
-
-component("enigmail/constants.jsm"); /* global EnigmailConstants: false */
-component("enigmail/locale.jsm"); /* global EnigmailLocale: false */
-component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
+/* global EnigmailTb60Compat: false */
+/* global EnigmailConstants: false */
+/* global EnigmailLocale: false */
+/* global EnigmailKeyRing: false */
 
 const SECURITY_INFO = EnigmailTb60Compat.getSecurityField();
 
@@ -40,8 +38,7 @@ var gMsgCompose,
   gWindowLocked,
   getCurrentIdentity;
 
-function Attachments2CompFields() {
-}
+function Attachments2CompFields() {}
 
 function DetermineConvertibility() {
   return Ci.nsIMsgCompConvertible.Yes;
@@ -85,8 +82,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     let secKey;
     if (!isWin) {
       secKey = do_get_file("../../package/tests/resources/dev-strike.sec", false);
-    }
-    else {
+    } else {
       secKey = do_get_file("..\\..\\package\\tests\\resources\\dev-strike.sec", false);
     }
     const importedKeysObj = {};

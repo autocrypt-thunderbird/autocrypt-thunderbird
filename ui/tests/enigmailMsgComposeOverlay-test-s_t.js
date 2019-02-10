@@ -438,8 +438,7 @@ function setPepPrivacyLabel_test() {
       setAttribute: function(prop, val) {
         if (prop === "value") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.pepSendUnsecure"));
-        }
-        else if (prop === "class") {
+        } else if (prop === "class") {
           Assert.equal(val, "enigmail-statusbar-pep-unsecure");
         }
       }
@@ -460,8 +459,7 @@ function setPepPrivacyLabel_test() {
       setAttribute: function(prop, val) {
         if (prop === "value") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.pepSendUnknown"));
-        }
-        else if (prop === "class") {
+        } else if (prop === "class") {
           Assert.equal(val, "enigmail-statusbar-pep-unsecure");
         }
       }
@@ -478,8 +476,7 @@ function setPepPrivacyLabel_test() {
       setAttribute: function(prop, val) {
         if (prop === "value") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.pepSendTrusted"));
-        }
-        else if (prop === "class") {
+        } else if (prop === "class") {
           Assert.equal(val, "enigmail-statusbar-pep-trusted");
         }
       }
@@ -500,8 +497,7 @@ function setPepPrivacyLabel_test() {
       setAttribute: function(prop, val) {
         if (prop === "value") {
           Assert.equal(val, EnigmailLocale.getString("msgCompose.pepSendSecure"));
-        }
-        else if (prop === "class") {
+        } else if (prop === "class") {
           Assert.equal(val, "enigmail-statusbar-pep-secure");
         }
       }
@@ -868,8 +864,6 @@ function run_test() {
   document = window.document;
 
   do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
-  do_load_module("chrome://enigmail/content/modules/constants.jsm");
-  do_load_module("chrome://enigmail/content/modules/locale.jsm");
 
   //Overriding Problem
   //TODO Use testHelper
