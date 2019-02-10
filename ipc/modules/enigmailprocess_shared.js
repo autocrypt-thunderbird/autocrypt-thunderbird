@@ -40,8 +40,7 @@ class Library {
         if (!this.library) {
           this.library = ctypes.open(name);
         }
-      }
-      catch (e) {
+      } catch (e) {
         // Ignore errors until we've tried all the options.
       }
     }
@@ -78,7 +77,7 @@ class Library {
  * @namespace
  * @lends Subprocess
  */
-const SubprocessConstants = {
+var SubprocessConstants = {
   /**
    * @property {integer} ERROR_END_OF_FILE
    *           The operation failed because the end of the file was reached.

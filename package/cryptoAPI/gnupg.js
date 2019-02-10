@@ -10,30 +10,38 @@
 
 var EXPORTED_SYMBOLS = ["getGnuPGAPI"];
 
-Components.utils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
+const Services = Components.utils.import("resource://gre/modules/Services.jsm").Services;
 
 // Load OpenPGP.js (including generic) API
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI/openpgp-js.js",
   null, "UTF-8"); /* global OpenPGPjsCryptoAPI: false */
 
 /* globals loaded from openpgp-js.js: */
-  /* global Cc: false, Cu: false, Ci: false */
-  /* global getOpenPGP: false, EnigmailLog: false */
+/* global Cc: false, Ci: false */
+/* global getOpenPGP: false, EnigmailLog: false */
 
-const EnigmailGpg = Cu.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
-const EnigmailExecution = Cu.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
-const EnigmailFiles = Cu.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailTime = Cu.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
-const EnigmailData = Cu.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailLocale = Cu.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailPassword = Cu.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
-const EnigmailErrorHandling = Cu.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
-const GnuPGDecryption = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm").GnuPGDecryption;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailTime = ChromeUtils.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
+const EnigmailErrorHandling = ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm").EnigmailErrorHandling;
+const GnuPGDecryption = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-decryption.jsm").GnuPGDecryption;
 
-const {obtainKeyList, createKeyObj, getPhotoFileFromGnuPG, extractSignatures} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
+const {
+  obtainKeyList,
+  createKeyObj,
+  getPhotoFileFromGnuPG,
+  extractSignatures
+} = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
-const {GnuPG_importKeyFromFile, GnuPG_extractSecretKey} = Cu.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-key.jsm");
+const {
+  GnuPG_importKeyFromFile,
+  GnuPG_extractSecretKey
+} = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-key.jsm");
 
 /**
  * GnuPG implementation of CryptoAPI
@@ -159,8 +167,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
         "--export-filter", "drop-subkey=" + dropSubkeyFilter,
         "--export", fpr
       ]);
-    }
-    else {
+    } else {
       args = args.concat(["--export-options", "export-minimal,no-export-attributes", "-a", "--export", fpr]);
     }
 
@@ -178,8 +185,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
         retObj.errorMsg = EnigmailLocale.getString("failKeyExtract");
         exportOK = false;
       }
-    }
-    else {
+    } else {
       // GnuPG older than 2.1.10
       if (keyBlock.length < 50) {
         retObj.exitCode = 2;
@@ -283,8 +289,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
         filename = filename.replace(/ .*$/, "");
       }
       return EnigmailData.convertToUnicode(unescape(filename), "utf-8");
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -314,8 +319,7 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
       const msg2 = EnigmailLocale.getString("keyAndSigDate", ["0x" + decrypted.keyId, dateTime]);
       const message = msg1 + "\n" + msg2;
       return (message);
-    }
-    else {
+    } else {
       throw (decrypted.errorMsg);
     }
   }

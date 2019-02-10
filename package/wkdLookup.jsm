@@ -12,16 +12,16 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWkdLookup"];
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false*/
-ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false*/
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-ChromeUtils.import("chrome://enigmail/content/modules/zbase32.jsm"); /*global EnigmailZBase32: false */
-ChromeUtils.import("chrome://enigmail/content/modules/openpgp.jsm"); /*global EnigmailOpenPGP: false */
-ChromeUtils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
-ChromeUtils.import("chrome://enigmail/content/modules/dns.jsm"); /*global EnigmailDns: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm"); /* global EnigmailSqliteDb: false*/
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const EnigmailZBase32 = ChromeUtils.import("chrome://enigmail/content/modules/zbase32.jsm").EnigmailZBase32;
+const EnigmailOpenPGP = ChromeUtils.import("chrome://enigmail/content/modules/openpgp.jsm").EnigmailOpenPGP;
+const EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
+const EnigmailDns = ChromeUtils.import("chrome://enigmail/content/modules/dns.jsm").EnigmailDns;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 var EnigmailWkdLookup = {
 

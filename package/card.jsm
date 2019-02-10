@@ -13,9 +13,9 @@ var EXPORTED_SYMBOLS = ["EnigmailCard"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
-ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 
 var EnigmailCard = {
   getCardStatus: function(exitCodeObj, errorMsgObj) {

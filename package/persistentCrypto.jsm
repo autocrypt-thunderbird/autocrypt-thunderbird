@@ -12,27 +12,27 @@ var EXPORTED_SYMBOLS = ["EnigmailPersistentCrypto"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
-ChromeUtils.import("resource://gre/modules/AddonManager.jsm"); /*global AddonManager: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm"); /*global EnigmailArmor: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
-ChromeUtils.import("chrome://enigmail/content/modules/glodaUtils.jsm"); /*global GlodaUtils: false */
-ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /*global EnigmailTb60Compat: false */
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
-ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
-ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm"); /*global EnigmailPassword: false */
-ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/attachment.jsm"); /*global EnigmailAttachment: false */
-ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /*global EnigmailStdlib: false*/
-ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm"); /*global EnigmailEncryption: false*/
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const AddonManager = ChromeUtils.import("resource://gre/modules/AddonManager.jsm").AddonManager;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const GlodaUtils = ChromeUtils.import("chrome://enigmail/content/modules/glodaUtils.jsm").GlodaUtils;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
+const EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
+const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailAttachment = ChromeUtils.import("chrome://enigmail/content/modules/attachment.jsm").EnigmailAttachment;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
+const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
+const EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm").EnigmailEncryption;
+const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 
 /*global MimeBody: false, MimeUnknown: false, MimeMessageAttachment: false */
 /*global msgHdrToMimeMessage: false, MimeMessage: false, MimeContainer: false */

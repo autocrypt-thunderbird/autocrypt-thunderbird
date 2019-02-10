@@ -14,23 +14,19 @@ var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
 
 /*global atob: false */
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm"); /*global EnigmailVerify: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm"); /*global EnigmailDecryption: false */
-ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /*global EnigmailMime: false */
-ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm"); /*global EnigmailSingletons: false */
-ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailVerify = ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm").EnigmailVerify;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm").EnigmailDecryption;
+var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
+const EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
+const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";

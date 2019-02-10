@@ -20,10 +20,10 @@ var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 
 var gTxtConverter = null;
 

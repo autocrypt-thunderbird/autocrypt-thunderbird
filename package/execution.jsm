@@ -21,8 +21,8 @@ ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/errorHandling.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 
 const loadOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
 

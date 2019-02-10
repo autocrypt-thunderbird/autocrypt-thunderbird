@@ -14,13 +14,13 @@ var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */
+const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
-ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm"); /*global EnigmailURIs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
+const EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 
 const NS_SIMPLEURI_CONTRACTID = "@mozilla.org/network/simple-uri;1";
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";

@@ -12,10 +12,10 @@ var EXPORTED_SYMBOLS = ["EnigmailPassword"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
 
 
 const gpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");

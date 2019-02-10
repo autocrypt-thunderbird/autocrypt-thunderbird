@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTb60Compat"];
 
-ChromeUtils.import("resource:///modules/MailUtils.jsm"); /*global MailUtils: false */
+const MailUtils = ChromeUtils.import("resource:///modules/MailUtils.jsm").MailUtils;
 
 var gCompFields;
 

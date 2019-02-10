@@ -20,7 +20,9 @@ const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.js
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailKeyRing;
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+
+const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 
 const NS_RDONLY = 0x01;
 const NS_WRONLY = 0x02;
@@ -519,7 +521,7 @@ var EnigmailRules = {
 
           if (rule.keyId) {
             if (isAutocryptEmail) {
-              let keyObj = EnigmailKeyRing.getKeyById(rule.keyId);
+              let keyObj = getKeyRing().getKeyById(rule.keyId);
               if (keyObj) {
                 if (!(keyObj.getEncryptionValidity().keyValid &&
                     keyObj.getSigningValidity().keyValid))

@@ -33,12 +33,12 @@ var gPepAdapterApiVer = "0.0.0";
 
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
-ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /*global subprocess: false */
-ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm"); /* global PromiseUtils: false */
-ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
-ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
+const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 
 var gRequestId = 1;
 var gConnectionInfo = null;

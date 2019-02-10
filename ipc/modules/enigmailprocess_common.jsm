@@ -17,10 +17,7 @@ var {
   results: Cr
 } = Components;
 
-// const {
-//   Services
-// } = ChromeUtils.import("resource://gre/modules/Services.jsm", {}); /* global Services: false */
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
+const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
 Components.utils.importGlobalProperties(["TextDecoder", "TextEncoder"]);
 
 XPCOMUtils.defineLazyModuleGetter(this, "AsyncShutdown",

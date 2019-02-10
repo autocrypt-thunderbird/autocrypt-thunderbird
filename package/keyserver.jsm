@@ -14,18 +14,18 @@ const EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
 
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyserverUris.jsm"); /*global EnigmailKeyserverURIs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /*global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm"); /*global EnigmailExecution: false */
-ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm"); /*global EnigmailGpg: false */
-ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm"); /*global EnigmailHttpProxy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
-ChromeUtils.import("chrome://enigmail/content/modules/xhrUtils.jsm"); /*global EnigmailXhrUtils: false */
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const EnigmailKeyserverURIs = ChromeUtils.import("chrome://enigmail/content/modules/keyserverUris.jsm").EnigmailKeyserverURIs;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
+const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailXhrUtils = ChromeUtils.import("chrome://enigmail/content/modules/xhrUtils.jsm").EnigmailXhrUtils;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 

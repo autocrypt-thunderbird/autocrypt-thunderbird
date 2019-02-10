@@ -15,8 +15,8 @@ var EXPORTED_SYMBOLS = ["EnigmailEvents"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm"); /*global EnigmailTimer: false */
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 
 /**** DEPRECATED - use EnigmailTimer instead *****/
 

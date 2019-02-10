@@ -14,7 +14,7 @@ var EXPORTED_SYMBOLS = ["EnigmailApp"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /*global EnigmailLazy: false */
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";

@@ -13,8 +13,8 @@ const EXPORTED_SYMBOLS = ["EnigmailKeyserverURIs"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 
 const KEYSERVER_PREF = "keyserver";
 const AUTO_KEYSERVER_SELECTION_PREF = "autoKeyServerSelection";

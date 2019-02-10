@@ -116,9 +116,9 @@
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_main.jsm"); /* global SubprocessMain: false */
-ChromeUtils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-ChromeUtils.import("resource://gre/modules/Task.jsm"); /* global Task: false */
+const SubprocessMain = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_main.jsm").SubprocessMain;
+const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+const Task = ChromeUtils.import("resource://gre/modules/Task.jsm").Task;
 
 var EXPORTED_SYMBOLS = ["subprocess"];
 

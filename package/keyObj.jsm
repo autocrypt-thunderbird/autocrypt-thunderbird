@@ -7,10 +7,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyObj"];
-
-
-
+var EXPORTED_SYMBOLS = ["newEnigmailKeyObj"];
 
 
 /**
@@ -67,12 +64,16 @@ var EXPORTED_SYMBOLS = ["EnigmailKeyObj"];
      * getVirtualKeySize
 */
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
-ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /*global EnigmailFuncs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/time.jsm"); /*global EnigmailTime: false */
-ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
+const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+const EnigmailTime = ChromeUtils.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+
+function newEnigmailKeyObj (keyData) {
+  return new EnigmailKeyObj(keyData);
+}
 
 class EnigmailKeyObj {
   constructor(keyData) {

@@ -20,14 +20,14 @@ ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/persistentCrypto.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /* global EnigmailKeyRing: false */
-ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /* global EnigmailStreams: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-ChromeUtils.import("resource://gre/modules/NetUtil.jsm"); /*global NetUtil: false*/
-ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm"); /* global EnigmailMime: false */
+const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
+const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
+const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");

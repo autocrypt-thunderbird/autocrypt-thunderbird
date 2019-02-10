@@ -11,15 +11,13 @@
 const EXPORTED_SYMBOLS = ["EnigmailLazy"];
 
 
-
 var EnigmailLazy = {
   loader: function(component, name) {
     let holder = null;
     return function() {
       if (holder === null) {
-        const into = {};
         component = component.replace(/^enigmail\//, "");
-        ChromeUtils.import("chrome://enigmail/content/modules/" + component, into);
+        const into = ChromeUtils.import("chrome://enigmail/content/modules/" + component);
         holder = into[name];
       }
       return holder;

@@ -12,7 +12,9 @@
 
 /*global EnigmailFiles: false */
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js"); /*global withEnigmail: false, withTestGpgHome: false, gKeyListObj: true */
-do_load_module("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm"); /*global appendKeyItems: false */
+
+let GnuPGKeyList = {};
+do_load_module("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm", GnuPGKeyList); /*global appendKeyItems: false */
 
 component("enigmail/trust.jsm"); /*global EnigmailTrust: false */
 component("enigmail/locale.jsm"); /*global EnigmailLocale: false */
@@ -306,7 +308,7 @@ const KeyRingHelper = {
       keys: [],
       index: []
     };
-    appendKeyItems(testKeyList, keyList);
+    GnuPGKeyList.appendKeyItems(testKeyList, keyList);
 
     createAndSortKeyList(keyList.keys,
       "validity", // sorted acc. to key validity
@@ -543,8 +545,8 @@ test(function shouldGetKeyValidityErrors() {
     index: []
   };
 
-  appendKeyItems(keyInfo, keyList);
-  appendKeyItems(secKeyInfo, keyList);
+  GnuPGKeyList.appendKeyItems(keyInfo, keyList);
+  GnuPGKeyList.appendKeyItems(secKeyInfo, keyList);
 
   createAndSortKeyList(keyList.keys,
     "validity", // sorted acc. to key validity

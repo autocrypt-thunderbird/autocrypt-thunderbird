@@ -15,10 +15,10 @@ const EXPORTED_SYMBOLS = ["EnigmailFiles"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 Components.utils.importGlobalProperties(["TextDecoder"]);
 
 const {

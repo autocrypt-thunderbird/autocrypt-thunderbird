@@ -11,17 +11,17 @@
 
 /* globals BaseProcess, PromiseWorker */
 
-/* global Components: false, libc: false, LIBC: false, OS: false */
+/* global Components: false, libc: false, LIBC: false */
 
 var {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 
 var EXPORTED_SYMBOLS = ["SubprocessImpl"];
 
 Components.utils.importGlobalProperties(["TextDecoder"]);
-ChromeUtils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
-ChromeUtils.import("resource://gre/modules/osfile.jsm"); /* global ctypes: false */
-ChromeUtils.import("resource://gre/modules/Services.jsm"); /* global Services: false */
-ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
+const OS = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
+const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+var SubprocessConstants = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
 
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared.js", this);
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared_unix.js", this);

@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTrust"];
 
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
+const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 // trust flags according to GPG documentation:
 // - https://www.gnupg.org/documentation/manuals/gnupg.pdf

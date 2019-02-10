@@ -11,8 +11,8 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailArmor"];
 
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 
 
 

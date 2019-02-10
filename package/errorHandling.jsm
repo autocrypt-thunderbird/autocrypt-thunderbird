@@ -17,9 +17,9 @@ ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/system.jsm"); /* global EnigmailSystem: false */
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+const EnigmailSystem = ChromeUtils.import("chrome://enigmail/content/modules/system.jsm").EnigmailSystem;
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 
 const getEnigmailKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 const getEnigmailGpg = EnigmailLazy.loader("enigmail/gpg.jsm", "EnigmailGpg");

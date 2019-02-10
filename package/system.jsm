@@ -13,12 +13,12 @@ var EXPORTED_SYMBOLS = ["EnigmailSystem"];
 
 
 
-ChromeUtils.import("resource://gre/modules/ctypes.jsm"); /* global ctypes: false */
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /* global EnigmailOS: false */
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /* global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /* global subprocess: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 
 var gKernel32Dll = null;
 var gSystemCharset = null;

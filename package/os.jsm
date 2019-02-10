@@ -10,13 +10,8 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailOS"];
 
-
-
-
-
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-// ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
 // const getExecution = EnigmailLazy.loader("enigmail/execution.jsm", "EnigmailExecution");
 
 let operatingSystem = null;

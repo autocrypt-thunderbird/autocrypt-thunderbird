@@ -33,7 +33,7 @@ test:
     - printf 'user_pref("extensions.blocklist.enabled", false);\n' >> "$TBPROFILE/prefs.js"
     - printf 'user_pref("app.update.enabled", false);\n' >> "$TBPROFILE/prefs.js"
     - printf 'user_pref("extensions.enigmail.logDirectory", "%s");\n' $(pwd)/tmp >> "$TBPROFILE/prefs.js"
-    - curl -s -o "$TBPROFILE/extensions/jsunit@enigmail.net.xpi" https://www.enigmail.net/jsunit/jsunit-0.2.0.xpi
+    - curl -s -o "$TBPROFILE/extensions/jsunit@enigmail.net.xpi" https://www.enigmail.net/jsunit/jsunit-0.2.1.xpi
     - export TBDOWNLOAD=$(curl -s 'https://download.mozilla.org/?product=thunderbird-beta-latest&os=linux64&lang=en-US' | sed -E 's/(.*href=")([^"]+)(".*)/\2/')
     - curl -s -o thunderbird.tar.bz2 $TBDOWNLOAD
     - tar -xjvf thunderbird.tar.bz2

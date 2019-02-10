@@ -33,8 +33,7 @@ var TestHelper = {
     let modName = "";
     if (name.search(/^enigmail\//) === 0) {
       modName = "chrome://enigmail/content/modules/" + name.replace(/^enigmail\//, "");
-    }
-    else {
+    } else {
       modName = "resource://" + name;
     }
 
@@ -202,13 +201,13 @@ function withOverwriteFuncs(overwriteArr, func) {
 
 function withPreferences(func) {
   return function() {
-    const keyRefreshPrefs = EnigmailPrefs.getPref("keyRefreshOn");
-    const keyserverPrefs = EnigmailPrefs.getPref("keyserver");
+    const keyRefreshPrefs = TestEnigmailPrefs.getPref("keyRefreshOn");
+    const keyserverPrefs = TestEnigmailPrefs.getPref("keyserver");
     try {
       func();
     } finally {
-      EnigmailPrefs.setPref("keyRefreshOn", keyRefreshPrefs);
-      EnigmailPrefs.setPref("keyserver", keyserverPrefs);
+      TestEnigmailPrefs.setPref("keyRefreshOn", keyRefreshPrefs);
+      TestEnigmailPrefs.setPref("keyserver", keyserverPrefs);
     }
   };
 }
@@ -228,8 +227,8 @@ function setupTestAccounts(primaryEmail = null, primaryKeyId = null) {
 }
 
 function setupTestAccount(accountName, incomingServerUserName, primaryEmail = null, primaryKeyId = null) {
-  
-  
+
+
 
   // sanity check
   let accountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
@@ -246,12 +245,10 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
 
     if (ac.identities.length < idNumber - 1) {
       throw "error - cannot add Identity with gaps";
-    }
-    else if (ac.identities.length === idNumber - 1) {
+    } else if (ac.identities.length === idNumber - 1) {
       id = accountManager.createIdentity();
       ac.addIdentity(id);
-    }
-    else {
+    } else {
       id = ac.identities.queryElementAt(idNumber - 1, Ci.nsIMsgIdentity);
     }
 
@@ -319,18 +316,18 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
   return gotAc;
 }
 
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
+const TestEnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 
 function withEnigmail(f) {
   return function() {
     try {
-      const enigmail = EnigmailCore.createInstance();
+      const enigmail = TestEnigmailCore.createInstance();
       const window = JSUnit.createStubWindow();
       enigmail.initialize(window, "");
-      return f(EnigmailCore.getEnigmailService(), window);
+      return f(TestEnigmailCore.getEnigmailService(), window);
     } finally {
       shutdownGpgAgent();
-      EnigmailCore.setEnigmailService(null);
+      TestEnigmailCore.setEnigmailService(null);
     }
   };
 }
@@ -343,7 +340,7 @@ function shutdownGpgAgent() {
     const proc = {
       command: EnigmailGpgAgent.gpgconfPath,
       arguments: ["--kill", "gpg-agent"],
-      environment: EnigmailCore.getEnvList(),
+      environment: TestEnigmailCore.getEnvList(),
       charset: null,
       mergeStderr: false
     };
@@ -359,25 +356,26 @@ function shutdownGpgAgent() {
 
 CustomAssert.registerExtraAssertionsOn(Assert);
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+const TestEnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const TestEnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+
 function withLogFiles(f) {
   return function() {
     try {
-      EnigmailLog.setLogLevel(5);
+      TestEnigmailLog.setLogLevel(5);
       f();
     } finally {
-      EnigmailLog.onShutdown();
-      EnigmailLog.createLogFiles();
+      TestEnigmailLog.onShutdown();
+      TestEnigmailLog.createLogFiles();
     }
   };
 }
 
 function assertLogContains(expected) {
   let failureMessage = "Expected log to contain: " + expected;
-  Assert.ok(EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs).indexOf(expected) !== -1, failureMessage);
+  Assert.ok(TestEnigmailLog.getLogData(TestEnigmailCore.version, TestEnigmailPrefs).indexOf(expected) !== -1, failureMessage);
 }
 
 function assertLogDoesNotContain(expected) {
-  Assert.equal(EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs).indexOf(expected), -1);
+  Assert.equal(TestEnigmailLog.getLogData(TestEnigmailCore.version, TestEnigmailPrefs).indexOf(expected), -1);
 }

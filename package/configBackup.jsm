@@ -13,10 +13,10 @@ var EXPORTED_SYMBOLS = ["EnigmailConfigBackup"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /* global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm"); /* global EnigmailRules: false */
-ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /* global EnigmailFiles: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /* global EnigmailPrefs: false */
+const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
+const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 
 const TYPE_BOOL = 1;
 const TYPE_CHAR = 2;

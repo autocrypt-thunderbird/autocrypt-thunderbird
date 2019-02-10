@@ -28,7 +28,6 @@ testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false */
 component("enigmail/files.jsm"); /* global EnigmailFiles: false */
 component("enigmail/keyRing.jsm"); /* global EnigmailKeyRing: false */
 component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
-component("enigmail/singletons.jsm"); /* global EnigmailSingletons: false */
 component("enigmail/mimeVerify.jsm"); /*global EnigmailVerify: false */
 
 ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm"); /* global EnigmailTb60Compat: false */

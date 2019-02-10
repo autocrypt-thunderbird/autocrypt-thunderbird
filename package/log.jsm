@@ -16,7 +16,7 @@ var EXPORTED_SYMBOLS = ["EnigmailLog"];
 
 ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/files.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/os.jsm"); /*global EnigmailOS: false */
+const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";

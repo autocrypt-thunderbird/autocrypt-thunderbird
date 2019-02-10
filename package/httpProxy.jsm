@@ -14,7 +14,7 @@ var EXPORTED_SYMBOLS = ["EnigmailHttpProxy"];
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
+const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 
 const NS_PREFS_SERVICE_CID = "@mozilla.org/preferences-service;1";
 

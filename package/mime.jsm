@@ -13,10 +13,10 @@ var EXPORTED_SYMBOLS = ["EnigmailMime"];
 
 
 
-ChromeUtils.import("resource:///modules/jsmime.jsm"); /*global jsmime: false*/
-ChromeUtils.import("chrome://enigmail/content/modules/data.jsm"); /*global EnigmailData: false */
-ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm"); /*global EnigmailRNG: false */
-ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm"); /*global EnigmailStreams: false */
+const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
+const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
+const EnigmailRNG = ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm").EnigmailRNG;
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 
 var EnigmailMime = {
   /***

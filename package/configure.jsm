@@ -19,12 +19,12 @@ ChromeUtils.import("chrome://enigmail/content/modules/app.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /* global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm"); /* global EnigmailStdlib: false */
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
-ChromeUtils.import("chrome://enigmail/content/modules/autoSetup.jsm"); /* global EnigmailAutoSetup: false */
-ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm"); /* global EnigmailSqliteDb: false*/
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
+const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailAutoSetup = ChromeUtils.import("chrome://enigmail/content/modules/autoSetup.jsm").EnigmailAutoSetup;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;

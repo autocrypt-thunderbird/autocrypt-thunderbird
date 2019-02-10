@@ -25,9 +25,9 @@ var {
 } = Components;
 
 Components.utils.importGlobalProperties(["TextEncoder"]);
-ChromeUtils.import("resource://gre/modules/AppConstants.jsm"); /* global AppConstants: false */
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); /* global XPCOMUtils: false */
-ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm"); /* global SubprocessConstants: false */
+const AppConstants = ChromeUtils.import("resource://gre/modules/AppConstants.jsm").AppConstants;
+const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
+var SubprocessConstants = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
 
 if (AppConstants.platform == "win") {
   XPCOMUtils.defineLazyModuleGetter(this, "SubprocessImpl",

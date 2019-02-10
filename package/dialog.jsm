@@ -19,7 +19,7 @@ ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm");
 ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm"); /* global EnigmailConstants: false */
+const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;
