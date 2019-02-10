@@ -269,6 +269,8 @@ function attachPepKey_test() {
 
 function checkProtectHeaders_test() {
 
+  window.openDialog = function(xulFilePath, str1, options, inputObj, resultObj) {};
+
   let ret = Enigmail.msg.checkProtectHeaders(0x0080);
   Assert.equal(ret, true);
 
