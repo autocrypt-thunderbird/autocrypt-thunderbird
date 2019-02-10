@@ -7,22 +7,16 @@
 
 "use strict";
 
-
-
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm"); /*global EnigmailDialog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/files.jsm"); /*global EnigmailFiles: false */
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm"); /*global EnigmailLog: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm"); /*global EnigmailConfigBackup: false */
-ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm"); /*global EnigmailGpgAgent: false */
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm"); /*global EnigmailLocale: false */
-ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm"); /*global EnigmailPrefs: false */
-
-var osUtils = {};
-ChromeUtils.import("resource://gre/modules/FileUtils.jsm", osUtils);
+var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+var EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
+var EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+var osUtils = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
 
 var gWorkFile = {
   file: null
@@ -54,8 +48,7 @@ function browseExportFile(referencedId) {
       (!filePath.exists() && filePath.parent.isWritable())) {
       document.getElementById(referencedId).value = filePath.path;
       gWorkFile.file = filePath;
-    }
-    else {
+    } else {
       EnigmailDialog.alert(window, EnigmailLocale.getString("cannotWriteToFile", filePath.path));
     }
   }
@@ -117,8 +110,7 @@ function doExport(tmpDir) {
     zipW.close();
 
     tmpDir.remove(true);
-  }
-  catch(ex) {
+  } catch (ex) {
     EnigmailLog.ERROR(`importExportWizard: error while creating ZIP file ${ex.toString()}\n`);
   }
   document.getElementById("doneMessage").removeAttribute("hidden");
@@ -158,8 +150,7 @@ function startExport() {
 
   try {
     retVal = doExport(tmpDir);
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.ERROR(`exportSettingsWizard.js: Exception during export: ${ex.toString()} at\n${ex.stack}\n`);
   }
 
@@ -169,8 +160,7 @@ function startExport() {
   if (retVal) {
     wizard.getButton("finish").removeAttribute("disabled");
     wizard.canAdvance = true;
-  }
-  else {
+  } else {
     exportFailed();
   }
 

@@ -17,10 +17,10 @@
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
-ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm"); /* global EnigmailFuncs: false */
-ChromeUtils.import("chrome://enigmail/content/modules/key.jsm"); /*global EnigmailKey: false */
-ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm"); /*global EnigmailCryptoAPI: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm"); /*global EnigmailKeyObj: false */
+var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+var EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
+var EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+var EnigmailKeyObj = ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm").EnigmailKeyObj;
 
 
 const INPUT = 0;

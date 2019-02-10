@@ -25,9 +25,9 @@
 
 
 
-ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm"); /* global EnigmailConfigBackup: false */
-ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm"); /* global EnigmailWindows: false */
-ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm"); /* global EnigmailLazy: false */
+var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
+var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
+var EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 
 const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
 

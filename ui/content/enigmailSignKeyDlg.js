@@ -4,20 +4,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/* global Components: false */
-/* global EnigmailKeyEditor: false, EnigmailLog: false, EnigmailLocale: false, EnigmailDialog: false */
-
 "use strict";
 
-
-
-ChromeUtils.import("chrome://enigmail/content/modules/core.jsm"); /*global EnigmailCore: false */
-ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/log.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
-ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm"); /*global EnigmailKeyRing: false */
-ChromeUtils.import("chrome://enigmail/content/modules/trust.jsm"); /*global EnigmailTrust: false */
+var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+var EnigmailKeyEditor = ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm").EnigmailKeyEditor;
+var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+var EnigmailTrust = ChromeUtils.import("chrome://enigmail/content/modules/trust.jsm").EnigmailTrust;
 
 var gExportableSignatureList = null;
 var gLocalSignatureList = null;
@@ -79,16 +74,14 @@ function onLoad() {
           if (sigType === "x") {
             if (gExportableSignatureList[signer] === undefined) {
               gExportableSignatureList[signer] = 1;
-            }
-            else {
+            } else {
               gExportableSignatureList[signer] += 1;
             }
           }
           if (sigType === "l") {
             if (gLocalSignatureList[signer] === undefined) {
               gLocalSignatureList[signer] = 1;
-            }
-            else {
+            } else {
               gLocalSignatureList[signer] += 1;
             }
           }
@@ -121,8 +114,7 @@ function onLoad() {
       }
     }
 
-  }
-  catch (ex) {}
+  } catch (ex) {}
 }
 
 function onAccept() {
@@ -144,8 +136,7 @@ function onAccept() {
     function(exitCode, errorMsg) {
       if (exitCode !== 0) {
         EnigmailDialog.alert(window, EnigmailLocale.getString("signKeyFailed") + "\n\n" + errorMsg);
-      }
-      else {
+      } else {
         window.arguments[1].refresh = true;
       }
       window.close();
@@ -166,8 +157,7 @@ function enigKeySelCb() {
 
   if (doLocalSig.checked) {
     signatureCount = gLocalSignatureList[signWithKeyId];
-  }
-  else {
+  } else {
     signatureCount = gExportableSignatureList[signWithKeyId];
   }
 
@@ -177,27 +167,23 @@ function enigKeySelCb() {
     alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySignedexportable.label", "0x" + keyToBeSigned));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
-  }
-  else if (signatureCount === undefined) {
+  } else if (signatureCount === undefined) {
     // No signature yet, Hide hint field and ENable OK button
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
-  }
-  else if (signatureCount == gUidCount[keyToBeSigned]) {
+  } else if (signatureCount == gUidCount[keyToBeSigned]) {
     // Signature count == UID count, so key is already fully signed and another signing operation makes no more sense
     // Here, we display a hint and DISable the OK button
     alreadySigned.setAttribute("value", EnigmailLocale.getString("alreadySigned.label", "0x" + keyToBeSigned));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = true;
-  }
-  else if (signatureCount > 0) {
+  } else if (signatureCount > 0) {
     // Signature count != UID count, so key is partly signed and another sign operation makes sense
     // Here, we display a hint and ENable the OK button
     alreadySigned.setAttribute("value", EnigmailLocale.getString("partlySigned.label", "0x" + keyToBeSigned));
     alreadySigned.removeAttribute("collapsed");
     acceptButton.disabled = false;
-  }
-  else {
+  } else {
     // Default catch for unforeseen cases. Hide hint field and enable OK button
     alreadySigned.setAttribute("collapsed", "true");
     acceptButton.disabled = false;
