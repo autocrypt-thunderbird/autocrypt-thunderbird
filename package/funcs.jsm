@@ -316,7 +316,7 @@ var EnigmailFuncs = {
       return EnigmailData.convertToUnicode(EnigmailPrefs.getPref("protectedSubjectText"), "utf-8");
     }
     else {
-      return EnigmailLocale.getString("msgCompose.encryptedSubjectStub");
+      return "...";
     }
   },
 
