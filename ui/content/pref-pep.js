@@ -41,7 +41,7 @@ function onLoad() {
 
   gLookupKeys.checked = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 
-  let versionNum = EnigmailApp.getVersion() + " (" + EnigmailBuildDate + ")";
+  let versionNum = EnigmailApp.getVersion() + " (" + EnigmailBuildDate.built + ")";
   let displayVersion = EnigmailLocale.getString("enigmailPepVersion", versionNum);
   document.getElementById("enigmailVersion").setAttribute("value", displayVersion);
 
@@ -69,8 +69,7 @@ function onAccept() {
 
   if (gLookupKeys.checked && (!origLookupKeys)) {
     EnigmailPEPAdapter.pep.startKeyserverLookup();
-  }
-  else if ((!gLookupKeys.checked) && origLookupKeys) {
+  } else if ((!gLookupKeys.checked) && origLookupKeys) {
     EnigmailPEPAdapter.pep.stopKeyserverLookup();
   }
 

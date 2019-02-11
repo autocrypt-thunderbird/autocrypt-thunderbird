@@ -121,7 +121,7 @@ deploy: $(PREFFILES) $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules $(MODFILES)
 	echo '"use strict";' > $(DIST)/chrome/content/modules/buildDate.jsm
 	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> $(DIST)/chrome/content/modules/buildDate.jsm
-	echo 'const EnigmailBuildDate = "$(ENIG_BUILD_DATE)";' >> $(DIST)/chrome/content/modules/buildDate.jsm
+	echo 'var EnigmailBuildDate = { built: "$(ENIG_BUILD_DATE)" };' >> $(DIST)/chrome/content/modules/buildDate.jsm
 
 
 clean:

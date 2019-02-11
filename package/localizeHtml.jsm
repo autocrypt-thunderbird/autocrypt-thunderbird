@@ -19,7 +19,7 @@ const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.
 const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 
 function getEnigmailVersion() {
-  let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate + ")";
+  let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate.built + ")";
   return EnigmailLocale.getString("usingVersion", versionStr);
 }
 
