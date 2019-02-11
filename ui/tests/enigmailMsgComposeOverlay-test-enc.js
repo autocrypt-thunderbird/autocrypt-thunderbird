@@ -8,6 +8,7 @@
 "use strict";
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
+
 /* global component: false, test: false, withTestGpgHome: false, withEnigmail: false, do_get_file: false, withOverwriteFuncs: false */
 var window = JSUnit.createStubWindow();
 var document = {
@@ -27,7 +28,7 @@ window.document = document;
 
 do_load_module("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js");
 /* global EnigmailMimeEncrypt: false */
-/* global EnigmailTb60Compat: false */
+var EnigmailTb60Compat = component("enigmail/tb60compat.jsm").EnigmailTb60Compat;
 /* global EnigmailConstants: false */
 /* global EnigmailLocale: false */
 /* global EnigmailKeyRing: false */
