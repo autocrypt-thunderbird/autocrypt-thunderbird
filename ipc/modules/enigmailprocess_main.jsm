@@ -173,8 +173,6 @@ var SubprocessMain = {
      * @returns {Promise<string>}
      */
     pathSearch(command, environment = this.getEnvironment()) {
-      // Promise.resolve lets us get around returning one of the Promise.jsm
-      // pseudo-promises returned by Task.jsm.
       let path = SubprocessImpl.pathSearch(command, environment);
       return Promise.resolve(path);
     }
