@@ -67,7 +67,7 @@ const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-st
  * @param {Array of String} onlyKeys: only load data for specified key IDs
  *
  * @return {Promise<Array Object>}:
- * key objects as specifiedin EnigmailKeyObj.constructor
+ * key objects as specified in EnigmailKeyObj.constructor
  */
 async function obtainKeyList(onlyKeys = null) {
   EnigmailLog.DEBUG("gnupg-keylist.jsm: obtainKeyList()\n");
