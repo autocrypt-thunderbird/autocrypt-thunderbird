@@ -20,7 +20,7 @@ EnigInitCommon("enigmailKeySelection");
 var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 var EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
 var EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-var EnigmailKeyObj = ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm").EnigmailKeyObj;
+var newEnigmailKeyObj = ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm").newEnigmailKeyObj;
 
 
 const INPUT = 0;
@@ -111,8 +111,7 @@ function getKeyList(secretOnly, refresh) {
       userList = EnigmailKeyRing.getAllSecretKeys(window);
       if (!userList) return null;
       keyList = EnigmailFuncs.cloneObj(userList);
-    }
-    else {
+    } else {
       userList = EnigmailKeyRing.getAllKeys(window);
       if (!userList) return null;
 
@@ -123,7 +122,7 @@ function getKeyList(secretOnly, refresh) {
       keyList = EnigmailFuncs.cloneObj(userList.keyList);
 
       let grpList = cApi.getGroups().map(k => {
-        return new EnigmailKeyObj(k);
+        return newEnigmailKeyObj(k);
       });
 
       for (let i in grpList) {
@@ -163,15 +162,13 @@ function sortKeys(a, b) {
   // 4th: sort according to user IDs
   else if (a.userId.toLowerCase() < b.userId.toLowerCase()) {
     r = -1;
-  }
-  else if (a.userId.toLowerCase() > b.userId.toLowerCase()) {
+  } else if (a.userId.toLowerCase() > b.userId.toLowerCase()) {
     r = 1;
   }
   // 5th: sort according to trust level (higher index value in front)
   else if (TRUSTLEVELS_SORTED.indexOf(a.keyTrust) > TRUSTLEVELS_SORTED.indexOf(b.keyTrust)) {
     r = -1;
-  }
-  else {
+  } else {
     r = 1;
   }
   return r;
@@ -226,8 +223,7 @@ function prepareDialog(secretOnly) {
         dialogMsgListRows.appendChild(row);
       }
       dialogMsgList.removeAttribute("collapsed");
-    }
-    else {
+    } else {
       dialogMsgList.setAttribute("collapsed", "true");
     }
   }
@@ -242,7 +238,7 @@ function prepareDialog(secretOnly) {
     var sendSignedCheckbox = document.getElementById("enigmailUserSelSendSigned");
     sendSignedCheckbox.setAttribute("checked", "false");
   }
-  if ( (window.arguments[INPUT].options.indexOf("rulesOption") < 0) ) {
+  if ((window.arguments[INPUT].options.indexOf("rulesOption") < 0)) {
     var rulesOption = document.getElementById("enigmailKeySelectionDlg").getButton("extra1");
     rulesOption.setAttribute("hidden", "true");
   }
@@ -262,8 +258,7 @@ function prepareDialog(secretOnly) {
     document.getElementById("dialogHeadline").setAttribute("collapsed", "true");
     document.getElementById("enigmailUserSelSendSigned").setAttribute("collapsed", "true");
     document.getElementById("enigmailUserSelSendEncrypted").setAttribute("collapsed", "true");
-  }
-  else if (window.arguments[INPUT].options.indexOf("noforcedisp") >= 0) {
+  } else if (window.arguments[INPUT].options.indexOf("noforcedisp") >= 0) {
     document.getElementById("displayNoLonger").removeAttribute("collapsed");
   }
 
@@ -309,8 +304,7 @@ function buildList(refresh) {
   var uidNotValid;
   if (gAlwaysTrust) {
     uidNotValid = "";
-  }
-  else {
+  } else {
     uidNotValid = "o-qn";
   }
 
@@ -328,7 +322,7 @@ function buildList(refresh) {
   var j;
   var toKeys = "";
   try {
-    if (typeof (window.arguments[INPUT].toKeys) == "string") {
+    if (typeof(window.arguments[INPUT].toKeys) == "string") {
       toKeys = window.arguments[INPUT].toKeys;
     }
   } catch (ex) {}
@@ -340,7 +334,7 @@ function buildList(refresh) {
     // However, that's confusing because with the after refreshing keys
     // with no change in the key set, different items are selected.
     // Thus, this is disabled until there is a reprocessing of validity.
-    if (typeof (window.arguments[INPUT].invalidAddr) == "string") {
+    if (typeof(window.arguments[INPUT].invalidAddr) == "string") {
       invalidAddr = " " + window.arguments[INPUT].invalidAddr + " ";
     }
   } catch (ex) {}
@@ -368,7 +362,7 @@ function buildList(refresh) {
 
   // delete "empty" entries
   for (i = 0; i < aUserList.length; i++) {
-    if (typeof (aUserList[i].userId) != "string") {
+    if (typeof(aUserList[i].userId) != "string") {
       aUserList.splice(i, 1);
     }
   }
@@ -416,10 +410,10 @@ function buildList(refresh) {
           aUserList[i].uidMatchInvalid = true; // found matching but invalid email
         }
         if (((!aUserList[i].keyTrust) ||
-          KEY_NOT_VALID.indexOf(aUserList[i].keyTrust) < 0) &&
+            KEY_NOT_VALID.indexOf(aUserList[i].keyTrust) < 0) &&
           aUserList[i].subkeyOK &&
           (aUserList[i].expiryTime <= 0 ||
-          (aUserList[i].expiryTime >= now))) {
+            (aUserList[i].expiryTime >= now))) {
           // key still valid
           aUserList[i].valid = true;
           escapedMailAddr = mailAddr.replace(escapeRegExp, "\\$1");
@@ -429,15 +423,13 @@ function buildList(refresh) {
             if (invalidAddr.indexOf(" " + mailAddr + " ") < 0) {
               aValidUsers.push(mailAddr);
               aUserList[i].activeState = (toAddr.search(s1) >= 0 ? 1 : 0);
-            }
-            else {
+            } else {
               // mail address found as invalid address: marks that to sort them to the beginning
               aUserList[i].uidMatchInvalid = true;
               aUserList[i].uidValid = false;
               aUserList[i].activeState = 0;
             }
-          }
-          else {
+          } else {
             aUserList[i].uidValid = false;
             aUserList[i].activeState = 0;
           }
@@ -452,8 +444,7 @@ function buildList(refresh) {
             }
           }
         }
-      }
-      else {
+      } else {
         // special handling for gpg groups
         mailAddr = stripEmailFromKey(aUserList[i].userId);
         aValidUsers.push(mailAddr);
@@ -461,8 +452,7 @@ function buildList(refresh) {
         aUserList[i].uidValid = true;
         if (toKeys.length > 0) {
           aUserList[i].activeState = (toKeys.indexOf("GROUP:" + aUserList[i].keyId + ",") >= 0 ? 1 : 0);
-        }
-        else
+        } else
           aUserList[i].activeState = 0;
       }
 
@@ -515,8 +505,7 @@ function buildTreeView(aUserList, hideExpired, secretOnly) {
       // do not show if expired keys are hidden
       if (secretOnly) {
         treeItem = enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].created, "", true);
-      }
-      else {
+      } else {
         treeItem = enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust, aUserList[i].uidValid);
       }
       if (aUserList[i].hasSubUserIds()) {
@@ -604,8 +593,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
   var keyCol = document.createElement("treecell");
   if (userObj.keyTrust != KEY_IS_GROUP) {
     keyCol.setAttribute("label", "0x" + keyValue);
-  }
-  else {
+  } else {
     keyCol.setAttribute("label", EnigGetString("keyTrust.group"));
   }
   keyCol.setAttribute("id", "keyid");
@@ -623,7 +611,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
 
   // process which row elements to make insensitive
   if (((userObj.keyTrust.length > 0) &&
-    (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0)) >= 0)) ||
+      (KEY_NOT_VALID.indexOf(userObj.keyTrust.charAt(0)) >= 0)) ||
     (!userObj.subkeyOK)) {
     // disabled/revoked/expired/invalid (sub)keys inactivate whole row
     userCol.setAttribute("properties", "enigKeyInactive");
@@ -633,8 +621,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
     if (!gAllowExpired && activeState >= 0) {
       activeState = 2;
     }
-  }
-  else if (!gAlwaysTrust) {
+  } else if (!gAlwaysTrust) {
     if (("mfu".indexOf(userObj.keyTrust.charAt(0)) < 0) ||
       (uidValidityStatus.length > 0) &&
       ("o-qn".indexOf(uidValidityStatus.charAt(0)) >= 0)) {
@@ -657,8 +644,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
   var treeItem = document.createElement("treeitem");
   if (userObj.keyTrust == KEY_IS_GROUP) {
     treeItem.setAttribute("id", "GROUP:" + userObj.keyId);
-  }
-  else {
+  } else {
     treeItem.setAttribute("id", "0x" + userObj.keyId);
     if (userObj.fpr.length > 0) {
       treeItem.setAttribute("fpr", "0x" + userObj.fpr);
@@ -686,13 +672,11 @@ function onAccept() {
       item = gUserList.view.getItemAtIndex(gUserList.currentIndex);
       if (item.getAttribute("fpr")) {
         resultObj.userList.push(item.getAttribute("fpr"));
-      }
-      else {
+      } else {
         resultObj.userList.push(item.getAttribute("id"));
       }
     }
-  }
-  else {
+  } else {
     item = treeChildren.firstChild;
     while (item) {
       var aRows = item.getElementsByAttribute("id", "indicator");
@@ -701,8 +685,7 @@ function onAccept() {
         if (elem.getAttribute("active") == "1") {
           if (item.getAttribute("fpr")) {
             resultObj.userList.push(item.getAttribute("fpr"));
-          }
-          else {
+          } else {
             resultObj.userList.push(item.getAttribute("id"));
           }
         }
@@ -753,45 +736,45 @@ function userSelCallback(event) {
   if (!gSendEncrypted)
     return;
 
-  var row = {};
-  var col = {};
-  var elt = {};
-  var Tree;
+  let Tree;
+  let row;
+  let col;
   if (event.type == "keypress") {
     // key event
     if (event.charCode == 32) {
       Tree = event.target;
       if (Tree.view.selection.count > 0) {
-        row.value = Tree.view.selection.currentIndex;
+        row = Tree.view.selection.currentIndex;
       }
-    }
-    else {
+    } else {
       return;
     }
-  }
-  else if (event.type == "click") {
+  } else if (event.type == "click") {
     // Mouse event
     Tree = document.getElementById("enigmailUserIdSelection");
-    Tree.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
 
-    if (!col.value) // not clicked on a valid column (e.g. scrollbar)
+    let treeInfo = Tree.getCellAt(event.clientX, event.clientY);
+    row = treeInfo.row;
+    col = treeInfo.col;
+
+    if (!treeInfo.col) // not clicked on a valid column (e.g. scrollbar)
       return;
 
     if (event.detail > 2) return;
 
-    if ((event.detail == 1) && (col.value.id != "selectionCol"))
+    if ((event.detail == 1) && (col.id != "selectionCol"))
       return; // single clicks are only relevant for the selection column
 
-    if ((event.detail == 2) && ("selectionCol,enigUserNameCol,uidValidityCol,expCol,keyCol".indexOf(col.value.id) < 0))
+    if ((event.detail == 2) && ("selectionCol,enigUserNameCol,uidValidityCol,expCol,keyCol".indexOf(col.id) < 0))
       return;
 
     event.stopPropagation();
 
   }
 
-  if (row.value == -1)
+  if (row == -1)
     return;
-  var treeItem = Tree.view.getItemAtIndex(row.value);
+  var treeItem = Tree.view.getItemAtIndex(row);
   Tree.currentItem = treeItem;
   var aRows = treeItem.getElementsByAttribute("id", "indicator");
 
@@ -806,8 +789,7 @@ function userSelCallback(event) {
     var elem = aRows[0];
     if (elem.getAttribute("active") == "1") {
       EnigSetActive(elem, 0);
-    }
-    else if (elem.getAttribute("active") == "0") {
+    } else if (elem.getAttribute("active") == "0") {
       EnigSetActive(elem, 1);
     }
   }
@@ -829,8 +811,7 @@ function displayNoLonger() {
   var dispMsg = document.getElementById("displayNoLonger");
   if (gSendEncrypted) {
     dispMsg.setAttribute("disabled", "true");
-  }
-  else {
+  } else {
     dispMsg.removeAttribute("disabled");
   }
 }
@@ -845,8 +826,7 @@ function disableList() {
     if (node.localName == "treecol") {
       if (gSendEncrypted) {
         node.removeAttribute("properties");
-      }
-      else {
+      } else {
         node.setAttribute("properties", "enigDontEncrypt");
       }
     }
@@ -905,8 +885,7 @@ function onSearchInput() {
     for (let item = treeChildren.firstChild; item; item = item.nextSibling) {
       item.setAttribute("hidden", false);
     }
-  }
-  else {
+  } else {
     // hide items that are
     // - not active
     // - and do not match the search string in all names/emails or key
@@ -954,8 +933,7 @@ function stripEmailFromKey(uid) {
   } catch (ex) {
     // remove quotes
     return EnigmailFuncs.stripEmail(uid.replace(/"/g, "")).toLowerCase();
-  }
-  finally {
+  } finally {
     // search for last ocurrence of < >
     return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase(); // eslint-disable-line no-unsafe-finally
   }

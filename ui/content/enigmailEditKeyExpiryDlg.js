@@ -77,21 +77,17 @@ function addSubkeyWithSelectboxes(treeChildren, subkey, keyCount) {
   if (subkey.keyTrust === "r") {
     // Revoked keys can not be changed.
     preSelected = -1;
-  }
-  else {
+  } else {
     if (subkey.type === "pub") {
       // The primary key is ALWAYS selected.
       preSelected = 1;
-    }
-    else if (keyCount === 2) {
+    } else if (keyCount === 2) {
       // If only 2 keys are here (primary + 1 subkey) then preSelect them anyway.
       preSelected = 1;
-    }
-    else if (subkey.keyTrust === "e") {
+    } else if (subkey.keyTrust === "e") {
       // Expired keys are normally un-selected.
       preSelected = 0;
-    }
-    else {
+    } else {
       // A valid subkey is pre-selected.
       preSelected = 1;
     }
@@ -119,11 +115,9 @@ function addSubkey(treeChildren, subkey, selectCol = false) {
   var expire;
   if (subkey.keyTrust === "r") {
     expire = EnigmailLocale.getString("keyValid.revoked");
-  }
-  else if (subkey.expiryTime.length === 0) {
+  } else if (subkey.expiryTime.length === 0) {
     expire = EnigmailLocale.getString("keyExpiryNever");
-  }
-  else {
+  } else {
     expire = subkey.expiry;
   }
 
@@ -188,18 +182,18 @@ function addSubkey(treeChildren, subkey, selectCol = false) {
 function enigmailKeySelCallback(event) {
   EnigmailLog.DEBUG("enigmailEditKeyExpiryDlg.js: enigmailKeySelCallback\n");
 
-  var treeList = document.getElementById("subkeyList");
-  var row = {};
-  var col = {};
-  var elt = {};
-  treeList.treeBoxObject.getCellAt(event.clientX, event.clientY, row, col, elt);
-  if (row.value == -1)
+  let treeList = document.getElementById("subkeyList");
+  let {
+    row,
+    col
+  } = treeList.getCellAt(event.clientX, event.clientY);
+  if (row == -1)
     return;
 
 
-  var treeItem = treeList.view.getItemAtIndex(row.value);
+  var treeItem = treeList.view.getItemAtIndex(row);
   treeList.currentItem = treeItem;
-  if (col.value.id != "selectionCol")
+  if (col.id != "selectionCol")
     return;
 
   var aRows = treeItem.getElementsByAttribute("id", "indicator");
@@ -208,8 +202,7 @@ function enigmailKeySelCallback(event) {
     var elem = aRows[0];
     if (elem.getAttribute("active") == "1") {
       EnigSetActive(elem, 0);
-    }
-    else if (elem.getAttribute("active") == "0") {
+    } else if (elem.getAttribute("active") == "0") {
       EnigSetActive(elem, 1);
     }
   }
@@ -235,8 +228,7 @@ function processKey(subKeys) {
         EnigmailTimer.setTimeout(function() {
           EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyExpirationDateFailed") + "\n\n" + errorMsg);
         }, 10);
-      }
-      else {
+      } else {
         window.arguments[1].refresh = true;
         window.close();
       }
@@ -282,8 +274,7 @@ function onAccept() {
     let subkeys = getSelectedSubkeys();
     if (subkeys.length > 0) {
       processKey(subkeys);
-    }
-    else {
+    } else {
       EnigmailTimer.setTimeout(function() {
         EnigmailDialog.alert(window, EnigmailLocale.getString("noKeySelected") + "\n");
       }, 10);
@@ -311,8 +302,7 @@ function checkExpirationDate() {
         }, 10);
       }
       return false;
-    }
-    else if (expiryTime <= 0) {
+    } else if (expiryTime <= 0) {
       if (gAlertPopUpIsOpen !== true) {
         gAlertPopUpIsOpen = true;
         EnigmailTimer.setTimeout(function() {

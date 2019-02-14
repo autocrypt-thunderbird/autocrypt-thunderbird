@@ -10,9 +10,9 @@
 
 
 
-const {EnigmailLocale} = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-const {EnigmailPrefs} = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-const {EnigmailDialog} = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
+var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
+var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 
 
 function onLoad() {
@@ -21,12 +21,11 @@ function onLoad() {
   let searchCollapser = document.getElementById("searchCollapser");
   let keyText;
 
-  if (typeof (window.arguments[0].keyId) == "string") {
+  if (typeof(window.arguments[0].keyId) == "string") {
     var keyId = window.arguments[0].keyId;
     if (window.arguments[0].upload) {
       keyText = EnigmailLocale.getString("uploadKey", keyId);
-    }
-    else {
+    } else {
       keyText = EnigmailLocale.getString("importKey", keyId);
     }
 
@@ -35,8 +34,7 @@ function onLoad() {
     }
     keyIdText.firstChild.data = keyText;
     searchCollapser.setAttribute("collapsed", "true");
-  }
-  else {
+  } else {
     keyIdText.setAttribute("collapsed", "true");
   }
 
@@ -46,7 +44,7 @@ function onLoad() {
   for (var i = 0; i < keyservers.length; i++) {
     if (keyservers[i].length > 0 &&
       (!window.arguments[0].upload ||
-      keyservers[i].slice(0, 10) !== "keybase://")) {
+        keyservers[i].slice(0, 10) !== "keybase://")) {
       menulist.appendItem(keyservers[i]);
     }
   }
@@ -60,7 +58,7 @@ function onAccept() {
   let menulist = document.getElementById("selectedServer");
   let srv = srvName.value;
   window.arguments[1].value = srv;
-  if (typeof (window.arguments[0].keyId) !== "string") {
+  if (typeof(window.arguments[0].keyId) !== "string") {
     window.arguments[1].email = document.getElementById("email").value;
     if (!window.arguments[1].email) {
       EnigmailDialog.alert(window, EnigmailLocale.getString("noEmailProvided"));

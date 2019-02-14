@@ -6,13 +6,13 @@
 
 "use strict";
 
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
-const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
-const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
+var EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
+var EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 
 var gImportFile = null;
 var gImportInProgress = false;
@@ -25,8 +25,7 @@ function onLoad() {
 function browseFile() {
   gImportFile = EnigmailDialog.filePicker(window,
     EnigmailLocale.getString("setupWizard.importSettingsFile"),
-    "", false, "*.zip", EnigmailLocale.getString("defaultBackupFileName") + ".zip",
-    [EnigmailLocale.getString("enigmailSettings"), "*.zip"]);
+    "", false, "*.zip", EnigmailLocale.getString("defaultBackupFileName") + ".zip", [EnigmailLocale.getString("enigmailSettings"), "*.zip"]);
 
   if (!gImportFile) return;
 
@@ -64,8 +63,7 @@ function importSettings() {
   let zipR;
   try {
     zipR = EnigmailFiles.openZipFile(gImportFile);
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG("importSettings.js: importSettings - openZipFile() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     EnigmailDialog.alert(window, EnigmailLocale.getString("setupWizard.invalidSettingsFile"));
     return false;
@@ -74,8 +72,7 @@ function importSettings() {
   let cfg;
   try {
     cfg = ensureGpgHomeDir();
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailDialog.alert(window, "importSettings - ensureGpgHomeDir() failed with " + ex.toString() + "\n" + ex.stack + "\n");
     return false;
   }
@@ -148,12 +145,10 @@ function importSettings() {
 
     try {
       if (doCfgFile) tmpFile.moveTo(cfg.homeDir, "gpg.conf");
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.DEBUG("importSettings.js: importSettings: Error with gpg.conf " + ex.toString() + "\n");
     }
-  }
-  else {
+  } else {
     EnigmailLog.DEBUG("importSettings.js: importSettings: Remark: no gpg.conf file in archive.\n");
   }
   if (!gImportInProgress) return false;
@@ -169,8 +164,7 @@ function importSettings() {
     if (r.retVal === 0 && r.unmatchedIds.length > 0) {
       displayUnmatchedIds(r.unmatchedIds);
     }
-  }
-  catch (ex) {
+  } catch (ex) {
     EnigmailLog.DEBUG(`importSettings.js: importSettings: exception in restorePrefs: ${ex.toString()}\n`);
   }
 
