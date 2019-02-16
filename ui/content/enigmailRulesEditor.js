@@ -25,6 +25,7 @@ const RESULT = 1;
 
 var gSearchInput = null;
 var gNumRows = null;
+var gAutocryptRules = [];
 
 function enigmailDlgOnLoad() {
   var enigmailSvc = GetEnigmailSvc();
@@ -44,7 +45,6 @@ function enigmailDlgOnLoad() {
     var node = rulesList.firstChild.firstChild;
     while (node) {
       if (node.tagName == "pgpRule") {
-        //try {
         var userObj = {
           email: node.getAttribute("email"),
           keyId: node.getAttribute("keyId"),
@@ -57,11 +57,13 @@ function enigmailDlgOnLoad() {
           userObj.negate = node.getAttribute("negateRule");
         }
 
-        var treeItem = document.createElement("treeitem");
-        createRow(treeItem, userObj);
-        treeChildren.appendChild(treeItem);
-      //}
-      //catch (ex) {}
+        if (userObj.email.search(/^\{autocrypt:\/\/.{1,200}\}$/) === 0) {
+          gAutocryptRules.push(userObj);
+        } else {
+          var treeItem = document.createElement("treeitem");
+          createRow(treeItem, userObj);
+          treeChildren.appendChild(treeItem);
+        }
       }
       node = node.nextSibling;
     }
@@ -89,6 +91,17 @@ function enigmailDlgOnAccept() {
       node.getAttribute("negateRule")
     );
     node = node.nextSibling;
+  }
+
+  for (let i in gAutocryptRules) {
+    EnigmailRules.addRule(true,
+      gAutocryptRules[i].email,
+      gAutocryptRules[i].keyId,
+      gAutocryptRules[i].sign,
+      gAutocryptRules[i].encrypt,
+      gAutocryptRules[i].pgpMime,
+      "0"
+    );
   }
   EnigmailRules.saveRulesFile();
 
@@ -123,8 +136,7 @@ function createCol(value, label, treeItem, translate) {
     case "negateRule":
       if (Number(label) == 1) {
         label = EnigGetString("negateRule");
-      }
-      else {
+      } else {
         label = "";
       }
   }
@@ -148,10 +160,10 @@ function createRow(treeItem, userObj) {
   treeRow.appendChild(pgpMime);
   treeRow.setAttribute("rowId", ++gNumRows);
 
+
   if (treeItem.firstChild) {
     treeItem.replaceChild(treeRow, treeItem.firstChild);
-  }
-  else {
+  } else {
     treeItem.appendChild(treeRow);
   }
 }
@@ -201,8 +213,7 @@ function enigDoAdd() {
     var treeChildren = document.getElementById("rulesTreeChildren");
     if (treeChildren.firstChild) {
       treeChildren.insertBefore(treeItem, treeChildren.firstChild);
-    }
-    else {
+    } else {
       treeChildren.appendChild(treeItem);
     }
   }
@@ -257,8 +268,7 @@ function enigDoSearch() {
   while (node) {
     if (node.getAttribute("email").toLowerCase().indexOf(searchTxt) < 0) {
       node.hidden = true;
-    }
-    else {
+    } else {
       node.hidden = false;
     }
     node = node.nextSibling;
