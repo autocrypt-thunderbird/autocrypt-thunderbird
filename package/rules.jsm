@@ -600,6 +600,8 @@ async function deleteAutocryptRule(emailAddr) {
   const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 
   await EnigmailAutocrypt.deleteUser(emailAddr, "1");
-  // make sure that gossip rule is marked as "imüported"
+  // make sure that gossip rule is marked as "imported"
   await EnigmailAutocrypt.setKeyImported(null, emailAddr);
+  // try to apply gossip key
+  await EnigmailAutocrypt.importAutocryptKeys(emailAddr, true);
 }
