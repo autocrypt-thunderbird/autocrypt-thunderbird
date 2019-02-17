@@ -71,7 +71,7 @@ const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/func
 const EnigmailTime = ChromeUtils.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
-function newEnigmailKeyObj (keyData) {
+function newEnigmailKeyObj(keyData) {
   return new EnigmailKeyObj(keyData);
 }
 
@@ -143,8 +143,7 @@ class EnigmailKeyObj {
         if (typeof this[i] !== "function") {
           if (typeof this[i] === "object") {
             cp[i] = EnigmailFuncs.cloneObj(this[i]);
-          }
-          else
+          } else
             cp[i] = this[i];
         }
       }
@@ -208,20 +207,16 @@ class EnigmailKeyObj {
     if (this.keyTrust.search(/r/i) >= 0) {
       // public key revoked
       retVal.reason = EnigmailLocale.getString("keyRing.pubKeyRevoked", [this.userId, "0x" + this.keyId]);
-    }
-    else if (this.keyTrust.search(/e/i) >= 0) {
+    } else if (this.keyTrust.search(/e/i) >= 0) {
       // public key expired
       retVal.reason = EnigmailLocale.getString("keyRing.pubKeyExpired", [this.userId, "0x" + this.keyId]);
-    }
-    else if (this.keyTrust.search(/d/i) >= 0 || this.keyUseFor.search(/D/i) >= 0) {
+    } else if (this.keyTrust.search(/d/i) >= 0 || this.keyUseFor.search(/D/i) >= 0) {
       // public key disabled
       retVal.reason = EnigmailLocale.getString("keyRing.keyDisabled", [this.userId, "0x" + this.keyId]);
-    }
-    else if (this.keyTrust.search(/i/i) >= 0) {
+    } else if (this.keyTrust.search(/i/i) >= 0) {
       // public key invalid
       retVal.reason = EnigmailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
-    }
-    else
+    } else
       retVal.keyValid = true;
 
     return retVal;
@@ -243,15 +238,13 @@ class EnigmailKeyObj {
     if (!this.secretAvailable) {
       retVal.reason = EnigmailLocale.getString("keyRing.noSecretKey", [this.userId, "0x" + this.keyId]);
       retVal.keyValid = false;
-    }
-    else if (this.keyUseFor.search(/S/) < 0) {
+    } else if (this.keyUseFor.search(/S/) < 0) {
       retVal.keyValid = false;
 
       if (this.keyTrust.search(/u/i) < 0) {
         // public key invalid
         retVal.reason = EnigmailLocale.getString("keyRing.keyNotTrusted", [this.userId, "0x" + this.keyId]);
-      }
-      else {
+      } else {
         let expired = 0,
           revoked = 0,
           unusable = 0,
@@ -270,15 +263,12 @@ class EnigmailKeyObj {
         if (found > 0 && (expired > 0 || revoked > 0)) {
           if (found === expired) {
             retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysExpired", [this.userId, "0x" + this.keyId]);
-          }
-          else if (found === revoked) {
+          } else if (found === revoked) {
             retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysRevoked", [this.userId, "0x" + this.keyId]);
-          }
-          else {
+          } else {
             retVal.reason = EnigmailLocale.getString("keyRing.signSubKeysUnusable", [this.userId, "0x" + this.keyId]);
           }
-        }
-        else
+        } else
           retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForSigning", [this.userId, "0x" + this.keyId]);
       }
     }
@@ -304,8 +294,7 @@ class EnigmailKeyObj {
       if (this.keyTrust.search(/u/i) < 0) {
         // public key invalid
         retVal.reason = EnigmailLocale.getString("keyRing.keyInvalid", [this.userId, "0x" + this.keyId]);
-      }
-      else {
+      } else {
         let expired = 0,
           revoked = 0,
           unusable = 0,
@@ -325,15 +314,12 @@ class EnigmailKeyObj {
         if (found > 0 && (expired > 0 || revoked > 0)) {
           if (found === expired) {
             retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysExpired", [this.userId, "0x" + this.keyId]);
-          }
-          else if (found === revoked) {
+          } else if (found === revoked) {
             retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysRevoked", [this.userId, "0x" + this.keyId]);
-          }
-          else {
+          } else {
             retVal.reason = EnigmailLocale.getString("keyRing.encSubKeysUnusable", [this.userId, "0x" + this.keyId]);
           }
-        }
-        else
+        } else
           retVal.reason = EnigmailLocale.getString("keyRing.pubKeyNotForEncryption", [this.userId, "0x" + this.keyId]);
       }
     }
@@ -364,8 +350,7 @@ class EnigmailKeyObj {
         let expiry = this.subKeys[sk].expiryTime;
         if (expiry === 0) expiry = Number.MAX_VALUE;
         encryption = Math.max(encryption, expiry);
-      }
-      else if (this.subKeys[sk].keyUseFor.search(/[sS]/) >= 0) {
+      } else if (this.subKeys[sk].keyUseFor.search(/[sS]/) >= 0) {
         let expiry = this.subKeys[sk].expiryTime;
         if (expiry === 0) expiry = Number.MAX_VALUE;
         signing = Math.max(signing, expiry);
@@ -402,14 +387,38 @@ class EnigmailKeyObj {
   getMinimalPubKey(emailAddr) {
     EnigmailLog.DEBUG("keyObj.jsm: EnigmailKeyObj.getMinimalPubKey: " + this.keyId + "\n");
 
+    if (emailAddr) {
+      try {
+        emailAddr = EnigmailFuncs.stripEmail(emailAddr.toLowerCase());
+      } catch (x) {
+        emailAddr = emailAddr.toLowerCase();
+      }
+
+
+      let foundUid = false,
+        uid = "";
+      for (let i in this.userIds) {
+        try {
+          uid = EnigmailFuncs.stripEmail(this.userIds[i].userId.toLowerCase());
+        } catch (x) {
+          uid = this.userIds[i].userId.toLowerCase();
+        }
+
+        if (uid == emailAddr) {
+          foundUid = true;
+          break;
+        }
+      }
+      if (!foundUid) emailAddr = false;
+    }
+
     if (!emailAddr) {
       emailAddr = this.userId;
     }
 
     try {
       emailAddr = EnigmailFuncs.stripEmail(emailAddr.toLowerCase());
-    }
-    catch (x) {
+    } catch (x) {
       emailAddr = emailAddr.toLowerCase();
     }
 
