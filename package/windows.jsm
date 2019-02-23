@@ -10,10 +10,6 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWindows"];
 
-
-
-
-
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
@@ -172,6 +168,15 @@ var EnigmailWindows = {
   },
 
   /**
+   * Display the "About Enigmail" window
+   *
+   * no return value
+   */
+  openGnuPGUpdate: function() {
+    EnigmailWindows.openMailTab("chrome://enigmail/content/ui/updateGnuPG.html");
+  },
+
+    /**
    * Open the Enigmail Documentation page in a new window
    *
    * no return value

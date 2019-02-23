@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+<html>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="chrome://enigmail/skin/enigmail-html.css">
+
+  <script src="chrome://enigmail/content/ui/updateGnuPG.js"></script>
+
+  <head>
+    <title txtId="updateGnuPG.tabName"></title>
+  </head>
+
+  <body onload="onload()">
+    <header class="header">
+      <div class="header-bar">
+        <div class="header-icon">
+          <a href="https://enigmail.net/" title="The Enigmail Project">
+            <img class="logo-img" src="chrome://enigmail/skin/enigmail-logo.png" alt="The Enigmail Project">
+          </a>
+        </div>
+      </div>
+    </header>
+    <div class="spacer"/>
+
+    <div class="body">
+
+      <h1 txtId="updateGnuPG.title"></h1>
+
+      <span id="noUpdateAvailable" style="visibility: collapse;">
+        <p>
+          <b><span txtId="updateGnuPG.noUpdateRequired"></span></b>
+        </p>
+      </span>
+
+      <div id="updateAvailable" class="body" style="visibility: collapse;">
+        <p>
+          <b><span txtId="updateGnuPG.updateRequired"></span></b>
+        </p>
+        <button type="button" id="btnInstallGnupg" onclick="installUpdate()">
+          <span txtId="updateGnuPG.installUpdate"></span>
+        </button>
+      </div>
+
+    <div id="progressBox" style="max-width: 100%; width: 440px; visibility: collapse">
+      <p>
+        Downloading GnuPG
+      </p>
+      <progress id="downloadProgress" style="width: 100%;" max="100" value="0"/>
+      <p/>
+      <div id="installProgressBox" style="visibility: collapse">
+        <p id="installLabel">
+          Launching the GnuPG installer
+        </p>
+        <progress id="installProgress" style="max-width: 100%; width: 440px; :indeterminate;" max="100"/>
+      </div>
+    </div>
+
+    <span id="updateComplete" style="visibility: collapse;">
+      <p>
+        GnuPG has been updated successfully.
+      </p>
+    </span>
+
+  </body>
+
+</html>

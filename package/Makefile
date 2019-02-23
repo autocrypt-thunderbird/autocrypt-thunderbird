@@ -43,6 +43,7 @@ MODFILES = \
            filtersWrapper.jsm \
            fixExchangeMsg.jsm \
            gpgAgent.jsm \
+           gnupgUpdate.jsm \
            glodaUtils.jsm \
            gpg.jsm \
            hash.jsm \

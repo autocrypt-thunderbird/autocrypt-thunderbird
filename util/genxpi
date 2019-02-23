@@ -90,6 +90,7 @@ zip -9 --must-match\
     chrome/content/modules/errorHandling.jsm \
     chrome/content/modules/funcs.jsm \
     chrome/content/modules/gpgAgent.jsm \
+    chrome/content/modules/gnupgUpdate.jsm \
     chrome/content/modules/protocolHandler.jsm \
     chrome/content/modules/events.jsm \
     chrome/content/modules/execution.jsm \

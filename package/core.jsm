@@ -39,6 +39,7 @@ const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.j
 const getEnigmailPEPAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPEPAdapter");
 const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
+const getEnigmailGnuPGUpdate = EnigmailLazy.loader("enigmail/gnupgUpdate.jsm", "EnigmailGnuPGUpdate");
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
@@ -364,6 +365,7 @@ Enigmail.prototype = {
     this.initialized = true;
 
     getEnigmailLog().DEBUG("core.jsm: Enigmail.initialize: END\n");
+    getEnigmailGnuPGUpdate().runUpdateCheck();
   },
 
   reinitialize: function() {

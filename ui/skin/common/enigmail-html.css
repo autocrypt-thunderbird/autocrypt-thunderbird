@@ -89,3 +89,8 @@ a:hover {
 .logo-img {
   max-height: 90px;
 }
+
+button {
+  font-size: 1.2em;
+  margin-top: 1.3em;
+}

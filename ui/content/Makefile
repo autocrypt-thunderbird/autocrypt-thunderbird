@@ -123,6 +123,8 @@ UIFILES = \
 	pepPrepHandshake.js \
 	pepTrustWords.xul \
 	pepTrustWords.js \
+	updateGnuPG.html \
+	updateGnuPG.js \
 	setupWizard2.js \
 	setupWizard2.xul
 	

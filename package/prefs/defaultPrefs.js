@@ -173,6 +173,9 @@ pref("extensions.enigmail.useDefaultComment", true);
 pref("extensions.enigmail.encryptToNews", false);
 pref("extensions.enigmail.warnOnSendingNewsgroups", true);
 
+// holds the timestamp of the last check for GnuPG updates
+pref("extensions.enigmail.gpgLastUpdate", 0);
+
 // set locale for GnuPG calls to en-US (Windows only)
 pref("extensions.enigmail.gpgLocaleEn", true);
 
@@ -206,7 +209,7 @@ pref("extensions.enigmail.wrapHtmlBeforeSend", true);
 // automatically download pepmda if it is available (without askin user)
 pref("extensions.enigmail.pEpAutoDownload", true);
 
-// holds the last result of the last check for pEp updates
+// holds the timestamp of the last check for pEp updates
 pref("extensions.enigmail.pEpLastUpdate", 0);
 
 // automatically update pEp?

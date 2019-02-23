@@ -40,9 +40,6 @@ const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm
 const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 const EnigmailXhrUtils = ChromeUtils.import("chrome://enigmail/content/modules/xhrUtils.jsm").EnigmailXhrUtils;
 
-
-
-
 const EXEC_FILE_PERMS = 0x1C0; // 0700
 
 
@@ -317,6 +314,7 @@ Installer.prototype = {
             self.hash = sanitizeHash(doc.hash);
             self.command = doc.command;
             self.mount = sanitizeFileName(doc.mountPath);
+            self.gpgVersion = doc.gpgVersion;
             deferred.resolve();
           }
           catch (ex) {
@@ -380,6 +378,18 @@ Installer.prototype = {
     }
 
     return deferred.promise;
+  },
+
+  getUrlObj: function() {
+    let o = {
+      url: this.url,
+      hash: this.hash,
+      comamnd: this.command,
+      mount: this.mount,
+      gpgVersion: this.gpgVersion
+    };
+
+    return o;
   },
 
   performDownload: function() {
@@ -573,5 +583,14 @@ var InstallGnuPG = {
       i.performDownload();
     });
     return i;
+  },
+
+  getAvailableInstaller: async function() {
+    if (!this.checkAvailability()) return null;
+
+    let i = new Installer(null);
+    await i.getDownloadUrl(i);
+
+    return i.getUrlObj();
   }
 };
