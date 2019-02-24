@@ -8,7 +8,6 @@
  * Enigmail styles for Windows (Aero Theme)
  */
 
-@import url("chrome://global/skin/");
 @import url("chrome://enigmail/skin/enigmail-common.css"); /* common styles for all platforms */
 @import url("chrome://enigmail/skin/enigmail-pEp.css");    /* styles related to pEp for all platforms */
 
