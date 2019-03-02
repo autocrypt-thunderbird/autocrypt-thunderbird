@@ -365,8 +365,8 @@ function createStreamListener(k) {
     QueryInterface: XPCOMUtils.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
     // nsIRequestObserver
-    onStartRequest: function(aRequest, aContext) {},
-    onStopRequest: function(aRequest, aContext, aStatusCode) {
+    onStartRequest: function(aRequest) {},
+    onStopRequest: function(aRequest, aStatusCode) {
       try {
         k(this._data);
       }
@@ -376,7 +376,7 @@ function createStreamListener(k) {
     },
 
     // nsIStreamListener
-    onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
+    onDataAvailable: function(aRequest, aInputStream, aOffset, aCount) {
       if (this._stream == null) {
         this._stream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
         this._stream.init(aInputStream);

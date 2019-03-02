@@ -43,11 +43,11 @@ function createScriptableInputStream(inputStream) {
 function buildListener(hasFoundTor, isDoneChecking) {
   EnigmailLog.DEBUG("socks5proxy.jsm: buildListener()\n");
   const listener = {
-    onStartRequest: function(request, context) {},
-    onStopRequest: function(request, context, statusCode) {
+    onStartRequest: function(request) {},
+    onStopRequest: function(request, statusCode) {
       isDoneChecking();
     },
-    onDataAvailable: function(request, context, inputStream, offset, count) {
+    onDataAvailable: function(request, inputStream, offset, count) {
       const response = createScriptableInputStream(inputStream).read(count);
       hasFoundTor(response.indexOf(EXPECTED_TOR_EXISTS_RESPONSE) !== -1);
     },

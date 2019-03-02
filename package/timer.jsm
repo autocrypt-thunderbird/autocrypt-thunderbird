@@ -10,7 +10,10 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailTimer"];
 
-const setTimeout = ChromeUtils.import("resource://gre/modules/Timer.jsm").setTimeout;
+const {
+  setTimeout,
+  clearTimeout
+} = ChromeUtils.import("resource://gre/modules/Timer.jsm");
 
 var EnigmailTimer = {
   /**
@@ -31,8 +34,7 @@ var EnigmailTimer = {
       callbackFunction();
       try {
         clearTimeout(timeoutID);
-      }
-      catch (ex) {}
+      } catch (ex) {}
     }
 
     timeoutID = setTimeout(callbackWrapper, sleepTimeMs);

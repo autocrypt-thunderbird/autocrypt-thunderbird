@@ -1822,7 +1822,7 @@ Enigmail.msg = {
         this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 
       },
-      onDataAvailable: function(req, sup, stream, offset, count) {
+      onDataAvailable: function(req, stream, offset, count) {
         this.inStream.init(stream);
         this.data += this.inStream.read(count);
       },

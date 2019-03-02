@@ -95,10 +95,10 @@ test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
   for (i = 0; i < dataArr.length; i++) {
     let s = dataArr[i] + "\r\n";
     inputStream.setData(s, s.length);
-    dec.onDataAvailable(null, null, inputStream, 0, s.length);
+    dec.onDataAvailable(null, inputStream, 0, s.length);
   }
 
-  dec.onStopRequest(null, null, null);
+  dec.onStopRequest(null, null);
 })));
 
 

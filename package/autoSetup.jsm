@@ -429,8 +429,8 @@ function createStreamListener(k) {
     QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
     // nsIRequestObserver
-    onStartRequest: function(aRequest, aContext) {},
-    onStopRequest: function(aRequest, aContext, aStatusCode) {
+    onStartRequest: function(aRequest) {},
+    onStopRequest: function(aRequest, aStatusCode) {
       try {
         k(this._data);
       }
@@ -440,7 +440,7 @@ function createStreamListener(k) {
     },
 
     // nsIStreamListener
-    onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
+    onDataAvailable: function(aRequest, aInputStream, aOffset, aCount) {
       if (this._stream === null) {
         this._stream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
         this._stream.init(aInputStream);
@@ -479,7 +479,7 @@ function streamListener(callback) {
     mHeaders: [],
     mBusy: true,
 
-    onStartRequest: function(aRequest, aContext) {
+    onStartRequest: function(aRequest) {
       this.mAttachments = [];
       this.mHeaders = [];
       this.mBusy = true;
@@ -488,11 +488,11 @@ function streamListener(callback) {
       channel.URI.QueryInterface(Components.interfaces.nsIMsgMailNewsUrl);
       channel.URI.msgHeaderSink = this; // adds this header sink interface to the channel
     },
-    onStopRequest: function(aRequest, aContext, aStatusCode) {
+    onStopRequest: function(aRequest, aStatusCode) {
       callback();
       this.mBusy = false; // if needed, you can poll this var to see if we are done collecting attachment details
     },
-    onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {},
+    onDataAvailable: function(aRequest, aInputStream, aOffset, aCount) {},
     onStartHeaders: function() {},
     onEndHeaders: function() {},
     processHeaders: function(aHeaderNameEnumerator, aHeaderValueEnumerator, aDontCollectAddress) {

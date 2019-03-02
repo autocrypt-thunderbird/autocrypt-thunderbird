@@ -27,7 +27,11 @@ const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
 const OS = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
-var SubprocessConstants = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
+var {
+  SubprocessConstants,
+  BaseProcess,
+  PromiseWorker
+} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
 
 XPCOMUtils.defineLazyServiceGetter(this, "env", "@mozilla.org/process/environment;1",
   "nsIEnvironment"); /* global env: false */

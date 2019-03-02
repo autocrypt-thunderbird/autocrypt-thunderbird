@@ -241,7 +241,7 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     // get data from libmime
     if (!this.initOk) return;
     this.inStream.init(stream);
@@ -347,7 +347,7 @@ MimeDecryptHandler.prototype = {
     return (this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0);
   },
 
-  onStopRequest: function(request, win, status) {
+  onStopRequest: function(request, status) {
     LOCAL_DEBUG("mimeDecrypt.jsm: onStopRequest\n");
     --gNumProc;
     if (!this.initOk) return;
@@ -458,6 +458,8 @@ MimeDecryptHandler.prototype = {
       if (this.xferEncoding == ENCODING_BASE64) {
         this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
       }
+
+      let win = this.msgWindow;
 
       if (!EnigmailDecryption.isReady(win)) return;
 
@@ -647,7 +649,7 @@ MimeDecryptHandler.prototype = {
         let veri = EnigmailVerify.newVerifier(proto);
         veri.onStartRequest(this.mimeSvc, this.uri);
         veri.onTextData(data);
-        veri.onStopRequest(null, null, 0);
+        veri.onStopRequest(null, 0);
       }
       else {
         if ("outputDecryptedData" in this.mimeSvc) {
@@ -656,9 +658,9 @@ MimeDecryptHandler.prototype = {
         else {
           let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
           gConv.setData(data, data.length);
-          this.mimeSvc.onStartRequest(null, null);
-          this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
-          this.mimeSvc.onStopRequest(null, null, 0);
+          this.mimeSvc.onStartRequest(null);
+          this.mimeSvc.onDataAvailable(null, gConv, 0, data.length);
+          this.mimeSvc.onStopRequest(null, 0);
         }
       }
     }

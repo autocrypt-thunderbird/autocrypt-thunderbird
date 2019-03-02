@@ -76,7 +76,7 @@ UnknownProtoHandler.prototype = {
   onStartRequest: function(request) {
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     if (!("outputDecryptedData" in this.mimeSvc)) {
-      this.mimeSvc.onStartRequest(null, null);
+      this.mimeSvc.onStartRequest(null);
     }
     this.bound = EnigmailMime.getBoundary(this.mimeSvc.contentType);
     /*
@@ -88,7 +88,7 @@ UnknownProtoHandler.prototype = {
     this.readMode = 0;
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     if (count > 0) {
       inStream.init(stream);
       let data = inStream.read(count);
@@ -122,7 +122,7 @@ UnknownProtoHandler.prototype = {
           }
           else {
             gConv.setData(out, out.length);
-            this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
+            this.mimeSvc.onDataAvailable(null, gConv, 0, out.length);
           }
         }
       }
@@ -131,7 +131,7 @@ UnknownProtoHandler.prototype = {
 
   onStopRequest: function() {
     if (!("outputDecryptedData" in this.mimeSvc)) {
-      this.mimeSvc.onStopRequest(null, null, 0);
+      this.mimeSvc.onStopRequest(null, 0);
     }
   }
 };
@@ -150,6 +150,7 @@ PgpMimeHandler.prototype = {
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {
+    // FIXME
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
 
@@ -219,9 +220,9 @@ PgpMimeHandler.prototype = {
     return null;
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {},
+  onDataAvailable: function(req, stream, offset, count) {},
 
-  onStopRequest: function(request, win, status) {},
+  onStopRequest: function(request, status) {},
 
   handleSmime: function(uri) {
     this.contentHandler = throwErrors;

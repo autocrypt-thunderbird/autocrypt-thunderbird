@@ -196,6 +196,7 @@ function PEPDecryptor(contentType) {
 PEPDecryptor.prototype = {
 
   onStartRequest: function(request, uri) {
+    // FIXME
     EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest\n");
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgWindow = EnigmailVerify.lastMsgWindow;
@@ -221,7 +222,7 @@ PEPDecryptor.prototype = {
     }
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     if (count > 0) {
       inStream.init(stream);
       this.sourceData += inStream.read(count);
@@ -377,8 +378,8 @@ PEPDecryptor.prototype = {
     else {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
       gConv.setData(this.decryptedData, this.decryptedData.length);
-      this.mimeSvc.onDataAvailable(null, null, gConv, 0, this.decryptedData.length);
-      this.mimeSvc.onStopRequest(null, null, 0);
+      this.mimeSvc.onDataAvailable(null, gConv, 0, this.decryptedData.length);
+      this.mimeSvc.onStopRequest(null, 0);
     }
   },
 

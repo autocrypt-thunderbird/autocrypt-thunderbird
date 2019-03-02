@@ -86,11 +86,11 @@ var EnigmailStreams = {
       _onStopCallback: onStopCallback,
       QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
-      onStartRequest: function(channel, ctxt) {
+      onStartRequest: function(channel) {
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
       },
 
-      onStopRequest: function(channel, ctxt, status) {
+      onStopRequest: function(channel, status) {
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
         this.inStream = null;
         var cbFunc = this._onStopCallback;
@@ -101,7 +101,7 @@ var EnigmailStreams = {
         });
       },
 
-      onDataAvailable: function(req, sup, stream, offset, count) {
+      onDataAvailable: function(req, stream, offset, count) {
         // get data from stream
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
         this.inStream.setInputStream(stream);

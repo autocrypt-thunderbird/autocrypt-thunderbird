@@ -74,6 +74,8 @@ PgpWkdHandler.prototype = {
   onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStartRequest\n"); // always log this one
 
+    // FIXME
+
     this.uri = uri ? uri.QueryInterface(Ci.nsIURI).clone() : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     if ("mimePart" in this.mimeSvc) {
@@ -92,7 +94,7 @@ PgpWkdHandler.prototype = {
 
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     LOCAL_DEBUG("wksMimeHandler.jsm: onDataAvailable: " + count + "\n");
     if (count > 0) {
       this.inStream.init(stream);
@@ -171,9 +173,9 @@ PgpWkdHandler.prototype = {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
       gConv.setData(msg, msg.length);
       try {
-        this.mimeSvc.onStartRequest(null, null);
-        this.mimeSvc.onDataAvailable(null, null, gConv, 0, msg.length);
-        this.mimeSvc.onStopRequest(null, null, 0);
+        this.mimeSvc.onStartRequest(null);
+        this.mimeSvc.onDataAvailable(null, gConv, 0, msg.length);
+        this.mimeSvc.onStopRequest(null, 0);
       }
       catch (ex) {
         EnigmailLog.ERROR("wksMimeHandler.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());

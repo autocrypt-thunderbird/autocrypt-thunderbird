@@ -129,7 +129,7 @@ PgpMimeEncrypt.prototype = {
     this.encHeader = null;
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     LOCAL_DEBUG("mimeEncrypt.js: onDataAvailable\n");
     this.inStream.init(stream);
     var data = this.inStream.read(count);
@@ -137,7 +137,7 @@ PgpMimeEncrypt.prototype = {
 
   },
 
-  onStopRequest: function(request, win, status) {
+  onStopRequest: function(request, status) {
     EnigmailLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
   },
 
