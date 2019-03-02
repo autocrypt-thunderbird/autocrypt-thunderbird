@@ -9,21 +9,7 @@
   <link rel="stylesheet" href="chrome://enigmail/skin/enigmail-html.css">
 
   <script>
-Cu.import("chrome://enigmail/content/modules/localizeHtml.jsm");
-
-function EnigOpenURL(hrefObj) {
-  const SEAMONKEY_ID="{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
-  var xulAppinfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULAppInfo);
-  if (xulAppinfo.ID == SEAMONKEY_ID) return;
-
-  var ioservice  = Components.classes["@mozilla.org/network/io-service;1"].
-                getService(Components.interfaces.nsIIOService);
-  var iUri = ioservice.newURI(hrefObj.href, null, null);
-  var eps  = Components.classes["@mozilla.org/uriloader/external-protocol-service;1"].
-                getService(Components.interfaces.nsIExternalProtocolService);
-
-  eps.loadURI(iUri, null);
-}
+const EnigmailLocalizeHtml = ChromeUtils.import("chrome://enigmail/content/modules/localizeHtml.jsm").EnigmailLocalizeHtml;
 
 function onload() {
   EnigmailLocalizeHtml.onPageLoad(document);

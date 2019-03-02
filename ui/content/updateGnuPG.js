@@ -23,11 +23,14 @@ var gResolveInstall = null;
 var gDownoadObj = null;
 
 async function checkGnuPGUpdate() {
-  let upd = await EnigmailGnuPGUpdate.isUpdateAvailable();
-  let elem = "noUpdateAvailable";
-  if (upd) {
-    elem = "updateAvailable";
-  }
+  let elem = "updateAvailable"; //"noUpdateAvailable";
+
+  /*
+    if (!EnigmailGnuPGUpdate.isGnuPGUpdatable()) {
+      elem = "cannotUpdateGnuPG";
+    } else if (await EnigmailGnuPGUpdate.isUpdateAvailable()) {
+      elem = "updateAvailable";
+    }*/
 
   document.getElementById(elem).style.visibility = "visible";
 }
@@ -35,9 +38,19 @@ async function checkGnuPGUpdate() {
 
 function onload() {
   EnigmailLocalizeHtml.onPageLoad(document);
+  if (!EnigmailGnuPGUpdate.isAutoCheckEnabled()) {
+    document.getElementById("noMoreUpdates").checked = true;
+  }
   checkGnuPGUpdate();
 }
 
+function stopChecking(elem) {
+  if (elem.checked) {
+    EnigmailGnuPGUpdate.stopCheckingForUpdate();
+  } else {
+    EnigmailGnuPGUpdate.enableCheckingForUpdate();
+  }
+}
 
 function installUpdate() {
   let progressBox = document.getElementById("progressBox");

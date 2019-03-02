@@ -10,13 +10,12 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
 
-
-
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailBuildDate = ChromeUtils.import("chrome://enigmail/content/modules/buildDate.jsm").EnigmailBuildDate;
 const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 function getEnigmailVersion() {
   let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate.built + ")";
@@ -29,8 +28,7 @@ function getGpgWorking() {
   var agentStr;
   if (enigmailSvc) {
     agentStr = EnigmailLocale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
-  }
-  else {
+  } else {
     agentStr = EnigmailLocale.getString("agentError");
 
     if (enigmailSvc && enigmailSvc.initializationError)

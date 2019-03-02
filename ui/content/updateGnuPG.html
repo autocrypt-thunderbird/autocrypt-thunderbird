@@ -30,6 +30,15 @@
 
       <h1 txtId="updateGnuPG.title"></h1>
 
+      <span id="cannotUpdateGnuPG" style="visibility: collapse;">
+        <p><span txtId="updateGnuPG.cannotUpdate.header"></span></p>
+          <ul>
+            <li>Windows: <a href="https://gpg4win.org">gpg4win</a></li>
+            <li>macOS: <a href="https://sourceforge.net/p/gpgosx/docu/Home/">GpgOSX</a></li>
+          </ul>
+        <p><span txtId="updateGnuPG.cannotUpdate.footer"></span></p>
+      </span>
+
       <span id="noUpdateAvailable" style="visibility: collapse;">
         <p>
           <b><span txtId="updateGnuPG.noUpdateRequired"></span></b>
@@ -39,6 +48,10 @@
       <div id="updateAvailable" class="body" style="visibility: collapse;">
         <p>
           <b><span txtId="updateGnuPG.updateRequired"></span></b>
+        </p>
+        <p>
+          <input id="noMoreUpdates" type="checkbox" onclick="stopChecking(this)">
+          <span txtId="updateGnuPG.noMoreUpdates"></span>
         </p>
         <button type="button" id="btnInstallGnupg" onclick="installUpdate()">
           <span txtId="updateGnuPG.installUpdate"></span>
