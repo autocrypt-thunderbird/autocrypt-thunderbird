@@ -10,10 +10,6 @@
  */
 
 
-
-
-
-
 const COLOR_UNDEF = -471142;
 
 const EnigmailpEp = ChromeUtils.import("chrome://enigmail/content/modules/pEp.jsm").EnigmailpEp;
@@ -195,13 +191,12 @@ function PEPDecryptor(contentType) {
 
 PEPDecryptor.prototype = {
 
-  onStartRequest: function(request, uri) {
-    // FIXME
+  onStartRequest: function(request) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest\n");
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgWindow = EnigmailVerify.lastMsgWindow;
-    if (uri) {
-      this.uri = uri.QueryInterface(Ci.nsIURI);
+    if ("messageURI" in this.mimeSvc) {
+      this.uri = this.mimeSvc.messageURI;
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
       this.backgroundJob = (this.uri.spec.search(/[&?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);

@@ -149,10 +149,14 @@ PgpMimeHandler.prototype = {
   QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
-  onStartRequest: function(request, uri) {
-    // FIXME
+  onStartRequest: function(request) {
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
+
+    let uri = null;
+    if ("messageURI" in mimeSvc) {
+      uri = mimeSvc.messageURI;
+    }
 
     if (!EnigmailCore.getService()) {
       // Ensure Enigmail is initialized

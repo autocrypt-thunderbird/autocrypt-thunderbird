@@ -144,7 +144,7 @@ function MimeDecryptHandler() {
 MimeDecryptHandler.prototype = {
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
-  onStartRequest: function(request, uri) {
+  onStartRequest: function(request) {
     if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
       return;
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest\n"); // always log this one
@@ -162,6 +162,11 @@ MimeDecryptHandler.prototype = {
     }
     else {
       this.mimePartNumber = "";
+    }
+
+    if ("messageURI" in this.mimeSvc) {
+      this.uri = this.mimeSvc.messageURI;
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
     }
     this.pipe = null;
     this.closePipe = false;
@@ -184,11 +189,6 @@ MimeDecryptHandler.prototype = {
     this.decryptedHeaders = {};
     this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
-
-    if (uri) {
-      this.uri = uri.QueryInterface(Ci.nsIURI);
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
-    }
 
     if (!this.isReloadingLastMessage()) {
       EnigmailSingletons.clearLastDecryptedMessage();

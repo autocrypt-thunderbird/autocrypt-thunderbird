@@ -71,13 +71,15 @@ PgpWkdHandler.prototype = {
 
   QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
 
-  onStartRequest: function(request, uri) {
+  onStartRequest: function(request) {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStartRequest\n"); // always log this one
 
-    // FIXME
-
-    this.uri = uri ? uri.QueryInterface(Ci.nsIURI).clone() : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
+    let uri = null;
+    if ("messageURI" in this.mimeSvc) {
+      uri = this.mimeSvc.messageURI;
+    }
+
     if ("mimePart" in this.mimeSvc) {
       this.mimePartNumber = this.mimeSvc.mimePart;
     }
