@@ -30,22 +30,22 @@
 
       <h1 txtId="updateGnuPG.title"></h1>
 
-      <span id="cannotUpdateGnuPG" style="visibility: collapse;">
+      <div id="cannotUpdateGnuPG" class="hidden">
         <p><span txtId="updateGnuPG.cannotUpdate.header"></span></p>
           <ul>
             <li>Windows: <a href="https://gpg4win.org">gpg4win</a></li>
             <li>macOS: <a href="https://sourceforge.net/p/gpgosx/docu/Home/">GpgOSX</a></li>
           </ul>
         <p><span txtId="updateGnuPG.cannotUpdate.footer"></span></p>
-      </span>
+      </div>
 
-      <span id="noUpdateAvailable" style="visibility: collapse;">
+      <div id="noUpdateAvailable" class="hidden">
         <p>
           <b><span txtId="updateGnuPG.noUpdateRequired"></span></b>
         </p>
-      </span>
+      </div>
 
-      <div id="updateAvailable" class="body" style="visibility: collapse;">
+      <div id="updateAvailable" class="body hidden">
         <p>
           <b><span txtId="updateGnuPG.updateRequired"></span></b>
         </p>
@@ -58,13 +58,13 @@
         </button>
       </div>
 
-    <div id="progressBox" style="max-width: 100%; width: 440px; visibility: collapse">
+    <div id="progressBox" style="max-width: 100%; width: 440px" class="hidden">
       <p>
         Downloading GnuPG
       </p>
       <progress id="downloadProgress" style="width: 100%;" max="100" value="0"/>
       <p/>
-      <div id="installProgressBox" style="visibility: collapse">
+      <div id="installProgressBox" class="hidden">
         <p id="installLabel">
           Launching the GnuPG installer
         </p>
@@ -72,11 +72,11 @@
       </div>
     </div>
 
-    <span id="updateComplete" style="visibility: collapse;">
+    <div id="updateComplete" class="hidden">
       <p>
         GnuPG has been updated successfully.
       </p>
-    </span>
+    </div>
 
   </body>
 

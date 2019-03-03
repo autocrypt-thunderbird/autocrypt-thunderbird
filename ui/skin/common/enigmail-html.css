@@ -94,3 +94,8 @@ button {
   font-size: 1.2em;
   margin-top: 1.3em;
 }
+
+.hidden {
+  visibility: collapse;
+  max-height: 0px;
+}

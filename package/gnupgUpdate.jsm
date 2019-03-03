@@ -25,9 +25,9 @@ var EnigmailGnuPGUpdate = {
     if (!this.isGnuPGUpdatable()) return false;
 
     let now = Math.floor(Date.now() / 1000);
-    let lastCheck = EnigmailPrefs.getPref("gpgLastUpdate");
+    let lastCheck = Number(EnigmailPrefs.getPref("gpgLastUpdate"));
     if (now > lastCheck) {
-      EnigmailPrefs.setPref("gpgLastUpdate", now);
+      EnigmailPrefs.setPref("gpgLastUpdate", String(now));
     }
 
     let newVer = await InstallGnuPG.getAvailableInstaller();
@@ -43,23 +43,23 @@ var EnigmailGnuPGUpdate = {
   isUpdateCheckNeeded: function() {
     // check once a week
     let now = Math.floor(Date.now() / 1000);
-    return (now < EnigmailPrefs.getPref("gpgLastUpdate") + 604800);
+    return (now < Number(EnigmailPrefs.getPref("gpgLastUpdate")) + 604800);
   },
 
   stopCheckingForUpdate: function() {
     // set the last check date to Dec 31, 2299
-    EnigmailPrefs.setPref("gpgLastUpdate", Math.floor(Date.parse('31 Dec 2299') / 1000));
+    EnigmailPrefs.setPref("gpgLastUpdate", String(Math.floor(Date.parse('31 Dec 2299') / 1000)));
   },
 
   enableCheckingForUpdate: function() {
     // set the last check date "now"
     let now = Math.floor(Date.now() / 1000);
-    EnigmailPrefs.setPref("gpgLastUpdate", now);
+    EnigmailPrefs.setPref("gpgLastUpdate", String(now));
   },
 
   isAutoCheckEnabled: function() {
     let farAway = Math.floor(Date.parse('31 Dec 2299') / 1000);
-    return EnigmailPrefs.getPref("gpgLastUpdate") < farAway;
+    return Number(EnigmailPrefs.getPref("gpgLastUpdate")) < farAway;
   },
 
 

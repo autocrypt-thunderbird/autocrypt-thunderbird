@@ -23,16 +23,15 @@ var gResolveInstall = null;
 var gDownoadObj = null;
 
 async function checkGnuPGUpdate() {
-  let elem = "updateAvailable"; //"noUpdateAvailable";
+  let elem = "noUpdateAvailable";
 
-  /*
-    if (!EnigmailGnuPGUpdate.isGnuPGUpdatable()) {
-      elem = "cannotUpdateGnuPG";
-    } else if (await EnigmailGnuPGUpdate.isUpdateAvailable()) {
-      elem = "updateAvailable";
-    }*/
+  if (!EnigmailGnuPGUpdate.isGnuPGUpdatable()) {
+    elem = "cannotUpdateGnuPG";
+  } else if (await EnigmailGnuPGUpdate.isUpdateAvailable()) {
+    elem = "updateAvailable";
+  }
 
-  document.getElementById(elem).style.visibility = "visible";
+  document.getElementById(elem).classList.remove("hidden");
 }
 
 
@@ -60,7 +59,7 @@ function installUpdate() {
   let btnInstallGnupg = document.getElementById("btnInstallGnupg");
 
   btnInstallGnupg.setAttribute("disabled", true);
-  progressBox.style.visibility = "visible";
+  progressBox.classList.remove("hidden");
 
   InstallGnuPG.startInstaller({
     onStart: function(reqObj) {
@@ -107,15 +106,15 @@ function installUpdate() {
     onDownloaded: function() {
       gDownoadObj = null;
       downloadProgress.setAttribute("value", 100);
-      installProgressBox.style.visibility = "visible";
+      installProgressBox.classList.remove("hidden");
     },
 
 
     returnToDownload: function() {
       btnInstallGnupg.removeAttribute("disabled");
-      progressBox.style.visibility = "collapse";
+      progressBox.classList.add("hidden");
       downloadProgress.setAttribute("value", 0);
-      installProgressBox.style.visibility = "collapse";
+      installProgressBox.classList.add("hidden");
     },
 
     onLoaded: function() {
@@ -131,7 +130,7 @@ function installUpdate() {
         this.returnToDownload();
         EnigmailDialog.alert(window, EnigmailLocale.getString("setupWizard.installFailed"));
       } else {
-        document.getElementById("updateComplete").style.visibility = "visible";
+        document.getElementById("updateComplete").classList.remove("hidden");
       }
     }
   });

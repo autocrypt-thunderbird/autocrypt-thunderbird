@@ -174,7 +174,7 @@ pref("extensions.enigmail.encryptToNews", false);
 pref("extensions.enigmail.warnOnSendingNewsgroups", true);
 
 // holds the timestamp of the last check for GnuPG updates
-pref("extensions.enigmail.gpgLastUpdate", 0);
+pref("extensions.enigmail.gpgLastUpdate", "0");
 
 // set locale for GnuPG calls to en-US (Windows only)
 pref("extensions.enigmail.gpgLocaleEn", true);
