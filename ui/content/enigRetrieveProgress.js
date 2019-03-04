@@ -9,10 +9,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
@@ -71,61 +67,20 @@ function onLoad() {
 
   msgProgress = Cc["@mozilla.org/messenger/progress;1"].createInstance(Ci.nsIMsgProgress);
 
-  if (inArg.accessType == EnigmailConstants.UPLOAD_WKD) {
-    uploadToWkd(inArg);
-  }
-  else {
+  if (inArg.accessType !== EnigmailConstants.UPLOAD_WKD) {
     performKeyServerOperation(inArg);
   }
-
 }
 
-function uploadToWkd(inArg) {
-  /*
-  let statTxt = document.getElementById("dialog.status2");
-  statTxt.value = EnigmailLocale.getString("keyserverTitle.uploading");
-  document.getElementById("progressWindow").setAttribute("title", EnigmailLocale.getString("keyserverTitle.uploading"));
-
-  let progressDlg = document.getElementById("dialog.progress");
-  progressDlg.setAttribute("mode", "undetermined");
-
-  msgProgress.processCanceledByUser = false;
-
-  let observer = {
-    get isCanceled() {
-      return msgProgress.processCanceledByUser;
-    },
-    onProgress: function(completionRate) {
-      progressDlg.setAttribute("value", completionRate);
-      progressDlg.setAttribute("mode", "normal");
-    },
-    onUpload: function(fpr) {
-      // do nothing
-    },
-    onFinished: function(completionStatus, errorMessage, displayError) {
-      if (completionStatus !== 0) {
-        window.close();
-        gEnigCallbackFunc(completionStatus, errorMessage, displayError);
-      }
-      else {
-        EnigmailDialog.info(window, EnigmailLocale.getString("keyserverProgress.wksUploadCompleted"));
-        window.close();
-      }
-    }
-  };
-
-  EnigmailKeyServer.performWkdUpload(inArg, window, observer); */
-}
 
 function performKeyServerOperation(inArg) {
-  EnigmailLog.DEBUG("enigRetrieveProgress.js: performKeyServerOperation\n");
+  EnigmailLog.DEBUG("enigRetrieveProgress.js: performKeyServerOperation()\n");
   var subject;
   var statTxt = document.getElementById("dialog.status2");
   if (inArg.accessType == EnigmailConstants.UPLOAD_KEY || inArg.accessType == EnigmailConstants.UPLOAD_WKD) {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.uploading");
     subject = EnigmailLocale.getString("keyserverTitle.uploading");
-  }
-  else {
+  } else {
     statTxt.value = EnigmailLocale.getString("keyserverProgress.refreshing");
     subject = EnigmailLocale.getString("keyserverTitle.refreshing");
   }
@@ -170,8 +125,7 @@ function onCancel() {
 }
 
 function processEnd(resultStatus, details) {
-  EnigmailLog.DEBUG(`enigmailRetrieveProgress.js: processEnd(): resultStatus=${resultStatus}
-`);
+  EnigmailLog.DEBUG(`enigmailRetrieveProgress.js: processEnd(): resultStatus=${resultStatus}\n`);
 
   let returnObj = window.arguments[1];
   let inArg = window.arguments[0];
@@ -188,10 +142,9 @@ function processEnd(resultStatus, details) {
         EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download", [details.keyList.length, inArg.keyId.length]));
         break;
       case EnigmailConstants.UPLOAD_KEY:
-        EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.upload", details.keyList.length));
+        EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.upload", [details.keyList.length]));
     }
-  }
-  else {
+  } else {
     let message = "";
     switch (accessType) {
       case EnigmailConstants.DOWNLOAD_KEY:

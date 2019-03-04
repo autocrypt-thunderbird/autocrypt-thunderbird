@@ -202,6 +202,7 @@ function getSelectedKeyIds() {
 function enigmailKeyMenu() {
   var keyList = getSelectedKeys();
   if (keyList.length == 1 && gKeyList[keyList[0]].secretAvailable) {
+    document.getElementById("bcUploadToWkd").removeAttribute("disabled");
     document.getElementById("bcRevoke").removeAttribute("collapsed");
     document.getElementById("bcEditKey").removeAttribute("collapsed");
   } else {
