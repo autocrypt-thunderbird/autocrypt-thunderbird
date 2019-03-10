@@ -113,8 +113,8 @@ enigmailLink {
   margin-top: 2px !important;
   margin-bottom: 2px !important;
   padding: 0 2px;
-  border-radius: 4px;
-  border-color: transparent ThreeDShadow;
+  border-color: ThreeDShadow;
+  border-width: 1px;
   min-height: 1ex;
 }
 
