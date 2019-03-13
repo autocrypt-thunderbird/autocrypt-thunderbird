@@ -59,6 +59,12 @@ function PgpMimeEncrypt(sMimeSecurityInfo) {
   this.originalSubject = null;
   this.keyMap = {};
 
+  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    this.onDataAvailable = this.onDataAvailable68;
+  } else {
+    this.onDataAvailable = this.onDataAvailable60;
+  }
+
   try {
     if (sMimeSecurityInfo) {
       if ("nsIMsgSMIMECompFields" in Ci) {
@@ -129,7 +135,10 @@ PgpMimeEncrypt.prototype = {
     this.encHeader = null;
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  /**
+   * onDataAvailable for TB <= 66
+   */
+  onDataAvailable60: function(req, ctxt, stream, offset, count) {
     LOCAL_DEBUG("mimeEncrypt.js: onDataAvailable\n");
     this.inStream.init(stream);
     var data = this.inStream.read(count);
@@ -137,7 +146,18 @@ PgpMimeEncrypt.prototype = {
 
   },
 
-  onStopRequest: function(request, win, status) {
+  /**
+   * onDataAvailable for TB >= 67
+   */
+  onDataAvailable68: function(req, stream, offset, count) {
+    LOCAL_DEBUG("mimeEncrypt.js: onDataAvailable\n");
+    this.inStream.init(stream);
+    var data = this.inStream.read(count);
+    //LOCAL_DEBUG("mimeEncrypt.js: >"+data+"<\n");
+
+  },
+
+  onStopRequest: function(request, status) {
     EnigmailLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
   },
 

@@ -80,17 +80,17 @@ var EnigmailStreams = {
   newStringStreamListener: function(onStopCallback) {
     EnigmailLog.DEBUG("enigmailCommon.jsm: newStreamListener\n");
 
-    return {
+    let listener = {
       data: "",
       inStream: Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream),
       _onStopCallback: onStopCallback,
       QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
-      onStartRequest: function(channel, ctxt) {
+      onStartRequest: function(channel) {
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
       },
 
-      onStopRequest: function(channel, ctxt, status) {
+      onStopRequest: function(channel, status) {
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
         this.inStream = null;
         var cbFunc = this._onStopCallback;
@@ -99,15 +99,26 @@ var EnigmailStreams = {
         EnigmailTimer.setTimeout(function _cb() {
           cbFunc(cbData);
         });
-      },
+      }
+    };
 
-      onDataAvailable: function(req, sup, stream, offset, count) {
-        // get data from stream
+    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+      // TB >= 67
+      listener.onDataAvailable = function(req, stream, offset, count) {
         // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
         this.inStream.setInputStream(stream);
         this.data += this.inStream.readBytes(count);
-      }
-    };
+      };      
+    }
+    else {
+      listener.onDataAvailable = function(req, ctxt, stream, offset, count) {
+        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+        this.inStream.setInputStream(stream);
+        this.data += this.inStream.readBytes(count);
+      };
+    }
+
+    return listener;
   },
 
   /**

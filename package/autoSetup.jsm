@@ -26,6 +26,7 @@ const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -421,35 +422,6 @@ var EnigmailAutoSetup = {
 };
 
 
-function createStreamListener(k) {
-  return {
-    _data: "",
-    _stream: null,
-
-    QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
-
-    // nsIRequestObserver
-    onStartRequest: function(aRequest, aContext) {},
-    onStopRequest: function(aRequest, aContext, aStatusCode) {
-      try {
-        k(this._data);
-      }
-      catch (e) {
-        EnigmailLog.DEBUG("autoSetup.jsm: createStreamListener: error: " + e + "\n");
-      }
-    },
-
-    // nsIStreamListener
-    onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {
-      if (this._stream === null) {
-        this._stream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-        this._stream.init(aInputStream);
-      }
-      this._data += this._stream.read(aCount);
-    }
-  };
-}
-
 /**
  * Recusrively go through all folders to get a flat array of all sub-folders
  * starting with a parent folder.
@@ -474,12 +446,12 @@ function getMsgFolders(folder, msgFolderArr) {
 
 // Util Function for Extracting manually added Headers
 function streamListener(callback) {
-  var newStreamListener = {
+  let streamListener = {
     mAttachments: [],
     mHeaders: [],
     mBusy: true,
 
-    onStartRequest: function(aRequest, aContext) {
+    onStartRequest: function(aRequest) {
       this.mAttachments = [];
       this.mHeaders = [];
       this.mBusy = true;
@@ -488,11 +460,11 @@ function streamListener(callback) {
       channel.URI.QueryInterface(Components.interfaces.nsIMsgMailNewsUrl);
       channel.URI.msgHeaderSink = this; // adds this header sink interface to the channel
     },
-    onStopRequest: function(aRequest, aContext, aStatusCode) {
+    onStopRequest: function(aRequest, aStatusCode) {
       callback();
       this.mBusy = false; // if needed, you can poll this var to see if we are done collecting attachment details
     },
-    onDataAvailable: function(aRequest, aContext, aInputStream, aOffset, aCount) {},
+    onDataAvailable: function(aRequest, aInputStream, aOffset, aCount) {},
     onStartHeaders: function() {},
     onEndHeaders: function() {},
     processHeaders: function(aHeaderNameEnumerator, aHeaderValueEnumerator, aDontCollectAddress) {
@@ -534,7 +506,7 @@ function streamListener(callback) {
     }
   };
 
-  return newStreamListener;
+  return streamListener;
 }
 
 function getStreamedMessage(msgFolder, msgHeader) {
@@ -624,7 +596,7 @@ function getStreamedHeaders(msgURI, mms) {
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     let headerObj = {};
     try {
-      mms.streamHeaders(msgURI, createStreamListener(aRawString => {
+      mms.streamHeaders(msgURI, EnigmailStreams.newStringStreamListener(aRawString => {
         try {
           //EnigmailLog.DEBUG(`getStreamedHeaders: ${aRawString}\n`);
           headers.initialize(aRawString);

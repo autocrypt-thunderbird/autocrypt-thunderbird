@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
+//var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;

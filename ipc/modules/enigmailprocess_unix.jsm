@@ -13,7 +13,12 @@
 
 /* global Components: false, libc: false, LIBC: false */
 
-var {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+var {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 var EXPORTED_SYMBOLS = ["SubprocessImpl"];
 
@@ -21,7 +26,11 @@ Components.utils.importGlobalProperties(["TextDecoder"]);
 const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
 const OS = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
-var SubprocessConstants = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
+var {
+  SubprocessConstants,
+  BaseProcess,
+  PromiseWorker
+} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm", this);
 
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared.js", this);
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared_unix.js", this);
@@ -84,7 +93,10 @@ class Process extends BaseProcess {
 // convert that into a JS typed array.
 // The resulting array will not be null-terminated.
 function ptrToUint8Array(input) {
-  let {cast, uint8_t} = ctypes;
+  let {
+    cast,
+    uint8_t
+  } = ctypes;
 
   let len = 0;
   for (let ptr = cast(input, uint8_t.ptr); ptr.contents; ptr = ptr.increment()) {
@@ -106,8 +118,7 @@ var SubprocessUnix = {
     let environ;
     if (OS.Constants.Sys.Name == "Darwin") {
       environ = libc._NSGetEnviron().contents;
-    }
-    else {
+    } else {
       environ = libc.environ;
     }
 
@@ -129,8 +140,9 @@ var SubprocessUnix = {
 
       for (let i = 0; i < buf.length; i++) {
         if (buf[i] == EQUAL) {
-          yield[decode(buf.subarray(0, i)),
-            decode(buf.subarray(i + 1))];
+          yield [decode(buf.subarray(0, i)),
+            decode(buf.subarray(i + 1))
+          ];
           break;
         }
       }

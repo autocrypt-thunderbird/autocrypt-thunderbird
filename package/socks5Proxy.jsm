@@ -11,9 +11,6 @@ const EXPORTED_SYMBOLS = ["EnigmailSocks5Proxy"];
 
 const CC = Components.Constructor;
 
-
-
-
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
@@ -42,17 +39,27 @@ function createScriptableInputStream(inputStream) {
 
 function buildListener(hasFoundTor, isDoneChecking) {
   EnigmailLog.DEBUG("socks5proxy.jsm: buildListener()\n");
-  const listener = {
-    onStartRequest: function(request, context) {},
-    onStopRequest: function(request, context, statusCode) {
+  let listener = {
+    onStartRequest: function(request) {},
+    onStopRequest: function(request, statusCode) {
       isDoneChecking();
-    },
-    onDataAvailable: function(request, context, inputStream, offset, count) {
-      const response = createScriptableInputStream(inputStream).read(count);
-      hasFoundTor(response.indexOf(EXPECTED_TOR_EXISTS_RESPONSE) !== -1);
     },
     QueryInterface: EnigmailTb60Compat.generateQI(["nsIRequestObserver", "nsIStreamListener"])
   };
+
+  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    // TB >= 67
+    listener.onDataAvailable = function(request, inputStream, offset, count) {
+      const response = createScriptableInputStream(inputStream).read(count);
+      hasFoundTor(response.indexOf(EXPECTED_TOR_EXISTS_RESPONSE) !== -1);
+    };
+  } else {
+    listener.onDataAvailable = function(request, ctxt, inputStream, offset, count) {
+      const response = createScriptableInputStream(inputStream).read(count);
+      hasFoundTor(response.indexOf(EXPECTED_TOR_EXISTS_RESPONSE) !== -1);
+    };
+  }
+
   return listener;
 }
 

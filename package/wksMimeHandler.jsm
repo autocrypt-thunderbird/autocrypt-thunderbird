@@ -11,10 +11,6 @@ var EXPORTED_SYMBOLS = ["EnigmailWksMimeHandler"];
  *  Module for handling response messages from OpenPGP Web Key Service
  */
 
-
-
-
-
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailVerify = ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm").EnigmailVerify;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -71,11 +67,18 @@ PgpWkdHandler.prototype = {
 
   QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
 
-  onStartRequest: function(request, uri) {
+  onStartRequest: function(request, ctxt) {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStartRequest\n"); // always log this one
 
-    this.uri = uri ? uri.QueryInterface(Ci.nsIURI).clone() : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
+    let uri = null;
+    if ("messageURI" in this.mimeSvc) {
+      uri = this.mimeSvc.messageURI;
+    }
+    else {
+      uri = ctxt;
+    }
+
     if ("mimePart" in this.mimeSvc) {
       this.mimePartNumber = this.mimeSvc.mimePart;
     }
@@ -92,7 +95,13 @@ PgpWkdHandler.prototype = {
 
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
+  onDataAvailable: function(req, dummy, stream, offset, count) {
+    if ("messageURI" in this.mimeSvc) {
+      // TB >= 67
+      stream = dummy;
+      count = offset;
+    }
+
     LOCAL_DEBUG("wksMimeHandler.jsm: onDataAvailable: " + count + "\n");
     if (count > 0) {
       this.inStream.init(stream);
@@ -171,9 +180,9 @@ PgpWkdHandler.prototype = {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
       gConv.setData(msg, msg.length);
       try {
-        this.mimeSvc.onStartRequest(null, null);
-        this.mimeSvc.onDataAvailable(null, null, gConv, 0, msg.length);
-        this.mimeSvc.onStopRequest(null, null, 0);
+        this.mimeSvc.onStartRequest(null);
+        this.mimeSvc.onDataAvailable(null, gConv, 0, msg.length);
+        this.mimeSvc.onStopRequest(null, 0);
       }
       catch (ex) {
         EnigmailLog.ERROR("wksMimeHandler.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());

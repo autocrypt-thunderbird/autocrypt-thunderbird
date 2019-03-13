@@ -43,6 +43,12 @@ function MimeVerify(protocol) {
   this.partiallySigned = false;
   this.exitCode = null;
   this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+
+  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    this.onDataAvailable = this.onDataAvailable68;
+  } else {
+    this.onDataAvailable = this.onDataAvailable60;
+  }
 }
 
 
@@ -171,21 +177,26 @@ MimeVerify.prototype = {
       hdr.micalg = hdr.micalg || "";
       this.boundary = hdr.boundary.replace(/['"]/g, "");
     }
-
   },
 
   onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("mimeVerify.jsm: onStartRequest\n"); // always log this one
 
-    this.uri = uri ? uri.QueryInterface(Ci.nsIURI) : null;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     if ("mimePart" in this.mimeSvc) {
       this.mimePartNumber = this.mimeSvc.mimePart;
-    }
-    else {
+    } else {
       this.mimePartNumber = "";
+    }
+
+    if ("messageURI" in this.mimeSvc) {
+      this.uri = this.mimeSvc.messageURI;
+    } else {
+      if (uri) {
+        this.uri = uri.QueryInterface(Ci.nsIURI);
+      }
     }
 
     this.dataCount = 0;
@@ -207,8 +218,23 @@ MimeVerify.prototype = {
     this.parseContentType();
   },
 
-  onDataAvailable: function(req, sup, stream, offset, count) {
-    LOCAL_DEBUG("mimeVerify.jsm: onDataAvailable: " + count + "\n");
+  /**
+   * onDataAvailable for TB <= 66
+   */
+  onDataAvailable60: function(req, ctxt, stream, offset, count) {
+    LOCAL_DEBUG("mimeVerify.jsm: onDataAvailable60: " + count + "\n");
+    if (count > 0) {
+      this.inStream.init(stream);
+      var data = this.inStream.read(count);
+      this.onTextData(data);
+    }
+  },
+
+  /**
+   * onDataAvailable for TB >= 67
+   */
+  onDataAvailable68: function(req, stream, offset, count) {
+    LOCAL_DEBUG("mimeVerify.jsm: onDataAvailable68: " + count + "\n");
     if (count > 0) {
       this.inStream.init(stream);
       var data = this.inStream.read(count);
@@ -229,8 +255,7 @@ MimeVerify.prototype = {
         i += 2 + this.boundary.length;
         if (this.keepData[i] == "\n") {
           ++i;
-        }
-        else if (this.keepData[i] == "\r") {
+        } else if (this.keepData[i] == "\r") {
           ++i;
           if (this.keepData[i] == "\n") ++i;
         }
@@ -238,8 +263,7 @@ MimeVerify.prototype = {
         this.keepData = this.keepData.substr(i);
         data = this.keepData;
         this.readMode = 1;
-      }
-      else {
+      } else {
         this.keepData = data.substr(-this.boundary.length - 3);
       }
     }
@@ -258,8 +282,7 @@ MimeVerify.prototype = {
           this.keepData = this.keepData.substr(i);
           this.readMode = 2;
         }
-      }
-      else
+      } else
         return;
     }
 
@@ -282,8 +305,7 @@ MimeVerify.prototype = {
         if (xferEnc.search(/base64/i) >= 0) {
           let bound = this.getBodyPart();
           this.keepData = EnigmailData.decodeBase64(this.keepData.substring(bound.start, bound.end)) + "\n";
-        }
-        else if (xferEnc.search(/quoted-printable/i) >= 0) {
+        } else if (xferEnc.search(/quoted-printable/i) >= 0) {
           let bound = this.getBodyPart();
           let qp = this.keepData.substring(bound.start, bound.end);
           this.keepData = EnigmailData.decodeQuotedPrintable(qp) + "\n";
@@ -293,8 +315,7 @@ MimeVerify.prototype = {
         let s = Math.max(this.keepData.search(/^-----BEGIN PGP /m), 0);
         let e = Math.max(this.keepData.search(/^-----END PGP /m), this.keepData.length - 30);
         this.sigData = this.keepData.substring(s, e + 30);
-      }
-      else {
+      } else {
         this.sigData = "";
       }
 
@@ -385,8 +406,7 @@ MimeVerify.prototype = {
     if (this.protectedHeaders && this.protectedHeaders.startPos >= 0 && this.protectedHeaders.endPos > this.protectedHeaders.startPos) {
       let r = this.signedData.substr(0, this.protectedHeaders.startPos) + this.signedData.substr(this.protectedHeaders.endPos);
       this.returnData(r);
-    }
-    else {
+    } else {
       this.returnData(this.signedData);
     }
 
@@ -410,8 +430,7 @@ MimeVerify.prototype = {
             let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
 
             msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
-          }
-          else {
+          } else {
             manUrl.value = {
               spec: "enigmail://invalid/message"
             };
@@ -447,8 +466,7 @@ MimeVerify.prototype = {
               if (url.value.host !== this.uri.host ||
                 url.value.path !== this.uri.path)
                 return;
-            }
-            else {
+            } else {
               // TB >= 57
               if (url.value.host !== this.uri.host ||
                 url.value.pathQueryRef !== this.uri.pathQueryRef)
@@ -456,8 +474,7 @@ MimeVerify.prototype = {
             }
           }
         }
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.writeException("mimeVerify.jsm", ex);
         EnigmailLog.DEBUG("mimeVerify.jsm: error while processing " + this.msgUriSpec + "\n");
       }
@@ -516,17 +533,16 @@ MimeVerify.prototype = {
     }
 
     if ("outputDecryptedData" in this.mimeSvc) {
+      // TB >= 57
       this.mimeSvc.outputDecryptedData(data, data.length);
-    }
-    else {
+    } else {
       let gConv = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
       gConv.setData(data, data.length);
       try {
         this.mimeSvc.onStartRequest(null, null);
         this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
         this.mimeSvc.onStopRequest(null, null, 0);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
       }
     }
@@ -570,8 +586,7 @@ MimeVerify.prototype = {
           this.mimePartNumber);
       }
       this.statusDisplayed = true;
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("mimeVerify.jsm", ex);
     }
   }
