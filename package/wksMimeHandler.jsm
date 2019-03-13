@@ -11,10 +11,6 @@ var EXPORTED_SYMBOLS = ["EnigmailWksMimeHandler"];
  *  Module for handling response messages from OpenPGP Web Key Service
  */
 
-
-
-
-
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailVerify = ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm").EnigmailVerify;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -71,13 +67,16 @@ PgpWkdHandler.prototype = {
 
   QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
 
-  onStartRequest: function(request) {
+  onStartRequest: function(request, ctxt) {
     EnigmailLog.DEBUG("wksMimeHandler.jsm: onStartRequest\n"); // always log this one
 
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let uri = null;
     if ("messageURI" in this.mimeSvc) {
       uri = this.mimeSvc.messageURI;
+    }
+    else {
+      uri = ctxt;
     }
 
     if ("mimePart" in this.mimeSvc) {
@@ -96,7 +95,13 @@ PgpWkdHandler.prototype = {
 
   },
 
-  onDataAvailable: function(req, stream, offset, count) {
+  onDataAvailable: function(req, dummy, stream, offset, count) {
+    if ("messageURI" in this.mimeSvc) {
+      // TB >= 67
+      stream = dummy;
+      count = offset;
+    }
+
     LOCAL_DEBUG("wksMimeHandler.jsm: onDataAvailable: " + count + "\n");
     if (count > 0) {
       this.inStream.init(stream);

@@ -1822,10 +1822,6 @@ Enigmail.msg = {
         this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 
       },
-      onDataAvailable: function(req, stream, offset, count) {
-        this.inStream.init(stream);
-        this.data += this.inStream.read(count);
-      },
       onStopRequest: function() {
         var start = this.data.indexOf("-----BEGIN PGP");
         var end = this.data.indexOf("-----END PGP");
@@ -1853,6 +1849,20 @@ Enigmail.msg = {
         }
       }
     };
+
+    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+      // TB >= 67
+      listener.onDataAvailable = function(req, stream, offset, count) {
+        this.inStream.init(stream);
+        this.data += this.inStream.read(count);
+      };
+    } else {
+      listener.onDataAvailable = function(req, ctxt, stream, offset, count) {
+        this.inStream.init(stream);
+        this.data += this.inStream.read(count);
+      };
+    }
+
 
     msgSvc.streamMessage(msgUriSpec,
       listener,

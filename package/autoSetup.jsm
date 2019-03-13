@@ -26,6 +26,7 @@ const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -421,35 +422,6 @@ var EnigmailAutoSetup = {
 };
 
 
-function createStreamListener(k) {
-  return {
-    _data: "",
-    _stream: null,
-
-    QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
-
-    // nsIRequestObserver
-    onStartRequest: function(aRequest) {},
-    onStopRequest: function(aRequest, aStatusCode) {
-      try {
-        k(this._data);
-      }
-      catch (e) {
-        EnigmailLog.DEBUG("autoSetup.jsm: createStreamListener: error: " + e + "\n");
-      }
-    },
-
-    // nsIStreamListener
-    onDataAvailable: function(aRequest, aInputStream, aOffset, aCount) {
-      if (this._stream === null) {
-        this._stream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-        this._stream.init(aInputStream);
-      }
-      this._data += this._stream.read(aCount);
-    }
-  };
-}
-
 /**
  * Recusrively go through all folders to get a flat array of all sub-folders
  * starting with a parent folder.
@@ -474,7 +446,7 @@ function getMsgFolders(folder, msgFolderArr) {
 
 // Util Function for Extracting manually added Headers
 function streamListener(callback) {
-  var newStreamListener = {
+  let streamListener = {
     mAttachments: [],
     mHeaders: [],
     mBusy: true,
@@ -534,7 +506,7 @@ function streamListener(callback) {
     }
   };
 
-  return newStreamListener;
+  return streamListener;
 }
 
 function getStreamedMessage(msgFolder, msgHeader) {
@@ -624,7 +596,7 @@ function getStreamedHeaders(msgURI, mms) {
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     let headerObj = {};
     try {
-      mms.streamHeaders(msgURI, createStreamListener(aRawString => {
+      mms.streamHeaders(msgURI, EnigmailStreams.newStringStreamListener(aRawString => {
         try {
           //EnigmailLog.DEBUG(`getStreamedHeaders: ${aRawString}\n`);
           headers.initialize(aRawString);

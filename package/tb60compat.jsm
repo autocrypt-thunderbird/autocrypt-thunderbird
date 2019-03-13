@@ -12,7 +12,7 @@ var EXPORTED_SYMBOLS = ["EnigmailTb60Compat"];
 
 const MailUtils = ChromeUtils.import("resource:///modules/MailUtils.jsm").MailUtils;
 
-var gCompFields;
+var gCompFields, gPgpMimeObj;
 
 var EnigmailTb60Compat = {
   generateQI: function(aCid) {
@@ -41,5 +41,13 @@ var EnigmailTb60Compat = {
     else {
       return MailUtils.getFolderForURI(folderUri, false);
     }
+  },
+
+  isMessageUriInPgpMime: function() {
+    if (!gPgpMimeObj) {
+      gPgpMimeObj = Cc["@mozilla.org/mime/pgp-mime-js-decrypt;1"].createInstance(Ci.nsIPgpMimeProxy); 
+    }
+    
+    return ("messageURI" in gPgpMimeObj);
   }
 };

@@ -73,10 +73,10 @@ function UnknownProtoHandler() {
 }
 
 UnknownProtoHandler.prototype = {
-  onStartRequest: function(request) {
+  onStartRequest: function(request, ctxt) {
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     if (!("outputDecryptedData" in this.mimeSvc)) {
-      this.mimeSvc.onStartRequest(null);
+      this.mimeSvc.onStartRequest(null, ctxt);
     }
     this.bound = EnigmailMime.getBoundary(this.mimeSvc.contentType);
     /*
@@ -88,7 +88,16 @@ UnknownProtoHandler.prototype = {
     this.readMode = 0;
   },
 
-  onDataAvailable: function(req, stream, offset, count) {
+  onDataAvailable: function(p1, p2, p3, p4) {
+    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+      this.processData(p1, p2, p3, p4);
+    }
+    else {
+      this.processData(p1, null, p2, p3, p4);
+    }
+  },
+
+  processData: function (req, stream, offset, count) {
     if (count > 0) {
       inStream.init(stream);
       let data = inStream.read(count);
@@ -118,11 +127,12 @@ UnknownProtoHandler.prototype = {
           let out = l.slice(startIndex, endIndex).join("\n") + "\n";
 
           if ("outputDecryptedData" in this.mimeSvc) {
+            // TB >= 57
             this.mimeSvc.outputDecryptedData(out, out.length);
           }
           else {
             gConv.setData(out, out.length);
-            this.mimeSvc.onDataAvailable(null, gConv, 0, out.length);
+            this.mimeSvc.onDataAvailable(null, null, gConv, 0, out.length);
           }
         }
       }
@@ -149,13 +159,16 @@ PgpMimeHandler.prototype = {
   QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
-  onStartRequest: function(request) {
+  onStartRequest: function(request, ctxt) {
     let mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     let ct = mimeSvc.contentType;
 
     let uri = null;
     if ("messageURI" in mimeSvc) {
       uri = mimeSvc.messageURI;
+    }
+    else {
+      uri = ctxt;
     }
 
     if (!EnigmailCore.getService()) {

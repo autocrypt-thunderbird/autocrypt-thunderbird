@@ -24,10 +24,10 @@ var overwriteEnigmailMime = {
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false, EnigmailSingletons: false */
+testing("mimeDecrypt.jsm"); /* global EnigmailMimeDecrypt: false, EnigmailSingletons: false, EnigmailTb60Compat: false */
 const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 const EnigmailKeyRing = component("enigmail/keyRing.jsm").EnigmailKeyRing;
-const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+//const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 
 
 test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
@@ -95,7 +95,11 @@ test(withTestGpgHome(withEnigmail(function processPgpMimeMsg() {
   for (i = 0; i < dataArr.length; i++) {
     let s = dataArr[i] + "\r\n";
     inputStream.setData(s, s.length);
-    dec.onDataAvailable(null, inputStream, 0, s.length);
+    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+      // TB >= 67
+      dec.onDataAvailable(null, inputStream, 0, s.length);
+    } else
+      dec.onDataAvailable(null, null, inputStream, 0, s.length);
   }
 
   dec.onStopRequest(null, null);

@@ -25,6 +25,7 @@ const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
 const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailMimeDecrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeDecrypt.jsm").EnigmailMimeDecrypt;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 
 
 var EXPORTED_SYMBOLS = ["EnigmailPEPDecrypt"];
@@ -186,17 +187,29 @@ function PEPDecryptor(contentType) {
   this.mimePartNumber = "";
   this.requestingSubpart = false;
   this.ignoreMessage = false;
+
+  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    this.onDataAvailable = this.onDataAvailable68;
+  } else {
+    this.onDataAvailable = this.onDataAvailable60;
+  }  
 }
 
 
 PEPDecryptor.prototype = {
 
-  onStartRequest: function(request) {
+  onStartRequest: function(request, uri) {
     EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest\n");
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     if ("messageURI" in this.mimeSvc) {
       this.uri = this.mimeSvc.messageURI;
+    }
+    else if (uri) {
+      this.uri = uri.QueryInterface(Ci.nsIURI);
+    }
+
+    if (this.uri) {
       EnigmailLog.DEBUG("pEpDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
 
       this.backgroundJob = (this.uri.spec.search(/[&?]header=(filter|print|quotebody|enigmailConvert)/) >= 0);
@@ -217,7 +230,20 @@ PEPDecryptor.prototype = {
     }
   },
 
-  onDataAvailable: function(req, stream, offset, count) {
+  /**
+   * onDataAvailable for TB <= 66
+   */
+  onDataAvailable60: function(req, ctxt, stream, offset, count) {
+    if (count > 0) {
+      inStream.init(stream);
+      this.sourceData += inStream.read(count);
+    }
+  },
+
+  /**
+   * onDataAvailable for TB >= 68
+   */
+  onDataAvailable68: function(req, stream, offset, count) {
     if (count > 0) {
       inStream.init(stream);
       this.sourceData += inStream.read(count);
@@ -368,6 +394,7 @@ PEPDecryptor.prototype = {
 
   returnData: function() {
     if ("outputDecryptedData" in this.mimeSvc) {
+      // TB >= 57
       this.mimeSvc.outputDecryptedData(this.decryptedData, this.decryptedData.length);
     }
     else {

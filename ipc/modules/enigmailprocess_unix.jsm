@@ -30,7 +30,7 @@ var {
   SubprocessConstants,
   BaseProcess,
   PromiseWorker
-} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm");
+} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm", this);
 
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared.js", this);
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/enigmailprocess_shared_unix.js", this);
