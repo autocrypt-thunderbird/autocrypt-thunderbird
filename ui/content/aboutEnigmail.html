@@ -8,13 +8,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="chrome://enigmail/skin/enigmail-html.css">
 
-  <script>
-const EnigmailLocalizeHtml = ChromeUtils.import("chrome://enigmail/content/modules/localizeHtml.jsm").EnigmailLocalizeHtml;
-
-function onload() {
-  EnigmailLocalizeHtml.onPageLoad(document);
-}
-  </script>
+  <script src="chrome://enigmail/content/ui/aboutEnigmail.js"></script>
 
   <head>
     <title txtId="aboutEnigmail.tabName"></title>
@@ -42,6 +36,12 @@ function onload() {
       <p>
       <pre txtId="FNC_isGpgWorking">
       </pre>
+      </p>
+      <p id="checkGnupgUpdate" class="hidden">
+        <button type="button" id="btnCheckGnupgUpdate" onclick="checkGnupgUpdate()">
+          <span txtId="updateGnuPG.checkUpdate"></span>
+        </button>
+
       </p>
       <hr>
 

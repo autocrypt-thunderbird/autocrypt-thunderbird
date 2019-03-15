@@ -21,6 +21,7 @@ UIFILES = \
 	enigmailAbContactsPanel.xul \
 	enigmailAbOverlay.js \
 	aboutEnigmail.html \
+	aboutEnigmail.js \
 	enigmailAddUidDlg.js \
 	enigmailAddUidDlg.xul \
 	enigmailMsgBox.js \
