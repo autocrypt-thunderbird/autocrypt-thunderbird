@@ -31,7 +31,7 @@ var {
   SubprocessConstants,
   BaseProcess,
   PromiseWorker
-} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm").SubprocessConstants;
+} = ChromeUtils.import("chrome://enigmail/content/modules/enigmailprocess_common.jsm", this);
 
 XPCOMUtils.defineLazyServiceGetter(this, "env", "@mozilla.org/process/environment;1",
   "nsIEnvironment"); /* global env: false */
