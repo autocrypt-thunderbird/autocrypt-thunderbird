@@ -7,12 +7,17 @@
 const EnigmailLocalizeHtml = ChromeUtils.import("chrome://enigmail/content/modules/localizeHtml.jsm").EnigmailLocalizeHtml;
 const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 const EnigmailGnuPGUpdate = ChromeUtils.import("chrome://enigmail/content/modules/gnupgUpdate.jsm").EnigmailGnuPGUpdate;
+const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 
 function onload() {
   EnigmailLocalizeHtml.onPageLoad(document);
 
-  if (EnigmailGnuPGUpdate.isGnuPGUpdatable()) {
-    document.getElementById("checkGnupgUpdate").classList.remove("hidden");
+  let enigmailSvc = EnigmailCore.getService();
+
+  if (enigmailSvc) {
+    if (EnigmailGnuPGUpdate.isGnuPGUpdatable()) {
+      document.getElementById("checkGnupgUpdate").classList.remove("hidden");
+    }
   }
 }
 
