@@ -19,8 +19,7 @@ var EnigmailTb60Compat = {
     if ("generateQI" in ChromeUtils) {
       // TB <= 60
       return ChromeUtils.generateQI(aCid);
-    }
-    else {
+    } else {
       let XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
       return XPCOMUtils.generateQI(aCid);
     }
@@ -37,17 +36,26 @@ var EnigmailTb60Compat = {
     if ("getExistingFolder" in MailUtils) {
       // TB >= 65
       return MailUtils.getExistingFolder(folderUri);
-    }
-    else {
+    } else {
       return MailUtils.getFolderForURI(folderUri, false);
     }
   },
 
   isMessageUriInPgpMime: function() {
     if (!gPgpMimeObj) {
-      gPgpMimeObj = Cc["@mozilla.org/mime/pgp-mime-js-decrypt;1"].createInstance(Ci.nsIPgpMimeProxy); 
+      gPgpMimeObj = Cc["@mozilla.org/mime/pgp-mime-js-decrypt;1"].createInstance(Ci.nsIPgpMimeProxy);
     }
-    
+
     return ("messageURI" in gPgpMimeObj);
+  },
+
+  /**
+   * return true, if platform is newer than or equal a given version
+   */
+  isPlatformNewerThan: function(requestedVersion) {
+    let vc = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+    let appVer = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo).platformVersion;
+
+    return vc.compare(appVer, requestedVersion) >= 0;
   }
 };

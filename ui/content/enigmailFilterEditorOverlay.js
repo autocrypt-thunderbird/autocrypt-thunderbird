@@ -11,30 +11,39 @@
 /* global Services: false */
 /* global gActionListOrdered: false, checkActionsReorder: true, nsMsgFilterType: false   */
 /* global  gFilterActionList: true, gCustomActions: false, gFilterList: false */
-/* global gFilterType: false, gFilterBundle: false */
+/* global gFilterType: false, gFilterBundle: false, gFilterActionStrings: false */
 
+var EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 var EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 
 
 var EnigmailFilterEditor = {
   onLoad: function() {
     let self = this;
+    let platformTb66 = EnigmailTb60Compat.isPlatformNewerThan("66");
 
     if ("arguments" in window && window.arguments[0]) {
       let args = window.arguments[0];
 
       if ("filter" in args) {
         // editing a filter
-        this.overwriteActionTypes(false);
+        if (platformTb66) {
+          this.overwriteActionTypes(false);
+        } else {
+          this.reInitialize(args.filter);
+        }
       }
     }
+
 
     // Overwrite the original checkActionsReorder function
     this.enigmail_origCheckActionsReorder = checkActionsReorder;
 
     checkActionsReorder = function() {
       let r = self.enigmail_origCheckActionsReorder();
-      EnigmailTimer.setTimeout(EnigmailFilterEditor.checkMoveAction.bind(EnigmailFilterEditor), 50);
+      EnigmailTimer.setTimeout(function() {
+        EnigmailFilterEditor.checkMoveAction(platformTb66);
+      }, 0);
       return r;
     };
   },
@@ -81,14 +90,34 @@ var EnigmailFilterEditor = {
     }
   },
 
-  checkMoveAction: function() {
+  reInitialize: function(filter) {
+    while (gFilterActionList.firstChild) {
+      gFilterActionList.removeChild(gFilterActionList.firstChild);
+    }
+
+    let numActions = filter.actionCount;
+    for (let actionIndex = 0; actionIndex < numActions; actionIndex++) {
+      let filterAction = filter.getActionAt(actionIndex);
+
+      var newActionRow = document.createElement('listitem');
+      newActionRow.setAttribute('initialActionIndex', actionIndex);
+      newActionRow.className = 'ruleaction';
+      gFilterActionList.appendChild(newActionRow);
+      newActionRow.setAttribute('value',
+        filterAction.type == Ci.nsMsgFilterAction.Custom ?
+        filterAction.customId : gFilterActionStrings[filterAction.type]);
+      newActionRow.setAttribute('onfocus', 'this.storeFocus();');
+    }
+  },
+
+  checkMoveAction: function(doOverwriteActionTypes) {
     let dlg = document.getElementById("FilterEditor");
     let acceptButton = dlg.getButton("accept");
     let forbidden = -1;
     let hasCopyAction = -1;
     let hasMoveAction = -1;
 
-    this.overwriteActionTypes(true);
+    if (doOverwriteActionTypes) this.overwriteActionTypes(true);
 
     for (let i = 0; i < gActionListOrdered.length; i++) {
       let action = gActionListOrdered.queryElementAt(i, Components.interfaces.nsIMsgRuleAction);
