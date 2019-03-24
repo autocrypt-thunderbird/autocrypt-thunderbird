@@ -86,7 +86,7 @@
 
 <!ENTITY enigmail.keyserver.label         "Keyserver">
 <!ENTITY enigmail.keyserverDlg.label      "Select Keyserver">
-<!ENTITY enigmail.keyservers.label        "Specify your keyserver(s)">
+<!ENTITY enigmail.keyservers.label        "Specify your keyserver(s):">
 <!ENTITY enigmail.keyservers.sample2      "Example: pool.sks-keyservers.net, pgp.mit.edu">
 
 <!ENTITY enigmail.searchForKey.example    "Example: 'Forename Surname &lt;user@example.com&gt;'">

@@ -439,7 +439,7 @@
             advanced="true">
           <vbox>
             <label control="enigmail_keyserver"
-                  value="&enigmail.keyservers.label;:" />
+                  value="&enigmail.keyservers.label;" />
             <textbox id="enigmail_keyserver"/>
             <label value="&enigmail.keyservers.sample2;" style="font-style: italic;"/>
           </vbox>
