@@ -210,7 +210,7 @@ test(withTestGpgHome(withEnigmail(function shouldGetGpgHomeDir() {
   let homedirExpected = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
 
   let homeDir = EnigmailGpgAgent.getGpgHomeDir();
-  Assert.equal(homedirExpected, homeDir);
+  Assert.equal(homedirExpected, homeDir.substr(0, homedirExpected.length));
 })));
 
 // getHomedirFromParam

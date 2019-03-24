@@ -1,4 +1,4 @@
-/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, FileUtils: false, JSUnit: false, EnigmailFiles: false */
+/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, JSUnit: false, EnigmailFiles: false */
 /*global dump: false, Cc: false, Ci: false*/
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,8 +9,10 @@
 "use strict";
 
 const osUtils = {};
-ChromeUtils.import("resource://gre/modules/osfile.jsm", osUtils);
-ChromeUtils.import("resource://gre/modules/FileUtils.jsm", osUtils);
+osUtils.OS = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
+osUtils.FileUtils = ChromeUtils.import("resource://gre/modules/FileUtils.jsm").FileUtils;
+const TestEnigmailRNG = ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm").EnigmailRNG;
+const TestEnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 
 var TestHelper = {
   getMyPath: function() {
@@ -78,7 +80,7 @@ var TestHelper = {
 
   initalizeGpgHome: function() {
     component("enigmail/files.jsm");
-    var homedir = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest");
+    var homedir = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest" + TestEnigmailRNG.generateRandomString(8));
     var workingDirectory = new osUtils.FileUtils.File(homedir);
     if (!workingDirectory.exists()) {
       workingDirectory.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 448);
@@ -112,6 +114,8 @@ var TestHelper = {
     var environment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
 
     environment.set("GNUPGHOME", workingDirectory.path);
+    if (TestEnigmailCore.getEnvList() !== null)
+      TestEnigmailCore.setEnvVariable("GNUPGHOME", workingDirectory.path);
     return homedir;
   },
 
@@ -315,8 +319,6 @@ function setupTestAccount(accountName, incomingServerUserName, primaryEmail = nu
 
   return gotAc;
 }
-
-const TestEnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 
 function withEnigmail(f) {
   return function() {
