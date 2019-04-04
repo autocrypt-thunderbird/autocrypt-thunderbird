@@ -220,16 +220,16 @@ SKIN_TB_LINUX = \
 	images/ok-sign.svg \
 	tb-linux/images/enigEncInactive.png \
 	tb-linux/images/enigEncNotOk.png \
-	tb-linux/images/enigEncOk.png \
+	tb-windows/images/enigEncOk.png \
 	tb-linux/images/enigSignInactive.png \
 	tb-linux/images/enigSignNotOk.png \
-	tb-linux/images/enigSignOk.png \
+	tb-windows/images/enigSignOk.png \
 	tb-linux/images/enigSignUnkown.png \
 	images/importSuccess.png \
 	images/twisty-open.png \
 	images/twisty-clsd.png \
 	images/spinning-wheel.png \
-	tb-linux/images/col-encrypted-signed.png \
+	tb-windows/images/col-encrypted-signed.png \
 	tb-windows/images/enigSignActiveNone.png \
 	tb-windows/images/enigSignActivePlus.png \
 	tb-windows/images/enigSignActiveMinus.png \
