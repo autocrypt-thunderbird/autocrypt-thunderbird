@@ -15,15 +15,15 @@
 
 var EXPORTED_SYMBOLS = ["GlodaUtils"];
 
-
+var GlodaUtils = null;
 
 try {
   // TB with omnijar
-  ChromeUtils.import("resource:///modules/gloda/utils.js");
+  GlodaUtils = ChromeUtils.import("resource:///modules/gloda/utils.js").GlodaUtils;
 }
 catch (ex) {
   // "old style" TB
-  ChromeUtils.import("resource://app/modules/gloda/utils.js");
+  GlodaUtils = ChromeUtils.import("resource://app/modules/gloda/utils.js").GlodaUtils;
 }
 
 // We don't define the exported symbol here - that is on purpose

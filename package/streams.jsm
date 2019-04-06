@@ -35,15 +35,8 @@ var EnigmailStreams = {
   createChannel: function(url) {
     let ioServ = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
-    let channel;
-    if ("newChannel2" in ioServ) {
-      // TB >= 48
-      let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-      channel = ioServ.newChannel2(url, null, null, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
-    }
-    else {
-      channel = ioServ.newChannel(url, null, null);
-    }
+    let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+    let channel = ioServ.newChannel(url, null, null, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
 
     return channel;
   },
@@ -59,14 +52,9 @@ var EnigmailStreams = {
     let ioServ = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
     let channel;
-    if ("newChannelFromURI2" in ioServ) {
-      // TB >= 48
-      let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-      channel = ioServ.newChannelFromURI2(uri, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
-    }
-    else {
-      channel = ioServ.newChannelFromURI(uri);
-    }
+    let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+    channel = ioServ.newChannelFromURI(uri, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
+
     return channel;
   },
   /**
@@ -143,14 +131,7 @@ var EnigmailStreams = {
       const newCharset = {};
       const hadCharset = {};
       let mimeType;
-      try {
-        // Gecko >= 43
-        mimeType = netUtil.parseResponseContentType(contentType, newCharset, hadCharset);
-      }
-      catch (ex) {
-        // Gecko < 43
-        mimeType = netUtil.parseContentType(contentType, newCharset, hadCharset);
-      }
+      mimeType = netUtil.parseResponseContentType(contentType, newCharset, hadCharset);
       contentCharset = newCharset.value;
     }
 

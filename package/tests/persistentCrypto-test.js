@@ -98,6 +98,7 @@ test(withTestGpgHome(withEnigmail(function messageIsMovedAndDecrypted() {
   );
 })));
 
+/*
 test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecrypted() {
   loadSecretKey();
   loadPublicKey();
@@ -132,6 +133,8 @@ test(withTestGpgHome(withEnigmail(function messageWithAttachemntIsMovedAndDecryp
     false
   );
 })));
+*/
+
 
 var loadSecretKey = function() {
   const secretKey = do_get_file("resources/dev-strike.sec", false);

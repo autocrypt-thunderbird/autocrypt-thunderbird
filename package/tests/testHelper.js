@@ -1,4 +1,4 @@
-/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, JSUnit: false, EnigmailFiles: false */
+/*global do_load_module: false, do_get_cwd: false, Components: false, Assert: false,  CustomAssert: false, JSUnit: false*/
 /*global dump: false, Cc: false, Ci: false*/
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,6 +13,7 @@ osUtils.OS = ChromeUtils.import("resource://gre/modules/osfile.jsm").OS;
 osUtils.FileUtils = ChromeUtils.import("resource://gre/modules/FileUtils.jsm").FileUtils;
 const TestEnigmailRNG = ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm").EnigmailRNG;
 const TestEnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const TestEnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 
 var TestHelper = {
   getMyPath: function() {
@@ -80,7 +81,7 @@ var TestHelper = {
 
   initalizeGpgHome: function() {
     component("enigmail/files.jsm");
-    var homedir = osUtils.OS.Path.join(EnigmailFiles.getTempDir(), ".gnupgTest" + TestEnigmailRNG.generateRandomString(8));
+    var homedir = osUtils.OS.Path.join(TestEnigmailFiles.getTempDir(), ".gnupgTest" + TestEnigmailRNG.generateRandomString(8));
     var workingDirectory = new osUtils.FileUtils.File(homedir);
     if (!workingDirectory.exists()) {
       workingDirectory.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 448);

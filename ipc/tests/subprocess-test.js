@@ -10,10 +10,7 @@
  * This file tests the implementation of subprocess.jsm
  */
 
-ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm"); /* global subprocess: false */
-
-
-
+const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
 
 var gTestLines;
 var gResultData;
