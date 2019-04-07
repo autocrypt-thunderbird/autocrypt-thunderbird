@@ -33,7 +33,7 @@ execTest("errorHandling-test.js");
 execTest("encryption-test.js");
 execTest("core-test.js");
 execTest("files-test.js");
-//execTest("streams-test.js"); // FIXME
+execTest("streams-test.js");
 execTest("gnupg-keylist-test.js");
 execTest("key-test.js");
 execTest("keyObj-test.js");

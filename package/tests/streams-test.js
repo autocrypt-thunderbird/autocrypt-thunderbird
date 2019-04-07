@@ -11,7 +11,7 @@
 
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
-testing("streams.jsm"); /*global EnigmailStreams: false,  EnigmailLog: false, EnigmailPrefs: false */
+testing("streams.jsm"); /*global EnigmailStreams: false,  EnigmailLog: false, EnigmailPrefs: false, NetUtil: false */
 const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 
 let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
@@ -26,8 +26,12 @@ function makeURI(aURL, aOriginCharset, aBaseURI) {
 test(function stringChannelTest() {
   var testString = "Hello world";
 
-  let uri = makeURI("dummy:none");
-  var ch = EnigmailStreams.newStringChannel(uri, "text/plain", "UTF-8", testString);
+  let c = NetUtil.newChannel({
+    uri: "chrome://enigmail/content/",
+    loadUsingSystemPrincipal: true
+  });
+
+  var ch = EnigmailStreams.newStringChannel(c.originalURI, "text/plain", "UTF-8", testString);
   var stringListener = EnigmailStreams.newStringStreamListener(
     function compareResults(gotData) {
       Assert.equal(testString, gotData);
@@ -60,5 +64,4 @@ test(function readFileChannel() {
   );
   ch.asyncOpen(stringListener, null);
   inspector.enterNestedEventLoop(0);
-
 });

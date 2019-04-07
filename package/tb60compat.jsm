@@ -17,7 +17,7 @@ var gCompFields, gPgpMimeObj;
 var EnigmailTb60Compat = {
   generateQI: function(aCid) {
     if ("generateQI" in ChromeUtils) {
-      // TB <= 60
+      // TB > 60
       return ChromeUtils.generateQI(aCid);
     } else {
       let XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;

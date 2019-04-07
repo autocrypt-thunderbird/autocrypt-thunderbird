@@ -87,7 +87,7 @@ EnigmailProtocolHandler.prototype = {
     return uri;
   },
 
-  newChannel: function(aURI) {
+  newChannel: function(aURI, loadInfo) {
     EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.newChannel: URI='" + aURI.spec + "'\n");
 
     var messageId = EnigmailData.extractMessageId(aURI.spec);
@@ -124,14 +124,15 @@ EnigmailProtocolHandler.prototype = {
         contentData = "Enigmail error: invalid URI " + aURI.spec;
       }
 
-      let channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData);
+      let channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData, loadInfo);
+
 
       return channel;
     }
 
     if (aURI.spec == aURI.scheme + ":dummy") {
       // Dummy PKCS7 content (to access mimeEncryptedClass)
-      return EnigmailStreams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7);
+      return EnigmailStreams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7, loadInfo);
     }
 
     var winName, spec;
