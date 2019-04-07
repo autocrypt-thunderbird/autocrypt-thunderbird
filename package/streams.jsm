@@ -25,34 +25,28 @@ var EnigmailStreams = {
   /**
    * Create a new channel from a URL.
    *
-   * @param url: String - URL specification
+   * @param url: String, nsIURI or nsIFile -  URL specification
    *
    * @return: channel
    */
   createChannel: function(url) {
-    let ioServ = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
+    let c = NetUtil.newChannel({
+      uri: url,
+      loadUsingSystemPrincipal: true
+    });
 
-    let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-    let channel = ioServ.newChannel(url, null, null, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
-
-    return channel;
+    return c;
   },
 
   /**
    * Create a new channel from a URI.
    *
-   * @param uri: Object - nsIURI
+   * @param uri: Object - nsIURI or string
    *
    * @return: channel
    */
   createChannelFromURI: function(uri) {
-    let ioServ = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
-
-    let channel;
-    let loadingPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-    channel = ioServ.newChannelFromURI(uri, null, loadingPrincipal, null, 0, Ci.nsIContentPolicy.TYPE_DOCUMENT);
-
-    return channel;
+    return this.createChannel(uri);
   },
   /**
    * create an nsIStreamListener object to read String data from an nsIInputStream
@@ -120,11 +114,7 @@ var EnigmailStreams = {
     EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel\n");
 
     if (!loadInfo) {
-      let c = NetUtil.newChannel({
-        uri: "chrome://enigmail/content/",
-        loadUsingSystemPrincipal: true
-      });
-      loadInfo = c.loadInfo;
+      loadInfo = createLoadInfo();
     }
 
     const inputStream = Cc[NS_STRING_INPUT_STREAM_CONTRACTID].createInstance(Ci.nsIStringInputStream);
@@ -157,11 +147,6 @@ var EnigmailStreams = {
   newFileChannel: function(uri, file, contentType, deleteOnClose) {
     EnigmailLog.DEBUG("enigmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
 
-    let c = NetUtil.newChannel({
-      uri: "chrome://enigmail/content/",
-      loadUsingSystemPrincipal: true
-    });
-
     let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
     let behaviorFlags = Ci.nsIFileInputStream.CLOSE_ON_EOF;
     if (deleteOnClose) {
@@ -174,7 +159,7 @@ var EnigmailStreams = {
     let isc = Cc[NS_INPUT_STREAM_CHNL_CONTRACTID].createInstance(Ci.nsIInputStreamChannel);
     isc.QueryInterface(Ci.nsIChannel);
     isc.contentDisposition = Ci.nsIChannel.DISPOSITION_ATTACHMENT;
-    isc.loadInfo = c.loadInfo;
+    isc.loadInfo = createLoadInfo();
     isc.setURI(uri);
     isc.contentStream = inputStream;
 
@@ -184,5 +169,13 @@ var EnigmailStreams = {
 
     return isc;
   }
-
 };
+
+function createLoadInfo() {
+  let c = NetUtil.newChannel({
+    uri: "chrome://enigmail/content/",
+    loadUsingSystemPrincipal: true
+  });
+
+  return c.loadInfo;
+}

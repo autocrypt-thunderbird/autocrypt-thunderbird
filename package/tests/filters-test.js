@@ -98,6 +98,10 @@ test(function processIncomingMailTest() {
 
   do_test_pending();
 
-  var fileUri = ioService.newFileURI(md);
-  processIncomingMail(fileUri.spec, true);
+  try {
+    processIncomingMail(md, true);
+  } catch (x) {
+    Assert.ok(false, "processIncomingMail: exception " + ex.toString());
+    do_test_finished();
+  }
 });
