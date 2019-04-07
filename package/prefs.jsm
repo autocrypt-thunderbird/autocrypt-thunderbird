@@ -71,17 +71,22 @@ function setDefaultPrefs() {
 
   let branch = p.defaultBranch;
   for (let key in gPrefs) {
-    let val = gPrefs[key];
-    switch (typeof val) {
-      case "boolean":
-        branch.setBoolPref(key, val);
-        break;
-      case "number":
-        branch.setIntPref(key, val);
-        break;
-      case "string":
-        branch.setCharPref(key, val);
-        break;
+    try {
+      let val = gPrefs[key];
+      switch (typeof val) {
+        case "boolean":
+          branch.setBoolPref(key, val);
+          break;
+        case "number":
+          branch.setIntPref(key, val);
+          break;
+        case "string":
+          branch.setCharPref(key, val);
+          break;
+      }
+    }
+    catch(ex) {
+      EnigmailLog.ERROR(`prefs.jsm: setDefaultPrefs(${key}: ERROR ${ex.toString()}\n`);
     }
   }
 }

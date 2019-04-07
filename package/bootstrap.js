@@ -40,8 +40,7 @@ function startup(data, reason) {
     EnigmailAmPrefsService.startup(reason);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
-  }
-  catch (ex) {
+  } catch (ex) {
     logException(ex);
   }
 }
@@ -85,8 +84,7 @@ function shutdown(data, reason) {
     // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
     //               in order to fully update images and locales, their caches need clearing here
     Services.obs.notifyObservers(null, "chrome-flush-caches", null);
-  }
-  catch (ex) {
+  } catch (ex) {
     logException(ex);
   }
 }
@@ -97,8 +95,7 @@ function shutdown(data, reason) {
 function shutdownModule(module, reason) {
   try {
     module.shutdown(reason);
-  }
-  catch (ex) {}
+  } catch (ex) {}
 }
 
 /**
@@ -114,11 +111,10 @@ function loadListOfModules() {
       gAllModules = [];
       let modules = request.response.split(/[\r\n]/);
       for (let mod of modules) {
-        mod = mod.replace(/^modules/, "");
+        mod = mod.replace(/^chrome/, "");
         gAllModules.push(mod);
       }
-    }
-    else
+    } else
       request.onerror(event);
   };
   request.send();
@@ -132,11 +128,12 @@ function unloadModules() {
   for (let mod of gAllModules) {
     try {
       // cannot unload filtersWrapper as you can't unregister filters in TB
-      if (mod !== "filtersWrapper.jsm") {
-        Cu.unload("resource://enigmail" + mod);
+      if (mod.search(/filtersWrapper\.jsm$/) < 0) {
+        Cu.unload("chrome://enigmail" + mod);
       }
+    } catch (ex) {
+      logException(ex);
     }
-    catch (ex) {}
   }
 }
 
@@ -146,6 +143,5 @@ function logException(exc) {
       Services
     } = ChromeUtils.import("resource://gre/modules/Services.jsm");
     Services.console.logStringMessage(exc.toString() + "\n" + exc.stack);
-  }
-  catch (x) {}
+  } catch (x) {}
 }
