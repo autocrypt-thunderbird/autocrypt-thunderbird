@@ -59,8 +59,7 @@ function onLoad() {
     document.getElementById("partnerFprLbl").setAttribute("value", EnigmailLocale.getString("pepTrustWords.partnerFingerprint", argsObj.otherId.address));
     document.getElementById("partnerFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.otherId.fpr));
     document.getElementById("myFpr").setAttribute("value", EnigmailKey.formatFpr(argsObj.ownId.fpr));
-  }
-  else {
+  } else {
     partnerEmail.setAttribute("collapsed", "true");
     document.getElementById("partnerFpr").setAttribute("collapsed", "true");
     document.getElementById("fprBox").setAttribute("collapsed", "true");
@@ -81,7 +80,7 @@ function appendLocaleMenuEntry(localeShort, localeLong) {
 
 
 function displayTrustWords(trustWords) {
-  document.getElementById("wordList").setAttribute("value", trustWords);
+  document.getElementById("wordList").value = trustWords;
 }
 
 function getTrustWords(locale) {
@@ -108,8 +107,7 @@ function getTrustWords(locale) {
 function onAccept() {
   if (gDialogMode == MODE_USER_USER) {
     return acceptUserHandshake();
-  }
-  else {
+  } else {
     return completeKeySync(PEP_SYNC_HANDSHAKE_ACCEPTED);
   }
 }
@@ -147,8 +145,7 @@ function onMistrustKey() {
         window.close();
       });
     }
-  }
-  else completeKeySync(PEP_SYNC_HANDSHAKE_REJECTED);
+  } else completeKeySync(PEP_SYNC_HANDSHAKE_REJECTED);
 }
 
 function completeKeySync(keySyncResult) {
@@ -185,8 +182,7 @@ function changeVerifcationType(type) {
     document.getElementById("selectTwLocale").removeAttribute("disabled");
 
     getTrustWords(gLocale);
-  }
-  else {
+  } else {
     // display fingerprint
     document.getElementById("fprBox").removeAttribute("collapsed");
     document.getElementById("wordList").setAttribute("collapsed", "true");

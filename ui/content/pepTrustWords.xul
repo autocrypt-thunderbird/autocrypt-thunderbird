@@ -18,6 +18,7 @@
 <dialog id="pepTrustWordsDlg"
         title="&enigmail.pEp.trustWordsDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="return onLoad();"
         ondialogaccept="return onAccept();"
         ondialogcancel="return onCancel();"
@@ -58,7 +59,7 @@
       </hbox>
     </vbox>
 
-    <textbox id="wordList" style="max-width: 400px;" editable="false" multiline="true" rows="5" flex="1"/>
+    <html:textarea id="wordList" style="max-width: 400px;" readonly="true" rows="5" flex="1" value=""/>
 
     <vbox id="fprBox">
       <label value="&enigmail.pEp.trustWordsDlg.myFingerprint;"/>

@@ -19,14 +19,14 @@ var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/wind
 var EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 
 
-var logFileData; // global definition of log file data to be able to save
+var gLogFileData; // global definition of log file data to be able to save
 // same data as displayed
 
 function saveLogFile() {
   let fileObj = EnigmailDialog.filePicker(window, EnigmailLocale.getString("saveLogFile.title"), null,
     true, "txt");
 
-  EnigmailFiles.writeFileContents(fileObj, logFileData, null);
+  EnigmailFiles.writeFileContents(fileObj, gLogFileData, null);
 
 }
 
@@ -35,26 +35,12 @@ function enigLoadPage() {
 
   EnigmailCore.getService();
 
-  var contentFrame = EnigmailWindows.getFrame(window, "contentFrame");
-  if (!contentFrame)
-    return;
-
   var winOptions = getWindowOptions();
 
-  if ("fileUrl" in winOptions) {
-    contentFrame.document.location.href = winOptions.fileUrl;
-  }
-
   if ("viewLog" in winOptions) {
-    let cf = document.getElementById("contentFrame");
-    cf.setAttribute("collapsed", "true");
-
     let cb = document.getElementById("contentBox");
-    logFileData = EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs);
-    cb.value = logFileData;
-
-    let cfb = document.getElementById("logFileBox");
-    cfb.removeAttribute("collapsed");
+    gLogFileData = EnigmailLog.getLogData(EnigmailCore.version, EnigmailPrefs);
+    cb.firstChild.data = gLogFileData;
   }
 
   if ("title" in winOptions) {

@@ -20,30 +20,23 @@
 
 <window id="EnigmailViewFile"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         title="enigmailViewFile"
         width="600" height="400"
         onload="return enigLoadPage();"
-        persist="screenX screenY width height">
+        persist="screenX screenY">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailViewFile.js"/>
 
 
-  <iframe id="contentFrame" type="content" name="contentFrame"
-        src=""
-        collapsed="true"
-        flex="1"/>
+  <html:div id="logFileBox" style="height: 100%; width: 100%">
 
-  <vbox id="logFileBox" collapsed="false" flex="1">
+    <html:p id="contentBox" style="display: block; white-space: pre; overflow: auto; width: 600px; height: 350px;"> </html:p>
 
-    <textbox id="contentBox" readonly="true"
-        multiline="true"
-        flex="1"
-        value=""/>
-
-    <hbox align="center" flex="0">
-      <button label="&enigmail.savelogfile.label;" oncommand="saveLogFile()"/>
-    </hbox>
-  </vbox>
+    <html:div style="text-align: center; height: 30px;" >
+      <html:button onclick="saveLogFile()">&enigmail.savelogfile.label;</html:button>
+    </html:div>
+  </html:div>
 
 </window>

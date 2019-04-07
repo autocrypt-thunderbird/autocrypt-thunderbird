@@ -301,7 +301,7 @@ var EnigmailWindows = {
   openDebugLog: function(win) {
     EnigmailWindows.openWin("enigmail:logFile",
       "chrome://enigmail/content/ui/enigmailViewFile.xul?viewLog=1&title=" + escape(EnigmailLocale.getString("debugLog.title")),
-      "resizable,centerscreen");
+      "centerscreen");
   },
 
   /**
