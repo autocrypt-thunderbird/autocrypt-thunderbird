@@ -420,7 +420,7 @@ var EnigmailFiles = {
 
     var ioServ = Cc[NS_IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
     var msgUri = ioServ.newURI(srcUrl, null, null);
-    var channel = lazyStream().createChannelFromURI(msgUri);
+    var channel = lazyStream().createChannel(msgUri);
     var istream = channel.open();
 
     var fstream = Cc["@mozilla.org/network/safe-file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);

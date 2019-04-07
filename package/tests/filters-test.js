@@ -100,7 +100,7 @@ test(function processIncomingMailTest() {
 
   try {
     processIncomingMail(md, true);
-  } catch (x) {
+  } catch (ex) {
     Assert.ok(false, "processIncomingMail: exception " + ex.toString());
     do_test_finished();
   }

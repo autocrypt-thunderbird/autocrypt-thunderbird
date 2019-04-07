@@ -1157,7 +1157,7 @@ function enigmailImportKeysFromUrl() {
           var ioServ = Cc[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
           var msgUri = ioServ.newURI(value.value, null, null);
 
-          var channel = EnigmailStreams.createChannelFromURI(msgUri);
+        var channel = EnigmailStreams.createChannel(msgUri);
           channel.asyncOpen(bufferListener, msgUri);
         } catch (ex) {
           var err = {

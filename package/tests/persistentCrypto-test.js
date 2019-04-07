@@ -152,7 +152,7 @@ function stringFromUrl(url) {
   const p = new Promise(function(resolve, reject) {
     const iOService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     const uri = iOService.newURI(url, null, null);
-    const attChannel = EnigmailStreams.createChannelFromURI(uri);
+    const attChannel = EnigmailStreams.createChannel(uri);
     const listener = EnigmailStreams.newStringStreamListener(function(data) {
       result = data;
       inspector.exitNestedEventLoop();

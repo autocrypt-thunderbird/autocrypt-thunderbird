@@ -2104,7 +2104,7 @@ Enigmail.msg = {
     var ioServ = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
     var msgUri = ioServ.newURI(argumentsObj.attachment.url, null, null);
 
-    var channel = EnigmailStreams.createChannelFromURI(msgUri);
+    var channel = EnigmailStreams.createChannel(msgUri);
     channel.asyncOpen(bufferListener, msgUri);
   },
 

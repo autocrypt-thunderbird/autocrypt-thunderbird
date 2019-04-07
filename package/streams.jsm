@@ -23,7 +23,7 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 var EnigmailStreams = {
 
   /**
-   * Create a new channel from a URL.
+   * Create a new channel from a URL or URI.
    *
    * @param url: String, nsIURI or nsIFile -  URL specification
    *
@@ -38,16 +38,7 @@ var EnigmailStreams = {
     return c;
   },
 
-  /**
-   * Create a new channel from a URI.
-   *
-   * @param uri: Object - nsIURI or string
-   *
-   * @return: channel
-   */
-  createChannelFromURI: function(uri) {
-    return this.createChannel(uri);
-  },
+
   /**
    * create an nsIStreamListener object to read String data from an nsIInputStream
    *
