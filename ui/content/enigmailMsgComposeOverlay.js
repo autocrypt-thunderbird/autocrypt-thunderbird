@@ -4851,7 +4851,7 @@ Enigmail.msg = {
     var beginIndex = beginIndexObj.value;
     var endIndex = endIndexObj.value;
 
-    var head = docText.substr(0, beginIndex);
+    const head = "";
     var tail = docText.substr(endIndex + 1);
 
     var pgpBlock = docText.substr(beginIndex, endIndex - beginIndex + 1);

@@ -152,7 +152,7 @@ var EnigmailDecryption = {
       pgpBlock = pgpBlock.replace(/\r?\n\r?\n/g, "\n");
     }
 
-    var head = cipherText.substr(0, beginIndexObj.value);
+    const head = "";
     var tail = cipherText.substr(endIndexObj.value + 1,
       cipherText.length - endIndexObj.value - 1);
 
@@ -238,8 +238,7 @@ var EnigmailDecryption = {
     }
     blockSeparationObj.value = result.blockSeparation;
 
-    if ((head.search(/\S/) >= 0) ||
-      (tail.search(/\S/) >= 0)) {
+    if (tail.search(/\S/) >= 0) {
       statusFlagsObj.value |= EnigmailConstants.PARTIALLY_PGP;
     }
 
