@@ -171,7 +171,12 @@ MimeDecryptHandler.prototype = {
 
     if ("messageURI" in this.mimeSvc) {
       this.uri = this.mimeSvc.messageURI;
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
+      if (this.uri) {
+        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
+      }
+      else {
+        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri=null\n");
+      }
     } else {
       if (uri) {
         this.uri = uri.QueryInterface(Ci.nsIURI);
