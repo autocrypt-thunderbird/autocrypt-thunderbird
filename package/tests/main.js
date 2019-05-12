@@ -21,6 +21,7 @@ function execTest(filename) {
 }
 
 execTest("initialize.js");
+execTest("funcs-test.js");
 execTest("gpgAgent-test.js");
 execTest("autocrypt-test.js");
 execTest("armor-test.js");
@@ -28,7 +29,7 @@ execTest("data-test.js");
 execTest("system-test.js");
 execTest("decryption-test.js");
 execTest("verify-test.js");
-execTest("persistentCrypto-test.js");
+//execTest("persistentCrypto-test.js");
 execTest("errorHandling-test.js");
 execTest("encryption-test.js");
 execTest("core-test.js");
@@ -47,7 +48,6 @@ execTest("mime-test.js");
 execTest("os-test.js");
 execTest("prefs-test.js");
 execTest("rules-test.js");
-execTest("funcs-test.js");
 execTest("mimeDecrypt-test.js");
 execTest("expiry-test.js");
 execTest("installGnuPG-test.js");

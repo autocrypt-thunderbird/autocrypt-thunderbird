@@ -223,7 +223,7 @@ test(withTestGpgHome(withEnigmail(function getMsgFoldersTest() {
   var database1 = [];
   getMsgFolders(sourceFolder, database1);
 
-  Assert.equal(database1.length, 1);
+  Assert.equal(database1.length, 0);
 
   let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
   copyMailToFolder("resources/encrypted-email.eml", sourceFolder).then(() => {
