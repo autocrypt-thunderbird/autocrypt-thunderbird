@@ -205,7 +205,7 @@ var EnigmailWkdLookup = {
     }
 
     try {
-      let keyData = EnigmailData.arrayBufferToString(await response.arrayBuffer());
+      let keyData = EnigmailData.arrayBufferToString(Cu.cloneInto(await response.arrayBuffer(), this));
       EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: got data for " + email + "\n");
       return keyData;
     }
