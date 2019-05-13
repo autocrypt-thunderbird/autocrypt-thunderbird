@@ -264,10 +264,15 @@ test(withTestGpgHome(withEnigmail(function shouldImportFromTextAndGetKeyDetails(
     "NBFVHm5sBEACs94Ln+RMdeyBpWQtTZ/NZnwntsB10Wd3HTgo5sdA/OOFOJrWetJ" +
     "fAZ/HRxiSu1bwRaFVC8p061ftTbxf8bsdfsykYJQQqPODfcO0/oY2n/Z93ya8KT");
 
-  Assert.equal(pubKey.keyData.substr(-52),
-    "lEnXD6TCZrOGlNCzLTWQTBLg1kw97xS/PQyCg24XsnHSt1DRJA==");
-
-  Assert.equal(pubKey.keyData.length, 3020);
+  if (pubKey.keyData.length === 3020) {
+    Assert.equal(pubKey.keyData.substr(-52),
+      "lEnXD6TCZrOGlNCzLTWQTBLg1kw97xS/PQyCg24XsnHSt1DRJA==");
+  } else if (pubKey.keyData.length === 3080) {
+    Assert.equal(pubKey.keyData.substr(-52),
+      "wJRJ1w+kwmazhpTQsy01kEwS4NZMPe8Uvz0MgoNuF7Jx0rdQ0SQ=");
+  } else {
+    Assert.ok(false, "pubkey.keyData.length neither 3020 nor 3080");
+  }
 })));
 
 
