@@ -64,8 +64,7 @@ var EnigmailWkdLookup = {
             if (checks[i]) {
               EnigmailLog.DEBUG("wkdLookup.jsm: findKeys: recheck " + emails[i] + "\n");
               toCheck.push(emails[i]);
-            }
-            else {
+            } else {
               EnigmailLog.DEBUG("wkdLookup.jsm: findKeys: skip check " + emails[i] + "\n");
             }
           }
@@ -86,13 +85,11 @@ var EnigmailWkdLookup = {
               if (gotKeys.length > 0) {
                 importDownloadedKeys(gotKeys);
                 resolve(true);
-              }
-              else
+              } else
                 resolve(false);
 
             });
-          }
-          else {
+          } else {
             resolve(false);
           }
 
@@ -120,8 +117,7 @@ var EnigmailWkdLookup = {
       let val = await timeForRecheck(conn, email);
       conn.close();
       return val;
-    }
-    catch (x) {
+    } catch (x) {
       EnigmailLog.DEBUG("wkdLookup.jsm: determineLastAttempt: could not open database\n");
       if (conn) {
         EnigmailLog.DEBUG("wkdLookup.jsm: error - closing connection: " + x + "\n");
@@ -140,7 +136,7 @@ var EnigmailWkdLookup = {
    * @return {Promise<String>}: URL (or null if not possible)
    */
 
-  getDownloadUrlFromEmail: async function(email) {
+  getDownloadUrlFromEmail: async function(email, advancedMethod) {
     email = email.toLowerCase().trim();
 
     let url = await getSiteSpecificUrl(email);
@@ -161,7 +157,13 @@ var EnigmailWkdLookup = {
     let gotHash = ch.finish(false);
     let encodedHash = EnigmailZBase32.encode(gotHash);
 
-    url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash+"?l="+escape(user);
+    if (advancedMethod) {
+      url = "https://openpgpkey." + domain + "/.well-known/openpgpkey/" + domain + "/hu/" + encodedHash + "?l=" + escape(user);
+    }
+    else {
+      url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash + "?l=" + escape(user);
+    }
+
     return url;
   },
 
@@ -175,7 +177,19 @@ var EnigmailWkdLookup = {
   downloadKey: async function(email) {
     EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey(" + email + ")\n");
 
-    let url = await EnigmailWkdLookup.getDownloadUrlFromEmail(email);
+    let keyData = await this.doWkdKeyDownload(email, true);
+
+    if (!keyData) {
+      keyData = await this.doWkdKeyDownload(email, false);
+    }
+
+    return keyData;
+  },
+
+  doWkdKeyDownload: async function(email, advancedMethod) {
+    EnigmailLog.DEBUG(`wkdLookup.jsm: doWkdKeyDownload(${email}, ${advancedMethod})\n`);
+
+    let url = await EnigmailWkdLookup.getDownloadUrlFromEmail(email, advancedMethod);
 
     let hdrs = new Headers({
       'Authorization': 'Basic ' + btoa("no-user:")
@@ -193,24 +207,22 @@ var EnigmailWkdLookup = {
 
     let response;
     try {
-      EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: requesting " + url + "\n");
+      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: requesting " + url + "\n");
       response = await fetch(myRequest);
       if (!response.ok) {
         return null;
       }
-    }
-    catch (ex) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: error " + ex.toString() + "\n");
+    } catch (ex) {
+      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
       return null;
     }
 
     try {
       let keyData = EnigmailData.arrayBufferToString(Cu.cloneInto(await response.arrayBuffer(), this));
-      EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: got data for " + email + "\n");
+      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: got data for " + email + "\n");
       return keyData;
-    }
-    catch (ex) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: downloadKey: error " + ex.toString() + "\n");
+    } catch (ex) {
+      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
       return null;
     }
   }
@@ -266,12 +278,10 @@ function importDownloadedKeys(keysArr) {
     if (keysArr[k].search(/^-----BEGIN PGP PUBLIC KEY BLOCK-----/) < 0) {
       try {
         keyData += EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keysArr[k]);
-      }
-      catch (ex) {
+      } catch (ex) {
         EnigmailLog.DEBUG("wkdLookup.jsm: importDownloadedKeys: exeption=" + ex + "\n");
       }
-    }
-    else {
+    } else {
       keyData += keysArr[k];
     }
   }
@@ -312,8 +322,7 @@ async function getSiteSpecificUrl(emailAddr) {
         mxHosts.indexOf("mailsec.protonmail.ch") >= 0) {
         url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
   }
 
   return url;
