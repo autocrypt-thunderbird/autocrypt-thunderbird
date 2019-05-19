@@ -408,9 +408,9 @@ var EnigmailMime = {
    *
    * @return undefined
    */
-  getMimeTreeFromUrl: function(url, getBody, callbackFunc) {
+  getMimeTreeFromUrl: function(url, getBody = false, callbackFunc) {
     function onData(data) {
-      let tree = getMimeTree(data);
+      let tree = getMimeTree(data, getBody);
       callbackFunc(tree);
     }
 

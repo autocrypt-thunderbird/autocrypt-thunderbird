@@ -161,7 +161,7 @@ var EnigmailWkdLookup = {
     let gotHash = ch.finish(false);
     let encodedHash = EnigmailZBase32.encode(gotHash);
 
-    url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash;
+    url = "https://" + domain + "/.well-known/openpgpkey/hu/" + encodedHash+"?l="+escape(user);
     return url;
   },
 
