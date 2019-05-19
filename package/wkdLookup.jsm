@@ -298,58 +298,6 @@ async function getSiteSpecificUrl(emailAddr) {
   let url = null;
 
   switch (domain) {
-    case "posteo.af":
-    case "posteo.at":
-    case "posteo.be":
-    case "posteo.biz":
-    case "posteo.ch":
-    case "posteo.cl":
-    case "posteo.co":
-    case "posteo.co.uk":
-    case "posteo.com.br":
-    case "posteo.cr":
-    case "posteo.cz":
-    case "posteo.de":
-    case "posteo.dk":
-    case "posteo.ee":
-    case "posteo.es":
-    case "posteo.eu":
-    case "posteo.fi":
-    case "posteo.gl":
-    case "posteo.gr":
-    case "posteo.hn":
-    case "posteo.hr":
-    case "posteo.hu":
-    case "posteo.ie":
-    case "posteo.in":
-    case "posteo.is":
-    case "posteo.jp":
-    case "posteo.la":
-    case "posteo.li":
-    case "posteo.lt":
-    case "posteo.lu":
-    case "posteo.me":
-    case "posteo.mx":
-    case "posteo.my":
-    case "posteo.net":
-    case "posteo.nl":
-    case "posteo.no":
-    case "posteo.nz":
-    case "posteo.org":
-    case "posteo.pe":
-    case "posteo.pl":
-    case "posteo.pm":
-    case "posteo.pt":
-    case "posteo.ro":
-    case "posteo.ru":
-    case "posteo.se":
-    case "posteo.sg":
-    case "posteo.si":
-    case "posteo.tn":
-    case "posteo.uk":
-    case "posteo.us":
-      url = "https://api.posteo.de/v1/public-keys/" + escape(emailAddr) + "?type=open_pgp";
-      break;
     case "protonmail.ch":
     case "protonmail.com":
     case "pm.me":
