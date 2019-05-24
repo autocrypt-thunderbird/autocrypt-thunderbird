@@ -5,11 +5,17 @@
   "version": "2.1a1pre",
   "author": "Enigmail Team",
   "homepage_url": "https://enigmail.net/",
-  "legacy": true,
+  "legacy": {
+    "type": "bootstrap",
+    "options": {
+      "page": "chrome://enigmail/content/ui/pref-enigmail.xul",
+      "open_in_tab": false
+    }
+  },
   "applications": {
     "gecko": {
       "id": "{847b3a00-7ab1-11d4-8f02-006008948af5}", // Enigmail GUID
-      "strict_min_version": "62.0a1"
+      "strict_min_version": "68.0a1"
     }
   },
   "icons": {
