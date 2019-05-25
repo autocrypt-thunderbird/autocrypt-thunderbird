@@ -14,8 +14,11 @@ const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.js
 var gEnigStringBundle = null;
 
 var EnigmailLocale = {
+  /**
+   * Get the application locale. Discrecommended - use getUILocale instead!
+   */
   get: function() {
-    try {
+    try {      
       return Cc["@mozilla.org/intl/nslocaleservice;1"].getService(Ci.nsILocaleService).getApplicationLocale();
     } catch (ex) {
       return {

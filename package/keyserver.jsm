@@ -1223,6 +1223,7 @@ const accessVksServer = {
         actionFlag = EnigmailConstants.DOWNLOAD_KEY;
       }
 
+      let uiLocale = EnigmailLocale.getUILocale();
       let payLoad = this.buildJsonPayload(actionFlag, keyId);
       if (payLoad === null) {
         reject(createError(EnigmailConstants.KEYSERVER_ERR_UNKNOWN));
@@ -1311,6 +1312,7 @@ const accessVksServer = {
       EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer: requesting ${method} for ${url}\n`);
       xmlReq.open(method, url);
       xmlReq.setRequestHeader("Content-Type", contentType);
+      xmlReq.setRequestHeader("Accept-Language", uiLocale);      
       xmlReq.send(payLoad);
     });
   },
