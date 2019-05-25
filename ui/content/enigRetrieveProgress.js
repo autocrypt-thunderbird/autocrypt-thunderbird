@@ -131,6 +131,7 @@ function processEnd(resultStatus, details) {
   let inArg = window.arguments[0];
 
   let accessType = inArg.accessType;
+  let message = "";
   returnObj.exitCode = resultStatus;
 
   if (resultStatus === 0) {
@@ -142,10 +143,13 @@ function processEnd(resultStatus, details) {
         EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download", [details.keyList.length, inArg.keyId.length]));
         break;
       case EnigmailConstants.UPLOAD_KEY:
-        EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.upload", [details.keyList.length]));
+        message = EnigmailLocale.getString("keyserver.result.upload", [details.keyList.length]);
+        if (("numEmails" in details) && details.numEmails >= 0) {
+          message += "\n\n" + EnigmailLocale.getString("keyUpload.verifyEmails");
+        }
+        EnigmailDialog.info(window, message);
     }
   } else {
-    let message = "";
     switch (accessType) {
       case EnigmailConstants.DOWNLOAD_KEY:
       case EnigmailConstants.REFRESH_KEY:
