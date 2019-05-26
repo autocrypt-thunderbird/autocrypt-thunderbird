@@ -28,8 +28,7 @@ function onAccept() {
     window.arguments[0].Select = wrapSelect.value;
     window.arguments[0].cancelled = false;
     EnigmailLog.DEBUG("enigmailwrapSelection.js: onAccept, setting return value, disable cancel\n");
-  }
-  else {
+  } else {
     EnigmailLog.DEBUG("enigmailwrapSelection.js: onAccept, enable cancel\n");
     window.arguments[0].cancelled = true;
   }
@@ -39,3 +38,12 @@ function onCancel() {
   EnigmailLog.DEBUG("enigmailwrapSelection.js: onCancel, enable cancel\n");
   window.arguments[0].cancelled = true;
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  onAccept();
+});
+
+document.addEventListener("dialogcancel", function(event) {
+  onCancel();
+});

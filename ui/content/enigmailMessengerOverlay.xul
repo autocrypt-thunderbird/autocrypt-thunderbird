@@ -415,16 +415,16 @@
     </vbox>
   </hbox>
 
-  <statusbar id="status-bar">
+  <hbox class="statusbar" id="status-bar">
     <hbox id="enigmail-status-bar"
           insertafter="totalMessageCount"
           app="mailnews">
-      <statusbarpanel id="enigmail-encrypted-status"
-        class="statusbarpanel-iconic"
+      <label id="enigmail-encrypted-status"
+        class="statusbarpanel-iconic statusbarpanel"
         collapsed="true"/>
-      <statusbarpanel id="enigmail-signed-status"
-        class="statusbarpanel-iconic"
+      <label id="enigmail-signed-status"
+        class="statusbarpanel-iconic statusbarpanel"
         collapsed="true"/>
     </hbox>
-  </statusbar>
+  </hbox>
 </overlay>

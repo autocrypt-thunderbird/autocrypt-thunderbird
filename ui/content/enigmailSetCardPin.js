@@ -73,8 +73,7 @@ function onAccept() {
     function _ChangePinCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         EnigmailDialog.info(window, EnigmailLocale.getString("cardPin.processFailed") + "\n" + pinObserver.result);
-      }
-      else
+      } else
         window.close();
     });
 
@@ -116,14 +115,18 @@ changePinObserver.prototype = {
     EnigmailLog.DEBUG("enigmailSetCardPin: changePinObserver.onDataAvailable: data=" + data + "\n");
     if (data.indexOf("[GNUPG:] SC_OP_FAILURE") >= 0) {
       this.result = this._data;
-    }
-    else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE") >= 0) {
+    } else if (data.indexOf("[GNUPG:] BAD_PASSPHRASE") >= 0) {
       this.result = EnigmailLocale.getString("badPhrase");
       return data;
-    }
-    else {
+    } else {
       this._data = data;
     }
     return "";
   }
 };
+
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

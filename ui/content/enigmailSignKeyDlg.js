@@ -189,3 +189,8 @@ function enigKeySelCb() {
     acceptButton.disabled = false;
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

@@ -8,10 +8,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailClipboard = ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm").EnigmailClipboard;
 var EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
@@ -65,8 +61,7 @@ function onLoad() {
     }
 
     dlg.setAttribute("title", args.dialogTitle);
-  }
-  else {
+  } else {
     dlg.setAttribute("title", EnigmailLocale.getString("enigAlert"));
   }
 
@@ -187,3 +182,7 @@ function onKeyPress(event) {
     event.stopPropagation();
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  dlgClose('accept');
+});

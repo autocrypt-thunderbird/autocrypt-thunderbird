@@ -21,9 +21,7 @@
         onload="onLoad();"
         buttons="accept,cancel,extra1"
         buttonlabelaccept="&enigmail.send.label;"
-        ondialogaccept="return onAccept();"
         buttonlabelextra1="&enigmail.perRecipientsOption.label;"
-        ondialogextra1="newRecipientRule();"
         minheight="450">
 
 

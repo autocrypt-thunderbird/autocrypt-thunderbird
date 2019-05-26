@@ -80,8 +80,7 @@ function onLoad() {
     keysGrid.appendChild(keysRows);
     keysGrid.appendChild(keysCols);
     keysInfoBox.appendChild(keysGrid);
-  }
-  else {
+  } else {
     EnigmailDialog.alert(window, EnigmailLocale.getString("importInfoNoKeys"));
     EnigmailEvents.dispatchEvent(window.close, 0);
     return;
@@ -152,8 +151,7 @@ function buildKeyGroupBox(keyObj) {
     if (i < keyObj.fpr.length / 2) {
       fprColumns.appendChild(document.createElement("column"));
       fprRow1.appendChild(label);
-    }
-    else {
+    } else {
       fprRow2.appendChild(label);
     }
   }
@@ -212,3 +210,7 @@ function dlgClose(buttonNumber) {
   window.arguments[1].value = buttonNumber;
   window.close();
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  dlgClose(0);
+});

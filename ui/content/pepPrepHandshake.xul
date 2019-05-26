@@ -19,7 +19,6 @@
         title="&enigmail.pEp.verifyTrustwords.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="cancel"
-        ondialogcancel="return onCancel();"
         onload="onLoad();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/pepPrepHandshake.js"/>

@@ -7,15 +7,12 @@
 // Uses: chrome://enigmail/content/ui/enigmailCommon.js
 
 /* global Components */
-/* global EnigInitCommon, EnigGetString, GetEnigmailSvc, EnigAlert, EnigConfirm */
+/* global EnigInitCommon, EnigGetString, GetEnigmailSvc, EnigAlert, EnigConfirm, EnigHelpWindow */
 
 "use strict";
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailRulesEditor");
-
-
-
 
 var EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
 var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -292,3 +289,12 @@ function onSearchInput() {
 
   enigDoSearch();
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!enigmailDlgOnAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+document.addEventListener("dialoghelp", function(event) {
+  EnigHelpWindow('rulesEditor');
+});

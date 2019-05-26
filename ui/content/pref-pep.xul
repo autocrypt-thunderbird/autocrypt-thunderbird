@@ -22,8 +22,7 @@
         onload="onLoad();"
         buttons="accept"
         buttonlabelaccept="&enigmail.cardDetails.closeWindow.label;"
-        onclick="return contentAreaClick(event);"
-        ondialogaccept="onAccept();">
+        onclick="return contentAreaClick(event);">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/pref-pep.js"/>
 

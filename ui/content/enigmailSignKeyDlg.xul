@@ -19,9 +19,7 @@
         title="&enigmail.sKeyDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        buttons="accept,cancel"
-        ondialogaccept="return onAccept();">
-
+        buttons="accept,cancel">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailSignKeyDlg.js"/>
 

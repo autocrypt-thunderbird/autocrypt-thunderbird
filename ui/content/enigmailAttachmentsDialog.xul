@@ -18,7 +18,6 @@
 <dialog id="attachmentsDialog"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailAttachDlgLoad();"
-        ondialogaccept="return enigmailAttachDlgAccept();"
         minheight="250">
 
 

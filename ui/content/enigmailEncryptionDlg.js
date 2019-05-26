@@ -11,7 +11,6 @@
 /* global EnigmailLog: false, EnigmailCore: false, EnigmailConstants: false */
 
 
-
 function enigmailEncryptionDlgLoad() {
   EnigmailLog.DEBUG("enigmailEncryptionDlgLoad.js: Load\n");
 
@@ -79,8 +78,7 @@ function getResultStatus(newStatus) {
       return EnigmailConstants.ENIG_FORCE_SMIME;
     }
     return EnigmailConstants.ENIG_ALWAYS;
-  }
-  else {
+  } else {
     return EnigmailConstants.ENIG_NEVER;
   }
 }
@@ -99,3 +97,12 @@ function enigmailEncryptionDlgAccept() {
 
   resultObj.success = true;
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  enigmailEncryptionDlgAccept();
+});
+
+document.addEventListener("dialogextra1", function(event) {
+  resetDefaults();
+});

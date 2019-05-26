@@ -21,10 +21,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 var EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
@@ -571,3 +567,9 @@ function enigLocateGpg() {
 function initiateAcKeyTransfer() {
   EnigmailWindows.inititateAcSetupMessage();
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!prefOnAccept())
+    event.preventDefault();
+});

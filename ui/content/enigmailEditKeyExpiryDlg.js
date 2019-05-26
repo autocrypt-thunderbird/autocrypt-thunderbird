@@ -14,8 +14,6 @@
 // enigmailCommon.js:
 /* global EnigSetActive: false, createCell */
 
-
-
 var gAlertPopUpIsOpen = false;
 
 /**
@@ -326,3 +324,8 @@ function onNoExpiry() {
   expireInput.disabled = noExpiry.checked;
   timeScale.disabled = noExpiry.checked;
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

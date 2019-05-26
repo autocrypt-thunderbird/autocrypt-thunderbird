@@ -19,7 +19,6 @@
         title="&enigmail.addPhoto.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="return acceptDlg();"
         width="400px"
         height="450px"
         buttons="accept, cancel">

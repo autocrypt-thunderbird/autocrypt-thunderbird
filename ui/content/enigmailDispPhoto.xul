@@ -19,7 +19,6 @@
         title="&enigmail.photoViewer.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="return window.close();"
         width="500px"
         height="400px"
         buttons="accept">

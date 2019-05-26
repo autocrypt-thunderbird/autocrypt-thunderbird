@@ -19,11 +19,9 @@
         title="&enigmail.encryptionDlg.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailEncryptionDlgLoad();"
-        ondialogaccept="enigmailEncryptionDlgAccept();"
         buttons="accept,cancel,extra1"
         buttonlabelextra1="&enigmail.encDlgReset.label;"
-        buttonaccesskeyextra1="&enigmail.encDlgReset.accesskey;"
-        ondialogextra1="resetDefaults()">
+        buttonaccesskeyextra1="&enigmail.encDlgReset.accesskey;">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>

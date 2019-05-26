@@ -87,3 +87,8 @@ function onSelectServer(menuList) {
     srvName.value = srv.label;
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

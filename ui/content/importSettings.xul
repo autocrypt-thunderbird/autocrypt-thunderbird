@@ -25,7 +25,6 @@
   buttonaccesskeyaccept="&enigmail.doneButton.accesskey;"
   buttonlabelaccept="&enigmail.doneButton.label;"
   onload="onLoad();"
-  ondialogcancel="return onCancel();"
   minwidth="460px" minheight="360px">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/importSettings.js"/>

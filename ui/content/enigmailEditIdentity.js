@@ -95,8 +95,7 @@ Enigmail.edit = {
       this.pgpSignPlainPolicy.checked = this.identity.getBoolAttribute("pgpSignPlain");
       this.autoEncryptDrafts.checked = this.identity.getBoolAttribute("autoEncryptDrafts");
 
-    }
-    else {
+    } else {
       this.enablePgp.checked = false;
       this.cryptoChoicesEnabled = false;
       this.pgpMimeMode.checked = true;
@@ -117,8 +116,7 @@ Enigmail.edit = {
     if (typeof(gAccount) == "object") {
       this.account = gAccount;
       this.identity = gIdentity;
-    }
-    else if ("arguments" in window) {
+    } else if ("arguments" in window) {
       this.identity = window.arguments[0].identity;
       this.account = window.arguments[0].account;
     }
@@ -139,13 +137,11 @@ Enigmail.edit = {
       if (onOk() === false) {
         return false;
       }
-    }
-    catch (ex) {}
+    } catch (ex) {}
     this.onSave();
     if (typeof(smimeOnAcceptEditor) == "function") {
       return smimeOnAcceptEditor();
-    }
-    else
+    } else
       return true;
   },
 
@@ -203,8 +199,7 @@ Enigmail.edit = {
     var elem = document.getElementById("enigmail_bcEnablePgp");
     if (this.cryptoChoicesEnabled) {
       if (elem) elem.removeAttribute("disabled");
-    }
-    else {
+    } else {
       if (elem) elem.setAttribute("disabled", "true");
     }
 
@@ -215,8 +210,7 @@ Enigmail.edit = {
   enableKeySel: function(enable) {
     if (enable) {
       document.getElementById("enigmail_bcUseKeyId").removeAttribute("disabled");
-    }
-    else {
+    } else {
       document.getElementById("enigmail_bcUseKeyId").setAttribute("disabled", "true");
     }
   },
@@ -224,8 +218,7 @@ Enigmail.edit = {
   enableAcSettings: function() {
     if (this.cryptoChoicesEnabled && this.enableAc.checked) {
       this.acPreferEncrypt.removeAttribute("disabled");
-    }
-    else {
+    } else {
       this.acPreferEncrypt.setAttribute("disabled", "true");
     }
   },
@@ -252,8 +245,7 @@ Enigmail.edit = {
       var selKey = resultObj.userList[0];
       //selKey = "0x"+selKey.substring(10,18);
       this.pgpKeyId.value = selKey;
-    }
-    catch (ex) {
+    } catch (ex) {
       // cancel pressed -> don't send mail
       return;
     }
@@ -262,3 +254,7 @@ Enigmail.edit = {
 };
 
 window.addEventListener("load-enigmail", Enigmail.edit.onLoadEditor.bind(Enigmail.edit), false);
+
+document.addEventListener("dialogaccept", function(event) {
+  Enigmail.edit.onAcceptEditor();
+});

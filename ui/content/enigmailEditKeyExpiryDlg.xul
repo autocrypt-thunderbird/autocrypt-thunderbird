@@ -23,10 +23,8 @@
         title="&enigmail.keyExpiry.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();"
-        ondialogaccept="return onAccept();"
         minwidth="460px"
-        persist="width height"
-        >
+        persist="width height">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>

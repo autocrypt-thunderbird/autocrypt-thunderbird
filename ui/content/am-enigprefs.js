@@ -63,14 +63,12 @@ function onPreInit(account, accountValues) {
 
         try {
           if (Enigmail.overlayInitialized) performInit();
-        }
-        catch (ex) {
+        } catch (ex) {
           EnigmailLog.ERROR("am-enigprefs.js: onPreInit: error: " + ex.message + "\n");
         }
       }
     );
-  }
-  else {
+  } else {
     // Enigmail Overlay already loaded
     Enigmail.edit.identity = account.defaultIdentity;
     Enigmail.edit.account = account;
@@ -107,3 +105,7 @@ function enigmailOnAcceptEditor() {
 
 
 function saveChanges() {}
+
+document.addEventListener("dialogaccept", function(event) {
+  Enigmail.edit.onAcceptEditor();
+});

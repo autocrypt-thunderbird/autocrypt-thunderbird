@@ -225,3 +225,9 @@ function onCancel() {
 
   return true;
 }
+
+
+document.addEventListener("dialogcancel", function(event) {
+  if (!onCancel())
+    event.preventDefault(); // Prevent the dialog closing.
+});

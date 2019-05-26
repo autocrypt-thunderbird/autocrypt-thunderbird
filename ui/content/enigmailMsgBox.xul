@@ -23,7 +23,6 @@
         buttons="accept,help,cancel,extra1,extra2"
         onload="onLoad();"
         xmlns:html="http://www.w3.org/1999/xhtml"
-        ondialogaccept="dlgClose('accept')"
         buttonpack="center">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgBox.js"/>

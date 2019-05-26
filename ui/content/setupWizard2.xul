@@ -28,8 +28,6 @@
   buttons="accept,cancel"
   buttonaccesskeyaccept="&enigmail.doneButton.accesskey;"
   buttonlabelaccept="&enigmail.doneButton.label;"
-  ondialogaccept="return onAccept();"
-  ondialogcancel="return onCancel();"
   onclick="handleClick(event)"
   minwidth="460px"
   minheight="400px">

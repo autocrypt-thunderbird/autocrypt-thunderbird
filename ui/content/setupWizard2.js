@@ -437,3 +437,14 @@ function handleClick(event) {
     EnigmailWindows.openMailTab(target.getAttribute("href"));
   }
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+document.addEventListener("dialogcancel", function(event) {
+  if (!onCancel())
+    event.preventDefault(); // Prevent the dialog closing.
+});

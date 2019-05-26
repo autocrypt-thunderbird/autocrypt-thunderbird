@@ -19,9 +19,7 @@
 <dialog id="enigmailEditKeyTrustDlg"
         title="&enigmail.keyTrust.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="onLoad();"
-        ondialogaccept="return onAccept();"
-        >
+        onload="onLoad();">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditKeyTrustDlg.js"/>

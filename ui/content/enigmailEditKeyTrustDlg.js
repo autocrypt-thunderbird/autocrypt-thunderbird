@@ -8,8 +8,6 @@
 
 "use strict";
 
-
-
 var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 var EnigmailKeyEditor = ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm").EnigmailKeyEditor;
 var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -57,8 +55,7 @@ function onLoad() {
       var t = document.getElementById("trustLevel" + currTrust.toString());
       document.getElementById("trustLevelGroup").selectedItem = t;
     }
-  }
-  catch (ex) {}
+  } catch (ex) {}
 
   var keyIdList = document.getElementById("keyIdList");
 
@@ -81,8 +78,7 @@ function processNextKey(index) {
         EnigmailDialog.alert(window, EnigmailLocale.getString("setKeyTrustFailed") + "\n\n" + errorMsg);
         window.close();
         return;
-      }
-      else {
+      } else {
         window.arguments[1].refresh = true;
       }
 
@@ -100,3 +96,8 @@ function onAccept() {
 
   return false;
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

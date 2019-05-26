@@ -169,8 +169,6 @@ function onCancel() {
   if (gDialogMode === MODE_KEY_SYNC) {
     completeKeySync(PEP_SYNC_HANDSHAKE_CANCEL);
   }
-
-  return true;
 }
 
 
@@ -189,3 +187,17 @@ function changeVerifcationType(type) {
     document.getElementById("selectTwLocale").setAttribute("disabled", "true");
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+
+document.addEventListener("dialogcancel", function(event) {
+  onCancel();
+});
+
+document.addEventListener("dialogextra1", function(event) {
+  onMistrustKey();
+});

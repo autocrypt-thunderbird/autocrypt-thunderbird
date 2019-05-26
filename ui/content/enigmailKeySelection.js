@@ -9,8 +9,6 @@
 
 "use strict";
 
-
-
 /* global EnigInitCommon: false, EnigmailTrust: false, EnigGetString: false, EnigmailCore: false, EnigmailLog: false */
 /* global EnigmailKeyRing: false, EnigGetPref: false, EnigGetTrustLabel: false, EnigSetActive: false, EnigAlert: false */
 /* global EnigSetPref: false, EnigConfirm: false, EnigmailPrefs: false, EnigDownloadKeys: false */
@@ -938,3 +936,13 @@ function stripEmailFromKey(uid) {
     return uid.replace(/(.*)(<)([^<> ]+)(>[^<>]*)$/, "$3").toLowerCase(); // eslint-disable-line no-unsafe-finally
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+
+document.addEventListener("dialogextra1", function(event) {
+  newRecipientRule();
+});

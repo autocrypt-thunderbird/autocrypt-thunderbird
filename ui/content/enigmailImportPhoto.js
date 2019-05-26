@@ -16,7 +16,6 @@ function onLoad() {
     " - " + window.arguments[0].userId);
 }
 
-function acceptDlg() {
+document.addEventListener("dialogaccept", function(event) {
   window.arguments[0].okPressed = true;
-  return true;
-}
+});

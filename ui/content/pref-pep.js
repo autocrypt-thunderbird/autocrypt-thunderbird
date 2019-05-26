@@ -5,10 +5,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 var EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
@@ -145,3 +141,7 @@ function openURL(hrefObj) {
 function juniorModeCallback(item) {
   gJuniorMode = Number(item.value);
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  onAccept();
+});

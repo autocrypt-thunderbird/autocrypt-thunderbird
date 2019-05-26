@@ -6,7 +6,7 @@
 
 // Uses: chrome://enigmail/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
-/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false */
+/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 
 "use strict";
@@ -20,7 +20,7 @@ const INPUT = 0;
 const RESULT = 1;
 
 function enigmailDlgOnLoad() {
-  
+
 
   var matchBegin = false;
   var matchEnd = false;
@@ -36,14 +36,11 @@ function enigmailDlgOnLoad() {
   var matchingRule = document.getElementById("matchingRule");
   if (matchBegin && matchEnd) {
     matchingRule.selectedIndex = 0;
-  }
-  else if (matchBegin) {
+  } else if (matchBegin) {
     matchingRule.selectedIndex = 2;
-  }
-  else if (matchEnd) {
+  } else if (matchEnd) {
     matchingRule.selectedIndex = 3;
-  }
-  else {
+  } else {
     matchingRule.selectedIndex = 1;
   }
 
@@ -57,7 +54,7 @@ function enigmailDlgOnLoad() {
   window.arguments[RESULT].cancelled = true;
 
   var action = "";
-  if (typeof (window.arguments[INPUT].keyId) == "object") {
+  if (typeof(window.arguments[INPUT].keyId) == "object") {
     switch (window.arguments[INPUT].keyId.join("")) {
       case ".":
         enigSetKeys("");
@@ -71,8 +68,7 @@ function enigmailDlgOnLoad() {
         enigSetKeys(window.arguments[INPUT].keyId);
         action = "actionUseKey";
     }
-  }
-  else {
+  } else {
     enigSetKeys("");
     action = "actionCont";
   }
@@ -84,22 +80,19 @@ function enigmailDlgOnLoad() {
   actionType.selectedItem = document.getElementById("actionType." + action);
   enigEnableKeySel(action == "actionUseKey");
 
-  if (typeof (window.arguments[INPUT].sign) == "number") {
+  if (typeof(window.arguments[INPUT].sign) == "number") {
     document.getElementById("sign").selectedIndex = window.arguments[INPUT].sign;
-  }
-  else {
+  } else {
     document.getElementById("sign").selectedIndex = 1;
   }
-  if (typeof (window.arguments[INPUT].encrypt) == "number") {
+  if (typeof(window.arguments[INPUT].encrypt) == "number") {
     document.getElementById("encrypt").selectedIndex = window.arguments[INPUT].encrypt;
-  }
-  else {
+  } else {
     document.getElementById("encrypt").selectedIndex = 1;
   }
-  if (typeof (window.arguments[INPUT].pgpmime) == "number") {
+  if (typeof(window.arguments[INPUT].pgpmime) == "number") {
     document.getElementById("pgpmime").selectedIndex = window.arguments[INPUT].pgpmime;
-  }
-  else {
+  } else {
     document.getElementById("pgpmime").selectedIndex = 1;
   }
 }
@@ -237,19 +230,16 @@ function enigSetKeys(keyList) {
   }
   if ((keyList.length === 0) || (keyList.length == 1 && keyList[0].length === 0)) {
     encryptionList.appendItem(EnigGetString("noKeyToUse"), "");
-  }
-  else {
+  } else {
     for (let i = 0; i < keyList.length; i++) {
 
       if (keyList[i].indexOf("GROUP:") === 0) {
         encryptionList.appendItem(keyList[i].substr(6) + " " + EnigGetString("keyTrust.group"), keyList[i]);
-      }
-      else {
+      } else {
         let keyObj = EnigmailKeyRing.getKeyById(keyList[i]);
         if (keyObj) {
           encryptionList.appendItem("0x" + keyObj.keyId + " (" + keyObj.userId + ")", keyList[i]);
-        }
-        else {
+        } else {
           encryptionList.appendItem(keyList[i], keyList[i]);
         }
       }
@@ -261,9 +251,19 @@ function enigEnableKeySel(enable) {
   if (enable) {
     document.getElementById("encryptionList").removeAttribute("disabled");
     document.getElementById("encryptionListButton").removeAttribute("disabled");
-  }
-  else {
+  } else {
     document.getElementById("encryptionList").setAttribute("disabled", "true");
     document.getElementById("encryptionListButton").setAttribute("disabled", "true");
   }
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!enigmailDlgOnAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+
+document.addEventListener("dialoghelp", function(event) {
+  EnigHelpWindow('editRcptRule');
+});

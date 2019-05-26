@@ -49,8 +49,7 @@ function onAccept() {
     function _addUidCb(exitCode, errorMsg) {
       if (exitCode !== 0) {
         EnigmailDialog.alert(window, EnigmailLocale.getString("addUidFailed") + "\n\n" + errorMsg);
-      }
-      else {
+      } else {
         window.arguments[1].refresh = true;
         EnigmailDialog.info(window, EnigmailLocale.getString("addUidOK"));
       }
@@ -59,3 +58,9 @@ function onAccept() {
 
   return false;
 }
+
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});

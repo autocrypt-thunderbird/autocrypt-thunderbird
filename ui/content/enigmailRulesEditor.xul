@@ -21,9 +21,7 @@
         onload="enigmailDlgOnLoad();"
         minheight="300"
         buttons="accept,cancel,help"
-        persist="screenX screenY width height"
-        ondialogaccept="return enigmailDlgOnAccept();"
-        ondialoghelp="EnigHelpWindow('rulesEditor');">
+        persist="screenX screenY width height">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailRulesEditor.js"/>

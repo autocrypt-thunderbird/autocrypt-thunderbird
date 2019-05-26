@@ -8,10 +8,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 
 var gInputArgs;
@@ -24,8 +20,7 @@ function onLoad() {
     document.getElementById("dlgDesc").setAttribute("description", EnigmailLocale.getString("enigmail.acSetupPasswd.descCopyPasswd"));
     let b = document.getElementById("enigmailAutocryptSetupPasswd").getButton("accept");
     b.focus();
-  }
-  else {
+  } else {
     document.getElementById("dlgDesc").setAttribute("description", EnigmailLocale.getString("enigmail.acSetupPasswd.descEnterPasswd"));
   }
 
@@ -41,8 +36,7 @@ function onLoad() {
     }
     if (gInputArgs.dlgMode === "input") {
       validate9x4Input();
-    }
-    else {
+    } else {
       let bc = document.getElementById("bc-input");
       bc.readOnly = true;
       bc.setAttribute("class", "plain enigmailTitle");
@@ -51,8 +45,7 @@ function onLoad() {
         p.value = gInputArgs.initialPasswd.substr((i - 1) * 5, 4);
       }
     }
-  }
-  else {
+  } else {
     document.getElementById("dlg9x4").setAttribute("collapsed", true);
     document.getElementById("dlgGeneric").removeAttribute("collapsed");
     if (gInputArgs.dlgMode !== "input") {
@@ -76,8 +69,7 @@ function onAccept() {
       }
 
       gInputArgs.password = passwd.substr(0, 44);
-    }
-    else {
+    } else {
       gInputArgs.password = document.getElementById("genericPasswd").value;
     }
   }
@@ -106,8 +98,11 @@ function validate9x4Input() {
   let b = document.getElementById("enigmailAutocryptSetupPasswd").getButton("accept");
   if (isValid) {
     b.removeAttribute("disabled");
-  }
-  else {
+  } else {
     b.setAttribute("disabled", "true");
   }
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  onAccept();
+});

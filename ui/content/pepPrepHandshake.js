@@ -8,10 +8,6 @@
 
 "use strict";
 
-
-
-
-
 var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
@@ -50,3 +46,7 @@ function onLoad() {
 function onCancel() {
   isCancelled = true;
 }
+
+document.addEventListener("dialogcancel", function(event) {
+  onCancel();
+});

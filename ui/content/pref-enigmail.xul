@@ -21,8 +21,7 @@
         title="&enigmail.preferences.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
-        onload="prefOnLoad();"
-        ondialogaccept="return prefOnAccept();">
+        onload="prefOnLoad();">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/pref-enigmail.js"/>

@@ -14,7 +14,6 @@
       class="color-dialog"
       title="&enigmail.amPrefTitle.label;"
       onload="parent.onPanelLoaded('am-enigprefs.xul');"
-      ondialogaccept="Enigmail.edit.onAcceptEditor();"
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>

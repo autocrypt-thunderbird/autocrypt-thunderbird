@@ -20,9 +20,7 @@
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="enigmailDlgOnLoad();"
         minheight="200"
-        buttons="accept,cancel,help"
-        ondialogaccept="return enigmailDlgOnAccept();"
-        ondialoghelp="EnigHelpWindow('editRcptRule');">
+        buttons="accept,cancel,help">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailSingleRcptSettings.js"/>

@@ -14,8 +14,7 @@
 <dialog id="enigmailAdvancedIdentityDlg"
         title="&enigmail.advancedIdentityDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onload="onLoad();"
-        ondialogaccept="onAccept()">
+        onload="onLoad();">
 
 
   <script type="application/x-javascript" src="chrome://enigmail/content/enigmailCommon.js"/>

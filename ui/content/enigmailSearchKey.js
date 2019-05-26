@@ -325,3 +325,12 @@ function statusError(errObj) {
   EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyserverConn", gKeyServer) + "\n\n" + errObj.errorDetails);
   closeDialog();
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  if (!onAccept())
+    event.preventDefault(); // Prevent the dialog closing.
+});
+
+document.addEventListener("dialogcancel", function(event) {
+  onCancel();
+});

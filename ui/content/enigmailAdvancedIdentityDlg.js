@@ -10,8 +10,6 @@
 
 "use strict";
 
-
-
 EnigInitCommon("enigmailAdvancedIdentityDlg");
 
 var gOpenPgpUrlName;
@@ -45,8 +43,7 @@ function onLoad() {
 function enigEnableUrlName() {
   if (gOpenPgpHeaderUrl.checked) {
     document.getElementById("enigmail_bcUseUrl").removeAttribute("disabled");
-  }
-  else {
+  } else {
     document.getElementById("enigmail_bcUseUrl").setAttribute("disabled", "true");
   }
 }
@@ -64,3 +61,7 @@ function onAccept() {
   s.openPgpUrlName = gOpenPgpUrlName.value;
   s.attachPgpKey = gOpenPgpSendKeyWithMsg.checked;
 }
+
+document.addEventListener("dialogaccept", function(event) {
+  onAccept();
+});
