@@ -53,6 +53,9 @@ Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 const BASE_PATH = "chrome://enigmail/content/ui/";
 const MY_ADDON_ID = "enigmail";
 
+var gMailStartup = false;
+var gCoreStartup = false;
+
 const overlays = {
   // main mail reading window
   "chrome://messenger/content/messenger.xul": [
@@ -143,8 +146,7 @@ var WindowListener = {
           if (overlayDef.application.indexOf(getAppId()) > 0) {
             continue;
           }
-        }
-        else if (overlayDef.application.indexOf(getAppId()) < 0) {
+        } else if (overlayDef.application.indexOf(getAppId()) < 0) {
           continue;
         }
       }
@@ -200,9 +202,8 @@ var EnigmailOverlays = {
    * Called by bootstrap.js upon startup of the addon
    * (e.g. enabling, instalation, update, application startup)
    *
-   * @param reason: Number - bootstrap "reason" constant
    */
-  startup: function(reason) {
+  startup: function() {
     DEBUG_LOG("enigmailOverlays.jsm: startup()\n");
 
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
@@ -210,7 +211,6 @@ var EnigmailOverlays = {
     // Wait for any new windows to open
     wm.addListener(WindowListener);
 
-    // Get the list of windows already open
     let windows = wm.getEnumerator(null);
     while (windows.hasMoreElements()) {
       try {
@@ -218,22 +218,34 @@ var EnigmailOverlays = {
 
         DEBUG_LOG("enigmailOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
 
-        if (domWindow.document.location.href === "about:blank") {
-          // a window is available, but it's not yet fully loaded
-          // ==> add an event listener to fire when the window is completely loaded
-
-          domWindow.addEventListener("load", function loadUi() {
-            domWindow.removeEventListener("load", loadUi, false);
-            loadUiForWindow(domWindow);
-          }, false);
-        }
-        else {
-          loadUiForWindow(domWindow);
-        }
-      }
-      catch (ex) {
+        loadUiForWindow(domWindow);
+      } catch (ex) {
         DEBUG_LOG("enigmailOverlays.jsm: startup: error " + ex.message + "\n");
       }
+    }
+  },
+
+  /**
+   * callback from mail-startup-done event. Wait for Enigmail-core-startup to be also done
+   * and then add Enigmail UI
+   */
+  mailStartupDone: function() {
+    gMailStartup = true;
+
+    if (gCoreStartup) {
+      EnigmailOverlays.startup();
+    }
+  },
+
+  /**
+   * callback from Enigmail-core-startup event. Wait for mail-startup-done to be also done
+   * and then add Enigmail UI
+   */
+  startupCore: function() {
+    gCoreStartup = true;
+
+    if (gMailStartup) {
+      EnigmailOverlays.startup();
     }
   },
 

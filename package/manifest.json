@@ -17,8 +17,5 @@
       "id": "{847b3a00-7ab1-11d4-8f02-006008948af5}", // Enigmail GUID
       "strict_min_version": "68.0a1"
     }
-  },
-  "icons": {
-    "48": "chrome/skin/tb-mac/enigmail-about.svg"
   }
 }

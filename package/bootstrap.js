@@ -21,18 +21,11 @@ function uninstall() {}
 
 function startup(data, reason) {
   try {
-    const {
-      EnigmailApp
-    } = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm", {});
-    const {
-      EnigmailCore
-    } = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm", {});
-    const {
-      EnigmailAmPrefsService
-    } = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
-    const {
-      EnigmailPgpmimeHander
-    } = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
+    const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
+    const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+    const EnigmailAmPrefsService = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
+    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
 
@@ -40,6 +33,8 @@ function startup(data, reason) {
     EnigmailAmPrefsService.startup(reason);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
+
+    Services.console.logStringMessage("Enigmail bootstrap completed");
   } catch (ex) {
     logException(ex);
   }
@@ -47,32 +42,17 @@ function startup(data, reason) {
 
 function shutdown(data, reason) {
   try {
-    const {
-      subprocess
-    } = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm", {});
+    const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
     subprocess.onShutdown();
 
     if (reason === APP_SHUTDOWN) return;
 
-    const {
-      EnigmailCore
-    } = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm", {});
-    const {
-      EnigmailAmPrefsService
-    } = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm", {});
-    const {
-      EnigmailPgpmimeHander
-    } = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm", {});
-    const {
-      EnigmailOverlays
-    } = ChromeUtils.import("chrome://enigmail/content/modules/enigmailOverlays.jsm", {});
-    const {
-      EnigmailWindows
-    } = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm", {});
-
-    const {
-      Services
-    } = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
+    const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+    const EnigmailAmPrefsService = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
+    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const EnigmailOverlays = ChromeUtils.import("chrome://enigmail/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
+    const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
+    const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     shutdownModule(EnigmailWindows, reason);
     shutdownModule(EnigmailOverlays, reason);
@@ -84,6 +64,7 @@ function shutdown(data, reason) {
     // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
     //               in order to fully update images and locales, their caches need clearing here
     Services.obs.notifyObservers(null, "chrome-flush-caches", null);
+
   } catch (ex) {
     logException(ex);
   }

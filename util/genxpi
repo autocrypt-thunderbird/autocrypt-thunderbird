@@ -29,6 +29,7 @@ targetDir=`pwd`
 cd "$cwd"
 
 cp ${srcDir}/package/install.rdf ${targetDir}/install.rdf
+cp ${srcDir}/package/manifest.json ${targetDir}/manifest.json
 cp ${srcDir}/package/bootstrap.js ${targetDir}/bootstrap.js
 
 # Prepare chrome.manifest
@@ -191,4 +192,5 @@ zip -9 \
     chrome/locale/*/help/*.* \
     bootstrap.js \
     chrome.manifest \
-    install.rdf
+    install.rdf \
+    manifest.json
