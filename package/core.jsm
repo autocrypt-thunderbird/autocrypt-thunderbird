@@ -88,7 +88,7 @@ var EnigmailCore = {
       try {
         let mimeEncrypt = getEnigmailMimeEncrypt();
         mimeEncrypt.startup(reason);        
-        enigmailOverlays.startupCore();
+        enigmailOverlays.startupCore(reason);
         let cLineReg = getEnigmailCommandLine().categoryRegistry;
         let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
         catMan.addCategoryEntry(cLineReg.category,

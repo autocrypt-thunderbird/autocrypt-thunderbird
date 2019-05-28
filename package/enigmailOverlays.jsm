@@ -41,6 +41,7 @@ const {
   utils: Cu
 } = Components;
 
+const APP_STARTUP = 1;
 const APP_SHUTDOWN = 2;
 
 const {
@@ -53,7 +54,7 @@ Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 const BASE_PATH = "chrome://enigmail/content/ui/";
 const MY_ADDON_ID = "enigmail";
 
-var gMailStartup = false;
+var gMailStartupDone = false;
 var gCoreStartup = false;
 
 const overlays = {
@@ -230,7 +231,7 @@ var EnigmailOverlays = {
    * and then add Enigmail UI
    */
   mailStartupDone: function() {
-    gMailStartup = true;
+    gMailStartupDone = true;
 
     if (gCoreStartup) {
       EnigmailOverlays.startup();
@@ -241,10 +242,16 @@ var EnigmailOverlays = {
    * callback from Enigmail-core-startup event. Wait for mail-startup-done to be also done
    * and then add Enigmail UI
    */
-  startupCore: function() {
+  startupCore: function(reason) {
+    DEBUG_LOG(`overlay.jsm: initiating startup (${reason})\n`);
+
     gCoreStartup = true;
 
-    if (gMailStartup) {
+    if (reason !== APP_STARTUP) {
+      gMailStartupDone = true;
+    }
+
+    if (gMailStartupDone) {
       EnigmailOverlays.startup();
     }
   },
