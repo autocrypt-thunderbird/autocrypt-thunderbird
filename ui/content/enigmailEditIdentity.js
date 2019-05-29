@@ -52,6 +52,8 @@ Enigmail.edit = {
     this.isSingleIdEditor = document.getElementById("enigmail_singleId") ? true : false;
     this.openPgpSendKeyWithMsg = document.getElementById("openpgp.sendKeyWithMsg");
 
+    document.getElementById("enigmail_amPrefAutocryptDesc").innerHTML = EnigmailLocale.getString("amPrefAutocrypt.desc");
+
     if (this.isSingleIdEditor) {
       let acTab = document.getElementById("enigmail_autocryptTab");
       acTab.setAttribute("collapsed", "true");

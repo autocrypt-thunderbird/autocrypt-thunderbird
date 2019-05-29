@@ -34,6 +34,7 @@ function onLoad() {
   gLookupKeys = document.getElementById("lookupKeys");
   gJuniorMode = EnigmailPrefs.getPref("juniorMode");
   document.getElementById("juniorMode").value = gJuniorMode;
+  document.getElementById("aboutLicense").innerHTML = EnigmailLocale.getString("aboutLicense.desc");
 
   gLookupKeys.checked = (EnigmailPrefs.getPref("autoKeyRetrieve").length > 0);
 

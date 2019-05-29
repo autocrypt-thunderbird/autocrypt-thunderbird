@@ -95,12 +95,12 @@
 
 
   <html:div id="previousInstall_acSetup" style="width: 440px; visibility: collapse;">
-    <html:p>&enigmail.setupWiz.foundAcSetupMessage;</html:p>
+    <html:p id="foundAcSetupMessage"></html:p>
     <html:button type="button" id="btnInitiateAcSetup" onclick="importAcSetup()">&enigmail.setupWiz.startSetupButton;</html:button>
   </html:div>
 
   <html:div id="previousInstall_ac" style="visibility: collapse;">
-    <html:p>&enigmail.setupWiz.foundAcNoSetupMsg;</html:p>
+    <html:p id="foundAcNoSetupMsg"></html:p>
   </html:div>
 
   <html:div id="previousInstall_pEp" style="visibility: collapse;">
@@ -133,7 +133,7 @@
   <html:div id="previousInstall_none" style="width: 440px; visibility: collapse; vertical-align: middle">
     <html:p>
       <html:span class="enigmailOkSign" style="float: left"/>
-      &enigmail.setupWiz.setupComplete;
+      <html:span id="setupComplete"></html:span>
     </html:p>
   </html:div>
 

@@ -31,7 +31,8 @@
               next="pgDisplayPasswd"
               label="&enigmail.acKeyTransfer.welcome.title;">
     <description style="max-width: 500px;">
-        &enigmail.acKeyTransfer.welcome.desc;
+        &enigmail.acKeyTransfer.welcome.desc1;<html:br/><html:br/>
+        &enigmail.acKeyTransfer.welcome.desc2;
     </description>
 
     <separator style="min-height: 20px;"/>
@@ -61,7 +62,8 @@
     </broadcasterset>
 
     <description style="max-width: 500px;">
-        &enigmail.acKeyTransfer.msgCreated.desc;
+        &enigmail.acKeyTransfer.msgCreated.desc1;<html:br/><html:br/>
+        &enigmail.acKeyTransfer.msgCreated.desc2;
     </description>
 
     <separator style="min-height: 20px;"/>

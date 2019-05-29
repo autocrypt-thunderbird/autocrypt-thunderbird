@@ -31,7 +31,11 @@
               next="pgExport"
               label="&enigmail.exportWiz.pgIntro.title;">
     <description>
-      &enigmail.exportWiz.pgIntro.desc1;
+      &enigmail.exportWiz.pgIntro.desc;
+      <html:ol>
+        <html:li>&enigmail.exportWiz.pgIntro.step1;</html:li>
+        <html:li>&enigmail.exportWiz.pgIntro.step2;</html:li>
+      </html:ol>
     </description>
 
     <separator/>

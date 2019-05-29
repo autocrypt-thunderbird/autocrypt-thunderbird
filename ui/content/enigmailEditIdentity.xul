@@ -117,9 +117,7 @@
 
             <!-- Autocrypt tab -->
             <vbox flex="1" align="start">
-              <description onclick="Enigmail.edit.handleClick(event)">
-                &enigmail.amPrefAutocrypt.description;
-              </description>
+              <html:p id="enigmail_amPrefAutocryptDesc" onclick="Enigmail.edit.handleClick(event)"></html:p>
 
               <checkbox id="enigmail_enableAutocrypt"
                   prefstring="mail.server.%serverkey%.enableAutocrypt"

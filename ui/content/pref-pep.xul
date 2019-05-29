@@ -161,7 +161,7 @@
 
         <spacer style="min-height: 10px;"/>
 
-        <description>&enigmail.about.license;</description>
+        <html:p id="aboutLicense"></html:p>
       </vbox>
 
     </tabpanels>

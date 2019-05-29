@@ -47,6 +47,10 @@ function onLoad() {
   let dlg = document.getElementById("setupWizardDlg");
   dlg.getButton("accept").setAttribute("disabled", "true");
 
+  document.getElementById("foundAcSetupMessage").innerHTML = EnigmailLocale.getString("setupWizard.foundAcSetupMessage");
+  document.getElementById("foundAcNoSetupMsg").innerHTML = EnigmailLocale.getString("setupWizard.foundAcNoSetupMsg");
+  document.getElementById("setupComplete").innerHTML = EnigmailLocale.getString("setupWizard.setupComplete");
+
   // let the dialog be loaded asynchronously such that we can disply the dialog
   // before we start working on it.
   EnigmailTimer.setTimeout(onLoadAsync, 1);

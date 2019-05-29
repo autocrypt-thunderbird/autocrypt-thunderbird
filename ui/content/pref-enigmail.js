@@ -124,6 +124,8 @@ function displayPrefs(showDefault, showPrefs, setPrefs) {
 function prefOnLoad() {
   EnigmailLog.DEBUG("pref-enigmail.js: prefOnLoad()\n");
 
+  document.getElementById("acSetupMessageDesc").innerHTML = EnigmailLocale.getString("acSetupMessage.desc");
+
   GetEnigmailSvc();
   displayPrefs(false, true, false);
 

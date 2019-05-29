@@ -473,9 +473,7 @@
 
         <vbox flex="1">
 
-          <description onclick="handleClick(event)">
-            &enigmail.pref.acSetupMessage.desc;
-          </description>
+          <html:p id="acSetupMessageDesc" onclick="handleClick(event)"></html:p>
 
           <hbox>
             <button id="initiateAcSetupMsg"
