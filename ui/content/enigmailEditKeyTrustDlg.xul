@@ -18,6 +18,7 @@
 
 <dialog id="enigmailEditKeyTrustDlg"
         title="&enigmail.keyTrust.title;"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         onload="onLoad();">
 
@@ -31,8 +32,8 @@
     </hbox>
     <separator/>
     <vbox>
-      <groupbox>
-        <caption label="&enigmail.keyTrust.trustLevel.label;" tooltiptext="&enigmail.keyTrust.trustLevel.tooltip;"/>
+      <vbox class="enigmailCaptionbox">
+        <html:h1><html:span>&enigmail.keyTrust.trustLevel.label;</html:span></html:h1>
           <radiogroup id="trustLevelGroup">
             <radio value="1" id="trustLevel1"
                    label="&enigmail.keyTrust.dontKnow.label;"/>
@@ -45,7 +46,7 @@
             <radio value="5" id="trustLevel5"
                    label="&enigmail.keyTrust.ultimateTrust.label;"/>
           </radiogroup>
-       </groupbox>
+       </vbox>
     </vbox>
   </vbox>
 </dialog>

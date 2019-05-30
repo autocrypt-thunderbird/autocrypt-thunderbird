@@ -18,6 +18,7 @@
 <dialog id="enigmailAddPhoto"
         title="&enigmail.addPhoto.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="onLoad();"
         width="400px"
         height="450px"
@@ -30,9 +31,9 @@
       <label value="&enigmail.addPhoto.question.label;"/>
       <label id="keyDesc" value=""/>
       <hbox align="center">
-        <groupbox autostretch="always">
+        <html:fielset autostretch="always">
           <image id="photoImage" maxwidth="350px" maxheight="300px"/>
-        </groupbox>
+        </html:fielset>
       </hbox>
     </vbox>
   </hbox>

@@ -218,7 +218,7 @@ function populateList(keyList) {
     treeItem = createListRow(keyList[i].keyId, false, keyList[i].uid[0], keyList[i].created, keyList[i].status);
     if (keyList[i].uid.length > 1) {
       treeItem.setAttribute("container", "true");
-      let subChildren = document.createElement("treechildren");
+      let subChildren = document.createXULElement("treechildren");
       for (let j = 1; j < keyList[i].uid.length; j++) {
         let subItem = createListRow(keyList[i].keyId, true, keyList[i].uid[j], "", keyList[i].status);
         subChildren.appendChild(subItem);
@@ -236,10 +236,10 @@ function populateList(keyList) {
 
 function createListRow(keyId, subKey, userId, dateField, trustStatus) {
   EnigmailLog.DEBUG("enigmailSearchKey.js: createListRow\n");
-  let selectCol = document.createElement("treecell");
+  let selectCol = document.createXULElement("treecell");
   selectCol.setAttribute("id", "indicator");
-  let expCol = document.createElement("treecell");
-  let userCol = document.createElement("treecell");
+  let expCol = document.createXULElement("treecell");
+  let userCol = document.createXULElement("treecell");
   userCol.setAttribute("id", "name");
   if (trustStatus.indexOf(ENIG_KEY_EXPIRED) >= 0) {
     expCol.setAttribute("label", EnigmailLocale.getString("selKeyExpired", dateField));
@@ -249,7 +249,7 @@ function createListRow(keyId, subKey, userId, dateField, trustStatus) {
 
   expCol.setAttribute("id", "expiry");
   userCol.setAttribute("label", userId);
-  let keyCol = document.createElement("treecell");
+  let keyCol = document.createXULElement("treecell");
   keyCol.setAttribute("id", "keyid");
   if (subKey) {
     EnigSetActive(selectCol, -1);
@@ -260,12 +260,12 @@ function createListRow(keyId, subKey, userId, dateField, trustStatus) {
   }
 
 
-  let userRow = document.createElement("treerow");
+  let userRow = document.createXULElement("treerow");
   userRow.appendChild(selectCol);
   userRow.appendChild(userCol);
   userRow.appendChild(expCol);
   userRow.appendChild(keyCol);
-  let treeItem = document.createElement("treeitem");
+  let treeItem = document.createXULElement("treeitem");
   treeItem.setAttribute("id", "0x" + keyId);
 
   if (trustStatus.length > 0 && ENIG_KEY_NOT_VALID.indexOf(trustStatus.charAt(0)) >= 0) {

@@ -151,8 +151,8 @@
       <vbox id="basic" flex="1">
           <description class="enigmailPrefsTitle">&enigmail.basicPrefs.label;</description>
           <hbox>
-            <html:fieldset orient="vertical" flex="1">
-              <html:legend>&enigmail.prefs.pathsTitle.label;</html:legend>
+            <vbox class="enigmailCaptionbox" orient="vertical" flex="1">
+              <html:h1><html:span>&enigmail.prefs.pathsTitle.label;</html:span></html:h1>
               <vbox>
                 <hbox align="center">
                   <label id="enigmailGpgPath" value="(error)"/>
@@ -168,11 +168,11 @@
                     oncommand="enigLocateGpg();"/>
                 </hbox>
               </vbox>
-            </html:fieldset>
+            </vbox>
           </hbox>
           <hbox>
-            <html:fieldset orient="vertical" flex="1">
-              <html:legend>&enigmail.passwordSettings.label;</html:legend>
+            <vbox class="enigmailCaptionbox" orient="vertical" flex="1">
+              <html:h1><html:span>&enigmail.passwordSettings.label;</html:span></html:h1>
               <hbox autostretch="never" align="center">
                 <label control="maxIdleMinutes"
                        tooltip="maxIdleMinutes.tooltip"
@@ -191,7 +191,7 @@
 
                 <description tooltip="maxIdleMinutes.tooltip" id="maxIdleMinutesTailLabel">&enigmail.maxIdleMinutesTail.label;</description>
               </hbox>
-            </html:fieldset>
+            </vbox>
           </hbox>
 
           <separator/>
@@ -251,7 +251,7 @@
         </hbox>
 
         <!-- elements for manual settings: -->
-        <html:fieldset id="enigmail_pref_sending_manually">
+        <vbox class="enigmailGroupbox" id="enigmail_pref_sending_manually">
           <vbox>
             <!-- sending preferences: keep sign/enc settings for reply -->
             <checkbox id="enigmail_keepSettingsForReply"
@@ -259,8 +259,8 @@
                       label="&enigmail.keepCryptoSettingsForReply.label;" />
 
             <!-- sending preferences: auto send encrypted -->
-            <html:fieldset>
-              <html:legend>&enigmail.autoSendEncryptedOption.label;</html:legend>
+            <vbox class="enigmailCaptionbox">
+              <html:h1><html:span>&enigmail.autoSendEncryptedOption.label;</html:span></html:h1>
               <vbox>
                 <radiogroup id="enigmail_autoSendEncrypted"
                             pref="true"
@@ -276,11 +276,11 @@
                         tooltip="autoSendEncryptedIfKeys.tooltip"/>
                 </radiogroup>
               </vbox>
-            </html:fieldset>
+            </vbox>
 
             <!-- sending preferences: accepted keys -->
-            <html:fieldset>
-              <html:legend>&enigmail.acceptedKeysOption.label;</html:legend>
+            <vbox class="enigmailCaptionbox">
+              <html:h1><html:span>&enigmail.acceptedKeysOption.label;</html:span></html:h1>
               <vbox>
                 <radiogroup id="enigmail_acceptedKeys"
                             pref="true"
@@ -296,11 +296,11 @@
                         tooltip="acceptedKeysAllUsable.tooltip"/>
                 </radiogroup>
               </vbox>
-            </html:fieldset>
+            </vbox>
 
             <!-- options to confirm before sending -->
-            <html:fieldset>
-              <html:legend>&enigmail.confirmBeforeSendingOption.label;</html:legend>
+            <vbox class="enigmailCaptionbox">
+              <html:h1><html:span>&enigmail.confirmBeforeSendingOption.label;</html:span></html:h1>
               <vbox>
                 <radiogroup id="enigmail_confirmBeforeSending"
                             pref="true"
@@ -333,9 +333,9 @@
                         tooltip="confirmBeforeSendingIfRules.tooltip"/>
                 </radiogroup>
               </vbox>
-            </html:fieldset>
+            </vbox>
           </vbox>
-        </html:fieldset>
+        </vbox>
         <description>&enigmail.seeAccountSettings.label;</description>
       </vbox>
 
@@ -343,8 +343,8 @@
       <vbox id="keySel" flex="1"
             advanced="true">
 
-          <html:fieldset>
-            <html:legend>&enigmail.recipientsSelectionOption.label;</html:legend>
+          <vbox class="enigmailCaptionbox">
+            <html:h1><html:span>&enigmail.recipientsSelectionOption.label;</html:span></html:h1>
             <vbox>
               <checkbox id="enigmail_assignKeysByRules"
                         label="&enigmail.assignKeysByRules.label;"
@@ -366,7 +366,7 @@
                         oncommand="EnigRulesEditor();"/>
               </vbox>
             </vbox>
-          </html:fieldset>
+          </vbox>
 
       </vbox>
 
@@ -376,7 +376,7 @@
           <description class="enigmailPrefsTitle">&enigmail.moreOptions.label;</description>
           <spacer flex="0"/>
 
-          <html:fieldset>
+          <vbox class="enigmailGroupbox">
             <vbox>
               <checkbox id="enigmail_protectHeaders"
                         label="&enigmail.protectHeadersPrefs.label;"
@@ -396,7 +396,7 @@
                 </hbox>
               </hbox>
             </vbox>
-          </html:fieldset>
+          </vbox>
 
           <checkbox id="enigmail_wrapHtmlBeforeSend"
                     label="&enigmail.wrapHtmlBeforeSend.label;"

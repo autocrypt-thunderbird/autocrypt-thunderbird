@@ -59,10 +59,10 @@
           </row>
         </rows>
       </grid>
-      <groupbox id="alsoknown" flex="1">
-        <caption label="&enigmail.keyDetails.alsoKnown.label;:"/>
+      <vbox class="enigmailCaptionbox" id="alsoknown" flex="1">
+        <html:h1><html:span>&enigmail.keyDetails.alsoKnown.label;:</html:span></html:h1>
         <richlistbox id="additionalUid" style="height: 4em;" flex="1"/>
-      </groupbox>
+      </vbox>
     </vbox>
     <vbox flex="1" align="end">
       <hbox flex="1" align="end">

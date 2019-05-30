@@ -18,6 +18,7 @@
 <dialog id="enigmailSignKeyDlg"
         title="&enigmail.sKeyDlg.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="onLoad();"
         buttons="accept,cancel">
 
@@ -59,22 +60,24 @@
         </row>
       </rows>
     </grid>
-    <vbox>
-      <groupbox>
-        <caption label="&enigmail.sKeyDlg.checked.label;"/>
-          <radiogroup id="trustLevel">
-            <radio value="0"
-                   selected="true"
-                   label="&enigmail.sKeyDlg.noAnswer.label;"/>
-           <radio value="1"
-                   label="&enigmail.sKeyDlg.notChecked.label;"/>
-            <radio value="2"
-                   label="&enigmail.sKeyDlg.casualCheck.label;"/>
-            <radio value="3"
-                   label="&enigmail.sKeyDlg.carefulCheck.label;"/>
-          </radiogroup>
-       </groupbox>
+
+    <vbox class="enigmailCaptionbox">
+      <html:h1><html:span>&enigmail.sKeyDlg.checked.label;</html:span></html:h1>
+      <vbox>
+        <radiogroup id="trustLevel">
+          <radio value="0"
+                 selected="true"
+                 label="&enigmail.sKeyDlg.noAnswer.label;"/>
+         <radio value="1"
+                 label="&enigmail.sKeyDlg.notChecked.label;"/>
+          <radio value="2"
+                 label="&enigmail.sKeyDlg.casualCheck.label;"/>
+          <radio value="3"
+                 label="&enigmail.sKeyDlg.carefulCheck.label;"/>
+        </radiogroup>
+      </vbox>
     </vbox>
+    
     <vbox>
       <checkbox checked="false"
             id="localSig"
@@ -82,11 +85,4 @@
             oncommand="enigKeySelCb()"/>
     </vbox>
   </vbox>
-  <!-- vbox align="end">
-    <hbox>
-      <button id="acceptButton" dlgtype="accept"/>
-      <button dlgtype="cancel"/>
-    </hbox>
-  </vbox -->
-
 </dialog>

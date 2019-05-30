@@ -90,7 +90,7 @@ function addSubkeyWithSelectboxes(treeChildren, subkey, keyCount) {
       preSelected = 1;
     }
   }
-  var selectCol = document.createElement("treecell");
+  var selectCol = document.createXULElement("treecell");
   selectCol.setAttribute("id", "indicator");
   EnigSetActive(selectCol, preSelected);
 
@@ -119,8 +119,8 @@ function addSubkey(treeChildren, subkey, selectCol = false) {
     expire = subkey.expiry;
   }
 
-  var aRow = document.createElement("treerow");
-  var treeItem = document.createElement("treeitem");
+  var aRow = document.createXULElement("treerow");
+  var treeItem = document.createXULElement("treeitem");
   var subkeyStr = EnigmailLocale.getString(subkey.type === "sub" ? "keyTypeSubkey" : "keyTypePrimary");
   if (selectCol !== false) {
     aRow.appendChild(selectCol);

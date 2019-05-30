@@ -87,10 +87,54 @@
   cursor: pointer;
 }
 
-enigmailLink {
-  text-decoration: underline;
-  color: blue;
-  cursor: pointer;
+.enigmailGroupbox {
+  border-radius: 4px;
+  border-style: groove;
+  border-width: thin;
+  padding: 3px;
+  margin: 3px;
+  border-color: lightgrey;
+}
+
+.enigmailCaptionbox {
+  border: 2px groove threedface;
+  border-top: none;
+  padding: 0.5em;
+  margin: 1em 2px;
+  border-radius: 4px;
+}
+
+.enigmailCaptionbox>h1 {
+  font: 1em normal;
+  margin: -1em -0.5em 0;
+  border-radius: 4px;
+}
+
+.enigmailCaptionbox>h1>span {
+  float: left;
+  border-radius: 4px;
+}
+
+.enigmailCaptionbox>h1:before {
+  border-top: 2px groove threedface;
+  content: ' ';
+  float: left;
+  margin: 0.5em 2px 0 -1px;
+  width: 0.75em;
+  border-radius: 4px;
+}
+
+.enigmailCaptionbox>h1:after {
+  border-top: 2px groove threedface;
+  content: ' ';
+  display: block;
+  height: 1.5em;
+  left: 2px;
+  margin: 0 1px 0 0;
+  overflow: hidden;
+  position: relative;
+  top: 0.5em;
+  border-radius: 4px;
 }
 
 .enigmailStrong {

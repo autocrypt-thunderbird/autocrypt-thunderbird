@@ -99,7 +99,7 @@ var EnigmailFilterEditor = {
     for (let actionIndex = 0; actionIndex < numActions; actionIndex++) {
       let filterAction = filter.getActionAt(actionIndex);
 
-      var newActionRow = document.createElement('listitem');
+      var newActionRow = document.createXULElement('listitem');
       newActionRow.setAttribute('initialActionIndex', actionIndex);
       newActionRow.className = 'ruleaction';
       gFilterActionList.appendChild(newActionRow);

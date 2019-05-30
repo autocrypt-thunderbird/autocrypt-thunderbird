@@ -77,22 +77,22 @@ function createRow(index) {
   let color = EnigmailPEPAdapter.calculateColorFromRating(rating);
   let funcName = getFuncNameFromColor(color);
 
-  let row = document.createElement("row");
-  let lblBox = document.createElement("hbox");
+  let row = document.createXULElement("row");
+  let lblBox = document.createXULElement("hbox");
   lblBox.setAttribute("align", "center");
   lblBox.setAttribute("size", "medium");
   lblBox.setAttribute("flex", "1");
   lblBox.setAttribute("class", EnigmailPEPAdapter.getRatingClass(rating));
   lblBox.setAttribute("id", "emailRow_" + index);
 
-  let label = document.createElement("label");
+  let label = document.createXULElement("label");
   label.setAttribute("value", emailAddr);
   lblBox.appendChild(label);
 
-  let func = document.createElement("hbox");
+  let func = document.createXULElement("hbox");
   func.setAttribute("align", "center");
   if (funcName !== "") {
-    let btn = document.createElement("button");
+    let btn = document.createXULElement("button");
     let btnLabel = "handshakeDlg.button." + funcName;
     btn.setAttribute("label", EnigmailLocale.getString(btnLabel));
     btn.setAttribute("oncommand", "doHandshakeCommand('" + funcName + "', " + index + ")");

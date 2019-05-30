@@ -18,6 +18,7 @@
 <dialog id="enigmailDispPhoto"
         title="&enigmail.photoViewer.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="onLoad();"
         width="500px"
         height="400px"
@@ -28,9 +29,9 @@
   <hbox align="center">
     <vbox align="center">
       <hbox align="center">
-        <groupbox autostretch="always">
+        <vbox class="enigmailGroupbox" autostretch="always">
           <image id="photoImage" maxwidth="350px" maxheight="300px"/>
-        </groupbox>
+        </vbox>
       </hbox>
     </vbox>
     <vbox>

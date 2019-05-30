@@ -22,7 +22,7 @@
               label="&enigmail.amPrefEnablePgp.label;"
               oncommand="Enigmail.edit.toggleEnable();"/>
     <vbox>
-      <groupbox id="enigmail_encryption.titleBox">
+      <vbox class="enigmailGroupbox" id="enigmail_encryption.titleBox">
         <radiogroup id="enigmail_pgpKeyMode" aria-labelledby="enablePgp">
           <radio id="enigmail_keymode_useFromAddress"
                  label="&enigmail.amPrefUseFromAddr.label;"
@@ -142,7 +142,7 @@
                   label="&enigmail.openpgpPrefsButton.label;"
                   oncommand="EnigmailWindows.openPrefWindow(window, true, 'sendingTab');"/>
         </hbox>
-      </groupbox>
+      </vbox>
     </vbox>
   </vbox>
 </overlay>

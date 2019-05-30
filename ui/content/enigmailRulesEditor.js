@@ -57,7 +57,7 @@ function enigmailDlgOnLoad() {
         if (userObj.email.search(/^\{autocrypt:\/\/.{1,200}\}$/) === 0) {
           gAutocryptRules.push(userObj);
         } else {
-          var treeItem = document.createElement("treeitem");
+          var treeItem = document.createXULElement("treeitem");
           createRow(treeItem, userObj);
           treeChildren.appendChild(treeItem);
         }
@@ -106,7 +106,7 @@ function enigmailDlgOnAccept() {
 }
 
 function createCol(value, label, treeItem, translate) {
-  var column = document.createElement("treecell");
+  var column = document.createXULElement("treecell");
   column.setAttribute("id", value);
   treeItem.setAttribute(value, label);
   switch (value) {
@@ -148,7 +148,7 @@ function createRow(treeItem, userObj) {
   var sign = createCol("sign", userObj.sign, treeItem);
   var encrypt = createCol("encrypt", userObj.encrypt, treeItem);
   var pgpMime = createCol("pgpMime", userObj.pgpMime, treeItem);
-  var treeRow = document.createElement("treerow");
+  var treeRow = document.createXULElement("treerow");
   treeRow.appendChild(negate);
   treeRow.appendChild(email);
   treeRow.appendChild(keyId);
@@ -205,7 +205,7 @@ function enigDoAdd() {
 
   window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (resultObj.cancelled === false) {
-    var treeItem = document.createElement("treeitem");
+    var treeItem = document.createXULElement("treeitem");
     createRow(treeItem, resultObj);
     var treeChildren = document.getElementById("rulesTreeChildren");
     if (treeChildren.firstChild) {

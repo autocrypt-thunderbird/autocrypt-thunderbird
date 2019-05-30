@@ -18,6 +18,7 @@
 <dialog id="enigmailWrapSelectionList"
         title="&enigmail.wrapSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         buttons="accept,cancel"
         onload="onLoad();">
 
@@ -27,8 +28,7 @@
   <vbox orient="vertical">
     <description>&enigmail.compose.excesslength.label;</description>
     <description>&enigmail.compose.excesslength_action.label;</description>
-    <vbox>
-      <groupbox>
+    <vbox class="enigmailGroupbox">
         <radiogroup id="wrapSelectGroup" aria-labelledby="enigmailWrapDesc">
           <radio value="0" id="wrap"
               label="&enigmail.compose.wrap_radio.label;"/>
@@ -39,7 +39,6 @@
           <radio value="3" id="editmanually"
               label="&enigmail.compose.editmanually.label;"/>
         </radiogroup>
-      </groupbox>
     </vbox>
   </vbox>
 </dialog>

@@ -20,6 +20,7 @@
         title="&enigmail.genCardKey.title;"
         windowtype="enigmail:genCardKey"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="onLoad()"
         buttons="accept,cancel"
         minwidth="450px"
@@ -36,7 +37,7 @@
 
   <popupset id="aTooltipSet"/>
 
-  <groupbox id="userIdBox" orient="vertical">
+  <vbox class="enigmailGroupbox" id="userIdBox" orient="vertical">
 
     <hbox orient="horizontal" align="center">
       <label value="&enigmail.keyUserId.label;" control="userIdentity"/>
@@ -49,7 +50,7 @@
               label="&enigmail.useForSigning.label;"
               checked="true" />
 
-  </groupbox>
+  </vbox>
 
   <checkbox id="createBackup"
             label="&enigmail.genCardKey.backupKey.label;"
@@ -111,16 +112,16 @@
           oncommand="onClose();" />
 </hbox>
 
-<groupbox id="keygenConsoleBox" orient="vertical">
+<vbox class="enigmailCaptionbox" id="keygenConsoleBox" orient="vertical">
+  <html:h1><html:span>&enigmail.keyGen.console.label;</html:span></html:h1>
 
-  <caption label="&enigmail.keyGen.console.label;"/>
+  <vbox>
+    <description>&enigmail.genCardKey.desc;</description>
 
-  <description>&enigmail.genCardKey.desc;</description>
-
-  <iframe id="keygenConsole" type="content" name="keygenConsole"
-          src="chrome://enigmail/content/ui/enigmailKeygenConsole.htm"
-          height="200" flex="1"/>
-
-</groupbox>
+    <iframe id="keygenConsole" type="content" name="keygenConsole"
+            src="chrome://enigmail/content/ui/enigmailKeygenConsole.htm"
+            height="200" flex="1"/>
+  </vbox>
+</vbox>
 
 </window>

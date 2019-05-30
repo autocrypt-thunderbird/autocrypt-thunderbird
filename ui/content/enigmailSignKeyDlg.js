@@ -103,7 +103,7 @@ function onLoad() {
       for (let j = 1; j < keyObj.userIds.length; j++) {
         if (keyObj.userIds[j].type === "uid" && (!EnigmailTrust.isInvalid(keyObj.userIds[j].keyTrust))) {
           ++nUid;
-          let uidLbl = document.createElement("label");
+          let uidLbl = document.createXULElement("label");
           uidLbl.setAttribute("value", keyObj.userIds[j].userId);
           sUid.appendChild(uidLbl);
         }

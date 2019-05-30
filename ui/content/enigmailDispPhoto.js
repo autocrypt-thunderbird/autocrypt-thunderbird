@@ -25,7 +25,7 @@ var gKeyId;
 
 function appendUid(uidStr) {
   let uidCont = document.getElementById("uidContainer");
-  let l = document.createElement("label");
+  let l = document.createXULElement("label");
   l.setAttribute("value", uidStr);
   uidCont.appendChild(l);
 }

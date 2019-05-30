@@ -18,6 +18,7 @@
 <dialog id="enigmailKeySelectionDlg"
         title="&enigmail.userSelectionList.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="onLoad();"
         buttons="accept,cancel,extra1"
         buttonlabelaccept="&enigmail.send.label;"
@@ -28,8 +29,8 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailKeySelection.js"/>
 
-  <groupbox id="dialogHeadline" orient="vertical">
-     <caption id="usersNotFoundCapt" label="&enigmail.usersNotFound.label;"/>
+  <vbox class="enigmailCaptionbox" id="dialogHeadline" orient="vertical">
+     <html:h1 id="usersNotFoundCapt"><html:span>&enigmail.usersNotFound.label;</html:span></html:h1>
      <vbox style="height: 5em; overflow: auto;">
        <grid id="dialogMsgList" collapsed="true">
          <columns>
@@ -40,14 +41,13 @@
        </grid>
      </vbox>
      <description id="dialogHeaderDesc" width="700px" collapsed="true">...</description>
-  </groupbox>
+  </vbox>
 
   <!-- <separator/> -->
 
   <vbox flex="1">
-    <groupbox width="700px" flex="1">
-      <caption id="dialogHeader"
-               label="..." collapsed="true"/>
+    <vbox class="enigmailCaptionbox" width="700px" flex="1">
+      <html:h1 ><html:span id="dialogHeader" style="visibility: hidden;">...</html:span></html:h1>
 
       <hbox flex="0" align="center">
         <label value="&enigmail.keyMan.filter.label;" control="filterKey"/>
@@ -94,7 +94,7 @@
               properties="sendUnencrypted"/>
 
       </tree>
-    </groupbox>
+    </vbox>
 
     <checkbox id="enigmailUserSelSendEncrypted"
               label="&enigmail.userSelSendEncrypted.label;"

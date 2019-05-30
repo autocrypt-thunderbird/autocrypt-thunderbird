@@ -58,13 +58,12 @@ function createNewRuleWithKey() {
 
   window.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
   if (!resultObj.cancelled) {
-    var treeItem = document.createElement("treeitem");
+    var treeItem = document.createXULElement("treeitem");
     createRow(treeItem, resultObj);
     var treeChildren = document.getElementById("rulesTreeChildren");
     if (treeChildren.firstChild) {
       treeChildren.insertBefore(treeItem, treeChildren.firstChild);
-    }
-    else {
+    } else {
       treeChildren.appendChild(treeItem);
     }
 

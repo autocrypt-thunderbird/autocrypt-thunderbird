@@ -130,11 +130,7 @@ function openURL(hrefObj) {
     href = hrefObj.getAttribute(href.substr(1));
   }
 
-  let ioservice = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-  let iUri = ioservice.newURI(href, null, null);
-  let eps = Cc["@mozilla.org/uriloader/external-protocol-service;1"].getService(Ci.nsIExternalProtocolService);
-
-  eps.loadURI(iUri, null);
+  EnigmailWindows.openMailTab(href);
 
   return false;
 }

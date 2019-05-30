@@ -179,8 +179,8 @@ function prepareDialog(secretOnly) {
   if (window.arguments[INPUT].dialogHeader) {
     var dialogHeader = document.getElementById("dialogHeader");
     if (dialogHeader) {
-      dialogHeader.setAttribute("label", window.arguments[INPUT].dialogHeader);
-      dialogHeader.removeAttribute("collapsed");
+      dialogHeader.innerHTML = window.arguments[INPUT].dialogHeader;
+      dialogHeader.style.visibility = "visible";
     }
   }
   var dialogMsgList = document.getElementById("dialogMsgList");
@@ -211,11 +211,11 @@ function prepareDialog(secretOnly) {
             msg = "???";
             break;
         }
-        var row = document.createElement('row');
-        var cell = document.createElement('label');
+        var row = document.createXULElement('row');
+        var cell = document.createXULElement('label');
         cell.setAttribute('value', array[detIdx].addr + ":");
         row.appendChild(cell);
-        cell = document.createElement('label');
+        cell = document.createXULElement('label');
         cell.setAttribute('value', msg);
         row.appendChild(cell);
         dialogMsgListRows.appendChild(row);
@@ -507,7 +507,7 @@ function buildTreeView(aUserList, hideExpired, secretOnly) {
         treeItem = enigUserSelCreateRow(aUserList[i], aUserList[i].activeState, aUserList[i].userId, aUserList[i].keyId, aUserList[i].expiry, aUserList[i].keyTrust, aUserList[i].uidValid);
       }
       if (aUserList[i].hasSubUserIds()) {
-        var subChildren = document.createElement("treechildren");
+        var subChildren = document.createXULElement("treechildren");
         for (let user = 1; user < aUserList[i].userIds.length; user++) {
           if (KEY_NOT_VALID.indexOf(aUserList[i].userIds[user].keyTrust) < 0) {
             var subItem = enigUserSelCreateRow(aUserList[i], -1, aUserList[i].userIds[user].userId, "", "", aUserList[i].userIds[user].keyTrust, true);
@@ -575,11 +575,11 @@ function buildNotFoundKeys(aUserList, aValidUsers, toAddrList, toKeys) {
 
 // create a (sub) row for the user tree
 function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField, uidValidityStatus, uidValid) {
-  var selectCol = document.createElement("treecell");
+  var selectCol = document.createXULElement("treecell");
   selectCol.setAttribute("id", "indicator");
-  var uidValidityCol = document.createElement("treecell");
-  var expCol = document.createElement("treecell");
-  var userCol = document.createElement("treecell");
+  var uidValidityCol = document.createXULElement("treecell");
+  var expCol = document.createXULElement("treecell");
+  var userCol = document.createXULElement("treecell");
 
   userCol.setAttribute("id", "name");
   expCol.setAttribute("id", "expiry");
@@ -588,7 +588,7 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
   userCol.setAttribute("label", userId);
   expCol.setAttribute("label", dateField);
 
-  var keyCol = document.createElement("treecell");
+  var keyCol = document.createXULElement("treecell");
   if (userObj.keyTrust != KEY_IS_GROUP) {
     keyCol.setAttribute("label", "0x" + keyValue);
   } else {
@@ -633,13 +633,13 @@ function enigUserSelCreateRow(userObj, activeState, userId, keyValue, dateField,
 
   EnigSetActive(selectCol, activeState);
   uidValidityCol.setAttribute("label", validity);
-  var userRow = document.createElement("treerow");
+  var userRow = document.createXULElement("treerow");
   userRow.appendChild(selectCol);
   userRow.appendChild(userCol);
   userRow.appendChild(uidValidityCol);
   userRow.appendChild(expCol);
   userRow.appendChild(keyCol);
-  var treeItem = document.createElement("treeitem");
+  var treeItem = document.createXULElement("treeitem");
   if (userObj.keyTrust == KEY_IS_GROUP) {
     treeItem.setAttribute("id", "GROUP:" + userObj.keyId);
   } else {

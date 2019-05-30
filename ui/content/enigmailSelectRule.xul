@@ -18,6 +18,7 @@
 <dialog id="enigmailSelectRule"
         title="&enigmail.addToRule.title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onload="editDlgOnLoad();"
         minheight="300"
         buttons="cancel"
@@ -31,7 +32,7 @@
 
   <separator/>
 
-  <groupbox width="700px" flex="1">
+  <vbox class="enigmailGroupbox" width="700px" flex="1">
     <vbox flex="1" align="stretch">
       <hbox flex="0" align="center">
         <label value="&enigmail.searchRule.label;" control="filterEmail"/>
@@ -63,7 +64,7 @@
         </tree>
       </hbox>
     </vbox>
-  </groupbox>
+  </vbox>
   <hbox>
     <button label="&enigmail.addToRule.useRuleButton.label;"
             accesskey="&enigmail.addToRule.useRuleButton.accesskey;"

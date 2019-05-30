@@ -38,43 +38,49 @@
       <vbox id="accountTabPanel" flex="1">
         <description class="enigmailTitle">&enigmail.pepPref.accountSecurity.desc;</description>
 
-        <groupbox>
-          <label value="&enigmail.pepPref.storeSecurely.title;"/>
+        <vbox class="enigmailGroupbox">
+          <vbox>
+            <label value="&enigmail.pepPref.storeSecurely.title;"/>
 
-          <groupbox>
-            <menulist id="selectedAccount" editable="false" oncommand="onSelectAccount(this)"/>
-            <checkbox id="trustedServer" label="&enigmail.pepPref.storeSecurely.label;"/>
-            <checkbox id="enableEncryption" label="&enigmail.pepPref.enableEncryption.label;"/>
-            <checkbox id="passiveMode" label="&enigmail.pepPref.passiveMode.label;"/>
-          </groupbox>
+            <vbox class="enigmailGroupbox">
+              <menulist id="selectedAccount" editable="false" oncommand="onSelectAccount(this)"/>
+              <checkbox id="trustedServer" label="&enigmail.pepPref.storeSecurely.label;"/>
+              <checkbox id="enableEncryption" label="&enigmail.pepPref.enableEncryption.label;"/>
+              <checkbox id="passiveMode" label="&enigmail.pepPref.passiveMode.label;"/>
+            </vbox>
 
-          <groupbox>
-            <checkbox id="protectedSubject" label="&enigmail.pepPref.protectedSubject.label;"/>
-            <checkbox id="warnReply" label="&enigmail.pepPref.warnReducedSecurity.label;"/>
-          </groupbox>
-        </groupbox>
+            <spacer style="min-height: 5px;" flex="0"/>
+
+            <vbox>
+              <checkbox id="protectedSubject" label="&enigmail.pepPref.protectedSubject.label;"/>
+              <checkbox id="warnReply" label="&enigmail.pepPref.warnReducedSecurity.label;"/>
+            </vbox>
+          </vbox>
+        </vbox>
       </vbox>
 
       <!-- "Compatibility" Tab -->
       <vbox id="compatTabPanel" flex="1">
         <description class="enigmailTitle">&enigmail.privacyPprefPane.juniorMode;</description>
 
-        <groupbox id="juniorModeGroup">
-          <radiogroup id="juniorMode" flex="1">
-            <radio id="juniorModeAuto"
-                   value="1"
-                   label="&enigmail.privacyPprefPane.juniorModeAuto;"
-                   oncommand="juniorModeCallback(this);"/>
-            <radio id="juniorModeForceOff"
-                   value="0"
-                   label="&enigmail.privacyPprefPane.juniorModeForceOff;"
-                   oncommand="juniorModeCallback(this);"/>
-            <radio id="juniorModeForceOn"
-                   value="2"
-                   label="&enigmail.privacyPprefPane.juniorModeForceOn;"
-                   oncommand="juniorModeCallback(this);"/>
-          </radiogroup>
-        </groupbox>
+        <vbox class="enigmailGroupbox" id="juniorModeGroup">
+          <vbox>
+            <radiogroup id="juniorMode" flex="1">
+              <radio id="juniorModeAuto"
+                     value="1"
+                     label="&enigmail.privacyPprefPane.juniorModeAuto;"
+                     oncommand="juniorModeCallback(this);"/>
+              <radio id="juniorModeForceOff"
+                     value="0"
+                     label="&enigmail.privacyPprefPane.juniorModeForceOff;"
+                     oncommand="juniorModeCallback(this);"/>
+              <radio id="juniorModeForceOn"
+                     value="2"
+                     label="&enigmail.privacyPprefPane.juniorModeForceOn;"
+                     oncommand="juniorModeCallback(this);"/>
+            </radiogroup>
+          </vbox>
+        </vbox>
 
         <spacer style="min-height: 5px;" flex="0"/>
 
@@ -114,7 +120,7 @@
         <spacer style="height: 5px;"/>
 
         <description>
-          Patrick Brunschwig, Ludwig Hügelschäfer, Robert J. Hansen, Daniele Raffo,<html:br/>
+          Patrick Brunschwig, Robert J. Hansen, Daniele Raffo, Ludwig Hügelschäfer,<html:br/>
           John Clizbe, Olav Seyfarth, Nico Josuttis, The p≡p Foundation
         </description>
 

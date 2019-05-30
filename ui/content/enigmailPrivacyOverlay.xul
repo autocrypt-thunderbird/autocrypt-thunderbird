@@ -18,8 +18,10 @@
 
   <prefpane id="panePrivacy" insertafter="mailContentGroup">
 
-    <groupbox id="enigmail_juniorModeGroup">
-      <caption label="&enigmail.privacyPprefPane.juniorMode;"/>
+    <vbox id="enigmail_juniorModeGroup">
+      <label>
+        <html:h2>&enigmail.privacyPprefPane.juniorMode;</html:h2>
+      </label>
       <radiogroup id="enigmail_juniorMode"
                   flex="1">
         <radio id="enigmail_juniorModeAuto"
@@ -35,7 +37,7 @@
                label="&enigmail.privacyPprefPane.juniorModeForceOn;"
                oncommand="EnigmailPrefOverlay.juniorModeCallback(this);"/>
       </radiogroup>
-    </groupbox>
+    </vbox>
   </prefpane>
 
 </overlay>

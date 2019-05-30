@@ -28,9 +28,8 @@
 
   <!-- <separator/> -->
 
-  <groupbox width="700px" id="keySelGroup">
-    <caption id="dialogHeader"
-             label="&enigmail.searchKeyDlgCapt.label;"/>
+  <vbox class="enigmailCaptionbox" width="700px" id="keySelGroup">
+    <html:h1 id="dialogHeader"><html:span>&enigmail.searchKeyDlgCapt.label;</html:span></html:h1>
 
     <tree id="enigmailKeySel" flex="1"
       hidecolumnpicker="false"
@@ -63,9 +62,7 @@
       <treechildren id="enigmailKeySelChildren"/>
 
     </tree>
-
-
-  </groupbox>
+  </vbox>
 
   <hbox id="progress.box">
     <label value="&enigmail.progress.label;:" control="dialog.progress"/>
