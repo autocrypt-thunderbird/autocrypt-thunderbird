@@ -84,6 +84,7 @@ MODFILES = \
            protocolHandler.jsm \
            rng.jsm \
            rules.jsm \
+           searchCallback.jsm \
            send.jsm \
            singletons.jsm \
            socks5Proxy.jsm \

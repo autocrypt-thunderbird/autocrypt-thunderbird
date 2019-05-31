@@ -138,6 +138,7 @@ zip -9 --must-match\
     chrome/content/modules/prefs.jsm \
     chrome/content/modules/rng.jsm \
     chrome/content/modules/rules.jsm \
+    chrome/content/modules/searchCallback.jsm \
     chrome/content/modules/send.jsm \
     chrome/content/modules/singletons.jsm \
     chrome/content/modules/socks5Proxy.jsm \

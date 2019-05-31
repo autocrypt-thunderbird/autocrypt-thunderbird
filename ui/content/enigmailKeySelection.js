@@ -17,6 +17,7 @@
 EnigInitCommon("enigmailKeySelection");
 var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 var EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
+var EnigmailSearchCallback = ChromeUtils.import("chrome://enigmail/content/modules/searchCallback.jsm").EnigmailSearchCallback;
 var EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 var newEnigmailKeyObj = ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm").newEnigmailKeyObj;
 
@@ -53,6 +54,7 @@ var gSendEncrypted = true;
 var gSendSigned = true;
 var gAllowExpired = false;
 var gIpcRequest;
+var gTimeoutId = {};
 
 var gEnigRemoveListener = false;
 var gKeysNotFound = [];
@@ -68,6 +70,8 @@ function onLoad() {
     document.getElementById("enigmailKeySelectionDlg").setAttribute("title", EnigGetString("userSel.secretKeySel.title"));
   }
   document.getElementById("enigmailUserIdSelection").addEventListener('click', onClickCallback, true);
+  EnigmailSearchCallback.setup(document.getElementById("filterKey"), gTimeoutId, applyFilter, 200);
+
   let enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
     return false;
@@ -872,7 +876,7 @@ function searchMissingKeys() {
 }
 
 
-function onSearchInput() {
+function applyFilter() {
   let searchInput = document.getElementById("filterKey");
   let searchValue = searchInput.value.toLowerCase();
   let userTreeList = document.getElementById("enigmailUserIdSelection");

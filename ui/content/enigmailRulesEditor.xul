@@ -31,8 +31,7 @@
     <vbox flex="1" align="stretch">
       <hbox flex="0" align="center">
         <label value="&enigmail.searchRule.label;" control="filterEmail"/>
-        <textbox id="filterEmail" type="search" size="30"
-          oncommand="onSearchInput()" />
+        <textbox id="filterEmail" type="search" size="30"/>
       </hbox>
       <hbox flex="1" >
         <tree id="rulesTree" flex="1"

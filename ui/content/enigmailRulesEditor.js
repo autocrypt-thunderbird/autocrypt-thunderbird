@@ -16,6 +16,7 @@ EnigInitCommon("enigmailRulesEditor");
 
 var EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
 var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+var EnigmailSearchCallback = ChromeUtils.import("chrome://enigmail/content/modules/searchCallback.jsm").EnigmailSearchCallback;
 
 const INPUT = 0;
 const RESULT = 1;
@@ -23,6 +24,7 @@ const RESULT = 1;
 var gSearchInput = null;
 var gNumRows = null;
 var gAutocryptRules = [];
+var gTimeoutId = {};
 
 function enigmailDlgOnLoad() {
   var enigmailSvc = GetEnigmailSvc();
@@ -67,7 +69,7 @@ function enigmailDlgOnLoad() {
   }
   var rulesTree = document.getElementById("rulesTree");
   gSearchInput = document.getElementById("filterEmail");
-
+  EnigmailSearchCallback.setup(gSearchInput, gTimeoutId, applyFilter, 200);
 }
 
 function enigmailDlgOnAccept() {
@@ -281,7 +283,7 @@ function enigDoResetFilter() {
   }
 }
 
-function onSearchInput() {
+function applyFilter() {
   if (gSearchInput.value === "") {
     enigDoResetFilter();
     return;

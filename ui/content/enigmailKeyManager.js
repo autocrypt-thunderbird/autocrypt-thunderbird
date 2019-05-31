@@ -32,7 +32,7 @@ var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/p
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 var EnigmailKeyServer = ChromeUtils.import("chrome://enigmail/content/modules/keyserver.jsm").EnigmailKeyServer;
 var EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
-
+var EnigmailSearchCallback = ChromeUtils.import("chrome://enigmail/content/modules/searchCallback.jsm").EnigmailSearchCallback;
 
 const INPUT = 0;
 const RESULT = 1;
@@ -50,6 +50,7 @@ var gShowInvalidKeys = null;
 var gShowUntrustedKeys = null;
 var gShowOthersKeys = null;
 var gPepKeyBlacklist = [];
+var gTimeoutId = {};
 
 function enigmailKeyManagerLoad() {
   EnigmailLog.DEBUG("enigmailKeyManager.js: enigmailKeyManagerLoad\n");
@@ -69,6 +70,7 @@ function enigmailKeyManagerLoad() {
   gShowOthersKeys = document.getElementById("showOthersKeys");
 
   window.addEventListener("reload-keycache", reloadKeys);
+  EnigmailSearchCallback.setup(gSearchInput, gTimeoutId, applyFilter, 200);
 
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
@@ -1157,7 +1159,7 @@ function enigmailImportKeysFromUrl() {
           var ioServ = Cc[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
           var msgUri = ioServ.newURI(value.value, null, null);
 
-        var channel = EnigmailStreams.createChannel(msgUri);
+          var channel = EnigmailStreams.createChannel(msgUri);
           channel.asyncOpen(bufferListener, msgUri);
         } catch (ex) {
           var err = {
@@ -1191,7 +1193,7 @@ function initiateAcKeyTransfer() {
 //
 
 
-function onSearchInput() {
+function applyFilter() {
   gKeyListView.applyFilter(0);
 }
 

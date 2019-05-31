@@ -376,11 +376,7 @@
   </popupset>
 
   <hbox flex="0" align="center">
-    <label value="&enigmail.keyMan.filter.label;" control="filterKey"/>
-    <textbox id="filterKey" size="30"
-             type="search"
-             timeout="500"
-             oncommand="onSearchInput();"/>
+    <textbox id="filterKey" size="35" placeholder="&enigmail.keyMan.filter.label;"/>
     <separator orient="vertical"/>
     <checkbox label="&enigmail.keyMan.showAllKeys.label;"
           checked="true"
