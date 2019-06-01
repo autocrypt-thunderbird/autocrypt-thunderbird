@@ -91,7 +91,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
 
     const DeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
     Enigmail.msg.statusEncrypted = EnigmailConstants.ENIG_FINAL_YES;
-    Enigmail.msg.statusSigned = EnigmailConstants.ENIG_FINAL_YES;
+    Enigmail.msg.statusSigned = EnigmailConstants.ENIG_FINAL_FORCENO;
     Enigmail.msg.statusPGPMime = EnigmailConstants.ENIG_FINAL_FORCEYES;
 
     gMsgCompose = {
@@ -105,7 +105,7 @@ test(withTestGpgHome(withEnigmail(withOverwriteFuncs(
     Enigmail.msg.protectHeaders = true;
     Enigmail.msg.editor = gMsgCompose.editor;
     let s = Enigmail.msg.getEncryptionFlags(DeliverMode.Now);
-    Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SEND_SIGNED);
+    Assert.equal(s.sendFlags, EnigmailConstants.SEND_ENCRYPTED);
 
     gWindowLocked = false;
     gMsgCompose.compFields[SECURITY_INFO] = EnigmailMimeEncrypt.createMimeEncrypt(null);
