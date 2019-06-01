@@ -311,7 +311,6 @@ PgpMimeEncrypt.prototype = {
     this.encHeader = EnigmailMime.createBoundary();
 
     let allHdr = "";
-    let visibleHdr = "";
 
     let addrParser = jsmime.headerparser.parseAddressingHeader;
     let newsParser = function(s) {
@@ -350,29 +349,16 @@ PgpMimeEncrypt.prototype = {
         field: "Message-Id",
         parser: noParser
       }
+      subject: {
+        field: "Subject",
+        parser: noParser
+      }
     };
-
-    // visible headers list
-    let vH = [
-      'from',
-      'to',
-      'subject',
-      'cc'
-    ];
 
     for (let i in h) {
       if (this.msgCompFields[i] && this.msgCompFields[i].length > 0) {
         allHdr += jsmime.headeremitter.emitStructuredHeader(h[i].field, h[i].parser(this.msgCompFields[i]), {});
       }
-
-      if (vH.indexOf(i) >= 0 && this.msgCompFields[i].length > 0) {
-        visibleHdr += jsmime.headeremitter.emitStructuredHeader(h[i].field, h[i].parser(this.msgCompFields[i]), {});
-      }
-    }
-
-    if (this.originalSubject && this.originalSubject.length > 0) {
-      allHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.originalSubject, {});
-      visibleHdr += jsmime.headeremitter.emitStructuredHeader("subject", this.originalSubject, {});
     }
 
     // special handling for references and in-reply-to
