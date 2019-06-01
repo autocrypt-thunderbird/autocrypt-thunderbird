@@ -10,7 +10,7 @@ UNITTEST =
 
 ifneq ($(TB_PATH),"")
 
-UNITTEST = $(JSUNIT) main.js
+UNITTEST = $(JSUNIT)
 
 endif
 

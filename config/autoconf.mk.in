@@ -17,4 +17,4 @@ srcdir = @srcdir@
 DIST = $(DEPTH)/build/dist
 BUILD = $(DEPTH)/build
 
-JSUNIT = $(DEPTH)/util/run-jsunit $(PERL) $(TB_PATH) $(TB_ARGS) -jsunit
+JSUNIT = $(DEPTH)/util/run-jsunit $(PERL) $(TB_PATH) $(TB_ARGS)
