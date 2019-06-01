@@ -348,7 +348,7 @@ PgpMimeEncrypt.prototype = {
       messageId: {
         field: "Message-Id",
         parser: noParser
-      }
+      },
       subject: {
         field: "Subject",
         parser: noParser
