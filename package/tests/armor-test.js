@@ -11,7 +11,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("armor.jsm"); /*global EnigmailArmor: false, EnigmailConstants: false */
-const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles;
 
 test(function shouldLocateEnigmailArmoredBlock() {
   const text = "    -----BEGIN PGP SIGNATURE-----\n" +
