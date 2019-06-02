@@ -35,7 +35,8 @@ const {
   obtainKeyList,
   createKeyObj,
   getPhotoFileFromGnuPG,
-  extractSignatures
+  extractSignatures,
+  getGpgKeyData
 } = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg-keylist.jsm");
 
 const {
@@ -430,6 +431,20 @@ class GnuPGCryptoAPI extends OpenPGPjsCryptoAPI {
 
     return this.decrypt(signed, options);
   }
+
+  async getKeyListFromKeyBlock(keyBlockStr) {
+
+    let res;
+    try {
+      res = await getGpgKeyData(keyBlockStr);
+    } catch (ex) {
+      if (ex === "unsupported") {
+        res = await this.OPENPGPjs_getKeyListFromKeyBlock(keyBlockStr);
+      } else throw ex;
+    }
+    return res;
+  }
+
 }
 
 function getGnuPGAPI() {

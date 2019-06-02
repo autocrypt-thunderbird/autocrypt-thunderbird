@@ -11,6 +11,7 @@
 do_load_module("file://" + do_get_cwd().path + "/testHelper.js");
 
 testing("armor.jsm"); /*global EnigmailArmor: false, EnigmailConstants: false */
+const EnigmailFiles = component("enigmail/files.jsm").EnigmailFiles
 
 test(function shouldLocateEnigmailArmoredBlock() {
   const text = "    -----BEGIN PGP SIGNATURE-----\n" +
@@ -103,4 +104,17 @@ test(function shouldGetArmorHeaders() {
   Assert.ok("version" in hdr);
   Assert.ok("comment" in hdr);
   Assert.equal(hdr.comment, "GPGTools - https://gpgtools.org");
+});
+
+
+test(function shouldSplitKeys() {
+  const publicKey1 = do_get_file("resources/dev-strike.asc", false);
+  const publicKey2 = do_get_file("resources/dev-tiger.asc", false);
+
+  const pubKeyData = EnigmailFiles.readFile(publicKey1) + "\r\n" + EnigmailFiles.readFile(publicKey2);
+
+
+  let keyBlocks = EnigmailArmor.splitArmoredBlocks(pubKeyData);
+
+  Assert.equal(keyBlocks.length, 2);
 });

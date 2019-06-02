@@ -10,12 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailKey"];
 
-
-
 const KEY_BLOCK_UNKNOWN = 0;
 const KEY_BLOCK_KEY = 1;
 const KEY_BLOCK_REVOCATION = 2;
-const SIG_TYPE_REVOCATION = 0x20;
 
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
@@ -26,6 +23,7 @@ const EnigmailOpenPGP = ChromeUtils.import("chrome://enigmail/content/modules/op
 const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 
 var EnigmailKey = {
@@ -54,8 +52,7 @@ var EnigmailKey = {
     if (matchb && (matchb.length > 3)) {
       EnigmailLog.DEBUG("enigmailCommon.jsm:: Enigmail.extractPubkey: NO_PUBKEY 0x" + matchb[3] + "\n");
       return matchb[2] + matchb[3];
-    }
-    else {
+    } else {
       return null;
     }
   },
@@ -73,8 +70,7 @@ var EnigmailKey = {
       if (key.keyTrust === "r") {
         // Key has already been revoked
         getDialog().info(null, EnigmailLocale.getString("revokeKeyAlreadyRevoked", keyId));
-      }
-      else {
+      } else {
 
         let userId = key.userId + " - 0x" + key.keyId;
         if (!getDialog().confirmDlg(null,
@@ -88,32 +84,10 @@ var EnigmailKey = {
           getDialog().alert(null, errorMsgObj.value);
         }
       }
-    }
-    else {
+    } else {
       // Suitable key for revocation certificate is not present in keyring
       getDialog().alert(null, EnigmailLocale.getString("revokeKeyNotPresent", keyId));
     }
-  },
-
-  /**
-   * Split armored blocks into an array of strings
-   */
-  splitArmoredBlocks: function(keyBlockStr) {
-    let myRe = /-----BEGIN PGP (PUBLIC|PRIVATE) KEY BLOCK-----/g;
-    let myArray;
-    let retArr = [];
-    let startIndex = -1;
-    while ((myArray = myRe.exec(keyBlockStr)) !== null) {
-      if (startIndex >= 0) {
-        let s = keyBlockStr.substring(startIndex, myArray.index);
-        retArr.push(s);
-      }
-      startIndex = myArray.index;
-    }
-
-    retArr.push(keyBlockStr.substring(startIndex));
-
-    return retArr;
   },
 
   /**
@@ -132,65 +106,16 @@ var EnigmailKey = {
   getKeyListFromKeyBlock: function(keyBlockStr, errorMsgObj, interactive = true) {
     EnigmailLog.DEBUG("key.jsm: getKeyListFromKeyBlock\n");
 
-    let blocks;
-    let isBinary = false;
-
-    errorMsgObj.value = "";
-
-    if (keyBlockStr.search(/-----BEGIN PGP (PUBLIC|PRIVATE) KEY BLOCK-----/) >= 0) {
-      blocks = this.splitArmoredBlocks(keyBlockStr);
-    }
-    else {
-      isBinary = true;
-      blocks = [EnigmailOpenPGP.enigmailFuncs.bytesToArmor(EnigmailOpenPGP.openpgp.enums.armor.public_key, keyBlockStr)];
-    }
-
+    const cApi = EnigmailCryptoAPI();
     let keyList = [];
     let key = {};
-    for (let b of blocks) {
-      let m = EnigmailFuncs.syncPromise(EnigmailOpenPGP.openpgp.message.readArmored(b));
+    let blocks;
 
-      for (let i = 0; i < m.packets.length; i++) {
-        let packetType = EnigmailOpenPGP.openpgp.enums.read(EnigmailOpenPGP.openpgp.enums.packet, m.packets[i].tag);
-        switch (packetType) {
-          case "publicKey":
-          case "secretKey":
-            key = {
-              id: m.packets[i].getKeyId().toHex().toUpperCase(),
-              fpr: m.packets[i].getFingerprint().toUpperCase(),
-              name: null,
-              isSecret: false
-            };
-
-            if (!(key.id in keyList)) {
-              keyList[key.id] = key;
-            }
-
-            if (packetType === "secretKey") {
-              keyList[key.id].isSecret = true;
-            }
-            break;
-          case "userid":
-            if (!key.name) {
-              key.name = m.packets[i].userid.replace(/[\r\n]+/g, " ");
-            }
-            break;
-          case "signature":
-            if (m.packets[i].signatureType === SIG_TYPE_REVOCATION) {
-              let keyId = m.packets[i].issuerKeyId.toHex().toUpperCase();
-              if (keyId in keyList) {
-                keyList[keyId].revoke = true;
-              }
-              else {
-                keyList[keyId] = {
-                  revoke: true,
-                  id: keyId
-                };
-              }
-            }
-            break;
-        }
-      }
+    try {
+      keyList = cApi.sync(cApi.getKeyListFromKeyBlock(keyBlockStr));
+    } catch (ex) {
+      errorMsgObj.value = ex.toString();
+      return [];
     }
 
 
@@ -203,7 +128,6 @@ var EnigmailKey = {
       key = retArr[0];
       if (("revoke" in key) && (!("name" in key))) {
         this.importRevocationCert(key.id, blocks.join("\n"));
-        errorMsgObj.value = "";
         return [];
       }
     }
@@ -253,5 +177,4 @@ var EnigmailKey = {
 
     return (keyId1Raw === keyId2Raw);
   }
-
 };

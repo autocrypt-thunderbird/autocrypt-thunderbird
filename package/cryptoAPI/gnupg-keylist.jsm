@@ -12,7 +12,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = ["obtainKeyList", "createKeyObj",
-  "getPhotoFileFromGnuPG", "extractSignatures"
+  "getPhotoFileFromGnuPG", "extractSignatures", "getGpgKeyData"
 ];
 
 const EnigmailTime = ChromeUtils.import("chrome://enigmail/content/modules/time.jsm").EnigmailTime;
@@ -90,8 +90,7 @@ async function obtainKeyList(onlyKeys = null) {
     index: []
   };
 
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: obtainKeyList: #lines: ${pubKeyList.length}
-`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: obtainKeyList: #lines: ${pubKeyList.length}\n`);
   if (pubKeyList.length > 0) {
     appendKeyItems(pubKeyList, keyList);
 
@@ -143,8 +142,7 @@ function appendKeyItems(keyListString, keyList) {
           keyObj.secretAvailable = true;
           // create a dummy object that is not added to the list since we already have the key
           keyObj = createKeyObj(listRow);
-        }
-        else {
+        } else {
           appendUnkownSecretKey(listRow[KEY_ID], keyListString, i, keyList);
           keyObj = keyList.index[listRow[KEY_ID]];
           keyObj.secretAvailable = true;
@@ -160,7 +158,7 @@ function appendKeyItems(keyListString, keyList) {
         if (listRow[USERID_ID].length === 0) {
           listRow[USERID_ID] = "-";
         }
-        if (typeof (keyObj.userId) !== "string") {
+        if (typeof(keyObj.userId) !== "string") {
           keyObj.userId = EnigmailData.convertGpgToUnicode(listRow[USERID_ID]);
           if (TRUSTLEVELS_SORTED.indexOf(listRow[KEY_TRUST_ID]) < TRUSTLEVELS_SORTED.indexOf(keyObj.keyTrust)) {
             // reduce key trust if primary UID is less trusted than public key
@@ -225,8 +223,7 @@ function createKeyObj(lineArr) {
     keyObj.fpr = "";
     keyObj.userId = null;
     keyObj.photoAvailable = false;
-  }
-  else if (lineArr[ENTRY_ID] === "grp") {
+  } else if (lineArr[ENTRY_ID] === "grp") {
     keyObj.keyUseFor = "G";
     keyObj.userIds = [];
     keyObj.subKeys = [];
@@ -241,8 +238,7 @@ function createKeyObj(lineArr) {
  * Handle secret keys for which gpg 2.0 does not create a public key record
  */
 function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: appendUnkownSecretKey: keyId: ${keyId}
-`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: appendUnkownSecretKey: keyId: ${keyId}\n`);
 
   let keyListStr = [];
 
@@ -259,15 +255,14 @@ function appendUnkownSecretKey(keyId, aKeyList, startIndex, keyList) {
 
 /**
  * Extract a photo ID from a key, store it as file and return the file object.
-
+ 
  * @param {String} keyId:       Key ID / fingerprint
  * @param {Number} photoNumber: number of the photo on the key, starting with 0
  *
  * @return {Promise<nsIFile>} object or null in case no data / error.
  */
 async function getPhotoFileFromGnuPG(keyId, photoNumber) {
-  EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}
-`);
+  EnigmailLog.DEBUG(`gnupg-keylist.jsm: getPhotoFileFromGnuPG, keyId=${keyId} photoNumber=${photoNumber}\n`);
 
   const GPG_ADDITIONAL_OPTIONS = ["--no-secmem-warning", "--no-verbose", "--no-auto-check-trustdb",
     "--batch", "--no-tty", "--no-verbose", "--status-fd", "1", "--attribute-fd", "2",
@@ -302,8 +297,7 @@ async function getPhotoFileFromGnuPG(keyId, photoNumber) {
       if (foundPicture === photoNumber) {
         imgSize = Number(matches[2]);
         break;
-      }
-      else {
+      } else {
         skipData += Number(matches[2]);
       }
     }
@@ -428,4 +422,78 @@ function extractSignatures(gpgKeyList, ignoreUnknownUid) {
   }
 
   return listObj;
+}
+
+
+async function getGpgKeyData(armorKeyString) {
+  EnigmailLog.DEBUG("gnupg.js: getGpgKeyData()\n");
+
+  if (!EnigmailGpg.getGpgFeature("supports-show-only")) {
+    throw "unsupported";
+  }
+
+  let args = EnigmailGpg.getStandardArgs(false).concat(["--no-tty", "--batch", "--no-verbose", "--with-fingerprint", "--with-colons", "--import-options", "import-show", "--dry-run", "--import"]);
+
+  let res = await EnigmailExecution.execAsync(EnigmailGpg.agentPath, args, armorKeyString);
+  let lines = res.stdoutData.split(/\n/);
+
+  let key = {};
+  let keyId = "";
+  let keyList = [];
+  /*
+  pub:u:256:22:84F83BE88C892606:1525969855:1683649855::u:::scESC:::::ed25519:::0:
+  fpr:::::::::AFE1B65C5F39ACA7960B22CD84F83BE88C892606:
+  uid:u::::1525969914::22DB32406212400B52CDC74DA2B33418637430F1::Patrick (ECC) <patrick@enigmail.net>::::::::::0:
+  uid:u::::1525969855::F70B7A77F085AA7BA003D6AFAB6FF0DB1FC901B0::enigmail <patrick@enigmail.net>::::::::::0:
+  sub:u:256:18:329DAB3350400C40:1525969855:1683649855:::::e:::::cv25519::
+  fpr:::::::::3B154538D4DFAA19BDADAAD0329DAB3350400C40:
+  */
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineTokens = lines[i].split(/:/);
+
+    switch (lineTokens[ENTRY_ID]) {
+      case "pub":
+      case "sec":
+        key = {
+          id: lineTokens[KEY_ID],
+          fpr: null,
+          name: null,
+          isSecret: false
+        };
+
+        if (!(key.id in keyList)) {
+          keyList[key.id] = key;
+        }
+
+        if (lineTokens[ENTRY_ID] === "sec") {
+          keyList[key.id].isSecret = true;
+        }
+        break;
+      case "fpr":
+        if (!key.fpr) {
+          key.fpr = lineTokens[USERID_ID];
+        }
+        break;
+      case "uid":
+        if (!key.name) {
+          key.name = lineTokens[USERID_ID];
+        }
+        break;
+      case "rvs":
+      case "rvk":
+        keyId = lineTokens[KEY_ID];
+        if (keyId in keyList) {
+          keyList[keyId].revoke = true;
+        } else {
+          keyList[keyId] = {
+            revoke: true,
+            id: keyId
+          };
+        }
+        break;
+    }
+  }
+
+  return keyList;
 }

@@ -49,11 +49,6 @@ test(function shouldSplitKeys() {
 
   const pubKeyData = EnigmailFiles.readFile(publicKey1) + "\r\n" + EnigmailFiles.readFile(publicKey2);
 
-
-  let keyBlocks = EnigmailKey.splitArmoredBlocks(pubKeyData);
-
-  Assert.equal(keyBlocks.length, 2);
-
   let keyList = EnigmailKey.getKeyListFromKeyBlock(pubKeyData, {});
 
   Assert.equal(keyList.length, 2);

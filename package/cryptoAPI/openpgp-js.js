@@ -16,6 +16,7 @@ const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").Enigm
 const EnigmailLazy = Cu.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
 
 const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
+const getArmor = EnigmailLazy.loader("enigmail/armor.jsm", "EnigmailArmor");
 
 // Load generic API
 Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI/interface.js",
@@ -43,7 +44,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     }
 
     try {
-      let openpgp = getOpenPGP().openpgp;
+      const openpgp = getOpenPGP().openpgp;
       let msg = await openpgp.key.readArmored(armoredKey);
 
       if (!msg || msg.keys.length === 0) {
@@ -97,6 +98,76 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n" + ex.stack + "\n");
     }
     return null;
+  }
+
+  async getKeyListFromKeyBlock(keyBlockStr) {
+    return await this.OPENPGPjs_getKeyListFromKeyBlockkeyBlockStr(keyBlockStr);
+  }
+
+  async OPENPGPjs_getKeyListFromKeyBlock(keyBlockStr) {
+    EnigmailLog.DEBUG("openpgp-js.js: getKeyListFromKeyBlock()\n");
+
+    const SIG_TYPE_REVOCATION = 0x20;
+
+    let keyList = [];
+    let key = {};
+    let blocks;
+    let isBinary = false;
+    const EOpenpgp = getOpenPGP();
+
+    if (keyBlockStr.search(/-----BEGIN PGP (PUBLIC|PRIVATE) KEY BLOCK-----/) >= 0) {
+      blocks = getArmor().splitArmoredBlocks(keyBlockStr);
+    } else {
+      isBinary = true;
+      blocks = [EOpenpgp.enigmailFuncs.bytesToArmor(EOpenpgp.openpgp.enums.armor.public_key, keyBlockStr)];
+    }
+
+    for (let b of blocks) {
+      let m = await EOpenpgp.openpgp.message.readArmored(b);
+
+      for (let i = 0; i < m.packets.length; i++) {
+        let packetType = EOpenpgp.openpgp.enums.read(EOpenpgp.openpgp.enums.packet, m.packets[i].tag);
+        switch (packetType) {
+          case "publicKey":
+          case "secretKey":
+            key = {
+              id: m.packets[i].getKeyId().toHex().toUpperCase(),
+              fpr: m.packets[i].getFingerprint().toUpperCase(),
+              name: null,
+              isSecret: false
+            };
+
+            if (!(key.id in keyList)) {
+              keyList[key.id] = key;
+            }
+
+            if (packetType === "secretKey") {
+              keyList[key.id].isSecret = true;
+            }
+            break;
+          case "userid":
+            if (!key.name) {
+              key.name = m.packets[i].userid.replace(/[\r\n]+/g, " ");
+            }
+            break;
+          case "signature":
+            if (m.packets[i].signatureType === SIG_TYPE_REVOCATION) {
+              let keyId = m.packets[i].issuerKeyId.toHex().toUpperCase();
+              if (keyId in keyList) {
+                keyList[keyId].revoke = true;
+              } else {
+                keyList[keyId] = {
+                  revoke: true,
+                  id: keyId
+                };
+              }
+            }
+            break;
+        }
+      }
+    }
+
+    return keyList;
   }
 }
 

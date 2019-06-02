@@ -258,4 +258,18 @@ class CryptoAPI {
     return null;
   }
 
+  /**
+   * Get details (key ID, UID) of the data contained in a OpenPGP key block
+   *
+   * @param {String} keyBlockStr  String: the contents of one or more public keys
+   *
+   * @return {Promise<Array>}: array of objects with the following structure:
+   *          - id (key ID)
+   *          - fpr
+   *          - name (the UID of the key)
+   */
+
+  async getKeyListFromKeyBlock(keyBlockStr) {
+    return null;
+  }
 }

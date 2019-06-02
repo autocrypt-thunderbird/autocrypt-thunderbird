@@ -37,8 +37,7 @@ function searchBlankLine(str, then) {
   var offset = str.search(/\n\s*\r?\n/);
   if (offset === -1) {
     return "";
-  }
-  else {
+  } else {
     return then(offset);
   }
 }
@@ -47,8 +46,7 @@ function indexOfNewline(str, off, then) {
   var offset = str.indexOf("\n", off);
   if (offset === -1) {
     return "";
-  }
-  else {
+  } else {
     return then(offset);
   }
 }
@@ -202,8 +200,7 @@ var EnigmailArmor = {
               if (part == EnigmailConstants.SIGNATURE_ARMOR) {
                 return signBlock.substr(armorIndex, endIndex - armorIndex).
                 replace(/\s*/g, "");
-              }
-              else {
+              } else {
                 return "";
               }
             });
@@ -274,5 +271,26 @@ var EnigmailArmor = {
     }
 
     return headers;
+  },
+
+  /**
+   * Split armored blocks into an array of strings
+   */
+  splitArmoredBlocks: function(keyBlockStr) {
+    let myRe = /-----BEGIN PGP (PUBLIC|PRIVATE) KEY BLOCK-----/g;
+    let myArray;
+    let retArr = [];
+    let startIndex = -1;
+    while ((myArray = myRe.exec(keyBlockStr)) !== null) {
+      if (startIndex >= 0) {
+        let s = keyBlockStr.substring(startIndex, myArray.index);
+        retArr.push(s);
+      }
+      startIndex = myArray.index;
+    }
+
+    retArr.push(keyBlockStr.substring(startIndex));
+
+    return retArr;
   }
 };
