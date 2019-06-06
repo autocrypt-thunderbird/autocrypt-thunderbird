@@ -1120,7 +1120,7 @@ const accessVksServer = {
    * Create the payload of hkp requests (upload only)
    *
    */
-  buildJsonPayload: function(actionFlag, searchTerms) {
+  buildJsonPayload: function(actionFlag, searchTerms, locale) {
     let payLoad = null,
       keyData = "";
 
@@ -1135,7 +1135,11 @@ const accessVksServer = {
         return payLoad;
 
       case EnigmailConstants.GET_CONFIRMATION_LINK:
-        payLoad = JSON.stringify(searchTerms);
+        payLoad = JSON.stringify({
+          token: searchTerms.token,
+          addresses: searchTerms.addresses,
+          locale: [locale]
+        });
         return payLoad;
 
       case EnigmailConstants.DOWNLOAD_KEY:
@@ -1224,7 +1228,7 @@ const accessVksServer = {
       }
 
       let uiLocale = EnigmailLocale.getUILocale();
-      let payLoad = this.buildJsonPayload(actionFlag, keyId);
+      let payLoad = this.buildJsonPayload(actionFlag, keyId, uiLocale);
       if (payLoad === null) {
         reject(createError(EnigmailConstants.KEYSERVER_ERR_UNKNOWN));
         return;
@@ -1239,7 +1243,7 @@ const accessVksServer = {
         switch (actionFlag) {
           case EnigmailConstants.UPLOAD_KEY:
           case EnigmailConstants.GET_CONFIRMATION_LINK:
-          
+
             EnigmailLog.DEBUG("keyserver.jsm: accessVksServer.onload: " + xmlReq.responseText + "\n");
             if (xmlReq.status >= 400) {
               reject(createError(EnigmailConstants.KEYSERVER_ERR_SERVER_ERROR));
@@ -1312,7 +1316,6 @@ const accessVksServer = {
       EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer: requesting ${method} for ${url}\n`);
       xmlReq.open(method, url);
       xmlReq.setRequestHeader("Content-Type", contentType);
-      xmlReq.setRequestHeader("Accept-Language", uiLocale);      
       xmlReq.send(payLoad);
     });
   },
