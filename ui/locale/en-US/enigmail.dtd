@@ -682,7 +682,7 @@
                                                       with your PC here. In this case, just close the wiazard, and wait for the synchronization to start.">
 <!ENTITY enigmail.setupWiz.useImportKeys             "Alternatively, you can import your keys using the 'Import Keys' button below.">
 <!ENTITY enigmail.setupWiz.existingEncryptedMsg      "We found that you have encrypted messages in your mail folders. We recommend that you export your keys on your existing device, and import them here. (Hint: you may use the 'Import Keys' multiple times, for example to import public and secret keys).">
-<!ENTITY enigmail.setupWiz.existingKeysFound         "We found that you already have OpenPGP keys. We recommend that we set up Enigmail for you such that you can continue to work with these keys.">
+<!ENTITY enigmail.setupWiz.existingKeysFound         "We found that you already have OpenPGP keys. We recommend that we set up Enigmail for you so that you can continue to work with these keys.">
 <!ENTITY enigmail.setupWiz.applyExistingKeysBtn      "Apply my Keys">
 <!ENTITY enigmail.setupWiz.rescanInboxBtn            "Rescan Inbox">
 <!ENTITY enigmail.setupWiz.importKeysBtn             "Import Keys">
