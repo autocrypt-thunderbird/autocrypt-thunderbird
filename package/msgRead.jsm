@@ -10,10 +10,6 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailMsgRead"];
 
-
-
-
-
 /**
  * Message-reading related functions
  */
@@ -74,13 +70,11 @@ var EnigmailMsgRead = {
 
       if (url.scheme == "file") {
         return url;
-      }
-      else {
+      } else {
         return url.QueryInterface(Ci.nsIMsgMailNewsUrl);
       }
 
-    }
-    catch (ex) {
+    } catch (ex) {
       return null;
     }
   },
@@ -96,8 +90,7 @@ var EnigmailMsgRead = {
     var attachmentList;
     if (index !== null) {
       attachmentList = attachmentObj;
-    }
-    else {
+    } else {
       attachmentList = currentAttachments;
       for (let i = 0; i < attachmentList.length; i++) {
         if (attachmentList[i].url == attachmentObj.url) {
@@ -117,11 +110,9 @@ var EnigmailMsgRead = {
     if ((this.getAttachmentName(attachmentList[index]).search(/\.(sig|asc)$/i) > 0) ||
       (attachmentList[index].contentType.match(/^application\/pgp-signature/i))) {
       findFile = new RegExp(escapeRegex(attName.replace(/\.(sig|asc)$/, "")));
-    }
-    else if (attName.search(/\.pgp$/i) > 0) {
+    } else if (attName.search(/\.pgp$/i) > 0) {
       findFile = new RegExp(escapeRegex(attName.replace(/\.pgp$/, "")) + "(\\.pgp)?\\.(sig|asc)$");
-    }
-    else {
+    } else {
       findFile = new RegExp(escapeRegex(attName) + "\\.(sig|asc)$");
     }
 
@@ -141,8 +132,7 @@ var EnigmailMsgRead = {
     if ("name" in attachment) {
       // Thunderbird
       return attachment.name;
-    }
-    else
+    } else
     // SeaMonkey
       return attachment.displayName;
   },
@@ -254,8 +244,7 @@ var EnigmailMsgRead = {
 
     try {
       fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
-    }
-    catch (ex) {}
+    } catch (ex) {}
 
     let keyObj = EnigmailKeyRing.getKeyById(keyId);
     if (!keyObj) return null;
@@ -276,8 +265,24 @@ var EnigmailMsgRead = {
       //     return fromAddr;
       //   }
       // }
-    }
-    catch (ex) {}
+    } catch (ex) {}
     return null;
+  },
+
+  searchQuotedPgp: function(node) {
+    if (node.nodeName.toLowerCase() === "blockquote" &&
+      node.textContent.indexOf("-----BEGIN PGP ") >= 0) {
+      return true;
+    }
+
+    if (node.firstChild && this.searchQuotedPgp(node.firstChild)) {
+      return true;
+    }
+
+    if (node.nextSibling && this.searchQuotedPgp(node.nextSibling)) {
+      return true;
+    }
+
+    return false;
   }
 };

@@ -891,7 +891,12 @@ Enigmail.msg = {
               foundIndex = -1;
             }
           }
-          if (foundIndex >= 0) {
+
+          if (foundIndex === 0) {
+            bodyElement = node;
+            break;
+          }
+          if (foundIndex > 0 && node.textContent.substr(foundIndex - 1, 1).search(/[\r\n]/) === 0) {
             bodyElement = node;
             break;
           }
@@ -900,7 +905,7 @@ Enigmail.msg = {
       }
     }
 
-    if (foundIndex >= 0) {
+    if (foundIndex >= 0 && (!this.hasInlineQuote(topElement))) {
       if (Enigmail.msg.savedHeaders["content-type"].search(/^text\/html/i) === 0) {
         let p = Cc["@mozilla.org/parserutils;1"].createInstance(Ci.nsIParserUtils);
         const de = Ci.nsIDocumentEncoder;
@@ -1002,6 +1007,14 @@ Enigmail.msg = {
     Enigmail.msg.messageParseCallback(msgText, contentEncoding, charset, interactive,
       importOnly, urlSpec, "", retry, head, tail,
       msgUriSpec);
+  },
+
+  hasInlineQuote: function(node) {
+    if (node.innerHTML.search(/<blockquote.*-----BEGIN PGP /i) < 0) {
+      return false;
+    }
+
+    return EnigmailMsgRead.searchQuotedPgp(node);
   },
 
   getBodyElement: function() {
