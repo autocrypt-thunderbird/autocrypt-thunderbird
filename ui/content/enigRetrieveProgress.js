@@ -143,7 +143,12 @@ function processEnd(resultStatus, details) {
         EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download", [details.keyList.length, inArg.keyId.length]));
         break;
       case EnigmailConstants.UPLOAD_KEY:
-        message = EnigmailLocale.getString("keyserver.result.upload", [details.keyList.length]);
+        if (details.keyList.length === 1) {
+          message = EnigmailLocale.getString("keyserver.result.uploadOne");
+        } else {
+          message = EnigmailLocale.getString("keyserver.result.uploadMany", [details.keyList.length]);
+        }
+
         if (("numEmails" in details) && details.numEmails >= 0) {
           message += "\n\n" + EnigmailLocale.getString("keyUpload.verifyEmails");
         }
