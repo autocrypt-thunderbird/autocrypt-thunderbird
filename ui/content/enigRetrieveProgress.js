@@ -140,7 +140,13 @@ function processEnd(resultStatus, details) {
     switch (accessType) {
       case EnigmailConstants.DOWNLOAD_KEY:
       case EnigmailConstants.REFRESH_KEY:
-        EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download", [details.keyList.length, inArg.keyId.length]));
+        if (details.keyList.length === 1 && inArg.keyId.length === 1) {
+          EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download.1of1"));
+        } else if (details.keyList.length === 1 && inArg.keyId.length > 1) {
+          EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download.1ofN", [inArg.keyId.length]));
+        } else {
+          EnigmailDialog.info(window, EnigmailLocale.getString("keyserver.result.download.NofN", [details.keyList.length, inArg.keyId.length]));
+        }
         break;
       case EnigmailConstants.UPLOAD_KEY:
         if (details.keyList.length === 1) {
