@@ -410,9 +410,7 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityDefaults\n");
 
     this.identity = getCurrentIdentity();
-    if (this.isEnigmailEnabled()) {
-      EnigmailFuncs.getSignMsg(this.identity); // convert old acc specific to new acc specific options
-    } else {
+    if (!this.isEnigmailEnabled()) {
       // reset status strings in menu to useful defaults
       this.statusEncryptedStr = EnigmailLocale.getString("encryptNo");
       this.statusSignedStr = EnigmailLocale.getString("signNo", [""]);

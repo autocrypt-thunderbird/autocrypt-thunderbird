@@ -145,39 +145,6 @@ var EnigmailFuncs = {
   },
 
   /**
-   * determine default values for signing and encryption.
-   * Translates "old-style" defaults (pre-Enigmail v1.0) to "current" defaults
-   *
-   * @identiy - nsIMsgIdentity object
-   *
-   * no return values
-   */
-  getSignMsg: function(identity) {
-    EnigmailLog.DEBUG("funcs.jsm: getSignMsg: identity.key=" + identity.key + "\n");
-    var sign = null;
-
-    EnigmailPrefs.getPref("configuredVersion"); // dummy call to getPref to ensure initialization
-
-    var prefRoot = EnigmailPrefs.getPrefRoot();
-
-    if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignPlain") === 0) {
-      if (prefRoot.getPrefType("mail.identity." + identity.key + ".pgpSignMsg") === 0) {
-        sign = identity.getBoolAttribute("pgpAlwaysSign");
-        identity.setBoolAttribute("pgpSignEncrypted", sign);
-        identity.setBoolAttribute("pgpSignPlain", sign);
-      }
-      else {
-        sign = identity.getIntAttribute("pgpSignMsg");
-        identity.setBoolAttribute("pgpSignEncrypted", sign == 1);
-        identity.setBoolAttribute("pgpSignPlain", sign > 0);
-      }
-      prefRoot.deleteBranch("mail.identity." + identity.key + ".pgpSignMsg");
-      prefRoot.deleteBranch("mail.identity." + identity.key + ".pgpAlwaysSign");
-    }
-  },
-
-
-  /**
    * this function tries to mimic the Thunderbird plaintext viewer
    *
    * @plainTxt - |string| containing the plain text data

@@ -306,13 +306,6 @@ function setIdentityDefaults_test() {
     //Function Overriding
   };
 
-  EnigmailFuncs = {
-    //Function Overriding
-    getSignMsg: function() {
-      Assert.ok(true);
-    }
-  };
-
   Enigmail.msg.isEnigmailEnabled = function() {
     //Function Overriding
     return true;
