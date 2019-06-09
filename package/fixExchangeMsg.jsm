@@ -20,9 +20,6 @@ const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.js
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 
-const EC = EnigmailCore;
-
-
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 /*
@@ -101,6 +98,8 @@ var EnigmailFixExchangeMsg = {
               EnigmailLog.DEBUG("*** start data ***\n'" + data + "'\n***end data***\n");
             }
 
+            self.determineCreatorApp(data);
+
             let hdrEnd = data.search(/\r?\n\r?\n/);
 
             if (hdrEnd <= 0) {
@@ -152,6 +151,25 @@ var EnigmailFixExchangeMsg = {
         }
       }
     );
+  },
+
+  determineCreatorApp: function(msgData) {
+    // perform extra testing if iPGMail is assumed
+    if (this.brokenByApp === "exchange") return;
+
+    let msgTree = EnigmailMime.getMimeTree(msgData, false);
+
+    try {
+      let isIPGMail =
+        msgTree.subParts.length === 3 &&
+        msgTree.subParts[0].headers.get("content-type").type.toLowerCase() === "text/plain" &&
+        msgTree.subParts[1].headers.get("content-type").type.toLowerCase() === "application/pgp-encrypted" &&
+        msgTree.subParts[2].headers.get("content-type").type.toLowerCase() === "text/plain";
+
+      if (!isIPGMail) {
+        this.brokenByApp = "exchange";
+      }
+    } catch (x) {}
   },
 
   /**
