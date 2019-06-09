@@ -126,7 +126,8 @@ var EnigmailFilterEditor = {
         break;
       }
 
-      if (action.customId == "enigmail@enigmail.net#filterActionMoveDecrypt") {
+      if (action.customId == "enigmail@enigmail.net#filterActionMoveDecrypt" ||
+        action.customId == "enigmail@enigmail.net#filterActionEncrypt") {
         hasMoveAction = i;
         if (i < gActionListOrdered.length - 1) {
           forbidden = i;
