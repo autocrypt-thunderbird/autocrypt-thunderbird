@@ -54,7 +54,10 @@ function enigmailKeygenLoad() {
   }
 
   if (EnigmailGpg.getGpgFeature("supports-ecc-keys")) {
-    document.getElementById("keyType_ecc").removeAttribute("hidden");
+    let eccElem = document.getElementById("keyType_ecc");
+    eccElem.removeAttribute("hidden");
+    updateKeySizeSel(eccElem);
+    document.getElementById("keyType").selectedItem = eccElem;
   }
 
 

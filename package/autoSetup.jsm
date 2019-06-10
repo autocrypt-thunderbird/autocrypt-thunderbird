@@ -27,6 +27,7 @@ const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
+const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -370,9 +371,17 @@ var EnigmailAutoSetup = {
   createAutocryptKey: function(userName, userEmail) {
     return new Promise((resolve, reject) => {
       EnigmailLog.DEBUG("autoSetup.jsm: createAutocryptKey()\n");
+
+      let keyType = "ECC",
+        keyLength = 0;
+
+      if (!EnigmailGpg.getGpgFeature("supports-ecc-keys")) {
+        // fallback for gpg < 2.1
+        keyLength = 4096;
+        keyType = "RSA";
+      }
+
       let expiry = 1825, // 5 years
-        keyLength = 4096,
-        keyType = "RSA",
         passphrase = "",
         generateObserver = {
           keyId: null,

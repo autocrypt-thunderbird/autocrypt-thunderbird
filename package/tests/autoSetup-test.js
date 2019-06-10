@@ -110,6 +110,7 @@ test(withTestGpgHome(withEnigmail(function keyGenTest() {
   EnigmailKeyRing.generateKey = function(userName, comment, userEmail, expiry, keyLength, keyType, passphrase, generateObserver) {
     let keyFile = do_get_file("resources/testing-domain.invalid.pub-sec", false);
 
+    Assert.equal(keyType, "ECC");
     let exitCode = EnigmailKeyRing.importKeyFromFile(keyFile, {}, {});
     generateObserver.keyId = KEY_ID;
     generateObserver.onStopRequest(exitCode);
