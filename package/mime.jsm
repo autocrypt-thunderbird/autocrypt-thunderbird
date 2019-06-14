@@ -143,7 +143,7 @@ var EnigmailMime = {
       header = hdrValue.join("").split(" ");
     }
     else {
-      header = hdrValue.split(" ");
+      header = hdrValue.split(/ +/);
     }
 
     let line = "";

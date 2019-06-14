@@ -98,46 +98,17 @@ var EnigmailFixExchangeMsg = {
               EnigmailLog.DEBUG("*** start data ***\n'" + data + "'\n***end data***\n");
             }
 
-            self.determineCreatorApp(data);
+            try {
+              let msg = self.getRepairedMessage(data);
 
-            let hdrEnd = data.search(/\r?\n\r?\n/);
-
-            if (hdrEnd <= 0) {
-              // cannot find end of header data
-              reject(0);
+              if (msg) {
+                resolve(msg);
+              } else
+                reject(2);
               return;
-            }
 
-            let hdrLines = data.substr(0, hdrEnd).split(/\r?\n/);
-            let hdrObj = self.getFixedHeaderData(hdrLines);
-
-            if (hdrObj.headers.length === 0 || hdrObj.boundary.length === 0) {
-              reject(1);
-              return;
-            }
-
-            let boundary = hdrObj.boundary;
-            let body;
-
-            switch (self.brokenByApp) {
-              case "exchange":
-                body = self.getCorrectedExchangeBodyData(data.substr(hdrEnd + 2), boundary);
-                break;
-              case "iPGMail":
-                body = self.getCorrectediPGMailBodyData(data.substr(hdrEnd + 2), boundary);
-                break;
-              default:
-                EnigmailLog.ERROR("fixExchangeMsg.jsm: getMessageBody: unknown appType " + self.brokenByApp + "\n");
-                reject(99);
-                return;
-            }
-
-            if (body) {
-              resolve(hdrObj.headers + "\r\n" + body);
-              return;
-            } else {
-              reject(2);
-              return;
+            } catch (ex) {
+              reject(ex);
             }
           }
         );
@@ -151,6 +122,45 @@ var EnigmailFixExchangeMsg = {
         }
       }
     );
+  },
+
+  getRepairedMessage: function(data) {
+    this.determineCreatorApp(data);
+
+    let hdrEnd = data.search(/\r?\n\r?\n/);
+
+    if (hdrEnd <= 0) {
+      // cannot find end of header data
+      throw 0;
+    }
+
+    let hdrLines = data.substr(0, hdrEnd).split(/\r?\n/);
+    let hdrObj = this.getFixedHeaderData(hdrLines);
+
+    if (hdrObj.headers.length === 0 || hdrObj.boundary.length === 0) {
+      throw 1;
+    }
+
+    let boundary = hdrObj.boundary;
+    let body;
+
+    switch (this.brokenByApp) {
+      case "exchange":
+        body = this.getCorrectedExchangeBodyData(data.substr(hdrEnd + 2), boundary);
+        break;
+      case "iPGMail":
+        body = this.getCorrectediPGMailBodyData(data.substr(hdrEnd + 2), boundary);
+        break;
+      default:
+        EnigmailLog.ERROR("fixExchangeMsg.jsm: getRepairedMessage: unknown appType " + self.brokenByApp + "\n");
+        throw 99;
+    }
+
+    if (body) {
+      return hdrObj.headers + "\r\n" + body;
+    } else {
+      throw 2;
+    }
   },
 
   determineCreatorApp: function(msgData) {
@@ -347,7 +357,7 @@ var EnigmailFixExchangeMsg = {
         let p0 = body.search(/^-----BEGIN PGP MESSAGE-----$/m);
         let p1 = body.search(/^-----END PGP MESSAGE-----$/m);
 
-        ok = (p0 >= 0 && p1 > p0 + 4);
+        ok = (p0 >= 0 && p1 > p0 + 32);
       }
       return ok;
     } catch (x) {}
