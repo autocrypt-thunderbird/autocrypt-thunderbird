@@ -30,6 +30,7 @@ const EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules
 const getFixExchangeMsg = EnigmailLazy.loader("enigmail/fixExchangeMsg.jsm", "EnigmailFixExchangeMsg");
 const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
+const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 const STATUS_OK = 0;
 const STATUS_FAILURE = 1;
@@ -163,6 +164,11 @@ CryptMessageIntoFolder.prototype = {
   messageParseCallback: async function(mimeTree, msgHdr) {
     this.mimeTree = mimeTree;
     this.hdr = msgHdr;
+
+    if (mimeTree.headers.has("subject")) {
+      this.subject = mimeTree.headers.get("subject");
+    }
+
     await this.decryptMimeTree(mimeTree);
 
     let msg = "";
@@ -259,39 +265,6 @@ CryptMessageIntoFolder.prototype = {
     return msg;
   },
 
-  readAttachment: function(attachment, strippedName) {
-    return new Promise(
-      function(resolve, reject) {
-        EnigmailLog.DEBUG("persistentCrypto.jsm: readAttachment\n");
-        let o;
-        var f = function _cb(data) {
-          EnigmailLog.DEBUG("persistentCrypto.jsm: readAttachment - got data (" + data.length + ")\n");
-          o = {
-            type: "attachment",
-            data: data,
-            name: strippedName ? strippedName : attachment.name,
-            partNum: attachment.partNum,
-            origName: attachment.name,
-            status: STATUS_NOT_REQUIRED
-          };
-          resolve(o);
-        };
-
-        try {
-          var bufferListener = EnigmailStreams.newStringStreamListener(f);
-          var ioServ = Cc[IOSERVICE_CONTRACTID].getService(Components.interfaces.nsIIOService);
-          var msgUri = ioServ.newURI(attachment.url, null, null);
-
-          var channel = EnigmailStreams.createChannel(msgUri);
-          channel.asyncOpen(bufferListener, msgUri);
-        } catch (ex) {
-          reject(o);
-        }
-      }
-    );
-  },
-
-
   /**
    *  Walk through the MIME message structure and decrypt the body if there is something to decrypt
    */
@@ -304,6 +277,8 @@ CryptMessageIntoFolder.prototype = {
 
     if (this.isPgpMime(mimePart)) {
       this.decryptPGPMIME(mimePart);
+    } else if (getAttachmentName(mimePart)) {
+      this.decryptAttachment(mimePart);
     } else {
       this.decryptINLINE(mimePart);
     }
@@ -412,7 +387,6 @@ CryptMessageIntoFolder.prototype = {
 
     if (data.substr(bodyIndex).search(/\r?\n$/) === 0) {
       return;
-
     }
 
     let m = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
@@ -460,6 +434,101 @@ CryptMessageIntoFolder.prototype = {
 
     this.messageDecrypted = true;
   },
+
+  decryptAttachment: function(mimePart) {
+
+    EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment()\n");
+    let attachmentHead = mimePart.body.substr(0, 30);
+    if (attachmentHead.search(/-----BEGIN PGP \w{5,10} KEY BLOCK-----/) >= 0) {
+      // attachment appears to be a PGP key file, we just go-a-head
+      return;
+    }
+
+    let attachmentName = getAttachmentName(mimePart);
+    if (attachmentName.search(/\.(pgp|asc|gpg)$/) < 0 &&
+      mimePart.body.search(/^-----BEGIN PGP ENCRYPTED MESSAGE-----$/m) < 0) {
+      return;
+    }
+
+    attachmentName = attachmentName.replace(/\.(pgp|asc|gpg)$/, "");
+
+    var enigmailSvc = EnigmailCore.getService();
+    var args = EnigmailGpg.getStandardArgs(true);
+    args.push("-d");
+
+    var statusMsgObj = {};
+    var cmdLineObj = {};
+    var exitCode = -1;
+    var statusFlagsObj = {};
+    var errorMsgObj = {};
+    statusFlagsObj.value = 0;
+
+    var listener = EnigmailExecution.newSimpleListener(
+      function _stdin(pipe) {
+        pipe.write(mimePart.body);
+        pipe.close();
+
+      }
+    );
+
+    do {
+      var proc = EnigmailExecution.execStart(getGpgAgent().agentPath, args, false, null, listener, statusFlagsObj);
+      if (!proc) {
+        return;
+      }
+      // Wait for child STDOUT to close
+      proc.wait();
+      EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
+
+      if ((listener.stdoutData && listener.stdoutData.length > 0) ||
+        (statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY)) {
+        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption OK\n");
+        exitCode = 0;
+      } else if (statusFlagsObj.value & (EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.MISSING_MDC)) {
+        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption without MDC protection\n");
+        exitCode = 0;
+      } else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
+        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption failed\n");
+        // since we cannot find out if the user wants to cancel
+        // we should ask
+        let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachmentName, this.subject]);
+
+        if (!getDialog().confirmDlg(null, msg,
+            EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
+          return;
+        }
+      } else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_INCOMPLETE) {
+        // failure; message not complete
+        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption incomplete\n");
+        return;
+      } else {
+        // there is nothing to be decrypted
+        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: no decryption required\n");
+        return;
+      }
+
+    } while (exitCode !== 0);
+
+
+    EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decrypted to " + listener.stdoutData.length + " bytes\n");
+    this.decryptedMessage = true;
+    mimePart.body = listener.stdoutData;
+    mimePart.headers._rawHeaders.set("content-disposition", `attachment; filename="${attachmentName}"`);
+    mimePart.headers._rawHeaders.set("content-transfer-encoding", ["base64"]);
+    let origCt = mimePart.headers.get("content-type");
+    let ct = origCt.type;
+
+
+    for (let i of origCt.entries()) {
+      if (i[0].toLowerCase() === "name") {
+        i[1] = i[1].replace(/\.(pgp|asc|gpg)$/, "");
+      }
+      ct += `; ${i[0]}="${i[1]}"`;
+    }
+
+    mimePart.headers._rawHeaders.set("content-type", [ct]);
+  },
+
 
   decryptINLINE: function(mimePart) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: decryptINLINE()\n");
@@ -593,11 +662,10 @@ CryptMessageIntoFolder.prototype = {
       let j = decryptedMessage.search(/[^\x01-\x7F]/); // eslint-disable-line no-control-regex
       if (j >= 0) {
         mimePart.headers._rawHeaders.set('content-transfer-encoding', ['base64']);
-        mimePart.body = EnigmailData.encodeBase64(decryptedMessage);
       } else {
-        mimePart.body = decryptedMessage;
         mimePart.headers._rawHeaders.set('content-transfer-encoding', ['8bit']);
       }
+      mimePart.body = decryptedMessage;
 
       let origCharset = getCharset(getHeaderValue(mimePart, 'content-type'));
       if (origCharset) {
@@ -663,7 +731,20 @@ CryptMessageIntoFolder.prototype = {
     }
 
     if (mimePart.body.length > 0) {
-      msg += mimePart.body;
+      let encoding = getTransferEncoding(mimePart);
+      if (!encoding) encoding = "8bit";
+
+      if (encoding === "quoted-printable") {
+        mimePart.headers._rawHeaders.set("content-transfer-encoding", ["base64"]);
+        encoding = "base64";
+      }
+
+      if (encoding === "base64") {
+        msg += EnigmailData.encodeBase64(mimePart.body);
+      } else {
+        msg += mimePart.body;
+      }
+
     }
 
     if (mimePart.subParts.length > 0) {
@@ -672,10 +753,9 @@ CryptMessageIntoFolder.prototype = {
       for (let i in mimePart.subParts) {
         msg += `--${boundary}\r\n`;
         msg += this.mimeToString(mimePart.subParts[i], true);
-      }
-
-      if (msg.search(/[\r\n]$/) < 0) {
-        msg += "\r\n";
+        if (msg.search(/[\r\n]$/) < 0) {
+          msg += "\r\n";
+        }
       }
 
       msg += `--${boundary}--\r\n`;
@@ -889,7 +969,7 @@ function getRfc822Headers(headerArr, contentType, ignoreHeadersArr) {
 
 function getContentType(mime) {
   try {
-    if (mime.headers.has("content-type")) {
+    if (mime && ("headers" in mime) && mime.headers.has("content-type")) {
       return mime.headers.get("content-type").type.toLowerCase();
     }
   } catch (e) {
@@ -901,7 +981,7 @@ function getContentType(mime) {
 // return the content of the boundary parameter
 function getBoundary(mime) {
   try {
-    if (mime.headers.has("content-type")) {
+    if (mime && ("headers" in mime) && mime.headers.has("content-type")) {
       return mime.headers.get("content-type").get("boundary");
     }
   } catch (e) {
@@ -912,7 +992,7 @@ function getBoundary(mime) {
 
 function getCharset(mime) {
   try {
-    if (mime.headers.has("content-type")) {
+    if (mime && ("headers" in mime) && mime.headers.has("content-type")) {
       let c = mime.headers.get("content-type").get("charset");
       if (c) return c.toLowerCase();
     }
@@ -924,7 +1004,7 @@ function getCharset(mime) {
 
 function getProtocol(mime) {
   try {
-    if (mime.headers.has("content-type")) {
+    if (mime && ("headers" in mime) && mime.headers.has("content-type")) {
       let c = mime.headers.get("content-type").get("protocol");
       if (c) return c.toLowerCase();
     }
@@ -932,6 +1012,35 @@ function getProtocol(mime) {
     EnigmailLog.DEBUG("persistentCrypto.jsm: getProtocol: " + e + "\n");
   }
   return "";
+}
+
+function getTransferEncoding(mime) {
+  try {
+    if (mime && ("headers" in mime) && mime.headers._rawHeaders.has("content-transfer-encoding")) {
+      let c = mime.headers._rawHeaders.get("content-transfer-encoding")[0];
+      if (c) return c.toLowerCase();
+    }
+  } catch (e) {
+    EnigmailLog.DEBUG("persistentCrypto.jsm: getTransferEncoding: " + e + "\n");
+  }
+  return "8Bit";
+}
+
+
+function getAttachmentName(mime) {
+  try {
+    if (mime && ("headers" in mime) && mime.headers.has("content-disposition")) {
+      let c = mime.headers.get("content-disposition")[0];
+      if (c) {
+        if (c.search(/^attachment/i) === 0) {
+          return EnigmailMime.getParameter(c, "filename");
+        }
+      }
+    }
+  } catch (e) {
+    EnigmailLog.DEBUG("persistentCrypto.jsm: getAttachmentName: " + e + "\n");
+  }
+  return null;
 }
 
 
