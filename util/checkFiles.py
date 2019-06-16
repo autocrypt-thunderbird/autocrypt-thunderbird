@@ -62,6 +62,8 @@ tbLabels = [
              "CheckMsg",
              "FNC_enigmailVersion",
              "FNC_isGpgWorking",
+             "contextMoveCopyMsgFavoritesMenu.label",
+             "contextMoveCopyMsgFavoritesMenu.accesskey"
            ]
 
 

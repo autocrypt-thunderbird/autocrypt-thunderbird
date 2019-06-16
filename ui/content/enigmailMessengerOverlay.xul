@@ -11,7 +11,12 @@
   to messenger mail reading window
 -->
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window [
+<!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd" >
+%messengerDTD;
+<!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigmailDTD;
+]>
 
 <overlay id="enigmailMessengerOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -134,12 +139,16 @@
             oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
 
           <menupopup id="enigmailDecryptfileHereMenu"
-                     type="folder"
+                     is="folder-menupopup"
                      mode="filing"
                      showFileHereLabel="true"
                      showRecent="true"
                      recentLabel="&enigmail.recent.label;"
-                     recentAccessKey="&enigmail.recent.accesskey;"/>
+                     recentAccessKey="&enigmail.recent.accesskey;"
+                     showFavorites="true" 
+                     favoritesLabel="&contextMoveCopyMsgFavoritesMenu.label;"
+                     favoritesAccessKey="&contextMoveCopyMsgFavoritesMenu.accesskey;"
+                     hasbeenopened="false" />
         </menu>
 
         <menuseparator enigmailtype="enigmail"/>
@@ -218,12 +227,16 @@
         accesskey="&enigmail.decryptToFolder.accesskey;"
         oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
       <menupopup id="enigmailCtxDecrypt-fileHereMenu"
-                 type="folder"
+                 is="folder-menupopup"
                  mode="filing"
                  showFileHereLabel="true"
                  showRecent="true"
                  recentLabel="&enigmail.recent.label;"
-                 recentAccessKey="&enigmail.recent.accesskey;"/>
+                 recentAccessKey="&enigmail.recent.accesskey;"
+                 showFavorites="true" 
+                 favoritesLabel="&contextMoveCopyMsgFavoritesMenu.label;"
+                 favoritesAccessKey="&contextMoveCopyMsgFavoritesMenu.accesskey;"
+                 hasbeenopened="false" />
     </menu>
   </menupopup>
 
