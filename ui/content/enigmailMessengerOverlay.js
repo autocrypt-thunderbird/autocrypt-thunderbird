@@ -9,7 +9,7 @@
 
 /* globals from Thunderbird: */
 /* global ReloadMessage: false, gDBView: false, gSignatureStatus: false, gEncryptionStatus: false, showMessageReadSecurityInfo: false */
-/* global gFolderDisplay: false, messenger: false, currentAttachments: false, msgWindow: false */
+/* global gFolderDisplay: false, messenger: false, currentAttachments: false, msgWindow: false, PanelUI: false */
 /* global currentHeaderData: false, gViewAllHeaders: false, gExpandedHeaderList: false, goDoCommand: false, HandleSelectedAttachments: false */
 /* global statusFeedback: false, global displayAttachmentsForExpandedView: false, global gMessageListeners: false, global gExpandedHeaderView */
 
@@ -144,6 +144,7 @@ Enigmail.msg = {
       "Enigmail.msg.msgPrint('", "');");
 
     //Enigmail.msg.overrideLayoutChange();
+    Enigmail.msg.prepareAppMenu();
     Enigmail.msg.setMainMenuLabel();
 
     Enigmail.msg.juniorModeObserver = EnigmailPEPAdapter.registerJuniorModeObserver(Enigmail.msg.setMainMenuLabel);
@@ -406,72 +407,51 @@ Enigmail.msg = {
 
   setMainMenuLabel: function() {
     let usePep = EnigmailPEPAdapter.usingPep();
-    let o = ["menu_Enigmail", "menu_Enigmail2ndPane"];
+    let o = ["menu_Enigmail", "appmenu-Enigmail"];
+
+    let m0 = document.getElementById(o[0]);
+    let m1 = document.getElementById(o[1]);
+
+    m1.setAttribute("enigmaillabel", m0.getAttribute("enigmaillabel"));
+    m1.setAttribute("peplabel", m0.getAttribute("peplabel"));
 
     for (let menuId of o) {
       let menu = document.getElementById(menuId);
 
-      let lbl = menu.getAttribute(usePep ? "peplabel" : "enigmaillabel");
-      menu.setAttribute("label", lbl);
+      if (menu) {
+        let lbl = menu.getAttribute(usePep ? "peplabel" : "enigmaillabel");
+        menu.setAttribute("label", lbl);
+      }
     }
+  },
+
+  prepareAppMenu: function() {
+    let menu = document.querySelector("#appMenu-mainView > vbox");
+    if (!menu) return;
+
+    let tsk = document.getElementById("appmenu_tasksMenu");
+    let e = document.createXULElement("toolbarbutton");
+    e.setAttribute("label", "xxEnigmail");
+    e.id = "appmenu-Enigmail";
+    e.setAttribute("class", "subviewbutton subviewbutton-nav subviewbutton-iconic");
+    e.setAttribute("closemenu", "none");
+    e.setAttribute("oncommand", "Enigmail.msg.displayAppmenu('appMenu-enigmailView', this)");
+    menu.insertBefore(e, tsk);
+  },
+
+  displayAppmenu: function(targetId, targetObj) {
+    let menuElem = document.getElementById("appmenu_enigmailMenuPlaceholder");
+    this.displayMainMenu(menuElem);
+    PanelUI.showSubView(targetId, targetObj);
   },
 
   displayMainMenu: function(menuPopup) {
 
     let usePep = EnigmailPEPAdapter.usingPep();
-    let obj = menuPopup.firstChild;
-
-    while (obj) {
-      if (obj.getAttribute("enigmailtype") == "enigmail" || obj.getAttribute("advanced") == "true") {
-        if (usePep) {
-          obj.setAttribute("hidden", "true");
-        } else {
-          obj.removeAttribute("hidden");
-        }
-      }
-
-      obj = obj.nextSibling;
-    }
 
     if (!usePep) {
       EnigmailFuncs.collapseAdvanced(menuPopup, 'hidden', Enigmail.msg.updateOptionsDisplay());
     }
-
-  },
-
-  setupMainMenu: function(menuPopup) {
-
-    function traverseTree(currentElement, func) {
-      if (currentElement) {
-        func(currentElement);
-        if (currentElement.id) {
-          EnigmailLog.DEBUG("traverseTree: " + currentElement.id + "\n");
-        }
-
-        // Traverse the tree
-        var i = 0;
-        var currentElementChild = currentElement.childNodes[i];
-        while (currentElementChild) {
-          // Recursively traverse the tree structure of the child node
-          traverseTree(currentElementChild, func);
-          i++;
-          currentElementChild = currentElement.childNodes[i];
-        }
-      }
-    }
-
-    var p = menuPopup.parentNode;
-    var a = document.getElementById("menu_EnigmailPopup");
-    var c = a.cloneNode(true);
-    p.removeChild(menuPopup);
-
-
-    traverseTree(c, function _updNode(node) {
-      if (node.id && node.id.length > 0) {
-        node.id += "2";
-      }
-    });
-    p.appendChild(c);
 
   },
 
