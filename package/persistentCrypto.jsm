@@ -400,11 +400,6 @@ CryptMessageIntoFolder.prototype = {
           let subject = m.extractHeader("subject", false) || "";
           this.mimeTree.headers._rawHeaders.set("subject", [subject]);
         }
-      } else if (this.mimeTree.headers.get("subject") === "p≡p") {
-        let subject = getPepSubject(data);
-        if (subject) {
-          this.mimeTree.headers._rawHeaders.set("subject", [subject]);
-        }
       }
     }
 
@@ -1043,59 +1038,6 @@ function getAttachmentName(mime) {
   return null;
 }
 
-
-function getPepSubject(mimeString) {
-  EnigmailLog.DEBUG("persistentCrypto.jsm: getPepSubject()\n");
-
-  let subject = null;
-
-  let emitter = {
-    ct: "",
-    firstPlainText: false,
-    startPart: function(partNum, headers) {
-      EnigmailLog.DEBUG("persistentCrypto.jsm: getPepSubject.startPart: partNum=" + partNum + "\n");
-      try {
-        this.ct = String(headers.getRawHeader("content-type")).toLowerCase();
-        if (!subject && !this.firstPlainText) {
-          let s = headers.getRawHeader("subject");
-          if (s) {
-            subject = String(s);
-            this.firstPlainText = true;
-          }
-        }
-      } catch (ex) {
-        this.ct = "";
-      }
-    },
-
-    endPart: function(partNum) {},
-
-    deliverPartData: function(partNum, data) {
-      EnigmailLog.DEBUG("persistentCrypto.jsm: getPepSubject.deliverPartData: partNum=" + partNum + " ct=" + this.ct + "\n");
-      if (!this.firstPlainText && this.ct.search(/^text\/plain/) === 0) {
-        // check data
-        this.firstPlainText = true;
-
-        let o = EnigmailMime.extractSubjectFromBody(data);
-        if (o) {
-          subject = o.subject;
-        }
-      }
-    }
-  };
-
-  let opt = {
-    strformat: "unicode",
-    bodyformat: "decode"
-  };
-
-  try {
-    let p = new jsmime.MimeParser(emitter, opt);
-    p.deliverData(mimeString);
-  } catch (ex) {}
-
-  return subject;
-}
 
 /**
  * Lazy deletion of original messages

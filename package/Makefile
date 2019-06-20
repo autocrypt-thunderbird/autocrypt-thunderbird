@@ -49,7 +49,6 @@ MODFILES = \
            hash.jsm \
            httpProxy.jsm \
            installGnuPG.jsm \
-           installPep.jsm \
            key.jsm \
            keyEditor.jsm \
            keyRing.jsm \
@@ -72,12 +71,6 @@ MODFILES = \
            overlays.jsm \
            passwordCheck.jsm \
            passwords.jsm \
-           pEp.jsm \
-           pEpAdapter.jsm \
-           pEpDecrypt.jsm \
-           pEpFilter.jsm \
-           pEpListener.jsm \
-           pEpKeySync.jsm \
            pgpmimeHandler.jsm \
            pipeConsole.jsm \
            prefs.jsm \

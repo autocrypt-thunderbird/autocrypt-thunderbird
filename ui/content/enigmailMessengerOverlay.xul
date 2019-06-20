@@ -28,7 +28,6 @@
 
   <broadcasterset id="otherActionsButtonBroadcasters">
     <broadcaster id="enigmailBcDisplayClass" class="headerValue"/>
-    <broadcaster id="enigmail-pEp-bc" collapsed="true"/>
   </broadcasterset>
 
   <!-- Thunderbird secondary pane -->
@@ -37,7 +36,6 @@
      <panelview id="appMenu-enigmailView" class="PanelUI-subView"
                 title="&enigmail.label;"
                 enigmaillabel="&enigmail.label;"
-                peplabel="&enigmail.pEp.label;"
                 insertbefore="appMenu-editView">
       <vbox class="panel-subview-body" id="appmenu_enigmailMenuPlaceholder">
 
@@ -259,7 +257,6 @@
     <menu id="menu_Enigmail"
           label="&enigmail.label;"
           enigmaillabel="&enigmail.label;"
-          peplabel="&enigmail.pEp.label;"
           accesskey="&enigmail.messengermenu.accesskey;"
           insertbefore="tasksMenu">
 
@@ -624,19 +621,6 @@
         class="enigmailMessagePane"
         flex="1"
         collapsed="true"/>
-  </hbox>
-
-  <hbox id="expandedHeadersBottomBox">
-    <vbox id="enigmail-pEp-status" insertbefore="otherActionsBox">
-      <spacer flex="1" maxheight="40"/>
-      <image id="enigmail-pEp-icon"
-        observes="enigmail-pEp-bc"
-        tooltiptext="&enigmail.messeneger.pEpIcon.tootlip;"
-        class="enigmailPepRating"
-        style="width:48px; height:48px; margin-left:2px; margin-right:2px;"
-        onclick="Enigmail.hdrView.pEpIconPopup();"/>
-      <spacer flex="1"/>
-    </vbox>
   </hbox>
 
   <hbox class="statusbar" id="status-bar">

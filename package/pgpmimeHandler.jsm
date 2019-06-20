@@ -30,8 +30,6 @@ const EnigmailMimeDecrypt = ChromeUtils.import("chrome://enigmail/content/module
 const EnigmailVerify = ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm").EnigmailVerify;
 const EnigmailWksMimeHandler = ChromeUtils.import("chrome://enigmail/content/modules/wksMimeHandler.jsm").EnigmailWksMimeHandler;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
-const EnigmailPEPDecrypt = ChromeUtils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm").EnigmailPEPDecrypt;
-const EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -190,12 +188,7 @@ PgpMimeHandler.prototype = {
         gLastEncryptedUri = u.spec;
       }
       // PGP/MIME encrypted message
-
-      if (EnigmailPEPAdapter.usingPep()) {
-        cth = EnigmailPEPDecrypt.getDecryptionService(ct);
-      }
-      else
-        cth = EnigmailMimeDecrypt.newPgpMimeHandler();
+      cth = EnigmailMimeDecrypt.newPgpMimeHandler();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       if (ct.search(/application\/pgp-signature/i) > 0) {

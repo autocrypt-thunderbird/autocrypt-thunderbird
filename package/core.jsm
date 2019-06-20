@@ -36,7 +36,6 @@ const getEnigmailApp = EnigmailLazy.loader("enigmail/app.jsm", "EnigmailApp");
 const getEnigmailKeyRefreshService = EnigmailLazy.loader("enigmail/keyRefreshService.jsm", "EnigmailKeyRefreshService");
 const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "EnigmailKeyServer");
 const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.jsm", "EnigmailWksMimeHandler");
-const getEnigmailPEPAdapter = EnigmailLazy.loader("enigmail/pEpAdapter.jsm", "EnigmailPEPAdapter");
 const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailGnuPGUpdate = EnigmailLazy.loader("enigmail/gnupgUpdate.jsm", "EnigmailGnuPGUpdate");
@@ -106,7 +105,7 @@ var EnigmailCore = {
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailWksMimeHandler().registerContentTypeHandler();
     getEnigmailFiltersWrapper().onStartup();
-    getEnigmailPEPAdapter().initialize().then(continueStartup).catch(continueStartup);
+    continueStartup();
   },
 
   shutdown: function(reason) {
@@ -123,7 +122,6 @@ var EnigmailCore = {
     }
 
     getEnigmailFiltersWrapper().onShutdown();
-    getEnigmailPEPAdapter().onShutdown();
     getEnigmailVerify().unregisterContentTypeHandler();
 
     getEnigmailGpgAgent().finalize();

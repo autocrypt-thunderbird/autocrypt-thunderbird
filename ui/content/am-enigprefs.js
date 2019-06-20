@@ -8,7 +8,6 @@
 
 "use strict";
 
-var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 var Overlays = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm").Overlays;
@@ -16,7 +15,6 @@ var Overlays = ChromeUtils.import("chrome://enigmail/content/modules/overlays.js
 if (!Enigmail) var Enigmail = {};
 
 var gPref = null;
-var gUsingPep = null;
 
 function onInit() {
   EnigmailLog.DEBUG("am-enigprefs.js: onInit()\n");
@@ -28,7 +26,6 @@ function onInit() {
 function performInit() {
   EnigmailLog.DEBUG("am-enigprefs.js: performInit()\n");
 
-  gUsingPep = EnigmailPEPAdapter.usingPep();
   Enigmail.edit.onInit();
 }
 

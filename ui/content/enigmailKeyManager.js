@@ -28,7 +28,6 @@ var EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/stre
 var EnigmailClipboard = ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm").EnigmailClipboard;
 var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 var EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
-var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 var EnigmailKeyServer = ChromeUtils.import("chrome://enigmail/content/modules/keyserver.jsm").EnigmailKeyServer;
 var EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
@@ -49,7 +48,6 @@ var gTreeChildren = null;
 var gShowInvalidKeys = null;
 var gShowUntrustedKeys = null;
 var gShowOthersKeys = null;
-var gPepKeyBlacklist = [];
 var gTimeoutId = {};
 
 function enigmailKeyManagerLoad() {
@@ -74,13 +72,6 @@ function enigmailKeyManagerLoad() {
 
   if (EnigGetPref("keyManShowAllKeys")) {
     gShowAllKeysElement.setAttribute("checked", "true");
-  }
-
-  if (EnigmailPEPAdapter.usingPep()) {
-    pEpLoadBlacklist();
-  } else {
-    let c = document.getElementById("pepBlacklistCol");
-    c.parentNode.removeChild(c);
   }
 
   gUserList.addEventListener('click', onListClick, true);
@@ -151,17 +142,6 @@ function buildKeyList(refresh) {
   keyListObj = EnigmailKeyRing.getAllKeys(window, getSortColumn(), getSortDirection());
 
   if (!keyListObj.keySortList) return;
-
-  if (gUserList.getAttribute("sortResource") === "pepBlacklistCol") {
-    let sortDirection = (gUserList.getAttribute("sortDirection") === "ascending" ? 1 : -1);
-
-    keyListObj.keySortList.sort(function(a, b) {
-      let i1 = gPepKeyBlacklist.indexOf(a.fpr) >= 0 ? 1 : 0;
-      let i2 = gPepKeyBlacklist.indexOf(b.fpr) >= 0 ? 1 : 0;
-
-      return (i1 > i2) ? -sortDirection : sortDirection;
-    });
-  }
 
   gKeyList = keyListObj.keyList;
   gKeySortList = keyListObj.keySortList;
@@ -273,10 +253,6 @@ function onListClick(event) {
 
     if (!col) // not clicked on a valid column (e.g. scrollbar)
       return;
-
-    if ((event.detail === 1) && (col.id === "pepBlacklistCol")) {
-      pEpHandleBlacklistClick(row);
-    }
   }
 
   if (event.detail != 2) {
@@ -318,73 +294,6 @@ function enigmailKeyDetails() {
     }
   }
 }
-
-function pEpLoadBlacklist() {
-  let inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);
-  EnigmailPEPAdapter.pep.blacklistGetKeyList().then(
-    function _ok(retObj) {
-      if (retObj && typeof(retObj) === "object" && "result" in retObj) {
-        gPepKeyBlacklist = retObj.result.outParams[0].map(
-          function _upperCase(x) {
-            return x.toUpperCase();
-          });
-      }
-
-      if (inspector && inspector.eventLoopNestLevel > 0) {
-        // unblock the waiting lock in finishCryptoEncapsulation
-        inspector.exitNestedEventLoop();
-      }
-    }
-  ).catch(function _err(retObj) {
-    gPepKeyBlacklist = [];
-    if (inspector && inspector.eventLoopNestLevel > 0) {
-      // unblock the waiting lock in finishCryptoEncapsulation
-      inspector.exitNestedEventLoop();
-    }
-  });
-
-  inspector.enterNestedEventLoop(0);
-}
-
-function pEpHandleBlacklistClick(rowNum) {
-  let action = 0;
-  let msg = "";
-  let button = "";
-  let key;
-  let keyList = getSelectedKeys();
-
-  if (keyList.length == 1) {
-    key = gKeyList[keyList[0]];
-    if (gPepKeyBlacklist.indexOf(key.fpr) >= 0) {
-      action = -1;
-      msg = EnigmailLocale.getString("keyman.removeBlacklistKey.msg", [key.userId, key.fprFormatted]);
-      button = EnigmailLocale.getString("keyman.removeBlacklistKey.button");
-    } else {
-      action = 1;
-      msg = EnigmailLocale.getString("keyman.addBlacklistKey.msg", [key.userId, key.fprFormatted]);
-      button = EnigmailLocale.getString("keyman.addBlacklistKey.button");
-    }
-  } else return;
-
-  if (EnigmailDialog.confirmDlg(window, msg, button)) {
-    let blacklistOp;
-
-    if (action > 0) {
-      blacklistOp = EnigmailPEPAdapter.pep.blacklistAddKey.bind(EnigmailPEPAdapter.pep);
-    } else {
-      blacklistOp = EnigmailPEPAdapter.pep.blacklistDeleteKey.bind(EnigmailPEPAdapter.pep);
-    }
-
-    blacklistOp(key.fpr).then(function _f(x) {
-      EnigmailLog.DEBUG("enigmailKeyManager.js: pEpHandleBlacklistClick: success\n");
-      pEpLoadBlacklist();
-      gUserList.invalidateRow(rowNum);
-    }).catch(function _err(x) {
-      EnigmailLog.DEBUG("enigmailKeyManager.js: pEpHandleBlacklistClick: got Error: " + JSON.stringify(x) + "\n");
-    });
-  }
-}
-
 
 function enigmailDeleteKey() {
   var keyList = getSelectedKeys();
@@ -1541,14 +1450,6 @@ var gKeyListView = {
     let r = this.getFilteredRow(row);
     if (!r) return null;
     let keyObj = gKeyList[r.keyNum];
-
-    if (r.rowType === "key" && col.id === "pepBlacklistCol") {
-      if (gPepKeyBlacklist.indexOf(keyObj.fpr) >= 0) {
-        return "chrome://enigmail/content/ui/check1.png";
-      } else {
-        return "chrome://enigmail/content/ui/check0.png";
-      }
-    }
 
     return null;
   },

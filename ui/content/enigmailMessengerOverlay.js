@@ -43,8 +43,6 @@ var EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/pas
 var EnigmailKeyUsability = ChromeUtils.import("chrome://enigmail/content/modules/keyUsability.jsm").EnigmailKeyUsability;
 var EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
 var EnigmailProtocolHandler = ChromeUtils.import("chrome://enigmail/content/modules/protocolHandler.jsm").EnigmailProtocolHandler;
-var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
-var EnigmailPEPDecrypt = ChromeUtils.import("chrome://enigmail/content/modules/pEpDecrypt.jsm").EnigmailPEPDecrypt;
 var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 var EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
@@ -147,15 +145,9 @@ Enigmail.msg = {
     Enigmail.msg.prepareAppMenu();
     Enigmail.msg.setMainMenuLabel();
 
-    Enigmail.msg.juniorModeObserver = EnigmailPEPAdapter.registerJuniorModeObserver(Enigmail.msg.setMainMenuLabel);
-
     let statusCol = document.getElementById("enigmailStatusCol");
     if (statusCol) {
-      if (EnigmailPEPAdapter.usingPep()) {
-        statusCol.setAttribute("label", EnigmailLocale.getString("enigmailPep.msgViewColumn.label"));
-      } else {
-        statusCol.setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
-      }
+      statusCol.setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
     }
 
     Enigmail.msg.savedHeaders = null;
@@ -168,11 +160,6 @@ Enigmail.msg = {
       EnigmailKeyRing.getAllKeys();
 
     }, 3600 * 1000); // 1 hour
-
-    EnigmailTimer.setTimeout(function _f() {
-      // check if there is an update to pEp after 10 minutes of uptime
-      EnigmailPEPAdapter.checkForPepUpdate();
-    }, 600 * 1000);
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
@@ -276,12 +263,6 @@ Enigmail.msg = {
 
   messengerClose: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messengerClose()\n");
-
-    if (this.juniorModeObserver) {
-      EnigmailPEPAdapter.unregisterJuniorModeObserver(this.juniorModeObserver);
-      this.juniorModeObserver = null;
-    }
-
   },
 
   reloadCompleteMsg: function() {
@@ -406,20 +387,18 @@ Enigmail.msg = {
   },
 
   setMainMenuLabel: function() {
-    let usePep = EnigmailPEPAdapter.usingPep();
     let o = ["menu_Enigmail", "appmenu-Enigmail"];
 
     let m0 = document.getElementById(o[0]);
     let m1 = document.getElementById(o[1]);
 
     m1.setAttribute("enigmaillabel", m0.getAttribute("enigmaillabel"));
-    m1.setAttribute("peplabel", m0.getAttribute("peplabel"));
 
     for (let menuId of o) {
       let menu = document.getElementById(menuId);
 
       if (menu) {
-        let lbl = menu.getAttribute(usePep ? "peplabel" : "enigmaillabel");
+        let lbl = menu.getAttribute("enigmaillabel");
         menu.setAttribute("label", lbl);
       }
     }
@@ -446,13 +425,7 @@ Enigmail.msg = {
   },
 
   displayMainMenu: function(menuPopup) {
-
-    let usePep = EnigmailPEPAdapter.usingPep();
-
-    if (!usePep) {
-      EnigmailFuncs.collapseAdvanced(menuPopup, 'hidden', Enigmail.msg.updateOptionsDisplay());
-    }
-
+    EnigmailFuncs.collapseAdvanced(menuPopup, 'hidden', Enigmail.msg.updateOptionsDisplay());
   },
 
   toggleAttribute: function(attrName) {
@@ -474,10 +447,6 @@ Enigmail.msg = {
    * Determine if Autocrypt is enabled for the currently selected message
    */
   isAutocryptEnabled: function() {
-    if (EnigmailPEPAdapter.usingPep()) {
-      return false;
-    }
-
     try {
       let email = EnigmailFuncs.stripEmail(gFolderDisplay.selectedMessage.recipients);
       let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
@@ -552,26 +521,11 @@ Enigmail.msg = {
 
     // don't parse message if we know it's a PGP/MIME message
     if (contentType.search(/^multipart\/encrypted(;|$)/i) === 0 && contentType.search(/application\/pgp-encrypted/i) > 0) {
-      if (EnigmailPEPAdapter.usingPep()) {
-        EnigmailPEPAdapter.processPGPMIME(currentHeaderData);
-      }
-
-      this.movePEPsubject();
       this.messageDecryptCb(event, isAuto, null);
       return;
     } else if (contentType.search(/^multipart\/signed(;|$)/i) === 0 && contentType.search(/application\/pgp-signature/i) > 0) {
-      if (EnigmailPEPAdapter.usingPep()) {
-        // treat PGP/MIME message like inline-PGP for the context of pEp
-        this.hidePgpKeys();
-        EnigmailPEPAdapter.processInlinePGP(this.getCurrentMsgUrl(), currentHeaderData);
-      }
-
-      this.movePEPsubject();
       this.messageDecryptCb(event, isAuto, null);
       return;
-    } else if (EnigmailPEPAdapter.usingPep()) {
-      this.hidePgpKeys();
-      EnigmailPEPAdapter.processInlinePGP(this.getCurrentMsgUrl(), currentHeaderData);
     }
 
     try {
@@ -1032,7 +986,6 @@ Enigmail.msg = {
     var userIdObj = {};
     var sigDetailsObj = {};
     var encToDetailsObj = {};
-    var pEpResult = null;
 
     var blockSeparationObj = {
       value: ""
@@ -1059,49 +1012,23 @@ Enigmail.msg = {
         EnigmailConstants.UI_ALLOW_KEY_IMPORT |
         EnigmailConstants.UI_UNVERIFIED_ENC_OK) : 0;
 
-      if (EnigmailPEPAdapter.usingPep()) {
-        let addresses = {
-          from: null,
-          to: EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.recipients),
-          cc: EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.ccList)
-        };
-        let fromAddr = EnigmailFuncs.parseEmails(gFolderDisplay.selectedMessage.author);
-        if (fromAddr.length > 0) {
-          addresses.from = fromAddr[0];
-        }
+      plainText = EnigmailDecryption.decryptMessage(window, uiFlags, msgText,
+        signatureObj, exitCodeObj, statusFlagsObj,
+        keyIdObj, userIdObj, sigDetailsObj,
+        errorMsgObj, blockSeparationObj, encToDetailsObj);
 
-        pEpResult = EnigmailPEPDecrypt.decryptMessageData(false, msgText, addresses);
-        if (pEpResult) {
-          plainText = pEpResult.longmsg;
-          if (pEpResult.shortmsg.length > 0) {
-            Enigmail.hdrView.setSubject(pEpResult.shortmsg);
-          }
+      //EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: plainText='"+plainText+"'\n");
 
+      exitCode = exitCodeObj.value;
+      newSignature = signatureObj.value;
 
-          exitCode = 0;
-        } else {
-          plainText = "";
-          exitCode = 1;
-        }
-      } else {
-        plainText = EnigmailDecryption.decryptMessage(window, uiFlags, msgText,
-          signatureObj, exitCodeObj, statusFlagsObj,
-          keyIdObj, userIdObj, sigDetailsObj,
-          errorMsgObj, blockSeparationObj, encToDetailsObj);
-
-        //EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: plainText='"+plainText+"'\n");
-
-        exitCode = exitCodeObj.value;
-        newSignature = signatureObj.value;
-
-        if (plainText === "" && exitCode === 0) {
-          plainText = " ";
-        }
-
-        statusFlags = statusFlagsObj.value;
-
-        EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: newSignature='" + newSignature + "'\n");
+      if (plainText === "" && exitCode === 0) {
+        plainText = " ";
       }
+
+      statusFlags = statusFlagsObj.value;
+
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageParseCallback: newSignature='" + newSignature + "'\n");
     }
 
     var errorMsg = errorMsgObj.value;
@@ -1115,19 +1042,15 @@ Enigmail.msg = {
 
     var displayedUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
     if (!msgUriSpec || (displayedUriSpec == msgUriSpec)) {
-      if (EnigmailPEPAdapter.usingPep() && pEpResult) {
-        Enigmail.hdrView.displayPepStatus(pEpResult.rating, pEpResult.fpr, null, pEpResult.persons);
-      } else {
-        if (tail.length > 0) {
-          statusFlags |= EnigmailConstants.PARTIALLY_PGP;
-        }
-        Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
-          sigDetailsObj.value,
-          errorMsg,
-          null, // blockSeparation
-          encToDetailsObj.value,
-          null); // xtraStatus
+      if (tail.length > 0) {
+        statusFlags |= EnigmailConstants.PARTIALLY_PGP;
       }
+      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
+        sigDetailsObj.value,
+        errorMsg,
+        null, // blockSeparation
+        encToDetailsObj.value,
+        null); // xtraStatus
     }
 
     var noSecondTry = EnigmailConstants.GOOD_SIGNATURE |
@@ -1280,7 +1203,6 @@ Enigmail.msg = {
           // for safety reasons, we replace the complete visible message with 
           // the decrypted or signed part (bug 983)
           node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
-          Enigmail.msg.movePEPsubject();
           return;
         }
         node = node.nextSibling;
@@ -1292,7 +1214,6 @@ Enigmail.msg = {
       while (node) {
         if (node.nodeName == "PRE") {
           node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
-          Enigmail.msg.movePEPsubject();
           return;
         }
         node = node.nextSibling;
@@ -1384,48 +1305,6 @@ Enigmail.msg = {
       }
     } else {
       EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
-    }
-  },
-
-  /**
-   * Extract the subject from the 1st content line and move it to the subject line
-   */
-  movePEPsubject: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: movePEPsubject:\n");
-
-    let bodyElement = this.getBodyElement();
-
-    if (bodyElement.textContent.search(/^\r?\n?Subject: [^\r\n]+\r?\n\r?\n/i) === 0 &&
-      ("subject" in currentHeaderData) &&
-      currentHeaderData.subject.headerValue === "pEp") {
-
-      if (gFolderDisplay.selectedMessage) {
-        let m = EnigmailMime.extractSubjectFromBody(bodyElement.textContent);
-        if (m) {
-          let node = bodyElement.firstChild;
-          let found = false;
-
-          while ((!found) && node) {
-            if (node.nodeName == "DIV") {
-              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(m.messageBody);
-              found = true;
-            }
-            node = node.nextSibling;
-          }
-
-          // if no <DIV> node is found, try with <PRE> (bug 24762)
-          node = bodyElement.firstChild;
-          while ((!found) && node) {
-            if (node.nodeName == "PRE") {
-              node.innerHTML = EnigmailFuncs.formatPlaintextMsg(m.messageBody);
-              found = true;
-            }
-            node = node.nextSibling;
-          }
-
-          Enigmail.hdrView.setSubject(m.subject);
-        }
-      }
     }
   },
 

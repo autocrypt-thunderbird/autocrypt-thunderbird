@@ -9,23 +9,11 @@
 
 /* global Components: false, gDBView: false */
 
-var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 var EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 
 if (!Enigmail) var Enigmail = {};
 
 Enigmail.columnHandler = {
-  _usingPep: null,
-  resetUsingPep: function() {
-    this._usingPep = null;
-  },
-  isUsingPep: function() {
-    if (this._usingPep === null) {
-      this._usingPep = EnigmailPEPAdapter.usingPep();
-    }
-
-    return this._usingPep;
-  },
   getCellText: function(row, col) {
     return null;
   },
@@ -40,31 +28,14 @@ Enigmail.columnHandler = {
     let hdr = gDBView.db.GetMsgHdrForKey(key);
     let newProp = null;
 
-    if (this.isUsingPep()) {
-      let rating = hdr.getUint32Property("enigmailPep") & 0xFF;
-
-      switch (rating) {
-        case 1:
-          newProp = "enigmailPepMistrust";
-          break;
-        case 2:
-          newProp = "enigmailPepReliable";
-          break;
-        case 3:
-          newProp = "enigmailPepTrusted";
-          break;
-      }
-    }
-    else {
-      let statusFlags = hdr.getUint32Property("enigmail");
-      if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
-        (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
-        newProp = "enigSignedEncrypted";
-      else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
-        newProp = "enigSigned";
-      else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
-        newProp = "enigEncrypted";
-    }
+    let statusFlags = hdr.getUint32Property("enigmail");
+    if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
+      (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
+      newProp = "enigSignedEncrypted";
+    else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
+      newProp = "enigSigned";
+    else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
+      newProp = "enigEncrypted";
 
     if (newProp) {
       return newProp;
@@ -76,10 +47,6 @@ Enigmail.columnHandler = {
   getRowProperties: function(row, props) {},
   getImageSrc: function(row, col) {},
   getSortLongForRow: function(hdr) {
-    if (this.isUsingPep()) {
-      return hdr.getUint32Property("enigmailPep");
-    }
-
     var statusFlags = hdr.getUint32Property("enigmail");
     if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
       (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
@@ -106,9 +73,6 @@ Enigmail.columnHandler = {
     let observerService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);
     observerService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
-
-    let folderTree = document.getElementById("folderTree");
-    folderTree.addEventListener("select", Enigmail.columnHandler.resetUsingPep.bind(Enigmail.columnHandler), false);
   },
 
   onUnloadEnigmail: function() {
@@ -116,9 +80,6 @@ Enigmail.columnHandler = {
     let observerService = Components.classes["@mozilla.org/observer-service;1"].
     getService(Components.interfaces.nsIObserverService);
     observerService.removeObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView");
-
-    let folderTree = document.getElementById("folderTree");
-    folderTree.removeEventListener("select", Enigmail.columnHandler.resetUsingPep, false);
   }
 };
 

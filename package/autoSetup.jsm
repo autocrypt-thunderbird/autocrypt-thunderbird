@@ -191,10 +191,6 @@ var EnigmailAutoSetup = {
             returnMsgValue.value = EnigmailConstants.AUTOSETUP_AC_HEADER;
             returnMsgValue.msgHeaders = msgHeaders;
           }
-          else if (latestMsg.msgType === "pEp") {
-            returnMsgValue.value = EnigmailConstants.AUTOSETUP_PEP_HEADER;
-            returnMsgValue.msgHeaders = msgHeaders;
-          }
           else {
             returnMsgValue.value = EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG;
             returnMsgValue.msgHeaders = msgHeaders;

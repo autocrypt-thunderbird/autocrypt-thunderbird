@@ -16,7 +16,6 @@ const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/loc
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
 const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
-const EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
 const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
 
@@ -319,14 +318,7 @@ var EnigmailWindows = {
 
     EnigmailCore.getService(win, true); // true: starting preferences dialog
 
-    let url;
-
-    if (EnigmailPEPAdapter.usingPep()) {
-      url = "chrome://enigmail/content/ui/pref-pep.xul";
-    }
-    else {
-      url = "chrome://enigmail/content/ui/pref-enigmail.xul";
-    }
+    let url = "chrome://enigmail/content/ui/pref-enigmail.xul";
     win.openDialog(url,
       "_blank", "chrome,resizable=yes", {
         'showBasic': showBasic,
@@ -590,56 +582,6 @@ var EnigmailWindows = {
     win.openDialog("chrome://enigmail/content/ui/enigmailSearchKey.xul",
       "", "dialog,modal,centerscreen", inputObj, resultObj);
   },
-
-  /**
-   * Open the Trustwords dialog for a specific pair of keys
-   *
-   * @param win:          Object - nsIWindow
-   * @param emailAddress: String - Email address of peer to verify
-   * @param headerData:   either: Object - nsIMsgHdr object for the message (to identify the ideal own identity)
-   *                      or:     String - own email address to compare with
-   *
-   * @return: Promise (resolve() case of success; rejection otherwise).
-   */
-  verifyPepTrustWords: function(win, emailAddress, headerData) {
-    let deferred = PromiseUtils.defer();
-
-    EnigmailPEPAdapter.prepareTrustWordsDlg(emailAddress, headerData).
-    then(function _ok(inputObj) {
-      win.openDialog("chrome://enigmail/content/ui/pepTrustWords.xul",
-        "", "dialog,modal,centerscreen", inputObj);
-      deferred.resolve();
-    }).
-    catch(function _err(errorMsg) {
-      switch (errorMsg) {
-        case "cannotVerifyOwnId":
-          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.cannotVerifyOwnId"));
-          break;
-        case "cannotFindKey":
-          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.cannotFindKey", emailAddress));
-          break;
-        default:
-          EnigmailWindows.alert(win, EnigmailLocale.getString("pepTrustWords.generalFailure", emailAddress));
-          break;
-      }
-      deferred.reject();
-    });
-
-    return deferred.promise;
-  },
-
-  pepHandshake: function(window, direction, myself, peers) {
-    let inputObj = {
-      myself: myself,
-      peers: peers,
-      direction: direction
-    };
-
-    window.openDialog("chrome://enigmail/content/ui/pepHandshake.xul",
-      "", "dialog,modal,centerscreen", inputObj);
-
-  },
-
 
   /**
    * Display Autocrypt Setup Passwd dialog.

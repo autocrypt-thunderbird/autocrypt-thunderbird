@@ -104,7 +104,6 @@ zip -9 --must-match\
     chrome/content/modules/hash.jsm \
     chrome/content/modules/httpProxy.jsm \
     chrome/content/modules/installGnuPG.jsm \
-    chrome/content/modules/installPep.jsm \
     chrome/content/modules/key.jsm \
     chrome/content/modules/keyEditor.jsm \
     chrome/content/modules/keyObj.jsm \
@@ -127,12 +126,6 @@ zip -9 --must-match\
     chrome/content/modules/overlays.jsm \
     chrome/content/modules/passwordCheck.jsm \
     chrome/content/modules/passwords.jsm \
-    chrome/content/modules/pEp.jsm \
-    chrome/content/modules/pEpAdapter.jsm \
-    chrome/content/modules/pEpDecrypt.jsm \
-    chrome/content/modules/pEpFilter.jsm \
-    chrome/content/modules/pEpListener.jsm \
-    chrome/content/modules/pEpKeySync.jsm \
     chrome/content/modules/pgpmimeHandler.jsm \
     chrome/content/modules/pipeConsole.jsm \
     chrome/content/modules/prefs.jsm \

@@ -13,7 +13,6 @@ var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.
 var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
 var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-var EnigmailPEPAdapter = ChromeUtils.import("chrome://enigmail/content/modules/pEpAdapter.jsm").EnigmailPEPAdapter;
 
 if (!Enigmail) var Enigmail = {};
 
@@ -30,7 +29,6 @@ Enigmail.edit = {
   pgpSignPlainPolicy: null,
   pgpSignEncPolicy: null,
   autoEncryptDrafts: null,
-  usingPep: null,
   openPgpSendKeyWithMsg: null,
 
   onInit: function() {
@@ -58,8 +56,6 @@ Enigmail.edit = {
       let acTab = document.getElementById("enigmail_autocryptTab");
       acTab.setAttribute("collapsed", "true");
     }
-
-    this.usingPep = EnigmailPEPAdapter.usingPep();
 
     if (this.identity) {
       this.enablePgp.checked = this.identity.getBoolAttribute("enablePgp");
@@ -171,17 +167,6 @@ Enigmail.edit = {
       this.identity.setBoolAttribute("autoEncryptDrafts", this.autoEncryptDrafts.checked);
     }
 
-    let usingPep = EnigmailPEPAdapter.usingPep();
-
-    if (usingPep !== this.usingPep) {
-      EnigmailPEPAdapter.handleJuniorModeChange();
-      this.usingPep = usingPep;
-    }
-
-    if (usingPep) {
-      EnigmailPEPAdapter.setOwnIdentities(0);
-    }
-
     if (!this.isSingleIdEditor) {
       this.account.incomingServer.setBoolValue("enableAutocrypt", this.enableAc.checked);
       this.account.incomingServer.setIntValue("acPreferEncrypt", this.acPreferEncrypt.checked ? 1 : 0);
@@ -190,12 +175,6 @@ Enigmail.edit = {
 
   toggleEnable: function() {
     let newCryptoEnabled = (!this.cryptoChoicesEnabled);
-
-    if (this.usingPep && newCryptoEnabled) {
-      if (!EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("switchPepMode"), EnigmailLocale.getString("enableEnigmail")))
-        return;
-    }
-
     this.cryptoChoicesEnabled = newCryptoEnabled;
     this.enableAllPrefs();
   },

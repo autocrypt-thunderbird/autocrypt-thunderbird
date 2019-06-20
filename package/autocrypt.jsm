@@ -607,7 +607,6 @@ var EnigmailAutocrypt = {
                 id.identity.setBoolAttribute("pgpSignEncrypted", true);
                 id.identity.setBoolAttribute("pgpMimeMode", true);
                 id.identity.setIntAttribute("pgpKeyMode", 1);
-                EnigmailPrefs.setPref("juniorMode", 1);
                 resolve(setupData);
               } else {
                 reject("keyImportFailed");

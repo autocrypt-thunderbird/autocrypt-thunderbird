@@ -38,7 +38,6 @@
       <broadcaster id="enigmail-bc-sign" checked="false"/>
       <broadcaster id="enigmail-bc-attach" checked="false"/>
       <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
-      <broadcaster id="enigmail-bc-pepEncrypt" hidden="true" encrypt="true"/>
       <broadcaster id="enigmail-bc-sendprocess"/>
     </broadcasterset>
   </window>
@@ -198,40 +197,12 @@
         </menupopup>
       </menu>
 
-      <menu id="menu_EnigmailPep"
-            label="&enigmail.pEp.label;"
-            accesskey="&enigmail.composemenu.accesskey;"
-            insertbefore="tasksMenu"
-            hidden="true">
-
-        <menupopup id="menu_EnigmailPopup"
-            onpopupshowing="Enigmail.msg.pepMenuPopup()">
-
-          <!-- encryption state / toggle menu -->
-          <menuitem id="enigmail_compose_pep_encrypt"
-                accesskey="&enigmail.pepEnableProtection.accesskey;"
-                label="&enigmail.pepEnableProtection.label;"
-                key="key_enigEncrypt"
-                oncommand="Enigmail.msg.onPepEncryptMenu()"
-                type="checkbox"/>
-
-          <menuitem id="enigmail_composeMenu_pep_handshake"
-                accesskey="&enigmail.pEp.verifyTrustwords.accesskey;"
-                label="&enigmail.pEp.verifyTrustwords.label;"
-                oncommand="Enigmail.msg.onPepHandshakeButton(event)"/>
-
-          <menuitem id="enigmail_composeMenu_pep_pref"
-                accesskey="&enigmail.prefs.accesskey;"
-                label="&enigmail.prefs.label;"
-                oncommand="EnigmailWindows.openPrefWindow(window, true, )"/>
-      </menupopup>
-    </menu>
   </menubar>
 
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
     targetToolbar="composeToolbar2"
-    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-enigmail-pepEncrypt,button-save,spring"
+    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-save,spring"
     targetToolbox="compose-toolbox">
 
     <!-- 'Encrypt message' button -->
@@ -280,33 +251,7 @@
             oncommand="Enigmail.msg.doPgpButton('displaySecuritySettings')">
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
-
-    <!-- encryption button for pEp -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-pepEncrypt"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            type="menu-button"
-            observes="enigmail-bc-pepEncrypt"
-            oncommand="Enigmail.msg.onPepEncryptButton()"
-            label="&enigmail.pepEnableProtection.label;">
-      <menupopup>
-        <menuitem id="enigmail_composeBtn_pep_handshake"
-              accesskey="&enigmail.pEp.verifyTrustwords.accesskey;"
-              label="&enigmail.pEp.verifyTrustwords.label;"
-              oncommand="Enigmail.msg.onPepHandshakeButton(event)"/>
-      </menupopup>
-    </toolbarbutton>
   </toolbarpalette>
-
-  <hbox id="status-bar">
-    <hbox align="center" insertbefore="statusText" class="statusbarpanel" id="enigmail-pep-statusbar">
-      <image class="enigmail-statusbar-pep-logo"/>
-      <label value="&enigmail.pEp.privacyStatus.label;"/>
-      <label id="enigmail-pep-privacy-status" value="&enigmail.pEp.composestatus.label;" class="enigmail-statusbar-pep-unsecure"
-        onclick="Enigmail.msg.onPepHandshakeButton(event)"/>
-    </hbox>
-  </hbox>
 
   <link rel="stylesheet" type="text/css" href="chrome://enigmail/skin/enigmail.css"/>
 
