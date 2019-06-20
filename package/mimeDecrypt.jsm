@@ -40,7 +40,7 @@ const ENCODING_QP = 2;
 
 const LAST_MSG = EnigmailSingletons.lastDecryptedMessage;
 
-var gDebugLogLevel = 0;
+var gDebugLogLevel = 3;
 
 var gNumProc = 0;
 
