@@ -32,22 +32,14 @@ const PGPMIME_ENCRYPT_CONTRACTID = "@enigmail.net/compose/mimeencrypt;1";
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
-// S/MIME contract IDs
-const SMIME_ENCRYPT_CONTRACTID = "@mozilla.org/messengercompose/composesecure;1";
-const kSmimeComposeSecureCID = "{dd753201-9a23-4e08-957f-b3616bf7e012}";
-
 const maxBufferLen = 102400;
 const MIME_SIGNED = 1;
 const MIME_ENCRYPTED = 2;
 
-var gDebugLogLevel = 0;
+var gDebugLogLevel = 3;
 
-function PgpMimeEncrypt(sMimeSecurityInfo) {
+function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
-
-  // nsIMsgSMIMECompFields
-  this.signMessage = false;
-  this.requireEncryptMessage = false;
 
   // "securityInfo" variables
   this.sendFlags = 0;
@@ -63,30 +55,13 @@ function PgpMimeEncrypt(sMimeSecurityInfo) {
   } else {
     this.onDataAvailable = this.onDataAvailable60;
   }
-
-  try {
-    if (sMimeSecurityInfo) {
-      if ("nsIMsgSMIMECompFields" in Ci) {
-        sMimeSecurityInfo = sMimeSecurityInfo.QueryInterface(Ci.nsIMsgSMIMECompFields);
-      }
-      this.signMessage = sMimeSecurityInfo.signMessage;
-      this.requireEncryptMessage = sMimeSecurityInfo.requireEncryptMessage;
-    }
-  }
-  catch (ex) {}
 }
 
 PgpMimeEncrypt.prototype = {
   classDescription: "Enigmail JS Encryption Handler",
   classID: PGPMIME_ENCRYPT_CID,
   get contractID() {
-    if (Components.classesByID && Components.classesByID[kSmimeComposeSecureCID]) {
-      // hack needed for TB < 62: we overwrite the S/MIME encryption handler
-      return SMIME_ENCRYPT_CONTRACTID;
-    }
-    else {
-      return PGPMIME_ENCRYPT_CONTRACTID;
-    }
+    return PGPMIME_ENCRYPT_CONTRACTID;
   },
   QueryInterface: EnigmailTb60Compat.generateQI([
     "nsIMsgComposeSecure",
@@ -101,8 +76,6 @@ PgpMimeEncrypt.prototype = {
 
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
   msgCompFields: null,
-  smimeCompose: null,
-  useSmime: false,
   outStringStream: null,
 
   // 0: processing headers
@@ -126,7 +99,6 @@ PgpMimeEncrypt.prototype = {
   cryptoMode: 0,
   exitCode: -1,
   inspector: null,
-  checkSMime: true,
 
   // nsIStreamListener interface
   onStartRequest: function(request) {
@@ -160,60 +132,16 @@ PgpMimeEncrypt.prototype = {
     EnigmailLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
   },
 
-  disableSMimeCheck: function() {
-    this.useSmime = false;
-    this.checkSMime = false;
-  },
-
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function(msgIdentity, msgCompFields) {
     EnigmailLog.DEBUG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
-    try {
-
-      if (Components.classesByID && kSmimeComposeSecureCID in Components.classesByID) {
-        // TB < 64
-        if (this.checkSMime) {
-          // Remember to use original CID, not CONTRACTID, to avoid infinite looping!
-          this.smimeCompose = Components.classesByID[kSmimeComposeSecureCID].createInstance(Ci.nsIMsgComposeSecure);
-          this.useSmime = this.smimeCompose.requiresCryptoEncapsulation(msgIdentity, msgCompFields);
-        }
-
-        if (this.useSmime) return true;
-
-        let securityInfo = msgCompFields.securityInfo.wrappedJSObject;
-        if (!securityInfo) return false;
-
-        for (let prop of ["sendFlags", "UIFlags", "senderEmailAddr", "recipients", "bccRecipients", "originalSubject", "keyMap"]) {
-          this[prop] = securityInfo[prop];
-        }
-      }
-      else {
-        // TB >= 64: we are not called for S/MIME
-        this.disableSMimeCheck();
-      }
-
-      return (this.sendFlags & (EnigmailConstants.SEND_SIGNED |
-        EnigmailConstants.SEND_ENCRYPTED |
-        EnigmailConstants.SEND_VERBATIM)) !== 0;
-    }
-    catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
-      throw (ex);
-    }
+    return (this.sendFlags & (EnigmailConstants.SEND_SIGNED |
+      EnigmailConstants.SEND_ENCRYPTED |
+      EnigmailConstants.SEND_VERBATIM)) !== 0;
   },
 
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
     EnigmailLog.DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
-
-    if (this.checkSMime && (!this.smimeCompose)) {
-      LOCAL_DEBUG("mimeEncrypt.js: beginCryptoEncapsulation: ERROR MsgComposeSecure not instantiated\n");
-      throw Cr.NS_ERROR_FAILURE;
-    }
-
-    if (this.useSmime)
-      return this.smimeCompose.beginCryptoEncapsulation(outStream, recipientList,
-        msgCompFields, msgIdentity,
-        sendReport, isDraft);
 
     if (!outStream) throw Cr.NS_ERROR_NULL_POINTER;
 
@@ -440,14 +368,6 @@ PgpMimeEncrypt.prototype = {
   finishCryptoEncapsulation: function(abort, sendReport) {
     EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
-    if (this.checkSMime && (!this.smimeCompose))
-      throw Cr.NS_ERROR_NOT_INITIALIZED;
-
-    if (this.useSmime) {
-      this.smimeCompose.finishCryptoEncapsulation(abort, sendReport);
-      return;
-    }
-
     if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
       this.flushOutput();
       return;
@@ -507,11 +427,6 @@ PgpMimeEncrypt.prototype = {
   mimeCryptoWriteBlock: function(buffer, length) {
     if (gDebugLogLevel > 4)
       LOCAL_DEBUG("mimeEncrypt.js: mimeCryptoWriteBlock: " + length + "\n");
-
-    if (this.checkSMime && (!this.smimeCompose))
-      throw Cr.NS_ERROR_NOT_INITIALIZED;
-
-    if (this.useSmime) return this.smimeCompose.mimeCryptoWriteBlock(buffer, length);
 
     try {
       let line = buffer.substr(0, length);
@@ -733,7 +648,7 @@ var EnigmailMimeEncrypt = {
   shutdown: function(reason) {},
 
   createMimeEncrypt: function(sMimeSecurityInfo) {
-    return new PgpMimeEncrypt(sMimeSecurityInfo);
+    return new PgpMimeEncrypt();
   },
 
   isEnigmailCompField: function(obj) {
