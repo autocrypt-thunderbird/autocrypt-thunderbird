@@ -373,21 +373,6 @@ PgpMimeEncrypt.prototype = {
       return;
     }
 
-
-    let statusFlagsObj = {};
-    let errorMsgObj = {};
-    let proc = EnigmailEncryption.encryptMessageStart(this.win,
-      this.UIFlags,
-      this.senderEmailAddr,
-      this.recipients,
-      this.bccRecipients,
-      this.hashAlgorithm,
-      this.sendFlags,
-      this,
-      statusFlagsObj,
-      errorMsgObj);
-    if (!proc) throw Cr.NS_ERROR_FAILURE;
-
     try {
       if (this.encapsulate) this.writeToPipe("--" + this.encapsulate + "--\r\n");
 
@@ -396,19 +381,25 @@ PgpMimeEncrypt.prototype = {
         if (this.cryptoMode == MIME_SIGNED) this.writeOut("\r\n--" + this.encHeader + "--\r\n");
       }
 
-      this.flushInput();
+      let plaintext = this.pipeQueue;
+      this.pipeQueue = "";
 
-      if (!this.pipe) {
-        this.closePipe = true;
-      }
-      else
-        this.pipe.close();
+      let statusFlagsObj = {};
+      let errorMsgObj = {};
+      let exitCodeObj = {};
+      this.encryptedData = EnigmailEncryption.encryptMessage(this.win,
+        this.UIFlags,
+        plaintext,
+        this.senderEmailAddr,
+        this.recipients,
+        this.bccRecipients,
+        this.sendFlags,
+        exitCodeObj,
+        statusFlagsObj,
+        errorMsgObj);
+      if (this.encryptedData == "") throw Cr.NS_ERROR_FAILURE;
 
-      // wait here for proc to terminate
-      proc.wait();
-
-      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation: exitCode = " + this.exitCode + "\n");
-      if (this.exitCode !== 0) throw Cr.NS_ERROR_FAILURE;
+      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
       if (this.cryptoMode == MIME_SIGNED) this.signedHeaders2();
 
@@ -421,7 +412,6 @@ PgpMimeEncrypt.prototype = {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
-
   },
 
   mimeCryptoWriteBlock: function(buffer, length) {
@@ -525,20 +515,7 @@ PgpMimeEncrypt.prototype = {
     if (gDebugLogLevel > 4)
       LOCAL_DEBUG("mimeEncrypt.js: writeToPipe: " + str.length + "\n");
 
-    if (this.pipe) {
-      this.pipeQueue += str;
-      if (this.pipeQueue.length > maxBufferLen)
-        this.flushInput();
-    }
-    else
-      this.pipeQueue += str;
-  },
-
-  flushInput: function() {
-    LOCAL_DEBUG("mimeEncrypt.js: flushInput\n");
-    if (!this.pipe) return;
-    this.pipe.write(this.pipeQueue);
-    this.pipeQueue = "";
+    this.pipeQueue += str;
   },
 
   getHeader: function(hdrStr, fullHeader) {
@@ -575,20 +552,6 @@ PgpMimeEncrypt.prototype = {
 
 
   // API for decryptMessage Listener
-  stdin: function(pipe) {
-    LOCAL_DEBUG("mimeEncrypt.js: stdin\n");
-    if (this.pipeQueue.length > 0) {
-      pipe.write(this.pipeQueue);
-      this.pipeQueue = "";
-    }
-    if (this.closePipe) {
-      pipe.close();
-    }
-    else {
-      this.pipe = pipe;
-    }
-  },
-
   stdout: function(s) {
     LOCAL_DEBUG("mimeEncrypt.js: stdout:" + s.length + "\n");
     this.encryptedData += s;
