@@ -112,8 +112,8 @@ UIFILES = \
 	upgradeInfo.html \
 	updateGnuPG.html \
 	updateGnuPG.js \
-	setupWizard2.js \
-	setupWizard2.xul
+	setupWizardAutocrypt.js \
+	setupWizardAutocrypt.xul
 	
 all: deploy
 

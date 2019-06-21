@@ -42,7 +42,7 @@ var EnigmailWindows = {
       return;
     }
 
-    win.open("chrome://enigmail/content/ui/setupWizard2.xul",
+    win.open("chrome://enigmail/content/ui/setupWizardAutocrypt.xul",
       "", "chrome,centerscreen,resizable");
   },
 

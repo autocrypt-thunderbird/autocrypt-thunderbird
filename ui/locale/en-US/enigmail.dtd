@@ -788,3 +788,17 @@
 <!ENTITY enigmail.importSetup.importingKeys          "Importing keys in GnuPG. This may take a while ...">
 <!ENTITY enigmail.importSetup.restoringGnupgSettings "Restoring GnuPG settings ...">
 <!ENTITY enigmail.importSetup.restoringEnigmail      "Restoring Enigmail settings ...">
+
+<!-- wizard: welcome step -->
+<!ENTITY autocrypt.onboarding.title                  "Welcome to Autocrypt!">
+<!ENTITY autocrypt.onboarding.welcome0               "Hi,">
+<!ENTITY autocrypt.onboarding.welcome1               "I hope you can enjoy hassle-free email encryption for the first time.
+                                                      While you are reading this I generate a key for your!">
+<!ENTITY autocrypt.onboarding.welcome2               "You already had a Key somewhere? I'm sorry :/
+                                                      My developers don't gave me the abillity to import keys.">
+<!ENTITY autocrypt.onboarding.welcome3               "But, I am pretty sure that they'll add this in future versions of me.
+                                                      Now, you can just use my key that I've generated. It's based on Elliptic Curves.">
+<!ENTITY autocrypt.onboarding.welcome4               "Cool, huh! So, don't be sad. Your old key was a dirty old keys from the 90th.
+                                                      Almost 30 Years later just Elliptic Curve matters.">
+<!ENTITY autocrypt.onboarding.welcome5               "Sincerly,">
+<!ENTITY autocrypt.onboarding.welcome6               "Your Software">

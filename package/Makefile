@@ -19,6 +19,7 @@ MODFILES = \
            attachment.jsm \
            autocrypt.jsm \
            autoSetup.jsm \
+           autocryptSetup.jsm \
            card.jsm \
            clipboard.jsm \
            commandLine.jsm \

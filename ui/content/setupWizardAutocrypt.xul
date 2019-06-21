@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+<!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
+%utilDTD;
+]>
+
+<!-- TODO: Need to localize dialog -->
+
+<dialog id="setupWizardDlg"
+  title="&autocrypt.onboarding.title;"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  onload="onLoad();"
+  buttons="accept"
+  minwidth="460px">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizardAutocrypt.js" />
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js"/>
+
+  <html:div id="onboardingMsg" style="width: 440px">
+    <html:p>&autocrypt.onboarding.welcome0;</html:p>
+    <html:p>&autocrypt.onboarding.welcome1;</html:p>
+    <html:p>&autocrypt.onboarding.welcome2;</html:p>
+    <html:p>&autocrypt.onboarding.welcome3;</html:p>
+    <html:p>&autocrypt.onboarding.welcome4;</html:p>
+    <html:p>&autocrypt.onboarding.welcome5;<html:br />&autocrypt.onboarding.welcome6;</html:p>
+  </html:div>
+    
+</dialog>
