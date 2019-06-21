@@ -36,7 +36,6 @@
     <broadcasterset id="enigmailBroadcasters">
       <broadcaster id="enigmail-bc-encrypt" checked="false"/>
       <broadcaster id="enigmail-bc-sign" checked="false"/>
-      <broadcaster id="enigmail-bc-attach" checked="false"/>
       <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
       <broadcaster id="enigmail-bc-sendprocess"/>
     </broadcasterset>
@@ -132,18 +131,6 @@
               advanced="true"
               oncommand="Enigmail.msg.toggleProtectHeaders();" />
 
-          <menuitem id="enigmail_insert_own_key"
-              label="&enigmail.attachmykey.label;"
-              accesskey="&enigmail.attachmykey.accesskey;"
-              type="checkbox"
-              checked="false"
-              oncommand="Enigmail.msg.toggleAttachOwnKey();" />
-
-          <menuitem id="enigmail_insert_key"
-              label="&enigmail.attachkey.label;"
-              accesskey="&enigmail.attachkey.accesskey;"
-              oncommand="Enigmail.msg.attachKey();" />
-
           <menuseparator/>
 
           <menuitem id="enigmail_clearPassphrase"
@@ -223,15 +210,6 @@
             tooltip="aTooltipSet"
             observes="enigmail-bc-sign"
             oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-
-    <!-- 'Attach my key' button -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-attach"
-            label="&enigmail.attachmykey.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-attach"
-            oncommand="Enigmail.msg.toggleAttachOwnKey();"/>
 
     <!-- 'Encrypt subject' button -->
     <toolbarbutton class="toolbarbutton-1"
