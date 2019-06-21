@@ -28,19 +28,10 @@ const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 
-const gMimeHashAlgorithms = [null, "sha1", "ripemd160", "sha256", "sha384", "sha512", "sha224", "md5"];
-
-const ENC_TYPE_MSG = 0;
-const ENC_TYPE_ATTACH_BINARY = 1;
-const ENC_TYPE_ATTACH_ASCII = 2;
-
-const GPG_COMMENT_OPT = "Using GnuPG with %s - https://www.enigmail.net/";
-
-
 var EnigmailEncryption = {
-  encryptMessage: function(parent, uiFlags, plainText, fromMailAddr, toMailAddr, bccMailAddr, sendFlags,
+  encryptMessage: function(parent, uiFlags, plainText, encodedPrivKey, encodedPubKeys, bccMailAddr, sendFlags,
     exitCodeObj, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: " + plainText.length + " bytes from " + fromMailAddr + " to " + toMailAddr + " (" + sendFlags + ")\n");
+    EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: " + plainText.length + " bytes to " + encodedPubKeys.length + " keys (" + sendFlags + ")\n");
 
     exitCodeObj.value = -1;
     statusFlagsObj.value = 0;
@@ -61,7 +52,7 @@ var EnigmailEncryption = {
     plainText = plainText.replace(/\n/g, "\r\n");
 
     const cApi = EnigmailCryptoAPI();
-    let ciphertext = cApi.sync(cApi.encrypt(plainText, fromMailAddr, toMailAddr));
+    let ciphertext = cApi.sync(cApi.encrypt(plainText, encodedPrivKey, encodedPubKeys));
 
     var retStatusObj = {};
     exitCodeObj.value = 0;

@@ -137,6 +137,33 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     }
   }
 
+  async encrypt(plaintext, encodedPrivKey, encodedPubKeys) {
+    EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
+
+    const openpgp = getOpenPGP().openpgp;
+    EnigmailLog.DEBUG("openpgp-js.js: await..\n");
+
+    let privKey = (await openpgp.key.readArmored(encodedPrivKey)).keys[0];
+
+    let parsedPubKeys = await Promise.all(pubKeys.map(pk => openpgp.key.readArmored(pk)));
+    let pubKeys = parsedPubKeys.map(result => result.keys[0]);
+
+    EnigmailLog.DEBUG("openpgp-js.js: encrypting..\n");
+    const encrypt_options = {
+      message: openpgp.message.fromText(plaintext),
+      publicKeys: pubKeys,
+      privateKeys: [privKey]
+    };
+
+    EnigmailLog.DEBUG("openpgp-js.js: decrypting...\n");
+    try {
+      let openpgp_result = await openpgp.encrypt(encrypt_options);
+      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok" + openpgp_result.data + "\n");
+    } catch (ex) {
+      EnigmailLog.DEBUG("openpgp-js.js: decrypt error!" + ex + "\n");
+      throw ex;
+    }
+  }
 
   async getKeyListFromKeyBlock(keyBlockStr) {
     return await this.OPENPGPjs_getKeyListFromKeyBlockkeyBlockStr(keyBlockStr);

@@ -40,6 +40,7 @@ var EnigmailWkdLookup = ChromeUtils.import("chrome://enigmail/content/modules/wk
 var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 var EnigmailMsgRead = ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm").EnigmailMsgRead;
 var EnigmailMimeEncrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
+var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 
 
@@ -2092,12 +2093,7 @@ Enigmail.msg = {
 
   /* process rules and find keys for passed email addresses
    * This is THE core method to prepare sending encryptes emails.
-   * - it processes the recipient rules (if not disabled)
-   * - it
    *
-   * @sendFlags:    Longint - all current combined/processed send flags (incl. optSendFlags)
-   * @optSendFlags: Longint - may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
-   * @gotSendFlags: Longint - initial sendMode of encryptMsg() (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
    * @fromAddr:     String - from email
    * @toAddrList:   Array  - both to and cc receivers
    * @bccAddrList:  Array  - bcc receivers
@@ -2107,42 +2103,22 @@ Enigmail.msg = {
    *                - bccAddrStr comma separated string of unprocessed to/cc emails
    *                or null (cancel sending the email)
    */
-  keySelection: function(enigmailSvc, sendFlags, optSendFlags, gotSendFlags, fromAddr, toAddrList, bccAddrList) {
+  keySelection: function(enigmailSvc, fromAddr, toAddrList, bccAddrList) {
     EnigmailLog.DEBUG("=====> keySelection()\n");
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection()\n");
-
-    const SIGN = EnigmailConstants.SEND_SIGNED;
-    const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
-
-    let toAddrStr = toAddrList.join(", ");
-    let bccAddrStr = bccAddrList.join(", ");
-    let keyMap = {};
 
     // NOTE: If we only have bcc addresses, we currently do NOT process rules and select keys at all
     //       This is GOOD because sending keys for bcc addresses makes bcc addresses visible
     //       (thus compromising the concept of bcc)
     //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
-    if (toAddrStr.length === 0) {
+    if (toAddrList.length === 0) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
 
-      if (this.statusPGPMime == EnigmailConstants.ENIG_FINAL_YES ||
-        this.statusPGPMime == EnigmailConstants.ENIG_FINAL_FORCEYES) {
-        sendFlags |= EnigmailConstants.SEND_PGP_MIME;
-      } else if (this.statusPGPMime == EnigmailConstants.ENIG_FINAL_NO ||
-        this.statusPGPMime == EnigmailConstants.ENIG_FINAL_FORCENO ||
-        this.statusPGPMime == EnigmailConstants.ENIG_FINAL_CONFLICT) {
-        sendFlags &= ~EnigmailConstants.SEND_PGP_MIME;
-      }
-
-      return {
-        sendFlags: sendFlags,
-        toAddrStr: toAddrStr,
-        bccAddrStr: bccAddrStr,
-        keyMap: keyMap
-      };
+      // TODO deal with bcc only
+      return false;
     }
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return toAddrStr=\"" + toAddrStr + "\" bccAddrStr=\"" + bccAddrStr + "\"\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return \n");
     EnigmailLog.DEBUG("  <=== keySelection()\n");
     return {
       sendFlags: sendFlags,
@@ -2923,7 +2899,7 @@ Enigmail.msg = {
     return newSecurityInfo;
   },
 
-  encryptMsg: function(msgSendType) {
+  encryptMsg: async function(msgSendType) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.sendMode=" + this.sendMode + ", Enigmail.msg.statusEncrypted=" +
       this.statusEncrypted +
       "\n");
@@ -3009,18 +2985,13 @@ Enigmail.msg = {
       }
 
       let result = this.keySelection(enigmailSvc,
-        sendFlags, // all current combined/processed send flags (incl. optSendFlags)
-        rcpt.optSendFlags, // may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
-        gotSendFlags, // initial sendMode (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
         rcpt.fromAddr, rcpt.toAddrList, rcpt.bccAddrList);
       if (!result) {
         return false;
       }
 
-      sendFlags = result.sendFlags;
-      let toAddrStr = result.toAddrStr;
-      let bccAddrStr = result.bccAddrStr;
-      let keyMap = result.keyMap;
+      let encodedPrivKey = result.encodedPrivKey;
+      let encodedPubKeys = result.encodedPubKeys;
 
       if (this.preferPgpOverSmime(sendFlags) === 0) {
         // use S/MIME
@@ -3062,9 +3033,9 @@ Enigmail.msg = {
 
       if ((sendFlags & (ENCRYPT | SIGN)) && usingPGPMime) {
         // Use PGP/MIME
-        newSecurityInfo = this.prepareSecurityInfo(sendFlags, uiFlags, rcpt, newSecurityInfo, keyMap);
-        newSecurityInfo.recipients = toAddrStr;
-        newSecurityInfo.bccRecipients = bccAddrStr;
+        newSecurityInfo = this.prepareSecurityInfo(sendFlags, uiFlags, rcpt, newSecurityInfo, {});
+        newSecurityInfo.encodedPrivKey = encodedPrivKey;
+        newSecurityInfo.encodedPubKeys = encodedPubKeys;
       } else if (!this.processed && (sendFlags & (ENCRYPT | SIGN))) {
         // use inline PGP
 
@@ -3072,8 +3043,8 @@ Enigmail.msg = {
           sendFlags: sendFlags,
           inlineEncAttach: inlineEncAttach,
           fromAddr: rcpt.fromAddr,
-          toAddr: toAddrStr,
-          bccAddr: bccAddrStr,
+          encodedPrivKey: encodedPrivKey,
+          encodedPubKeys: encodedPubKeys,
           uiFlags: uiFlags,
           bucketList: document.getElementById("attachmentBucket")
         };
@@ -3086,11 +3057,11 @@ Enigmail.msg = {
       // update the list of attachments
       Attachments2CompFields(msgCompFields);
 
-      if (!this.prepareSending(sendFlags,
-          rcpt.toAddrList.join(", "),
-          toAddrStr + ", " + bccAddrStr,
-          isOffline
-        )) return false;
+      //if (!this.prepareSending(sendFlags,
+      //  rcpt.toAddrList.join(", "),
+      //  toAddrStr + ", " + bccAddrStr,
+      //  isOffline
+      //  )) return false;
 
       if (msgCompFields.characterSet != "ISO-2022-JP") {
         if ((usingPGPMime &&
@@ -3470,10 +3441,8 @@ Enigmail.msg = {
     }
   },
 
-  modifyCompFields: function() {
-
+  modifyCompFields: async function() {
     try {
-
       if (!this.identity) {
         this.identity = getCurrentIdentity();
       }
@@ -3483,7 +3452,7 @@ Enigmail.msg = {
           this.setAdditionalHeader("X-Enigmail-Version", EnigmailApp.getVersion());
         }
 
-        this.setAutocryptHeader();
+        await this.setAutocryptHeader();
       }
     } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
@@ -3497,7 +3466,7 @@ Enigmail.msg = {
     return account.incomingServer; /* returns nsIMsgIncomingServer */
   },
 
-  setAutocryptHeader: function() {
+  setAutocryptHeader: async function() {
     if (!this.isAutocryptEnabled()) return;
 
     this.identity = getCurrentIdentity();
@@ -3516,7 +3485,7 @@ Enigmail.msg = {
 
     if (key) {
       let srv = this.getCurrentIncomingServer();
-      let prefMutual = (srv.getIntValue("acPreferEncrypt") > 0 ? "; prefer-encrypt=mutual" : "");
+
 
       let k = key.getMinimalPubKey(fromMail);
       if (k.exitCode === 0) {
@@ -3529,11 +3498,12 @@ Enigmail.msg = {
   /**
    * Handle the 'compose-send-message' event from TB
    */
-  sendMessageListener: function(event) {
+  sendMessageListener: async function(event) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener\n");
 
     // Do nothing if a compatible version of the "SendLater" addon is installed.
-    // SendLater will call handleSendMessageEvent when needed.
+    // SendLater will call te quickfix -buffer-name=list
+    // handleSendMessageEvent when needed.
 
     try {
       if (typeof(Sendlater3Composing.callEnigmail) === "function") {
@@ -3541,14 +3511,14 @@ Enigmail.msg = {
       }
     } catch (ex) {}
 
-    Enigmail.msg.handleSendMessageEvent(event);
+    await Enigmail.msg.handleSendMessageEvent(event);
   },
 
   /**
    * Perform handling of the compose-send-message' event from TB (or SendLater)
    */
-  handleSendMessageEvent: function(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleSendMessageEvent\n");
+  handleSendMessageEvent: async function(event) {
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleSendMessageEvent I AM ASYNC\n");
     let msgcomposeWindow = document.getElementById("msgcomposeWindow");
     let sendMsgType = Number(msgcomposeWindow.getAttribute("msgtype"));
 
@@ -3557,9 +3527,10 @@ Enigmail.msg = {
       let bc = document.getElementById("enigmail-bc-sendprocess");
 
       try {
-        this.modifyCompFields();
+        await this.modifyCompFields();
         bc.setAttribute("disabled", "true");
-        if (!this.encryptMsg(sendMsgType)) {
+        let encryptResult = await this.encryptMsg(sendMsgType);
+        if (!encryptResult) {
           this.resetUpdatedFields();
           event.preventDefault();
           event.stopPropagation();

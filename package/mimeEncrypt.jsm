@@ -42,6 +42,8 @@ function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
 
   // "securityInfo" variables
+  this.encodedPrivKey = "";
+  this.encodedPubKeys = "";
   this.sendFlags = 0;
   this.UIFlags = 0;
   this.senderEmailAddr = "";
@@ -369,16 +371,7 @@ PgpMimeEncrypt.prototype = {
       let statusFlagsObj = {};
       let errorMsgObj = {};
       let exitCodeObj = {};
-      this.encryptedData = EnigmailEncryption.encryptMessage(this.win,
-        this.UIFlags,
-        plaintext,
-        this.senderEmailAddr,
-        this.recipients,
-        this.bccRecipients,
-        this.sendFlags,
-        exitCodeObj,
-        statusFlagsObj,
-        errorMsgObj);
+      this.encryptedData = EnigmailEncryption.encryptMessage(plaintext, this.encodedPrivKey, this.encodedPubKeys);
       if (this.encryptedData == "") throw Cr.NS_ERROR_FAILURE;
 
       LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
