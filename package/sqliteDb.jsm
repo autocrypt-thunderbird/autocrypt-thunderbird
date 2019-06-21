@@ -54,20 +54,24 @@ var EnigmailSqliteDb = {
     }
   },
 
-  retrieveSecretKeys: async function(email, callback) {
+  retrieveSecretKeyBlobs: async function(email) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
     let conn;
     try {
       conn = await this.openDatabase();
-      await retrieveSecretKeys(conn, email, callback);
+      let secretKeyRows = await retrieveSecretKeyRows(conn, email);
       conn.close();
+
+      let secretKeyBlobs = secretKeyRows.map(row => row.secret);
       EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys - success\n`);
+      return secretKeyBlobs;
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeys: ERROR: ${ex}\n`);
       if (conn) {
         conn.close();
       }
+      return [];
     }
   },
 
@@ -276,19 +280,21 @@ async function storeSecretKey(connection, secret, pub, username, email) {
  *
  * @return {Promise}
  */
-async function retrieveSecretKeys(connection, email, callback) {
+function retrieveSecretKeyRows(connection, email) {
   EnigmailLog.DEBUG("sqliteDB.jsm: retrieveSecretKey()\n");
 
-  const result = [];
-  await connection.execute( "select * from secret_keydata where email='" + email + "';", {},
-    function _onRow(row) {
-      var res = {
-        secret: row.getResultByName("secret"),
-        email: row.getResultByName("email"),
-        pub: row.getResultByName("pub"),
-        username: row.getResultByName("username")
-      }
-      result.push(res);
+  return new Promise(async (resolve, reject) => {
+    const result = [];
+    await connection.execute( "select * from secret_keydata where email='" + email + "';", {},
+      function _onRow(row) {
+        var res = {
+          secret: row.getResultByName("secret"),
+          email: row.getResultByName("email"),
+          pub: row.getResultByName("pub"),
+          username: row.getResultByName("username")
+        };
+        result.push(res);
+    });
+    resolve(result);
   });
-  callback(result);
 }

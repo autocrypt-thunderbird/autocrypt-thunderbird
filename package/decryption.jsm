@@ -27,6 +27,7 @@ const EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/p
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;
@@ -200,20 +201,24 @@ var EnigmailDecryption = {
       return "";
     }
 
-    // limit output to 100 times message size to avoid DoS attack
-    var maxOutput = pgpBlock.length * 100;
-    let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-    let options = {
-      keyserver: keyserver,
-      keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-      fromAddr: EnigmailDecryption.getFromAddr(parent),
-      verifyOnly: verifyOnly,
-      noOutput: false,
-      maxOutputLength: maxOutput,
-      uiFlags: uiFlags
-    };
     const cApi = EnigmailCryptoAPI();
-    let result = cApi.sync(cApi.decrypt(pgpBlock, options));
+    let result = cApi.sync(async function() {
+      let fromAddr = EnigmailDecryption.getFromAddr(parent);
+      let privKeys = await EnigmailSqliteDb.retrieveSecretKeyBlobs(fromAddr);
+
+      // limit output to 100 times message size to avoid DoS attack
+      var maxOutput = pgpBlock.length * 100;
+      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+      let options = {
+        privKeys: privKeys,
+        fromAddr: fromAddr,
+        verifyOnly: verifyOnly,
+        maxOutputLength: maxOutput,
+        uiFlags: uiFlags
+      };
+
+      return cApi.decrypt(pgpBlock, options);
+    });
 
     var plainText = EnigmailData.getUnicodeData(result.decryptedData);
     exitCodeObj.value = result.exitCode;

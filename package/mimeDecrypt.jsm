@@ -29,6 +29,7 @@ const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -511,15 +512,25 @@ MimeDecryptHandler.prototype = {
 
       EnigmailLog.DEBUG("mimeDecryp.jsm: starting decryption\n");
 
-      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-      let options = {
-        keyserver: keyserver,
-        keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-        fromAddr: EnigmailDecryption.getFromAddr(win),
-        maxOutputLength: maxOutput
-      };
+      let pgpBlock = this.outQueue;
       const cApi = EnigmailCryptoAPI();
-      this.returnStatus = cApi.sync(cApi.decryptMime(this.outQueue, options));
+      this.returnStatus = cApi.sync((async function() {
+        let privKeys = await EnigmailSqliteDb.retrieveSecretKeyBlobs('testo@mugenguild.com');
+
+        // limit output to 100 times message size to avoid DoS attack
+        var maxOutput = pgpBlock.length * 100;
+        let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
+        let options = {
+          privKeys: privKeys,
+          keyserver: keyserver,
+          keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
+          fromAddr: EnigmailDecryption.getFromAddr(win),
+          maxOutputLength: maxOutput
+        };
+
+        return cApi.decrypt(pgpBlock, options);
+      })());
+
       this.decryptedData = this.returnStatus.decryptedData;
       this.handleResult(this.returnStatus.exitCode);
 

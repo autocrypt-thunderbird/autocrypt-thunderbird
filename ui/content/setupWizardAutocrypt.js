@@ -43,7 +43,6 @@ function onLoadAsync() {
 }
 
 function onFinish() {
-  sqlite.retrieveSecretKeys('leif@cotech.de', function(result) {
-    EnigmailLog.DEBUG(JSON.stringify(result) + "\n");
-  });
+  const dlg = document.getElementById("setupWizardDlg");
+  dlg.dismiss();
 }
