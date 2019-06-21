@@ -192,7 +192,7 @@ var EnigmailWks = {
           return;
         }
         EnigmailLog.DEBUG("webKey.jsm: submitKey: send " + listener.stdoutData + "\n");
-        let si = EnigmailMimeEncrypt.createMimeEncrypt(null);
+        let si = EnigmailMimeEncrypt.createMimeEncrypt();
         let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
         let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 
@@ -258,7 +258,7 @@ var EnigmailWks = {
         }
       }, function(ret) {
         try {
-          let si = EnigmailMimeEncrypt.createMimeEncrypt(null);
+          let si = EnigmailMimeEncrypt.createMimeEncrypt();
           let subject = listener.stdoutData.match(/^Subject:[ \t]*(.+)$/im);
           let to = listener.stdoutData.match(/^To:[ \t]*(.+)$/im);
 

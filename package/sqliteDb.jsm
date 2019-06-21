@@ -114,8 +114,6 @@ async function checkAutocryptTable(connection) {
 
       await connection.execute("alter table autocrypt_keydata add keyring_inserted text default '0';", {},
         function _onRow(row) {});
-      let EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-      EnigmailAutocrypt.updateAllImportedKeys();
     }
   }
   catch (error) {

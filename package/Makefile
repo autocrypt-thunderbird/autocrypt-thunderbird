@@ -46,7 +46,6 @@ MODFILES = \
            gnupgUpdate.jsm \
            glodaUtils.jsm \
            gpg.jsm \
-           hash.jsm \
            httpProxy.jsm \
            installGnuPG.jsm \
            key.jsm \

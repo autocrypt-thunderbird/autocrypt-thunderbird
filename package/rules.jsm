@@ -520,18 +520,6 @@ var EnigmailRules = {
           //          => then we only process the flags
 
           if (rule.keyId) {
-            if (isAutocryptEmail) {
-              let keyObj = getKeyRing().getKeyById(rule.keyId);
-              if (keyObj) {
-                if (!(keyObj.getEncryptionValidity().keyValid)) {
-                  keyObj = null;
-                  deleteAutocryptRule(addr);
-                }
-              }
-
-              if (!keyObj) continue;
-            }
-
             // move found address from openAdresses to corresponding list (with keys added)
             let elem = openList.splice(openIndex, 1)[0];
             --openIndex; // IMPORTANT because we remove element in the array we iterate on
@@ -595,13 +583,3 @@ var EnigmailRules = {
   }
 };
 
-
-async function deleteAutocryptRule(emailAddr) {
-  const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-
-  await EnigmailAutocrypt.deleteUser(emailAddr, "1");
-  // make sure that gossip rule is marked as "imported"
-  await EnigmailAutocrypt.setKeyImported(null, emailAddr);
-  // try to apply gossip key
-  await EnigmailAutocrypt.importAutocryptKeys(emailAddr, true);
-}

@@ -35,7 +35,6 @@ var EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.j
 var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 var EnigmailMsgRead = ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm").EnigmailMsgRead;
 var EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
-var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 
 if (!Enigmail) var Enigmail = {};
 
@@ -394,10 +393,6 @@ Enigmail.hdrView = {
 
     Enigmail.msg.createArtificialAutocryptHeader();
 
-    if (statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE) {
-      this.tryImportAutocryptHeader();
-    }
-
     this.displayStatusBar();
     this.updateMsgDb();
 
@@ -452,35 +447,6 @@ Enigmail.hdrView = {
       enigMsgPane.removeAttribute("collapsed");
       enigMsgPane.textContent = EnigmailLocale.getString("wksConfirmationReq.message");
     }
-  },
-
-  /**
-   * Try to import an autocrypt header from an unverified signature
-   * (i.e. the sender's key is not available)
-   */
-  tryImportAutocryptHeader: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: tryImportAutocryptHeader()\n");
-
-    if (!("autocrypt" in currentHeaderData)) return;
-    if (!Enigmail.msg.isAutocryptEnabled()) return;
-    if (!("from" in currentHeaderData)) return;
-
-    let fromEmail = "";
-    try {
-      fromEmail = EnigmailFuncs.stripEmail(currentHeaderData.from.headerValue).toLowerCase();
-    } catch (ex) {}
-
-    let keys = EnigmailKeyRing.getKeysByUserId(fromEmail, true);
-    if (keys.length > 0) return;
-
-    EnigmailAutocrypt.importAutocryptKeys([fromEmail]).then(foundKeys => {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: tryImportAutocryptHeader: got " +
-        foundKeys.length + " autocrypt keys\n");
-      if (foundKeys.length > 0) {
-        let k = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
-        if (k) gDBView.reloadMessageWithAllParts();
-      }
-    });
   },
 
   /**
