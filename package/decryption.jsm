@@ -203,15 +203,14 @@ var EnigmailDecryption = {
 
     const cApi = EnigmailCryptoAPI();
     let result = cApi.sync(async function() {
-      let fromAddr = EnigmailDecryption.getFromAddr(parent);
-      let privKeys = await EnigmailSqliteDb.retrieveSecretKeyBlobs(fromAddr);
+      let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
 
       // limit output to 100 times message size to avoid DoS attack
       var maxOutput = pgpBlock.length * 100;
       let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
       let options = {
         privKeys: privKeys,
-        fromAddr: fromAddr,
+        fromAddr: EnigmailDecryption.getFromAddr(parent),
         verifyOnly: verifyOnly,
         maxOutputLength: maxOutput,
         uiFlags: uiFlags

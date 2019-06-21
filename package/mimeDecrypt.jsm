@@ -515,7 +515,7 @@ MimeDecryptHandler.prototype = {
       let pgpBlock = this.outQueue;
       const cApi = EnigmailCryptoAPI();
       this.returnStatus = cApi.sync((async function() {
-        let privKeys = await EnigmailSqliteDb.retrieveSecretKeyBlobs('testo@mugenguild.com');
+        let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
 
         // limit output to 100 times message size to avoid DoS attack
         var maxOutput = pgpBlock.length * 100;

@@ -75,6 +75,28 @@ var EnigmailSqliteDb = {
     }
   },
 
+  retrieveAllSecretKeyBlobs: async function() {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      const result = [];
+      await conn.execute("select secret from secret_keydata;", {},
+        function _onRow(row) {
+          result.push(row.getResultByName("secret"));
+      });
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys - success\n`);
+      return result;
+    } catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeys: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+      throw ex;
+    }
+  },
+
   storeSecretKey: async function(secret, pub, username, email) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey()\n`);
     let conn;
