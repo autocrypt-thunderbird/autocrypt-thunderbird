@@ -10,7 +10,7 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS = ipc ui package lang stdlib
 
-ALL = dirs xpi
+ALL = dirs
 
 ifeq ($(TESTS),yes)
 ALL += test
