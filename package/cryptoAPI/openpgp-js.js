@@ -138,29 +138,37 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async encrypt(plaintext, encodedPrivKey, encodedPubKeys) {
-    EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
+    EnigmailLog.DEBUG(`openpgp-js.js: encrypt()\n`);
 
     const openpgp = getOpenPGP().openpgp;
     EnigmailLog.DEBUG("openpgp-js.js: await..\n");
 
-    let privKey = (await openpgp.key.readArmored(encodedPrivKey)).keys[0];
-
-    let parsedPubKeys = await Promise.all(pubKeys.map(pk => openpgp.key.readArmored(pk)));
-    let pubKeys = parsedPubKeys.map(result => result.keys[0]);
-
-    EnigmailLog.DEBUG("openpgp-js.js: encrypting..\n");
-    const encrypt_options = {
-      message: openpgp.message.fromText(plaintext),
-      publicKeys: pubKeys,
-      privateKeys: [privKey]
-    };
-
-    EnigmailLog.DEBUG("openpgp-js.js: decrypting...\n");
     try {
+      // let privKey = (await openpgp.key.readArmored(encodedPrivKey)).keys[0];
+
+      let binaryPubKeys = encodedPubKeys.map(pk =>
+        Uint8Array.from(atob(pk), c => c.charCodeAt(0)));
+      EnigmailLog.DEBUG("openpgp-js.js: " + JSON.stringify(binaryPubKeys) + "\n");
+      let parsedPubKeys = await Promise.all(binaryPubKeys.map(pk => openpgp.key.read(pk)));
+      let pubKeys = parsedPubKeys.map(result => {
+        EnigmailLog.DEBUG("openpgp-js.js: " + JSON.stringify(result) + "\n");
+        return result.keys[0];
+      });
+
+      EnigmailLog.DEBUG("openpgp-js.js: await..\n");
+
+      EnigmailLog.DEBUG("openpgp-js.js: encrypting..\n");
+      const encrypt_options = {
+        message: openpgp.message.fromText(plaintext),
+        publicKeys: pubKeys
+        // privateKeys: [privKey]
+      };
+
       let openpgp_result = await openpgp.encrypt(encrypt_options);
-      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok" + openpgp_result.data + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok" + openpgp_result + "\n");
+      return openpgp_result.data;
     } catch (ex) {
-      EnigmailLog.DEBUG("openpgp-js.js: decrypt error!" + ex + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: encrypt error: " + ex + "\n");
       throw ex;
     }
   }
@@ -236,6 +244,29 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 }
 
+function streamToString(stream, enc, cb) {
+    if (typeof enc === 'function') {
+        cb = enc;
+        enc = null;
+    }
+    cb = cb || function () {};
+
+    var str = '';
+
+    return new Promise (function (resolve, reject) {
+        stream.on('data', function (data) {
+            str += (typeof enc === 'string') ? data.toString(enc) : data.toString();
+        });
+        stream.on('end', function () {
+            resolve(str);
+            cb(null, str);
+        });
+        stream.on('error', function (err) {
+            reject(err);
+            cb(err);
+        });
+    });
+}
 
 function getOpenPGPjsAPI() {
   return new OpenPGPjsCryptoAPI();

@@ -30,6 +30,7 @@ const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/time
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
@@ -82,10 +83,6 @@ var EnigmailKeyRing = {
     if (gKeyListObj.keySortList.length === 0) {
       loadKeyList(win, sortColumn, sortDirection);
       getWindows().keyManReloadKeys();
-      if (!gKeyCheckDone) {
-        gKeyCheckDone = true;
-        runKeyUsabilityCheck();
-      }
     } else {
       if (sortColumn) {
         gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
@@ -506,6 +503,11 @@ var EnigmailKeyRing = {
   importKey: function(parent, isInteractive, keyBlock, keyId, errorMsgObj, importedKeysObj) {
     EnigmailLog.DEBUG("keyRing.jsm: EnigmailKeyRing.importKey: id=" + keyId + ", " + isInteractive + "\n");
 
+    const cApi = EnigmailCryptoAPI();
+    return cApi.sync(this.importKeyAsync());
+  },
+
+  importKeyAsync: async function(parent, isInteractive, keyBlock, keyId, errorMsgObj, importedKeysObj) {
     const beginIndexObj = {};
     const endIndexObj = {};
     const blockType = EnigmailArmor.locateArmoredBlock(keyBlock, 0, "", beginIndexObj, endIndexObj, {});
@@ -529,55 +531,7 @@ var EnigmailKeyRing = {
       }
     }
 
-    const args = EnigmailGpg.getStandardArgs(false).concat(["--no-verbose", "--status-fd", "2", "--no-auto-check-trustdb", "--import"]);
-
-    const exitCodeObj = {};
-    const statusMsgObj = {};
-
-    EnigmailExecution.execCmd(EnigmailGpg.agentPath, args, pgpBlock, exitCodeObj, {}, statusMsgObj, errorMsgObj);
-
-    const statusMsg = statusMsgObj.value;
-
-    if (!importedKeysObj) {
-      importedKeysObj = {};
-    }
-    importedKeysObj.value = [];
-
-    let exitCode = 1;
-    if (statusMsg && (statusMsg.search(/^IMPORT_RES /m) > -1)) {
-      let importRes = statusMsg.match(/^IMPORT_RES ([0-9]+) ([0-9]+) ([0-9]+) 0 ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)/m);
-
-      if (importRes !== null) {
-        let secCount = parseInt(importRes[9], 10); // number of secret keys found
-        let secImported = parseInt(importRes[10], 10); // number of secret keys imported
-        let secDups = parseInt(importRes[11], 10); // number of secret keys already on the keyring
-
-        if (secCount !== secImported + secDups) {
-          EnigmailKeyRing.clearCache();
-          errorMsgObj.value = EnigmailLocale.getString("import.secretKeyImportError");
-          return 1;
-        }
-      }
-
-      exitCode = 0;
-      // Normal return
-      if (statusMsg.search(/^IMPORT_OK /m) > -1) {
-        let l = statusMsg.split(/\r|\n/);
-        for (let i = 0; i < l.length; i++) {
-          const matches = l[i].match(/^(IMPORT_OK [0-9]+ )(([0-9a-fA-F]{8}){2,5})/);
-          if (matches && (matches.length > 2)) {
-            EnigmailLog.DEBUG("enigmail.js: Enigmail.importKey: IMPORTED 0x" + matches[2] + "\n");
-            importedKeysObj.value.push(matches[2]);
-          }
-        }
-
-        if (importedKeysObj.value.length > 0) {
-          EnigmailKeyRing.updateKeys(importedKeysObj.value);
-        }
-      }
-    }
-
-    return exitCode;
+    return 0;
   },
 
   isGeneratingKey: function() {
@@ -1140,26 +1094,6 @@ function createAndSortKeyList(keyList, sortColumn, sortDirection, resetKeyCache)
   EnigmailKeyRing.rebuildKeyIndex();
 
   gKeyListObj.keySortList.sort(getSortFunction(sortColumn.toLowerCase(), gKeyListObj, sortDirection));
-}
-
-
-function runKeyUsabilityCheck() {
-  EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck()\n");
-
-  EnigmailTimer.setTimeout(function _f() {
-    try {
-      let msg = getKeyUsability().keyExpiryCheck();
-
-      if (msg && msg.length > 0) {
-        getDialog().info(null, msg);
-      } else {
-        getKeyUsability().checkOwnertrust();
-      }
-    } catch (ex) {
-      EnigmailLog.DEBUG("keyRing.jsm: runKeyUsabilityCheck: exception " + ex.message + "\n" + ex.stack + "\n");
-    }
-
-  }, 60 * 1000); // 1 minute
 }
 
 function waitForKeyList() {

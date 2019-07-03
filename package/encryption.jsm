@@ -26,22 +26,17 @@ const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/func
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 
 var EnigmailEncryption = {
-  encryptMessage: function(parent, uiFlags, plainText, encodedPrivKey, encodedPubKeys, bccMailAddr, sendFlags,
-    exitCodeObj, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: " + plainText.length + " bytes to " + encodedPubKeys.length + " keys (" + sendFlags + ")\n");
-
-    exitCodeObj.value = -1;
-    statusFlagsObj.value = 0;
-    errorMsgObj.value = "";
+  encryptMessage: async function(plainText, encodedPrivKey, encodedPubKeys) {
+    EnigmailLog.DEBUG("encryption.js: Enigmail.encryptMessage: " + plainText.length + " bytes to " + encodedPubKeys.length + " keys\n");
 
     if (!plainText) {
-      EnigmailLog.DEBUG("enigmail.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
-      exitCodeObj.value = 0;
+      EnigmailLog.DEBUG("encryption.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
       EnigmailLog.DEBUG("  <=== encryptMessage()\n");
-      return plainText;
+      return "";
     }
 
     // First convert all linebreaks to newlines
@@ -52,10 +47,7 @@ var EnigmailEncryption = {
     plainText = plainText.replace(/\n/g, "\r\n");
 
     const cApi = EnigmailCryptoAPI();
-    let ciphertext = cApi.sync(cApi.encrypt(plainText, encodedPrivKey, encodedPubKeys));
-
-    var retStatusObj = {};
-    exitCodeObj.value = 0;
+    let ciphertext = await cApi.encrypt(plainText, encodedPrivKey, encodedPubKeys);
 
     // Normal return
     EnigmailLog.DEBUG("  <=== encryptMessage()\n");

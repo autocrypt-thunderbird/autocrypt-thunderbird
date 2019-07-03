@@ -42,7 +42,7 @@ var EnigmailSqliteDb = {
       conn = await this.openDatabase();
       await checkAutocryptTable(conn);
       await checkWkdTable(conn);
-      await createSecretKeyTable(conn);
+      await createTables(conn);
       conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
     }
@@ -54,7 +54,31 @@ var EnigmailSqliteDb = {
     }
   },
 
-  retrieveSecretKeyBlobs: async function(email) {
+  retrievePublicKeyBlobs: async function(emails) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      const result = [];
+      // TODO actually select by email addresses, instead of all
+      await conn.execute( "select keydata from autocrypt_keydata;", {},
+        function _onRow(row) {
+          let data = row.getResultByName("keydata");
+          result.push(data);
+      });
+      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys - success\n`);
+      return result;
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeys: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+      return [];
+    }
+  },
+
+  retrieveSecretKeyBlob: async function(email) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
     let conn;
     try {
@@ -102,7 +126,39 @@ var EnigmailSqliteDb = {
     let conn;
     try {
       conn = await this.openDatabase();
-      await storeSecretKey(conn, secret, pub, username, email);
+      // TODO use prepared statement!
+      await conn.execute(
+        "insert into secret_keydata values (" +
+        "'" + secret + "'," +
+        "'" + pub + "'," +
+        "'" + username + "'," +
+        "'" + email + "'" +
+        ");"
+      );
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey - success\n`);
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: storeSecretKey: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+    }
+  },
+
+  storePublicKey: async function(fpr_primary, data) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: storePublicKey()\n`);
+
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      await conn.execute(
+        "insert into public_keydata values (" +
+        "'" + fpr_primary + "'," +
+        "'" + data + "'" +
+        ");"
+      );
+
       conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey - success\n`);
     }
@@ -259,36 +315,32 @@ function createWkdTable(connection) {
  *
  * @return {Promise}
  */
-async function createSecretKeyTable(connection) {
+async function createTables(connection) {
   EnigmailLog.DEBUG("sqliteDB.jsm: createSecretKeyTable()\n");
 
   await connection.execute("create table if not exists secret_keydata (" +
-          "secret text not null, " + 
-          "pub text not null, " + 
+          "secret text not null, " +
+          "pub text not null, " +
           "username text not null, " +
-          "email text not null" + 
+          "email text not null" +
     ");"
   );
 
-  return null;
-}
+  await connection.execute("create table if not exists public_keydata (" +
+          "fpr_primary text not null, " +
+          "data text not null" +
+    ");"
+  );
 
-/**
- * Store secret key in "secret_keydata" table
- *
- * @param connection: Object - SQLite connection
- *
- * @return {Promise}
- */
-async function storeSecretKey(connection, secret, pub, username, email) {
-  EnigmailLog.DEBUG("sqliteDB.jsm: storeSecretKey()\n");
+  await connection.execute("create table if not exists public_fingerprints (" +
+          "fpr_primary text not null, " +
+          "fpr text not null" +
+    ");"
+  );
 
-  await connection.execute(
-    "insert into secret_keydata values (" +
-     "'" + secret + "'," +
-     "'" + pub + "'," +
-     "'" + username + "'," +
-     "'" + email + "'" +
+  await connection.execute("create table if not exists public_keyids (" +
+          "fpr_primary text not null, " +
+          "key_id long not null" +
     ");"
   );
 

@@ -25,6 +25,7 @@ const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
@@ -368,13 +369,12 @@ PgpMimeEncrypt.prototype = {
       let plaintext = this.pipeQueue;
       this.pipeQueue = "";
 
-      let statusFlagsObj = {};
-      let errorMsgObj = {};
-      let exitCodeObj = {};
-      this.encryptedData = EnigmailEncryption.encryptMessage(plaintext, this.encodedPrivKey, this.encodedPubKeys);
-      if (this.encryptedData == "") throw Cr.NS_ERROR_FAILURE;
+      const cApi = EnigmailCryptoAPI();
+      this.encryptedData = cApi.sync(EnigmailEncryption.encryptMessage(
+        plaintext, this.encodedPrivKey, this.encodedPubKeys));
+      if (this.encryptedData == "" || !this.encryptedData) throw Cr.NS_ERROR_FAILURE;
 
-      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
+      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation " + this.encryptedData + "\n");
 
       if (this.cryptoMode == MIME_SIGNED) this.signedHeaders2();
 

@@ -482,6 +482,7 @@ var EnigmailAutocrypt = {
    * @return Boolean: true: account is valid / false: OpenPGP not configured or key not valid
    */
   isAccountSetupForPgp: function(emailAddr) {
+    /*
     let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(emailAddr).toLowerCase());
     let keyObj = null;
 
@@ -501,6 +502,7 @@ var EnigmailAutocrypt = {
     if (!o.keyValid) return false;
     o = keyObj.getSigningValidity();
     if (!o.keyValid) return false;
+    */
 
     return true;
   },
