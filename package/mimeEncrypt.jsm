@@ -26,6 +26,7 @@ const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
@@ -34,8 +35,6 @@ const PGPMIME_ENCRYPT_CONTRACTID = "@enigmail.net/compose/mimeencrypt;1";
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
 const maxBufferLen = 102400;
-const MIME_SIGNED = 1;
-const MIME_ENCRYPTED = 2;
 
 var gDebugLogLevel = 3;
 
@@ -43,8 +42,9 @@ function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
 
   // "securityInfo" variables
-  this.encodedPrivKey = "";
-  this.encodedPubKeys = "";
+  this.fromAddr = "";
+  this.toAddrs = "";
+  this.bccAddrs = "";
   this.sendFlags = 0;
   this.UIFlags = 0;
   this.senderEmailAddr = "";
@@ -168,11 +168,9 @@ PgpMimeEncrypt.prototype = {
       }
 
       if (this.sendFlags & EnigmailConstants.SEND_PGP_MIME) {
-
         if (this.sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
-          // applies to encrypted and signed & encrypted
-          this.cryptoMode = MIME_ENCRYPTED;
-        }
+        } else
+          throw Cr.NS_ERROR_NOT_IMPLEMENTED;
       }
       else
         throw Cr.NS_ERROR_NOT_IMPLEMENTED;
@@ -192,9 +190,7 @@ PgpMimeEncrypt.prototype = {
   startCryptoHeaders: function() {
     EnigmailLog.DEBUG("mimeEncrypt.js: startCryptoHeaders\n");
 
-    if (this.cryptoMode == MIME_SIGNED) this.signedHeaders1(false);
-    if (this.cryptoMode == MIME_ENCRYPTED) this.encryptedHeaders();
-
+    this.encryptedHeaders();
     this.writeSecureHeaders();
   },
 
@@ -270,14 +266,11 @@ PgpMimeEncrypt.prototype = {
       "--" + this.encHeader + "\r\n";
 
     this.writeToPipe(w);
-
-    if (this.cryptoMode == MIME_SIGNED) this.writeOut(w);
   },
 
   getAutocryptGossip: function() {
     let gossip = "";
-    if (this.cryptoMode == MIME_ENCRYPTED &&
-      this.msgCompFields.hasHeader("autocrypt") &&
+    if (this.msgCompFields.hasHeader("autocrypt") &&
       this.keyMap &&
       EnigmailFuncs.getNumberOfRecipients(this.msgCompFields) > 1) {
       for (let email in this.keyMap) {
@@ -363,20 +356,16 @@ PgpMimeEncrypt.prototype = {
 
       if (this.encHeader) {
         this.writeToPipe("\r\n--" + this.encHeader + "--\r\n");
-        if (this.cryptoMode == MIME_SIGNED) this.writeOut("\r\n--" + this.encHeader + "--\r\n");
       }
 
       let plaintext = this.pipeQueue;
       this.pipeQueue = "";
 
       const cApi = EnigmailCryptoAPI();
-      this.encryptedData = cApi.sync(EnigmailEncryption.encryptMessage(
-        plaintext, this.encodedPrivKey, this.encodedPubKeys));
+      this.encryptedData = cApi.sync(this.signAndEncrypt(this.fromAddr, this.toAddrs, plaintext));
       if (this.encryptedData == "" || !this.encryptedData) throw Cr.NS_ERROR_FAILURE;
 
       LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation " + this.encryptedData + "\n");
-
-      if (this.cryptoMode == MIME_SIGNED) this.signedHeaders2();
 
       this.encryptedData = this.encryptedData.replace(/\r/g, "").replace(/\n/g, "\r\n"); // force CRLF
       this.writeOut(this.encryptedData);
@@ -387,6 +376,38 @@ PgpMimeEncrypt.prototype = {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
+  },
+
+  swag: async function(fromAddr, toAddrs, plaintext) {
+    let encodedPrivKey = await this.selectPrivKey(fromAddr);
+    let encodedPubKeys = await this.selectPubKeys(toAddrs);
+    return await EnigmailEncryption.encryptMessage(plaintext, encodedPrivKey, encodedPubKeys);
+  },
+
+  selectPrivKey: async function(fromAddr) {
+    return await sqlite.retrieveSecretKeyBlob(fromAddr);
+  },
+
+  selectPubKeys: async function(toAddrList, bccAddrList) {
+    EnigmailLog.DEBUG("=====> keySelection()\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection()\n");
+
+    // NOTE: If we only have bcc addresses, we currently do NOT process rules and select keys at all
+    //       This is GOOD because sending keys for bcc addresses makes bcc addresses visible
+    //       (thus compromising the concept of bcc)
+    //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
+    if (toAddrList.length === 0) {
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
+
+      // TODO deal with bcc only
+      return false;
+    }
+
+    let result = await sqlite.retrievePublicKeyBlobs(toAddrList);
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return \n");
+    EnigmailLog.DEBUG("  <=== keySelection()\n");
+
+    return result;
   },
 
   mimeCryptoWriteBlock: function(buffer, length) {
@@ -408,46 +429,26 @@ PgpMimeEncrypt.prototype = {
         if (line.replace(/[\r\n]/g, "").length === 0) {
           this.inputMode = 1;
 
-          if (this.cryptoMode == MIME_ENCRYPTED) {
-            if (!this.encHeader) {
-              let ct = this.getHeader("content-type", false);
-              if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
-                this.encapsulate = EnigmailMime.createBoundary();
-                this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
-                  this.encapsulate + '"\r\n\r\n');
-                this.writeToPipe("--" + this.encapsulate + "\r\n");
-              }
+          if (!this.encHeader) {
+            let ct = this.getHeader("content-type", false);
+            if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
+              this.encapsulate = EnigmailMime.createBoundary();
+              this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
+                this.encapsulate + '"\r\n\r\n');
+              this.writeToPipe("--" + this.encapsulate + "\r\n");
             }
-          }
-          else if (this.cryptoMode == MIME_SIGNED) {
-            let ct = this.getHeader("content-type", true);
-            let hdr = EnigmailFuncs.getHeaderData(ct);
-            hdr.boundary = hdr.boundary || "";
-            hdr.boundary = hdr.boundary.replace(/['"]/g, "");
           }
 
           this.writeToPipe(this.headerData);
-          if (this.cryptoMode == MIME_SIGNED ||
-            (this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+          if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
             this.writeOut(this.headerData);
           }
         }
 
       }
       else if (this.inputMode == 1) {
-        if (this.cryptoMode == MIME_SIGNED) {
-          // special treatments for various special cases with PGP/MIME signed messages
-          if (line.substr(0, 5) == "From ") {
-            LOCAL_DEBUG("mimeEncrypt.js: added >From\n");
-            this.writeToPipe(">");
-          }
-        }
-
         this.writeToPipe(line);
-        if (this.cryptoMode == MIME_SIGNED) {
-          this.writeOut(line);
-        }
-        else if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
           this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", "")));
         }
       }
@@ -523,7 +524,7 @@ PgpMimeEncrypt.prototype = {
     }
 
     return res;
-  },
+  }
 };
 
 

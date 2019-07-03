@@ -35,8 +35,6 @@
   <window id="msgcomposeWindow">
     <broadcasterset id="enigmailBroadcasters">
       <broadcaster id="enigmail-bc-encrypt" checked="false"/>
-      <broadcaster id="enigmail-bc-sign" checked="false"/>
-      <broadcaster id="enigmail-bc-protectHdr" checked="false"/>
       <broadcaster id="enigmail-bc-sendprocess"/>
     </broadcasterset>
   </window>
@@ -55,141 +53,10 @@
          oncommand="Enigmail.msg.setFinalSendMode('toggle-final-sign')" modifiers="accel, shift"/>
   </keyset>
 
-<!-- menu for all apps -->
-
-  <menubar id="mail-menubar">
-
-      <menu id="menu_Enigmail"
-            label="&enigmail.label;"
-            accesskey="&enigmail.composemenu.accesskey;"
-            insertbefore="tasksMenu">
-
-        <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
-
-          <!-- encryption state / toggle menu -->
-          <menuitem id="enigmail_compose_encrypt_item"
-                accesskey="&enigmail.encryptedsend.accesskey;"
-                label="&enigmail.encryptedsend.label;"
-                key="key_enigEncrypt"
-                type="checkbox"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
-
-          <!-- signing state / toggle menu -->
-          <menuitem id="enigmail_compose_sign_item"
-                accesskey="&enigmail.signedsend.accesskey;"
-                label="&enigmail.signedsend.label;"
-                key="key_enigSign"
-                type="checkbox"
-                oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-
-          <!-- PGP/MIME state / toggle menu -->
-          <menuseparator/>
-          <menuitem id="enigmail_compose_pgpmime_item"
-                accesskey="&enigmail.usePgpMime.accesskey;"
-                label="&enigmail.usePgpMime.label;"
-                type="radio"
-                name="enigmailPgpProtocol"
-                oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeYes');"/>
-
-          <menuitem id="enigmail_compose_inline_item"
-                accesskey="&enigmail.useInline.accesskey;"
-                label="&enigmail.useInline.label;"
-                name="enigmailPgpProtocol"
-                checked="false"
-                type="radio"
-                oncommand="Enigmail.msg.setFinalSendMode('final-pgpmimeNo');"/>
-
-          <menuitem id="enigmail_compose_smime_item"
-                accesskey="&enigmail.useSmime.accesskey;"
-                label="&enigmail.useSmime.label;"
-                name="enigmailPgpProtocol"
-                checked="false"
-                type="radio"
-                oncommand="Enigmail.msg.setFinalSendMode('final-useSmime');"/>
-
-          <menuseparator/>
-
-          <menuitem id="enigmail_trust_all_keys"
-              label="&enigmail.tempTrustAllKeys.label;"
-              accesskey="&enigmail.tempTrustAllKeys.accesskey;"
-              type="checkbox"
-              checked="false"
-              advanced="true"
-              oncommand="Enigmail.msg.tempTrustAllKeys();" />
-
-          <menuitem id="enigmail_undo_encryption"
-              label="&enigmail.undoencryption.label;"
-              accesskey="&enigmail.undoencryption.accesskey;"
-              oncommand="Enigmail.msg.undoEncryption();" />
-
-          <menuitem id="enigmail_encrypt_subject"
-              label="&enigmail.protectHeaders.label;"
-              accesskey="&enigmail.protectHeaders.accesskey;"
-              type="checkbox"
-              checked="false"
-              advanced="true"
-              oncommand="Enigmail.msg.toggleProtectHeaders();" />
-
-          <menuseparator/>
-
-          <menuitem id="enigmail_clearPassphrase"
-              label="&enigmail.clearPassphrase.label;"
-              accesskey="&enigmail.clearPassphrase.accesskey;"
-              advanced="true"
-              oncommand="EnigmailPassword.clearPassphrase(window);" />
-
-          <menuitem id="enigmail_keymgmt"
-             label="&enigmail.keyManWindow.label;"
-             accesskey="&enigmail.keyManWindow.accesskey;"
-             oncommand="EnigmailWindows.openKeyManager(window);" />
-
-          <menuitem id="enigmail_RulesEditor"
-              label="&enigmail.editRules.label;"
-              accesskey="&enigmail.editRules.accesskey;"
-              oncommand="EnigmailWindows.openRulesEditor();"/>
-
-          <menuseparator/>
-
-          <menu id="enigmail_compose_options_menu"
-                label="&enigmail.prefs.label;"
-                accesskey="&enigmail.prefs.accesskey;">
-
-            <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
-
-              <menuitem id="enigmail_accountSettings"
-                label="&enigmail.pgpAccountSettings.label;"
-                accesskey="&enigmail.pgpAccountSettings.accesskey;"
-                oncommand="Enigmail.msg.goAccountManager();" />
-
-              <menuitem id="enigmail_defaultSendOpts"
-                label="&enigmail.sendOptionsMenu.label;"
-                accesskey="&enigmail.sendOptionsMenu.accesskey;"
-                oncommand="EnigmailWindows.openPrefWindow(window, true, 'sendingTab');" />
-
-              <menuitem id="enigmail_defaultKeySelOpts"
-                label="&enigmail.defaultKeySelOpts.label;"
-                accesskey="&enigmail.defaultKeySelOpts.accesskey;"
-                advanced="true"
-                oncommand="EnigmailWindows.openPrefWindow(window, true, 'keySelTab');" />
-
-            </menupopup>
-          </menu>
-
-          <menuitem id="enigmail_help"
-              label="&enigmail.help.label;"
-              accesskey="&enigmail.help.accesskey;"
-              oncommand="EnigmailWindows.openHelpWindow('compose');" />
-
-        </menupopup>
-      </menu>
-
-  </menubar>
-
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
     targetToolbar="composeToolbar2"
-    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-enigmail-sign,button-save,spring"
+    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-save,spring"
     targetToolbox="compose-toolbox">
 
     <!-- 'Encrypt message' button -->
@@ -201,25 +68,6 @@
             observes="enigmail-bc-encrypt"
             oncommand="Enigmail.msg.doPgpButton('toggle-final-encrypt');"/>
 
-
-    <!-- 'Sign message' button -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-sign"
-            label="&enigmail.signedsend.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-sign"
-            oncommand="Enigmail.msg.doPgpButton('toggle-final-sign');"/>
-
-    <!-- 'Encrypt subject' button -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="enigmail-toolbar-encryptHdr-button"
-            label="&enigmail.protectHeaders.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-protectHdr"
-            oncommand="Enigmail.msg.toggleProtectHeaders()">
-    </toolbarbutton>
 
     <!-- status info button -->
     <toolbarbutton class="toolbarbutton-1"

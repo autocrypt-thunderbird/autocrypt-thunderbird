@@ -31,18 +31,12 @@ Enigmail.hlp = {
    * @return: list of all found key (with leading "0x") or null
    *          details in details parameter
    */
-  validKeysForAllRecipients: function(emailsOrKeys, details) {
+  validKeysForAllRecipients: function(emails) {
     EnigmailLog.DEBUG("=====> validKeysForAllRecipients()\n");
-    EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailsOrKeys='" + emailsOrKeys + "'\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): emailsOrKeys='" + emails.join(',') + "'\n");
 
-    return ["0x7BD18320DEADFA11"];
-
-    // use helper to see when we enter and leave this function
-    // let resultingArray = this.doValidKeysForAllRecipients(emailsOrKeys, details);
-
-    // EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: validKeysForAllRecipients(): return '" + resultingArray + "'\n");
-    // EnigmailLog.DEBUG("  <=== validKeysForAllRecipients()\n");
-    // return resultingArray;
+    // TODO calculate autocrypt recommendation
+    return true;
   },
 
 
