@@ -13,11 +13,9 @@ const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
 const GlodaUtils = ChromeUtils.import("chrome://enigmail/content/modules/glodaUtils.jsm").GlodaUtils;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
@@ -30,7 +28,6 @@ const EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules
 const getFixExchangeMsg = EnigmailLazy.loader("enigmail/fixExchangeMsg.jsm", "EnigmailFixExchangeMsg");
 const getDecryption = EnigmailLazy.loader("enigmail/decryption.jsm", "EnigmailDecryption");
 const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
-const getGpgAgent = EnigmailLazy.loader("enigmail/gpgAgent.jsm", "EnigmailGpgAgent");
 
 const STATUS_OK = 0;
 const STATUS_FAILURE = 1;
@@ -448,66 +445,13 @@ CryptMessageIntoFolder.prototype = {
     attachmentName = attachmentName.replace(/\.(pgp|asc|gpg)$/, "");
 
     var enigmailSvc = EnigmailCore.getService();
-    var args = EnigmailGpg.getStandardArgs(true);
-    args.push("-d");
 
-    var statusMsgObj = {};
-    var cmdLineObj = {};
-    var exitCode = -1;
-    var statusFlagsObj = {};
-    var errorMsgObj = {};
-    statusFlagsObj.value = 0;
-
-    var listener = EnigmailExecution.newSimpleListener(
-      function _stdin(pipe) {
-        pipe.write(mimePart.body);
-        pipe.close();
-
-      }
-    );
-
-    do {
-      var proc = EnigmailExecution.execStart(getGpgAgent().agentPath, args, false, null, listener, statusFlagsObj);
-      if (!proc) {
-        return;
-      }
-      // Wait for child STDOUT to close
-      proc.wait();
-      EnigmailExecution.execEnd(listener, statusFlagsObj, statusMsgObj, cmdLineObj, errorMsgObj);
-
-      if ((listener.stdoutData && listener.stdoutData.length > 0) ||
-        (statusFlagsObj.value & EnigmailConstants.DECRYPTION_OKAY)) {
-        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption OK\n");
-        exitCode = 0;
-      } else if (statusFlagsObj.value & (EnigmailConstants.DECRYPTION_FAILED | EnigmailConstants.MISSING_MDC)) {
-        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption without MDC protection\n");
-        exitCode = 0;
-      } else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
-        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption failed\n");
-        // since we cannot find out if the user wants to cancel
-        // we should ask
-        let msg = EnigmailLocale.getString("converter.decryptAtt.failed", [attachmentName, this.subject]);
-
-        if (!getDialog().confirmDlg(null, msg,
-            EnigmailLocale.getString("dlg.button.retry"), EnigmailLocale.getString("dlg.button.skip"))) {
-          return;
-        }
-      } else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_INCOMPLETE) {
-        // failure; message not complete
-        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decryption incomplete\n");
-        return;
-      } else {
-        // there is nothing to be decrypted
-        EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: no decryption required\n");
-        return;
-      }
-
-    } while (exitCode !== 0);
+    // TODO
 
 
-    EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decrypted to " + listener.stdoutData.length + " bytes\n");
+    EnigmailLog.DEBUG("persistentCrypto.jsm: decryptAttachment: decrypted to " + 0 + " bytes\n");
     this.decryptedMessage = true;
-    mimePart.body = listener.stdoutData;
+    // mimePart.body = listener.stdoutData;
     mimePart.headers._rawHeaders.set("content-disposition", `attachment; filename="${attachmentName}"`);
     mimePart.headers._rawHeaders.set("content-transfer-encoding", ["base64"]);
     let origCt = mimePart.headers.get("content-type");

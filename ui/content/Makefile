@@ -57,8 +57,6 @@ UIFILES = \
 	enigmailImportPhoto.xul \
 	keyDetailsDlg.js \
 	keyDetailsDlg.xul \
-	enigmailKeyManager.xul \
-	enigmailKeyManager.js \
 	enigmailManageUidDlg.js \
 	enigmailManageUidDlg.xul \
 	enigmailRulesEditor.xul \

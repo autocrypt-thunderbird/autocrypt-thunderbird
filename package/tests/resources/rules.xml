@@ -1,9 +1,0 @@
-<pgpRuleList>
-  <!-- Keys: { anbd } for 'mszt start with' and 'must end with'
-       Keys: '' no key, continue with further rules
-             '.' no key, skip further rules
-       Flag values:  0: never, 1: undef/maybe, 2: always
-    -->
-  <pgpRule email='{user1@some.domain}' keyId='0x1234ABCD' sign='1' encrypt='1' pgpMime='1'/>
-  <pgpRule email='user2@some.domain' keyId='0x1234ABCE' sign='2' encrypt='1' pgpMime='0'/>
-</pgpRuleList>

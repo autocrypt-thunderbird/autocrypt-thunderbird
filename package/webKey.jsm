@@ -24,7 +24,6 @@ const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/file
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailExecution = ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm").EnigmailExecution;
-const EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
 const EnigmailSend = ChromeUtils.import("chrome://enigmail/content/modules/send.jsm").EnigmailSend;
 const EnigmailMimeEncrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
@@ -36,71 +35,6 @@ const GPG_WKS_CLIENT = "gpg-wks-client";
 
 var EnigmailWks = {
   wksClientPath: null,
-
-  /**
-   * Get WKS Client path (gpg-wks-client)
-   *
-   * @param window  : Object - parent window for dialog display
-   * @param cb      : Function(retValue) - callback function.
-   *                   retValue: nsIFile Object to gpg-wks-client executable or NULL
-   * @return        : Object - NULL or a process handle
-   */
-  getWksClientPathAsync: function(window, cb) {
-    EnigmailLog.DEBUG("webKey.jsm: getWksClientPathAsync\n");
-
-    if (EnigmailWks.wksClientPath === null) {
-      let listener = EnigmailExecution.newSimpleListener(null, function(ret) {
-        if (ret === 0) {
-          try {
-            let stdout = listener.stdoutData;
-
-            let libexecdir = /^libexecdir:(.+?)$/m.exec(stdout)[1];
-            if (libexecdir) {
-              libexecdir = libexecdir.replace(/%3a/gi, ":");
-            }
-            else {
-              libexecdir = "";
-            }
-
-            let wks_client = checkIfExists(libexecdir, GPG_WKS_CLIENT);
-            if (!wks_client) {
-              let bindir = /^bindir:(.+?)$/m.exec(stdout)[1];
-              if (bindir) {
-                bindir = bindir.replace(/%3a/gi, ":");
-              }
-              else {
-                bindir = "";
-              }
-              wks_client = checkIfExists(bindir, GPG_WKS_CLIENT);
-
-              if (!wks_client) {
-                cb(null);
-                return;
-              }
-            }
-
-            EnigmailWks.wksClientPath = wks_client;
-            cb(wks_client);
-          }
-          catch (e) {
-            EnigmailLog.DEBUG("webKey.jsm: getWksClientPathAsync: " + e.toString() + "\n");
-            cb(null);
-          }
-        }
-        else {
-          cb(null);
-        }
-      });
-
-      return EnigmailExecution.execStart(EnigmailGpgAgent.gpgconfPath, ["--list-dirs"], false, window, listener, {
-        value: null
-      });
-    }
-    else {
-      cb(EnigmailWks.wksClientPath);
-      return null;
-    }
-  },
 
   /**
    * Determine if WKS is supported by email provider

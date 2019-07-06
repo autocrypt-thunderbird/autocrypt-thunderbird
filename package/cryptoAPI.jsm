@@ -17,10 +17,10 @@ var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Service
 function EnigmailCryptoAPI() {
   if (!gCurrentApi) {
     const {
-      getGnuPGAPI
-    } = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/gnupg.js");
+      getOpenPGPjsAPI
+    } = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/openpgp-js.js");
 
-    gCurrentApi = getGnuPGAPI();
+    gCurrentApi = getOpenPGPjsAPI();
   }
 
   return gCurrentApi;

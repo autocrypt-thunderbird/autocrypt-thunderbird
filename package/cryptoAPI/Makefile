@@ -8,10 +8,6 @@ DEPTH		= ../..
 include $(DEPTH)/config/autoconf.mk
 
 MODFILES = \
-	gnupg.js \
-	gnupg-decryption.jsm \
-	gnupg-keylist.jsm \
-	gnupg-key.jsm \
 	openpgp-js.js \
 	interface.js
 

@@ -20,7 +20,6 @@ MODFILES = \
            autocrypt.jsm \
            autoSetup.jsm \
            autocryptSetup.jsm \
-           card.jsm \
            clipboard.jsm \
            commandLine.jsm \
            configBackup.jsm \
@@ -34,24 +33,18 @@ MODFILES = \
            dialog.jsm \
            encryption.jsm \
            enigmailOverlays.jsm \
-           errorHandling.jsm \
            events.jsm \
-           execution.jsm \
            dns.jsm \
            funcs.jsm \
            files.jsm \
            filters.jsm \
            filtersWrapper.jsm \
            fixExchangeMsg.jsm \
-           gpgAgent.jsm \
            gnupgUpdate.jsm \
            glodaUtils.jsm \
-           gpg.jsm \
            httpProxy.jsm \
            installGnuPG.jsm \
            key.jsm \
-           keyEditor.jsm \
-           keyRing.jsm \
            keyObj.jsm \
            keyUsability.jsm \
            keyRefreshService.jsm \

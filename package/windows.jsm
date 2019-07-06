@@ -13,7 +13,6 @@ var EXPORTED_SYMBOLS = ["EnigmailWindows"];
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
 const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
 const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
@@ -419,94 +418,6 @@ var EnigmailWindows = {
     };
     win.openDialog("chrome://enigmail/content/ui/enigmailSignKeyDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-    return resultObj.refresh;
-  },
-
-  /**
-   * Display the photo ID associated with a key
-   *
-   * @win        - |object| holding the parent window for the dialog
-   * @keyId      - |string| containing the key ID (eg. "0x12345678")
-   * @userId     - |string| containing the User ID (for displaing in the dialog only)
-   * @photoNumber - |number| UAT entry in the squence of appearance in the key listing, starting with 0
-   * no return value
-   */
-  showPhoto: function(win, keyId, userId, photoNumber) {
-    const enigmailSvc = EnigmailCore.getService(win);
-    if (enigmailSvc) {
-      if (!photoNumber) photoNumber = 0;
-      let keyObj = EnigmailKeyRing.getKeyById(keyId);
-      if (!keyObj) {
-        EnigmailWindows.alert(win, EnigmailLocale.getString("noPhotoAvailable"));
-      }
-
-      let photoFile = keyObj.getPhotoFile(photoNumber);
-
-      if (photoFile) {
-        if (!(photoFile.isFile() && photoFile.isReadable())) {
-          EnigmailWindows.alert(win, EnigmailLocale.getString("error.photoPathNotReadable", photoFile.path));
-        }
-        else {
-          const photoUri = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService).
-          newFileURI(photoFile).spec;
-          const argsObj = {
-            photoUri: photoUri,
-            userId: userId,
-            keyId: keyId
-          };
-
-          win.openDialog("chrome://enigmail/content/ui/enigmailDispPhoto.xul",
-            photoUri,
-            "chrome,modal,resizable,dialog,centerscreen",
-            argsObj);
-          try {
-            // delete the photo file
-            photoFile.remove(false);
-          }
-          catch (ex) {}
-        }
-      }
-      else {
-        EnigmailWindows.alert(win, EnigmailLocale.getString("noPhotoAvailable"));
-      }
-    }
-  },
-
-  /**
-   * Display the OpenPGP Key Details window
-   *
-   * @win        - |object| holding the parent window for the dialog
-   * @keyId      - |string| containing the key ID (eg. "0x12345678")
-   * @refresh    - |boolean| if true, cache is cleared and the key data is loaded from GnuPG
-   *
-   * @return  Boolean - true:  keylist needs to be refreshed
-   *                  - false: no need to refresh keylist
-   */
-  openKeyDetails: function(win, keyId, refresh) {
-    const keyListObj = {};
-
-    if (!win) {
-      win = this.getBestParentWin();
-    }
-
-    keyId = keyId.replace(/^0x/, "");
-
-    if (refresh) {
-      EnigmailKeyRing.clearCache();
-    }
-
-    const inputObj = {
-      keyId: keyId
-    };
-    const resultObj = {
-      refresh: false
-    };
-    win.openDialog("chrome://enigmail/content/ui/keyDetailsDlg.xul", "",
-      "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-    if (resultObj.refresh) {
-      EnigmailKeyRing.clearCache();
-    }
-
     return resultObj.refresh;
   },
 

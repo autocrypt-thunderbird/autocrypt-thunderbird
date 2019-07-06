@@ -12,8 +12,6 @@ const EXPORTED_SYMBOLS = ["EnigmailOS"];
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-// const getExecution = EnigmailLazy.loader("enigmail/execution.jsm", "EnigmailExecution");
-
 let operatingSystem = null;
 
 function getOS() {

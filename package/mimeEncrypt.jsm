@@ -23,7 +23,6 @@ const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.
 const EnigmailHash = ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm").EnigmailHash;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
@@ -270,6 +269,9 @@ PgpMimeEncrypt.prototype = {
   },
 
   getAutocryptGossip: function() {
+    // TODO
+    return '';
+    /*
     let gossip = "";
     if (this.msgCompFields.hasHeader("autocrypt") &&
       this.keyMap &&
@@ -287,6 +289,7 @@ PgpMimeEncrypt.prototype = {
     }
 
     return gossip;
+    */
   },
 
   encryptedHeaders: function(isEightBit) {

@@ -8,12 +8,13 @@
 
 "use strict";
 
-//var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
+var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailLazy = Cu.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 
 const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
 const getArmor = EnigmailLazy.loader("enigmail/armor.jsm", "EnigmailArmor");

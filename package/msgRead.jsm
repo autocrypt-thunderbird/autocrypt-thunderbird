@@ -16,8 +16,6 @@ var EXPORTED_SYMBOLS = ["EnigmailMsgRead"];
 
 const EnigmailPrefs = (ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm", {})).EnigmailPrefs;
 const EnigmailApp = (ChromeUtils.import("chrome://enigmail/content/modules/app.jsm", {})).EnigmailApp;
-const EnigmailVersioning = (ChromeUtils.import("chrome://enigmail/content/modules/versioning.jsm", {})).EnigmailVersioning;
-const EnigmailKeyRing = (ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm", {})).EnigmailKeyRing;
 const EnigmailFuncs = (ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm", {})).EnigmailFuncs;
 const EnigmailAutocrypt = (ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
 
@@ -246,7 +244,8 @@ var EnigmailMsgRead = {
       fromAddr = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
     } catch (ex) {}
 
-    let keyObj = EnigmailKeyRing.getKeyById(keyId);
+    // TODO
+    let keyObj = false; // EnigmailKeyRing.getKeyById(keyId);
     if (!keyObj) return null;
 
     let userIdList = keyObj.userIds;

@@ -1,8 +1,0 @@
-info:1:3
-pub:CCCCCCCCCCCCCCCCCCCCCCCC0003AAAA00010001:1:2048:1516625442::
-uid:Test User <test.user@enigmail-test.net>:1516625444::
-pub:CCCCCCCCCCCCCCCCCCCCCCCC0004AAAA00010001:1:4096:1514659468::
-uid:User Two <test-2@enigmail-test.net>:1514659471::
-uid:User Three <test-3@enigmail-test.net>:1514679471::
-pub:CCCCCCCCCCCCCCCCCCCCCCCC0005AAAA00010001:1:4096:1510762768:1668442768:r
-uid:Revoked User <revoked-key@enigmail-test.net>:1510762768::
