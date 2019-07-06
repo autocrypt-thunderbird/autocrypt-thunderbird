@@ -54,6 +54,48 @@ var EnigmailSqliteDb = {
     }
   },
 
+  retrieveAutocryptRows: async function(emails) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      const result = [];
+
+      const fields = [ "email", "key_data", "key_data_gossip", "last_seen_message", "last_seen_key", "last_seen_gossip", "is_mutual" ];
+      const date_fields = [ "last_seen_message", "last_seen_key", "last_seen_gossip" ];
+      // TODO actually select by email addresses, instead of all
+      await conn.execute(
+        "select " + fields.join(', ') + " from autocrypt_peers;",
+        {},
+        function _onRow(row) {
+          try {
+            const obj = {};
+            for (const field of fields) {
+              obj[field] = row.getResultByName(field);
+            }
+            for (const field of date_fields) {
+              if (obj[field]) {
+                obj[field] = new Date(obj[field]);
+              }
+            }
+            result.push(obj);
+          } catch (ex) {
+            EnigmailLog.ERROR(`${ex}\n`);
+          }
+      });
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows - success ${JSON.stringify(result)}\n`);
+      return result;
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: retrieveAutocryptRows: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+      return [];
+    }
+  },
+
   retrievePublicKeyBlobs: async function(emails) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
     let conn;
@@ -79,23 +121,25 @@ var EnigmailSqliteDb = {
   },
 
   retrieveSecretKeyBlob: async function(email) {
-    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
+    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeyBlob()\n`);
     let conn;
     try {
       conn = await this.openDatabase();
-      let secretKeyRows = await retrieveSecretKeyRows(conn, email);
+      const result = [];
+      await conn.execute("select secret from secret_keydata where email = ?",
+        [email],
+        function _onRow(row) {
+          result.push(row.getResultByName("secret"));
+      });
       conn.close();
-
-      let secretKeyBlobs = secretKeyRows.map(row => row.secret);
-      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys - success\n`);
-      return secretKeyBlobs;
-    }
-    catch (ex) {
-      EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeys: ERROR: ${ex}\n`);
+      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeyBlob - success\n`);
+      return result;
+    } catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeyBlob: ERROR: ${ex}\n`);
       if (conn) {
         conn.close();
       }
-      return [];
+      throw ex;
     }
   },
 
@@ -118,6 +162,85 @@ var EnigmailSqliteDb = {
         conn.close();
       }
       throw ex;
+    }
+  },
+
+  autocryptInsertOrUpdateLastSeenMessage: async function(email, last_seen_message) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeen()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      let data = {
+          email: String(email),
+          last_seen_message: last_seen_message.toISOString()
+      };
+      await conn.execute(
+        "insert or ignore into autocrypt_peers (email, last_seen_message) values (:email, :last_seen_message);",
+        data
+      );
+      await conn.execute(
+        "update autocrypt_peers set last_seen_message = :last_seen_message where email = :email",
+        data
+      );
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeenMessage - success\n`);
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeenMessage: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+    }
+  },
+
+  autocryptUpdateKey: async function(email, last_seen_key, key_data, is_mutual) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      let data = {
+        email: String(email),
+        last_seen_key: last_seen_key.toISOString(),
+        key_data: btoa(key_data),
+        is_mutual: is_mutual ? 1 : 0
+      };
+      // EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey(): data = ` + JSON.stringify(data) + "\n");
+      await conn.execute(
+        "update autocrypt_peers set last_seen_key = :last_seen_key, key_data = :key_data, is_mutual = :is_mutual where email = :email;",
+        data
+      );
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey - success\n`);
+    } catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: autocryptUpdateKey: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+    }
+  },
+
+  autocryptUpdateGossipKey: async function(email, last_seen_gossip, key_data_gossip) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey()\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      let data = {
+        email: String(email),
+        last_seen_gossip: last_seen_gossip.toISOString(),
+        key_data_gossip: btoa(key_data_gossip)
+      };
+      // EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey(): data = ` + JSON.stringify(data) + "\n");
+      await conn.execute(
+        "update autocrypt_peers set last_seen_gossip = :last_seen_gossip, key_data = :key_data_gossip where email = :email;",
+        data
+      );
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey - success\n`);
+    } catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: autocryptUpdateGossipKey: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
     }
   },
 
@@ -215,22 +338,10 @@ function openDatabaseConn(resolve, reject, waitms, maxtime) {
  */
 async function checkAutocryptTable(connection) {
   try {
-    let exists = await connection.tableExists("autocrypt_keydata");
+    let exists = await connection.tableExists("autocrypt_peers");
     EnigmailLog.DEBUG("sqliteDB.jsm: checkAutocryptTable - success\n");
     if (!exists) {
       await createAutocryptTable(connection);
-    }
-    else {
-      let hasKeyRingInserted = false;
-      await connection.execute("pragma table_info('autocrypt_keydata');", {},
-        function _onRow(row) {
-          let colname = row.getResultByName("name");
-          if (colname === "keyring_inserted") hasKeyRingInserted = true;
-        });
-      if (hasKeyRingInserted) return true;
-
-      await connection.execute("alter table autocrypt_keydata add keyring_inserted text default '0';", {},
-        function _onRow(row) {});
     }
   }
   catch (error) {
@@ -250,20 +361,18 @@ async function checkAutocryptTable(connection) {
 async function createAutocryptTable(connection) {
   EnigmailLog.DEBUG("sqliteDB.jsm: createAutocryptTable()\n");
 
-  await connection.execute("create table autocrypt_keydata (" +
-    "email text not null, " + // email address of correspondent
-    "keydata text not null, " + // base64-encoded key as received
-    "fpr text, " + // fingerprint of key
-    "type text not null, " + // key type (1==OpenPGP, regular key. 1g == OpenPGP gossip)
-    "last_seen_autocrypt text, " +
-    "last_seen text not null, " +
-    "state text not null," + // timestamp of last mail received for the email/type combination
-    "keyring_inserted text default '0');"
+  await connection.execute("create table autocrypt_peers (" +
+    "email text not null primary key, " +
+    "key_data text, " +
+    "key_data_gossip text, " +
+    "last_seen_message text not null, " +
+    "last_seen_key text, " +
+    "last_seen_gossip text, " +
+    "is_mutual integer default(0)" +
+    ")"
   );
 
   EnigmailLog.DEBUG("sqliteDB.jsm: createAutocryptTable - index\n");
-  await connection.execute("create unique index autocrypt_keydata_i1 on autocrypt_keydata(email, type)");
-
   return null;
 }
 
@@ -347,28 +456,3 @@ async function createTables(connection) {
   return null;
 }
 
-/**
- * Retrieve secret key in "secret_keydata" table
- *
- * @param connection: Object - SQLite connection
- *
- * @return {Promise}
- */
-function retrieveSecretKeyRows(connection, email) {
-  EnigmailLog.DEBUG("sqliteDB.jsm: retrieveSecretKey()\n");
-
-  return new Promise(async (resolve, reject) => {
-    const result = [];
-    await connection.execute( "select * from secret_keydata where email='" + email + "';", {},
-      function _onRow(row) {
-        var res = {
-          secret: row.getResultByName("secret"),
-          email: row.getResultByName("email"),
-          pub: row.getResultByName("pub"),
-          username: row.getResultByName("username")
-        };
-        result.push(res);
-    });
-    resolve(result);
-  });
-}

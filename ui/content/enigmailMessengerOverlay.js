@@ -649,8 +649,11 @@ Enigmail.msg = {
           dateValue = currentHeaderData.date.headerValue;
         }
 
-        EnigmailAutocrypt.processAutocryptHeader(currentHeaderData.from.headerValue, Enigmail.msg.savedHeaders.autocrypt,
-          dateValue, Enigmail.msg.isAutocryptEnabled());
+        EnigmailAutocrypt.processAutocryptHeaders(
+          currentHeaderData.from.headerValue,
+          Enigmail.msg.savedHeaders.autocrypt,
+          dateValue
+        );
       } else {
         Enigmail.msg.createArtificialAutocryptHeader();
       }
@@ -2275,31 +2278,31 @@ Enigmail.msg = {
       fromValue = currentHeaderData.from.headerValue;
     }
 
-    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags) {
-      let securityInfo = Enigmail.msg.securityInfo;
-      let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
-      if (keyObj && keyObj.getEncryptionValidity().keyValid) {
-        if (securityInfo.statusFlags & EnigmailConstants.GOOD_SIGNATURE) {
-          let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
-            ((securityInfo.statusFlags & EnigmailConstants.DECRYPTION_OKAY) ||
-              (securityInfo.statusFlags & EnigmailConstants.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
-            "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + '; keydata="LQ=="';
+    // if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.statusFlags) {
+    //   let securityInfo = Enigmail.msg.securityInfo;
+    //   let keyObj = EnigmailKeyRing.getKeyById(securityInfo.keyId);
+    //   if (keyObj && keyObj.getEncryptionValidity().keyValid) {
+    //     if (securityInfo.statusFlags & EnigmailConstants.GOOD_SIGNATURE) {
+    //       let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
+    //         ((securityInfo.statusFlags & EnigmailConstants.DECRYPTION_OKAY) ||
+    //           (securityInfo.statusFlags & EnigmailConstants.PGP_MIME_ENCRYPTED) ? "; prefer-encrypt=mutual" : "") +
+    //         "; _enigmail_artificial=yes; _enigmail_fpr=" + keyObj.fpr + '; keydata="LQ=="';
 
-          created = true;
+    //       created = true;
 
-          EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
-            Enigmail.msg.isAutocryptEnabled());
-        }
-      }
-    }
+    //       EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
+    //         Enigmail.msg.isAutocryptEnabled());
+    //     }
+    //   }
+    // }
 
-    if (!created) {
-      let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
-        '; prefer-encrypt=reset; _enigmail_artificial=yes; keydata="LQ=="';
+    // if (!created) {
+    //   let hdrData = "addr=" + EnigmailFuncs.stripEmail(fromValue) +
+    //     '; prefer-encrypt=reset; _enigmail_artificial=yes; keydata="LQ=="';
 
-      EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
-        Enigmail.msg.isAutocryptEnabled());
-    }
+    //   EnigmailAutocrypt.processAutocryptHeader(fromValue, [hdrData], dateValue,
+    //     Enigmail.msg.isAutocryptEnabled());
+    // }
   },
 
   confirmKeyRequest: function() {

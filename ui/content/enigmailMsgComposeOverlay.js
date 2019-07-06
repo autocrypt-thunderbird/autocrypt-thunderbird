@@ -1707,7 +1707,7 @@ Enigmail.msg = {
         this.addRecipients(toAddrList, recList);
       }
 
-      this.autoPgpEncryption = Enigmail.hlp.validKeysForAllRecipients(toAddrList);
+      this.autoPgpEncryption = true;
 
       // if not clear whether to encrypt yet, check whether automatically-send-encrypted applies
       // if (toAddrList.length > 0 && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {

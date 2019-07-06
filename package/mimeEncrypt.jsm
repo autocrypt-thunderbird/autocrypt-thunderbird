@@ -26,6 +26,7 @@ const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // our own contract IDs
@@ -378,7 +379,7 @@ PgpMimeEncrypt.prototype = {
     }
   },
 
-  swag: async function(fromAddr, toAddrs, plaintext) {
+  signAndEncrypt: async function(fromAddr, toAddrs, plaintext) {
     let encodedPrivKey = await this.selectPrivKey(fromAddr);
     let encodedPubKeys = await this.selectPubKeys(toAddrs);
     return await EnigmailEncryption.encryptMessage(plaintext, encodedPrivKey, encodedPubKeys);
@@ -390,24 +391,26 @@ PgpMimeEncrypt.prototype = {
 
   selectPubKeys: async function(toAddrList, bccAddrList) {
     EnigmailLog.DEBUG("=====> keySelection()\n");
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection()\n");
+    EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection()\n");
 
     // NOTE: If we only have bcc addresses, we currently do NOT process rules and select keys at all
     //       This is GOOD because sending keys for bcc addresses makes bcc addresses visible
     //       (thus compromising the concept of bcc)
     //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
     if (toAddrList.length === 0) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
+      EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
 
       // TODO deal with bcc only
       return false;
     }
 
-    let result = await sqlite.retrievePublicKeyBlobs(toAddrList);
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.keySelection(): return \n");
+    let recommendations = await EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList);
+    // EnigmailLog.DEBUG(`mimeEncrypt.js: Enigmail.msg.keySelection(): ${JSON.stringify(recommendations)} \n`);
+
+    EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection(): return \n");
     EnigmailLog.DEBUG("  <=== keySelection()\n");
 
-    return result;
+    return recommendations.peers.map(peer => peer.key_data);
   },
 
   mimeCryptoWriteBlock: function(buffer, length) {

@@ -773,15 +773,11 @@ MimeDecryptHandler.prototype = {
       msgDate = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader.dateInSeconds;
     } catch (x) {}
 
-
-    for (let i in gossip) {
-      let addr = EnigmailMime.getParameter(gossip[i], "addr");
-      try {
-        let r = await EnigmailAutocrypt.processAutocryptHeader(addr, [gossip[i].replace(/ /g, "")], msgDate, true, true);
-        EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: r=${r}\n`);
-      } catch (x) {
-        EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${x}\n`);
-      }
+    try {
+      await EnigmailAutocrypt.processAutocryptGossipHeaders(gossip, msgDate);
+      // this is async, but we don't have to wait
+    } catch (x) {
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${x}\n`);
     }
   }
 };

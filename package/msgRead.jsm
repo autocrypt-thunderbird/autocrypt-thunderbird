@@ -258,6 +258,7 @@ var EnigmailMsgRead = {
         }
       }
 
+      // TODO ?
       // // uid not found, try Autocrypt keystore
       // let acList = await EnigmailAutocrypt.getOpenPGPKeyForEmail([fromAddr]);
       // for (let i = 0; i < acList.length; i++) {
