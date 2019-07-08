@@ -101,18 +101,18 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return null;
   }
 
-  async decrypt(encrypted, options) {
+  async decrypt(ciphertext, armoredPrivKeys) {
     EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
 
     const openpgp = getOpenPGP().openpgp;
-    EnigmailLog.DEBUG("openpgp-js.js: await.." + JSON.stringify(options.privKeys) + "\n");
+    EnigmailLog.DEBUG("openpgp-js.js: parsing secret keys..\n");
 
-    let parsedPrivKeys = await Promise.all(options.privKeys.map(pk => openpgp.key.readArmored(pk)));
+    let parsedPrivKeys = await Promise.all(armoredPrivKeys.map(pk => openpgp.key.readArmored(pk)));
     let privKeys = parsedPrivKeys.map(result => result.keys[0]);
 
-    EnigmailLog.DEBUG("openpgp-js.js: decrypting.." + JSON.stringify(privKeys) + "\n");
+    EnigmailLog.DEBUG("openpgp-js.js: decrypting..\n");
     const decrypt_options = {
-      message: await openpgp.message.readArmored(encrypted),
+      message: await openpgp.message.readArmored(ciphertext),
       publicKeys: [],
       privateKeys: privKeys
     };
@@ -120,7 +120,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     EnigmailLog.DEBUG("openpgp-js.js: decrypting...\n");
     try {
       let openpgp_result = await openpgp.decrypt(decrypt_options);
-      EnigmailLog.DEBUG("openpgp-js.js: decrypt ok" + openpgp_result.data + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: decrypt ok\n");
       return {
         exitCode: 0,
         decryptedData: openpgp_result.data,
@@ -133,40 +133,41 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         encToDetails: ''
       };
     } catch (ex) {
-      EnigmailLog.DEBUG("openpgp-js.js: decrypt error!" + ex + "\n");
+      EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);
       throw ex;
     }
   }
 
-  async encrypt(plaintext, encodedPrivKey, encodedPubKeys) {
+  async encrypt(plaintext, armoredPrivKey, encodedPubKeys) {
     EnigmailLog.DEBUG(`openpgp-js.js: encrypt()\n`);
-
     const openpgp = getOpenPGP().openpgp;
-    EnigmailLog.DEBUG("openpgp-js.js: await..\n");
 
     try {
-      // let privKey = (await openpgp.key.readArmored(encodedPrivKey)).keys[0];
-
-      let binaryPubKeys = encodedPubKeys.map(pk =>
-        Uint8Array.from(atob(pk), c => c.charCodeAt(0)));
-      EnigmailLog.DEBUG("openpgp-js.js: " + JSON.stringify(binaryPubKeys) + "\n");
-      let parsedPubKeys = await Promise.all(binaryPubKeys.map(pk => openpgp.key.read(pk)));
-      let pubKeys = parsedPubKeys.map(result => {
-        EnigmailLog.DEBUG("openpgp-js.js: " + JSON.stringify(result) + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: preparing pubkeys..\n");
+      let pubKeys = Promise.all(encodedPubKeys.map(async pk => {
+        // TODO encode as Uint8Array
+        let binaryPk = Uint8Array.from(atob(pk), c => c.charCodeAt(0));
+        let result = await openpgp.key.read(binaryPk);
         return result.keys[0];
-      });
+      }));
 
-      EnigmailLog.DEBUG("openpgp-js.js: await..\n");
+      // EnigmailLog.DEBUG(`openpgp-js.js: encrypt skey: ${encodedPrivKey}\n`);
+      let privKey = (async function() {
+        // TODO encode as Uint8Array
+        // let binarySk = Uint8Array.from(atob(encodedPrivKey), c => c.charCodeAt(0));
+        let result = await openpgp.key.readArmored(armoredPrivKey);
+        return result.keys[0];
+      })();
 
-      EnigmailLog.DEBUG("openpgp-js.js: encrypting..\n");
       const encrypt_options = {
         message: openpgp.message.fromText(plaintext),
-        publicKeys: pubKeys
-        // privateKeys: [privKey]
+        publicKeys: await pubKeys,
+        privateKeys: [await privKey]
       };
 
+      EnigmailLog.DEBUG(`openpgp-js.js: encrypting to ${encrypt_options.publicKeys.length} pubkeys..\n`);
       let openpgp_result = await openpgp.encrypt(encrypt_options);
-      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok" + openpgp_result + "\n");
+      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok\n");
       return openpgp_result.data;
     } catch (ex) {
       EnigmailLog.DEBUG("openpgp-js.js: encrypt error: " + ex + "\n");

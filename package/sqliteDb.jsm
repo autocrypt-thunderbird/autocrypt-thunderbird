@@ -84,7 +84,7 @@ var EnigmailSqliteDb = {
           }
       });
       conn.close();
-      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows - success ${JSON.stringify(result)}\n`);
+      EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows - returning ${result.length} keys\n`);
       return result;
     }
     catch (ex) {

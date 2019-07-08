@@ -114,8 +114,8 @@ Enigmail.hdrView = {
     s.firstChild.data = txt;
   },
 
-  updateHdrIcons: function(exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus, encMimePartNumber) {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: exitCode=" + exitCode + ", statusFlags=" + statusFlags + ", keyId=" + keyId + ", userId=" + userId + ", " + errorMsg +
+  updateHdrIcons: function(statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, encToDetails, xtraStatus, encMimePartNumber) {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: statusFlags=" + statusFlags + ", keyId=" + keyId + ", userId=" + userId + ", " + errorMsg +
       "\n");
 
     if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.xtraStatus && Enigmail.msg.securityInfo.xtraStatus === "wks-request") {
@@ -157,15 +157,16 @@ Enigmail.hdrView = {
     var errorLines = "";
     var fullStatusInfo = "";
 
-    if (exitCode == EnigmailConstants.POSSIBLE_PGPMIME) {
-      exitCode = 0;
-    } else {
+    // TODO ???
+    // if (exitCode == EnigmailConstants.POSSIBLE_PGPMIME) {
+    // exitCode = 0;
+    // } else {
       if (errorMsg) {
         // no EnigConvertGpgToUnicode() here; strings are already UTF-8
         errorLines = errorMsg.split(/\r?\n/);
         fullStatusInfo = errorMsg;
       }
-    }
+    // }
 
     if (errorLines && (errorLines.length > 22)) {
       // Retain only first twenty lines and last two lines of error message
@@ -1110,7 +1111,7 @@ Enigmail.hdrView = {
       return false;
     },
 
-    updateSecurityStatus: function(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, extraDetails, mimePartNumber) {
+    updateSecurityStatus: function(unusedUriSpec, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, extraDetails, mimePartNumber) {
       // uriSpec is not used for Enigmail anymore. It is here becaue other addons and pEp rely on it
 
       EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
@@ -1144,7 +1145,7 @@ Enigmail.hdrView = {
           } catch (x) {}
         }
 
-        Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+        Enigmail.hdrView.updateHdrIcons(statusFlags, keyId, userId, sigDetails,
           errorMsg, blockSeparation, encToDetails,
           null, mimePartNumber);
       }

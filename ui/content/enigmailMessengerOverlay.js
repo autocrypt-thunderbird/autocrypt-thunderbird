@@ -759,7 +759,7 @@ Enigmail.msg = {
 
           if (EnigmailVerify.getManualUri() != this.getCurrentMsgUriSpec()) {
             // decryption set to manual
-            Enigmail.hdrView.updateHdrIcons(EnigmailConstants.POSSIBLE_PGPMIME, 0, // exitCode, statusFlags
+            Enigmail.hdrView.updateHdrIcons(0, // statusFlags
               "", "", // keyId, userId
               "", // sigDetails
               EnigmailLocale.getString("possiblyPgpMime"), // infoMsg
@@ -792,7 +792,7 @@ Enigmail.msg = {
 
     let ph = new EnigmailProtocolHandler();
     let uri = ph.newURI(uriStr, "", "");
-    Enigmail.hdrView.headerPane.updateSecurityStatus("", 0, 0, "", "", "", "", "", uri, "", "1");
+    Enigmail.hdrView.headerPane.updateSecurityStatus("", 0, "", "", "", "", "", uri, "", "1");
   },
 
   messageParse: function(interactive, importOnly, contentEncoding, msgUriSpec) {
@@ -1048,7 +1048,7 @@ Enigmail.msg = {
       if (tail.length > 0) {
         statusFlags |= EnigmailConstants.PARTIALLY_PGP;
       }
-      Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
+      Enigmail.hdrView.updateHdrIcons(statusFlags, keyIdObj.value, userIdObj.value,
         sigDetailsObj.value,
         errorMsg,
         null, // blockSeparation
@@ -1238,7 +1238,7 @@ Enigmail.msg = {
         while (node) {
           if (node.nodeName == "DIV") {
             node.innerHTML = EnigmailFuncs.formatPlaintextMsg(EnigmailData.convertToUnicode(messageContent, charset));
-            Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyIdObj.value, userIdObj.value,
+            Enigmail.hdrView.updateHdrIcons(statusFlags, keyIdObj.value, userIdObj.value,
               sigDetailsObj.value,
               errorMsg,
               null, // blockSeparation

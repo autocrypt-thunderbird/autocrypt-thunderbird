@@ -70,8 +70,8 @@ function AutocryptHeader(parameters, addr, key_data, is_prefer_encrypt_mutual) {
 }
 
 function parseAutocryptHeader(raw_header_value) {
-  EnigmailLog.DEBUG("autocrypt: parsing header: " + raw_header_value + "\n");
-  // fix keydata value by manually quoting it
+  EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader()\n");
+  // fix keydata value for mime header parser, by manually quoting it
   let header_value = raw_header_value.replace(/[\r\n \t]/g, "");
   let k = header_value.search(/keydata=/);
   if (k > 0) {
@@ -85,7 +85,7 @@ function parseAutocryptHeader(raw_header_value) {
 
   if (AUTOCRYPT_PARAM_TYPE in parameters) {
     if (!AUTOCRYPT_TYPE_1.equals(parameters[AUTOCRYPT_PARAM_TYPE])) {
-        EnigmailLog.DEBUG("autocrypt: unsupported type parameter " + parameters[AUTOCRYPT_PARAM_TYPE] + "\n");
+        EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): unsupported type parameter " + parameters[AUTOCRYPT_PARAM_TYPE] + "\n");
         return null;
     }
     delete parameters[AUTOCRYPT_PARAM_TYPE];
@@ -93,37 +93,38 @@ function parseAutocryptHeader(raw_header_value) {
 
   let base64KeyData = parameters[AUTOCRYPT_PARAM_KEY_DATA];
   delete parameters[AUTOCRYPT_PARAM_KEY_DATA];
-  if (base64KeyData === undefined) {
-      EnigmailLog.DEBUG("autocrypt: missing key parameter\n");
+  if (!base64KeyData) {
+      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): missing key parameter\n");
       return null;
   }
 
   // let key_data = parseBase64ToUint8Array(base64KeyData);
   let key_data = atob(base64KeyData);
-  if (key_data === null) {
-      EnigmailLog.DEBUG("autocrypt: error parsing base64 data\n");
+  if (!key_data) {
+      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): error parsing base64 data\n");
       return null;
   }
 
   let addr = parameters[AUTOCRYPT_PARAM_ADDR];
   delete parameters[AUTOCRYPT_PARAM_ADDR];
-  if (addr === null) {
-      EnigmailLog.DEBUG("autocrypt: no addr header!\n");
+  if (!addr) {
+      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): no addr header!\n");
       return null;
   }
   addr = addr.toLowerCase();
 
   let isPreferEncryptMutual = false;
   let preferEncrypt = parameters[AUTOCRYPT_PARAM_PREFER_ENCRYPT];
-  if (preferEncrypt !== undefined && preferEncrypt.toLowerCase() == AUTOCRYPT_PREFER_ENCRYPT_MUTUAL) {
+  if (preferEncrypt && preferEncrypt.toLowerCase() == AUTOCRYPT_PREFER_ENCRYPT_MUTUAL) {
       isPreferEncryptMutual = true;
   }
 
   if (hasCriticalParameters(parameters)) {
-      EnigmailLog.DEBUG("autocrypt: unknown critical parameter!\n");
+      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): unknown critical parameter!\n");
       return null;
   }
 
+  EnigmailLog.DEBUG(`autocrypt: parseAutocryptHeader(): ok (for ${addr})\n`);
   return new AutocryptHeader(parameters, addr, key_data, isPreferEncryptMutual);
 }
 
@@ -135,7 +136,6 @@ function hasCriticalParameters(parameters) {
     }
     return false;
 }
-
 
 var EnigmailAutocrypt = {
   determineAutocryptRecommendations: async function(fromAddrs) {

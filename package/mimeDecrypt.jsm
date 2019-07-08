@@ -41,7 +41,7 @@ const ENCODING_QP = 2;
 
 const LAST_MSG = EnigmailSingletons.lastDecryptedMessage;
 
-var gDebugLogLevel = 3;
+var gDebugLogLevel = 5;
 
 var gNumProc = 0;
 
@@ -128,7 +128,6 @@ function MimeDecryptHandler() {
   this.headerMode = 0;
   this.xferEncoding = ENCODING_DEFAULT;
   this.matchedPgpDelimiter = 0;
-  this.exitCode = null;
   this.msgWindow = null;
   this.msgUriSpec = null;
   this.returnStatus = null;
@@ -186,14 +185,12 @@ MimeDecryptHandler.prototype = {
     }
     this.pipe = null;
     this.closePipe = false;
-    this.exitCode = null;
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
     this.statusDisplayed = false;
     this.returnStatus = null;
     this.dataLength = 0;
-    this.decryptedData = "";
     this.mimePartCount = 0;
     this.bytesWritten = 0;
     this.matchedPgpDelimiter = 0;
@@ -488,104 +485,116 @@ MimeDecryptHandler.prototype = {
 
     if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
       if (!this.isUrlEnigmailConvert()) {
-        this.returnData(EnigmailMimeDecrypt.emptyAttachment());
+        this.returnDataToLibMime(EnigmailMimeDecrypt.emptyAttachment());
       } else {
         throw "mimeDecrypt.jsm: Cannot decrypt messages with mixed (encrypted/non-encrypted) content";
       }
       return;
     }
 
-    if (!this.isReloadingLastMessage()) {
-      if (this.xferEncoding == ENCODING_BASE64) {
-        this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
-      }
-
-      let win = this.msgWindow;
-
-      if (!EnigmailDecryption.isReady(win)) return;
-
-      // limit output to 100 times message size to avoid DoS attack
-      let maxOutput = this.outQueue.length * 100;
-      let statusFlagsObj = {};
-      let errorMsgObj = {};
-      let listener = this;
-
-      EnigmailLog.DEBUG("mimeDecryp.jsm: starting decryption\n");
-
-      let pgpBlock = this.outQueue;
-      const cApi = EnigmailCryptoAPI();
-      this.returnStatus = cApi.sync((async function() {
-        let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
-
-        // limit output to 100 times message size to avoid DoS attack
-        var maxOutput = pgpBlock.length * 100;
-        let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-        let options = {
-          privKeys: privKeys,
-          keyserver: keyserver,
-          keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-          fromAddr: EnigmailDecryption.getFromAddr(win),
-          maxOutputLength: maxOutput
-        };
-
-        return cApi.decrypt(pgpBlock, options);
-      })());
-
-      this.decryptedData = this.returnStatus.decryptedData;
-      this.handleResult(this.returnStatus.exitCode);
-
-      let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
-        !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
-
-      if (!this.isUrlEnigmailConvert()) {
-        // don't return decrypted data if decryption failed (because it's likely an MDC error),
-        // unless we are called for permanent decryption
-        if (mdcError) {
-          this.decryptedData = "";
-        }
-      }
-
-      this.displayStatus();
-
-      // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
-      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
-      this.decryptedData = this.decryptedData.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
-
-      let prefix = EnigmailMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
-      this.returnData(prefix + this.decryptedData);
-
-      // don't remember the last message if it contains an embedded PGP/MIME message
-      // to avoid ending up in a loop
-      if (this.mimePartNumber === "1" &&
-        this.decryptedData.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0 &&
-        !mdcError) {
-        LAST_MSG.lastMessageData = this.decryptedData;
-        LAST_MSG.lastMessageURI = currMsg;
-        LAST_MSG.lastStatus = this.returnStatus;
-        LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
-        LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
-      } else {
-        LAST_MSG.lastMessageURI = null;
-        LAST_MSG.lastMessageData = "";
-      }
-
-      this.decryptedData = "";
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
-      this.proc = null;
-    } else {
+    if (this.isReloadingLastMessage()) {
       this.returnStatus = LAST_MSG.lastStatus;
       this.decryptedHeaders = LAST_MSG.lastStatus.decryptedHeaders;
       this.mimePartNumber = LAST_MSG.lastStatus.mimePartNumber;
-      this.exitCode = 0;
       this.displayStatus();
-      this.returnData(LAST_MSG.lastMessageData);
+      this.returnDataToLibMime(LAST_MSG.lastMessageData);
+      return;
     }
+
+    if (this.xferEncoding == ENCODING_BASE64) {
+      this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
+    }
+
+    let win = this.msgWindow;
+
+    if (!EnigmailDecryption.isReady(win)) return;
+
+    // limit output to 100 times message size to avoid DoS attack
+    let maxOutput = this.outQueue.length * 100;
+    let statusFlagsObj = {};
+    let errorMsgObj = {};
+    let listener = this;
+
+    EnigmailLog.DEBUG("mimeDecryp.jsm: starting decryption\n");
+
+    let pgpBlock = this.outQueue;
+    const cApi = EnigmailCryptoAPI();
+    this.returnStatus = cApi.sync((async function() {
+      let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
+
+      // limit output to 100 times message size to avoid DoS attack
+      // var maxOutput = pgpBlock.length * 100;
+      // fromAddr: EnigmailDecryption.getFromAddr(win),
+      return cApi.decrypt(pgpBlock, privKeys);
+    })());
+
+    let decryptedPlaintext = this.returnStatus.decryptedData;
+
+    // ensure newline at the end of the stream
+    if (!decryptedPlaintext.endsWith("\n")) {
+      decryptedPlaintext += "\r\n";
+    }
+
+    LOCAL_DEBUG("mimeDecrypt.jsm: done\n");
+
+    if (gDebugLogLevel > 4)
+      LOCAL_DEBUG("mimeDecrypt.jsm: done'\n");
+
+    try {
+      let replacedPlaintext = this.extractEncryptedHeaders(decryptedPlaintext);
+      if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
+    } catch (ex) {}
+
+    try {
+      this.extractAutocryptGossip(decryptedPlaintext);
+    } catch (ex) {}
+
+    let replacedPlaintext = this.maybeAddWrapperToDecryptedResult(decryptedPlaintext);
+    if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
+
+    let mdcError = ((this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
+      !(this.returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
+
+    if (!this.isUrlEnigmailConvert()) {
+      // don't return decrypted data if decryption failed (because it's likely an MDC error),
+      // unless we are called for permanent decryption
+      if (mdcError) {
+        decryptedPlaintext = "";
+      }
+    }
+
+    this.displayStatus();
+
+    // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
+    decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
+    decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+
+    let prefix = EnigmailMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
+    this.returnDataToLibMime(prefix + decryptedPlaintext);
+
+    // don't remember the last message if it contains an embedded PGP/MIME message
+    // to avoid ending up in a loop
+    if (this.mimePartNumber === "1" &&
+      decryptedPlaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0 &&
+      !mdcError) {
+      LAST_MSG.lastMessageData = decryptedPlaintext;
+      LAST_MSG.lastMessageURI = currMsg;
+      LAST_MSG.lastStatus = this.returnStatus;
+      LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
+      LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
+    } else {
+      LAST_MSG.lastMessageURI = null;
+      LAST_MSG.lastMessageData = "";
+    }
+
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
+    this.proc = null;
   },
 
   displayStatus: function() {
     EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus\n");
 
-    if (this.exitCode === null || this.msgWindow === null || this.statusDisplayed)
+    if (this.msgWindow === null || this.statusDisplayed)
       return;
 
     let uriSpec = (this.uri ? this.uri.spec : null);
@@ -600,7 +609,6 @@ MimeDecryptHandler.prototype = {
 
         headerSink.updateSecurityStatus(
           this.msgUriSpec,
-          this.exitCode,
           this.returnStatus.statusFlags,
           this.returnStatus.keyId,
           this.returnStatus.userId,
@@ -622,48 +630,30 @@ MimeDecryptHandler.prototype = {
     LOCAL_DEBUG("mimeDecrypt.jsm: displayStatus done\n");
   },
 
-  handleResult: function(exitCode) {
-    LOCAL_DEBUG("mimeDecrypt.jsm: done: " + exitCode + "\n");
-
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeDecrypt.jsm: done: decrypted data='" + this.decryptedData + "'\n");
-
-    // ensure newline at the end of the stream
-    if (!this.decryptedData.endsWith("\n")) {
-      this.decryptedData += "\r\n";
+  maybeAddWrapperToDecryptedResult: function(decryptedPlaintext) {
+    let i = decryptedPlaintext.search(/\n\r?\n/);
+    if (!i) {
+      return null;
     }
 
-    try {
-      this.extractEncryptedHeaders();
-      this.extractAutocryptGossip();
-    } catch (ex) {}
+    var hdr = decryptedPlaintext.substr(0, i).split(/\r?\n/);
+    for (let j = 0; j < hdr.length; j++) {
+      if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
+        continue;
+      }
 
-    let i = this.decryptedData.search(/\n\r?\n/);
-    if (i > 0) {
-      var hdr = this.decryptedData.substr(0, i).split(/\r?\n/);
-      for (let j = 0; j < hdr.length; j++) {
-        if (hdr[j].search(/^\s*content-type:\s+text\/(plain|html)/i) >= 0) {
-          LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
+      LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
+      if (!this.isUrlEnigmailConvert()) {
+        let wrapper = EnigmailMime.createBoundary();
 
-          this.addWrapperToDecryptedResult();
-          break;
-        }
+        return 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
+          'Content-Disposition: inline\r\n\r\n' +
+          '--' + wrapper + '\r\n' +
+          decryptedPlaintext + '\r\n' +
+          '--' + wrapper + '--\r\n';
       }
     }
-
-    this.exitCode = exitCode;
-  },
-
-  addWrapperToDecryptedResult: function() {
-    if (!this.isUrlEnigmailConvert()) {
-      let wrapper = EnigmailMime.createBoundary();
-
-      this.decryptedData = 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
-        'Content-Disposition: inline\r\n\r\n' +
-        '--' + wrapper + '\r\n' +
-        this.decryptedData + '\r\n' +
-        '--' + wrapper + '--\r\n';
-    }
+    return null;
   },
 
   extractContentType: function(data) {
@@ -676,8 +666,8 @@ MimeDecryptHandler.prototype = {
   },
 
   // return data to libMime
-  returnData: function(data) {
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: " + data.length + " bytes\n");
+  returnDataToLibMime: function(data) {
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: " + data.length + " bytes\n");
 
     let proto = null;
     let ct = this.extractContentType(data);
@@ -687,7 +677,7 @@ MimeDecryptHandler.prototype = {
 
     try {
       if (proto && proto.search(/application\/(pgp|pkcs7|x-pkcs7)-signature/i) >= 0) {
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: returnData: using direct verification\n");
+        EnigmailLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: using direct verification\n");
         this.mimeSvc.contentType = ct;
         if ("mimePart" in this.mimeSvc) {
           this.mimeSvc.mimePart = this.mimeSvc.mimePart + ".1";
@@ -709,7 +699,7 @@ MimeDecryptHandler.prototype = {
         }
       }
     } catch (ex) {
-      EnigmailLog.ERROR("mimeDecrypt.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      EnigmailLog.ERROR("mimeDecrypt.jsm: returnDataToLibMime(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
   },
 
@@ -721,7 +711,6 @@ MimeDecryptHandler.prototype = {
       if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.updateSecurityStatus(
           this.msgUriSpec,
-          EnigmailConstants.POSSIBLE_PGPMIME,
           0,
           "",
           "",
@@ -749,21 +738,22 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  extractEncryptedHeaders: function() {
-    let r = EnigmailMime.extractProtectedHeaders(this.decryptedData);
+  extractEncryptedHeaders: function(decryptedPlaintext) {
+    let r = EnigmailMime.extractProtectedHeaders(decryptedPlaintext);
     if (!r) return;
 
     this.decryptedHeaders = r.newHeaders;
     if (r.startPos >= 0 && r.endPos > r.startPos) {
-      this.decryptedData = this.decryptedData.substr(0, r.startPos) + this.decryptedData.substr(r.endPos);
+      return decryptedPlaintext.substr(0, r.startPos) + decryptedPlaintext.substr(r.endPos);
     }
+    return null;
   },
 
-  extractAutocryptGossip: async function() {
-    let m = this.decryptedData.search(/^--/m);
+  extractAutocryptGossip: async function(decryptedPlaintext) {
+    let m = decryptedPlaintext.search(/^--/m);
 
     let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    hdr.initialize(this.decryptedData.substr(0, m));
+    hdr.initialize(decryptedPlaintext.substr(0, m));
 
     let gossip = hdr.getHeader("autocrypt-gossip") || [];
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);

@@ -53,7 +53,7 @@ function newStatusObject() {
 
 var EnigmailDecryption = {
   isReady: function(win) {
-    return (EnigmailCore.getService(win)) && (!EnigmailKeyRing.isGeneratingKey());
+    return (EnigmailCore.getService(win));
   },
 
   getFromAddr: function(win) {
@@ -127,6 +127,13 @@ var EnigmailDecryption = {
     }
 
     var publicKey = (blockType == "PUBLIC KEY BLOCK");
+    if (publicKey) {
+      errorMsgObj.value = EnigmailLocale.getString("keyInMessageBody");
+      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
+      statusFlagsObj.value |= EnigmailConstants.INLINE_KEY;
+
+      return "";
+    }
 
     var verifyOnly = (blockType == "SIGNED MESSAGE");
 
@@ -149,27 +156,8 @@ var EnigmailDecryption = {
       pgpBlock = pgpBlock.replace(/\r?\n\r?\n/g, "\n");
     }
 
-    const head = "";
     var tail = cipherText.substr(endIndexObj.value + 1,
       cipherText.length - endIndexObj.value - 1);
-
-    if (publicKey) {
-      if (!allowImport) {
-        errorMsgObj.value = EnigmailLocale.getString("keyInMessageBody");
-        statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
-        statusFlagsObj.value |= EnigmailConstants.INLINE_KEY;
-
-        return "";
-      }
-
-      // Import public key
-      exitCodeObj.value = EnigmailKeyRing.importKey(parent, true, pgpBlock, "",
-        errorMsgObj);
-      if (exitCodeObj.value === 0) {
-        statusFlagsObj.value |= EnigmailConstants.IMPORTED_KEY;
-      }
-      return "";
-    }
 
     var newSignature = "";
 
@@ -191,28 +179,11 @@ var EnigmailDecryption = {
       return "";
     }
 
-    if (EnigmailKeyRing.isGeneratingKey()) {
-      errorMsgObj.value = EnigmailLocale.getString("notComplete");
-      statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
-      return "";
-    }
-
     const cApi = EnigmailCryptoAPI();
     let result = cApi.sync(async function() {
       let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
-
-      // limit output to 100 times message size to avoid DoS attack
-      var maxOutput = pgpBlock.length * 100;
-      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-      let options = {
-        privKeys: privKeys,
-        fromAddr: EnigmailDecryption.getFromAddr(parent),
-        verifyOnly: verifyOnly,
-        maxOutputLength: maxOutput,
-        uiFlags: uiFlags
-      };
-
-      return cApi.decrypt(pgpBlock, options);
+      // let from_addr = EnigmailDecryption.getFromAddr(parent),
+      return cApi.decrypt(pgpBlock, privKeys);
     });
 
     var plainText = EnigmailData.getUnicodeData(result.decryptedData);
