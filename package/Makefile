@@ -48,6 +48,7 @@ MODFILES = \
            keyObj.jsm \
            keyUsability.jsm \
            keyRefreshService.jsm \
+           keyRing.jsm \
            keyserver.jsm \
            keyserverUris.jsm \
            lazy.jsm \

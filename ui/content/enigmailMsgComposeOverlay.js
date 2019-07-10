@@ -29,7 +29,7 @@ var EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm"
 var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 var EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 var EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
 var EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 var EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
@@ -40,7 +40,6 @@ var EnigmailWkdLookup = ChromeUtils.import("chrome://enigmail/content/modules/wk
 var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 var EnigmailMsgRead = ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm").EnigmailMsgRead;
 var EnigmailMimeEncrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
-var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 var sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
@@ -1904,12 +1903,6 @@ Enigmail.msg = {
       userIdValue = this.identity.email;
     }
 
-    if (this.identity.getIntAttribute("pgpKeyMode") === 0) {
-      let key = EnigmailKeyRing.getSecretKeyByEmail(userIdValue);
-      if (key) {
-        userIdValue = "0x" + key.fpr;
-      }
-    }
     return userIdValue;
   },
 
@@ -3115,7 +3108,7 @@ Enigmail.msg = {
       }
 
       if (this.isEnigmailEnabled()) {
-        // await this.setAutocryptHeader();
+        await this.setAutocryptHeader();
       }
     } catch (ex) {
       EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
@@ -3139,22 +3132,9 @@ Enigmail.msg = {
       fromMail = EnigmailFuncs.stripEmail(gMsgCompose.compFields.from);
     } catch (ex) {}
 
-    let key;
-    if (this.identity.getIntAttribute("pgpKeyMode") > 0) {
-      key = EnigmailKeyRing.getKeyById(this.identity.getCharAttribute("pgpkeyId"));
-    } else {
-      key = EnigmailKeyRing.getSecretKeyByEmail(this.identity.email);
-    }
-
-    if (key) {
-      let srv = this.getCurrentIncomingServer();
-
-
-      let k = key.getMinimalPubKey(fromMail);
-      if (k.exitCode === 0) {
-        let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
-        this.setAdditionalHeader('Autocrypt', 'addr=' + fromMail + '; keydata=\r\n' + keyData);
-      }
+    let autocrypt_header_content = await EnigmailAutocrypt.getAutocryptHeaderContentFor(fromMail);
+    if (autocrypt_header_content) {
+      this.setAdditionalHeader('Autocrypt', autocrypt_header_content);
     }
   },
 
@@ -3190,9 +3170,9 @@ Enigmail.msg = {
       let bc = document.getElementById("enigmail-bc-sendprocess");
 
       try {
-        // await this.modifyCompFields();
-        bc.setAttribute("disabled", "true");
         const cApi = EnigmailCryptoAPI();
+        cApi.sync(this.modifyCompFields());
+        bc.setAttribute("disabled", "true");
         let encryptResult = cApi.sync(this.encryptMsg(sendMsgType));
         if (!encryptResult) {
           this.resetUpdatedFields();

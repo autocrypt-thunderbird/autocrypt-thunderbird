@@ -86,11 +86,9 @@ var EnigmailAutocryptSetup = {
         userIds: [{ name:userName, email:userEmail }], // multiple user IDs
         curve: "ed25519"                                         // ECC curve name
       };
-    
-      openpgp.generateKey(options).then(function(key) {
-        sqlite.storeSecretKey(
-          key.privateKeyArmored, key.publicKeyArmored, userName, userEmail
-        );
+
+      openpgp.generateKey(options).then(function(generated) {
+        EnigmailKeyRing.insertSecretKey(generated.key, userName, userEmail);
       });
   },
 

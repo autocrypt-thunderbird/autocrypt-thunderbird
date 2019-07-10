@@ -26,6 +26,7 @@ const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/pref
 const EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 const DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
@@ -56,10 +57,10 @@ const AUTOCRYPT_RECOMMEND= {
   MUTUAL: '50-mutual'
 };
 
-function AutocryptKeyRecommendation(email, recommendation, key_data) {
+function AutocryptKeyRecommendation(email, recommendation, fpr_primary) {
   this.email = email;
   this.recommendation = recommendation;
-  this.key_data = key_data;
+  this.fpr_primary = fpr_primary;
 }
 
 function AutocryptHeader(parameters, addr, key_data, is_prefer_encrypt_mutual) {
@@ -98,7 +99,6 @@ function parseAutocryptHeader(raw_header_value) {
       return null;
   }
 
-  // let key_data = parseBase64ToUint8Array(base64KeyData);
   let key_data = atob(base64KeyData);
   if (!key_data) {
       EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): error parsing base64 data\n");
@@ -163,7 +163,7 @@ var EnigmailAutocrypt = {
 
   determineSingleAutocryptRecommendation: async function(row) {
     EnigmailLog.DEBUG(`autocrypt.jsm: determineSingleAutocryptRecommendation(): row=${JSON.stringify(row)}\n`);
-    if (row.key_data) {
+    if (row.fpr_primary) {
       let isLastSeenOlderThanDiscourageTimespan = row.last_seen_message &&
         row.last_seen_key &&
         row.last_seen_key < (row.last_seen_message.getTime() - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS);
@@ -176,40 +176,45 @@ var EnigmailAutocrypt = {
       } else {
         recommendation = AUTOCRYPT_RECOMMEND.AVAILABLE;
       }
-      return new AutocryptKeyRecommendation(row.email, recommendation, row.key_data);
-    } else if (row.key_data_gossip) {
+      return new AutocryptKeyRecommendation(row.email, recommendation, row.fpr_primary);
+    } else if (row.fpr_primary_gossip) {
       let recommendation = AUTOCRYPT_RECOMMEND.DISCOURAGED_GOSSIP;
-      return new AutocryptKeyRecommendation(row.email, recommendation, row.gossip_key_data);
+      return new AutocryptKeyRecommendation(row.email, recommendation, row.fpr_primary_gossip);
     } else {
       return new AutocryptKeyRecommendation(row.email, AUTOCRYPT_RECOMMEND.DISABLE, null);
     }
   },
 
   updateAutocryptPeerState: async function(from_addr, effective_date, autocrypt_header) {
-      let current_peer = await sqlite.retrieveAutocryptRows([from_addr]);
-      current_peer = current_peer && current_peer.length ? current_peer[0] : null;
+    let current_peer = await sqlite.retrieveAutocryptRows([from_addr]);
+    current_peer = current_peer && current_peer.length ? current_peer[0] : null;
 
-      // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
-      let last_seen_key = current_peer !== null ? current_peer.last_seen_key : null;
-      if (last_seen_key !== null && effective_date < last_seen_key) {
-          return;
-      }
+    // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
+    let last_seen_key = current_peer !== null ? current_peer.last_seen_key : null;
+    if (last_seen_key !== null && effective_date < last_seen_key) {
+        return;
+    }
 
-      // 2. If the message’s effective date is more recent than peers[from-addr].last_seen then set peers[from-addr].last_seen to the message’s effective date.
-      let last_seen_message = current_peer !== null ? current_peer.last_seen_message : null;
-      if (last_seen_message === null || effective_date > last_seen_message) {
-          await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
-      }
+    // 2. If the message’s effective date is more recent than peers[from-addr].last_seen then set peers[from-addr].last_seen to the message’s effective date.
+    let last_seen_message = current_peer !== null ? current_peer.last_seen_message : null;
+    if (last_seen_message === null || effective_date > last_seen_message) {
+        await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
+    }
 
-      // 3. If the Autocrypt header is unavailable, no further changes are required and the update process terminates.
-      if (!autocrypt_header.key_data) {
-          return;
-      }
+    // 3. If the Autocrypt header is unavailable, no further changes are required and the update process terminates.
+    if (!autocrypt_header.key_data) {
+        return;
+    }
 
-      // 4. Set peers[from-addr].autocrypt_timestamp to the message’s effective date.
-      // 5. Set peers[from-addr].public_key to the corresponding keydata value of the Autocrypt header.
-      // 6. Set peers[from-addr].prefer_encrypt to the corresponding prefer-encrypt value of the Autocrypt header.
-      await sqlite.autocryptUpdateKey(from_addr, effective_date, autocrypt_header.key_data, autocrypt_header.is_prefer_encrypt_mutual);
+    let fpr_primary = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
+    if (!fpr_primary) {
+        return;
+    }
+
+    // 4. Set peers[from-addr].autocrypt_timestamp to the message’s effective date.
+    // 5. Set peers[from-addr].public_key to the corresponding keydata value of the Autocrypt header.
+    // 6. Set peers[from-addr].prefer_encrypt to the corresponding prefer-encrypt value of the Autocrypt header.
+    await sqlite.autocryptUpdateKey(from_addr, effective_date, fpr_primary, autocrypt_header.is_prefer_encrypt_mutual);
   },
 
   updateAutocryptGossipPeerState: async function(effective_date, autocrypt_header) {
@@ -322,30 +327,18 @@ var EnigmailAutocrypt = {
     */
 
     return true;
+  },
+
+  getAutocryptHeaderContentFor: async function(email) {
+    EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ${email}\n`);
+    let key_data_b64 = await EnigmailKeyRing.getPublicKeyBase64ForEmail(email);
+    if (!key_data_b64) {
+      EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): no data\n`);
+      return null;
+    }
+
+    EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ok\n`);
+    let key_data_wrapped = " " + key_data_b64.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
+    return `addr=${email}; keydata=\r\n` + key_data_wrapped;
   }
 };
-
-/**
- * Set the fpr attribute for a given key parameter object
- */
-function getFprForKey(paramsArr) {
-  try {
-    let key_Data = atob(paramsArr.key_data);
-    let err = {};
-    let keyInfo = EnigmailKey.getKeyListFromKeyBlock(key_Data, err, false);
-    if (keyInfo.length === 1) {
-      paramsArr.fpr = keyInfo[0].fpr;
-    }
-  } catch (x) {}
-}
-
-
-function parseBase64ToUint8Array(base64_string) {
-  try {
-    return Uint8Array.from(atob(base64_string), c => c.charCodeAt(0));
-  } catch (ex) {
-    EnigmailLog.ERROR(`autocrypt.jsm: parseBase64ToUint8Array: ERROR: ${ex}\n`);
-    return null;
-  }
-}
-

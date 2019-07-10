@@ -392,8 +392,6 @@ Enigmail.hdrView = {
       encryptedMimePart: encMimePartNumber
     };
 
-    Enigmail.msg.createArtificialAutocryptHeader();
-
     this.displayStatusBar();
     this.updateMsgDb();
 

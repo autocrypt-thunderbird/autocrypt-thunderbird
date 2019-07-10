@@ -23,7 +23,6 @@ const EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/p
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").hEnigmailSqliteDb;
 
 const STATUS_ERROR = EnigmailConstants.BAD_SIGNATURE | EnigmailConstants.DECRYPTION_FAILED;
 const STATUS_DECRYPTION_OK = EnigmailConstants.DECRYPTION_OKAY;
@@ -181,9 +180,8 @@ var EnigmailDecryption = {
 
     const cApi = EnigmailCryptoAPI();
     let result = cApi.sync(async function() {
-      let privKeys = await EnigmailSqliteDb.retrieveAllSecretKeyBlobs();
-      // let from_addr = EnigmailDecryption.getFromAddr(parent),
-      return cApi.decrypt(pgpBlock, privKeys);
+      let openPgpSecretKeys = await EnigmailKeyRing.getAllSecretKeys();
+      return cApi.decrypt(pgpBlock, openPgpSecretKeys);
     });
 
     var plainText = EnigmailData.getUnicodeData(result.decryptedData);

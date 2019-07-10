@@ -27,6 +27,7 @@ const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/loc
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
@@ -383,13 +384,13 @@ PgpMimeEncrypt.prototype = {
   },
 
   signAndEncrypt: async function(fromAddr, toAddrs, plaintext) {
-    let encodedPrivKey = await this.selectPrivKey(fromAddr);
-    let encodedPubKeys = await this.selectPubKeys(toAddrs);
-    return await EnigmailEncryption.encryptMessage(plaintext, encodedPrivKey, encodedPubKeys);
+    let openPgpSecretKey = await this.selectPrivKey(fromAddr);
+    let openPgpPubKeys = await this.selectPubKeys(toAddrs);
+    return await EnigmailEncryption.encryptMessage(plaintext, openPgpSecretKey, openPgpPubKeys);
   },
 
   selectPrivKey: async function(fromAddr) {
-    return await sqlite.retrieveSecretKeyBlob(fromAddr);
+    return await EnigmailKeyRing.getAllSecretKeys()[0];
   },
 
   selectPubKeys: async function(toAddrList, bccAddrList) {
@@ -407,13 +408,16 @@ PgpMimeEncrypt.prototype = {
       return false;
     }
 
+    let openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
     let recommendations = await EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList);
     // EnigmailLog.DEBUG(`mimeEncrypt.js: Enigmail.msg.keySelection(): ${JSON.stringify(recommendations)} \n`);
 
-    EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection(): return \n");
-    EnigmailLog.DEBUG("  <=== keySelection()\n");
+    let selected_openpgp_keys = recommendations.peers
+      .map(peer => openpgp_keys_map[peer.fpr_primary])
+      .filter(x => x);
 
-    return recommendations.peers.map(peer => peer.key_data);
+    EnigmailLog.DEBUG(`mimeEncrypt.js: Enigmail.msg.keySelection(): returning ${selected_openpgp_keys.length} keys\n`);
+    return selected_openpgp_keys;
   },
 
   mimeCryptoWriteBlock: function(buffer, length) {
