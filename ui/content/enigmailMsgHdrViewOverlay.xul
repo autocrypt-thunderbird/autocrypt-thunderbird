@@ -15,10 +15,4 @@
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgHdrViewOverlay.js"/>
 
   <menupopup id="attachmentMenuList" onpopupshowing="Enigmail.hdrView.fillAttachmentListPopup(this);"/>
-
-  <popup id="emailAddressPopup">
-    <menuitem label="&enigmail.createRuleFromAddr.label;"
-              id="enigmailCreateRuleFromAddr"
-              oncommand="Enigmail.hdrView.createRuleFromAddress(document.popupNode);"/>
-  </popup>
 </overlay>

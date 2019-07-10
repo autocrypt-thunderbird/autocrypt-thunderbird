@@ -399,83 +399,14 @@ MimeDecryptHandler.prototype = {
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
-    let url = {};
     let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
-    this.backgroundJob = false;
+    this.backgroundJob = (this.uri && this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
-    if (this.uri) {
-      // return if not decrypting currently displayed message (except if
-      // printing, replying, etc)
-
-      this.backgroundJob = (this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
-
-      try {
-        var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
-
-        if (!EnigmailPrefs.getPref("autoDecrypt")) {
-          // "decrypt manually" mode
-          let manUrl = {};
-
-          if (EnigmailVerify.getManualUri()) {
-            let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
-
-            msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
-          } else {
-            manUrl.value = {
-              spec: "enigmail://invalid/message"
-            };
-          }
-
-          // print a message if not message explicitly decrypted
-          let currUrlSpec = this.uri.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
-          let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
-
-
-          if ((!this.backgroundJob) && currUrlSpec.indexOf(manUrlSpec) !== 0) {
-            this.handleManualDecrypt();
-            return;
-          }
-        }
-
-        if (this.msgUriSpec) {
-          let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);
-
-          msgSvc.GetUrlForUri(this.msgUriSpec, url, null);
-        }
-
-        if (this.uri.spec.search(/[&?]header=[^&]+/) > 0 &&
-          this.uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
-
-          if (this.uri.spec.search(/[&?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
-            EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
-            return;
-          }
-        }
-
-        if (this.uri.spec.search(/[&?]header=[^&]+/) < 0 &&
-          this.uri.spec.search(/[&?]part=[.0-9]+/) < 0 &&
-          this.uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
-
-          if (this.uri && url && url.value) {
-
-            if ("path" in url) {
-              // TB < 57
-              if (url.value.host !== this.uri.host ||
-                url.value.path !== this.uri.path)
-                return;
-            } else {
-              // TB >= 57
-              if (url.value.host !== this.uri.host ||
-                url.value.pathQueryRef !== this.uri.pathQueryRef)
-                return;
-            }
-          }
-        }
-      } catch (ex) {
-        EnigmailLog.writeException("mimeDecrypt.js", ex);
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: error while processing " + this.msgUriSpec + "\n");
-      }
+    // return if not decrypting currently displayed message (except if
+    // printing, replying, etc)
+    if (!this.checkShouldDecryptUri(this.uri, this.msgUriSpec)) {
+      return;
     }
 
     let spec = this.uri ? this.uri.spec : null;
@@ -506,25 +437,19 @@ MimeDecryptHandler.prototype = {
 
     if (!EnigmailDecryption.isReady(win)) return;
 
-    // limit output to 100 times message size to avoid DoS attack
-    let maxOutput = this.outQueue.length * 100;
-    let statusFlagsObj = {};
-    let errorMsgObj = {};
-    let listener = this;
-
-    EnigmailLog.DEBUG("mimeDecryp.jsm: starting decryption\n");
+    EnigmailLog.DEBUG("mimeDecrypt.jsm: starting decryption\n");
 
     let pgpBlock = this.outQueue;
     const cApi = EnigmailCryptoAPI();
     let returnStatus = cApi.sync((async function() {
-      let openpgp_secret_keys  = await EnigmailKeyRing.getAllSecretKeys();
+      let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
       let openpgp_public_keys = await EnigmailKeyRing.getAllPublicKeys();
 
-      // limit output to 100 times message size to avoid DoS attack
-      // var maxOutput = pgpBlock.length * 100;
       // fromAddr: EnigmailDecryption.getFromAddr(win),
       return cApi.decrypt(pgpBlock, openpgp_secret_keys, openpgp_public_keys);
     })());
+
+    LOCAL_DEBUG("mimeDecrypt.jsm: decryption ok\n");
 
     let decryptedPlaintext = returnStatus.plaintext;
 
@@ -533,32 +458,20 @@ MimeDecryptHandler.prototype = {
       decryptedPlaintext += "\r\n";
     }
 
-    LOCAL_DEBUG("mimeDecrypt.jsm: done\n");
-
     if (gDebugLogLevel > 4)
       LOCAL_DEBUG("mimeDecrypt.jsm: done'\n");
 
-    try {
+    // this is async, but we don't have to wait
+    this.extractAutocryptGossip(decryptedPlaintext);
+
+    {
       let replacedPlaintext = this.extractEncryptedHeaders(decryptedPlaintext);
       if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
-    } catch (ex) {}
+    }
 
-    try {
-      this.extractAutocryptGossip(decryptedPlaintext);
-    } catch (ex) {}
-
-    let replacedPlaintext = this.maybeAddWrapperToDecryptedResult(decryptedPlaintext);
-    if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
-
-    let mdcError = ((returnStatus.statusFlags & EnigmailConstants.DECRYPTION_FAILED) ||
-      !(returnStatus.statusFlags & EnigmailConstants.DECRYPTION_OKAY));
-
-    if (!this.isUrlEnigmailConvert()) {
-      // don't return decrypted data if decryption failed (because it's likely an MDC error),
-      // unless we are called for permanent decryption
-      if (mdcError) {
-        decryptedPlaintext = "";
-      }
+    {
+      let replacedPlaintext = this.maybeAddWrapperToDecryptedResult(decryptedPlaintext);
+      if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
     }
 
     this.displayStatus(returnStatus);
@@ -573,8 +486,7 @@ MimeDecryptHandler.prototype = {
     // don't remember the last message if it contains an embedded PGP/MIME message
     // to avoid ending up in a loop
     if (this.mimePartNumber === "1" &&
-      decryptedPlaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0 &&
-      !mdcError) {
+      decryptedPlaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
       LAST_MSG.lastMessageData = decryptedPlaintext;
       LAST_MSG.lastMessageURI = currMsg;
       LAST_MSG.lastStatus = returnStatus;
@@ -626,6 +538,57 @@ MimeDecryptHandler.prototype = {
       EnigmailLog.writeException("mimeDecrypt.jsm", ex);
     }
     LOCAL_DEBUG("mimeDecrypt.jsm: displayStatus done\n");
+  },
+
+  checkShouldDecryptUri: function(uri, msgUriSpec) {
+    if (!uri) {
+      return true;
+    }
+
+    try {
+      var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
+
+      let url = {};
+      if (msgUriSpec) {
+        let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
+
+        msgSvc.GetUrlForUri(msgUriSpec, url, null);
+      }
+
+      if (uri.spec.search(/[&?]header=[^&]+/) > 0 &&
+        uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
+
+        if (uri.spec.search(/[&?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
+          EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
+          return false;
+        }
+      }
+
+      if (uri.spec.search(/[&?]header=[^&]+/) < 0 &&
+        uri.spec.search(/[&?]part=[.0-9]+/) < 0 &&
+        uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
+
+        if (uri && url && url.value) {
+
+          if ("path" in url) {
+            // TB < 57
+            if (url.value.host !== uri.host ||
+              url.value.path !== uri.path)
+              return false;
+          } else {
+            // TB >= 57
+            if (url.value.host !== uri.host ||
+              url.value.pathQueryRef !== uri.pathQueryRef)
+              return false;
+          }
+        }
+      }
+    } catch (ex) {
+      EnigmailLog.writeException("mimeDecrypt.js", ex);
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: error while processing " + msgUriSpec + "\n");
+    }
+
+    return true;
   },
 
   maybeAddWrapperToDecryptedResult: function(decryptedPlaintext) {
@@ -701,29 +664,6 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  handleManualDecrypt: function() {
-
-    try {
-      let headerSink = EnigmailSingletons.messageReader;
-
-      if (headerSink && this.uri && !this.backgroundJob) {
-        headerSink.updateSecurityStatus(
-          this.msgUriSpec,
-          0,
-          "",
-          "",
-          "",
-          EnigmailLocale.getString("possiblyPgpMime"),
-          "",
-          this.uri,
-          null,
-          "");
-      }
-    } catch (ex) {}
-
-    return 0;
-  },
-
   updateHeadersInMsgDb: function() {
     if (this.mimePartNumber !== "1") return;
     if (!this.uri) return;
@@ -737,35 +677,38 @@ MimeDecryptHandler.prototype = {
   },
 
   extractEncryptedHeaders: function(decryptedPlaintext) {
-    let r = EnigmailMime.extractProtectedHeaders(decryptedPlaintext);
-    if (!r) return null;
+    try {
+      let r = EnigmailMime.extractProtectedHeaders(decryptedPlaintext);
+      if (!r) return null;
 
-    this.decryptedHeaders = r.newHeaders;
-    if (r.startPos >= 0 && r.endPos > r.startPos) {
-      return decryptedPlaintext.substr(0, r.startPos) + decryptedPlaintext.substr(r.endPos);
+      this.decryptedHeaders = r.newHeaders;
+      if (r.startPos >= 0 && r.endPos > r.startPos) {
+        return decryptedPlaintext.substr(0, r.startPos) + decryptedPlaintext.substr(r.endPos);
+      }
+    } catch (ex) {
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractEncryptedHeaders: Error: ${ex}\n`);
     }
     return null;
   },
 
   extractAutocryptGossip: async function(decryptedPlaintext) {
-    let m = decryptedPlaintext.search(/^--/m);
-
-    let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
-    hdr.initialize(decryptedPlaintext.substr(0, m));
-
-    let gossip = hdr.getHeader("autocrypt-gossip") || [];
-    EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
-
-    let msgDate = null;
     try {
-      msgDate = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader.dateInSeconds;
-    } catch (x) {}
+      let m = decryptedPlaintext.search(/^--/m);
 
-    try {
+      let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      hdr.initialize(decryptedPlaintext.substr(0, m));
+
+      let gossip = hdr.getHeader("autocrypt-gossip") || [];
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
+
+      let msgDate = null;
+      try {
+        msgDate = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader.dateInSeconds;
+      } catch (x) {}
+
       await EnigmailAutocrypt.processAutocryptGossipHeaders(gossip, msgDate);
-      // this is async, but we don't have to wait
-    } catch (x) {
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${x}\n`);
+    } catch (ex) {
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${ex}\n`);
     }
   }
 };

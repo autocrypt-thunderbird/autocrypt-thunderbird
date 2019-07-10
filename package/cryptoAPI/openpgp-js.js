@@ -113,15 +113,36 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       privateKeys: openpgp_secret_keys
     };
 
+    // TODO limit output to 100 times message size to avoid DoS attack?
+
     EnigmailLog.DEBUG(`openpgp-js.js: decrypting...\n`);
     try {
       let openpgp_result = await openpgp.decrypt(decrypt_options);
       let time_diff_ms = new Date() - startTime;
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
+      // EnigmailLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
+
+      let status_flags = EnigmailConstants.PGP_MIME_ENCRYPTED
+        | EnigmailConstants.DECRYPTION_OKAY
+        | EnigmailConstants.STATUS_DECRYPTION_OK;
+
+      let sig_key_id = '';
+      if (openpgp_result.signatures && openpgp_result.signatures.length) {
+        let sig = openpgp_result.signatures[0];
+
+        sig_key_id = sig.keyid.toHex().toUpperCase();
+        status_flags |= EnigmailConstants.PGP_MIME_SIGNED;
+        if (sig.valid) {
+          status_flags |= EnigmailConstants.GOOD_SIGNATURE;
+        } else {
+          status_flags |= EnigmailConstants.BAD_SIGNATURE;
+        }
+      }
+
       return {
         plaintext: openpgp_result.data,
-        statusFlags: EnigmailConstants.PGP_MIME_ENCRYPTED | EnigmailConstants.DECRYPTION_OKAY | EnigmailConstants.STATUS_DECRYPTION_OK,
-        keyId: '',
+        statusFlags: status_flags,
+        keyId: sig_key_id,
         userId: 'juja@example.net',
         sigDetails: '',
         errorMsg: 'no error',
@@ -317,6 +338,22 @@ function streamToString(stream, enc, cb) {
             cb(err);
         });
     });
+}
+
+// Note: cache should not be re-used by repeated calls to JSON.stringify.
+function stringify(o) {
+  const cache = [];
+  return JSON.stringify(o, function(key, value) {
+      if (typeof value === 'object' && value !== null) {
+          if (cache.indexOf(value) !== -1) {
+              // Duplicate reference found, discard key
+              return undefined;
+          }
+          // Store value in our collection
+          cache.push(value);
+      }
+      return value;
+  });
 }
 
 function getOpenPGPjsAPI() {
