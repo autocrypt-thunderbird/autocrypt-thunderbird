@@ -159,11 +159,16 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     EnigmailLog.DEBUG(`openpgp-js.js: encrypt()\n`);
     const openpgp = getOpenPGP().openpgp;
 
+    // encrypt to self, too
+    if (openPgpSecretKey) {
+      openPgpPubKeys.push(openPgpSecretKey.toPublic());
+    }
+
     try {
       const encrypt_options = {
         message: openpgp.message.fromText(plaintext),
         publicKeys: openPgpPubKeys,
-        privateKeys: openPgpSecretKey
+        privateKeys: [openPgpSecretKey]
       };
 
       EnigmailLog.DEBUG(`openpgp-js.js: encrypting to ${encrypt_options.publicKeys.length} pubkeys..\n`);

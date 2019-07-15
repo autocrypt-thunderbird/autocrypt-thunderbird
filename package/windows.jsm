@@ -13,7 +13,6 @@ var EXPORTED_SYMBOLS = ["EnigmailWindows"];
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailRules = ChromeUtils.import("chrome://enigmail/content/modules/rules.jsm").EnigmailRules;
 const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
 const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
 const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
@@ -188,17 +187,6 @@ var EnigmailWindows = {
   },
 
   /**
-   * Display the Per-Recipient Rules editor window
-   *
-   * no return value
-   */
-  openRulesEditor: function() {
-    EnigmailWindows.openWin("enigmail:rulesEditor",
-      "chrome://enigmail/content/ui/enigmailRulesEditor.xul",
-      "dialog,centerscreen,resizable");
-  },
-
-  /**
    * Display the OpenPGP key manager window
    *
    * no return value
@@ -324,34 +312,6 @@ var EnigmailWindows = {
         'clientType': 'thunderbird',
         'selectTab': selectTab
       });
-  },
-
-  /**
-   * Display the dialog for creating a new per-recipient rule
-   *
-   * @win          - |object| holding the parent window for the dialog
-   * @emailAddress - |string| containing the email address for the rule
-   *
-   * @return       - always true
-   */
-  createNewRule: function(win, emailAddress) {
-    // make sure the rules database is loaded
-    const enigmailSvc = EnigmailCore.getService(win);
-    if (!enigmailSvc) {
-      return false;
-    }
-
-    // open rule dialog
-    EnigmailRules.getRulesData({});
-
-    const inputObj = {
-      toAddress: "{" + emailAddress + "}",
-      options: "",
-      command: "add"
-    };
-    win.openDialog("chrome://enigmail/content/ui/enigmailSingleRcptSettings.xul", "",
-      "dialog,modal,centerscreen,resizable", inputObj, {});
-    return true;
   },
 
   /**

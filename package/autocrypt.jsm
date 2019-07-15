@@ -10,7 +10,7 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailAutocrypt"];
+var EXPORTED_SYMBOLS = ["EnigmailAutocrypt", "AUTOCRYPT_RECOMMEND"];
 
 const Cr = Components.results;
 
@@ -49,7 +49,7 @@ const AUTOCRYPT_STATE = {
 // critical parameters: {param: mandatory}
 const CRITICAL = [ 'addr', 'type', 'keydata', 'type', 'prefer-encrypt' ];
 
-const AUTOCRYPT_RECOMMEND= {
+const AUTOCRYPT_RECOMMEND = {
   DISABLE: '10-disable',
   DISCOURAGED_OLD: '20-discouraged_old',
   DISCOURAGED_GOSSIP: '30-discouraged_gossip',
@@ -138,9 +138,9 @@ function hasCriticalParameters(parameters) {
 }
 
 var EnigmailAutocrypt = {
-  determineAutocryptRecommendations: async function(fromAddrs) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${fromAddrs.join(', ')}\n`);
-    let peer_rows = await sqlite.retrieveAutocryptRows(fromAddrs);
+  determineAutocryptRecommendations: async function(emails) {
+    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${emails.join(', ')}\n`);
+    let peer_rows = await sqlite.retrieveAutocryptRows(emails);
     let peers = await Promise.all(peer_rows.map(row =>
       this.determineSingleAutocryptRecommendation(row)));
 

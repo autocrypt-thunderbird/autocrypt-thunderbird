@@ -70,7 +70,6 @@ MODFILES = \
            prefs.jsm \
            protocolHandler.jsm \
            rng.jsm \
-           rules.jsm \
            searchCallback.jsm \
            send.jsm \
            singletons.jsm \
@@ -78,6 +77,7 @@ MODFILES = \
            sqliteDb.jsm \
            stdlib.jsm \
            streams.jsm \
+           sync.jsm \
            system.jsm \
            tb60compat.jsm \
            time.jsm \

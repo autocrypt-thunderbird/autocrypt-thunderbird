@@ -390,7 +390,7 @@ PgpMimeEncrypt.prototype = {
   },
 
   selectPrivKey: async function(fromAddr) {
-    return await EnigmailKeyRing.getAllSecretKeys()[0];
+    return (await EnigmailKeyRing.getAllSecretKeys())[0];
   },
 
   selectPubKeys: async function(toAddrList, bccAddrList) {
@@ -405,7 +405,7 @@ PgpMimeEncrypt.prototype = {
       EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
 
       // TODO deal with bcc only
-      return false;
+      return [];
     }
 
     let openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
