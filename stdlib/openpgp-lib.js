@@ -26920,7 +26920,7 @@
          * @memberof module:config
          * @property {Integer} min_bytes_for_web_crypto The minimum amount of bytes for which to use native WebCrypto APIs when available
          */
-        min_bytes_for_web_crypto: 1000,
+        min_bytes_for_web_crypto: 10,
         /**
          * @memberof module:config
          * @property {Boolean} Use transferable objects between the Web Worker and main thread

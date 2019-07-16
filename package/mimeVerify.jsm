@@ -55,15 +55,17 @@ function MimeVerify(protocol) {
 var EnigmailVerify = {
   lastMsgWindow: null,
   lastMsgUri: null,
+  folderDisplay: null,
   manualMsgUri: null,
 
   currentCtHandler: EnigmailConstants.MIME_HANDLER_UNDEF,
 
-  setMsgWindow: function(msgWindow, msgUriSpec) {
+  setMsgWindow: function(msgWindow, folderDisplay, msgUriSpec) {
     LOCAL_DEBUG("mimeVerify.jsm: setMsgWindow: " + msgUriSpec + "\n");
 
     this.lastMsgWindow = msgWindow;
     this.lastMsgUri = msgUriSpec;
+    this.folderDisplay = folderDisplay;
   },
 
   newVerifier: function(protocol) {
@@ -498,7 +500,7 @@ MimeVerify.prototype = {
       let options = {
         keyserver: keyserver,
         keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-        fromAddr: EnigmailDecryption.getFromAddr(win),
+        fromAddr: EnigmailDecryption.getFromAddr(this.folderDisplay),
         mimeSignatureFile: sigFileName
       };
       const cApi = EnigmailCryptoAPI();
@@ -571,18 +573,10 @@ MimeVerify.prototype = {
       }
 
       if (headerSink) {
-        headerSink.updateSecurityStatus(this.lastMsgUri,
-          this.exitCode,
+        headerSink.updateSecurityStatus(
           this.returnStatus.statusFlags,
           this.returnStatus.keyId,
-          this.returnStatus.userId,
-          this.returnStatus.sigDetails,
-          this.returnStatus.errorMsg,
-          this.returnStatus.blockSeparation,
           this.uri,
-          JSON.stringify({
-            encryptedTo: this.returnStatus.encToDetails
-          }),
           this.mimePartNumber);
       }
       this.statusDisplayed = true;

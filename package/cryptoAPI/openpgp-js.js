@@ -142,12 +142,14 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       return {
         plaintext: openpgp_result.data,
         statusFlags: status_flags,
-        keyId: sig_key_id,
-        userId: 'juja@example.net',
-        sigDetails: '',
-        errorMsg: 'no error',
-        blockSeparation: '',
-        encToDetails: ''
+        keyId: sig_key_id
+        /*
+          userId: 'juja@example.net',
+          sigDetails: '',
+          errorMsg: 'no error',
+          blockSeparation: '',
+          encToDetails: ''
+        */
       };
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);

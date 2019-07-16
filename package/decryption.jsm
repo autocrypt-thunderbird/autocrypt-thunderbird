@@ -56,20 +56,28 @@ var EnigmailDecryption = {
   },
 
   getFromAddr: function(win) {
-    var fromAddr;
-    if (win && win.gFolderDisplay && win.gFolderDisplay.selectedMessage) {
-      fromAddr = win.gFolderDisplay.selectedMessage.author;
-      try {
-        fromAddr = EnigmailFuncs.stripEmail(fromAddr);
-        if (fromAddr.search(/[a-zA-Z0-9]@.*[\(\)]/) >= 0) {
-          fromAddr = false;
-        }
-      }
-      catch (ex) {
-        fromAddr = false;
-      }
+    EnigmailLog.DEBUG(`decryption.jsm: getFromAddr() ${win.gFolderDisplay}\n`);
+    if (!win.gFolderDisplay) {
+      EnigmailLog.DEBUG(`decryption.jsm: getFromAddr(): error: gFolderDisplay unavailable\n`);
+      return false;
     }
-    return fromAddr;
+    if (!win.gFolderDisplay.selectedMessage) {
+      EnigmailLog.DEBUG(`decryption.jsm: getFromAddr(): error: no selected message\n`);
+      return false;
+    }
+    const from_addr = win.gFolderDisplay.selectedMessage.author;
+    try {
+      let from_addr_stripped = EnigmailFuncs.stripEmail(from_addr);
+      if (from_addr_stripped.search(/[a-zA-Z0-9]@.*[\(\)]/) >= 0) {
+        EnigmailLog.DEBUG(`decryption.jsm: getFromAddr(): error: bad address format\n`);
+        return false;
+      }
+      EnigmailLog.DEBUG(`decryption.jsm: getFromAddr(): ok (${from_addr_stripped})\n`);
+      return from_addr_stripped;
+    } catch (ex) {
+      EnigmailLog.DEBUG(`decryption.jsm: getFromAddr(): error: failed to parse address\n`);
+      return false;
+    }
   },
 
   /**

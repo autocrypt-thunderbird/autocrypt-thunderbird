@@ -18,7 +18,7 @@ const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.js
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
-var gCachedPublicKeyMap = false;
+var gCachedPublicKeysByFpr = false;
 var gCachedPublicKeyList = false;
 
 var gCachedSecretKeyMap = false;
@@ -32,16 +32,16 @@ var EnigmailKeyRing = {
 
   getAllPublicKeysMap: async function() {
     await this.ensurePublicKeyCache();
-    return gCachedPublicKeyMap;
+    return gCachedPublicKeysByFpr;
   },
 
   clearPublicKeyCache: function() {
-    gCachedPublicKeyMap = false;
+    gCachedPublicKeysByFpr = false;
     gCachedPublicKeyList = false;
   },
 
   ensurePublicKeyCache: async function () {
-    if (gCachedPublicKeyMap && gCachedPublicKeyList) {
+    if (gCachedPublicKeysByFpr && gCachedPublicKeyList) {
       return;
     }
 
@@ -58,7 +58,7 @@ var EnigmailKeyRing = {
       public_key_list.push(openpgp_public_key);
     }));
 
-    gCachedPublicKeyMap = public_key_map;
+    gCachedPublicKeysByFpr = public_key_map;
     gCachedPublicKeyList = public_key_list;
 
     let time_diff_ms = new Date() - startTime;
@@ -75,21 +75,32 @@ var EnigmailKeyRing = {
     return gCachedSecretKeyMap;
   },
 
-  getPublicKeyBase64ForEmail: async function(email) {
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ${email}\n`);
+  getPublicKeyByEmail: async function(email) {
+    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ${email}\n`);
     let public_key_map = await this.getAllPublicKeysMap();
     let autocrypt_row = await sqlite.retrieveAutocryptRows([email]);
     if (autocrypt_row && autocrypt_row.length && autocrypt_row[0].fpr_primary) {
       let public_key = public_key_map[autocrypt_row[0].fpr_primary];
       if (public_key) {
+        EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ok\n`);
+        return public_key;
+      }
+      EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no key?\n`);
+      return null;
+    }
+    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no data\n`);
+    return null;
+  },
+
+  getPublicKeyBase64ForEmail: async function(email) {
+    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ${email}\n`);
+    let public_key = await this.getPublicKeyByEmail(email);
+    if (public_key) {
         EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ok\n`);
         let public_key_data = public_key.toPacketlist().write();
         return btoa(String.fromCharCode.apply(null, public_key_data));
-      }
-      EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): no key?\n`);
-      return null;
     }
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): no data\n`);
+    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): no key?\n`);
     return null;
   },
 
