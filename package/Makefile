@@ -86,6 +86,7 @@ MODFILES = \
            trust.jsm \
            uris.jsm \
            verify.jsm \
+           verifyStatus.jsm \
            versioning.jsm \
            webKey.jsm \
            wkdLookup.jsm \

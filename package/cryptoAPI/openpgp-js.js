@@ -122,27 +122,19 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
       // EnigmailLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
 
-      let status_flags = EnigmailConstants.PGP_MIME_ENCRYPTED
-        | EnigmailConstants.DECRYPTION_OKAY
-        | EnigmailConstants.STATUS_DECRYPTION_OK;
-
-      let sig_key_id = '';
+      let sig_key_id;
+      let sig_ok;
       if (openpgp_result.signatures && openpgp_result.signatures.length) {
         let sig = openpgp_result.signatures[0];
 
         sig_key_id = sig.keyid.toHex().toUpperCase();
-        status_flags |= EnigmailConstants.PGP_MIME_SIGNED;
-        if (sig.valid) {
-          status_flags |= EnigmailConstants.GOOD_SIGNATURE;
-        } else {
-          status_flags |= EnigmailConstants.BAD_SIGNATURE;
-        }
+        sig_ok = sig.valid;
       }
 
       return {
         plaintext: openpgp_result.data,
-        statusFlags: status_flags,
-        keyId: sig_key_id
+        sig_key_id: sig_key_id,
+        sig_ok: sig_ok
         /*
           userId: 'juja@example.net',
           sigDetails: '',

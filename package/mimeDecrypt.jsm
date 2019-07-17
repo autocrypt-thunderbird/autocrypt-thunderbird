@@ -30,6 +30,7 @@ const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const createVerifyStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").createVerifyStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -423,7 +424,7 @@ MimeDecryptHandler.prototype = {
     if (this.isReloadingLastMessage()) {
       this.decryptedHeaders = LAST_MSG.lastStatus.decryptedHeaders;
       this.mimePartNumber = LAST_MSG.lastStatus.mimePartNumber;
-      this.displayStatus(LAST_MSG.lastStatus);
+      this.displayStatus(LAST_MSG.lastStatus.verify_status);
       this.returnDataToLibMime(LAST_MSG.lastStatus.decryptedPlaintext);
       return;
     }
@@ -446,17 +447,17 @@ MimeDecryptHandler.prototype = {
 
     let pgpBlock = this.outQueue;
     const cApi = EnigmailCryptoAPI();
-    let return_status = cApi.sync((async function() {
+    let [decryptedPlaintext, verify_status] = cApi.sync((async function() {
       let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
-      let openpgp_public_keys = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
+      let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
-      return cApi.decrypt(pgpBlock, openpgp_secret_keys, openpgp_public_keys);
+      let return_status = await cApi.decrypt(pgpBlock, openpgp_secret_keys, openpgp_public_key);
+      let verify_status = await createVerifyStatus(return_status.sig_ok, return_status.sig_key_id, sender_address, openpgp_public_key);
+
+      return [return_status.plaintext, verify_status];
     })());
 
     LOCAL_DEBUG("mimeDecrypt.jsm: decryption ok\n");
-
-    let decryptedPlaintext = return_status.plaintext;
-    delete return_status.plaintext;
 
     // ensure newline at the end of the stream
     if (!decryptedPlaintext.endsWith("\n")) {
@@ -479,11 +480,11 @@ MimeDecryptHandler.prototype = {
       if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
     }
 
-    this.displayStatus(return_status);
-
     // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
     decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
     decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+
+    this.displayStatus(verify_status);
 
     let prefix = EnigmailMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
     this.returnDataToLibMime(prefix + decryptedPlaintext);
@@ -493,7 +494,7 @@ MimeDecryptHandler.prototype = {
     if (this.mimePartNumber === "1" &&
       decryptedPlaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
       LAST_MSG.lastMessageURI = currMsg;
-      LAST_MSG.lastStatus = return_status;
+      LAST_MSG.lastStatus.verify_status = verify_status;
       LAST_MSG.lastStatus.decryptedPlaintext = decryptedPlaintext;
       LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
       LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
@@ -505,7 +506,7 @@ MimeDecryptHandler.prototype = {
     this.proc = null;
   },
 
-  displayStatus: function(returnStatus) {
+  displayStatus: function(verify_status) {
     EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus\n");
 
     if (this.msgWindow === null || this.statusDisplayed)
@@ -521,8 +522,7 @@ MimeDecryptHandler.prototype = {
         headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
 
         headerSink.updateSecurityStatus(
-          returnStatus.statusFlags,
-          returnStatus.keyId,
+          verify_status,
           this.uri,
           this.mimePartNumber);
       } else {
