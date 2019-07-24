@@ -46,6 +46,12 @@
              enigmailtype="enigmail"
              oncommand="EnigmailWindows.openSetupWizard(window, true);" />
 
+        <toolbarbutton id="autocrypt_settings2"
+             class="subviewbutton subviewbutton-iconic"
+             label="&autocrypt.settings.label;"
+             enigmailtype="enigmail"
+             oncommand="EnigmailWindows.openAutocryptSettings(window);" />
+
         <toolbarbutton id="enigmail_decryptverify2"
              class="subviewbutton subviewbutton-iconic"
              label="&enigmail.decryptverify.label;"
@@ -154,6 +160,12 @@
              advanced="true"
              accesskey="&enigmail.setupWiz.accesskey;"
              oncommand="EnigmailWindows.openSetupWizard(window, true);" />
+
+        <toolbarbutton id="enigmail_wizard_advanced3"
+             class="subviewbutton subviewbutton-iconic"
+             label="&autocrypt.settings.label;"
+             accesskey="&enigmail.setupWiz.accesskey;"
+             oncommand="EnigmailWindows.openAutocryptSettings(window);" />
 
         <toolbarbutton id="enigmail_about2"
              class="subviewbutton subviewbutton-iconic"

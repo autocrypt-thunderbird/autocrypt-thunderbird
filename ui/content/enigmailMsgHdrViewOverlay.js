@@ -419,8 +419,10 @@ Enigmail.hdrView = {
 
           let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
           if (msgFrame) {
-            msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView), true);
-            msgFrame.addEventListener("load", Enigmail.hdrView.messageLoad.bind(Enigmail.hdrView), false);
+            Enigmail.boundMessageUnload = Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView);
+            Enigmail.boundMessageLoad = Enigmail.hdrView.messageLoad.bind(Enigmail.hdrView);
+            msgFrame.addEventListener("unload", Enigmail.boundMessageUnload, true);
+            msgFrame.addEventListener("load", Enigmail.boundMessageLoad, false);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -834,7 +836,7 @@ Enigmail.hdrView = {
   },
 
   onUnloadEnigmail: function() {
-    window.removeEventListener("load-enigmail", Enigmail.hdrView.hdrViewLoad, false);
+    window.removeEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);
     for (let i = 0; i < gMessageListeners.length; i++) {
       if (gMessageListeners[i] === Enigmail.hdrView.messageListener) {
         gMessageListeners.splice(i, 1);
@@ -864,8 +866,8 @@ Enigmail.hdrView = {
 
     let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
     if (msgFrame) {
-      msgFrame.removeEventListener("unload", Enigmail.hdrView.messageUnload, true);
-      msgFrame.removeEventListener("load", Enigmail.hdrView.messageLoad, false);
+      msgFrame.removeEventListener("unload", Enigmail.boundMessageUnload, true);
+      msgFrame.removeEventListener("load", Enigmail.boundMessageLoad, false);
     }
 
     CanDetachAttachments = Enigmail.hdrView.origCanDetachAttachments;
@@ -956,4 +958,5 @@ function hasUnauthenticatedParts(mimePartNumber) {
 }
 
 
-window.addEventListener("load-enigmail", Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView), false);
+Enigmail.boundHdrViewLoad = Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView);
+window.addEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);

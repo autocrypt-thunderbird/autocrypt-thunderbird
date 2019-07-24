@@ -163,7 +163,8 @@ Enigmail.msg = {
 
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
-    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.msg.messageFrameUnload.bind(Enigmail.msg), true);
+    Enigmail.boundMessageFrameUnload = Enigmail.msg.messageFrameUnload.bind(Enigmail.msg);
+    Enigmail.msg.messagePane.addEventListener("unload", Enigmail.boundMessageFrameUnload, true);
 
     this.treeController = {
       supportsCommand: function(command) {
@@ -2349,16 +2350,16 @@ Enigmail.msg = {
   },
 
   onUnloadEnigmail: function() {
-    //EnigmailLog.DEBUG("enigmailMessengerOverlay.js: onUnloadEnigmail()\n");
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: onUnloadEnigmail()\n");
 
-    window.removeEventListener("unload", Enigmail.msg.messengerClose, false);
-    window.removeEventListener("unload-enigmail", Enigmail.msg.onUnloadEnigmail, false);
-    window.removeEventListener("load-enigmail", Enigmail.msg.messengerStartup, false);
+    window.removeEventListener("unload", Enigmail.boundMessengerClose, false);
+    window.removeEventListener("unload-enigmail", Enigmail.boundOnUnloadEnigmail, false);
+    window.removeEventListener("load-enigmail", Enigmail.boundMessengerStartup, false);
 
     this.messageCleanup();
 
     if (this.messagePane) {
-      this.messagePane.removeEventListener("unload", Enigmail.msg.messageFrameUnload, true);
+      this.messagePane.removeEventListener("unload", Enigmail.boundMessageFrameUnload, true);
     }
 
     for (let c of this.changedAttributes) {
@@ -2367,6 +2368,10 @@ Enigmail.msg = {
         elem.setAttribute(c.attrib, c.value);
       }
     }
+
+    let menu = document.querySelector("#appMenu-mainView > vbox");
+    let appMenu = document.getElementById("appmenu-Enigmail");
+    menu.removeChild(appMenu);
 
     if (this.treeController) {
       top.controllers.removeController(this.treeController);
@@ -2391,6 +2396,9 @@ Enigmail.msg = {
   }
 };
 
-window.addEventListener("load-enigmail", Enigmail.msg.messengerStartup.bind(Enigmail.msg), false);
-window.addEventListener("unload", Enigmail.msg.messengerClose.bind(Enigmail.msg), false);
-window.addEventListener("unload-enigmail", Enigmail.msg.onUnloadEnigmail.bind(Enigmail.msg), false);
+Enigmail.boundMessengerStartup = Enigmail.msg.messengerStartup.bind(Enigmail.msg);
+Enigmail.boundMessengerClose = Enigmail.msg.messengerClose.bind(Enigmail.msg);
+Enigmail.boundOnUnloadEnigmail = Enigmail.msg.onUnloadEnigmail.bind(Enigmail.msg);
+window.addEventListener("load-enigmail", Enigmail.boundMessengerStartup, false);
+window.addEventListener("unload", Enigmail.boundMessengerClose, false);
+window.addEventListener("unload-enigmail", Enigmail.boundOnUnloadEnigmail, false);

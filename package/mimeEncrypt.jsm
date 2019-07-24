@@ -43,11 +43,10 @@ function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
 
   // "securityInfo" variables
+  this.sendFlags = 0;
   this.fromAddr = "";
   this.toAddrs = "";
   this.bccAddrs = "";
-  this.sendFlags = 0;
-  this.UIFlags = 0;
   this.senderEmailAddr = "";
   this.recipients = "";
   this.bccRecipients = "";
@@ -138,10 +137,12 @@ PgpMimeEncrypt.prototype = {
 
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function(msgIdentity, msgCompFields) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: requiresCryptoEncapsulation\n");
-    return (this.sendFlags & (EnigmailConstants.SEND_SIGNED |
-      EnigmailConstants.SEND_ENCRYPTED |
-      EnigmailConstants.SEND_VERBATIM)) !== 0;
+    let result = this.composeCryptoState && this.composeCryptoState.isEncryptEnabled();
+    // (EnigmailConstants.SEND_SIGNED |
+    // EnigmailConstants.SEND_ENCRYPTED |
+    // EnigmailConstants.SEND_VERBATIM)) !== 0;
+    EnigmailLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: ${result}\n`);
+    return result;
   },
 
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
@@ -160,7 +161,7 @@ PgpMimeEncrypt.prototype = {
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       this.win = windowManager.getMostRecentWindow(null);
 
-      if (this.sendFlags & EnigmailConstants.SEND_VERBATIM) {
+      if (this.composeCryptoState.isEnableSendVerbatim) {
         this.recipientList = recipientList;
         this.msgIdentity = msgIdentity;
         this.msgCompFields = msgCompFields;
@@ -168,13 +169,10 @@ PgpMimeEncrypt.prototype = {
         return null;
       }
 
-      if (this.sendFlags & EnigmailConstants.SEND_PGP_MIME) {
-        if (this.sendFlags & EnigmailConstants.SEND_ENCRYPTED) {
-        } else
+      if (this.composeCryptoState.isEncryptEnabled() &&
+        this.composeCryptoState.isEnablePgpInline) {
           throw Cr.NS_ERROR_NOT_IMPLEMENTED;
       }
-      else
-        throw Cr.NS_ERROR_NOT_IMPLEMENTED;
 
       this.cryptoBoundary = EnigmailMime.createBoundary();
       this.startCryptoHeaders();
@@ -297,7 +295,7 @@ PgpMimeEncrypt.prototype = {
     EnigmailLog.DEBUG("mimeEncrypt.js: encryptedHeaders\n");
     let subj = "";
 
-    if (this.sendFlags & EnigmailConstants.ENCRYPT_HEADERS) {
+    if (this.composeCryptoState.isEnableProtectedHeaders) {
       subj = jsmime.headeremitter.emitStructuredHeader("subject", EnigmailFuncs.getProtectedSubjectText(), {});
     }
 
@@ -351,7 +349,7 @@ PgpMimeEncrypt.prototype = {
   finishCryptoEncapsulation: function(abort, sendReport) {
     EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
-    if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+    if (this.composeCryptoState.isEnableSendVerbatim) {
       this.flushOutput();
       return;
     }
@@ -427,11 +425,11 @@ PgpMimeEncrypt.prototype = {
     try {
       let line = buffer.substr(0, length);
       if (this.inputMode === 0) {
-        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+        if (this.composeCryptoState.isEnableSendVerbatim) {
           line = EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", ""));
         }
 
-        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) === 0 ||
+        if (!this.composeCryptoState.isEnableSendVerbatim ||
           line.match(/^(From|To|Subject|Message-ID|Date|User-Agent|MIME-Version):/i) === null) {
           this.headerData += line;
         }
@@ -450,7 +448,7 @@ PgpMimeEncrypt.prototype = {
           }
 
           this.writeToPipe(this.headerData);
-          if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+          if (this.composeCryptoState.isEnableSendVerbatim) {
             this.writeOut(this.headerData);
           }
         }
@@ -458,7 +456,7 @@ PgpMimeEncrypt.prototype = {
       }
       else if (this.inputMode == 1) {
         this.writeToPipe(line);
-        if ((this.sendFlags & EnigmailConstants.SEND_VERBATIM) !== 0) {
+        if (this.composeCryptoState.isEnableSendVerbatim) {
           this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", "")));
         }
       }

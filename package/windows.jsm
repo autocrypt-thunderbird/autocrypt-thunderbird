@@ -44,6 +44,18 @@ var EnigmailWindows = {
       "", "chrome,centerscreen,resizable");
   },
 
+  openAutocryptSettings: function(win) {
+    EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings()\n");
+
+    if (!EnigmailStdlib.hasConfiguredAccounts()) {
+      EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings: no configured accounts\n");
+      return;
+    }
+
+    win.open("chrome://enigmail/content/ui/autocryptSettings.xul",
+      "", "chrome,dialog,centerscreen,resizable,modal");
+  },
+
   /**
    * Open a window, or focus it if it is already open
    *
