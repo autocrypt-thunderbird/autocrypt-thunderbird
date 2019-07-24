@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<!-- those two as well? -->
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/content/bindings.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="autocryptSettings"
+        title="&autocrypt.settings.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        onload="enigmailDlgOnLoad();"
+        buttons="accept">
+
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://enigmail/content/ui/autocryptSettings.js"/>
+
+  <vbox style="margin: 10px;">
+    <hbox align="center">
+      <label value="Configuring Autocrypt for address " id="labelAutocryptEmail" control="menulistAutocryptEmail"/>
+      <menulist id="menulistAutocryptEmail" oncommand="onCommandMenulistAutocryptEmail();" aria-labelledby="labelAutocryptEmail menulistAutocryptEmail">
+      </menulist>
+      <spacer flex="1" />
+    </hbox>
+
+    <vbox class="enigmailGroupbox">
+      <grid>
+        <columns>
+          <column flex="0"/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="center" style="height: 3em;">
+            <label value="Status: " />
+            <hbox align="center">
+              <label style="font-family: monospace;" id="textboxConfiguredStatus" />
+              <spacer flex="1" />
+              <button label="Run Setup" />
+            </hbox>
+          </row>
+          <row align="center" style="height: 3em;">
+            <label value="Key for this address: " />
+            <label style="font-family: monospace; width: 28em;" id="textboxConfiguredKey" />
+          </row>
+          <row align="center" style="height: 3em;">
+            <label value="Encryption mode: " />
+            <hbox align="center">
+              <menulist id="menulistAutocryptMode" oncommand="onCommandMenulistAutocryptMode();" aria-labelledby="menulistAutocryptMode">
+                <menupopup>
+                  <menuitem value="mutual" label="Automatic, if possible" />
+                  <menuitem value="manual" label="Manual only" />
+                </menupopup>
+              </menulist>
+              <label id="labelAutocryptModeSaved" value="Saved!" hidden="true" />
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+    </vbox>
+
+  </vbox>
+
+  <!--
+  <vbox class="enigmailGroupbox">
+    <vbox>
+      <grid>
+        <columns>
+          <column flex="0"/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.ruleEmail.label;" control="ruleEmail"/>
+            </hbox>
+            <hbox>
+              <textbox style="max-height: 1em;" id="ruleEmail" tooltip="&enigmail.ruleEmail.tooltip;" size="30"/>
+              <description width="130px">&enigmail.sepratationDesc.label;</description>
+            </hbox>
+          </row>
+          <row>
+            <label value=" "/>
+            <label value=" "/>
+          </row>
+          <row>
+            <hbox align="center">
+              <label value="&enigmail.matchDescStart.label;" id="matchDescStartLabel"/>
+            </hbox>
+            <hbox align="center">
+              <menulist id="matchingRule" aria-labelledby="matchDescStartLabel matchingRule matchDescEndLabel">
+                <menupopup>
+                  <menuitem value="0" label="&enigmail.matchExact.label;"/>
+                  <menuitem value="1" label="&enigmail.matchContains.label;"/>
+                  <menuitem value="2" label="&enigmail.matchBegin.label;"/>
+                  <menuitem value="3" label="&enigmail.matchEnd.label;"/>
+                </menupopup>
+              </menulist>
+              <label value="&enigmail.matchDescEnd.label;" id="matchDescEndLabel"/>
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+      <separator/>
+        <vbox class="enigmailCaptionbox">
+          <html:h1><html:span>&enigmail.action.label;</html:span></html:h1>
+          <vbox>
+            <hbox>
+              <radiogroup id="actionType">
+                <radio id="actionType.actionCont"
+                      value="0"
+                      oncommand="enigEnableKeySel(false);"
+                      label="&enigmail.nextRule.label;"/>
+                <radio id="actionType.actionStop"
+                      value="1"
+                      oncommand="enigEnableKeySel(false);"
+                      label="&enigmail.nextAddress.label;"/>
+                <radio id="actionType.actionUseKey"
+                      value="2"
+                      oncommand="enigEnableKeySel(true);"
+                      label="&enigmail.useKeys.label;"/>
+              </radiogroup>
+            </hbox>
+            <hbox align="start">
+              <richlistbox flex="1" id="encryptionList" style="height:50px" aria-labelledby="actionType.actionUseKey"/>
+              <button label="&enigmail.selKeysButton.label;"
+                      id="encryptionListButton"
+                      accesskey="&enigmail.selKeysButton.accesskey;"
+                      oncommand="enigmailDlgKeySelection();"/>
+            </hbox>
+          </vbox>
+        </vbox>
+      <separator/>
+
+      <vbox class="enigmailCaptionbox">
+        <html:h1><html:span>&enigmail.setDefaultsFor.label;</html:span></html:h1>
+        <vbox>
+          <grid>
+            <columns>
+              <column flex="0"/>
+              <column flex="1"/>
+            </columns>
+            <rows>
+              <row>
+                <hbox align="center">
+                  <label value="&enigmail.encryption.label;" control="encrypt"/>
+                </hbox>
+                <hbox>
+                  <menulist id="encrypt">
+                    <menupopup>
+                      <menuitem value="0" label="&enigmail.never.label;"/>
+                      <menuitem value="1" label="&enigmail.maybe.label;"/>
+                      <menuitem value="2" label="&enigmail.always.label;"/>
+                    </menupopup>
+                  </menulist>
+                </hbox>
+              </row>
+              <row>
+                <hbox align="center">
+                  <label value="&enigmail.signing.label;" control="sign"/>
+                </hbox>
+                <hbox>
+                  <menulist id="sign">
+                    <menupopup>
+                      <menuitem value="0" label="&enigmail.never.label;"/>
+                      <menuitem value="1" label="&enigmail.maybe.label;"/>
+                      <menuitem value="2" label="&enigmail.always.label;"/>
+                    </menupopup>
+                  </menulist>
+                </hbox>
+              </row>
+              <row>
+                <hbox align="center">
+                  <label value="&enigmail.pgpMime.label;" control="pgpmime"/>
+                </hbox>
+                <hbox>
+                  <menulist id="pgpmime">
+                    <menupopup>
+                      <menuitem value="0" label="&enigmail.never.label;"/>
+                      <menuitem value="1" label="&enigmail.maybe.label;"/>
+                      <menuitem value="2" label="&enigmail.always.label;"/>
+                    </menupopup>
+                  </menulist>
+                </hbox>
+              </row>
+            </rows>
+          </grid>
+          <description>&enigmail.singleRcptSettings.desc;
+          </description>
+        </vbox>
+      </vbox>
+    </vbox>
+  </vbox>
+  -->
+
+</dialog>

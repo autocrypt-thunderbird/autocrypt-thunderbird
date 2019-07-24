@@ -9,18 +9,5 @@ var EXPORTED_SYMBOLS = ["EnigmailSingletons"];
 
 var EnigmailSingletons = {
   // handle to most recent message reader window
-  messageReader: null,
-
-  // information about the last PGP/MIME decrypted message (pEp and mimeDecrypt)
-  lastDecryptedMessage: {},
-
-  clearLastDecryptedMessage: function() {
-    let lm = this.lastDecryptedMessage;
-    lm.lastMessageData = "";
-    lm.lastMessageURI = null;
-    lm.lastStatus = {};
-    lm.lastPepStatus = {};
-  }
+  messageReader: null
 };
-
-EnigmailSingletons.clearLastDecryptedMessage();

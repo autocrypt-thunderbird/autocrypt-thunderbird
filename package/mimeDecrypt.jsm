@@ -30,6 +30,7 @@ const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
+const AutocryptMessageCache = ChromeUtils.import("chrome://enigmail/content/modules/messageCache.jsm").AutocryptMessageCache;
 const createVerifyStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").createVerifyStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
@@ -40,9 +41,7 @@ const ENCODING_DEFAULT = 0;
 const ENCODING_BASE64 = 1;
 const ENCODING_QP = 2;
 
-const LAST_MSG = EnigmailSingletons.lastDecryptedMessage;
-
-var gDebugLogLevel = 5;
+var gDebugLogLevel = 3;
 
 var gNumProc = 0;
 
@@ -135,7 +134,6 @@ function MimeDecryptHandler() {
   this.statusDisplayed = false;
   this.uri = null;
   this.backgroundJob = false;
-  this.decryptedHeaders = {};
   this.mimePartNumber = "";
   this.dataIsBase64 = null;
   this.base64Cache = "";
@@ -198,13 +196,8 @@ MimeDecryptHandler.prototype = {
     this.outQueue = "";
     this.statusStr = "";
     this.headerMode = 0;
-    this.decryptedHeaders = {};
     this.xferEncoding = ENCODING_DEFAULT;
     this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
-
-    if (!this.isReloadingLastMessage()) {
-      EnigmailSingletons.clearLastDecryptedMessage();
-    }
   },
 
   processData: function(data) {
@@ -362,25 +355,6 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  /**
-   * Determine if we are reloading the same message as the previous one
-   *
-   * @return Boolean
-   */
-  isReloadingLastMessage: function() {
-    if (!this.uri) return false;
-    if (!LAST_MSG.lastMessageURI) return false;
-    if (this.isUrlEnigmailConvert()) return false;
-
-    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
-
-    if (LAST_MSG.lastMessageURI.folder === currMsg.folder && LAST_MSG.lastMessageURI.msgNum === currMsg.msgNum) {
-      return true;
-    }
-
-    return false;
-  },
-
   isUrlEnigmailConvert: function() {
     if (!this.uri) return false;
 
@@ -398,8 +372,6 @@ MimeDecryptHandler.prototype = {
 
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
-
-    let currMsg = EnigmailURIs.msgIdentificationFromUrl(this.uri);
 
     this.backgroundJob = (this.uri && this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
@@ -421,11 +393,11 @@ MimeDecryptHandler.prototype = {
       return;
     }
 
-    if (this.isReloadingLastMessage()) {
-      this.decryptedHeaders = LAST_MSG.lastStatus.decryptedHeaders;
-      this.mimePartNumber = LAST_MSG.lastStatus.mimePartNumber;
-      this.displayStatus(LAST_MSG.lastStatus.verify_status);
-      this.returnDataToLibMime(LAST_MSG.lastStatus.decryptedPlaintext);
+    const cached_message = AutocryptMessageCache.getCachedMessage(this.uri);
+    if (cached_message) {
+      this.mimePartNumber = "1";
+      this.displayStatus(cached_message.verify_status, cached_message.decrypted_headers);
+      this.returnDataToLibMime(cached_message.decrypted_plaintext);
       return;
     }
 
@@ -470,9 +442,11 @@ MimeDecryptHandler.prototype = {
     // this is async, but we don't have to wait
     this.extractAutocryptGossip(decryptedPlaintext);
 
-    {
-      let replacedPlaintext = this.extractEncryptedHeaders(decryptedPlaintext);
-      if (replacedPlaintext) decryptedPlaintext = replacedPlaintext;
+    let decrypted_headers;
+    const extractResult = this.extractEncryptedHeaders(decryptedPlaintext);
+    if (extractResult) {
+      decryptedPlaintext = extractResult[0];
+      decrypted_headers = extractResult[1];
     }
 
     {
@@ -484,7 +458,7 @@ MimeDecryptHandler.prototype = {
     decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
     decryptedPlaintext = decryptedPlaintext.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
 
-    this.displayStatus(verify_status);
+    this.displayStatus(verify_status, decrypted_headers);
 
     let prefix = EnigmailMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
     this.returnDataToLibMime(prefix + decryptedPlaintext);
@@ -493,20 +467,18 @@ MimeDecryptHandler.prototype = {
     // to avoid ending up in a loop
     if (this.mimePartNumber === "1" &&
       decryptedPlaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
-      LAST_MSG.lastMessageURI = currMsg;
-      LAST_MSG.lastStatus.verify_status = verify_status;
-      LAST_MSG.lastStatus.decryptedPlaintext = decryptedPlaintext;
-      LAST_MSG.lastStatus.decryptedHeaders = this.decryptedHeaders;
-      LAST_MSG.lastStatus.mimePartNumber = this.mimePartNumber;
-    } else {
-      LAST_MSG.lastMessageURI = null;
+      const cached_message = {
+        decrypted_plaintext: decryptedPlaintext,
+        decrypted_headers: decrypted_headers,
+        verify_status: verify_status
+      };
+      AutocryptMessageCache.putCachedMessage(this.uri, cached_message);
     }
-
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
     this.proc = null;
   },
 
-  displayStatus: function(verify_status) {
+  displayStatus: function(verify_status, decrypted_headers) {
     EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus\n");
 
     if (this.msgWindow === null || this.statusDisplayed)
@@ -519,14 +491,14 @@ MimeDecryptHandler.prototype = {
       let headerSink = EnigmailSingletons.messageReader;
 
       if (headerSink && this.uri && !this.backgroundJob) {
-        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.decryptedHeaders), this.mimePartNumber);
+        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(decrypted_headers), this.mimePartNumber);
 
         headerSink.updateSecurityStatus(
           verify_status,
           this.uri,
           this.mimePartNumber);
       } else {
-        this.updateHeadersInMsgDb();
+        this.updateHeadersInMsgDb(decrypted_headers);
       }
       this.statusDisplayed = true;
     } catch (ex) {
@@ -659,14 +631,14 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  updateHeadersInMsgDb: function() {
+  updateHeadersInMsgDb: function(decrypted_headers) {
     if (this.mimePartNumber !== "1") return;
     if (!this.uri) return;
 
-    if (this.decryptedHeaders && ("subject" in this.decryptedHeaders)) {
+    if (decrypted_headers && ("subject" in decrypted_headers)) {
       try {
         let msgDbHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-        msgDbHdr.subject = EnigmailData.convertFromUnicode(this.decryptedHeaders.subject, "utf-8");
+        msgDbHdr.subject = EnigmailData.convertFromUnicode(decrypted_headers.subject, "utf-8");
       } catch (x) {}
     }
   },
@@ -676,9 +648,9 @@ MimeDecryptHandler.prototype = {
       let r = EnigmailMime.extractProtectedHeaders(decryptedPlaintext);
       if (!r) return null;
 
-      this.decryptedHeaders = r.newHeaders;
+      const decrypted_headers = r.newHeaders;
       if (r.startPos >= 0 && r.endPos > r.startPos) {
-        return decryptedPlaintext.substr(0, r.startPos) + decryptedPlaintext.substr(r.endPos);
+        return [decryptedPlaintext.substr(0, r.startPos) + decryptedPlaintext.substr(r.endPos), decrypted_headers];
       }
     } catch (ex) {
       EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractEncryptedHeaders: Error: ${ex}\n`);
