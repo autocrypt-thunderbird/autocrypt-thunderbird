@@ -115,6 +115,7 @@ var EnigmailSqliteDb = {
           let key_data = Uint8Array.from(row.getResultByName("key_data"));
           result.push({ fpr_primary: fpr_primary, key_data: key_data });
       });
+      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAllPublicKeys: ${result.length} rows\n`);
       return result;
     }
