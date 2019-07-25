@@ -76,47 +76,47 @@ const ENCRYPT_STATUS = {
 const ENCRYPT_DISPLAY_STATUS = {
   UNCONFIGURED: {
     encSymbol: "inactiveNone",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption not configured for this address",
     buttonPressed: false
   },
   SIGN_ONLY: {
     encSymbol: "activeNone",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Sign-only mode",
     buttonPressed: false
   },
   UNAVAILABLE: {
     encSymbol: "forceNo",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption disabled (missing keys)",
     buttonPressed: false
   },
   ENABLED: {
     encSymbol: "activeNone",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption enabled (manual)",
+    buttonPressed: true
+  },
+  ENABLED_MUTUAL: {
+    encSymbol: "activeNone",
+    encStr: "Encryption enabled (automatic)",
     buttonPressed: true
   },
   ENABLED_ERROR: {
     encSymbol: "activeConflict",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption error",
     buttonPressed: true
   },
   ENABLED_TRUSTED: {
     encSymbol: "activeNone",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption enabled (trusted)",
     buttonPressed: true
   },
   AVAILABLE: {
     encSymbol: "activeNone",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption available",
     buttonPressed: false
   },
   DISABLE: {
     encSymbol: "forceNo",
-    encStr: "No (force disable)",
-    buttonPressed: false
-  },
-  ERROR: {
-    encSymbol: "inactiveConflict",
-    encStr: EnigmailLocale.getString("encryptMessageAuto"),
+    encStr: "Encryption disabled (manual)",
     buttonPressed: false
   }
 };
@@ -161,14 +161,6 @@ ComposeCryptoState.prototype.toggleUserChoice = function() {
       this.currentCryptoMode = CRYPTO_MODE.CHOICE_ENABLED;
   } else {
       this.currentCryptoMode = CRYPTO_MODE.NO_CHOICE;
-  }
-};
-
-ComposeCryptoState.prototype.getToolbarMsg = function() {
-  if (this.isEncryptEnabled()) {
-    return EnigmailLocale.getString("msgCompose.toolbarTxt.signAndEncrypt");
-  } else {
-    return EnigmailLocale.getString("msgCompose.toolbarTxt.noEncryption");
   }
 };
 
@@ -1232,7 +1224,7 @@ Enigmail.msg = {
 
     // process resulting toolbar message
     if (toolbarTxt) {
-      toolbarTxt.value = this.composeCryptoState.getToolbarMsg();
+      toolbarTxt.value = display_status.encStr;
 
       if (Enigmail.msg.getSecurityParams()) {
         let si = Enigmail.msg.getSecurityParams(null, true);

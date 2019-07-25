@@ -54,7 +54,7 @@
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
     targetToolbar="composeToolbar2"
-    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-enigmail-encrypt,button-save,spring"
+    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-save,button-enigmail-encrypt,enigmail-toolbar-text-button,spring"
     targetToolbox="compose-toolbox">
 
     <!-- 'Encrypt message' button -->
@@ -64,8 +64,7 @@
             buttontype="thunderbird"
             tooltip="aTooltipSet"
             observes="enigmail-bc-encrypt"
-            oncommand="Enigmail.msg.onButtonToggleEncrypt();"/>
-
+            oncommand="Enigmail.msg.onButtonToggleEncrypt();" />
 
     <!-- status info button -->
     <toolbarbutton class="toolbarbutton-1"
