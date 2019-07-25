@@ -191,7 +191,7 @@ var EnigmailAutocrypt = {
 
     // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
     let last_seen_key = current_peer !== null ? current_peer.last_seen_key : null;
-    if (last_seen_key !== null && effective_date < last_seen_key) {
+    if (last_seen_key !== null && effective_date <= last_seen_key) {
         return;
     }
 
