@@ -14,6 +14,7 @@ var EXPORTED_SYMBOLS = ["EnigmailVerify"];
 
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
+const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
@@ -24,6 +25,7 @@ const EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
 const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const MessageCryptoStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").MessageCryptoStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_PROTO = "application/pgp-signature";
@@ -41,7 +43,6 @@ function MimeVerify(protocol) {
   this.protocol = protocol;
   this.verifyEmbedded = false;
   this.partiallySigned = false;
-  this.exitCode = null;
   this.inStream = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
 
   if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
@@ -125,7 +126,6 @@ MimeVerify.prototype = {
   statusDisplayed: false,
   window: null,
   inStream: null,
-  sigFile: null,
   sigData: "",
   mimePartNumber: "",
 
@@ -214,9 +214,7 @@ MimeVerify.prototype = {
     this.last80Chars = "";
     this.signedData = "";
     this.statusStr = "";
-    this.returnStatus = null;
     this.statusDisplayed = false;
-    this.protectedHeaders = null;
     this.parseContentType();
   },
 
@@ -398,18 +396,18 @@ MimeVerify.prototype = {
 
     if (this.readMode < 4) {
       // we got incomplete data; simply return what we got
-      this.returnData(this.signedData.length > 0 ? this.signedData : this.keepData);
+      this.returnDataToLibMime(this.signedData.length > 0 ? this.signedData : this.keepData);
 
       return;
     }
 
-    this.protectedHeaders = EnigmailMime.extractProtectedHeaders(this.signedData);
+    let protected_headers = EnigmailMime.extractProtectedHeaders(this.signedData);
 
-    if (this.protectedHeaders && this.protectedHeaders.startPos >= 0 && this.protectedHeaders.endPos > this.protectedHeaders.startPos) {
-      let r = this.signedData.substr(0, this.protectedHeaders.startPos) + this.signedData.substr(this.protectedHeaders.endPos);
-      this.returnData(r);
+    if (protected_headers && protected_headers.protectedHeaders && protected_headers.protectedHeaders.startPos >= 0 && protected_headers.protectedHeaders.endPos > protected_headers.protectedHeaders.startPos) {
+      let r = this.signedData.substr(0, protected_headers.protectedHeaders.startPos) + this.signedData.substr(protected_headers.protectedHeaders.endPos);
+      this.returnDataToLibMime(r);
     } else {
-      this.returnData(this.signedData);
+      this.returnDataToLibMime(this.signedData);
     }
 
     // return if not verifying first mime part
@@ -485,40 +483,49 @@ MimeVerify.prototype = {
     if (this.protocol === PGPMIME_PROTO) {
       var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
       var win = windowManager.getMostRecentWindow(null);
-
-      // create temp file holding signature data
-      this.sigFile = EnigmailFiles.getTempDirObj();
-      this.sigFile.append("data.sig");
-      this.sigFile.createUnique(this.sigFile.NORMAL_FILE_TYPE, 0x180);
-      EnigmailFiles.writeFileContents(this.sigFile, this.sigData, 0x180);
-
       if (!EnigmailDecryption.isReady(win)) return;
 
+      // discover the pane
+      var pane = Cc["@mozilla.org/appshell/window-mediator;1"]
+          .getService(Components.interfaces.nsIWindowMediator)
+          .getMostRecentWindow("mail:3pane");
+      let sender_address = EnigmailDecryption.getFromAddr(pane);
 
-      let sigFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePath(this.sigFile));
-      let keyserver = EnigmailPrefs.getPref("autoKeyRetrieve");
-      let options = {
-        keyserver: keyserver,
-        keyserverProxy: EnigmailHttpProxy.getHttpProxy(keyserver),
-        fromAddr: EnigmailDecryption.getFromAddr(this.folderDisplay),
-        mimeSignatureFile: sigFileName
-      };
+      // if (this.partiallySigned)
+        // this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
+
+      let pgpBlock = this.signedData;
+      let sigData = this.sigData;
       const cApi = EnigmailCryptoAPI();
-      this.returnStatus = cApi.sync(cApi.verifyMime(this.signedData, options));
-      this.exitCode = this.returnStatus.exitCode;
+      let verify_status = cApi.sync((async function() {
+        let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
-      if (this.partiallySigned)
-        this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
+        try {
+          let return_status = await cApi.verify(pgpBlock, sigData, openpgp_public_key);
+          EnigmailLog.DEBUG(`mimeVerify.jsm: return status: ${JSON.stringify(return_status)}\n`);
 
-      this.displayStatus();
+          let verify_status;
+          if (return_status.sig_ok) {
+            verify_status = MessageCryptoStatus.createVerifyOkStatus(sender_address, return_status.sig_key_id, openpgp_public_key);
+          } else {
+            verify_status = MessageCryptoStatus.createVerifyErrorStatus(sender_address, return_status.sig_key_id);
+          }
 
-      if (this.sigFile) this.sigFile.remove(false);
+          return verify_status;
+        } catch (e) {
+          EnigmailLog.DEBUG(`mimeVerify.jsm: verify error: ${e}\n`);
+          let verify_status = MessageCryptoStatus.createVerifyErrorStatus(sender_address);
+          return verify_status;
+        }
+      })());
+
+      this.displayStatus(verify_status, protected_headers);
     }
   },
 
   // return data to libMime
-  returnData: function(data) {
-    EnigmailLog.DEBUG("mimeVerify.jsm: returnData: " + data.length + " bytes\n");
+  returnDataToLibMime: function(data) {
+    EnigmailLog.DEBUG("mimeVerify.jsm: returnDataToLibMime: " + data.length + " bytes\n");
 
     let m = data.match(/^(content-type: +)([\w/]+)/im);
     if (m && m.length >= 3) {
@@ -545,7 +552,7 @@ MimeVerify.prototype = {
         this.mimeSvc.onDataAvailable(null, null, gConv, 0, data.length);
         this.mimeSvc.onStopRequest(null, null, 0);
       } catch (ex) {
-        EnigmailLog.ERROR("mimeVerify.jsm: returnData(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+        EnigmailLog.ERROR("mimeVerify.jsm: returnDataToLibMime(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
       }
     }
   },
@@ -559,23 +566,22 @@ MimeVerify.prototype = {
     }
   },
 
-  displayStatus: function() {
+  displayStatus: function(verify_status, protected_headers) {
     EnigmailLog.DEBUG("mimeVerify.jsm: displayStatus\n");
-    if (this.exitCode === null || this.msgWindow === null || this.statusDisplayed || this.backgroundJob)
+    if (this.msgWindow === null || this.statusDisplayed || this.backgroundJob)
       return;
 
     try {
       LOCAL_DEBUG("mimeVerify.jsm: displayStatus displaying result\n");
       let headerSink = EnigmailSingletons.messageReader;
 
-      if (this.protectedHeaders) {
-        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(this.protectedHeaders.newHeaders), this.mimePartNumber);
+      if (protected_headers && protected_headers.protectedHeaders) {
+        headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(protected_headers.protectedHeaders.newHeaders), this.mimePartNumber);
       }
 
       if (headerSink) {
         headerSink.updateSecurityStatus(
-          this.returnStatus.statusFlags,
-          this.returnStatus.keyId,
+          verify_status,
           this.uri,
           this.mimePartNumber);
       }

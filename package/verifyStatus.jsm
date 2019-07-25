@@ -9,7 +9,7 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["createVerifyStatus", "createBadEncryptionStatus"];
+var EXPORTED_SYMBOLS = ["MessageCryptoStatus"];
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -24,34 +24,62 @@ const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
+const SIGNATURE_STATUS = {
+  NONE: -1,
+  INVALID: 0,
+  KEY_MISSING: 1,
+  OK: 2
+};
 
-function MessageCryptoStatus(sig_ok, sig_key_id, sender_address, public_key, is_decrypt_error) {
-  this.sig_ok = sig_ok;
+const SIGNATURE_KEY_STATUS = {
+  NONE: -1,
+  MISSING: 0,
+  OK: 1,
+  INVALID_KEY_REVOKED: 2,
+  INVALID_KEY_EXPIRED: 3,
+  INVALID_KEY_INSECURE: 4
+};
+
+const SIGNATURE_TRUST_STATUS = {
+  NONE: 0,
+  TRUSTED: 1
+};
+
+const DECRYPTION_STATUS = {
+  NONE: -1,
+  ERROR: 0,
+  OK: 1
+};
+
+function MessageCryptoStatus(signature_status, sig_key_status, sig_trust_status, decryption_status, sender_address, sig_key_id, public_key) {
+  this.signature_status = signature_status;
+  this.sig_key_status = sig_key_status;
+  this.sig_trust_status = sig_trust_status;
+  this.decryption_status = decryption_status;
   this.sig_key_id = sig_key_id;
   this.sender_address = sender_address;
   this.public_key = public_key;
-  this.is_decrypt_error = is_decrypt_error;
 }
 
-MessageCryptoStatus.prototype.isDecrypted = function() {
-  return true;
+MessageCryptoStatus.prototype.wasEncrypted = function() {
+  return this.decryption_status != DECRYPTION_STATUS.NONE;
 };
 
-MessageCryptoStatus.prototype.isDecryptFailed = function() {
-  return this.is_decrypt_error;
+MessageCryptoStatus.prototype.isDecryptOk = function() {
+  return this.decryption_status == DECRYPTION_STATUS.OK;
 };
 
-MessageCryptoStatus.prototype.isSigned = function() {
-  return Boolean(this.sig_key_id);
-};
-
-
-MessageCryptoStatus.prototype.isSignKeyKnown = function() {
-  return true;
+MessageCryptoStatus.prototype.wasSigned = function() {
+  return this.signature_status != SIGNATURE_STATUS.NONE;
 };
 
 MessageCryptoStatus.prototype.isSignOk = function() {
-  return this.sign_ok;
+  return this.signature_status == SIGNATURE_STATUS.OK;
+};
+
+MessageCryptoStatus.prototype.isSignKeyKnown = function() {
+  return this.signature_status != SIGNATURE_STATUS.NONE &&
+    this.signature_status != SIGNATURE_STATUS.KEY_MISSING;
 };
 
 MessageCryptoStatus.prototype.getSignKeyId = function() {
@@ -59,29 +87,51 @@ MessageCryptoStatus.prototype.getSignKeyId = function() {
 };
 
 MessageCryptoStatus.prototype.isSignKeyTrusted = function() {
-  return true;
+  return this.sig_trust_status == SIGNATURE_TRUST_STATUS.TRUSTED;
 };
 
-MessageCryptoStatus.prototype.getStatusFlags = function() {
-  let status_flags = EnigmailConstants.PGP_MIME_ENCRYPTED
-    | EnigmailConstants.DECRYPTION_OKAY
-    | EnigmailConstants.STATUS_DECRYPTION_OK;
-
-  status_flags |= EnigmailConstants.PGP_MIME_SIGNED;
-  if (this.sig_ok) {
-    status_flags |= EnigmailConstants.GOOD_SIGNATURE;
-  } else {
-    status_flags |= EnigmailConstants.BAD_SIGNATURE;
-  }
-
-  return status_flags;
+MessageCryptoStatus.createDecryptOkStatus = function(sender_address, sig_ok, sig_key_id, public_key) {
+  return new MessageCryptoStatus(
+    sig_ok ? SIGNATURE_STATUS.OK : SIGNATURE_STATUS.KEY_MISSING,
+    SIGNATURE_KEY_STATUS.NONE,
+    SIGNATURE_TRUST_STATUS.NONE,
+    DECRYPTION_STATUS.OK,
+    sender_address,
+    sig_key_id,
+    public_key
+  );
 };
 
+MessageCryptoStatus.createDecryptErrorStatus = function(sender_address) {
+  return new MessageCryptoStatus(
+    SIGNATURE_STATUS.NONE,
+    SIGNATURE_KEY_STATUS.NONE,
+    SIGNATURE_TRUST_STATUS.NONE,
+    DECRYPTION_STATUS.OK,
+    sender_address
+  );
+};
 
-async function createBadEncryptionStatus(sender_address) {
-  return new MessageCryptoStatus(false, null, sender_address, null, true);
-}
+MessageCryptoStatus.createVerifyOkStatus = function(sender_address, sig_key_id, public_key) {
+  return new MessageCryptoStatus(
+    SIGNATURE_STATUS.OK,
+    SIGNATURE_KEY_STATUS.OK,
+    SIGNATURE_TRUST_STATUS.NONE,
+    DECRYPTION_STATUS.NONE,
+    sender_address,
+    sig_key_id,
+    public_key
+  );
+};
 
-async function createVerifyStatus(sig_ok, sig_key_id, sender_address, public_key) {
-  return new MessageCryptoStatus(sig_ok, sig_key_id, sender_address, public_key, false);
-}
+MessageCryptoStatus.createVerifyErrorStatus = function(sender_address, sig_key_id, public_key) {
+  return new MessageCryptoStatus(
+    public_key ? SIGNATURE_STATUS.INVALID : SIGNATURE_STATUS.KEY_MISSING,
+    SIGNATURE_KEY_STATUS.NONE,
+    SIGNATURE_TRUST_STATUS.NONE,
+    DECRYPTION_STATUS.NONE,
+    sender_address,
+    sig_key_id,
+    public_key
+  );
+};

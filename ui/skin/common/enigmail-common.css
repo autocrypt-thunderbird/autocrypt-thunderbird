@@ -51,13 +51,35 @@
   width: 2px;
 }
 
-.enigmailHeaderBoxLabelNoSignature {
-  background-color: #d8e0e8;
+.enigmailHeaderBoxLabelEncryptE2eOk {
+  background-color: #ccffcc;
   color: black;
 }
 
-.enigmailHeaderBoxLabelSignatureOk {
-  background-color: #ccffcc;
+.enigmailHeaderBoxLabelEncryptTransportOk {
+  background-color: #FFFFC9;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelEncryptError {
+  background-color: #FFD8FE;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelClearsignOk {
+  background-color: #ccffff;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelClearsignUnknown {
+  background-color: #ccffff;
+  color: black;
+}
+
+
+/* TODO */
+.enigmailHeaderBoxLabelNoSignature {
+  background-color: #d8e0e8;
   color: black;
 }
 

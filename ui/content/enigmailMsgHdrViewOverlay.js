@@ -218,7 +218,7 @@ Enigmail.hdrView = {
       return;
     }
 
-    let verify_status = Enigmail.msg.securityInfo.verify_status;
+    let message_status = Enigmail.msg.securityInfo.verify_status;
 
     // if (secInfo.statusArr.length > 0) {
     // expStatusText.value = secInfo.statusArr[0];
@@ -228,19 +228,26 @@ Enigmail.hdrView = {
 
 
     let statusLine, style;
-    if (verify_status.isDecryptFailed()) {
-      statusLine = `Message failed to decrypt :(`;
-      style = "SignatureNotOk";
-    } else if (verify_status.isDecrypted() && verify_status.isSigned()) {
-      statusLine = `Message is end-to-end encrypted (${verify_status.getSignKeyId()})`;
-      style = "SignatureVerified";
-    } else if (verify_status.isDecrypted()) {
-      statusLine = "Message is encrypted, but not end-to-end!";
-      style = "SignatureUnknown";
+    if (message_status.wasEncrypted()) {
+      if (message_status.isDecryptOk() && message_status.isSignOk()) {
+        statusLine = `Message is end-to-end encrypted (${message_status.getSignKeyId()})`;
+        style = "EncryptE2eOk";
+      } else if (message_status.isDecryptOk()) {
+        statusLine = "Message is encrypted, but not end-to-end!";
+        style = "EncryptTransportOk";
+      } else {
+        statusLine = `Message failed to decrypt :(`;
+        style = "EncryptError";
+      }
+    } else if (message_status.wasSigned()) {
+      if (message_status.isSignOk()) {
+        statusLine = `Message is signed (${message_status.getSignKeyId()})`;
+        style = "ClearsignOk";
+      } else if (!message_status.isSignKeyKnown()) {
+        statusLine = "Message might be signed";
+        style = "ClearsignUnknown";
+      }
     }
-
-    // SignatureOk
-    // Signature
 
     if (statusLine) {
       this.setStatusText(statusLine + " ");
@@ -248,7 +255,7 @@ Enigmail.hdrView = {
       enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabel" + style);
       this.displayExtendedStatus(true);
 
-      if (verify_status.isSigned() && !verify_status.isSignKeyKnown()) {
+      if (message_status.wasSigned() && !message_status.isSignKeyKnown()) {
         document.getElementById("enigmail_importKey").removeAttribute("hidden");
       } else {
         document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
@@ -737,7 +744,7 @@ Enigmail.hdrView = {
 
       if (this.isCurrentMessage(uri)) {
 
-        if (verify_status.isDecrypted()) {
+        if (verify_status.wasEncrypted()) {
           if (gEncryptedURIService) {
             // remember encrypted message URI to enable TB prevention against EFAIL attack
             Enigmail.hdrView.lastEncryptedUri = gFolderDisplay.selectedMessageUris[0];
