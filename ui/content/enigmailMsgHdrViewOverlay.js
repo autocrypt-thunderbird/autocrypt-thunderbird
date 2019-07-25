@@ -88,9 +88,6 @@ Enigmail.hdrView = {
       statusBar.removeAttribute("signed");
       statusBar.removeAttribute("encrypted");
 
-      let enigmailBox = document.getElementById("enigmailBox");
-      enigmailBox.setAttribute("collapsed", "true");
-
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo = {};
@@ -118,8 +115,20 @@ Enigmail.hdrView = {
     icon.setAttribute("collapsed", "true");
 
     this.displayExtendedStatus(false);
-    enigmailBox.removeAttribute("collapsed");
     this.setStatusText("Processing OpenPGP...");
+  },
+
+  showMessageUnencrypted: function() {
+    let expStatusText = document.getElementById("expandedEnigmailStatusText");
+    let icon = document.getElementById("enigToggleHeaderView2");
+    let enigmailBox = document.getElementById("enigmailBox");
+
+    expStatusText.value = "";
+    expStatusText.setAttribute("state", "false");
+    icon.setAttribute("collapsed", "true");
+
+    this.displayExtendedStatus(false);
+    this.setStatusText("Message is not encrypted");
   },
 
   updateHdrIcons: function(verify_status, encMimePartNumber) {
@@ -169,7 +178,6 @@ Enigmail.hdrView = {
     let view = Enigmail.hdrView;
 
     view.setStatusText(EnigmailLocale.getString("autocryptSetupReq"));
-    view.enigmailBox.removeAttribute("collapsed");
     let confirm = document.getElementById("enigmail_confirmKey");
     confirm.setAttribute("label", EnigmailLocale.getString("autocryptSetupReq.button.label"));
     confirm.removeAttribute("hidden");
@@ -210,8 +218,6 @@ Enigmail.hdrView = {
     expStatusText.setAttribute("state", "false");
     icon.setAttribute("collapsed", "true");
 
-    this.setStatusText("");
-    enigmailBox.setAttribute("collapsed", "true");
     this.displayExtendedStatus(false);
 
     if (!Enigmail.msg.securityInfo || !Enigmail.msg.securityInfo.verify_status) {
@@ -229,15 +235,21 @@ Enigmail.hdrView = {
 
     let statusLine, style;
     if (message_status.wasEncrypted()) {
-      if (message_status.isDecryptOk() && message_status.isSignOk()) {
-        statusLine = `Message is end-to-end encrypted (${message_status.getSignKeyId()})`;
-        style = "EncryptE2eOk";
-      } else if (message_status.isDecryptOk()) {
-        statusLine = "Message is encrypted, but not end-to-end!";
-        style = "EncryptTransportOk";
-      } else {
+      if (!message_status.isDecryptOk()) {
         statusLine = `Message failed to decrypt :(`;
         style = "EncryptError";
+      } else if (!message_status.wasSigned()) {
+        statusLine = "Message is transport encrypted";
+        style = "EncryptTransportOk";
+      } else if (message_status.isSignOk()) {
+        statusLine = `Message is end-to-end encrypted (${message_status.getSignKeyId()})`;
+        style = "EncryptE2eOk";
+      } else if (!message_status.isSignKeyKnown()) {
+        statusLine = "Message is end-to-end encrypted, from unknown key";
+        style = "EncryptE2eUnknown";
+      } else {
+        statusLine = "Message is encrypted";
+        style = "EncryptE2eError";
       }
     } else if (message_status.wasSigned()) {
       if (message_status.isSignOk()) {
@@ -251,7 +263,6 @@ Enigmail.hdrView = {
 
     if (statusLine) {
       this.setStatusText(statusLine + " ");
-      enigmailBox.removeAttribute("collapsed");
       enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabel" + style);
       this.displayExtendedStatus(true);
 
@@ -264,7 +275,6 @@ Enigmail.hdrView = {
 
     } else {
       this.setStatusText("");
-      enigmailBox.setAttribute("collapsed", "true");
       this.displayExtendedStatus(false);
     }
 
@@ -442,7 +452,7 @@ Enigmail.hdrView = {
           Enigmail.hdrView.statusBarHide();
           EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
           Enigmail.hdrView.setStatusText("");
-          this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
+          this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
 
           let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
           if (msgFrame) {
@@ -462,8 +472,7 @@ Enigmail.hdrView = {
 
         try {
           Enigmail.hdrView.statusBarHide();
-
-          this.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
+          this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
         } catch (ex) {}
       },
 

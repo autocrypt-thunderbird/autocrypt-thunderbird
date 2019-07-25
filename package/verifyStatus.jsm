@@ -32,8 +32,7 @@ const SIGNATURE_STATUS = {
 };
 
 const SIGNATURE_KEY_STATUS = {
-  NONE: -1,
-  MISSING: 0,
+  NONE: 0,
   OK: 1,
   INVALID_KEY_REVOKED: 2,
   INVALID_KEY_EXPIRED: 3,
@@ -92,8 +91,8 @@ MessageCryptoStatus.prototype.isSignKeyTrusted = function() {
 
 MessageCryptoStatus.createDecryptOkStatus = function(sender_address, sig_ok, sig_key_id, public_key) {
   return new MessageCryptoStatus(
-    sig_ok ? SIGNATURE_STATUS.OK : SIGNATURE_STATUS.KEY_MISSING,
-    SIGNATURE_KEY_STATUS.NONE,
+    sig_ok ? SIGNATURE_STATUS.OK : (public_key ? SIGNATURE_STATUS.NONE : SIGNATURE_STATUS.KEY_MISSING),
+    public_key ? SIGNATURE_KEY_STATUS.OK : SIGNATURE_KEY_STATUS.NONE,
     SIGNATURE_TRUST_STATUS.NONE,
     DECRYPTION_STATUS.OK,
     sender_address,

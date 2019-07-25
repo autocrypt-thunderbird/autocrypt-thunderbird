@@ -56,8 +56,18 @@
   color: black;
 }
 
-.enigmailHeaderBoxLabelEncryptTransportOk {
+.enigmailHeaderBoxLabelEncryptE2eUnknown {
   background-color: #FFFFC9;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelEncryptE2eError {
+  background-color: #FFD8FE;
+  color: black;
+}
+
+.enigmailHeaderBoxLabelEncryptTransportOk {
+  /* background-color: #FFFFC9; */
   color: black;
 }
 

@@ -467,7 +467,7 @@
   <vbox id="enigmailHdrBox">
     <hbox id="enigmailBox"
           class="expandedEnigmailBox"
-          collapsed="true" align="center">
+          align="center">
 
       <vbox>
         <spacer class="enigmailHeaderSpacer"/>

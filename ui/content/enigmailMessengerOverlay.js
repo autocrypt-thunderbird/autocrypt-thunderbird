@@ -286,17 +286,6 @@ Enigmail.msg = {
   messageCleanup: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageCleanup\n");
 
-    var enigmailBox = document.getElementById("enigmailBox");
-
-    if (enigmailBox && !enigmailBox.collapsed) {
-      enigmailBox.setAttribute("collapsed", "true");
-
-      var statusText = document.getElementById("expandedEnigmailStatusText");
-      if (statusText) {
-        statusText.value = "";
-      }
-    }
-
     let exchBox = document.getElementById("enigmailBrokenExchangeBox");
     if (exchBox) {
       exchBox.setAttribute("collapsed", "true");
@@ -442,27 +431,6 @@ Enigmail.msg = {
     if (attrName == "autoDecrypt") {
       this.messageReload(false);
     }
-  },
-
-  /**
-   * Determine if Autocrypt is enabled for the currently selected message
-   */
-  isAutocryptEnabled: function() {
-    try {
-      let email = EnigmailFuncs.stripEmail(gFolderDisplay.selectedMessage.recipients);
-      let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
-
-      if (maybeIdent && maybeIdent.identity) {
-        if (!maybeIdent.identity.getBoolAttribute("enablePgp")) {
-          return false;
-        }
-
-        let acct = EnigmailFuncs.getAccountForIdentity(maybeIdent.identity);
-        return acct.incomingServer.getBoolValue("enableAutocrypt");
-      }
-    } catch (ex) {}
-
-    return false;
   },
 
   messageImport: function() {
