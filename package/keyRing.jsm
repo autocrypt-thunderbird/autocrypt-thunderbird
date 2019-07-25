@@ -75,6 +75,15 @@ var EnigmailKeyRing = {
     return gCachedSecretKeyMap;
   },
 
+  getPublicKeyByKeyId: async function(key_id) {
+    let fpr_primary = await sqlite.findPrimaryFprByKeyId(key_id);
+    if (!fpr_primary) {
+      return null;
+    }
+    let public_key_map = await this.getAllPublicKeysMap();
+    return public_key_map[fpr_primary];
+  },
+
   getPublicKeyByEmail: async function(email) {
     EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ${email}\n`);
     let public_key_map = await this.getAllPublicKeysMap();

@@ -118,40 +118,52 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     EnigmailLog.DEBUG(`openpgp-js.js: decrypting...\n`);
     try {
       let openpgp_result = await openpgp.decrypt(decrypt_options);
-      let time_diff_ms = new Date() - startTime;
-      EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
       // EnigmailLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
 
+      let sig_ok = false;
       let sig_key_id;
-      let sig_ok;
-      let sig_data;
+      let sig_openpgp_key;
       if (openpgp_result.signatures && openpgp_result.signatures.length) {
         let sig = openpgp_result.signatures[0];
 
-        sig_ok = sig.valid;
         sig_key_id = sig.keyid.toHex().toUpperCase();
-
-        if (!sig_ok && openpgp_public_key_callback) {
+        if (sig.valid) {
+          sig_ok = true;
+          sig_openpgp_key = openpgp_public_key;
+        } else if (openpgp_public_key_callback) {
+          // TODO make this less ugly? :)
           EnigmailLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
-          let foreign_keys = await openpgp_public_key_callback(sig_key_id);
-          if (foreign_keys) {
+          let foreign_key = await openpgp_public_key_callback(sig_key_id);
+          if (foreign_key) {
             EnigmailLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
-            let foreign_signature = await openpgp.verify({
+            let foreign_result = await openpgp.verify({
               message: openpgp.message.fromText(openpgp_result.data),
-              publicKeys: foreign_keys,
-              signature: sig
+              publicKeys: foreign_key,
+              signature: sig.signature
             });
-            sig_ok = foreign_signature.valid;
+            EnigmailLog.DEBUG(`openpgp-js.js: verified ${stringify(foreign_result)}\n`);
+            if (foreign_result && foreign_result.signatures && foreign_result.signatures.length) {
+              let sig = foreign_result.signatures[0];
+              if (sig.valid) {
+                EnigmailLog.DEBUG(`openpgp-js.js: foreign signature ok\n`);
+                sig_ok = true;
+                sig_openpgp_key = foreign_key;
+              }
+            }
           } else {
             EnigmailLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
           }
         }
       }
 
+      let time_diff_ms = new Date() - startTime;
+      EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
+
       return {
         plaintext: openpgp_result.data,
+        sig_ok: sig_ok,
         sig_key_id: sig_key_id,
-        sig_ok: sig_ok
+        sig_openpgp_key: sig_openpgp_key
       };
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);

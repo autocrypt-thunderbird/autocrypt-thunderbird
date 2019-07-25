@@ -91,7 +91,7 @@ MessageCryptoStatus.prototype.isSignKeyTrusted = function() {
 
 MessageCryptoStatus.createDecryptOkStatus = function(sender_address, sig_ok, sig_key_id, public_key) {
   return new MessageCryptoStatus(
-    sig_ok ? SIGNATURE_STATUS.OK : (public_key ? SIGNATURE_STATUS.NONE : SIGNATURE_STATUS.KEY_MISSING),
+    sig_ok ? SIGNATURE_STATUS.OK : (sig_key_id ? (public_key ? SIGNATURE_STATUS.ERROR : SIGNATURE_STATUS.KEY_MISSING) : SIGNATURE_STATUS.NONE),
     public_key ? SIGNATURE_KEY_STATUS.OK : SIGNATURE_KEY_STATUS.NONE,
     SIGNATURE_TRUST_STATUS.NONE,
     DECRYPTION_STATUS.OK,

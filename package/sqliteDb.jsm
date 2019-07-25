@@ -152,6 +152,31 @@ var EnigmailSqliteDb = {
     }
   },
 
+  findPrimaryFprByKeyId: async function(key_id) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: findPrimaryFprByKeyId(${key_id})\n`);
+    let conn;
+    try {
+      conn = await this.openDatabase();
+      let result = null;
+      await conn.execute( "select fpr_primary from public_keyids where key_id = :key_id;", {
+        key_id: key_id.toUpperCase()
+      },
+        function _onRow(row) {
+          result = row.getResultByName("fpr_primary");
+      });
+      conn.close();
+      EnigmailLog.DEBUG(`sqliteDb.jsm: findPrimaryFprByKeyId: ${result}\n`);
+      return result;
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: findPrimaryFprByKeyId: ERROR: ${ex}\n`);
+      if (conn) {
+        conn.close();
+      }
+      return [];
+    }
+  },
+
   autocryptInsertOrUpdateLastSeenMessage: async function(email, last_seen_message) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeen()\n`);
     let conn;
