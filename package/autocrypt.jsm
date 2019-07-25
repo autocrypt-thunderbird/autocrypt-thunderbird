@@ -116,7 +116,8 @@ function parseAutocryptHeader(raw_header_value) {
   let isPreferEncryptMutual = false;
   let preferEncrypt = parameters[AUTOCRYPT_PARAM_PREFER_ENCRYPT];
   if (preferEncrypt && preferEncrypt.toLowerCase() == AUTOCRYPT_PREFER_ENCRYPT_MUTUAL) {
-      isPreferEncryptMutual = true;
+    delete parameters[AUTOCRYPT_PARAM_PREFER_ENCRYPT];
+    isPreferEncryptMutual = true;
   }
 
   if (hasCriticalParameters(parameters)) {
@@ -271,7 +272,7 @@ var EnigmailAutocrypt = {
       effective_date = new Date(dateSent * 1000);
     }
 
-    this.updateAutocryptPeerState(from_addr, effective_date, autocrypt_header);
+    await this.updateAutocryptPeerState(from_addr, effective_date, autocrypt_header);
   },
 
   processAutocryptGossipHeaders: async function(headerDataArr, dateSent) {

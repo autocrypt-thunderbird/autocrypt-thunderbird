@@ -25,6 +25,7 @@ const EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
 const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const AutocryptHelper = ChromeUtils.import("chrome://enigmail/content/modules/autocryptHelper.jsm").AutocryptHelper;
 const MessageCryptoStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").MessageCryptoStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
@@ -494,10 +495,13 @@ MimeVerify.prototype = {
       // if (this.partiallySigned)
         // this.returnStatus.statusFlags |= EnigmailConstants.PARTIALLY_PGP;
 
+      let uri = this.uri;
       let pgpBlock = this.signedData;
       let sigData = this.sigData;
       const cApi = EnigmailCryptoAPI();
       let verify_status = cApi.sync((async function() {
+        await AutocryptHelper.processAutocryptForMessage(uri);
+
         let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
         try {

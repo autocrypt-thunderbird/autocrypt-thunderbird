@@ -107,7 +107,7 @@ MessageCryptoStatus.createDecryptErrorStatus = function(sender_address) {
     SIGNATURE_STATUS.NONE,
     SIGNATURE_KEY_STATUS.NONE,
     SIGNATURE_TRUST_STATUS.NONE,
-    DECRYPTION_STATUS.OK,
+    DECRYPTION_STATUS.ERROR,
     sender_address
   );
 };

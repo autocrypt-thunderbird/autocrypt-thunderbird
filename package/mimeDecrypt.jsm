@@ -32,6 +32,7 @@ const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const AutocryptMessageCache = ChromeUtils.import("chrome://enigmail/content/modules/messageCache.jsm").AutocryptMessageCache;
 const MessageCryptoStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").MessageCryptoStatus;
+const AutocryptHelper = ChromeUtils.import("chrome://enigmail/content/modules/autocryptHelper.jsm").AutocryptHelper;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -118,8 +119,6 @@ function MimeDecryptHandler() {
   this.mimeSvc = null;
   this.initOk = false;
   this.boundary = "";
-  this.pipe = null;
-  this.closePipe = false;
   this.statusStr = "";
   this.outQueue = "";
   this.dataLength = 0;
@@ -181,8 +180,7 @@ MimeDecryptHandler.prototype = {
         EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
       }
     }
-    this.pipe = null;
-    this.closePipe = false;
+
     this.msgWindow = EnigmailVerify.lastMsgWindow;
     this.msgUriSpec = EnigmailVerify.lastMsgUri;
 
@@ -419,9 +417,12 @@ MimeDecryptHandler.prototype = {
 
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
 
+    let uri = this.uri;
     let pgpBlock = this.outQueue;
     const cApi = EnigmailCryptoAPI();
     let [decrypted_plaintext, verify_status] = cApi.sync((async function() {
+      await AutocryptHelper.processAutocryptForMessage(uri);
+
       let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
       let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
