@@ -39,6 +39,7 @@ const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm",
 const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailGnuPGUpdate = EnigmailLazy.loader("enigmail/gnupgUpdate.jsm", "EnigmailGnuPGUpdate");
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
@@ -84,7 +85,7 @@ var EnigmailCore = {
 
       try {
         let mimeEncrypt = getEnigmailMimeEncrypt();
-        mimeEncrypt.startup(reason);        
+        mimeEncrypt.startup(reason);
         enigmailOverlays.startupCore(reason);
         let cLineReg = getEnigmailCommandLine().categoryRegistry;
         let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
@@ -104,6 +105,10 @@ var EnigmailCore = {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
       }
     }
+
+    // TODO not doing this currently, doesn't actually help :(
+    // const cApi = EnigmailCryptoAPI();
+    // cApi.initialize();
 
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailWksMimeHandler().registerContentTypeHandler();

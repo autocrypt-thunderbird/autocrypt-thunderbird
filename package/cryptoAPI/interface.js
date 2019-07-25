@@ -272,4 +272,8 @@ class CryptoAPI {
   async getKeyListFromKeyBlock(keyBlockStr) {
     return null;
   }
+
+  async initialize() {
+    return null;
+  }
 }
