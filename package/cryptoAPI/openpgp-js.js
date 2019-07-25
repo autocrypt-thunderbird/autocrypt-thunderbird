@@ -171,7 +171,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       signature: await openpgp.signature.readArmored(sig_data)
     };
 
-    EnigmailLog.DEBUG(`openpgp-js.js: ${JSON.stringify(verify_options)}\n`);
+    // EnigmailLog.DEBUG(`openpgp-js.js: ${JSON.stringify(verify_options)}\n`);
     // TODO limit output to 100 times message size to avoid DoS attack?
 
     EnigmailLog.DEBUG(`openpgp-js.js: verifying...\n`);
