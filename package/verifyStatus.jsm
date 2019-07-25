@@ -9,7 +9,7 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["createVerifyStatus"];
+var EXPORTED_SYMBOLS = ["createVerifyStatus", "createBadEncryptionStatus"];
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
@@ -25,43 +25,44 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/ke
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 
-function VerifyStatus(sig_ok, sig_key_id, sender_address, public_key) {
+function MessageCryptoStatus(sig_ok, sig_key_id, sender_address, public_key, is_decrypt_error) {
   this.sig_ok = sig_ok;
   this.sig_key_id = sig_key_id;
   this.sender_address = sender_address;
   this.public_key = public_key;
+  this.is_decrypt_error = is_decrypt_error;
 }
 
-VerifyStatus.prototype.isDecrypted = function() {
+MessageCryptoStatus.prototype.isDecrypted = function() {
   return true;
 };
 
-VerifyStatus.prototype.isDecryptFailed = function() {
-  return false;
+MessageCryptoStatus.prototype.isDecryptFailed = function() {
+  return this.is_decrypt_error;
 };
 
-VerifyStatus.prototype.isSigned = function() {
+MessageCryptoStatus.prototype.isSigned = function() {
   return Boolean(this.sig_key_id);
 };
 
 
-VerifyStatus.prototype.isSignKeyKnown = function() {
+MessageCryptoStatus.prototype.isSignKeyKnown = function() {
   return true;
 };
 
-VerifyStatus.prototype.isSignOk = function() {
+MessageCryptoStatus.prototype.isSignOk = function() {
   return this.sign_ok;
 };
 
-VerifyStatus.prototype.getSignKeyId = function() {
+MessageCryptoStatus.prototype.getSignKeyId = function() {
   return this.sig_key_id;
 };
 
-VerifyStatus.prototype.isSignKeyTrusted = function() {
+MessageCryptoStatus.prototype.isSignKeyTrusted = function() {
   return true;
 };
 
-VerifyStatus.prototype.getStatusFlags = function() {
+MessageCryptoStatus.prototype.getStatusFlags = function() {
   let status_flags = EnigmailConstants.PGP_MIME_ENCRYPTED
     | EnigmailConstants.DECRYPTION_OKAY
     | EnigmailConstants.STATUS_DECRYPTION_OK;
@@ -77,7 +78,10 @@ VerifyStatus.prototype.getStatusFlags = function() {
 };
 
 
+async function createBadEncryptionStatus(sender_address) {
+  return new MessageCryptoStatus(false, null, sender_address, null, true);
+}
 
 async function createVerifyStatus(sig_ok, sig_key_id, sender_address, public_key) {
-  return new VerifyStatus(sig_ok, sig_key_id, sender_address, public_key);
+  return new MessageCryptoStatus(sig_ok, sig_key_id, sender_address, public_key, false);
 }

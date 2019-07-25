@@ -186,7 +186,6 @@ Enigmail.hdrView = {
   },
 
   displayStatusBar: function() {
-    let statusText = document.getElementById("enigmailStatusText");
     let expStatusText = document.getElementById("expandedEnigmailStatusText");
     let icon = document.getElementById("enigToggleHeaderView2");
     let bodyElement = document.getElementById("messagepanebox");
@@ -214,18 +213,25 @@ Enigmail.hdrView = {
     // }
 
 
-    let statusLine;
-    if (verify_status.isDecrypted() && verify_status.isSigned()) {
+    let statusLine, style;
+    if (verify_status.isDecryptFailed()) {
+      statusLine = `Message failed to decrypt :(`;
+      style = "SignatureNotOk";
+    } else if (verify_status.isDecrypted() && verify_status.isSigned()) {
       statusLine = `Message is end-to-end encrypted (${verify_status.getSignKeyId()})`;
+      style = "SignatureVerified";
     } else if (verify_status.isDecrypted()) {
       statusLine = "Message is encrypted, but not end-to-end!";
-    } else if (verify_status.isSigned()) {
-      statusLine = "Message is signed";
+      style = "SignatureUnknown";
     }
+
+    // SignatureOk
+    // Signature
 
     if (statusLine) {
       this.setStatusText(statusLine + " ");
       enigmailBox.removeAttribute("collapsed");
+      enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabel" + style);
       this.displayExtendedStatus(true);
 
       if (verify_status.isSigned() && !verify_status.isSignKeyKnown()) {
@@ -244,6 +250,13 @@ Enigmail.hdrView = {
     if (!gSMIMEContainer)
       return;
 
+    try {
+      gSMIMEContainer.collapsed = false;
+      gSignedUINode.collapsed = false;
+      gEncryptedUINode.collapsed = false;
+    } catch (e) { }
+
+    /* TODO display status in S/MIME icons as well?
     let statusBar = document.getElementById("enigmail-status-bar");
     // Update icons and header-box css-class
     try {
@@ -255,29 +268,21 @@ Enigmail.hdrView = {
         if (verify_status.isTrusted()) {
           // Display trusted good signature icon
           gSignedUINode.setAttribute("signed", "ok");
-          enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureOk");
           statusBar.setAttribute("signed", "ok");
           bodyElement.setAttribute("enigSigned", "ok");
         } else {
           // Display untrusted/bad signature icon
           gSignedUINode.setAttribute("signed", "unknown");
-          enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
           statusBar.setAttribute("signed", "unknown");
         }
-      } else if (verify_status.isSigned()) {
-        enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
-      } else {
-        enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelNoSignature");
       }
 
         // Display unverified signature icon
         // gSignedUINode.setAttribute("signed", "unknown");
-        // enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
         // statusBar.setAttribute("signed", "unknown");
 
         // Display unverified signature icon
         // gSignedUINode.setAttribute("signed", "unknown");
-        // enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureVerified");
         // statusBar.setAttribute("signed", "unknown");
 
       if (verify_status.isDecrypted()) {
@@ -300,6 +305,7 @@ Enigmail.hdrView = {
     } catch (ex) {
       EnigmailLog.writeException("displayStatusBar", ex);
     }
+    */
   },
 
   dispSecurityContext: function() {
@@ -836,6 +842,7 @@ Enigmail.hdrView = {
   },
 
   onUnloadEnigmail: function() {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: onUnloadEnigmail()\n");
     window.removeEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);
     for (let i = 0; i < gMessageListeners.length; i++) {
       if (gMessageListeners[i] === Enigmail.hdrView.messageListener) {

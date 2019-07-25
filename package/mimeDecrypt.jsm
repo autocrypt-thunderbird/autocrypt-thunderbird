@@ -32,6 +32,7 @@ const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules
 const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
 const AutocryptMessageCache = ChromeUtils.import("chrome://enigmail/content/modules/messageCache.jsm").AutocryptMessageCache;
 const createVerifyStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").createVerifyStatus;
+const createBadEncryptionStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").createBadEncryptionStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -423,10 +424,16 @@ MimeDecryptHandler.prototype = {
       let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
       let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
-      let return_status = await cApi.decrypt(pgpBlock, openpgp_secret_keys, openpgp_public_key);
-      let verify_status = await createVerifyStatus(return_status.sig_ok, return_status.sig_key_id, sender_address, openpgp_public_key);
+      try {
+        let return_status = await cApi.decrypt(pgpBlock, openpgp_secret_keys, openpgp_public_key);
+        let verify_status = await createVerifyStatus(return_status.sig_ok, return_status.sig_key_id, sender_address, openpgp_public_key);
 
-      return [return_status.plaintext, verify_status];
+        return [return_status.plaintext, verify_status];
+      } catch (e) {
+        EnigmailLog.DEBUG(`mimeDecrypt.jsm: decrypt error: ${e}\n`);
+        let verify_status = await createBadEncryptionStatus(sender_address);
+        return ["", verify_status];
+      }
     })());
 
     LOCAL_DEBUG("mimeDecrypt.jsm: decryption ok\n");

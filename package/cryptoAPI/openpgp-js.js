@@ -101,7 +101,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return null;
   }
 
-  async decrypt(ciphertext, openpgp_secret_keys, openpgp_public_keys) {
+  async decrypt(ciphertext, openpgp_secret_keys, openpgp_public_key, openpgp_public_key_callback) {
     EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
 
     const openpgp = getOpenPGP().openpgp;
@@ -109,7 +109,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
     const decrypt_options = {
       message: await openpgp.message.readArmored(ciphertext),
-      publicKeys: openpgp_public_keys,
+      publicKeys: openpgp_public_key,
       privateKeys: openpgp_secret_keys
     };
 
@@ -124,24 +124,34 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
       let sig_key_id;
       let sig_ok;
+      let sig_data;
       if (openpgp_result.signatures && openpgp_result.signatures.length) {
         let sig = openpgp_result.signatures[0];
 
-        sig_key_id = sig.keyid.toHex().toUpperCase();
         sig_ok = sig.valid;
+        sig_key_id = sig.keyid.toHex().toUpperCase();
+
+        if (!sig_ok && openpgp_public_key_callback) {
+          EnigmailLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
+          let foreign_keys = await openpgp_public_key_callback(sig_key_id);
+          if (foreign_keys) {
+            EnigmailLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
+            let foreign_signature = await openpgp.verify({
+              message: await openpgp.message.fromText(openpgp_result.data),
+              publicKeys: foreign_keys,
+              signature: sig
+            });
+            sig_ok = foreign_signature.valid;
+          } else {
+            EnigmailLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
+          }
+        }
       }
 
       return {
         plaintext: openpgp_result.data,
         sig_key_id: sig_key_id,
         sig_ok: sig_ok
-        /*
-          userId: 'juja@example.net',
-          sigDetails: '',
-          errorMsg: 'no error',
-          blockSeparation: '',
-          encToDetails: ''
-        */
       };
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);
