@@ -416,6 +416,8 @@ MimeDecryptHandler.prototype = {
         .getMostRecentWindow("mail:3pane");
     let sender_address = EnigmailDecryption.getFromAddr(pane);
 
+    this.displayLoadingProgress();
+
     EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
 
     let pgpBlock = this.outQueue;
@@ -483,6 +485,14 @@ MimeDecryptHandler.prototype = {
     }
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
     this.proc = null;
+  },
+
+  displayLoadingProgress: function() {
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: displayLoadingProgress()\n");
+      let headerSink = EnigmailSingletons.messageReader;
+      if (headerSink && this.uri && !this.backgroundJob) {
+        headerSink.showLoading();
+      }
   },
 
   displayStatus: function(verify_status, decrypted_headers) {

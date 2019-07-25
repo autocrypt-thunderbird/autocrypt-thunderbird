@@ -108,6 +108,20 @@ Enigmail.hdrView = {
     s.firstChild.data = txt;
   },
 
+  showLoading: function() {
+    let expStatusText = document.getElementById("expandedEnigmailStatusText");
+    let icon = document.getElementById("enigToggleHeaderView2");
+    let enigmailBox = document.getElementById("enigmailBox");
+
+    expStatusText.value = "";
+    expStatusText.setAttribute("state", "false");
+    icon.setAttribute("collapsed", "true");
+
+    this.displayExtendedStatus(false);
+    enigmailBox.removeAttribute("collapsed");
+    this.setStatusText("Processing OpenPGP...");
+  },
+
   updateHdrIcons: function(verify_status, encMimePartNumber) {
     EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: verify_status=${verify_status}\n`);
 
@@ -709,6 +723,10 @@ Enigmail.hdrView = {
 
       EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: false\n");
       return false;
+    },
+
+    showLoading: function() {
+      Enigmail.hdrView.showLoading();
     },
 
     updateSecurityStatus: function(verify_status, uri, mimePartNumber) {
