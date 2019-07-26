@@ -57,16 +57,12 @@ UIFILES = \
 	keyDetailsDlg.xul \
 	enigmailManageUidDlg.js \
 	enigmailManageUidDlg.xul \
-	enigmailRulesEditor.xul \
-	enigmailRulesEditor.js \
 	enigmailSearchKey.js \
 	enigmailSearchKey.xul \
 	enigmailKeyImportInfo.js \
 	enigmailKeyImportInfo.xul \
 	enigmailSingleRcptSettings.js \
 	enigmailSingleRcptSettings.xul \
-	enigmailSelectRule.js \
-	enigmailSelectRule.xul \
 	enigmailSignKeyDlg.js \
 	enigmailSignKeyDlg.xul \
 	pref-enigmail.xul \

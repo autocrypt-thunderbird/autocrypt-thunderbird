@@ -139,8 +139,7 @@ var gEnigAutoSendEncrypted = ["autoSendEncryptedNever",
 var gEnigConfirmBeforeSending = ["confirmBeforeSendingNever",
   "confirmBeforeSendingAlways",
   "confirmBeforeSendingIfEncrypted",
-  "confirmBeforeSendingIfNotEncrypted",
-  "confirmBeforeSendingIfRules"
+  "confirmBeforeSendingIfNotEncrypted"
 ];
 
 const ENIG_BUTTON_POS_0 = 1;
@@ -388,10 +387,6 @@ function EnigGetWindowOptions() {
   return winOptions;
 }
 
-function EnigRulesEditor() {
-  EnigmailWindows.openRulesEditor();
-}
-
 function EngmailCardDetails() {
   EnigmailWindows.openCardDetails();
 }
@@ -436,11 +431,6 @@ function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, 
 // get keys from keyserver
 function EnigDownloadKeys(inputObj, resultObj) {
   return EnigmailWindows.downloadKeys(window, inputObj, resultObj);
-}
-
-// create new PGP Rule
-function EnigNewRule(emailAddress) {
-  return EnigmailWindows.createNewRule(window, emailAddress);
 }
 
 function EnigGetTrustCode(keyObj) {
