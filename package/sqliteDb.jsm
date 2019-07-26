@@ -43,6 +43,7 @@ var EnigmailSqliteDb = {
       await checkAutocryptTable(conn);
       await checkWkdTable(conn);
       await createTables(conn);
+      await fixupTables(conn);
       conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
     }
@@ -283,14 +284,14 @@ var EnigmailSqliteDb = {
     }
   },
 
-  storeSecretKey: async function(fpr_primary, key_data_secret, username, email) {
+  storeSecretKey: async function(fpr_primary, key_data_secret, email) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey()\n`);
     let conn;
     try {
       conn = await this.openDatabase();
       await conn.execute(
-        "replace into secret_keydata values (:fpr_primary, :key_data_secret, :username, :email);",
-        { fpr_primary: fpr_primary, key_data_secret: key_data_secret, username: username, email: email }
+        "replace into secret_keydata values (:fpr_primary, :key_data_secret :email);",
+        { fpr_primary: fpr_primary, key_data_secret: key_data_secret, email: email }
       );
       conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey: ok\n`);
@@ -459,20 +460,12 @@ function createWkdTable(connection) {
     "last_seen integer);"); // timestamp of last mail received for the email/type combination
 }
 
-/**
- * Create the "secret_keydata" table
- *
- * @param connection: Object - SQLite connection
- *
- * @return {Promise}
- */
 async function createTables(connection) {
-  EnigmailLog.DEBUG("sqliteDB.jsm: createSecretKeyTable()\n");
+  EnigmailLog.DEBUG("sqliteDB.jsm: createTables()\n");
 
   await connection.execute("create table if not exists secret_keydata (" +
           "fpr_primary text not null primary key, " +
           "key_data_secret text not null, " +
-          "username text not null, " +
           "email text not null" +
     ");"
   );
@@ -498,7 +491,16 @@ async function createTables(connection) {
           "foreign key (fpr_primary) references public_keydata (fpr_primary) on delete cascade" +
     ");"
   );
+}
 
-  return null;
+async function fixupTables(connection) {
+  EnigmailLog.DEBUG("sqliteDB.jsm: fixupTables()\n");
+
+  await connection.execute("insert or ignore into autocrypt_peers " +
+    "(email, fpr_primary, last_seen_message) " +
+    "select email, fpr_primary, :last_seen_message " +
+    "from secret_keydata;", {
+      last_seen_message: new Date().toISOString()
+    });
 }
 

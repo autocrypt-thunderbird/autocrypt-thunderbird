@@ -51,7 +51,8 @@ const CRITICAL = [ 'addr', 'type', 'keydata', 'type', 'prefer-encrypt' ];
 
 const AUTOCRYPT_RECOMMEND = {
   DISABLE: '10-disable',
-  DISCOURAGED_OLD: '20-discouraged_old',
+  DISCOURAGED: '20-discouraged',
+  DISCOURAGED_OLD: '25-discouraged_old',
   DISCOURAGED_GOSSIP: '30-discouraged_gossip',
   AVAILABLE: '40-available',
   MUTUAL: '50-mutual'
@@ -148,9 +149,13 @@ var EnigmailAutocrypt = {
     EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peers.length} Autocrypt rows\n`);
 
     var group_recommendation = null;
-    for (const r of peers) {
-      if (!group_recommendation || (r.recommendation && r.recommendation < group_recommendation)) {
-        group_recommendation = r.recommendation;
+    if (emails.length > peers.length) {
+      group_recommendation = AUTOCRYPT_RECOMMEND.DISABLE;
+    } else {
+      for (const r of peers) {
+        if (!group_recommendation || (r.recommendation && r.recommendation < group_recommendation)) {
+          group_recommendation = r.recommendation;
+        }
       }
     }
 
@@ -297,37 +302,18 @@ var EnigmailAutocrypt = {
       this.updateAutocryptGossipPeerState(effective_date, autocrypt_header)));
   },
 
-  /**
-   * Check if an account is set up with OpenPGP and if the configured key is valid
-   *
-   * @param emailAddr: String - email address identifying the account
-   *
-   * @return Boolean: true: account is valid / false: OpenPGP not configured or key not valid
-   */
-  isAccountSetupForPgp: function(emailAddr) {
-    /*
-    let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(emailAddr).toLowerCase());
-    let keyObj = null;
+  getAutocryptSettingsForIdentity: async function(fromAddr) {
+    const address = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
 
-    if (!(id && id.identity)) return false;
-    if (!id.identity.getBoolAttribute("enablePgp")) return false;
-
-    if (id.identity.getIntAttribute("pgpKeyMode") === 1) {
-      keyObj = EnigmailKeyRing.getKeyById(id.identity.getCharAttribute("pgpkeyId"));
-    } else {
-      keyObj = EnigmailKeyRing.getSecretKeyByUserId(emailAddr);
+    const autocrypt_rows = await sqlite.retrieveAutocryptRows([fromAddr]);
+    if (autocrypt_rows && autocrypt_rows.length) {
+      const autocrypt_row = autocrypt_rows[0];
+      if (autocrypt_row.is_secret) {
+        return autocrypt_row;
+      }
     }
 
-    if (!keyObj) return false;
-    if (!keyObj.secretAvailable) return false;
-
-    let o = keyObj.getEncryptionValidity();
-    if (!o.keyValid) return false;
-    o = keyObj.getSigningValidity();
-    if (!o.keyValid) return false;
-    */
-
-    return true;
+    return false;
   },
 
   getAutocryptHeaderContentFor: async function(email) {

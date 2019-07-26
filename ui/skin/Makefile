@@ -14,7 +14,6 @@ UIFILES = \
 SKIN_TB_WIN_XP = \
 	tb-windows/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -64,23 +63,12 @@ SKIN_TB_WIN_XP = \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.svg \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg
 
 SKIN_AERO = \
 	tb-aero/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -130,16 +118,6 @@ SKIN_AERO = \
 	images/attach-inactive-18.svg \
 	images/password-error.svg \
 	images/warning-16.png \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg
 
@@ -147,7 +125,6 @@ SKIN_AERO = \
 SKIN_TB_MAC = \
 	tb-mac/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -197,23 +174,12 @@ SKIN_TB_MAC = \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.svg \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg
 
 SKIN_TB_LINUX = \
 	tb-linux/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -263,23 +229,12 @@ SKIN_TB_LINUX = \
 	images/attach-inactive-18.svg \
 	images/warning-16.png \
 	images/password-error.svg \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg
 
 SKIN_CLASSIC_SEAMONKEY = \
 	classic-seamonkey/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -340,16 +295,6 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/attach-active-30.svg \
 	images/warning-16.png \
 	images/password-error.svg \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg \
 	images/headerProtected-24.svg \
 	images/headerUnprotected-24.svg \
 	images/headerProtected-30.svg \
@@ -359,7 +304,6 @@ SKIN_CLASSIC_SEAMONKEY = \
 SKIN_MODERN = \
 	modern/enigmail.css \
 	common/enigmail-common.css \
-	common/enigmail-pEp.css \
 	common/enigmail-html.css \
 	images/enigmail-about.svg \
 	images/enigmail-logo.png \
@@ -413,17 +357,7 @@ SKIN_MODERN = \
 	tb-windows/images/enigEncForceNo.png \
 	images/modern-toolbar-background.png \
 	images/warning-16.png \
-	images/password-error.svg \
-	images/col-pEpGreen.svg \
-	images/col-pEpYellow.svg \
-	images/col-pEpRed.svg \
-	images/pEpGreen.svg \
-	images/pEpGrey.svg \
-	images/pEpYellow.svg \
-	images/pEpRed.svg \
-	images/pEpEncryptActive.svg \
-	images/pEpEncryptInactive.svg \
-	images/pEpLogo.svg
+	images/password-error.svg
 
 	
 all: deploy

@@ -13,14 +13,6 @@ var EXPORTED_SYMBOLS = ["EnigmailSync"];
 var inspector;
 
 var EnigmailSync = {
-  /**
-   * Synchronize a promise: wait synchonously until a promise has completed and return
-   * the value that the promise returned.
-   *
-   * @param {Promise} promise: the promise to wait for
-   *
-   * @return {Variant} whatever the promise returns
-   */
   sync: function(promise) {
     if (!inspector) {
       inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);

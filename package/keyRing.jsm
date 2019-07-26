@@ -170,7 +170,7 @@ var EnigmailKeyRing = {
     let key_data_secret = openpgp_secret_key.toPacketlist().write();
     let key_data_public = openpgp_secret_key.toPublic().toPacketlist().write();
 
-    await sqlite.storeSecretKey(fpr_primary, key_data_secret, userName, userEmail);
+    await sqlite.storeSecretKey(fpr_primary, key_data_secret, userEmail);
     await this.insertOrUpdate(key_data_public);
 
     let effective_date = new Date();
