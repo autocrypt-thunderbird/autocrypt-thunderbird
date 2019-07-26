@@ -100,8 +100,6 @@ UIFILES = \
 	importSettings.js \
 	importSettings.xul \
 	upgradeInfo.html \
-	updateGnuPG.html \
-	updateGnuPG.js \
 	setupWizardAutocrypt.js \
 	setupWizardAutocrypt.xul
 	

@@ -41,9 +41,7 @@ MODFILES = \
            filters.jsm \
            filtersWrapper.jsm \
            fixExchangeMsg.jsm \
-           gnupgUpdate.jsm \
            glodaUtils.jsm \
-           installGnuPG.jsm \
            key.jsm \
            keyObj.jsm \
            keyUsability.jsm \
