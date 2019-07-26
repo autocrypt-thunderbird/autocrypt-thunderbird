@@ -486,6 +486,9 @@ MimeVerify.prototype = {
       var win = windowManager.getMostRecentWindow(null);
       if (!EnigmailDecryption.isReady(win)) return;
 
+      this.displayLoadingProgress();
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
+
       // discover the pane
       var pane = Cc["@mozilla.org/appshell/window-mediator;1"]
           .getService(Components.interfaces.nsIWindowMediator)
@@ -568,6 +571,14 @@ MimeVerify.prototype = {
       this.msgWindow = msgWindow;
       this.msgUriSpec = msgUriSpec;
     }
+  },
+
+  displayLoadingProgress: function() {
+      EnigmailLog.DEBUG("mimeDecrypt.jsm: displayLoadingProgress()\n");
+      let headerSink = EnigmailSingletons.messageReader;
+      if (headerSink && this.uri && !this.backgroundJob) {
+        headerSink.showLoading();
+      }
   },
 
   displayStatus: function(verify_status, protected_headers) {
