@@ -43,7 +43,6 @@ MODFILES = \
            fixExchangeMsg.jsm \
            gnupgUpdate.jsm \
            glodaUtils.jsm \
-           httpProxy.jsm \
            installGnuPG.jsm \
            key.jsm \
            keyObj.jsm \
@@ -75,7 +74,6 @@ MODFILES = \
            searchCallback.jsm \
            send.jsm \
            singletons.jsm \
-           socks5Proxy.jsm \
            sqliteDb.jsm \
            stdlib.jsm \
            streams.jsm \
@@ -84,7 +82,6 @@ MODFILES = \
            tb60compat.jsm \
            time.jsm \
            timer.jsm \
-           tor.jsm \
            trust.jsm \
            uris.jsm \
            verify.jsm \

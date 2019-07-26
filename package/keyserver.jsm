@@ -17,7 +17,6 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/ke
 const EnigmailKeyserverURIs = ChromeUtils.import("chrome://enigmail/content/modules/keyserverUris.jsm").EnigmailKeyserverURIs;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
 const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 const EnigmailXhrUtils = ChromeUtils.import("chrome://enigmail/content/modules/xhrUtils.jsm").EnigmailXhrUtils;
 

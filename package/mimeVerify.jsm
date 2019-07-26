@@ -23,7 +23,6 @@ const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/pref
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm").EnigmailDecryption;
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
-const EnigmailHttpProxy = ChromeUtils.import("chrome://enigmail/content/modules/httpProxy.jsm").EnigmailHttpProxy;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const AutocryptHelper = ChromeUtils.import("chrome://enigmail/content/modules/autocryptHelper.jsm").AutocryptHelper;
 const MessageCryptoStatus = ChromeUtils.import("chrome://enigmail/content/modules/verifyStatus.jsm").MessageCryptoStatus;
