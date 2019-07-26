@@ -32,8 +32,6 @@ UIFILES = \
 	enigmailAttachmentsDialog.js \
 	enigmailAmIdEditOverlay.xul \
 	enigmailCheckLanguage.xul \
-	enigmailCardDetails.js \
-	enigmailCardDetails.xul \
 	enigmailConsole.xul \
 	enigmailConsole.js \
 	enigmailConsole.htm \
@@ -48,8 +46,6 @@ UIFILES = \
 	enigmailEditKeyTrustDlg.xul \
 	enigmailEncryptionDlg.xul \
 	enigmailEncryptionDlg.js \
-	enigmailGenCardKey.js \
-	enigmailGenCardKey.xul \
 	enigmailGenericDisplay.js \
 	enigmailGenericDisplay.xul \
 	enigmailGenericDisplay.htm \
@@ -71,8 +67,6 @@ UIFILES = \
 	enigmailSingleRcptSettings.xul \
 	enigmailSelectRule.js \
 	enigmailSelectRule.xul \
-	enigmailSetCardPin.js \
-	enigmailSetCardPin.xul \
 	enigmailSignKeyDlg.js \
 	enigmailSignKeyDlg.xul \
 	pref-enigmail.xul \
