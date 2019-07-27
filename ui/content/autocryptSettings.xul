@@ -30,7 +30,7 @@
 
   <vbox style="margin: 10px;">
     <hbox align="center">
-      <label value="Configuring Autocrypt for address " id="labelAutocryptEmail" control="menulistAutocryptEmail"/>
+      <label style="font-weight: bold;" value="Configure Autocrypt for address " id="labelAutocryptEmail" control="menulistAutocryptEmail"/>
       <menulist id="menulistAutocryptEmail" oncommand="onCommandMenulistAutocryptEmail();" aria-labelledby="labelAutocryptEmail menulistAutocryptEmail">
       </menulist>
       <spacer flex="1" />
@@ -60,7 +60,7 @@
             <hbox align="center">
               <menulist id="menulistAutocryptMode" oncommand="onCommandMenulistAutocryptMode();" aria-labelledby="menulistAutocryptMode">
                 <menupopup>
-                  <menuitem value="mutual" label="Automatic, if possible" />
+                  <menuitem value="mutual" label="Allow automatic" />
                   <menuitem value="manual" label="Manual only" />
                 </menupopup>
               </menulist>
@@ -71,6 +71,10 @@
       </grid>
     </vbox>
 
+    <hbox>
+      <button label="Additional Keys" />
+      <spacer flex="1" />
+    </hbox>
   </vbox>
 
   <!--
