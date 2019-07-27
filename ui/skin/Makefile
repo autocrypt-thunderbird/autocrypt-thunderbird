@@ -64,7 +64,10 @@ SKIN_TB_WIN_XP = \
 	images/warning-16.png \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
-	images/headerUnprotected-18.svg
+	images/headerUnprotected-18.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 SKIN_AERO = \
 	tb-aero/enigmail.css \
@@ -119,7 +122,10 @@ SKIN_AERO = \
 	images/password-error.svg \
 	images/warning-16.png \
 	images/headerProtected-18.svg \
-	images/headerUnprotected-18.svg
+	images/headerUnprotected-18.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 
 SKIN_TB_MAC = \
@@ -175,7 +181,10 @@ SKIN_TB_MAC = \
 	images/warning-16.png \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
-	images/headerUnprotected-18.svg
+	images/headerUnprotected-18.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 SKIN_TB_LINUX = \
 	tb-linux/enigmail.css \
@@ -230,7 +239,10 @@ SKIN_TB_LINUX = \
 	images/warning-16.png \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
-	images/headerUnprotected-18.svg
+	images/headerUnprotected-18.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 SKIN_CLASSIC_SEAMONKEY = \
 	classic-seamonkey/enigmail.css \
@@ -298,7 +310,10 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/headerProtected-24.svg \
 	images/headerUnprotected-24.svg \
 	images/headerProtected-30.svg \
-	images/headerUnprotected-30.svg
+	images/headerUnprotected-30.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 # missing: modern-encrypt-disabled.png, modern-sign-disabled.png
 SKIN_MODERN = \
@@ -357,7 +372,10 @@ SKIN_MODERN = \
 	tb-windows/images/enigEncForceNo.png \
 	images/modern-toolbar-background.png \
 	images/warning-16.png \
-	images/password-error.svg
+	images/password-error.svg \
+	images/autocrypt-18.svg \
+	images/autocrypt-inactive-18.svg \
+	images/autocrypt-disabled-18.svg
 
 	
 all: deploy
