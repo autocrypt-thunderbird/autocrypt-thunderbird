@@ -54,24 +54,37 @@
   <!-- Enigmail toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
     targetToolbar="composeToolbar2"
-    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-save,button-enigmail-encrypt,enigmail-toolbar-text-button,spring"
+    targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-save,button-enigmail-encrypt,spring"
     targetToolbox="compose-toolbox">
 
     <!-- 'Encrypt message' button -->
-    <toolbarbutton class="toolbarbutton-1"
-            id="button-enigmail-encrypt"
-            label="&enigmail.encryptedsend.label;"
-            buttontype="thunderbird"
-            tooltip="aTooltipSet"
-            observes="enigmail-bc-encrypt"
-            oncommand="Enigmail.msg.onButtonToggleEncrypt();" />
+    <toolbarbutton
+      class="toolbarbutton-1"
+      type="menu-button"
+      id="button-enigmail-encrypt"
+      label="Autocrypt"
+      buttontype="thunderbird"
+      tooltip="aTooltipSet"
+      observes="enigmail-bc-encrypt"
+      oncommand="Enigmail.msg.onButtonToggleEncrypt();"
+      >
+      <menupopup>
+        <menuitem closemenu="none" label="Enable or disable encryption" />
+        <menuseparator />
+        <menuitem disabled="true" id="label-autocrypt-status" label="Status: Encryption is disabled" />
+        <menuitem disabled="true" id="check-autocrypt-status-manual" type="checkbox" label="You chose to encrypt this message" />
+        <menuitem disabled="true" id="check-autocrypt-status-reply" type="checkbox" label="You are replying to an encrypted message" />
+        <menuitem disabled="true" id="check-autocrypt-status-mutual" type="checkbox" label="You and all recipients allow automatic encryption" />
+      </menupopup>
+    </toolbarbutton>
 
     <!-- status info button -->
     <toolbarbutton class="toolbarbutton-1"
             id="enigmail-toolbar-text-button"
             label="&enigmail.composetoolbar.desc;"
             buttontype="thunderbird"
-            oncommand="Enigmail.msg.onButtonDisplaySecuritySettings();">
+            oncommand="Enigmail.msg.onButtonDisplaySecuritySettings();"
+            disabled="true">
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>
   </toolbarpalette>

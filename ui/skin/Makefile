@@ -65,6 +65,10 @@ SKIN_TB_WIN_XP = \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
@@ -123,6 +127,10 @@ SKIN_AERO = \
 	images/warning-16.png \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
@@ -182,6 +190,10 @@ SKIN_TB_MAC = \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
@@ -240,6 +252,10 @@ SKIN_TB_LINUX = \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
@@ -311,6 +327,10 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/headerUnprotected-24.svg \
 	images/headerProtected-30.svg \
 	images/headerUnprotected-30.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
@@ -373,6 +393,10 @@ SKIN_MODERN = \
 	images/modern-toolbar-background.png \
 	images/warning-16.png \
 	images/password-error.svg \
+	images/status-lock-18.svg \
+	images/status-lock-disabled-18.svg \
+	images/status-lock-error-18.svg \
+	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg

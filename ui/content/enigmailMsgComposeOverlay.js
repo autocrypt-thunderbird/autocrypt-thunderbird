@@ -194,6 +194,18 @@ ComposeCryptoState.prototype.toggleUserChoice = function() {
   }
 };
 
+ComposeCryptoState.prototype.isCheckStatusManual = function() {
+  return this.currentCryptoMode == CRYPTO_MODE.CHOICE_ENABLED;
+};
+
+ComposeCryptoState.prototype.isCheckStatusMutual = function() {
+  return this.isAutocryptMutual && this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL;
+};
+
+ComposeCryptoState.prototype.isCheckStatusReply = function() {
+  return this.isReplyToOpenPgpEncryptedMessage;
+};
+
 ComposeCryptoState.prototype.getDisplayStatus = function() {
   if (!this.isAutocryptConfiguredForIdentity) {
     return ENCRYPT_DISPLAY_STATUS.UNCONFIGURED;
@@ -295,16 +307,16 @@ Enigmail.msg = {
     Enigmail.msg.composeBodyReady = false;
 
     // Relabel SMIME button and menu item
-    // var smimeButton = document.getElementById("button-security");
-    // let toolbar = document.getElementById("composeToolbar2");
+    var smimeButton = document.getElementById("button-security");
+    let toolbar = document.getElementById("composeToolbar2");
 
-    // if (smimeButton) {
-    // smimeButton.setAttribute("label", "S/MIME");
-    // if (toolbar && toolbar.getAttribute("currentset").length === 0) {
+    if (smimeButton) {
+      smimeButton.setAttribute("label", "S/MIME");
+      // if (toolbar && toolbar.getAttribute("currentset").length === 0) {
         // remove S/MIME button if the toolbar is displaying the default set
-    // toolbar.removeChild(smimeButton);
-    // }
-    // }
+      // toolbar.removeChild(smimeButton);
+      // }
+    }
 
     var msgId = document.getElementById("msgIdentityPopup");
     if (msgId) {
@@ -330,7 +342,7 @@ Enigmail.msg = {
     this.initialSendFlags();
   },
 
-  delayedProcessFinalState: function() {
+  delayedUpdateStatusBar: function() {
     EnigmailTimer.setTimeout(function _f() {
         Enigmail.msg.updateStatusBar();
       },
@@ -362,7 +374,7 @@ Enigmail.msg = {
     } else {
       this.composeCryptoState.currentCryptoMode = CRYPTO_MODE.NO_CHOICE;
     }
-    this.delayedProcessFinalState();
+    this.delayedUpdateStatusBar();
   },
 
   toggleSMimeSign: function() {
@@ -373,7 +385,7 @@ Enigmail.msg = {
     } else {
       this.composeCryptoState.currentCryptoMode = CRYPTO_MODE.NO_CHOICE;
     }
-    this.delayedProcessFinalState();
+    this.delayedUpdateStatusBar();
   },
 
   setIdentityCallback: function(elementId) {
@@ -896,13 +908,13 @@ Enigmail.msg = {
   onPressKeyToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPressKeyToggleEncrypt()\n");
     this.composeCryptoState.toggleUserChoice();
-    this.updateStatusBar();
+    this.delayedUpdateStatusBar();
   },
 
   onButtonToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onButtonToggleEncrypt()\n");
     this.composeCryptoState.toggleUserChoice();
-    this.updateStatusBar();
+    this.delayedUpdateStatusBar();
   },
 
   onButtonDisplaySecuritySettings: function() {
@@ -1115,6 +1127,10 @@ Enigmail.msg = {
     }
     this.setChecked("enigmail-bc-encrypt", display_status.buttonPressed);
     this.setEnabled("enigmail-bc-encrypt", display_status.buttonEnabled);
+
+    this.setChecked("check-autocrypt-status-manual", this.composeCryptoState.isCheckStatusManual());
+    this.setChecked("check-autocrypt-status-reply", this.composeCryptoState.isCheckStatusReply());
+    this.setChecked("check-autocrypt-status-mutual", this.composeCryptoState.isCheckStatusMutual());
 
     // process resulting toolbar message
     if (toolbarTxt) {

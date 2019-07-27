@@ -148,6 +148,10 @@ Enigmail.hdrView = {
       }
     }
 
+    if (verify_status.wasEncrypted() && this.lastEncryptedMsgKey) {
+      EnigmailURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
+    }
+
     // if (verify_status.isDecrypted() && verify_status.isSigned()) {
     //   statusLine = `Message is end-to-end encrypted (${verify_status.getSignKeyId()})`;
     // } else if (verify_status.isDecrypted()) {
@@ -459,6 +463,8 @@ Enigmail.hdrView = {
           // this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
 
           let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+          EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: current frame: ${msgFrame}\n`);
+
           if (msgFrame) {
             Enigmail.boundMessageUnload = Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView);
             Enigmail.boundMessageLoad = Enigmail.hdrView.messageLoad.bind(Enigmail.hdrView);
@@ -468,7 +474,9 @@ Enigmail.hdrView = {
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
           Enigmail.hdrView.setWindowCallback();
-        } catch (ex) {}
+        } catch (ex) {
+          EnigmailLog.writeException(ex);
+        }
       },
 
       onEndHeaders: function _listener_onEndHeaders() {

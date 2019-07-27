@@ -31,28 +31,33 @@
 
 #button-enigmail-encrypt
 {
-  list-style-image : url("chrome://enigmail/skin/autocrypt-18.svg");
+  list-style-image : url("chrome://enigmail/skin/status-lock-disabled-18.svg");
 }
 
 /* hide label unless text-only mode is enabled */
 
 #button-enigmail-encrypt[disabled] {
-  list-style-image : url("chrome://enigmail/skinautocrypt-disabled-18.svg");
+  list-style-image : url("chrome://enigmail/skin/status-lock-disabled-18.svg");
 }
 
 #button-enigmail-encrypt[encrypted="activeNone"]
 {
-  list-style-image : url("chrome://enigmail/skin/autocrypt-18.svg");
+  list-style-image : url("chrome://enigmail/skin/status-lock-18.svg");
+}
+
+#button-enigmail-encrypt[encrypted="activeConflict"]
+{
+  list-style-image : url("chrome://enigmail/skin/status-lock-error-18.svg");
 }
 
 #button-enigmail-encrypt[encrypted="forceYes"]
 {
-  list-style-image : url("chrome://enigmail/skin/autocrypt-18.svg");
+  list-style-image : url("chrome://enigmail/skin/status-lock-18.svg");
 }
 
 #button-enigmail-encrypt[encrypted="forceNo"]
 {
-  list-style-image : url("chrome://enigmail/skin/autocrypt-inactive-18.svg");
+  list-style-image : url("chrome://enigmail/skin/status-lock-disabled-18.svg");
 }
 
 
