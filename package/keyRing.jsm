@@ -17,6 +17,7 @@ const Cr = Components.results;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const AutocryptMasterpass = ChromeUtils.import("chrome://enigmail/content/modules/masterpass.jsm").AutocryptMasterpass;
 
 var gCachedPublicKeysByFpr = false;
 var gCachedPublicKeyList = false;
@@ -126,12 +127,22 @@ var EnigmailKeyRing = {
     EnigmailLog.DEBUG("ensureSecretKeyCache(): loading keys...\n");
     const cApi = EnigmailCryptoAPI();
 
+    let master_password = AutocryptMasterpass.retrieveAutocryptPassword();
+
     let startTime = new Date();
     let secret_key_rows = await sqlite.retrieveAllSecretKeys();
     const secret_key_map = {};
     const secret_key_list = [];
     await Promise.all(secret_key_rows.map(async row => {
       let openpgp_secret_key = await cApi.parseOpenPgpKey(row.key_data_secret);
+      if (!openpgp_secret_key.isPrivate()) {
+        EnigmailLog.ERROR(`ensureSecretKeyCache(): expected secret key, found public!\n`);
+        return;
+      }
+      if (!openpgp_secret_key.isDecrypted()) {
+        await openpgp_secret_key.decrypt(master_password);
+        EnigmailLog.DEBUG(`ensureSecretKeyCache(): decrypt ok for ${row.fpr_primary}\n`);
+      }
       secret_key_map[row.fpr_primary] = openpgp_secret_key;
       secret_key_list.push(openpgp_secret_key);
     }));
@@ -165,6 +176,9 @@ var EnigmailKeyRing = {
       EnigmailLog.ERROR(`keyRing.jsm: insertSecretKey(): key is not secret!\n`);
       return;
     }
+
+    let master_password = AutocryptMasterpass.retrieveAutocryptPassword();
+    await openpgp_secret_key.encrypt(master_password);
 
     let fpr_primary = openpgp_secret_key.getFingerprint().toUpperCase();
     let key_data_secret = openpgp_secret_key.toPacketlist().write();
