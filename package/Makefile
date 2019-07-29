@@ -53,6 +53,7 @@ MODFILES = \
            locale.jsm \
            localizeHtml.jsm \
            log.jsm \
+           masterpass.jsm \
            messageCache.jsm \
            mime.jsm \
            mimeDecrypt.jsm \

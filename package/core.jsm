@@ -37,8 +37,9 @@ const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "Enig
 const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.jsm", "EnigmailWksMimeHandler");
 const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
+const getEnigmailCryptoAPI = EnigmailLazy.loader("enigmail/cryptoAPI.jsm", "EnigmailCryptoAPI");
+const getAutocryptMasterpass = EnigmailLazy.loader("enigmail/masterpass.jsm", "AutocryptMasterpass");
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
 
@@ -95,6 +96,8 @@ var EnigmailCore = {
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
         self.factories.push(new Factory(getEnigmailCommandLine().Handler));
         self.factories.push(new Factory(mimeEncrypt.Handler));
+
+        getAutocryptMasterpass().ensureAutocryptPassword();
 
         // let win = getEnigmailWindows().getBestParentWin();
         // getEnigmailLog().DEBUG("core.jsm: getService: show settings");
