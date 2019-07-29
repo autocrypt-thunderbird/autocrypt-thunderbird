@@ -69,7 +69,7 @@
       oncommand="Enigmail.msg.onButtonToggleEncrypt();"
       >
       <menupopup>
-        <menuitem closemenu="none" label="Enable or disable encryption" />
+        <menuitem closemenu="none" id="menuitem-autocrypt-toggle" label="Enable or disable encryption" />
         <menuseparator />
         <menuitem disabled="true" id="label-autocrypt-status" class="menuitem-non-iconic" label="Status: Encryption is disabled" />
         <menuitem disabled="true" id="check-autocrypt-status-manual" type="checkbox" label="You chose to encrypt this message" />
