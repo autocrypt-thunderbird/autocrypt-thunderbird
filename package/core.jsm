@@ -96,9 +96,9 @@ var EnigmailCore = {
         self.factories.push(new Factory(getEnigmailCommandLine().Handler));
         self.factories.push(new Factory(mimeEncrypt.Handler));
 
-        let win = getEnigmailWindows().getBestParentWin();
-        getEnigmailLog().DEBUG("core.jsm: getService: show settings");
-        getEnigmailWindows().openAutocryptSettings(win);
+        // let win = getEnigmailWindows().getBestParentWin();
+        // getEnigmailLog().DEBUG("core.jsm: getService: show settings");
+        // getEnigmailWindows().openAutocryptSettings(win);
 
       } catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
