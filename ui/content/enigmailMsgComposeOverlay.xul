@@ -71,7 +71,7 @@
       <menupopup>
         <menuitem closemenu="none" label="Enable or disable encryption" />
         <menuseparator />
-        <menuitem disabled="true" id="label-autocrypt-status" label="Status: Encryption is disabled" />
+        <menuitem disabled="true" id="label-autocrypt-status" class="menuitem-non-iconic" label="Status: Encryption is disabled" />
         <menuitem disabled="true" id="check-autocrypt-status-manual" type="checkbox" label="You chose to encrypt this message" />
         <menuitem disabled="true" id="check-autocrypt-status-reply" type="checkbox" label="You are replying to an encrypted message" />
         <menuitem disabled="true" id="check-autocrypt-status-mutual" type="checkbox" label="You and all recipients allow automatic encryption" />

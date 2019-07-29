@@ -85,49 +85,49 @@ const ENCRYPT_DISPLAY_STATUS = {
   },
   UNAVAILABLE: {
     encSymbol: "forceNo",
-    encStr: "Encryption disabled (missing keys)",
+    encStr: "Encryption is not available",
     buttonPressed: false,
     buttonEnabled: false
   },
   ENABLED_MANUAL: {
     encSymbol: "activeNone",
-    encStr: "Encryption enabled",
+    encStr: "Encryption is enabled",
     buttonPressed: true,
     buttonEnabled: true
   },
   ENABLED_REPLY: {
     encSymbol: "activeNone",
-    encStr: "Encryption enabled (reply)",
+    encStr: "Encryption is enabled (automatic)",
     buttonPressed: true,
     buttonEnabled: true
   },
   ENABLED_MUTUAL: {
     encSymbol: "activeNone",
-    encStr: "Encryption enabled (automatic)",
+    encStr: "Encryption is enabled (automatic)",
     buttonPressed: true,
     buttonEnabled: true
   },
   ENABLED_ERROR: {
     encSymbol: "activeConflict",
-    encStr: "Encryption error",
+    encStr: "Encryption is enabled, but not available!",
     buttonPressed: true,
     buttonEnabled: true
   },
   ENABLED_TRUSTED: {
     encSymbol: "activeNone",
-    encStr: "Encryption enabled (trusted)",
+    encStr: "Encryption is enabled (trusted)",
     buttonPressed: true,
     buttonEnabled: true
   },
   AVAILABLE: {
     encSymbol: "inactiveNone",
-    encStr: "Encryption available",
+    encStr: "Encryption is available",
     buttonPressed: false,
     buttonEnabled: true
   },
   DISABLE: {
     encSymbol: "forceNo",
-    encStr: "Encryption disabled (manual)",
+    encStr: "Encryption is disabled",
     buttonPressed: false,
     buttonEnabled: true
   },
@@ -158,6 +158,10 @@ ComposeCryptoState.prototype.isEncryptEnabled = function() {
   // it is *vital* that this is consistent, so we derive this directly from the
   // display status.
   return this.getDisplayStatus().buttonPressed;
+};
+
+ComposeCryptoState.prototype.isSignOnly = function() {
+  return this.currentCryptoMode == CRYPTO_MODE.SIGN_ONLY;
 };
 
 ComposeCryptoState.prototype.isWouldEncryptAutomatically = function() {
@@ -215,10 +219,10 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
   switch(this.currentCryptoMode) {
     case CRYPTO_MODE.NO_CHOICE:
       if (this.isReplyToOpenPgpEncryptedMessage) {
-        return ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY;
+        return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
       }
       if (is_mutual_peers && this.isAutocryptMutual) {
-        return ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL;
+        return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
       }
       if (can_encrypt) {
         return ENCRYPT_DISPLAY_STATUS.AVAILABLE;
@@ -395,18 +399,6 @@ Enigmail.msg = {
         Enigmail.msg.setIdentityDefaults();
       },
       100);
-  },
-
-
-  /**
-   * Determine if any of Enigmail (OpenPGP) or S/MIME encryption is enabled for the account
-   */
-  getEncryptionEnabled: function() {
-    let id = getCurrentIdentity();
-
-    return true;
-    // return ((id.getUnicharAttribute("encryption_cert_name") !== "") ||
-    // this.isEnigmailEnabled());
   },
 
   isSmimeEnabled: function() {
@@ -1094,25 +1086,11 @@ Enigmail.msg = {
 
     var toolbarTxt = document.getElementById("enigmail-toolbar-text");
     var encBroadcaster = document.getElementById("enigmail-bc-encrypt");
+    var labelAutocryptStatus = document.getElementById("label-autocrypt-status");
 
-    let enc = this.getEncryptionEnabled();
     let sign = this.getSigningEnabled();
     // enigmail disabled for this identity?:
-    if (!enc) {
-      // hide icons if enigmail not enabled
-      encBroadcaster.removeAttribute("encrypted");
-      encBroadcaster.setAttribute("disabled", "true");
-    } else {
-      encBroadcaster.removeAttribute("disabled");
-    }
-
-    if (!enc && !sign) {
-      if (toolbarTxt) {
-        toolbarTxt.value = EnigmailLocale.getString("msgCompose.toolbarTxt.disabled");
-        toolbarTxt.removeAttribute("class");
-      }
-      return;
-    }
+    encBroadcaster.removeAttribute("disabled");
 
     let display_status = this.composeCryptoState.getDisplayStatus();
 
@@ -1131,6 +1109,11 @@ Enigmail.msg = {
     this.setChecked("check-autocrypt-status-manual", this.composeCryptoState.isCheckStatusManual());
     this.setChecked("check-autocrypt-status-reply", this.composeCryptoState.isCheckStatusReply());
     this.setChecked("check-autocrypt-status-mutual", this.composeCryptoState.isCheckStatusMutual());
+
+    if (labelAutocryptStatus) {
+      labelAutocryptStatus.label = "Status: " + display_status.encStr;
+      labelAutocryptStatus.setAttribute("class", "menuitem-non-iconic");
+    }
 
     // process resulting toolbar message
     if (toolbarTxt) {
@@ -1908,41 +1891,13 @@ Enigmail.msg = {
     };
   },
 
-  prepareSending: function(sendFlags, toAddrStr, gpgKeys, isOffline) {
-    let confirm = this.isSendConfirmationRequired(sendFlags);
-    if (confirm === null) return false;
-    // perform confirmation dialog if necessary/requested
-    if (confirm) {
-      if (!this.confirmBeforeSend(toAddrStr, gpgKeys, sendFlags, isOffline)) {
-        if (this.processed) {
-          this.undoEncryption(0);
-        }
-        return false;
-      }
-    } else if ((sendFlags & EnigmailConstants.SEND_WITH_CHECK) &&
-      !this.messageSendCheck()) {
-      // Abort send
-      if (this.processed) {
-        this.undoEncryption(0);
-      }
-
-      return false;
-    }
-
-    return true;
-  },
-
   prepareSecurityInfo: function(sendFlags, uiFlags, rcpt, newSecurityInfo, keyMap = {}) {
     return newSecurityInfo;
   },
 
   encryptMsg: async function(msgSendType) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + ", Enigmail.msg.statusEncrypted=" +
-      this.statusEncrypted +
-      "\n");
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + "\n");
 
-    const SIGN = EnigmailConstants.SEND_SIGNED;
-    const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
     const DeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
     let promptSvc = EnigmailDialog.getPromptSvc();
 
@@ -1955,9 +1910,10 @@ Enigmail.msg = {
     // gotSendFlags
     // } = this.getEncryptionFlags(msgSendType);
 
-    if (this.composeCryptoState.isEncryptSmimeEnabled()) {
-      return this.sendSmimeEncrypted(msgSendType, true, true, isOffline);
-    }
+    // if (this.composeCryptoState.isEncryptSmimeEnabled()) {
+    // EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: deferring to smime\n");
+    // return this.sendSmimeEncrypted(msgSendType, true, true, isOffline);
+    // }
 
     switch (msgSendType) {
       case DeliverMode.SaveAsDraft:
@@ -1975,8 +1931,7 @@ Enigmail.msg = {
     let msgCompFields = gMsgCompose.compFields;
     let newsgroups = msgCompFields.newsgroups; // Check if sending to any newsgroups
 
-    if (msgCompFields.to === "" && msgCompFields.cc === "" &&
-      msgCompFields.bcc === "" && newsgroups === "") {
+    if (!msgCompFields.to && !msgCompFields.cc && !msgCompFields.bcc && !newsgroups) {
       // don't attempt to send message if no recipient specified
       var bundle = document.getElementById("bundle_composeMsgs");
       EnigmailDialog.alert(window, bundle.getString("12511"));
@@ -2020,13 +1975,14 @@ Enigmail.msg = {
       // return true;
       // }
 
-      if (!this.checkProtectHeaders(this.composeCryptoState.isEncryptEnabled(), this.isEnablePgpInline)) {
-        return false;
-      }
+      // if (!this.checkProtectHeaders(this.composeCryptoState.isEncryptEnabled(), this.isEnablePgpInline)) {
+      // return false;
+      // }
 
       // ----------------------- Rewrapping code, taken from function "encryptInline"
 
       if (this.composeCryptoState.isEncryptEnabled()) {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encryption enabled\n");
         if (this.composeCryptoState.enablePgpInline && !this.processed) {
           // use inline PGP
           EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encrypting as inline\n");
@@ -2072,11 +2028,13 @@ Enigmail.msg = {
         newSecurityInfo.composeCryptoState = this.composeCryptoState;
         newSecurityInfo.fromAddr = rcpt.fromAddr;
 
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo: securityInfo = " + newSecurityInfo + "\n");
+        EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo\n`);
 
         newSecurityInfo.fromAddr = rcpt.fromAddr;
         newSecurityInfo.toAddrs = rcpt.toAddrList;
         newSecurityInfo.bccAddrs = rcpt.bccAddrList;
+      } else {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encryption not enabled\n");
       }
 
       // update the list of attachments
@@ -2113,6 +2071,7 @@ Enigmail.msg = {
     // called automatically from nsMsgCompose->sendMsg().
     // registration for this is done in core.jsm: startup()
 
+    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: deferring to pgp/mime encryption\n");
     return true;
   },
 
@@ -2142,8 +2101,6 @@ Enigmail.msg = {
     // sign/encrypt message using inline-PGP
 
     const dce = Components.interfaces.nsIDocumentEncoder;
-    const SIGN = EnigmailConstants.SEND_SIGNED;
-    const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
 
     var enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc) return false;
@@ -2188,7 +2145,7 @@ Enigmail.msg = {
     var editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor);
     var wrapWidth = 72;
 
-    if (!(sendInfo.sendFlags & ENCRYPT)) {
+    if (this.composeCryptoState.isEncryptEnabled()) {
       // signed messages only
       if (gMsgCompose.composeHTML) {
         // enforce line wrapping here
@@ -2230,7 +2187,7 @@ Enigmail.msg = {
 
       var escText = origText; // Copy plain text for possible escaping
 
-      if (sendFlowed && !(sendInfo.sendFlags & ENCRYPT)) {
+      if (sendFlowed && this.composeCryptoState.isSignOnly()) {
         // Prevent space stuffing a la RFC 2646 (format=flowed).
 
         //EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: escText["+encoderFlags+"] = '"+escText+"'\n");
@@ -2259,15 +2216,11 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: charset=" + charset + "\n");
 
       // Encode plaintext to charset from unicode
-      var plainText = (sendInfo.sendFlags & ENCRYPT) ?
+      var plainText = this.composeCryptoState.isEncryptEnabled() ?
         EnigmailData.convertFromUnicode(origText, charset) :
         EnigmailData.convertFromUnicode(escText, charset);
 
-      var cipherText = EnigmailEncryption.encryptMessage(window, sendInfo.uiFlags, plainText,
-        sendInfo.encodedPrivKey, sendInfo.encodedPubKeys, sendInfo.bccAddr,
-        sendInfo.sendFlags,
-        exitCodeObj, statusFlagsObj,
-        errorMsgObj);
+      var cipherText = EnigmailEncryption.encryptMessage(plainText, sendInfo.encodedPrivKey, sendInfo.encodedPubKeys);
 
       exitCode = exitCodeObj.value;
 
@@ -2300,7 +2253,7 @@ Enigmail.msg = {
         // Restore original text
         this.replaceEditorText(origText);
 
-        if (sendInfo.sendFlags & (ENCRYPT | SIGN)) {
+        if (this.composeCryptoState.isEncryptEnabled()) {
           // Encryption/signing failed
 
           /*if (statusFlagsObj.statusMsg) {
