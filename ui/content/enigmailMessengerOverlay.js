@@ -154,13 +154,6 @@ Enigmail.msg = {
 
     Enigmail.msg.decryptButton = document.getElementById("button-enigmail-decrypt");
 
-    EnigmailTimer.setTimeout(function _f() {
-      // if nothing happened, then load all keys after 1 hour
-      // to trigger the key check
-      EnigmailKeyRing.getAllKeys();
-
-    }, 3600 * 1000); // 1 hour
-
     // Need to add event listener to Enigmail.msg.messagePane to make it work
     // Adding to msgFrame doesn't seem to work
     Enigmail.boundMessageFrameUnload = Enigmail.msg.messageFrameUnload.bind(Enigmail.msg);
