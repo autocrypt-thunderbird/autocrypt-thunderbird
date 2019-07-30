@@ -99,6 +99,8 @@ UIFILES = \
 	exportSettingsWizard.xul \
 	importSettings.js \
 	importSettings.xul \
+	manageAllKeys.js \
+	manageAllKeys.xul \
 	upgradeInfo.html \
 	setupWizardAutocrypt.js \
 	setupWizardAutocrypt.xul

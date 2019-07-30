@@ -8,6 +8,7 @@
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
+/* global EnigmailWindows: false */
 
 "use strict";
 
@@ -104,6 +105,10 @@ async function blinkAutocrpyModeSaved() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function onClickManageAllKeys() {
+  EnigmailWindows.openManageAllKeys(window);
 }
 
 function enigmailDlgOnAccept() {

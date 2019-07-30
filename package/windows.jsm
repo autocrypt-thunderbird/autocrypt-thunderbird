@@ -56,6 +56,13 @@ var EnigmailWindows = {
       "", "chrome,dialog,centerscreen,resizable,modal");
   },
 
+  openManageAllKeys: function(win) {
+    EnigmailLog.DEBUG("windows.jsm: openManageAllKeys()\n");
+
+    win.open("chrome://enigmail/content/ui/manageAllKeys.xul",
+      "", "chrome,dialog,centerscreen,resizable,modal");
+  },
+
   /**
    * Open a window, or focus it if it is already open
    *
