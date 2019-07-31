@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "Enigmail",
+  "name": "Autocrypt",
   "description": "OpenPGP message encryption and authentication",
-  "version": "2.1a1pre",
-  "author": "Enigmail Team",
-  "homepage_url": "https://enigmail.net/",
+  "version": "0.9.1",
+  "author": "Vincent Breitmoser",
+  "homepage_url": "https://autocrypt.org/",
   "legacy": {
     "type": "bootstrap",
     "options": {
@@ -14,7 +14,7 @@
   },
   "applications": {
     "gecko": {
-      "id": "{847b3a00-7ab1-11d4-8f02-006008948af5}", // Enigmail GUID
+      "id": "{c0b84c00-227f-4762-b4fc-354bcfe0f865}", // Autocrypt GUID
       "strict_min_version": "68.0a1",
       "strict_max_version": "69.0"
     }

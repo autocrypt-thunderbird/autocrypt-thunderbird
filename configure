@@ -577,11 +577,11 @@ MFLAGS=
 MAKEFLAGS=
 
 # Identity of this package.
-PACKAGE_NAME='enigmail'
-PACKAGE_TARNAME='enigmail'
-PACKAGE_VERSION='2.1'
-PACKAGE_STRING='enigmail 2.1'
-PACKAGE_BUGREPORT='https://www.enigmail.net'
+PACKAGE_NAME='autocrypt'
+PACKAGE_TARNAME='autocrypt'
+PACKAGE_VERSION='0.9'
+PACKAGE_STRING='autocrypt 0.9'
+PACKAGE_BUGREPORT='https://autocrypt.org'
 PACKAGE_URL=''
 
 ac_subst_vars='LTLIBOBJS

@@ -18,7 +18,7 @@ const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.
 const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
-const ENIG_EXTENSION_GUID = "{847b3a00-7ab1-11d4-8f02-006008948af5}";
+const ENIG_EXTENSION_GUID = "{c0b84c00-227f-4762-b4fc-354bcfe0f865}";
 const SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
