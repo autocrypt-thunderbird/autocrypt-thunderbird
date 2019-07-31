@@ -13,12 +13,32 @@
 "use strict";
 
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 
 // Initialize enigmailCommon
 EnigInitCommon("manageAllKeys");
 
-async function enigmailDlgOnLoad() {
-  EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
+const views = { };
+
+async function onLoad() {
+  EnigmailLog.DEBUG("manageAllKeys.js: onLoad()\n");
+
+  views.dialog = document.getElementById("manageAllKeys");
+  views.labelKeyStatus = document.getElementById("labelKeyStatus");
+  views.labelKeyFpr = document.getElementById("labelKeyFpr");
+  views.labelKeyCreated = document.getElementById("labelKeyCreated");
+  views.labelKeyAddress = document.getElementById("labelKeyAddress");
+
+  views.buttonForget = document.getElementById("buttonForget");
+  views.buttonBackup = document.getElementById("buttonBackup");
+
+  views.keyList = document.getElementById("treeAllKeys");
+  views.treeChildren = views.keyList.getElementsByAttribute("id", "treechildrenAllKeys")[0];
+
+  views.dialog.getButton("extra1").label = "Import";
+  views.buttonBackup.setAttribute("disabled", "true");
+  views.buttonForget.setAttribute("disabled", "true");
+
   let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
   await buildTreeView(secret_keys);
 }
@@ -26,29 +46,38 @@ async function enigmailDlgOnLoad() {
 async function buildTreeView(secret_keys) {
   EnigmailLog.DEBUG("manageAllKeys.js: buildTreeView\n");
 
-  let keyList = document.getElementById("treeAllKeys");
-  let treeChildren = keyList.getElementsByAttribute("id", "treechildrenAllKeys")[0];
+  clearTreeView();
 
   for (let i = 0; i < secret_keys.length; i++) {
     const secret_key = secret_keys[i];
     let key_info = await getKeyInfo(secret_key);
     let treeItem = buildTreeRow(key_info);
-    treeChildren.appendChild(treeItem);
+    views.treeChildren.appendChild(treeItem);
+  }
+}
+
+function clearTreeView() {
+  while (views.treeChildren.firstChild) {
+    views.treeChildren.removeChild(views.treeChildren.firstChild);
   }
 }
 
 async function getKeyInfo(secret_key) {
+  const fingerprint = secret_key.getFingerprint().toString().toUpperCase();
+
+  const autocrypt_info = await EnigmailAutocrypt.getAutocryptSettingsForFingerprint(fingerprint);
+
   const primary_uid = await secret_key.getPrimaryUser();
-  let address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
-  let creation = secret_key.getCreationTime();
-  let fingerprint = secret_key.getFingerprint().toString().toUpperCase();
+  const address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
+  const creation = secret_key.getCreationTime();
   return {
     'identifier': fingerprint,
     'fpr_short': fingerprint,
     'fpr': EnigmailKey.formatFpr(fingerprint),
     'created_date': creation.toLocaleDateString(),
     'created_full': creation.toLocaleString(),
-    'address': address
+    'address': address,
+    'is_active': Boolean(autocrypt_info)
   };
 }
 
@@ -85,25 +114,37 @@ async function onKeySelect() {
   const secret_key = secret_keys[identifier];
   const key_info = await getKeyInfo(secret_key);
 
-  const labelKeyStatus = document.getElementById("labelKeyStatus");
-  const labelKeyFpr = document.getElementById("labelKeyFpr");
-  const labelKeyCreated = document.getElementById("labelKeyCreated");
-  const labelKeyAddress = document.getElementById("labelKeyAddress");
+  views.labelKeyStatus.value = key_info.is_active ? 'Active' : 'Archived';
+  views.labelKeyFpr.value = key_info.fpr;
+  views.labelKeyCreated.value = key_info.created_full;
+  views.labelKeyAddress.value = key_info.address;
 
-  labelKeyStatus.value = "Archived";
-  labelKeyFpr.value = key_info.fpr;
-  labelKeyCreated.value = key_info.created_full;
-  labelKeyAddress.value = key_info.address;
+  views.buttonForget.setAttribute("disabled", key_info.is_active ? 'true' : 'false');
+  views.buttonBackup.setAttribute("disabled", false);
 }
 
-async function getCurrentlySelectedAutocryptRow() {
-  const menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
-  const item = menulistAutocryptEmail.selectedItem;
-  EnigmailLog.DEBUG(`selectIdentityByIndex(): selected item: ${item.value}\n`);
-  const autocrypt_rows = await sqlite.retrieveAutocryptRows([item.value]);
-  if (autocrypt_rows && autocrypt_rows.length) {
-    return autocrypt_rows[0];
+async function onClickBackup() {
+}
+
+async function onClickForget() {
+  const keyList = document.getElementById("treeAllKeys");
+  const identifier = keyList.view.getItemAtIndex(keyList.currentIndex).getAttribute("identifier");
+  if (!identifier) {
+    return;
   }
-  return null;
+
+  let args = {
+    confirm_string: identifier.substring(identifier.length -4)
+  };
+  var result = {
+    confirmed: false
+  };
+
+  window.openDialog("chrome://enigmail/content/ui/dialogDeleteKey.xul", "",
+    "chrome,dialog,modal,centerscreen", args, result);
+
+  if (result.confirmed) {
+    EnigmailLog.DEBUG(`onClickForget(): ok\n`);
+  }
 }
 

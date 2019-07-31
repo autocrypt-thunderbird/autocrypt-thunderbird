@@ -57,6 +57,23 @@ var EnigmailSqliteDb = {
 
   retrieveAutocryptRows: async function(emails) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows() for ${emails.length} addresses\n`);
+    const placeholders = Array(emails.length).fill('?');
+    const where = "email IN (" + placeholders.join(',') + ")";
+
+    return await this.retrieveAutocryptRowsInternal(where, emails);
+  },
+
+  retrieveAutocryptRowsByFingerprint: async function(fpr) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRowsByFingerprint(${fpr})\n`);
+    const where = "fpr_primary = :fpr_primary";
+    const args = {
+      fpr_primary: fpr
+    };
+
+    return await this.retrieveAutocryptRowsInternal(where, args);
+  },
+
+  retrieveAutocryptRowsInternal: async function(where, args) {
     let conn;
     try {
       conn = await this.openDatabase();
@@ -68,10 +85,9 @@ var EnigmailSqliteDb = {
         "is_secret": "EXISTS(SELECT * FROM secret_keydata s WHERE autocrypt_peers.fpr_primary = s.fpr_primary) AS is_secret"
       };
 
-      const placeholders = Array(emails.length).fill('?');
-      await conn.execute(
-        "select " + fields.join(', ') + ", " + date_fields.join(', ') + ", " + Object.values(special_fields).join(', ') + " from autocrypt_peers where email IN (" + placeholders.join(',') + ");",
-        emails,
+      const query = "select " + fields.join(', ') + ", " + date_fields.join(', ') + ", " + Object.values(special_fields).join(', ') + " from autocrypt_peers where " + where + ";";
+
+      await conn.execute(query, args,
         function _onRow(row) {
           try {
             const obj = {};
@@ -103,6 +119,7 @@ var EnigmailSqliteDb = {
       return [];
     }
   },
+
 
   retrieveAllPublicKeys: async function() {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAllPublicKeys()\n`);

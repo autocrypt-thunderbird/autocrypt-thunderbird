@@ -302,6 +302,18 @@ var EnigmailAutocrypt = {
       this.updateAutocryptGossipPeerState(effective_date, autocrypt_header)));
   },
 
+  getAutocryptSettingsForFingerprint: async function(fingerprint) {
+    const autocrypt_rows = await sqlite.retrieveAutocryptRowsByFingerprint(fingerprint);
+    if (autocrypt_rows && autocrypt_rows.length) {
+      const autocrypt_row = autocrypt_rows[0];
+      if (autocrypt_row.is_secret) {
+        return autocrypt_row;
+      }
+    }
+
+    return false;
+  },
+
   getAutocryptSettingsForIdentity: async function(fromAddr) {
     const address = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
 

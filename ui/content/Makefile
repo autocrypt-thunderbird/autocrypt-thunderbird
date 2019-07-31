@@ -18,6 +18,8 @@ UIFILES = \
 	columnOverlay.xul \
 	columnOverlay.js \
 	commonWorkflows.js \
+	dialogDeleteKey.xul \
+	dialogDeleteKey.js \
 	enigmailCommon.js \
 	enigmailAbCardViewOverlay.xul \
 	enigmailAbContactsPanel.xul \

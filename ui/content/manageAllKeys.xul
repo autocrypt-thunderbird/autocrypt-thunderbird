@@ -22,59 +22,61 @@
         title="Manage all keys"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
-        onload="enigmailDlgOnLoad();"
-        buttons="accept">
+        onload="onLoad();"
+        buttons="extra1,accept">
 
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
   <script type="application/x-javascript" src="chrome://enigmail/content/ui/manageAllKeys.js"/>
 
-  <vbox class="enigmailCaptionbox" width="700px" flex="1">
-    <html:h1 ><html:span id="dialogHeader">Manage all keys</html:span></html:h1>
+  <vbox>
+    <vbox class="enigmailCaptionbox" width="700px" flex="1">
+      <html:h1 ><html:span id="dialogHeader">Manage all keys</html:span></html:h1>
 
-    <tree id="treeAllKeys" flex="1" hidecolumnpicker="true" seltype="single" style="height: 150px" onselect="onKeySelect();">
-      <treecols>
-        <treecol id="enigUserNameCol" primary="true" flex="1" ignoreincolumnpicker="true" label="Key" />
-        <splitter class="tree-splitter" />
-        <treecol id="uidValidityCol" label="Created" />
-        <splitter class="tree-splitter" />
-        <treecol id="expCol" label="Previously used for" />
-      </treecols>
+      <tree id="treeAllKeys" flex="1" hidecolumnpicker="true" seltype="single" style="height: 150px" onselect="onKeySelect();">
+        <treecols>
+          <treecol primary="true" flex="1" label="Key" />
+          <splitter class="tree-splitter" />
+          <treecol label="Created" />
+          <splitter class="tree-splitter" />
+          <treecol label="Previously used for" />
+        </treecols>
 
-      <treechildren id="treechildrenAllKeys" />
-    </tree>
+        <treechildren id="treechildrenAllKeys" />
+      </tree>
 
-    <spacer style="height: 1em;" />
+      <spacer style="height: 1em;" />
 
-    <grid>
-      <columns>
-        <column flex="0"/>
-        <column flex="1"/>
-      </columns>
-      <rows>
-        <row align="center" style="height: 2em;">
-          <label value="Status: " />
-          <hbox align="center">
-            <label style="font-family: monospace;" id="labelKeyStatus" value="Archived" />
-            <spacer flex="1" />
-            <button label="Export" />
-            <button label="Forget" />
-          </hbox>
-        </row>
-        <row align="center" style="height: 2em;">
-          <label value="Key: " />
-          <label id="labelKeyFpr" />
-        </row>
-        <row align="center" style="height: 2em;">
-          <label value="Created: " />
-          <label id="labelKeyCreated" />
-        </row>
-        <row align="center" style="height: 2em;">
-          <label value="Used for address: " />
-          <label id="labelKeyAddress" />
-        </row>
-      </rows>
-    </grid>
+      <grid>
+        <columns>
+          <column flex="0"/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row align="center" style="height: 2em;">
+            <label value="Status: " />
+            <hbox align="center">
+              <label style="font-family: monospace;" id="labelKeyStatus" />
+              <spacer flex="1" />
+              <button label="Backup" id="buttonBackup" oncommand="onClickBackup();" />
+              <button label="Forget" id="buttonForget" oncommand="onClickForget();" />
+            </hbox>
+          </row>
+          <row align="center" style="height: 2em;">
+            <label value="Key: " />
+            <label id="labelKeyFpr" />
+          </row>
+          <row align="center" style="height: 2em;">
+            <label value="Created: " />
+            <label id="labelKeyCreated" />
+          </row>
+          <row align="center" style="height: 2em;">
+            <label value="Used for address: " />
+            <label id="labelKeyAddress" />
+          </row>
+        </rows>
+      </grid>
 
+    </vbox>
   </vbox>
 
 </dialog>
