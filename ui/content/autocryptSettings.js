@@ -13,6 +13,7 @@
 "use strict";
 
 const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
+const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // Initialize enigmailCommon
@@ -59,6 +60,7 @@ async function onCommandMenulistAutocryptEmail() {
   const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
   const textboxConfiguredStatus = document.getElementById("textboxConfiguredStatus");
   const labelAutocryptModeSaved = document.getElementById("labelAutocryptModeSaved");
+  const buttonSendSetupMessage = document.getElementById("buttonSendSetupMessage");
   labelAutocryptModeSaved.hidden = true;
 
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
@@ -70,6 +72,7 @@ async function onCommandMenulistAutocryptEmail() {
     textboxConfiguredKey.value = formatted_fpr;
     menulistAutocryptMode.disabled = false;
     menulistAutocryptMode.selectedIndex = autocrypt_info.is_mutual ? 0 : 1;
+    buttonSendSetupMessage.disabled = false;
   } else {
     EnigmailLog.DEBUG(`selectIdentityByIndex(): no key selected\n`);
 
@@ -77,6 +80,7 @@ async function onCommandMenulistAutocryptEmail() {
     textboxConfiguredKey.value = "None";
     menulistAutocryptMode.disabled = true;
     menulistAutocryptMode.selectedIndex = 0;
+    buttonSendSetupMessage.disabled = true;
   }
 }
 
@@ -105,6 +109,11 @@ async function blinkAutocrpyModeSaved() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function onClickSendSetupMessage() {
+  const autocrypt_info = await getCurrentlySelectedAutocryptRow();
+  await EnigmailAutocryptSetup.sendSetupMessage(autocrypt_info.email);
 }
 
 async function onClickManageAllKeys() {

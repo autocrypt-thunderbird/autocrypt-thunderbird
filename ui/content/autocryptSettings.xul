@@ -67,6 +67,13 @@
               <label id="labelAutocryptModeSaved" value="Saved!" hidden="true" />
             </hbox>
           </row>
+          <row align="center" style="height: 3em;">
+            <label value="Setup for other device: " />
+            <hbox align="center">
+              <button label="Send Setup Message" id="buttonSendSetupMessage" disabled="true" oncommand="onClickSendSetupMessage();" />
+              <spacer flex="1" />
+            </hbox>
+          </row>
         </rows>
       </grid>
     </vbox>
