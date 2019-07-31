@@ -13,6 +13,8 @@ UIFILES = \
 	autocryptInitiateBackup.js \
 	autocryptSetupPasswd.xul \
 	autocryptSetupPasswd.js \
+	autocryptSetup.xul \
+	autocryptSetup.js \
 	autocryptSettings.js \
 	autocryptSettings.xul \
 	columnOverlay.xul \

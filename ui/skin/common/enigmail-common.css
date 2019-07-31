@@ -311,6 +311,10 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
   font-family: "Courier New", Courier, monospace;
 }
 
+.setupRecommended {
+  font-weight: bold;
+}
+
 .enigmailExpandViewButton {
   width: 9px;
   /* The image's width is 9 pixels */

@@ -48,7 +48,7 @@
             <hbox align="center">
               <label style="font-family: monospace;" id="textboxConfiguredStatus" />
               <spacer flex="1" />
-              <button label="Run Setup" />
+              <button label="Run Setup" oncommand="onClickRunSetup();" />
             </hbox>
           </row>
           <row align="center" style="height: 3em;">

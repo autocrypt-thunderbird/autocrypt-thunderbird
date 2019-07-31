@@ -120,122 +120,24 @@ async function onClickManageAllKeys() {
   EnigmailWindows.openManageAllKeys(window);
 }
 
-function enigmailDlgOnAccept() {
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return false;
+async function onClickRunSetup() {
+  const menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
+  const item = menulistAutocryptEmail.selectedItem;
+  const autocrypt_info = await getCurrentlySelectedAutocryptRow();
 
-  var keyList = "";
-  var ruleEmail = document.getElementById("ruleEmail");
-  var matchingRule = document.getElementById("matchingRule").value;
-  var matchBegin = false;
-  var matchEnd = false;
-  switch (Number(matchingRule)) {
-    case 0:
-      matchBegin = true;
-      matchEnd = true;
-      break;
-    case 2:
-      matchBegin = true;
-      break;
-    case 3:
-      matchEnd = true;
-      break;
-  }
+  let args = {
+    email: item.value,
+    current_key: autocrypt_info ? autocrypt_info.fpr_primary : null
+  };
+  var result = {
+    success: false
+  };
 
-  // Remove trailing whitespace
-  ruleEmail.value = ruleEmail.value.replace(/\s+$/, "").replace(/^\s+/, "");
-  if (ruleEmail.value.length === 0) {
-    EnigmailDialog.info(window, EnigGetString("noEmptyRule"));
-    return false;
-  }
-  if (ruleEmail.value.search(/[<>]/) >= 0) {
-    EnigmailDialog.info(window, EnigGetString("invalidAddress"));
-    return false;
-  }
-  if (ruleEmail.value.search(/[{}]/) >= 0) {
-    EnigmailDialog.info(window, EnigGetString("noCurlyBrackets"));
-    return false;
-  }
-  var encryptionList = document.getElementById("encryptionList");
-  for (var i = 0; i < encryptionList.getRowCount(); i++) {
-    var item = encryptionList.getItemAtIndex(i);
-    var valueLabel = item.getAttribute("value");
-    if (valueLabel.length > 0) {
-      keyList += ", " + valueLabel;
-    }
-  }
-  var email = "";
-  var mailAddrs = ruleEmail.value.split(/[ ,]+/);
-  for (let i = 0; i < mailAddrs.length; i++) {
-    email += (matchBegin ? " {" : " ") + mailAddrs[i] + (matchEnd ? "}" : "");
-  }
-  window.arguments[RESULT].email = email.substr(1);
-  window.arguments[RESULT].keyId = keyList.substr(2);
-  window.arguments[RESULT].sign = document.getElementById("sign").value;
-  window.arguments[RESULT].encrypt = document.getElementById("encrypt").value;
-  window.arguments[RESULT].pgpMime = document.getElementById("pgpmime").value;
-  window.arguments[RESULT].negate = 0; /*Number(document.getElementById("negateRule").value);*/
+  window.openDialog("chrome://autocrypt/content/ui/autocryptSetup.xul", "",
+    "chrome,dialog,modal,centerscreen", args, result);
 
-  var actionType = document.getElementById("actionType");
-  switch (Number(actionType.selectedItem.value)) {
-    case 1:
-      window.arguments[RESULT].keyId = ".";
-      break;
-
-    case 2:
-      if (keyList === "" && (window.arguments[RESULT].encrypt > 0)) {
-        if (!EnigConfirm(EnigGetString("noEncryption", ruleEmail.value, ruleEmail.value))) {
-          return false;
-        }
-        window.arguments[RESULT].encrypt = 0;
-      }
-      break;
+  if (result.success) {
+    EnigmailLog.DEBUG(`onClickRunSetup(): ok\n`);
   }
-
-  window.arguments[RESULT].cancelled = false;
-  if (window.arguments[INPUT].options.indexOf("nosave") < 0) {
-    // TODO save
-  }
-  return true;
-}
-
-function enigmailDlgKeySelection() {
-  EnigmailLog.DEBUG("enigmailMsgComposeHelper.js: enigmailDlgKeySelection: \n");
-
-  var enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc)
-    return;
-
-  var resultObj = {};
-  var inputObj = {};
-  inputObj.dialogHeader = "";
-  inputObj.forUser = document.getElementById("ruleEmail").value.replace(/[ ,]+/g, ", ");
-  inputObj.toAddr = inputObj.forUser;
-  inputObj.toKeys = "";
-  var encryptionList = document.getElementById("encryptionList");
-  encryptionList.clearSelection();
-  for (var i = 0; i < encryptionList.getRowCount(); i++) {
-    var item = encryptionList.getItemAtIndex(i);
-    var valueLabel = item.getAttribute("value");
-    if (valueLabel.length > 0) {
-      inputObj.toKeys += valueLabel + ",";
-    }
-  }
-
-  inputObj.options = "multisel,forUser,noplaintext";
-  var button = document.getElementById("encryptionListButton");
-  var label = button.getAttribute("label");
-  inputObj.options += ",sendlabel=" + label;
-  inputObj.options += ",";
-
-  window.openDialog("chrome://autocrypt/content/ui/enigmailKeySelection.xul", "", "dialog,modal,centerscreen,resizable", inputObj, resultObj);
-  try {
-    if (resultObj.cancelled) return;
-  } catch (ex) {
-    // cancel pressed -> do nothing
-    return;
-  }
-  enigSetKeys(resultObj.userList);
 }
 
