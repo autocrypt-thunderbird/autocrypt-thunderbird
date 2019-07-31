@@ -17,7 +17,6 @@ var EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.js
 var EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
 var EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-var InstallGnuPG = ChromeUtils.import("chrome://enigmail/content/modules/installGnuPG.jsm").InstallGnuPG;
 var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
 var EnigmailGpgAgent = ChromeUtils.import("chrome://enigmail/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyRing.jsm").EnigmailKeyRing;
@@ -130,12 +129,7 @@ function checkGnupgInstallation() {
       gResolveInstall = resolve;
       document.getElementById("searchingGnuPG").style.visibility = "collapse";
       document.getElementById("requireGnuPG").style.visibility = "visible";
-
-      if (InstallGnuPG.checkAvailability()) {
-        document.getElementById("installBox").style.visibility = "visible";
-      } else {
-        document.getElementById("findGpgBox").style.visibility = "visible";
-      }
+      document.getElementById("findGpgBox").style.visibility = "visible";
     }
   });
 }
@@ -220,86 +214,6 @@ function installGnuPG() {
   btnInstallGnupg.setAttribute("disabled", true);
   btnLocateGnuPG.setAttribute("disabled", true);
   progressBox.style.visibility = "visible";
-
-  InstallGnuPG.startInstaller({
-    onStart: function(reqObj) {
-      gDownoadObj = reqObj;
-    },
-
-    onError: function(errorMessage) {
-      if (typeof(errorMessage) == "object") {
-        var s = EnigmailLocale.getString("errorType." + errorMessage.type);
-        if (errorMessage.type.startsWith("Security")) {
-          s += "\n" + EnigmailLocale.getString("setupWizard.downloadForbidden");
-        } else
-          s += "\n" + EnigmailLocale.getString("setupWizard.downloadImpossible");
-
-        EnigmailDialog.alert(window, s);
-      } else {
-        EnigmailDialog.alert(window, EnigmailLocale.getString(errorMessage));
-      }
-
-      this.returnToDownload();
-    },
-
-    onWarning: function(message) {
-      var ret = false;
-      if (message == "hashSumMismatch") {
-        ret = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("setupWizard.hashSumError"), EnigmailLocale.getString("dlgYes"),
-          EnigmailLocale.getString("dlgNo"));
-      }
-
-      if (!ret) this.returnToDownload();
-
-      return ret;
-    },
-
-    onProgress: function(event) {
-      if (event.lengthComputable) {
-        var percentComplete = event.loaded / event.total * 100;
-        downloadProgress.setAttribute("value", percentComplete);
-      } else {
-        downloadProgress.removeAttribute("value");
-      }
-    },
-
-    onDownloaded: function() {
-      gDownoadObj = null;
-      downloadProgress.setAttribute("value", 100);
-      installProgressBox.style.visibility = "visible";
-    },
-
-
-    returnToDownload: function() {
-      window.outerHeight -= 100;
-      btnInstallGnupg.removeAttribute("disabled");
-      btnLocateGnuPG.removeAttribute("disabled");
-      progressBox.style.visibility = "collapse";
-      downloadProgress.setAttribute("value", 0);
-      installProgressBox.style.visibility = "collapse";
-    },
-
-    onLoaded: function() {
-      installProgress.setAttribute("value", 100);
-      progressBox.style.visibility = "collapse";
-      installProgressBox.style.visibility = "collapse";
-      document.getElementById("installBox").style.visibility = "collapse";
-      window.outerHeight -= 100;
-
-      let origPath = EnigmailPrefs.getPref("agentPath");
-      EnigmailPrefs.setPref("agentPath", "");
-
-      let svc = getEnigmailService(true);
-
-      if (!svc) {
-        EnigmailPrefs.setPref("agentPath", origPath);
-        this.returnToDownload();
-        EnigmailDialog.alert(window, EnigmailLocale.getString("setupWizard.installFailed"));
-      } else {
-        gResolveInstall(true);
-      }
-    }
-  });
 }
 
 

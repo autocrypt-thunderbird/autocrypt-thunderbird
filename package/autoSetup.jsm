@@ -24,10 +24,8 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/ke
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
-const EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
 const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
-const EnigmailGpg = ChromeUtils.import("chrome://enigmail/content/modules/gpg.jsm").EnigmailGpg;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -351,7 +349,6 @@ var EnigmailAutoSetup = {
       }
 
       // upload created keys to WKD (if possible)
-      EnigmailWks.wksUpload(createdKeys, null);
     }, timeoutValue);
   },
 
@@ -370,12 +367,6 @@ var EnigmailAutoSetup = {
 
       let keyType = "ECC",
         keyLength = 0;
-
-      if (!EnigmailGpg.getGpgFeature("supports-ecc-keys")) {
-        // fallback for gpg < 2.1
-        keyLength = 4096;
-        keyType = "RSA";
-      }
 
       let expiry = 1825, // 5 years
         passphrase = "",

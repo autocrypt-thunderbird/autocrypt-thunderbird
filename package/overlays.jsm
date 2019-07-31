@@ -518,7 +518,7 @@ function loadScriptFromUrl(url, targetWindow) {
   try {
     Services.scriptloader.loadSubScript(url, targetWindow);
   } catch (ex) {
-    oconsole.error(`loadScriptFromUrl: Error with loading script ${url}:\n${ex.message}`);
+    oconsole.error(`loadScriptFromUrl: Error with loading script ${url}:\n${ex}`);
   }
 
   targetWindow.addEventListener = oldAddEventListener;

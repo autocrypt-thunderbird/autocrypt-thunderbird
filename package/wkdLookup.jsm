@@ -19,7 +19,6 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/ke
 const EnigmailZBase32 = ChromeUtils.import("chrome://enigmail/content/modules/zbase32.jsm").EnigmailZBase32;
 const EnigmailOpenPGP = ChromeUtils.import("chrome://enigmail/content/modules/openpgp.jsm").EnigmailOpenPGP;
 const EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
-const EnigmailDns = ChromeUtils.import("chrome://enigmail/content/modules/dns.jsm").EnigmailDns;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailSqliteDb = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
@@ -313,16 +312,6 @@ async function getSiteSpecificUrl(emailAddr) {
     case "pm.me":
       url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
       break;
-  }
-
-  if (!url) {
-    try {
-      let mxHosts = await EnigmailDns.lookup("MX", domain);
-      if (mxHosts & mxHosts.indexOf("mail.protonmail.ch") >= 0 ||
-        mxHosts.indexOf("mailsec.protonmail.ch") >= 0) {
-        url = "https://api.protonmail.ch/pks/lookup?op=get&options=mr&search=" + escape(emailAddr);
-      }
-    } catch (ex) {}
   }
 
   return url;

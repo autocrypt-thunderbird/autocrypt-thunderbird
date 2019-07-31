@@ -27,7 +27,6 @@ const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/st
 const EnigmailOpenPGP = ChromeUtils.import("chrome://enigmail/content/modules/openpgp.jsm").EnigmailOpenPGP;
 const EnigmailRNG = ChromeUtils.import("chrome://enigmail/content/modules/rng.jsm").EnigmailRNG;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailKeyEditor = ChromeUtils.import("chrome://enigmail/content/modules/keyEditor.jsm").EnigmailKeyEditor;
 const EnigmailSend = ChromeUtils.import("chrome://enigmail/content/modules/send.jsm").EnigmailSend;
 const sqlite = ChromeUtils.import("chrome://enigmail/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
@@ -371,22 +370,7 @@ var EnigmailAutocryptSetup = {
 
           let setupData = this.importSetupKey(msg.data);
           if (setupData) {
-            EnigmailKeyEditor.setKeyTrust(null, "0x" + setupData.fpr, "5", function(returnCode) {
-              if (returnCode === 0) {
-                let id = EnigmailStdlib.getIdentityForEmail(EnigmailFuncs.stripEmail(fromAddr).toLowerCase());
-                let ac = EnigmailFuncs.getAccountForIdentity(id.identity);
-                ac.incomingServer.setBoolValue("enableAutocrypt", true);
-                ac.incomingServer.setIntValue("acPreferEncrypt", (setupData.preferEncrypt === "mutual" ? 1 : 0));
-                id.identity.setCharAttribute("pgpkeyId", "0x" + setupData.fpr);
-                id.identity.setBoolAttribute("enablePgp", true);
-                id.identity.setBoolAttribute("pgpSignEncrypted", true);
-                id.identity.setBoolAttribute("pgpMimeMode", true);
-                id.identity.setIntAttribute("pgpKeyMode", 1);
-                resolve(setupData);
-              } else {
-                reject("keyImportFailed");
-              }
-            });
+            resolve(setupData);
           } else {
             reject("keyImportFailed");
           }

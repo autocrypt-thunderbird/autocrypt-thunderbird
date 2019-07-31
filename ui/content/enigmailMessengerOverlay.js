@@ -39,14 +39,12 @@ var EnigmailKeyRing = ChromeUtils.import("chrome://enigmail/content/modules/keyR
 var EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm").EnigmailDecryption;
 var EnigmailAttachment = ChromeUtils.import("chrome://enigmail/content/modules/attachment.jsm").EnigmailAttachment;
 var EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailPassword = ChromeUtils.import("chrome://enigmail/content/modules/passwords.jsm").EnigmailPassword;
 var EnigmailKeyUsability = ChromeUtils.import("chrome://enigmail/content/modules/keyUsability.jsm").EnigmailKeyUsability;
 var EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
 var EnigmailProtocolHandler = ChromeUtils.import("chrome://enigmail/content/modules/protocolHandler.jsm").EnigmailProtocolHandler;
 var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 var EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
-var EnigmailWks = ChromeUtils.import("chrome://enigmail/content/modules/webKey.jsm").EnigmailWks;
 var EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
 var EnigmailConfigure = ChromeUtils.import("chrome://enigmail/content/modules/configure.jsm").EnigmailConfigure;
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
@@ -2218,42 +2216,9 @@ Enigmail.msg = {
 
   confirmKeyRequest: function() {
     switch (Enigmail.msg.securityInfo.xtraStatus) {
-      case "wks-request":
-        this.confirmWksRequest();
-        break;
       case "autocrypt-setup":
         this.performAutocryptSetup();
         break;
-    }
-  },
-
-  confirmWksRequest: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: confirmWksRequest()\n");
-    try {
-      var msg = gFolderDisplay.selectedMessage;
-      if (!(!msg || !msg.folder)) {
-        var accMgr = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
-        var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-        let email = EnigmailFuncs.stripEmail(msgHdr.recipients);
-        let maybeIdent = EnigmailStdlib.getIdentityForEmail(email);
-
-        if (maybeIdent && maybeIdent.identity) {
-          EnigmailStdlib.msgHdrsModifyRaw([msgHdr], function(data) {
-            EnigmailWks.confirmKey(maybeIdent.identity, data, window, function(ret) {
-              if (ret) {
-                EnigmailDialog.info(window, EnigmailLocale.getString("wksConfirmSuccess"));
-              } else {
-                EnigmailDialog.alert(window, EnigmailLocale.getString("wksConfirmFailure"));
-              }
-            });
-            return null;
-          });
-        } else {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("wksNoIdentity", [email]));
-        }
-      }
-    } catch (e) {
-      EnigmailLog.DEBUG(e + "\n");
     }
   },
 

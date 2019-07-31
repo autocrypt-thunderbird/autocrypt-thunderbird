@@ -35,7 +35,6 @@ MODFILES = \
            encryption.jsm \
            enigmailOverlays.jsm \
            events.jsm \
-           dns.jsm \
            funcs.jsm \
            files.jsm \
            filters.jsm \
@@ -63,8 +62,6 @@ MODFILES = \
            os.jsm \
            openpgp.jsm \
            overlays.jsm \
-           passwordCheck.jsm \
-           passwords.jsm \
            pgpmimeHandler.jsm \
            pipeConsole.jsm \
            prefs.jsm \
@@ -85,8 +82,6 @@ MODFILES = \
            uris.jsm \
            verify.jsm \
            verifyStatus.jsm \
-           versioning.jsm \
-           webKey.jsm \
            wkdLookup.jsm \
            windows.jsm \
            wksMimeHandler.jsm \
