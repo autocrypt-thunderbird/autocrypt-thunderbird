@@ -22,7 +22,6 @@ MODFILES = \
            autoSetup.jsm \
            autocryptSetup.jsm \
            clipboard.jsm \
-           commandLine.jsm \
            configBackup.jsm \
            configure.jsm \
            constants.jsm \

@@ -24,7 +24,6 @@ const getEnigmailFiltersWrapper = EnigmailLazy.loader("autocrypt/filtersWrapper.
 const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
 const getEnigmailOS = EnigmailLazy.loader("autocrypt/os.jsm", "EnigmailOS");
 const getEnigmailLocale = EnigmailLazy.loader("autocrypt/locale.jsm", "EnigmailLocale");
-const getEnigmailCommandLine = EnigmailLazy.loader("autocrypt/commandLine.jsm", "EnigmailCommandLine");
 const getEnigmailPrefs = EnigmailLazy.loader("autocrypt/prefs.jsm", "EnigmailPrefs");
 const getEnigmailVerify = EnigmailLazy.loader("autocrypt/mimeVerify.jsm", "EnigmailVerify");
 const getEnigmailWindows = EnigmailLazy.loader("autocrypt/windows.jsm", "EnigmailWindows");
@@ -85,14 +84,7 @@ var EnigmailCore = {
         let mimeEncrypt = getEnigmailMimeEncrypt();
         mimeEncrypt.startup(reason);
         enigmailOverlays.startupCore(reason);
-        let cLineReg = getEnigmailCommandLine().categoryRegistry;
-        let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
-        catMan.addCategoryEntry(cLineReg.category,
-          cLineReg.entry,
-          cLineReg.serviceName,
-          false, true);
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
-        self.factories.push(new Factory(getEnigmailCommandLine().Handler));
         self.factories.push(new Factory(mimeEncrypt.Handler));
 
         getAutocryptMasterpass().ensureAutocryptPassword();
@@ -117,10 +109,6 @@ var EnigmailCore = {
 
   shutdown: function(reason) {
     getEnigmailLog().DEBUG("core.jsm: shutdown():\n");
-
-    let cLineReg = getEnigmailCommandLine().categoryRegistry;
-    let catMan = Cc["@mozilla.org/categorymanager;1"].getService(Ci.nsICategoryManager);
-    catMan.deleteCategoryEntry(cLineReg.category, cLineReg.entry, false);
 
     if (this.factories) {
       for (let fct of this.factories) {
