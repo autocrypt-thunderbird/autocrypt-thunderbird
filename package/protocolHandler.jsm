@@ -8,12 +8,12 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailStreams = ChromeUtils.import("chrome://enigmail/content/modules/streams.jsm").EnigmailStreams;
-const EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
+const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
 const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";
@@ -140,22 +140,22 @@ EnigmailProtocolHandler.prototype = {
       // About Enigmail
       //            winName = "about:"+enigmail;
       winName = "about:enigmail";
-      spec = "chrome://enigmail/content/ui/enigmailAbout.xul";
+      spec = "chrome://autocrypt/content/ui/enigmailAbout.xul";
 
     } else if (aURI.spec == aURI.scheme + ":console") {
       // Display enigmail console messages
       winName = "enigmail:console";
-      spec = "chrome://enigmail/content/ui/enigmailConsole.xul";
+      spec = "chrome://autocrypt/content/ui/enigmailConsole.xul";
 
     } else if (aURI.spec == aURI.scheme + ":keygen") {
       // Display enigmail key generation console
       winName = "enigmail:keygen";
-      spec = "chrome://enigmail/content/ui/enigmailKeygen.xul";
+      spec = "chrome://autocrypt/content/ui/enigmailKeygen.xul";
 
     } else {
       // Display Enigmail about page
       winName = "about:enigmail";
-      spec = "chrome://enigmail/content/ui/enigmailAbout.xul";
+      spec = "chrome://autocrypt/content/ui/enigmailAbout.xul";
     }
 
     var windowManager = Cc[WMEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);

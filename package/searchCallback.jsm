@@ -8,7 +8,7 @@
 
 const EXPORTED_SYMBOLS = ["EnigmailSearchCallback"];
 
-const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 
 
 var EnigmailSearchCallback = {

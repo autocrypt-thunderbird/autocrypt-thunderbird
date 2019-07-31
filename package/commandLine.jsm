@@ -14,11 +14,11 @@ var EXPORTED_SYMBOLS = ["EnigmailCommandLine"];
 
 
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
 
 
 const NS_ENIGCLINE_SERVICE_CID = Components.ID("{847b3ab1-7ab1-11d4-8f02-006008948af5}");
-const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/enigmail/cline-handler;1";
+const NS_CLINE_SERVICE_CONTRACTID = "@mozilla.org/autocrypt/cline-handler;1";
 
 function Handler() {}
 
@@ -34,7 +34,7 @@ Handler.prototype = {
       cmdLine.preventDefault = true; // do not open main app window
 
       const wwatch = Cc["@mozilla.org/embedcomp/window-watcher;1"].getService(Ci.nsIWindowWatcher);
-      wwatch.openWindow(null, "chrome://enigmail/content/ui/enigmailKeyManager.xul", "_blank", "chrome,dialog=no,all", cmdLine);
+      wwatch.openWindow(null, "chrome://autocrypt/content/ui/enigmailKeyManager.xul", "_blank", "chrome,dialog=no,all", cmdLine);
     }
   },
 

@@ -51,7 +51,7 @@ const {
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 // the following constants need to be customized for each addon
-const BASE_PATH = "chrome://enigmail/content/ui/";
+const BASE_PATH = "chrome://autocrypt/content/ui/";
 const MY_ADDON_ID = "enigmail";
 
 var gMailStartupDone = false;
@@ -104,7 +104,7 @@ const overlays = {
     "enigmailEditIdentity.xul"
   ],
   "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  "chrome://enigmail/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
+  "chrome://autocrypt/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
 
   // Overlay for privacy preferences in Thunderbird
   "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
@@ -119,10 +119,10 @@ const overlays = {
 
 const {
   EnigmailLog
-} = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm", {});
+} = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm", {});
 const {
   Overlays
-} = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+} = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {});
 
 function DEBUG_LOG(str) {
   EnigmailLog.DEBUG(str);

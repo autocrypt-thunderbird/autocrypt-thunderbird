@@ -19,10 +19,10 @@ var gEnigmailFilters = null;
 
 let {
   EnigmailConstants
-} = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm");
 let {
   EnigmailLocale
-} = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm");
 
 /**
  * filter action for creating a decrypted version of the mail and
@@ -153,7 +153,7 @@ var EnigmailFiltersWrapper = {
   onStartup: function() {
     let {
       EnigmailFilters
-    } = ChromeUtils.import("chrome://enigmail/content/modules/filters.jsm");
+    } = ChromeUtils.import("chrome://autocrypt/content/modules/filters.jsm");
     gEnigmailFilters = EnigmailFilters;
 
     addFilterIfNotExists(filterActionMoveDecrypt);

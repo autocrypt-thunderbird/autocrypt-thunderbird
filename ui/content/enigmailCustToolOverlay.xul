@@ -13,7 +13,7 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <link rel="stylesheet" href="chrome://enigmail/skin/enigmail.css" type="text/css"/>
+    <link rel="stylesheet" href="chrome://autocrypt/skin/enigmail.css" type="text/css"/>
 
     <!-- make overlays.jsm happy -->
     <vbox id="enigmail-dummy" collapsed="true"/>

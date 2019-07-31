@@ -218,7 +218,7 @@ function manageUids() {
   var resultObj = {
     refresh: false
   };
-  window.openDialog("chrome://enigmail/content/ui/enigmailManageUidDlg.xul",
+  window.openDialog("chrome://autocrypt/content/ui/enigmailManageUidDlg.xul",
     "", "dialog,modal,centerscreen,resizable=yes", inputObj, resultObj);
   if (resultObj.refresh) {
     enableRefresh();

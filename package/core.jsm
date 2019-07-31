@@ -14,29 +14,29 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 
 // load all modules lazily to avoid possible cross-reference errors
-const getEnigmailConsole = EnigmailLazy.loader("enigmail/pipeConsole.jsm", "EnigmailConsole");
-const getEnigmailMimeEncrypt = EnigmailLazy.loader("enigmail/mimeEncrypt.jsm", "EnigmailMimeEncrypt");
-const getEnigmailProtocolHandler = EnigmailLazy.loader("enigmail/protocolHandler.jsm", "EnigmailProtocolHandler");
-const getEnigmailFiltersWrapper = EnigmailLazy.loader("enigmail/filtersWrapper.jsm", "EnigmailFiltersWrapper");
-const getEnigmailLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
-const getEnigmailOS = EnigmailLazy.loader("enigmail/os.jsm", "EnigmailOS");
-const getEnigmailLocale = EnigmailLazy.loader("enigmail/locale.jsm", "EnigmailLocale");
-const getEnigmailCommandLine = EnigmailLazy.loader("enigmail/commandLine.jsm", "EnigmailCommandLine");
-const getEnigmailPrefs = EnigmailLazy.loader("enigmail/prefs.jsm", "EnigmailPrefs");
-const getEnigmailVerify = EnigmailLazy.loader("enigmail/mimeVerify.jsm", "EnigmailVerify");
-const getEnigmailWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
-const getEnigmailDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
-const getEnigmailConfigure = EnigmailLazy.loader("enigmail/configure.jsm", "EnigmailConfigure");
-const getEnigmailApp = EnigmailLazy.loader("enigmail/app.jsm", "EnigmailApp");
-const getEnigmailKeyRefreshService = EnigmailLazy.loader("enigmail/keyRefreshService.jsm", "EnigmailKeyRefreshService");
-const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "EnigmailKeyServer");
-const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
-const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
-const getEnigmailCryptoAPI = EnigmailLazy.loader("enigmail/cryptoAPI.jsm", "EnigmailCryptoAPI");
-const getAutocryptMasterpass = EnigmailLazy.loader("enigmail/masterpass.jsm", "AutocryptMasterpass");
+const getEnigmailConsole = EnigmailLazy.loader("autocrypt/pipeConsole.jsm", "EnigmailConsole");
+const getEnigmailMimeEncrypt = EnigmailLazy.loader("autocrypt/mimeEncrypt.jsm", "EnigmailMimeEncrypt");
+const getEnigmailProtocolHandler = EnigmailLazy.loader("autocrypt/protocolHandler.jsm", "EnigmailProtocolHandler");
+const getEnigmailFiltersWrapper = EnigmailLazy.loader("autocrypt/filtersWrapper.jsm", "EnigmailFiltersWrapper");
+const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
+const getEnigmailOS = EnigmailLazy.loader("autocrypt/os.jsm", "EnigmailOS");
+const getEnigmailLocale = EnigmailLazy.loader("autocrypt/locale.jsm", "EnigmailLocale");
+const getEnigmailCommandLine = EnigmailLazy.loader("autocrypt/commandLine.jsm", "EnigmailCommandLine");
+const getEnigmailPrefs = EnigmailLazy.loader("autocrypt/prefs.jsm", "EnigmailPrefs");
+const getEnigmailVerify = EnigmailLazy.loader("autocrypt/mimeVerify.jsm", "EnigmailVerify");
+const getEnigmailWindows = EnigmailLazy.loader("autocrypt/windows.jsm", "EnigmailWindows");
+const getEnigmailDialog = EnigmailLazy.loader("autocrypt/dialog.jsm", "EnigmailDialog");
+const getEnigmailConfigure = EnigmailLazy.loader("autocrypt/configure.jsm", "EnigmailConfigure");
+const getEnigmailApp = EnigmailLazy.loader("autocrypt/app.jsm", "EnigmailApp");
+const getEnigmailKeyRefreshService = EnigmailLazy.loader("autocrypt/keyRefreshService.jsm", "EnigmailKeyRefreshService");
+const getEnigmailKeyServer = EnigmailLazy.loader("autocrypt/keyserver.jsm", "EnigmailKeyServer");
+const getEnigmailOverlays = EnigmailLazy.loader("autocrypt/enigmailOverlays.jsm", "EnigmailOverlays");
+const getEnigmailSqlite = EnigmailLazy.loader("autocrypt/sqliteDb.jsm", "EnigmailSqliteDb");
+const getEnigmailCryptoAPI = EnigmailLazy.loader("autocrypt/cryptoAPI.jsm", "EnigmailCryptoAPI");
+const getAutocryptMasterpass = EnigmailLazy.loader("autocrypt/masterpass.jsm", "AutocryptMasterpass");
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];

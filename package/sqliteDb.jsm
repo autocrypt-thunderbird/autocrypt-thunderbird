@@ -17,8 +17,8 @@ const Cr = Components.results;
 
 
 const Sqlite = ChromeUtils.import("resource://gre/modules/Sqlite.jsm").Sqlite;
-const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
 
 var EnigmailSqliteDb = {

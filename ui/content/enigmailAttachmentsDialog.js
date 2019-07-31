@@ -5,7 +5,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/ui/enigmailCommon.js
+// Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 
 /* global Components: false, EnigInitCommon: false, EnigSetPref: false, EnigGetPref: false */
 

@@ -6,13 +6,13 @@
 -->
 
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 
 <overlay id="enigmailMsgHdrViewOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgHdrViewOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailMsgHdrViewOverlay.js"/>
 
   <menupopup id="attachmentMenuList" onpopupshowing="Enigmail.hdrView.fillAttachmentListPopup(this);"/>
 </overlay>

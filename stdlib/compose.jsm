@@ -54,7 +54,7 @@ const {
   isOSX,
   isWindows,
   isAccel
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/misc.jsm");
 
 const {
   msgHdrToMessageBody,
@@ -77,8 +77,8 @@ const {
   getMail3Pane,
   msgHdrGetHeaders,
   msgHdrsModifyRaw
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/msgHdrUtils.jsm");
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
 
 function getEditorForIframe(aIframe) {

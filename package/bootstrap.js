@@ -21,10 +21,10 @@ function uninstall() {}
 
 function startup(data, reason) {
   try {
-    const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
-    const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-    const EnigmailAmPrefsService = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
-    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
+    const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+    const EnigmailAmPrefsService = ChromeUtils.import("chrome://autocrypt/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
+    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
@@ -44,11 +44,11 @@ function shutdown(data, reason) {
   try {
     if (reason === APP_SHUTDOWN) return;
 
-    const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-    const EnigmailAmPrefsService = ChromeUtils.import("chrome://enigmail/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
-    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://enigmail/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
-    const EnigmailOverlays = ChromeUtils.import("chrome://enigmail/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
-    const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
+    const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+    const EnigmailAmPrefsService = ChromeUtils.import("chrome://autocrypt/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
+    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const EnigmailOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
+    const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     shutdownModule(EnigmailWindows, reason);
@@ -81,7 +81,7 @@ function shutdownModule(module, reason) {
  */
 function loadListOfModules() {
   let request = new XMLHttpRequest();
-  request.open("GET", "chrome://enigmail/content/modules/all-modules.txt", true); // async=true
+  request.open("GET", "chrome://autocrypt/content/modules/all-modules.txt", true); // async=true
   request.responseType = "text";
   request.onerror = function(event) {};
   request.onload = function(event) {
@@ -107,7 +107,7 @@ function unloadModules() {
     try {
       // cannot unload filtersWrapper as you can't unregister filters in TB
       if (mod.search(/filtersWrapper\.jsm$/) < 0) {
-        Cu.unload("chrome://enigmail" + mod);
+        Cu.unload("chrome://autocrypt" + mod);
       }
     } catch (ex) {
       logException(ex);

@@ -6,7 +6,7 @@
 -->
 
 <?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
 <!-- those two as well? -->
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/content/bindings.css" type="text/css"?>
@@ -14,7 +14,7 @@
 <!DOCTYPE window [
 <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
 %brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!ENTITY % enigMailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 %enigMailDTD;
 ]>
 
@@ -25,8 +25,8 @@
         onload="enigmailDlgOnLoad();"
         buttons="accept">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/autocryptSettings.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/autocryptSettings.js"/>
 
   <vbox style="margin: 10px;">
     <hbox align="center">

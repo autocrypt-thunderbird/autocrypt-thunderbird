@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["AutocryptMasterpass"];
 
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
 const PASS_URI = 'chrome://autocrypt';
 const PASS_REALM = 'DO NOT DELETE';

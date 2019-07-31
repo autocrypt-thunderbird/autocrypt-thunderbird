@@ -8,9 +8,9 @@
 
 "use strict";
 
-var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-var Overlays = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm").Overlays;
+var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+var Overlays = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm").Overlays;
 
 if (!Enigmail) var Enigmail = {};
 
@@ -50,7 +50,7 @@ function onPreInit(account, accountValues) {
 
   if (!foundEnigmail) {
     // Enigmail Overlay not yet loaded
-    Overlays.loadOverlays("enigmail-am", window, ["chrome://enigmail/content/ui/enigmailEditIdentity.xul"]).then(
+    Overlays.loadOverlays("enigmail-am", window, ["chrome://autocrypt/content/ui/enigmailEditIdentity.xul"]).then(
       nLoaded => {
         EnigmailLog.DEBUG("am-enigprefs.js: onPreInit: XUL loaded\n");
 

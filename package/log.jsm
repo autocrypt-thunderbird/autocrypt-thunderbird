@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLog"];
 
-const EnigmailConsole = ChromeUtils.import("chrome://enigmail/content/modules/pipeConsole.jsm").EnigmailConsole;
-const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
+const EnigmailConsole = ChromeUtils.import("chrome://autocrypt/content/modules/pipeConsole.jsm").EnigmailConsole;
+const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
+const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";

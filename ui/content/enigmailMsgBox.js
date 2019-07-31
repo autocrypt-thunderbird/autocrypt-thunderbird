@@ -8,10 +8,10 @@
 
 "use strict";
 
-var EnigmailClipboard = ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm").EnigmailClipboard;
-var EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailEvents = ChromeUtils.import("chrome://enigmail/content/modules/events.jsm").EnigmailEvents;
+var EnigmailClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").EnigmailClipboard;
+var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
+var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").EnigmailEvents;
 
 function onLoad() {
   var dlg = document.getElementById("enigmailMsgBox");

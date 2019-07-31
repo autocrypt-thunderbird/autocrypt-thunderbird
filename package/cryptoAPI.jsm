@@ -18,7 +18,7 @@ function EnigmailCryptoAPI() {
   if (!gCurrentApi) {
     const {
       getOpenPGPjsAPI
-    } = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI/openpgp-js.js");
+    } = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI/openpgp-js.js");
 
     gCurrentApi = getOpenPGPjsAPI();
   }

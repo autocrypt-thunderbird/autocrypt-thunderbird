@@ -16,34 +16,34 @@
 /*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false, getCurrentAccountKey: false */
 /*global Sendlater3Composing: false, MailServices: false */
 
-var EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-var EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
-var EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-var EnigmailArmor = ChromeUtils.import("chrome://enigmail/content/modules/armor.jsm").EnigmailArmor;
-var EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
-var EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-var EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
-var EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm").EnigmailDialog;
-var EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
-var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailAutocrypt = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-var EnigmailURIs = ChromeUtils.import("chrome://enigmail/content/modules/uris.jsm").EnigmailURIs;
-var EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailDecryption = ChromeUtils.import("chrome://enigmail/content/modules/decryption.jsm").EnigmailDecryption;
-var EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm").EnigmailEncryption;
-var EnigmailClipboard = ChromeUtils.import("chrome://enigmail/content/modules/clipboard.jsm").EnigmailClipboard;
-var EnigmailWkdLookup = ChromeUtils.import("chrome://enigmail/content/modules/wkdLookup.jsm").EnigmailWkdLookup;
-var EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
-var EnigmailMsgRead = ChromeUtils.import("chrome://enigmail/content/modules/msgRead.jsm").EnigmailMsgRead;
-var EnigmailMimeEncrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
-var EnigmailSync = ChromeUtils.import("chrome://enigmail/content/modules/sync.jsm").EnigmailSync ;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
+var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
+var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
+var EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
+var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+var EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
+var EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
+var EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
+var EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
+var EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
+var EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+var EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
+var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
+var EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
+var EnigmailEncryption = ChromeUtils.import("chrome://autocrypt/content/modules/encryption.jsm").EnigmailEncryption;
+var EnigmailClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").EnigmailClipboard;
+var EnigmailWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").EnigmailWkdLookup;
+var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
+var EnigmailMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").EnigmailMsgRead;
+var EnigmailMimeEncrypt = ChromeUtils.import("chrome://autocrypt/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
+var EnigmailSync = ChromeUtils.import("chrome://autocrypt/content/modules/sync.jsm").EnigmailSync ;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 
-const AUTOCRYPT_RECOMMEND = ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm").AUTOCRYPT_RECOMMEND;
+const AUTOCRYPT_RECOMMEND = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AUTOCRYPT_RECOMMEND;
 
 
 if (!Enigmail) var Enigmail = {};
@@ -284,7 +284,7 @@ Enigmail.msg = {
     function loadOverlay(targetWindow, srcUrl) {
       let {
         Overlays
-      } = ChromeUtils.import("chrome://enigmail/content/modules/overlays.jsm", {});
+      } = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {});
 
       Overlays.loadOverlays("Enigmail", targetWindow, [srcUrl]);
     }
@@ -304,13 +304,13 @@ Enigmail.msg = {
     if (sb) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
       EnigmailTimer.setTimeout(function _f() {
-        loadOverlay(sb.contentDocument.defaultView, "chrome://enigmail/content/ui/enigmailAbContactsPanel.xul");
+        loadOverlay(sb.contentDocument.defaultView, "chrome://autocrypt/content/ui/enigmailAbContactsPanel.xul");
       }, 2000);
     }
 
     let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
     customizeToolbar.addEventListener("pageshow", function(event) {
-      loadOverlay(event.target.defaultView, "chrome://enigmail/content/ui/enigmailCustToolOverlay.xul");
+      loadOverlay(event.target.defaultView, "chrome://autocrypt/content/ui/enigmailCustToolOverlay.xul");
     }, false);
 
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
@@ -834,7 +834,7 @@ Enigmail.msg = {
       currentId = getCurrentIdentity();
       account = EnigmailFuncs.getAccountForIdentity(currentId);
     } catch (ex) {}
-    window.openDialog("chrome://enigmail/content/ui/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
+    window.openDialog("chrome://autocrypt/content/ui/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
       account: account
     });
@@ -1064,7 +1064,7 @@ Enigmail.msg = {
       success: false,
       resetDefaults: false
     };
-    window.openDialog("chrome://enigmail/content/ui/enigmailEncryptionDlg.xul", "", "dialog,modal,centerscreen", inputObj);
+    window.openDialog("chrome://autocrypt/content/ui/enigmailEncryptionDlg.xul", "", "dialog,modal,centerscreen", inputObj);
 
     if (!inputObj.success) return; // Cancel pressed
 
@@ -1214,7 +1214,7 @@ Enigmail.msg = {
         if (excess) {
           EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Excess lines detected\n");
           var resultObj = {};
-          window.openDialog("chrome://enigmail/content/ui/enigmailWrapSelection.xul", "", "dialog,modal,centerscreen", resultObj);
+          window.openDialog("chrome://autocrypt/content/ui/enigmailWrapSelection.xul", "", "dialog,modal,centerscreen", resultObj);
           try {
             if (resultObj.cancelled) {
               // cancel pressed -> do not send, return instead.

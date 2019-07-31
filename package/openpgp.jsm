@@ -39,8 +39,8 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
 var gOpenPGPLib;
 
 function initialize() {
-  const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-  const getOpenPGPLibrary = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/openpgp-lib.jsm").getOpenPGPLibrary;
+  const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+  const getOpenPGPLibrary = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/openpgp-lib.jsm").getOpenPGPLibrary;
 
   EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
 

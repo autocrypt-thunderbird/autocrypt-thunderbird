@@ -9,11 +9,11 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailDialog"];
 
-const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
-const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
+const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;
@@ -111,7 +111,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/ui/enigmailMsgBox.xul", "_blank",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailMsgBox.xul", "_blank",
       "chrome,dialog,modal,centerscreen,resizable,titlebar", {
         msgtext: mesg,
         checkboxLabel: checkboxLabel,
@@ -162,7 +162,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/ui/enigmailMsgBox.xul", "",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailMsgBox.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", argsObj, result);
 
     if (argsObj.checkboxLabel) {
@@ -429,7 +429,7 @@ var EnigmailDialog = {
       win = EnigmailWindows.getBestParentWin();
     }
 
-    win.openDialog("chrome://enigmail/content/ui/enigmailKeyImportInfo.xul", "",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailKeyImportInfo.xul", "",
       "chrome,dialog,modal,centerscreen,resizable", {
         keyList: keyList
       },

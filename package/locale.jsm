@@ -8,7 +8,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailLocale"];
 
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
 
 var gEnigStringBundle = null;
@@ -54,7 +54,7 @@ var EnigmailLocale = {
           This is accomplished by passing a random number in a parameter after a '?'. (this random ID is otherwise ignored)
           The loaded string bundle is still cached on startup and should still be cleared out of the cache on addon shutdown.
           This just bypasses the built-in cache for repeated loads of the same path so that a newly installed update loads cleanly. */
-        let bundlePath = "chrome://enigmail/locale/enigmail.properties?" + Math.random();
+        let bundlePath = "chrome://autocrypt/locale/enigmail.properties?" + Math.random();
         EnigmailLog.DEBUG("locale.jsm: loading stringBundle " + bundlePath + "\n");
         let strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService);
         gEnigStringBundle = strBundleService.createBundle(bundlePath);

@@ -5,15 +5,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 
 <overlay id="enigmail_IdentityEditOvl"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailEditIdentity.js"/>
 
   <vbox id="enigmail_IdentityEdit">
     <checkbox id="enigmail_enablePgp"

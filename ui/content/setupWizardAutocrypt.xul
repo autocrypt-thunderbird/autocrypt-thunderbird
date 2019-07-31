@@ -7,12 +7,12 @@
 
 
 <?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
   <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
 %brandDTD;
-<!ENTITY % enigMailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!ENTITY % enigMailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 %enigMailDTD;
 <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
 %utilDTD;
@@ -28,8 +28,8 @@
   buttons="accept"
   minwidth="460px">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/setupWizardAutocrypt.js" />
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/commonWorkflows.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/setupWizardAutocrypt.js" />
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/commonWorkflows.js"/>
 
   <html:div id="onboardingMsg" style="width: 440px">
     <html:p>&autocrypt.onboarding.welcome0;</html:p>

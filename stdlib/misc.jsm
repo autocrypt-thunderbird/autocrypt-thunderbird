@@ -35,7 +35,7 @@ const {
 
 const fixIterator = ChromeUtils.import("resource:///modules/iteratorUtils.jsm").fixIterator;
 const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",

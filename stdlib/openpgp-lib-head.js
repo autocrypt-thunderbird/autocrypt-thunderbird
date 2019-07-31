@@ -49,7 +49,7 @@ const {
   TransformStream,
   ReadableStream,
   WritableStream
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/web-streams.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/web-streams.jsm");
 
 function getOpenPGPLibrary() {
 

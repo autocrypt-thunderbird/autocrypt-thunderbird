@@ -21,15 +21,15 @@
 }
 
 .enigmailPepRating[ratingcode="mistrust"] {
-  list-style-image: url("chrome://enigmail/skin/pEpRed.svg");
+  list-style-image: url("chrome://autocrypt/skin/pEpRed.svg");
 }
 
 .enigmailPepRating[ratingcode="reliable"] {
-  list-style-image: url("chrome://enigmail/skin/pEpYellow.svg");
+  list-style-image: url("chrome://autocrypt/skin/pEpYellow.svg");
 }
 
 .enigmailPepRating[ratingcode="trusted"] {
-  list-style-image: url("chrome://enigmail/skin/pEpGreen.svg");
+  list-style-image: url("chrome://autocrypt/skin/pEpGreen.svg");
 }
 
 
@@ -48,7 +48,7 @@
 
 .enigmailPepIdentityMistrust
 {
-  background-image: url('chrome://enigmail/skin/pEpRed.svg');
+  background-image: url('chrome://autocrypt/skin/pEpRed.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -57,7 +57,7 @@
 
 .enigmailPepIdentityReliable
 {
-  background-image: url('chrome://enigmail/skin/pEpYellow.svg');
+  background-image: url('chrome://autocrypt/skin/pEpYellow.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -66,7 +66,7 @@
 
 .enigmailPepIdentityTrusted
 {
-  background-image: url('chrome://enigmail/skin/pEpGreen.svg');
+  background-image: url('chrome://autocrypt/skin/pEpGreen.svg');
   background-size: 14px 14px;
   background-position: left center;
   background-repeat: no-repeat;
@@ -79,7 +79,7 @@
 
 .enigmailPepIdentityMistrust[size="medium"]
 {
-  background-image: url('chrome://enigmail/skin/pEpRed.svg');
+  background-image: url('chrome://autocrypt/skin/pEpRed.svg');
   background-size: 27px 27px;
   min-height: 41px;
   background-position: left center;
@@ -89,7 +89,7 @@
 
 .enigmailPepIdentityReliable[size="medium"]
 {
-  background-image: url('chrome://enigmail/skin/pEpYellow.svg');
+  background-image: url('chrome://autocrypt/skin/pEpYellow.svg');
   background-size: 27px 27px;
   min-height: 41px;
   background-position: left center;
@@ -99,7 +99,7 @@
 
 .enigmailPepIdentityTrusted[size="medium"]
 {
-  background-image: url('chrome://enigmail/skin/pEpGreen.svg');
+  background-image: url('chrome://autocrypt/skin/pEpGreen.svg');
   background-size: 27px 27px;
   min-height: 41px;
   background-position: left center;
@@ -108,7 +108,7 @@
 }
 
 .enigmailPepIdentityUnknown[size="medium"] {
-  background-image: url('chrome://enigmail/skin/pEpGrey.svg');
+  background-image: url('chrome://autocrypt/skin/pEpGrey.svg');
   background-size: 27px 27px;
   min-height: 41px;
   background-position: left center;
@@ -117,16 +117,16 @@
 }
 
 #button-enigmail-pepEncrypt[encrypt="true"] {
-  list-style-image: url('chrome://enigmail/skin/pEpEncryptActive.svg');
+  list-style-image: url('chrome://autocrypt/skin/pEpEncryptActive.svg');
 }
 
 #button-enigmail-pepEncrypt[encrypt="false"] {
-  list-style-image: url('chrome://enigmail/skin/pEpEncryptInactive.svg');
+  list-style-image: url('chrome://autocrypt/skin/pEpEncryptInactive.svg');
 }
 
 .enigmail-statusbar-pep-logo
 {
-  list-style-image: url('chrome://enigmail/skin/pEpLogo.svg');
+  list-style-image: url('chrome://autocrypt/skin/pEpLogo.svg');
   max-height: 12px;
   margin: 0px 4px;
 }
@@ -191,15 +191,15 @@
 */
 treechildren::-moz-tree-image(enigmailPepMistrust)
 {
-  list-style-image: url('chrome://enigmail/skin/col-pEpRed.svg');
+  list-style-image: url('chrome://autocrypt/skin/col-pEpRed.svg');
 }
 
 treechildren::-moz-tree-image(enigmailPepReliable)
 {
-  list-style-image: url('chrome://enigmail/skin/col-pEpYellow.svg');
+  list-style-image: url('chrome://autocrypt/skin/col-pEpYellow.svg');
 }
 
 treechildren::-moz-tree-image(enigmailPepTrusted)
 {
-  list-style-image: url('chrome://enigmail/skin/col-pEpGreen.svg');
+  list-style-image: url('chrome://autocrypt/skin/col-pEpGreen.svg');
 }

@@ -14,10 +14,10 @@ var EXPORTED_SYMBOLS = ["EnigmailMsgRead"];
  * Message-reading related functions
  */
 
-const EnigmailPrefs = (ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm", {})).EnigmailPrefs;
-const EnigmailApp = (ChromeUtils.import("chrome://enigmail/content/modules/app.jsm", {})).EnigmailApp;
-const EnigmailFuncs = (ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm", {})).EnigmailFuncs;
-const EnigmailAutocrypt = (ChromeUtils.import("chrome://enigmail/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
+const EnigmailPrefs = (ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm", {})).EnigmailPrefs;
+const EnigmailApp = (ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm", {})).EnigmailApp;
+const EnigmailFuncs = (ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm", {})).EnigmailFuncs;
+const EnigmailAutocrypt = (ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
 
 const ExtraHeaders = ["autocrypt", "openpgp"];
 

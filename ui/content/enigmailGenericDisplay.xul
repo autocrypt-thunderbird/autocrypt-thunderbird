@@ -6,13 +6,13 @@
 -->
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
 
 <?xul-overlay href="chrome://global/content/globalOverlay.xul"?>
 <?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
 
 <!DOCTYPE window [
-  <!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+  <!ENTITY % enigmailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd">
    %enigmailDTD;
   <!ENTITY % utilDTD SYSTEM "chrome://communicator/locale/utilityOverlay.dtd">
    %utilDTD;
@@ -29,8 +29,8 @@
         onload="enigLoadPage();">
 
   <script type="application/x-javascript" src="chrome://global/content/globalOverlay.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailCommon.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailGenericDisplay.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailGenericDisplay.js"/>
 
 <commandset id="tasksCommands"/>
 
@@ -44,6 +44,6 @@
 </keyset>
 
 <iframe id="contentFrame" type="content" name="contentFrame"
-        src="chrome://enigmail/content/ui/enigmailGenericDisplay.htm" flex="100%"/>
+        src="chrome://autocrypt/content/ui/enigmailGenericDisplay.htm" flex="100%"/>
 
 </dialog>

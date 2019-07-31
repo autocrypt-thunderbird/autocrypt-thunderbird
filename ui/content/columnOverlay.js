@@ -9,7 +9,7 @@
 
 /* global Components: false, gDBView: false */
 
-var EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 
 if (!Enigmail) var Enigmail = {};
 

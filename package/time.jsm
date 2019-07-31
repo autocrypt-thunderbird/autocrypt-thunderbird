@@ -8,7 +8,7 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailTime"];
 
-const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 
 const DATE_2DIGIT = "2-digit";
 const DATE_4DIGIT = "numeric";

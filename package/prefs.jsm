@@ -14,8 +14,8 @@ var EXPORTED_SYMBOLS = ["EnigmailPrefs"];
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailFiles = ChromeUtils.import("chrome://enigmail/content/modules/files.jsm").EnigmailFiles;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
 const {
   Services
 } = ChromeUtils.import("resource://gre/modules/Services.jsm");
@@ -67,7 +67,7 @@ function pref(key, val) {
 function setDefaultPrefs() {
   EnigmailLog.DEBUG("prefs.jsm: setDefaultPrefs()\n");
 
-  Services.scriptloader.loadSubScript("chrome://enigmail/content/preferences/defaultPrefs.js", {}, "UTF-8");
+  Services.scriptloader.loadSubScript("chrome://autocrypt/content/preferences/defaultPrefs.js", {}, "UTF-8");
 
   let branch = p.defaultBranch;
   for (let key in gPrefs) {

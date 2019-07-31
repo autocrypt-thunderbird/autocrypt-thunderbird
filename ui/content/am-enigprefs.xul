@@ -8,7 +8,7 @@
 
 <?xml-stylesheet href="chrome://messenger/skin/accountManage.css" type="text/css"?>
 
-<!DOCTYPE page SYSTEM "chrome://enigmail/locale/enigmail.dtd">
+<!DOCTYPE page SYSTEM "chrome://autocrypt/locale/enigmail.dtd">
 
 <page xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
       xmlns:html="http://www.w3.org/1999/xhtml"
@@ -18,8 +18,8 @@
       orient="vertical">
 
   <script type="application/x-javascript" src="chrome://messenger/content/AccountManager.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailEditIdentity.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/am-enigprefs.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailEditIdentity.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/am-enigprefs.js"/>
 
   <broadcasterset>
     <broadcaster id="enigmail_bcEnablePgp" disabled="false"/>

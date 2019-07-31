@@ -16,8 +16,8 @@ var EnigmailLazy = {
     let holder = null;
     return function() {
       if (holder === null) {
-        component = component.replace(/^enigmail\//, "");
-        const into = ChromeUtils.import("chrome://enigmail/content/modules/" + component);
+        component = component.replace(/^autocrypt\//, "");
+        const into = ChromeUtils.import("chrome://autocrypt/content/modules/" + component);
         holder = into[name];
       }
       return holder;

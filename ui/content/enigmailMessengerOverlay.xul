@@ -14,7 +14,7 @@
 <!DOCTYPE window [
 <!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd" >
 %messengerDTD;
-<!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!ENTITY % enigmailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 %enigmailDTD;
 ]>
 
@@ -22,9 +22,9 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript"  src="chrome://enigmail/content/ui/enigmailMessengerOverlay.js"/>
+  <script type="application/x-javascript"  src="chrome://autocrypt/content/ui/enigmailMessengerOverlay.js"/>
 
-  <link href="chrome://enigmail/skin/enigmail.css" rel="stylesheet" type="text/css"/>
+  <link href="chrome://autocrypt/skin/enigmail.css" rel="stylesheet" type="text/css"/>
 
   <broadcasterset id="otherActionsButtonBroadcasters">
     <broadcaster id="enigmailBcDisplayClass" class="headerValue"/>

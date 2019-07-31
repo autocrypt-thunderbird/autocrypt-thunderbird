@@ -12,15 +12,15 @@ var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
-const EnigmailLog = Cu.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailLazy = Cu.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
-const EnigmailConstants = Cu.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailLog = Cu.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailLazy = Cu.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailConstants = Cu.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 
-const getOpenPGP = EnigmailLazy.loader("enigmail/openpgp.jsm", "EnigmailOpenPGP");
-const getArmor = EnigmailLazy.loader("enigmail/armor.jsm", "EnigmailArmor");
+const getOpenPGP = EnigmailLazy.loader("autocrypt/openpgp.jsm", "EnigmailOpenPGP");
+const getArmor = EnigmailLazy.loader("autocrypt/armor.jsm", "EnigmailArmor");
 
 // Load generic API
-Services.scriptloader.loadSubScript("chrome://enigmail/content/modules/cryptoAPI/interface.js",
+Services.scriptloader.loadSubScript("chrome://autocrypt/content/modules/cryptoAPI/interface.js",
   null, "UTF-8"); /* global CryptoAPI */
 
 

@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/ui/enigmailCommon.js
+// Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /*global Components */
 
 /* global EnigmailLog: false, EnigmailLocale: false, EnigmailGpgAgent: false, EnigmailPrefs: false, EnigmailDialog: false */
@@ -21,11 +21,11 @@
 
 "use strict";
 
-var EnigmailConfigBackup = ChromeUtils.import("chrome://enigmail/content/modules/configBackup.jsm").EnigmailConfigBackup;
-var EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+var EnigmailConfigBackup = ChromeUtils.import("chrome://autocrypt/content/modules/configBackup.jsm").EnigmailConfigBackup;
+var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
+var EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 
-const getCore = EnigmailLazy.loader("enigmail/core.jsm", "EnigmailCore");
+const getCore = EnigmailLazy.loader("autocrypt/core.jsm", "EnigmailCore");
 
 // Initialize enigmailCommon
 EnigInitCommon("pref-enigmail");
@@ -276,7 +276,7 @@ function resetPrefs() {
 // Serializes various Enigmail settings into a separate file.
 function backupPrefs() {
 
-  window.open("chrome://enigmail/content/ui/exportSettingsWizard.xul",
+  window.open("chrome://autocrypt/content/ui/exportSettingsWizard.xul",
     "", "chrome,centerscreen,resizable,modal");
 }
 

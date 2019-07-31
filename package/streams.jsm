@@ -10,9 +10,9 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailStreams"];
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 
@@ -164,7 +164,7 @@ var EnigmailStreams = {
 
 function createLoadInfo() {
   let c = NetUtil.newChannel({
-    uri: "chrome://enigmail/content/",
+    uri: "chrome://autocrypt/content/",
     loadUsingSystemPrincipal: true
   });
 

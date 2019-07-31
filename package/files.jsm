@@ -15,18 +15,18 @@ const EXPORTED_SYMBOLS = ["EnigmailFiles"];
 
 
 
-const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
-const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
+const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
+const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 Components.utils.importGlobalProperties(["TextDecoder"]);
 
 const {
   OS
 } = ChromeUtils.import("resource://gre/modules/osfile.jsm", {});
 
-const lazyStream = EnigmailLazy.loader("enigmail/streams.jsm", "EnigmailStreams");
-const lazyLog = EnigmailLazy.loader("enigmail/log.jsm", "EnigmailLog");
+const lazyStream = EnigmailLazy.loader("autocrypt/streams.jsm", "EnigmailStreams");
+const lazyLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
 
 const NS_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";

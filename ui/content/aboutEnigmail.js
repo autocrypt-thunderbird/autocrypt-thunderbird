@@ -4,9 +4,9 @@
 
 "use strict";
 
-const EnigmailLocalizeHtml = ChromeUtils.import("chrome://enigmail/content/modules/localizeHtml.jsm").EnigmailLocalizeHtml;
-const EnigmailWindows = ChromeUtils.import("chrome://enigmail/content/modules/windows.jsm").EnigmailWindows;
-const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
+const EnigmailLocalizeHtml = ChromeUtils.import("chrome://autocrypt/content/modules/localizeHtml.jsm").EnigmailLocalizeHtml;
+const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
+const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
 
 function onload() {
   EnigmailLocalizeHtml.onPageLoad(document);

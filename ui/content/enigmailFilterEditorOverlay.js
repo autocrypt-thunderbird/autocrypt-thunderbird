@@ -13,8 +13,8 @@
 /* global  gFilterActionList: true, gCustomActions: false, gFilterList: false */
 /* global gFilterType: false, gFilterBundle: false, gFilterActionStrings: false */
 
-var EnigmailTb60Compat = ChromeUtils.import("chrome://enigmail/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-var EnigmailTimer = ChromeUtils.import("chrome://enigmail/content/modules/timer.jsm").EnigmailTimer;
+var EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+var EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 
 
 var EnigmailFilterEditor = {

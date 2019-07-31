@@ -10,12 +10,12 @@
 
 var EXPORTED_SYMBOLS = ["EnigmailWindows"];
 
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailApp = ChromeUtils.import("chrome://enigmail/content/modules/app.jsm").EnigmailApp;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
 const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
-const EnigmailStdlib = ChromeUtils.import("chrome://enigmail/content/modules/stdlib.jsm").EnigmailStdlib;
+const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -40,7 +40,7 @@ var EnigmailWindows = {
       return;
     }
 
-    win.open("chrome://enigmail/content/ui/setupWizardAutocrypt.xul",
+    win.open("chrome://autocrypt/content/ui/setupWizardAutocrypt.xul",
       "", "chrome,centerscreen,resizable");
   },
 
@@ -52,14 +52,14 @@ var EnigmailWindows = {
       return;
     }
 
-    win.open("chrome://enigmail/content/ui/autocryptSettings.xul",
+    win.open("chrome://autocrypt/content/ui/autocryptSettings.xul",
       "", "chrome,dialog,centerscreen,resizable,modal");
   },
 
   openManageAllKeys: function(win) {
     EnigmailLog.DEBUG("windows.jsm: openManageAllKeys()\n");
 
-    win.open("chrome://enigmail/content/ui/manageAllKeys.xul",
+    win.open("chrome://autocrypt/content/ui/manageAllKeys.xul",
       "", "chrome,dialog,centerscreen,resizable,modal");
   },
 
@@ -67,7 +67,7 @@ var EnigmailWindows = {
    * Open a window, or focus it if it is already open
    *
    * @winName   : String - name of the window; used to identify if it is already open
-   * @spec      : String - window URL (e.g. chrome://enigmail/content/ui/test.xul)
+   * @spec      : String - window URL (e.g. chrome://autocrypt/content/ui/test.xul)
    * @winOptions: String - window options as defined in nsIWindow.open
    * @optObj    : any    - an Object, Array, String, etc. that is passed as parameter
    *                       to the window
@@ -170,7 +170,7 @@ var EnigmailWindows = {
 
   openHelpWindow: function(source) {
     EnigmailWindows.openWin("enigmail:help",
-      "chrome://enigmail/content/ui/enigmailHelp.xul?src=" + source,
+      "chrome://autocrypt/content/ui/enigmailHelp.xul?src=" + source,
       "centerscreen,resizable");
   },
 
@@ -180,7 +180,7 @@ var EnigmailWindows = {
    * no return value
    */
   openAboutWindow: function() {
-    EnigmailWindows.openMailTab("chrome://enigmail/content/ui/aboutEnigmail.html");
+    EnigmailWindows.openMailTab("chrome://autocrypt/content/ui/aboutEnigmail.html");
   },
 
   /**
@@ -189,7 +189,7 @@ var EnigmailWindows = {
    * no return value
    */
   openGnuPGUpdate: function() {
-    EnigmailWindows.openMailTab("chrome://enigmail/content/ui/updateGnuPG.html");
+    EnigmailWindows.openMailTab("chrome://autocrypt/content/ui/updateGnuPG.html");
   },
 
     /**
@@ -214,7 +214,7 @@ var EnigmailWindows = {
     EnigmailCore.getService(win);
 
     EnigmailWindows.openWin("enigmail:KeyManager",
-      "chrome://enigmail/content/ui/enigmailKeyManager.xul",
+      "chrome://autocrypt/content/ui/enigmailKeyManager.xul",
       "resizable");
   },
 
@@ -227,7 +227,7 @@ var EnigmailWindows = {
     EnigmailCore.getService(win);
 
     EnigmailWindows.openWin("",
-      "chrome://enigmail/content/ui/importSettings.xul",
+      "chrome://autocrypt/content/ui/importSettings.xul",
       "chrome,dialog,centerscreen,resizable,modal");
   },
 
@@ -239,7 +239,7 @@ var EnigmailWindows = {
   keyManReloadKeys: function() {
     let windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
     const winName = "enigmail:KeyManager";
-    const spec = "chrome://enigmail/content/ui/enigmailKeygen.xul";
+    const spec = "chrome://autocrypt/content/ui/enigmailKeygen.xul";
 
     let winEnum = windowManager.getEnumerator(null);
     let recentWin = null;
@@ -267,7 +267,7 @@ var EnigmailWindows = {
    */
   openKeyGen: function() {
     EnigmailWindows.openWin("enigmail:generateKey",
-      "chrome://enigmail/content/ui/enigmailKeygen.xul",
+      "chrome://autocrypt/content/ui/enigmailKeygen.xul",
       "chrome,resizable=yes");
   },
 
@@ -278,7 +278,7 @@ var EnigmailWindows = {
    */
   openCardDetails: function() {
     EnigmailWindows.openWin("enigmail:cardDetails",
-      "chrome://enigmail/content/ui/enigmailCardDetails.xul",
+      "chrome://autocrypt/content/ui/enigmailCardDetails.xul",
       "centerscreen");
   },
 
@@ -292,7 +292,7 @@ var EnigmailWindows = {
    */
   openConsoleWindow: function() {
     EnigmailWindows.openWin("enigmail:console",
-      "chrome://enigmail/content/ui/enigmailConsole.xul",
+      "chrome://autocrypt/content/ui/enigmailConsole.xul",
       "resizable,centerscreen");
   },
 
@@ -305,7 +305,7 @@ var EnigmailWindows = {
    */
   openDebugLog: function(win) {
     EnigmailWindows.openWin("enigmail:logFile",
-      "chrome://enigmail/content/ui/enigmailViewFile.xul?viewLog=1&title=" + escape(EnigmailLocale.getString("debugLog.title")),
+      "chrome://autocrypt/content/ui/enigmailViewFile.xul?viewLog=1&title=" + escape(EnigmailLocale.getString("debugLog.title")),
       "centerscreen");
   },
 
@@ -324,7 +324,7 @@ var EnigmailWindows = {
 
     EnigmailCore.getService(win, true); // true: starting preferences dialog
 
-    let url = "chrome://enigmail/content/ui/pref-enigmail.xul";
+    let url = "chrome://autocrypt/content/ui/pref-enigmail.xul";
     win.openDialog(url,
       "_blank", "chrome,resizable=yes", {
         'showBasic': showBasic,
@@ -350,7 +350,7 @@ var EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/ui/enigmailEditKeyExpiryDlg.xul", "",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailEditKeyExpiryDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -372,7 +372,7 @@ var EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/ui/enigmailEditKeyTrustDlg.xul", "",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailEditKeyTrustDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -395,7 +395,7 @@ var EnigmailWindows = {
     const resultObj = {
       refresh: false
     };
-    win.openDialog("chrome://enigmail/content/ui/enigmailSignKeyDlg.xul", "",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailSignKeyDlg.xul", "",
       "dialog,modal,centerscreen,resizable", inputObj, resultObj);
     return resultObj.refresh;
   },
@@ -433,7 +433,7 @@ var EnigmailWindows = {
       keysrvObj.value = inputObj.autoKeyServer;
     }
     else {
-      win.openDialog("chrome://enigmail/content/ui/enigmailKeyserverDlg.xul",
+      win.openDialog("chrome://autocrypt/content/ui/enigmailKeyserverDlg.xul",
         "", "dialog,modal,centerscreen", valueObj, keysrvObj);
     }
 
@@ -469,7 +469,7 @@ var EnigmailWindows = {
       }
     }
 
-    win.openDialog("chrome://enigmail/content/ui/enigmailSearchKey.xul",
+    win.openDialog("chrome://autocrypt/content/ui/enigmailSearchKey.xul",
       "", "dialog,modal,centerscreen", inputObj, resultObj);
   },
 
@@ -495,7 +495,7 @@ var EnigmailWindows = {
 
     if (password) inputObj.initialPasswd = password;
 
-    window.openDialog("chrome://enigmail/content/ui/autocryptSetupPasswd.xul",
+    window.openDialog("chrome://autocrypt/content/ui/autocryptSetupPasswd.xul",
       "", "dialog,modal,centerscreen", inputObj);
 
     return inputObj.password;
@@ -510,13 +510,13 @@ var EnigmailWindows = {
       window = this.getBestParentWin();
     }
 
-    window.openDialog("chrome://enigmail/content/ui/autocryptInitiateBackup.xul",
+    window.openDialog("chrome://autocrypt/content/ui/autocryptInitiateBackup.xul",
       "", "dialog,centerscreen");
   },
 
   /**
    * Open a URL in a tab on the main window. The URL can either be a web page
-   * (e.g. https://enigmail.net/ or a chrome document (e.g. chrome://enigmail/content/ui/x.xul))
+   * (e.g. https://enigmail.net/ or a chrome document (e.g. chrome://autocrypt/content/ui/x.xul))
    *
    * @param aURL:    String - the URL to open
    * @param winName: String - name of the window; used to identify if it is already open
@@ -550,7 +550,7 @@ var EnigmailWindows = {
     let tabs = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
 
     for (let i = tabs.tabInfo.length - 1; i >= 0; i--) {
-      if ("openedUrl" in tabs.tabInfo[i] && tabs.tabInfo[i].openedUrl.startsWith("chrome://enigmail/")) {
+      if ("openedUrl" in tabs.tabInfo[i] && tabs.tabInfo[i].openedUrl.startsWith("chrome://autocrypt/")) {
         tabs.closeTab(tabs.tabInfo[i]);
       }
     }

@@ -7,7 +7,7 @@
 -->
 
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 
 <overlay id="enigmailColumnOverlay"
     xmlns:html="http://www.w3.org/1999/xhtml"
@@ -22,5 +22,5 @@
    </treecols>
   <!--/tree -->
 
-  <script type="text/javascript" src="chrome://enigmail/content/ui/columnOverlay.js"/>
+  <script type="text/javascript" src="chrome://autocrypt/content/ui/columnOverlay.js"/>
 </overlay>

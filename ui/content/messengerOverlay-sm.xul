@@ -12,7 +12,7 @@
   enigmailMessengerOverlay.xul properly
 -->
 
-<!DOCTYPE window SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!DOCTYPE window SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 
 <overlay id="messengerOverlay-tbird"
     xmlns:html="http://www.w3.org/1999/xhtml"

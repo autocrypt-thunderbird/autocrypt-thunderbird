@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/ui/enigmailCommon.js
+// Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 
 "use strict";
 
@@ -27,7 +27,7 @@ function enigHelpLoad() {
 
   var winOptions = EnigGetWindowOptions();
   var helpFile = winOptions.src;
-  contentFrame.document.location.href = "chrome://enigmail/locale/help/" + helpFile + ".html";
+  contentFrame.document.location.href = "chrome://autocrypt/locale/help/" + helpFile + ".html";
 }
 
 function contentAreaClick(event) {

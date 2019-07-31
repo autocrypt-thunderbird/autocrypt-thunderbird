@@ -10,10 +10,10 @@
   messenger compose window
 -->
 
-<?xml-stylesheet href="chrome://enigmail/skin/enigmail.css" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
 
 <!DOCTYPE window [
-<!ENTITY % enigmailDTD SYSTEM "chrome://enigmail/locale/enigmail.dtd" >
+<!ENTITY % enigmailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
 %enigmailDTD;
 <!ENTITY % messengercomposeDTD SYSTEM "chrome://messenger/locale/messengercompose/messengercompose.dtd" >
 %messengercomposeDTD;
@@ -23,10 +23,10 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgComposeHelper.js"/>
-  <script type="application/x-javascript" src="chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailMsgComposeHelper.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailMsgComposeOverlay.js"/>
 
-  <link rel="stylesheet" type="text/css" href="chrome://enigmail/skin/enigmail.css"/>
+  <link rel="stylesheet" type="text/css" href="chrome://autocrypt/skin/enigmail.css"/>
 
  <commandset id="msgComposeCommandUpdate"
               commandupdater="true"

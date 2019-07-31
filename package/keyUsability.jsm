@@ -15,16 +15,16 @@ var EXPORTED_SYMBOLS = ["EnigmailKeyUsability"];
 
 
 
-const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
-const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.jsm").EnigmailCore;
-const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailLazy = ChromeUtils.import("chrome://enigmail/content/modules/lazy.jsm").EnigmailLazy;
+const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
+const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 
-const getDialog = EnigmailLazy.loader("enigmail/dialog.jsm", "EnigmailDialog");
-const getWindows = EnigmailLazy.loader("enigmail/windows.jsm", "EnigmailWindows");
-const getKeyRing = EnigmailLazy.loader("enigmail/keyRing.jsm", "EnigmailKeyRing");
+const getDialog = EnigmailLazy.loader("autocrypt/dialog.jsm", "EnigmailDialog");
+const getWindows = EnigmailLazy.loader("autocrypt/windows.jsm", "EnigmailWindows");
+const getKeyRing = EnigmailLazy.loader("autocrypt/keyRing.jsm", "EnigmailKeyRing");
 
 const DAY = 86400; // number of seconds of 1 day
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-// Uses: chrome://enigmail/content/ui/enigmailCommon.js
+// Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 
 "use strict";
 
@@ -15,11 +15,11 @@
 
 // Initialize enigmailCommon
 EnigInitCommon("enigmailKeySelection");
-var EnigmailFuncs = ChromeUtils.import("chrome://enigmail/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailKey = ChromeUtils.import("chrome://enigmail/content/modules/key.jsm").EnigmailKey;
-var EnigmailSearchCallback = ChromeUtils.import("chrome://enigmail/content/modules/searchCallback.jsm").EnigmailSearchCallback;
-var EnigmailCryptoAPI = ChromeUtils.import("chrome://enigmail/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-var newEnigmailKeyObj = ChromeUtils.import("chrome://enigmail/content/modules/keyObj.jsm").newEnigmailKeyObj;
+var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
+var EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
+var EnigmailSearchCallback = ChromeUtils.import("chrome://autocrypt/content/modules/searchCallback.jsm").EnigmailSearchCallback;
+var EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+var newEnigmailKeyObj = ChromeUtils.import("chrome://autocrypt/content/modules/keyObj.jsm").newEnigmailKeyObj;
 
 
 const INPUT = 0;

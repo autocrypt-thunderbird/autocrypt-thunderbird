@@ -25,7 +25,7 @@ const {
   determineComposeHtml,
   composeMessageTo,
   getSignatureContentsForAccount
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/compose.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/compose.jsm");
 
 const {
   gIdentities,
@@ -48,7 +48,7 @@ const {
   isOSX,
   isWindows,
   isAccel
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/misc.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/misc.jsm");
 
 const {
   msgHdrToMessageBody,
@@ -71,7 +71,7 @@ const {
   getMail3Pane,
   msgHdrGetHeaders,
   msgHdrsModifyRaw
-} = ChromeUtils.import("chrome://enigmail/content/modules/stdlib/msgHdrUtils.jsm");
+} = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/msgHdrUtils.jsm");
 
 var EnigmailStdlib = {
   // compose.jsm
