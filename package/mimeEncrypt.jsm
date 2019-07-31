@@ -20,7 +20,6 @@ const EnigmailDialog = ChromeUtils.import("chrome://enigmail/content/modules/dia
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailEncryption = ChromeUtils.import("chrome://enigmail/content/modules/encryption.jsm").EnigmailEncryption;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
-const EnigmailHash = ChromeUtils.import("chrome://enigmail/content/modules/hash.jsm").EnigmailHash;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
 const EnigmailConstants = ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailLocale = ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm").EnigmailLocale;

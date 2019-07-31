@@ -84,7 +84,6 @@ MODFILES = \
            verifyStatus.jsm \
            wkdLookup.jsm \
            windows.jsm \
-           wksMimeHandler.jsm \
            xhrUtils.jsm \
            zbase32.jsm
 

@@ -34,7 +34,6 @@ const getEnigmailConfigure = EnigmailLazy.loader("enigmail/configure.jsm", "Enig
 const getEnigmailApp = EnigmailLazy.loader("enigmail/app.jsm", "EnigmailApp");
 const getEnigmailKeyRefreshService = EnigmailLazy.loader("enigmail/keyRefreshService.jsm", "EnigmailKeyRefreshService");
 const getEnigmailKeyServer = EnigmailLazy.loader("enigmail/keyserver.jsm", "EnigmailKeyServer");
-const getEnigmailWksMimeHandler = EnigmailLazy.loader("enigmail/wksMimeHandler.jsm", "EnigmailWksMimeHandler");
 const getEnigmailOverlays = EnigmailLazy.loader("enigmail/enigmailOverlays.jsm", "EnigmailOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("enigmail/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailCryptoAPI = EnigmailLazy.loader("enigmail/cryptoAPI.jsm", "EnigmailCryptoAPI");
@@ -113,7 +112,6 @@ var EnigmailCore = {
     // cApi.initialize();
 
     getEnigmailVerify().registerContentTypeHandler();
-    getEnigmailWksMimeHandler().registerContentTypeHandler();
     getEnigmailFiltersWrapper().onStartup();
     continueStartup();
   },

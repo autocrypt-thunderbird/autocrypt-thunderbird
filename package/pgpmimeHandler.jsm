@@ -28,7 +28,6 @@ const EnigmailCore = ChromeUtils.import("chrome://enigmail/content/modules/core.
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailMimeDecrypt = ChromeUtils.import("chrome://enigmail/content/modules/mimeDecrypt.jsm").EnigmailMimeDecrypt;
 const EnigmailVerify = ChromeUtils.import("chrome://enigmail/content/modules/mimeVerify.jsm").EnigmailVerify;
-const EnigmailWksMimeHandler = ChromeUtils.import("chrome://enigmail/content/modules/wksMimeHandler.jsm").EnigmailWksMimeHandler;
 const EnigmailMime = ChromeUtils.import("chrome://enigmail/content/modules/mime.jsm").EnigmailMime;
 const EnigmailSingletons = ChromeUtils.import("chrome://enigmail/content/modules/singletons.jsm").EnigmailSingletons;
 
@@ -211,9 +210,6 @@ PgpMimeHandler.prototype = {
           cth = EnigmailVerify.newVerifier("application/(x-)?pkcs7-signature");
         }
       }
-    }
-    else if (ct.search(/application\/vnd.gnupg.wks/i) === 0) {
-      cth = EnigmailWksMimeHandler.newHandler();
     }
 
     if (!cth) {
