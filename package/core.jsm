@@ -14,6 +14,7 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
+const subprocess = ChromeUtils.import("chrome://autocrypt/content/modules/subprocess.jsm").subprocess;
 const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 
 // load all modules lazily to avoid possible cross-reference errors
@@ -219,6 +220,21 @@ function initializeLogging(env) {
   }
 }
 
+function initializeSubprocessLogging(env) {
+  const nspr_log_modules = env.get("NSPR_LOG_MODULES");
+  const matches = nspr_log_modules.match(/subprocess:(\d+)/);
+
+  subprocess.registerLogHandler(function(txt) {
+    getEnigmailLog().ERROR("subprocess.jsm: " + txt);
+  });
+
+  if (matches && matches.length > 1 && matches[1] > 2) {
+    subprocess.registerDebugHandler(function(txt) {
+      getEnigmailLog().DEBUG("subprocess.jsm: " + txt);
+    });
+  }
+}
+
 function failureOn(ex, status) {
   status.initializationError = getEnigmailLocale().getString("enigmailNotAvailable");
   getEnigmailLog().ERROR("core.jsm: Enigmail.initialize: Error - " + status.initializationError + "\n");
@@ -313,6 +329,7 @@ Enigmail.prototype = {
 
     this.environment = getEnvironment(this);
 
+    initializeSubprocessLogging(this.environment);
     initializeEnvironment(this.environment);
 
     try {

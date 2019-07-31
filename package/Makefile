@@ -29,6 +29,7 @@ MODFILES = \
            cryptoAPI.jsm \
            data.jsm \
            decryption.jsm \
+           execution.jsm \
            persistentCrypto.jsm \
            dialog.jsm \
            encryption.jsm \
@@ -39,6 +40,7 @@ MODFILES = \
            filters.jsm \
            filtersWrapper.jsm \
            fixExchangeMsg.jsm \
+           gpgImport.jsm \
            glodaUtils.jsm \
            key.jsm \
            keyObj.jsm \

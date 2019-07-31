@@ -42,6 +42,9 @@ function startup(data, reason) {
 
 function shutdown(data, reason) {
   try {
+    const subprocess = ChromeUtils.import("chrome://autocrypt/content/modules/subprocess.jsm").subprocess;
+    subprocess.onShutdown();
+
     if (reason === APP_SHUTDOWN) return;
 
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
