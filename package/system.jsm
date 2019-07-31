@@ -16,7 +16,6 @@ var EXPORTED_SYMBOLS = ["EnigmailSystem"];
 const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
 const EnigmailOS = ChromeUtils.import("chrome://enigmail/content/modules/os.jsm").EnigmailOS;
 const EnigmailData = ChromeUtils.import("chrome://enigmail/content/modules/data.jsm").EnigmailData;
-const subprocess = ChromeUtils.import("chrome://enigmail/content/modules/subprocess.jsm").subprocess;
 const EnigmailLog = ChromeUtils.import("chrome://enigmail/content/modules/log.jsm").EnigmailLog;
 const EnigmailPrefs = ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm").EnigmailPrefs;
 
@@ -76,39 +75,7 @@ const CODEPAGE_MAPPING = {
 function getWindowsCopdepage() {
   EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
 
-  if (EnigmailPrefs.getPref("gpgLocaleEn")) {
-    return "437";
-  }
-
-  let output = "";
-  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  let sysRoot = env.get("SystemRoot");
-
-  if (!sysRoot || sysRoot.length === 0) {
-    sysRoot = "C:\\windows";
-  }
-
-  try {
-    let p = subprocess.call({
-      command: sysRoot + "\\system32\\chcp.com",
-      arguments: [],
-      environment: [],
-      charset: null,
-      mergeStderr: false,
-      stdout: function(data) {
-        output += data;
-      }
-    });
-    p.wait();
-
-    output = output.replace(/[\r\n]/g, "");
-    output = output.replace(/^(.*[: ])([0-9]+)([^0-9].*)?$/, "$2");
-  }
-  catch (ex) {
-    output = "437";
-  }
-
-  return output;
+  return "437";
 }
 
 /**
@@ -116,54 +83,8 @@ function getWindowsCopdepage() {
  */
 function getUnixCharset() {
   EnigmailLog.DEBUG("system.jsm: getUnixCharset\n");
-  let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  let lc = env.get("LC_ALL");
 
-
-  if (lc.length === 0) {
-    let places = [
-      "/usr/bin/locale",
-      "/usr/local/bin/locale",
-      "/opt/bin/locale"
-    ];
-    var localeFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
-
-    for (let i = 0; i < places.length; i++) {
-      localeFile.initWithPath(places[i]);
-      if (localeFile.exists()) break;
-    }
-
-    if (!localeFile.exists()) return "utf-8";
-
-    let output = "";
-
-    let p = subprocess.call({
-      command: localeFile,
-      arguments: [],
-      environment: [],
-      charset: null,
-      mergeStderr: false,
-      stdout: function(data) {
-        output += data;
-      }
-    });
-    p.wait();
-
-    let m = output.match(/^(LC_ALL=)(.*)$/m);
-    if (m && m.length > 2) {
-      lc = m[2].replace(/"/g, "");
-    }
-    else return "utf-8";
-  }
-
-  let i = lc.search(/[.@]/);
-
-  if (i < 0) return "utf-8";
-
-  lc = lc.substr(i + 1);
-
-  return lc;
-
+  return "utf-8";
 }
 
 function getKernel32Dll() {
