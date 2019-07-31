@@ -371,7 +371,7 @@ var EnigmailSqliteDb = {
 function openDatabaseConn(resolve, reject, waitms, maxtime) {
   EnigmailLog.DEBUG("sqliteDb.jsm: openDatabaseConn()\n");
   Sqlite.openConnection({
-    path: "enigmail.sqlite",
+    path: "autocrypt.sqlite",
     sharedMemoryCache: false
   }).
   then(connection => {
