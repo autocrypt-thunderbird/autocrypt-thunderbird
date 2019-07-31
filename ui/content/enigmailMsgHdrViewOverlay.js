@@ -461,14 +461,13 @@ Enigmail.hdrView = {
           // Enigmail.hdrView.setStatusText("");
           // this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
 
-          let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+          let msgFrame = Enigmail.msg.messagePane;
+          // let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
           EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: current frame: ${msgFrame}\n`);
 
           if (msgFrame) {
-            Enigmail.boundMessageUnload = Enigmail.hdrView.messageUnload.bind(Enigmail.hdrView);
-            Enigmail.boundMessageLoad = Enigmail.hdrView.messageLoad.bind(Enigmail.hdrView);
-            msgFrame.addEventListener("unload", Enigmail.boundMessageUnload, true);
-            msgFrame.addEventListener("load", Enigmail.boundMessageLoad, false);
+            msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload, true);
+            msgFrame.addEventListener("DOMContentLoaded", Enigmail.hdrView.messageLoad, false);
           }
 
           Enigmail.hdrView.forgetEncryptedMsgKey();
@@ -504,14 +503,14 @@ Enigmail.hdrView = {
     if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.xtraStatus) {
       Enigmail.msg.securityInfo.xtraStatus = "";
     }
-    this.forgetEncryptedMsgKey();
+    Enigmail.hdrView.forgetEncryptedMsgKey();
   },
 
   messageLoad: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
     Enigmail.msg.messageAutoDecrypt();
     Enigmail.msg.handleAttchmentEvent();
-    this.displayStatusBar();
+    Enigmail.hdrView.displayStatusBar();
   },
 
   dispKeyDetails: function() {
@@ -917,10 +916,11 @@ Enigmail.hdrView = {
       attCtx.removeEventListener("popupshowing", this.onShowAttachmentContextMenu, false);
     }
 
-    let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+    let msgFrame = Enigmail.msg.messagePane;
+    // let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
     if (msgFrame) {
-      msgFrame.removeEventListener("unload", Enigmail.boundMessageUnload, true);
-      msgFrame.removeEventListener("load", Enigmail.boundMessageLoad, false);
+      msgFrame.removeEventListener("unload", Enigmail.hdrView.messageUnload, true);
+      msgFrame.removeEventListener("DOMContentLoaded", Enigmail.hdrView.messageLoad, false);
     }
 
     CanDetachAttachments = Enigmail.hdrView.origCanDetachAttachments;
