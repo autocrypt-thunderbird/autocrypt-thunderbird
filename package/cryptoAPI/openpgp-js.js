@@ -391,6 +391,19 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return keyList;
   }
 
+  async generateAutocryptKey(email) {
+    EnigmailLog.DEBUG(`autocryptSetup.jsm: createAutocryptKey(): ${email}\n`);
+
+    const openpgp = getOpenPGP().openpgp;
+    var options = {
+      userIds: [{ email: email }],
+      curve: "ed25519"
+    };
+
+    let gen_result = await openpgp.generateKey(options);
+    return gen_result.key;
+  }
+
   // TODO this was intended to "warm up" the js crypto routines. doesn't
   // actually help, so we don't do it for now.
   async initialize() {
