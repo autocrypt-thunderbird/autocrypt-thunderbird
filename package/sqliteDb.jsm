@@ -20,37 +20,32 @@ const Sqlite = ChromeUtils.import("resource://gre/modules/Sqlite.jsm").Sqlite;
 const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
-var EnigmailSqliteDb = {
-  /**
-   * Provide an sqlite conection object asynchronously, retrying if needed
-   *
-   * @return {Promise<Sqlite Connection>}: the Sqlite database object
-   */
+const DATABASE_FILENAME = 'autocrypt.sqlite';
 
-  openDatabase: function() {
-    EnigmailLog.DEBUG("sqliteDb.jsm: openDatabase()\n");
-    return new Promise((resolve, reject) => {
-      openDatabaseConn(resolve, reject, 100, Date.now() + 10000);
-    });
+var EnigmailSqliteDb = {
+  getDbConnection: async function() {
+    EnigmailLog.DEBUG("sqliteDb.jsm: getDbConnection()\n");
+    if (!this.cachedConnection) {
+      this.cachedConnection = await new Promise((resolve, reject) => {
+        openDatabaseConn(resolve, reject, 100, Date.now() + 10000);
+      });
+    }
+    return this.cachedConnection;
   },
 
   checkDatabaseStructure: async function() {
     EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       await checkAutocryptTable(conn);
       await checkWkdTable(conn);
       await createTables(conn);
       await fixupTables(conn);
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: checkDatabaseStructure: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -75,7 +70,7 @@ var EnigmailSqliteDb = {
   retrieveAutocryptRowsInternal: async function(where, args) {
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       const result = [];
 
       const fields = [ "email", "fpr_primary", "fpr_primary_gossip", "last_seen_message", "last_seen_key", "last_seen_gossip", "is_mutual" ];
@@ -106,15 +101,11 @@ var EnigmailSqliteDb = {
             EnigmailLog.ERROR(`${ex}\n`);
           }
       });
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAutocryptRows - returning ${result.length} keys\n`);
       return result;
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: retrieveAutocryptRows: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
       return [];
     }
   },
@@ -124,7 +115,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAllPublicKeys()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       const result = [];
       await conn.execute( "select fpr_primary, key_data from public_keydata;", {},
         function _onRow(row) {
@@ -132,15 +123,11 @@ var EnigmailSqliteDb = {
           let key_data = Uint8Array.from(row.getResultByName("key_data"));
           result.push({ fpr_primary: fpr_primary, key_data: key_data });
       });
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveAllPublicKeys: ${result.length} rows\n`);
       return result;
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: retrieveAllPublicKeys: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
       return [];
     }
   },
@@ -149,7 +136,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       const result = [];
       await conn.execute("select fpr_primary, key_data_secret from secret_keydata;", {},
         function _onRow(row) {
@@ -157,14 +144,10 @@ var EnigmailSqliteDb = {
           let key_data_secret = Uint8Array.from(row.getResultByName("key_data_secret"));
           result.push({ fpr_primary: fpr_primary, key_data_secret: key_data_secret });
       });
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: retrieveSecretKeys - success\n`);
       return result;
     } catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: retrieveSecretKeys: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
       throw ex;
     }
   },
@@ -173,7 +156,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: findPrimaryFprByKeyId(${key_id})\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       let result = null;
       await conn.execute( "select fpr_primary from public_keyids where key_id = :key_id;", {
         key_id: key_id.toUpperCase()
@@ -181,15 +164,11 @@ var EnigmailSqliteDb = {
         function _onRow(row) {
           result = row.getResultByName("fpr_primary");
       });
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: findPrimaryFprByKeyId: ${result}\n`);
       return result;
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: findPrimaryFprByKeyId: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
       return [];
     }
   },
@@ -198,7 +177,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeen()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       let data = {
           email: String(email),
           last_seen_message: last_seen_message.toISOString()
@@ -211,14 +190,10 @@ var EnigmailSqliteDb = {
         "update autocrypt_peers set last_seen_message = :last_seen_message where email = :email",
         data
       );
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeenMessage - success\n`);
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: autocryptInsertOrUpdateLastSeenMessage: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -226,7 +201,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       let data = {
         email: String(email),
         last_seen_key: last_seen_key.toISOString(),
@@ -239,13 +214,9 @@ var EnigmailSqliteDb = {
          " AND NOT EXISTS(SELECT * FROM secret_keydata s WHERE autocrypt_peers.fpr_primary = s.fpr_primary)",
         data
       );
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey - success\n`);
     } catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: autocryptUpdateKey: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -253,7 +224,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       let data = {
         email: String(email),
         last_seen_gossip: last_seen_gossip.toISOString(),
@@ -264,13 +235,9 @@ var EnigmailSqliteDb = {
         "update autocrypt_peers set last_seen_gossip = :last_seen_gossip, fpr_primary = :fpr_primary_gossip where email = :email;",
         data
       );
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey - success\n`);
     } catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: autocryptUpdateGossipKey: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -278,7 +245,7 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateSecretKey()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       let data = {
         email: String(email),
         fpr_primary: fpr_primary,
@@ -290,13 +257,9 @@ var EnigmailSqliteDb = {
          " AND EXISTS(SELECT * FROM secret_keydata s WHERE autocrypt_peers.fpr_primary = s.fpr_primary)",
         data
       );
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateSecretKey - success\n`);
     } catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: autocryptUpdateSecretKey: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -304,19 +267,15 @@ var EnigmailSqliteDb = {
     EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey()\n`);
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       await conn.execute(
-        "replace into secret_keydata values (:fpr_primary, :key_data_secret :email);",
+        "replace into secret_keydata values (:fpr_primary, :key_data_secret, :email);",
         { fpr_primary: fpr_primary, key_data_secret: key_data_secret, email: email }
       );
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey: ok\n`);
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: storeSecretKey: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   },
 
@@ -325,7 +284,7 @@ var EnigmailSqliteDb = {
 
     let conn;
     try {
-      conn = await this.openDatabase();
+      conn = await this.getDbConnection();
       await conn.execute(
         "replace into public_keydata (fpr_primary, key_data) values (:fpr_primary, :key_data);",
         { fpr_primary: fpr_primary, key_data: key_data }
@@ -343,14 +302,10 @@ var EnigmailSqliteDb = {
         rows_key_ids
       );
 
-      conn.close();
       EnigmailLog.DEBUG(`sqliteDb.jsm: replacePublicKey - success\n`);
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: replacePublicKey: ERROR: ${ex}\n`);
-      if (conn) {
-        conn.close();
-      }
     }
   }
 };
@@ -370,8 +325,7 @@ var EnigmailSqliteDb = {
 function openDatabaseConn(resolve, reject, waitms, maxtime) {
   EnigmailLog.DEBUG("sqliteDb.jsm: openDatabaseConn()\n");
   Sqlite.openConnection({
-    path: "autocrypt.sqlite",
-    sharedMemoryCache: false
+    path: DATABASE_FILENAME
   }).
   then(connection => {
     resolve(connection);
