@@ -35,7 +35,7 @@ async function enigmailDlgOnLoad() {
 
   view.boxKeep = document.getElementById("boxKeep");
   view.boxGenerate = document.getElementById("boxGenerate");
-  view.boxArchived = document.getElementById("boxArchived");
+  view.boxExisting = document.getElementById("boxExisting");
 
   view.labelSetupCurrentKey = document.getElementById("labelSetupCurrentKey");
 
@@ -106,7 +106,7 @@ function disableAllChildren(el, disabled) {
 function showOnly(group) {
   disableAllChildren(view.boxKeep, true);
   disableAllChildren(view.boxGenerate, true);
-  disableAllChildren(view.boxArchived, true);
+  disableAllChildren(view.boxExisting, true);
 
   disableAllChildren(group, false);
 }
@@ -123,9 +123,16 @@ async function onRadioChangeSetup() {
       showOnly(view.boxGenerate);
       break;
     }
-    case 'archived': {
-      showOnly(view.boxArchived);
+    case 'existing': {
+      showOnly(view.boxExisting);
       break;
     }
   }
 }
+
+function dialogConfirm() {
+  window.arguments[1].choice = view.radiogroupSetupChoice.selectedItem.value;
+  window.close();
+}
+
+document.addEventListener("dialogaccept", dialogConfirm);

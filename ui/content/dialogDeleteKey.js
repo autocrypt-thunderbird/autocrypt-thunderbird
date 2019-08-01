@@ -26,7 +26,7 @@ async function onLoad() {
 
 function onTextConfirmInput() {
   const textboxConfirmKeyDelete = document.getElementById("textboxConfirmKeyDelete");
-  let is_confirmed = textboxConfirmKeyDelete.value == getConfirmString();
+  let is_confirmed = textboxConfirmKeyDelete.value.toLowerCase() == getConfirmString();
   setAcceptButtonEnabled(is_confirmed);
 }
 

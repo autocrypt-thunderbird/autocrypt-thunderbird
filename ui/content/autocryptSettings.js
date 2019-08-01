@@ -14,6 +14,8 @@
 
 const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
 const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
+const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+const AutocryptSecret = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSecret.jsm").AutocryptSecret;
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // Initialize enigmailCommon
@@ -122,11 +124,15 @@ async function onClickManageAllKeys() {
 
 async function onClickRunSetup() {
   const menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
-  const item = menulistAutocryptEmail.selectedItem;
+  const email = menulistAutocryptEmail.selectedItem ?
+    menulistAutocryptEmail.selectedItem.value : null;
+  if (!email) {
+    return;
+  }
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
 
   let args = {
-    email: item.value,
+    email: email,
     current_key: autocrypt_info ? autocrypt_info.fpr_primary : null
   };
   var result = {
@@ -136,8 +142,13 @@ async function onClickRunSetup() {
   window.openDialog("chrome://autocrypt/content/ui/autocryptSetup.xul", "",
     "chrome,dialog,modal,centerscreen", args, result);
 
-  if (result.success) {
-    EnigmailLog.DEBUG(`onClickRunSetup(): ok\n`);
+  if (result.choice == 'generate') {
+    EnigmailLog.DEBUG(`selectIdentityByIndex(): generate\n`);
+    const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
+    textboxConfiguredKey.value = "Generating…";
+
+    await AutocryptSecret.generateKeyForEmail(email, autocrypt_info.is_mutual);
+    await onCommandMenulistAutocryptEmail();
   }
 }
 
