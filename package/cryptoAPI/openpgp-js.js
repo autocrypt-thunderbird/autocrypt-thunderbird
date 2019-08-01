@@ -287,13 +287,15 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     try {
       const openpgp = getOpenPGP().openpgp;
 
-      let binary_data;
+      let result;
       if (key_data instanceof Uint8Array) {
-        binary_data = key_data;
+        result = await openpgp.key.read(key_data);
+      } else if (key_data.startsWith('-----')) {
+        result = await openpgp.key.readArmored(key_data);
       } else {
-        binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
+        let binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
+        result = await openpgp.key.read(binary_data);
       }
-      let result = await openpgp.key.read(binary_data);
       // EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
 
       let key = result.keys[0];

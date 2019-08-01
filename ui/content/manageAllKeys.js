@@ -16,6 +16,7 @@
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 
 // Initialize enigmailCommon
 EnigInitCommon("manageAllKeys");
@@ -69,13 +70,7 @@ async function getKeyInfo(secret_key) {
 
   const autocrypt_info = await EnigmailAutocrypt.getAutocryptSettingsForFingerprint(fingerprint);
 
-  let address;
-  if (autocrypt_info) {
-    address = autocrypt_info.email;
-  } else {
-    const primary_uid = await secret_key.getPrimaryUser();
-    address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
-  }
+  let address = autocrypt_info ? autocrypt_info.email : 'None';
   const creation = secret_key.getCreationTime();
   return {
     'identifier': fingerprint,
@@ -120,10 +115,18 @@ async function onKeySelect() {
   const secret_key = secret_keys[identifier];
   const key_info = await getKeyInfo(secret_key);
 
+  let address;
+  if (!key_info.is_active) {
+    const primary_uid = await secret_key.getPrimaryUser();
+    address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
+  } else {
+    address = key_info.address;
+  }
+
   views.labelKeyStatus.value = key_info.is_active ? 'Active' : 'Archived';
   views.labelKeyFpr.value = key_info.fpr;
   views.labelKeyCreated.value = key_info.created_full;
-  views.labelKeyAddress.value = key_info.address;
+  views.labelKeyAddress.value = address;
 
   views.buttonForget.setAttribute("disabled", key_info.is_active ? 'true' : 'false');
   views.buttonBackup.setAttribute("disabled", false);
@@ -158,6 +161,66 @@ async function onClickBackup() {
   }
 }
 
+async function onClickImport() {
+  let outFile = EnigFilePicker(
+    'Select file to import', "", false, "", '', [
+      'Autocrypt key backup (.htm)', "*.htm",
+      'OpenPGP Key (.asc)', "*.asc",
+      'OpenPGP Secret Key (.sec)', "*.sec"
+    ]);
+  if (!outFile) return;
+
+  let content = EnigmailFiles.readFile(outFile);
+  let result;
+  try {
+    result = EnigmailAutocryptSetup.determineImportFormat(content);
+  } catch (ex) {
+    EnigmailLog.writeException(ex);
+    EnigAlert("File format could not be recognized");
+    return;
+  }
+
+  EnigmailLog.DEBUG(`onClickImport(): input type: ${result.format}\n`);
+  switch (result.format) {
+    case 'encrypted':
+    case 'autocrypt-setup': {
+      break;
+    }
+    case 'openpgp-secret': {
+      const cApi = EnigmailCryptoAPI();
+      try {
+        let openpgp_secret_key = await cApi.parseOpenPgpKey(result.data);
+        if (!openpgp_secret_key.isDecrypted()) {
+          EnigmailLog.DEBUG(`onClickImport(): key is encrypted - asking for password\n`);
+          let attempt = async password => {
+            try {
+              await openpgp_secret_key.decrypt(password);
+              return true;
+            } catch (ex) {
+              EnigmailLog.DEBUG(`onClickImport(): decryption failure: ${ex}\n`);
+              return false;
+            }
+          };
+          let args = { attempt: attempt };
+
+          window.openDialog("chrome://autocrypt/content/ui/dialogKeyPassword.xul", "",
+            "chrome,dialog,modal,centerscreen", args);
+
+          if (!openpgp_secret_key.isDecrypted()) {
+            return;
+          }
+        }
+        await EnigmailKeyRing.insertSecretKey(openpgp_secret_key);
+      } catch (ex) {
+        EnigmailLog.DEBUG(`onClickImport(): ${ex}\n`);
+        EnigAlert("Error parsing key format!");
+        return;
+      }
+      break;
+    }
+  }
+}
+
 async function onClickForget() {
   const keyList = document.getElementById("treeAllKeys");
   const identifier = keyList.view.getItemAtIndex(keyList.currentIndex).getAttribute("identifier");
@@ -180,3 +243,4 @@ async function onClickForget() {
   }
 }
 
+document.addEventListener("dialogextra1", onClickImport);

@@ -311,6 +311,43 @@ var EnigmailAutocryptSetup = {
     });
   },
 
+  determineImportFormat: function(data) {
+    let start = {}, end = {};
+    let msgType = EnigmailArmor.locateArmoredBlock(data, 0, "", start, end, {});
+
+    if (msgType) {
+      data = data.substring(start.value, end.value);
+    }
+
+    if (msgType === "MESSAGE") {
+      EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData: got backup key\n");
+      let armorHdr = EnigmailArmor.getArmorHeaders(data);
+
+      let passphraseFormat = "generic";
+      if ("passphrase-format" in armorHdr) {
+        passphraseFormat = armorHdr["passphrase-format"];
+      }
+      let passphraseHint = "";
+      if ("passphrase-begin" in armorHdr) {
+        passphraseHint = armorHdr["passphrase-begin"];
+      }
+
+      return {
+        format: passphraseFormat || passphraseHint ? 'autocrypt-setup' : 'encrypted',
+        data: data,
+        passphraseFormat: passphraseFormat,
+        passphraseHint: passphraseHint
+      };
+    } else if (msgType === "PRIVATE KEY BLOCK") {
+      return {
+        format: 'openpgp-secret',
+        data: data
+      };
+    } else {
+      throw new Error("No compatible format detected!");
+    }
+  },
+
   /**
    * @return Promise(Object):
    *          fpr:           String - FPR of the imported key

@@ -38,7 +38,7 @@
           <splitter class="tree-splitter" />
           <treecol label="Created" />
           <splitter class="tree-splitter" />
-          <treecol label="Previously used for" />
+          <treecol label="Address" />
         </treecols>
 
         <treechildren id="treechildrenAllKeys" />

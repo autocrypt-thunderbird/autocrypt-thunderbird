@@ -275,19 +275,19 @@ var EnigmailSqliteDb = {
     }
   },
 
-  storeSecretKey: async function(fpr_primary, key_data_secret, email) {
-    EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey()\n`);
+  storeSecretKeyData: async function(fpr_primary, key_data_secret) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKeyData()\n`);
     let conn;
     try {
       conn = await this.getDbConnection();
       await conn.execute(
-        "replace into secret_keydata values (:fpr_primary, :key_data_secret, :email);",
-        { fpr_primary: fpr_primary, key_data_secret: key_data_secret, email: email }
+        "replace into secret_keydata values (:fpr_primary, :key_data_secret);",
+        { fpr_primary: fpr_primary, key_data_secret: key_data_secret }
       );
-      EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKey: ok\n`);
+      EnigmailLog.DEBUG(`sqliteDb.jsm: storeSecretKeyData: ok\n`);
     }
     catch (ex) {
-      EnigmailLog.ERROR(`sqliteDb.jsm: storeSecretKey: ERROR: ${ex}\n`);
+      EnigmailLog.ERROR(`sqliteDb.jsm: storeSecretKeyData: ERROR: ${ex}\n`);
     }
   },
 
@@ -447,8 +447,7 @@ async function createTables(connection) {
 
   await connection.execute("create table if not exists secret_keydata (" +
           "fpr_primary text not null primary key, " +
-          "key_data_secret text not null, " +
-          "email text not null" +
+          "key_data_secret text not null " +
     ");"
   );
 

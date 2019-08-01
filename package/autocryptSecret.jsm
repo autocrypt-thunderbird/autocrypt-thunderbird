@@ -39,12 +39,12 @@ var AutocryptSecret = {
     let secret_key = await openpgp.generateAutocryptKey(email);
     let fpr_primary = secret_key.getFingerprint().toUpperCase();
 
-    await EnigmailKeyRing.insertSecretKey(secret_key, email);
+    await EnigmailKeyRing.insertSecretKey(secret_key);
 
     let is_mutual = 1;
     let autocrypt_rows = await sqlite.retrieveAutocryptRows([email]);
-    if (autocrypt_rows) {
-      is_mutual = autocrypt_rows[0].is_mutual;
+    if (autocrypt_rows && email in autocrypt_rows) {
+      is_mutual = autocrypt_rows[email].is_mutual;
     }
 
     let effective_date = new Date();

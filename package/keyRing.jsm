@@ -170,7 +170,7 @@ var EnigmailKeyRing = {
     return parsed_key.fpr_primary;
   },
 
-  insertSecretKey: async function(openpgp_secret_key, userEmail) {
+  insertSecretKey: async function(openpgp_secret_key) {
     EnigmailLog.DEBUG(`keyRing.jsm: insertSecretKey()\n`);
     if (!openpgp_secret_key.isPrivate()) {
       EnigmailLog.ERROR(`keyRing.jsm: insertSecretKey(): key is not secret!\n`);
@@ -184,7 +184,7 @@ var EnigmailKeyRing = {
     let key_data_secret = openpgp_secret_key.toPacketlist().write();
     let key_data_public = openpgp_secret_key.toPublic().toPacketlist().write();
 
-    await sqlite.storeSecretKey(fpr_primary, key_data_secret, userEmail);
+    await sqlite.storeSecretKeyData(fpr_primary, key_data_secret);
     await this.insertOrUpdate(key_data_public);
 
     // TODO there is a better way to do this
