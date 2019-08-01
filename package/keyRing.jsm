@@ -14,10 +14,10 @@ var EXPORTED_SYMBOLS = ["EnigmailKeyRing"];
 
 const Cr = Components.results;
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const AutocryptMasterpass = ChromeUtils.import("chrome://autocrypt/content/modules/masterpass.jsm").AutocryptMasterpass;
+const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 
 var gCachedPublicKeysByFpr = false;
 var gCachedPublicKeyList = false;

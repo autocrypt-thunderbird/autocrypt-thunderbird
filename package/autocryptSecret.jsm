@@ -32,7 +32,7 @@ const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.j
 
 
 var AutocryptSecret = {
-  generateKeyForEmail: async function(email, is_mutual) {
+  generateKeyForEmail: async function(email) {
     EnigmailLog.DEBUG(`keyRing.jsm: generateKeyForEmail()\n`);
 
     const openpgp = EnigmailCryptoAPI();
@@ -41,10 +41,38 @@ var AutocryptSecret = {
 
     await EnigmailKeyRing.insertSecretKey(secret_key, email);
 
+    let is_mutual = 1;
+    let autocrypt_rows = await sqlite.retrieveAutocryptRows([email]);
+    if (autocrypt_rows) {
+      is_mutual = autocrypt_rows[0].is_mutual;
+    }
+
     let effective_date = new Date();
     await sqlite.autocryptInsertOrUpdateLastSeenMessage(email, effective_date);
-    await sqlite.autocryptUpdateKey(email, effective_date, fpr_primary, is_mutual);
+    await sqlite.autocryptUpdateKey(email, effective_date, fpr_primary, is_mutual, true);
 
     EnigmailLog.DEBUG(`keyRing.jsm: generateKeyForEmail(): ok\n`);
+  },
+
+  changeSecretKeyForEmail: async function(email, fpr_primary) {
+    EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail()\n`);
+
+    let secret_keys_map = await EnigmailKeyRing.getAllSecretKeysMap();
+    if (!(fpr_primary in secret_keys_map)) {
+      EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail(): unknown fpr_primary!\n`);
+      return;
+    }
+
+    let is_mutual = 1;
+    let autocrypt_rows = await sqlite.retrieveAutocryptRows([email]);
+    if (autocrypt_rows && email in autocrypt_rows) {
+      is_mutual = autocrypt_rows[email].is_mutual;
+    }
+
+    let effective_date = new Date();
+    await sqlite.autocryptInsertOrUpdateLastSeenMessage(email, effective_date);
+    await sqlite.autocryptUpdateKey(email, effective_date, fpr_primary, is_mutual, true);
+
+    EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail(): ok\n`);
   }
 };

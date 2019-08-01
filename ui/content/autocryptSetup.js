@@ -29,16 +29,12 @@ async function enigmailDlgOnLoad() {
   EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
 
   view.radiogroupSetupChoice = document.getElementById("radiogroupSetupChoice");
-
   view.radioSetupKeep = document.getElementById("radioSetupKeep");
   view.radioSetupGenerate = document.getElementById("radioSetupGenerate");
-
   view.boxKeep = document.getElementById("boxKeep");
   view.boxGenerate = document.getElementById("boxGenerate");
   view.boxExisting = document.getElementById("boxExisting");
-
   view.labelSetupCurrentKey = document.getElementById("labelSetupCurrentKey");
-
   view.menulistExistingKeys = document.getElementById("menulistExistingKeys");
 
   document.getElementById("labelSetupAddress").value = getSetupEmail();
@@ -81,6 +77,7 @@ async function refreshExistingKeys() {
     view.menulistExistingKeys.appendItem(fingerprint, fingerprint);
   }
 
+  /* TODO finish or remove
   let gpg_keys = await AutocryptGpgImport.obtainKeyList(getSetupEmail());
   if (gpg_keys) {
     for (let gpg_fpr in gpg_keys) {
@@ -92,6 +89,7 @@ async function refreshExistingKeys() {
       view.menulistExistingKeys.appendItem(`${gpg_fpr} (from GnuPG)`, gpg_fpr);
     }
   }
+  */
 
   // view.menulistExistingKeys.label = 'heyho'; // `(${secret_keys.length} keys available)`;
 }
@@ -131,7 +129,11 @@ async function onRadioChangeSetup() {
 }
 
 function dialogConfirm() {
-  window.arguments[1].choice = view.radiogroupSetupChoice.selectedItem.value;
+  let choice = view.radiogroupSetupChoice.selectedItem.value;
+  window.arguments[1].choice = choice;
+  if (choice == 'existing') {
+    window.arguments[1].fpr_primary = view.menulistExistingKeys.value;
+  }
   window.close();
 }
 

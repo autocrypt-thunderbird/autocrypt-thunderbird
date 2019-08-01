@@ -197,7 +197,7 @@ var EnigmailSqliteDb = {
     }
   },
 
-  autocryptUpdateKey: async function(email, last_seen_key, fpr_primary, is_mutual) {
+  autocryptUpdateKey: async function(email, last_seen_key, fpr_primary, is_mutual, allow_secret = false) {
     EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey()\n`);
     let conn;
     try {
@@ -208,10 +208,10 @@ var EnigmailSqliteDb = {
         fpr_primary: fpr_primary,
         is_mutual: is_mutual ? 1 : 0
       };
+      let secret_guard = allow_secret ? '' : ' AND NOT EXISTS(SELECT * FROM secret_keydata s WHERE autocrypt_peers.fpr_primary = s.fpr_primary)';
       // EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey(): data = ` + JSON.stringify(data) + "\n");
       await conn.execute(
-        "update autocrypt_peers set last_seen_key = :last_seen_key, fpr_primary = :fpr_primary, is_mutual = :is_mutual WHERE email = :email" +
-         " AND NOT EXISTS(SELECT * FROM secret_keydata s WHERE autocrypt_peers.fpr_primary = s.fpr_primary)",
+        "update autocrypt_peers set last_seen_key = :last_seen_key, fpr_primary = :fpr_primary, is_mutual = :is_mutual WHERE email = :email" + secret_guard,
         data
       );
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateKey - success\n`);

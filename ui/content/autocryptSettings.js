@@ -147,8 +147,14 @@ async function onClickRunSetup() {
     const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
     textboxConfiguredKey.value = "Generating…";
 
-    await AutocryptSecret.generateKeyForEmail(email, autocrypt_info.is_mutual);
+    await AutocryptSecret.generateKeyForEmail(email);
     await onCommandMenulistAutocryptEmail();
+  } else if (result.choice == 'existing') {
+    EnigmailLog.DEBUG(`selectIdentityByIndex(): existing (${result.fpr_primary})\n`);
+    if (result.fpr_primary && (!autocrypt_info || result.fpr_primary != autocrypt_info.fpr_primary)) {
+      await AutocryptSecret.changeSecretKeyForEmail(email, result.fpr_primary);
+      await onCommandMenulistAutocryptEmail();
+    }
   }
 }
 
