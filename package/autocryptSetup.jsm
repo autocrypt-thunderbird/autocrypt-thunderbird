@@ -124,6 +124,58 @@ var EnigmailAutocryptSetup = {
   },
 
   /**
+   * Create Autocrypt Backup File
+   *
+   * @param identity: Object - nsIMsgIdentity
+   *
+   * @return Promise({str, passwd}):
+   *             msg:    String - complete setup message
+   *             passwd: String - backup password
+   */
+  createBackupFile: async function(secret_key) {
+    EnigmailLog.DEBUG("autocrypt.jsm: createBackupFile()\n");
+
+    if (!EnigmailCore.getService(null, false)) {
+      throw new Error("EnigmailCore not available!");
+    }
+
+    try {
+      let preferEncrypt = "mutual"; // : "nopreference";
+      let armoredBackup = await this.createArmoredBackup(secret_key, preferEncrypt);
+      return armoredBackup;
+    } catch(e) {
+      EnigmailLog.DEBUG(`autocrypt.jsm: createBackupFile: error ${e}\n`);
+      throw e;
+    }
+  },
+
+  createArmoredBackup: async function(secret_key, preferEncrypt) {
+    let key_data = secret_key.armor();
+    let innerMsg = EnigmailArmor.replaceArmorHeaders(key_data, {
+      'Autocrypt-Prefer-Encrypt': preferEncrypt
+    }) + '\r\n';
+
+    let bkpCode = this.createBackupCode();
+    let enc = {
+      message: EnigmailOpenPGP.openpgp.message.fromText(innerMsg),
+      passwords: bkpCode,
+      armor: true
+    };
+
+    // create symmetrically encrypted message
+    let msg = await EnigmailOpenPGP.openpgp.encrypt(enc);
+    let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
+      'Passphrase-Format': 'numeric9x4',
+      'Passphrase-Begin': bkpCode.substr(0, 2)
+    }).replace(/\n/g, "\r\n");
+
+    return {
+      msg: msgData,
+      passwd: bkpCode
+    };
+  },
+
+  /**
    * Create Autocrypt Setup Message
    *
    * @param identity: Object - nsIMsgIdentity

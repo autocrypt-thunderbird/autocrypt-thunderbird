@@ -63,7 +63,7 @@
           </row>
           <row align="center" style="height: 2em;">
             <label value="Key: " />
-            <label id="labelKeyFpr" />
+            <label id="labelKeyFpr" style="font-family: monospace;" />
           </row>
           <row align="center" style="height: 2em;">
             <label value="Created: " />

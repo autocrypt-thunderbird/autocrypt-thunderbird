@@ -8,12 +8,14 @@
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
-/* global EnigmailWindows: false, EnigmailFuncs */
+/* global EnigmailWindows: false, EnigmailFuncs: false, EnigFilePicker: false, EnigAlert: false */
+/* global EnigmailFiles: false */
 
 "use strict";
 
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
 
 // Initialize enigmailCommon
 EnigInitCommon("manageAllKeys");
@@ -67,8 +69,13 @@ async function getKeyInfo(secret_key) {
 
   const autocrypt_info = await EnigmailAutocrypt.getAutocryptSettingsForFingerprint(fingerprint);
 
-  const primary_uid = await secret_key.getPrimaryUser();
-  const address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
+  let address;
+  if (autocrypt_info) {
+    address = autocrypt_info.email;
+  } else {
+    const primary_uid = await secret_key.getPrimaryUser();
+    address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
+  }
   const creation = secret_key.getCreationTime();
   return {
     'identifier': fingerprint,
@@ -107,8 +114,7 @@ function buildTreeRow(key_info) {
 async function onKeySelect() {
   EnigmailLog.DEBUG("manageAllKeys.js: onKeySelect\n");
 
-  const keyList = document.getElementById("treeAllKeys");
-  const identifier = keyList.view.getItemAtIndex(keyList.currentIndex).getAttribute("identifier");
+  const identifier = views.keyList.view.getItemAtIndex(views.keyList.currentIndex).getAttribute("identifier");
 
   const secret_keys = await EnigmailKeyRing.getAllSecretKeysMap();
   const secret_key = secret_keys[identifier];
@@ -124,6 +130,32 @@ async function onKeySelect() {
 }
 
 async function onClickBackup() {
+  EnigmailLog.DEBUG("manageAllKeys.js: onClickBackup\n");
+
+  const identifier = views.keyList.view.getItemAtIndex(views.keyList.currentIndex).getAttribute("identifier");
+  if (!identifier) {
+    return;
+  }
+
+  const secret_keys = await EnigmailKeyRing.getAllSecretKeysMap();
+  const secret_key = secret_keys[identifier];
+  if (!secret_key) {
+    return;
+  }
+
+  let outFile = EnigFilePicker('swag', "", true, "*.htm", 'AutocryptKeyBackup.htm', ['Autocrypt key backup', "*.htm"]);
+  if (!outFile) return;
+
+  var exitCodeObj = {};
+  var errorMsgObj = {};
+
+  let setup_message = await EnigmailAutocryptSetup.createBackupFile(secret_key);
+
+  if (!EnigmailFiles.writeFileContents(outFile, setup_message.msg)) {
+    EnigAlert("Failed!");
+  } else {
+    EnigAlert(`Ok: ${setup_message.passwd}`);
+  }
 }
 
 async function onClickForget() {
@@ -134,7 +166,7 @@ async function onClickForget() {
   }
 
   let args = {
-    confirm_string: identifier.substring(identifier.length -4)
+    confirm_string: identifier.substring(identifier.length -4).toLowerCase()
   };
   var result = {
     confirmed: false

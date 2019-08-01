@@ -387,6 +387,9 @@ var EnigmailFiles = {
    *  @return true if data was written successfully, false otherwise
    */
   writeFileContents: function(filePath, data, permissions) {
+    if (!permissions) {
+      permissions = DEFAULT_FILE_PERMS;
+    }
     try {
       const fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
 
