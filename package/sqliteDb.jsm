@@ -33,6 +33,18 @@ var EnigmailSqliteDb = {
     return this.cachedConnection;
   },
 
+  clearCachedConnections: function() {
+    EnigmailLog.DEBUG("sqliteDb.jsm: clearCachedConnections()\n");
+    if (this.cachedConnection) {
+      try {
+        this.cachedConnection.close();
+        this.cachedConnection = null;
+      } catch (ex) {
+        EnigmailLog.DEBUG(`sqliteDb.jsm: clearCachedConnections(): caught exception on close: ${ex}\n`);
+      }
+    }
+  },
+
   checkDatabaseStructure: async function() {
     EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure()\n`);
     let conn;

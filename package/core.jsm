@@ -120,7 +120,10 @@ var EnigmailCore = {
     getEnigmailFiltersWrapper().onShutdown();
     getEnigmailVerify().unregisterContentTypeHandler();
 
+    getEnigmailSqlite().clearCachedConnections();
+
     getEnigmailLocale().shutdown();
+    getEnigmailLog().DEBUG("core.jsm: shutdown(): ok (except log)\n");
     getEnigmailLog().onShutdown();
 
     getEnigmailLog().setLogLevel(3);
