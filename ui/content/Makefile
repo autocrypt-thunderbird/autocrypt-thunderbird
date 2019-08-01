@@ -40,14 +40,6 @@ UIFILES = \
 	enigmailConsole.js \
 	enigmailConsole.htm \
 	enigmailCustToolOverlay.xul \
-	enigmailDispPhoto.js \
-	enigmailDispPhoto.xul \
-	enigmailEditIdentity.js \
-	enigmailEditIdentity.xul \
-	enigmailEditKeyExpiryDlg.js \
-	enigmailEditKeyExpiryDlg.xul \
-	enigmailEditKeyTrustDlg.js \
-	enigmailEditKeyTrustDlg.xul \
 	enigmailEncryptionDlg.xul \
 	enigmailEncryptionDlg.js \
 	enigmailGenericDisplay.js \
@@ -59,8 +51,6 @@ UIFILES = \
 	enigmailImportPhoto.xul \
 	keyDetailsDlg.js \
 	keyDetailsDlg.xul \
-	enigmailManageUidDlg.js \
-	enigmailManageUidDlg.xul \
 	enigmailSearchKey.js \
 	enigmailSearchKey.xul \
 	enigmailKeyImportInfo.js \
@@ -77,8 +67,6 @@ UIFILES = \
 	enigmailKeygen.xul \
 	enigmailKeygen.js \
 	enigmailKeygenConsole.htm \
-	enigmailKeyserverDlg.xul \
-	enigmailKeyserverDlg.js \
 	enigmailKeySelection.xul \
 	enigmailKeySelection.js \
 	enigmailMsgComposeOverlay.xul \
