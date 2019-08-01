@@ -24,6 +24,7 @@ const getEnigmailProtocolHandler = EnigmailLazy.loader("autocrypt/protocolHandle
 const getEnigmailFiltersWrapper = EnigmailLazy.loader("autocrypt/filtersWrapper.jsm", "EnigmailFiltersWrapper");
 const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
 const getEnigmailOS = EnigmailLazy.loader("autocrypt/os.jsm", "EnigmailOS");
+const getEnigmailKeyring = EnigmailLazy.loader("autocrypt/keyRing.jsm", "EnigmailKeyRing");
 const getEnigmailLocale = EnigmailLazy.loader("autocrypt/locale.jsm", "EnigmailLocale");
 const getEnigmailPrefs = EnigmailLazy.loader("autocrypt/prefs.jsm", "EnigmailPrefs");
 const getEnigmailVerify = EnigmailLazy.loader("autocrypt/mimeVerify.jsm", "EnigmailVerify");
@@ -61,7 +62,7 @@ var EnigmailCore = {
     return gEnigmailService;
   },
 
-  startup: function(reason) {
+  startup: async function(reason) {
     let env = getEnvironment();
     initializeLogDirectory();
     initializeLogging(env);
@@ -72,13 +73,13 @@ var EnigmailCore = {
     let enigmailOverlays = getEnigmailOverlays();
     Services.obs.addObserver(enigmailOverlays.mailStartupDone, "mail-startup-done", false);
 
-    getEnigmailSqlite().checkDatabaseStructure();
+    await getEnigmailSqlite().checkDatabaseStructure();
     getEnigmailPrefs().startup(reason);
 
     let self = this;
     this.factories = [];
 
-    function continueStartup() {
+    async function continueStartup() {
       getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
 
       try {
@@ -90,9 +91,8 @@ var EnigmailCore = {
 
         getAutocryptMasterpass().ensureAutocryptPassword();
 
-        // let win = getEnigmailWindows().getBestParentWin();
-        // getEnigmailLog().DEBUG("core.jsm: getService: show settings");
-        // getEnigmailWindows().openAutocryptSettings(win);
+        // warm up cache
+        await getEnigmailKeyring().getAllSecretKeys();
 
       } catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
@@ -105,7 +105,7 @@ var EnigmailCore = {
 
     getEnigmailVerify().registerContentTypeHandler();
     getEnigmailFiltersWrapper().onStartup();
-    continueStartup();
+    await continueStartup();
   },
 
   shutdown: function(reason) {
