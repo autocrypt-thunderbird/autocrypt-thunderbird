@@ -44,7 +44,7 @@ if [ "$enableLang" = "yes" ]; then
     echo '# Additional languages' >> ${targetDir}/chrome.manifest
 
     for lang in `cat ${srcDir}/lang/current-languages.txt`; do
-      echo 'locale        enigmail    '$lang'       chrome/locale/'$lang'/' >> ${targetDir}/chrome.manifest
+      echo 'locale        autocrypt    '$lang'       chrome/locale/'$lang'/' >> ${targetDir}/chrome.manifest
     done
   fi
 fi
@@ -59,117 +59,11 @@ echo "Creating ${xpiFile} file"
 zip -9 --must-match\
     ../${xpiFile} \
     chrome/content/preferences/defaultPrefs.js \
-    chrome/content/modules/addrbook.jsm \
-    chrome/content/modules/amPrefsService.jsm \
-    chrome/content/modules/app.jsm \
-    chrome/content/modules/armor.jsm \
-    chrome/content/modules/attachment.jsm \
-    chrome/content/modules/autocrypt.jsm \
-    chrome/content/modules/autoSetup.jsm \
-    chrome/content/modules/buildDate.jsm \
-    chrome/content/modules/card.jsm \
-    chrome/content/modules/clipboard.jsm \
-    chrome/content/modules/commandLine.jsm \
-    chrome/content/modules/configure.jsm \
-    chrome/content/modules/constants.jsm \
-    chrome/content/modules/cryptoAPI.jsm \
-    chrome/content/modules/cryptoAPI/gnupg.js \
-    chrome/content/modules/cryptoAPI/gnupg-decryption.jsm \
-    chrome/content/modules/cryptoAPI/gnupg-key.jsm \
-    chrome/content/modules/cryptoAPI/gnupg-keylist.jsm \
-    chrome/content/modules/cryptoAPI/openpgp-js.js \
-    chrome/content/modules/cryptoAPI/interface.js \
-    chrome/content/modules/data.jsm \
-    chrome/content/modules/dns.jsm \
-    chrome/content/modules/decryption.jsm \
-    chrome/content/modules/persistentCrypto.jsm \
-    chrome/content/modules/dialog.jsm \
-    chrome/content/modules/encryption.jsm \
-    chrome/content/modules/core.jsm \
-    chrome/content/modules/configBackup.jsm \
-    chrome/content/modules/enigmailOverlays.jsm \
-    chrome/content/modules/errorHandling.jsm \
-    chrome/content/modules/funcs.jsm \
-    chrome/content/modules/gpgAgent.jsm \
-    chrome/content/modules/gnupgUpdate.jsm \
-    chrome/content/modules/protocolHandler.jsm \
-    chrome/content/modules/events.jsm \
-    chrome/content/modules/execution.jsm \
-    chrome/content/modules/files.jsm \
-    chrome/content/modules/filters.jsm \
-    chrome/content/modules/filtersWrapper.jsm \
-    chrome/content/modules/fixExchangeMsg.jsm \
-    chrome/content/modules/glodaUtils.jsm \
-    chrome/content/modules/gpg.jsm \
-    chrome/content/modules/hash.jsm \
-    chrome/content/modules/httpProxy.jsm \
-    chrome/content/modules/installGnuPG.jsm \
-    chrome/content/modules/key.jsm \
-    chrome/content/modules/keyEditor.jsm \
-    chrome/content/modules/keyObj.jsm \
-    chrome/content/modules/keyRing.jsm \
-    chrome/content/modules/keyUsability.jsm \
-    chrome/content/modules/keyRefreshService.jsm \
-    chrome/content/modules/keyserver.jsm \
-    chrome/content/modules/keyserverUris.jsm \
-    chrome/content/modules/lazy.jsm \
-    chrome/content/modules/locale.jsm \
-    chrome/content/modules/localizeHtml.jsm \
-    chrome/content/modules/log.jsm \
-    chrome/content/modules/mime.jsm \
-    chrome/content/modules/mimeDecrypt.jsm \
-    chrome/content/modules/mimeEncrypt.jsm \
-    chrome/content/modules/mimeVerify.jsm \
-    chrome/content/modules/msgRead.jsm \
-    chrome/content/modules/os.jsm \
-    chrome/content/modules/openpgp.jsm \
-    chrome/content/modules/overlays.jsm \
-    chrome/content/modules/passwordCheck.jsm \
-    chrome/content/modules/passwords.jsm \
-    chrome/content/modules/pgpmimeHandler.jsm \
-    chrome/content/modules/pipeConsole.jsm \
-    chrome/content/modules/prefs.jsm \
-    chrome/content/modules/rng.jsm \
-    chrome/content/modules/rules.jsm \
-    chrome/content/modules/searchCallback.jsm \
-    chrome/content/modules/send.jsm \
-    chrome/content/modules/singletons.jsm \
-    chrome/content/modules/socks5Proxy.jsm \
-    chrome/content/modules/stdlib/compose.jsm \
-    chrome/content/modules/stdlib/misc.jsm \
-    chrome/content/modules/stdlib/msgHdrUtils.jsm \
-    chrome/content/modules/stdlib/openpgp-lib.jsm \
-    chrome/content/modules/stdlib/openpgp.worker.js \
-    chrome/content/modules/stdlib/web-streams.jsm \
-    chrome/content/modules/stdlib.jsm \
-    chrome/content/modules/streams.jsm \
-    chrome/content/modules/subprocess.jsm \
-    chrome/content/modules/enigmailprocess_shared_unix.js \
-    chrome/content/modules/enigmailprocess_worker_common.js \
-    chrome/content/modules/enigmailprocess_common.jsm \
-    chrome/content/modules/enigmailprocess_shared_win.js \
-    chrome/content/modules/enigmailprocess_worker_unix.js \
-    chrome/content/modules/enigmailprocess_main.jsm \
-    chrome/content/modules/enigmailprocess_unix.jsm \
-    chrome/content/modules/enigmailprocess_worker_win.js \
-    chrome/content/modules/enigmailprocess_shared.js \
-    chrome/content/modules/enigmailprocess_win.jsm \
-    chrome/content/modules/sqliteDb.jsm \
-    chrome/content/modules/system.jsm \
-    chrome/content/modules/tb60compat.jsm \
-    chrome/content/modules/time.jsm \
-    chrome/content/modules/timer.jsm \
-    chrome/content/modules/tor.jsm \
-    chrome/content/modules/trust.jsm \
-    chrome/content/modules/uris.jsm \
-    chrome/content/modules/verify.jsm \
-    chrome/content/modules/versioning.jsm \
-    chrome/content/modules/webKey.jsm \
-    chrome/content/modules/wkdLookup.jsm \
-    chrome/content/modules/windows.jsm \
-    chrome/content/modules/wksMimeHandler.jsm \
-    chrome/content/modules/xhrUtils.jsm \
-    chrome/content/modules/zbase32.jsm \
+    chrome/content/modules/*.jsm \
+    chrome/content/modules/cryptoAPI/*.js \
+    chrome/content/modules/stdlib/*.jsm \
+    chrome/content/modules/stdlib/*.js \
+    chrome/content/modules/*.js \
     chrome/content/modules/all-modules.txt \
     chrome/content/am-enigprefs.xul
 
