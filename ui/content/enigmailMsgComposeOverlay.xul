@@ -62,6 +62,7 @@
       class="toolbarbutton-1"
       type="menu-button"
       id="button-enigmail-encrypt"
+      is="toolbarbutton-menu-button"
       label="Autocrypt"
       buttontype="thunderbird"
       tooltip="aTooltipSet"
