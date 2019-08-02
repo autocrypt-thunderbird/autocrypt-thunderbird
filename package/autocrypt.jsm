@@ -328,7 +328,7 @@ var EnigmailAutocrypt = {
     return false;
   },
 
-  getAutocryptHeaderContentFor: async function(email) {
+  getAutocryptHeaderContentFor: async function(email, include_preference) {
     EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ${email}\n`);
     let key_data_b64 = await EnigmailKeyRing.getPublicKeyBase64ForEmail(email);
     if (!key_data_b64) {
@@ -336,8 +336,16 @@ var EnigmailAutocrypt = {
       return null;
     }
 
+    let preference = "";
+    if (include_preference) {
+      let settings = this.getAutocryptSettingsForIdentity(email);
+      if (settings && settings.is_mutual) {
+        preference = "prefer-encrypt=mutual; ";
+      }
+    }
+
     EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ok\n`);
     let key_data_wrapped = " " + key_data_b64.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
-    return `addr=${email}; keydata=\r\n` + key_data_wrapped;
+    return `addr=${email}; ${preference}keydata=\r\n` + key_data_wrapped;
   }
 };

@@ -2045,7 +2045,7 @@ Enigmail.msg = {
       fromMail = EnigmailFuncs.stripEmail(gMsgCompose.compFields.from);
     } catch (ex) {}
 
-    let autocrypt_header_content = await EnigmailAutocrypt.getAutocryptHeaderContentFor(fromMail);
+    let autocrypt_header_content = await EnigmailAutocrypt.getAutocryptHeaderContentFor(fromMail, true);
     if (autocrypt_header_content) {
       this.setAdditionalHeader('Autocrypt', autocrypt_header_content);
     }
