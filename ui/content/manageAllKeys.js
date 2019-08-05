@@ -30,7 +30,10 @@ async function onLoad() {
   views.labelKeyStatus = document.getElementById("labelKeyStatus");
   views.labelKeyFpr = document.getElementById("labelKeyFpr");
   views.labelKeyCreated = document.getElementById("labelKeyCreated");
-  views.labelKeyAddress = document.getElementById("labelKeyAddress");
+  views.labelKeyCreatedFor = document.getElementById("labelKeyCreatedFor");
+  views.labelKeyCreatedForAll = document.getElementById("labelKeyCreatedForAll");
+  views.labelKeyUsedFor = document.getElementById("labelKeyUsedFor");
+  views.labelKeyUsedForAll = document.getElementById("labelKeyUsedForAll");
 
   views.buttonForget = document.getElementById("buttonForget");
   views.buttonBackup = document.getElementById("buttonBackup");
@@ -51,9 +54,16 @@ async function buildTreeView(secret_keys) {
 
   clearTreeView();
 
-  for (let i = 0; i < secret_keys.length; i++) {
-    const secret_key = secret_keys[i];
-    let key_info = await getKeyInfo(secret_key);
+  let key_infos = await Promise.all(secret_keys.map(secret_key => getKeyInfo(secret_key)));
+  key_infos.sort(function(a, b) {
+    if (a.is_active == b.is_active) {
+      return a.created < b.created ? -1 : +1;
+    }
+    return a.is_active ? -1 : +1;
+  });
+
+  for (let i = 0; i < key_infos.length; i++) {
+    const key_info = key_infos[i];
     let treeItem = buildTreeRow(key_info);
     views.treeChildren.appendChild(treeItem);
   }
@@ -68,38 +78,48 @@ function clearTreeView() {
 async function getKeyInfo(secret_key) {
   const fingerprint = secret_key.getFingerprint().toString().toUpperCase();
 
-  const autocrypt_info = await EnigmailAutocrypt.getAutocryptSettingsForFingerprint(fingerprint);
+  const autocrypt_infos = await EnigmailAutocrypt.getAutocryptSettingsByFingerprint(fingerprint);
 
-  let address = autocrypt_info ? autocrypt_info.email : 'None';
+  let used_for_all = autocrypt_infos.map(info => info.email);
+  let used_for = used_for_all.length ? used_for_all[0] : null;
+
+  let created_for_all = secret_key.getUserIds().map(addr => EnigmailFuncs.stripEmail(addr));
+  created_for_all.sort();
+  let created_for = created_for_all.length ? created_for_all[0] : null;
+
   const creation = secret_key.getCreationTime();
   return {
     'identifier': fingerprint,
     'fpr_short': fingerprint,
     'fpr': EnigmailKey.formatFpr(fingerprint),
+    'created': creation,
     'created_date': creation.toLocaleDateString(),
     'created_full': creation.toLocaleString(),
-    'address': address,
-    'is_active': Boolean(autocrypt_info)
+    'used_for': used_for ? used_for : 'None',
+    'used_for_all': used_for_all,
+    'created_for': created_for ? created_for : 'None',
+    'created_for_all': created_for_all,
+    'is_active': autocrypt_infos.length > 0
   };
 }
 
 function buildTreeRow(key_info) {
   let keyFpCol = document.createXULElement("treecell");
   let createdCol = document.createXULElement("treecell");
-  let addressCol = document.createXULElement("treecell");
+  let inUseCol = document.createXULElement("treecell");
 
   keyFpCol.setAttribute("id", "key");
   createdCol.setAttribute("id", "created");
-  addressCol.setAttribute("id", "address");
+  inUseCol.setAttribute("id", "inuse");
 
   keyFpCol.setAttribute("label", key_info.fpr_short);
   createdCol.setAttribute("label", key_info.created_date);
-  addressCol.setAttribute("label", key_info.address);
+  inUseCol.setAttribute("label", key_info.is_active ? "Yes" : "");
 
   let keyRow = document.createXULElement("treerow");
+  keyRow.appendChild(inUseCol);
   keyRow.appendChild(keyFpCol);
   keyRow.appendChild(createdCol);
-  keyRow.appendChild(addressCol);
   let treeItem = document.createXULElement("treeitem");
   treeItem.appendChild(keyRow);
   treeItem.setAttribute("identifier", key_info.identifier);
@@ -115,18 +135,27 @@ async function onKeySelect() {
   const secret_key = secret_keys[identifier];
   const key_info = await getKeyInfo(secret_key);
 
-  let address;
-  if (!key_info.is_active) {
-    const primary_uid = await secret_key.getPrimaryUser();
-    address = primary_uid ? EnigmailFuncs.stripEmail(primary_uid.user.userId.userid) : "None";
-  } else {
-    address = key_info.address;
-  }
-
   views.labelKeyStatus.value = key_info.is_active ? 'Active' : 'Archived';
   views.labelKeyFpr.value = key_info.fpr;
   views.labelKeyCreated.value = key_info.created_full;
-  views.labelKeyAddress.value = address;
+
+  views.labelKeyUsedFor.value = key_info.used_for;
+  if (key_info.used_for_all.length > 1) {
+    views.labelKeyUsedForAll.setAttribute("hidden", "false");
+    views.labelKeyUsedForAll.value = `and ${key_info.used_for_all.length-1} more`;
+    views.labelKeyUsedForAll.setAttribute("tooltiptext", key_info.used_for_all.join('\n'));
+  } else {
+    views.labelKeyUsedForAll.setAttribute("hidden", "true");
+  }
+
+  views.labelKeyCreatedFor.value = key_info.created_for;
+  if (key_info.created_for_all.length > 1) {
+    views.labelKeyCreatedForAll.setAttribute("hidden", "false");
+    views.labelKeyCreatedForAll.value = `and ${key_info.created_for_all.length-1} more`;
+    views.labelKeyCreatedForAll.setAttribute("tooltiptext", key_info.created_for_all.join('\n'));
+  } else {
+    views.labelKeyCreatedForAll.setAttribute("hidden", "true");
+  }
 
   views.buttonForget.setAttribute("disabled", key_info.is_active ? 'true' : 'false');
   views.buttonBackup.setAttribute("disabled", false);

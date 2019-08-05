@@ -34,11 +34,10 @@
 
       <tree id="treeAllKeys" flex="1" hidecolumnpicker="true" seltype="single" style="height: 150px" onselect="onKeySelect();">
         <treecols>
-          <treecol primary="true" flex="1" label="Key" />
+          <treecol id="treecolInUse" align="center" label="In use" />
+          <treecol id="treecolKey" align="start" primary="true" flex="1" label="Key" />
           <splitter class="tree-splitter" />
-          <treecol label="Created" />
-          <splitter class="tree-splitter" />
-          <treecol label="Address" />
+          <treecol id="treecolCreated" align="start" label="Created" />
         </treecols>
 
         <treechildren id="treechildrenAllKeys" />
@@ -70,8 +69,18 @@
             <label id="labelKeyCreated" />
           </row>
           <row align="center" style="height: 2em;">
+            <label value="Created for address: " />
+            <hbox>
+              <label id="labelKeyCreatedFor" />
+              <label id="labelKeyCreatedForAll" style="text-decoration: underline dotted;" />
+            </hbox>
+          </row>
+          <row align="center" style="height: 2em;">
             <label value="Used for address: " />
-            <label id="labelKeyAddress" />
+            <hbox>
+              <label id="labelKeyUsedFor" />
+              <label id="labelKeyUsedForAll" style="text-decoration: underline dotted;" />
+            </hbox>
           </row>
         </rows>
       </grid>
