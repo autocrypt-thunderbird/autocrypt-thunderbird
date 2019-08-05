@@ -39,7 +39,7 @@
     <radiogroup id="radiogroupSetupChoice">
       <vbox style="margin: 10px;">
         <hbox align="center" style="height: 3em;">
-          <radio id="radioSetupKeep" value="keep" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Keep current" />
+          <radio id="radioSetupKeep" value="keep" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Keep current key" />
           <spacer flex="1" />
         </hbox>
         <hbox id="boxKeep">
@@ -49,7 +49,7 @@
       </vbox>
       <vbox style="margin: 10px;">
         <hbox align="center" style="height: 3em;">
-          <radio id="radioSetupGenerate" value="generate" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Create new" />
+          <radio id="radioSetupGenerate" value="generate" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Create new key" />
           <spacer flex="1" />
         </hbox>
         <hbox id="boxGenerate">
@@ -58,7 +58,7 @@
       </vbox>
       <vbox style="margin: 10px;">
         <hbox align="center">
-          <radio id="radioSetupExisting" value="existing" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Use existing" />
+          <radio id="radioSetupExisting" value="existing" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Use other key" />
           <spacer flex="1" />
         </hbox>
         <hbox align="center" id="boxExisting" style="height: 3em;">

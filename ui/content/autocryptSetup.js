@@ -31,6 +31,7 @@ async function enigmailDlgOnLoad() {
   view.radiogroupSetupChoice = document.getElementById("radiogroupSetupChoice");
   view.radioSetupKeep = document.getElementById("radioSetupKeep");
   view.radioSetupGenerate = document.getElementById("radioSetupGenerate");
+  view.radioSetupExisting = document.getElementById("radioSetupExisting");
   view.boxKeep = document.getElementById("boxKeep");
   view.boxGenerate = document.getElementById("boxGenerate");
   view.boxExisting = document.getElementById("boxExisting");
@@ -38,8 +39,10 @@ async function enigmailDlgOnLoad() {
   view.menulistExistingKeys = document.getElementById("menulistExistingKeys");
 
   document.getElementById("labelSetupAddress").value = getSetupEmail();
-  if (window.arguments[0].current_key) {
-    view.labelSetupCurrentKey.value = window.arguments[0].current_key;
+  let current_key = getCurrentKey();
+  if (current_key) {
+    const formatted_fpr = EnigmailKey.formatFpr(current_key);
+    view.labelSetupCurrentKey.value = formatted_fpr;
     view.radiogroupSetupChoice.selectedIndex = 0;
     view.radioSetupKeep.setAttribute("class", "setupRecommended");
     view.radioSetupKeep.setAttribute("disabled", "false");
@@ -55,8 +58,23 @@ async function enigmailDlgOnLoad() {
   await refreshExistingKeys();
 }
 
+function getCurrentKey() {
+  return window.arguments[0].current_key;
+}
+
 function getSetupEmail() {
   return window.arguments[0].email;
+}
+
+async function findRelevantSecretKeys() {
+  let email = getSetupEmail();
+  let current_key = getCurrentKey();
+
+  let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
+
+  let uid_predicate = uid => EnigmailFuncs.stripEmail(uid).toLowerCase() == email;
+  let email_filter = (key => key.getFingerprint().toUpperCase() != current_key && key.getUserIds().find(uid_predicate));
+  return secret_keys.filter(email_filter);
 }
 
 async function refreshExistingKeys() {
@@ -64,17 +82,18 @@ async function refreshExistingKeys() {
 
   view.menulistExistingKeys.removeAllItems();
 
-  let email = getSetupEmail();
+  const secret_keys = await findRelevantSecretKeys();
 
-  let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
-  let email_filter = (key => key.getUserIds().find(uid =>
-      EnigmailFuncs.stripEmail(uid).toLowerCase() == email));
-  secret_keys = secret_keys.filter(email_filter);
-
-  EnigmailLog.DEBUG(`refreshExistingKeys(): ${secret_keys.length}\n`);
-  for (let secret_key of secret_keys) {
-    let fingerprint = secret_key.getFingerprint().toUpperCase();
-    view.menulistExistingKeys.appendItem(fingerprint, fingerprint);
+  if (secret_keys.length) {
+    EnigmailLog.DEBUG(`refreshExistingKeys(): ${secret_keys.length}\n`);
+    for (let secret_key of secret_keys) {
+      let fingerprint = secret_key.getFingerprint().toUpperCase();
+      const formatted_fpr = EnigmailKey.formatFpr(fingerprint);
+      view.menulistExistingKeys.appendItem(formatted_fpr, fingerprint);
+    }
+    view.radioSetupExisting.setAttribute("disabled", "false");
+  } else {
+    view.radioSetupExisting.setAttribute("disabled", "true");
   }
 
   /* TODO finish or remove
