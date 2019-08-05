@@ -368,6 +368,7 @@ Enigmail.msg = {
   },
 
   setMainMenuLabel: function() {
+    /*
     let o = ["menu_Enigmail", "appmenu-Enigmail"];
 
     let m0 = document.getElementById(o[0]);
@@ -383,20 +384,21 @@ Enigmail.msg = {
         menu.setAttribute("label", lbl);
       }
     }
+    */
   },
 
   prepareAppMenu: function() {
-    let menu = document.querySelector("#appMenu-mainView > vbox");
+    let menu = document.querySelector("#appMenu-preferencesView > vbox");
     if (!menu) return;
 
-    let tsk = document.getElementById("appmenu_tasksMenu");
+    let tsk = document.getElementById("appmenu_accountmgr");
     let e = document.createXULElement("toolbarbutton");
-    e.setAttribute("label", "xxEnigmail");
+    e.setAttribute("label", "Autocrypt Settings");
     e.id = "appmenu-Enigmail";
-    e.setAttribute("class", "subviewbutton subviewbutton-nav subviewbutton-iconic");
+    e.setAttribute("class", "subviewbutton subviewbutton-iconic autocryptIconBw");
     e.setAttribute("closemenu", "none");
-    e.setAttribute("oncommand", "Enigmail.msg.displayAppmenu('appMenu-enigmailView', this)");
-    menu.insertBefore(e, tsk);
+    e.setAttribute("oncommand", "EnigmailWindows.openAutocryptSettings(window)");
+    menu.insertBefore(e, tsk.nextSibling);
   },
 
   displayAppmenu: function(targetId, targetObj) {
@@ -2295,7 +2297,7 @@ Enigmail.msg = {
       }
     }
 
-    let menu = document.querySelector("#appMenu-mainView > vbox");
+    let menu = document.querySelector("#appMenu-preferencesView > vbox");
     let appMenu = document.getElementById("appmenu-Enigmail");
     menu.removeChild(appMenu);
 

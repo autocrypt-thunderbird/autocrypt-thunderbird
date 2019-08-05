@@ -70,6 +70,7 @@ SKIN_TB_WIN_XP = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 
@@ -132,6 +133,7 @@ SKIN_AERO = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 
@@ -195,6 +197,7 @@ SKIN_TB_MAC = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 
@@ -257,6 +260,7 @@ SKIN_TB_LINUX = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 
@@ -332,6 +336,7 @@ SKIN_CLASSIC_SEAMONKEY = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 
@@ -398,6 +403,7 @@ SKIN_MODERN = \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
+	images/autocrypt-bw-18.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 

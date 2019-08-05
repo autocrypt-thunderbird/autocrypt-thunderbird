@@ -315,6 +315,14 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
   font-weight: bold;
 }
 
+.autocryptIcon {
+  list-style-image: url("chrome://autocrypt/skin/autocrypt-18.svg");
+}
+
+.autocryptIconBw {
+  list-style-image: url("chrome://autocrypt/skin/autocrypt-bw-18.svg");
+}
+
 .enigmailExpandViewButton {
   width: 9px;
   /* The image's width is 9 pixels */
