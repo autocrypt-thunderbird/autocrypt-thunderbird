@@ -69,6 +69,9 @@ function getOpenPGPLibrary() {
   window.navigator = navigator;
   window.crypto = crypto;
 
+  // no idea why, but oenpgp.js won't load without this defined
+  let self = window;
+
   const console = {
     assert: function() {},
     log: function() {},

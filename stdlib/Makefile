@@ -17,7 +17,7 @@ MODFILES = \
 
 all: deploy
 
-createlib: 
+createlib: openpgp-lib-head.js openpgp-lib.js openpgp-lib-tail.js
 	cat openpgp-lib-head.js openpgp-lib.js openpgp-lib-tail.js > openpgp-lib.jsm
 
 deploy: createlib $(MODFILES)
