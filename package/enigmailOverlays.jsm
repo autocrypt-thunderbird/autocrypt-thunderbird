@@ -95,26 +95,22 @@ const overlays = {
     // Overlay for SeaMonkey
     url: "enigmailMsgComposeOverlay-sm.xul",
     application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
-  }],
+  }]
 
-  "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
-  "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
-  "chrome://messenger/content/am-identity-edit.xul": [
-    "enigmailAmIdEditOverlay.xul",
-    "enigmailEditIdentity.xul"
-  ],
-  "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  "chrome://autocrypt/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
+  // "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
+  // "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
+  // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
+  // "chrome://autocrypt/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
 
   // Overlay for privacy preferences in Thunderbird
-  "chrome://messenger/content/preferences/preferences.xul": ["enigmailPrivacyOverlay.xul"],
+  // "chrome://messenger/content/preferences/preferencesTab.xul": ["enigmailPrivacyOverlay.xul"]
 
   // Overlay for Customize Toolbar (Windows, Linux)
-  "chrome://messenger/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB 60+
-  "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB <= 52.x
+  // "chrome://messenger/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB 60+
+  // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB <= 52.x
 
   // Overlay for Account Manager
-  "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"]
+  // "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"]
 };
 
 const {

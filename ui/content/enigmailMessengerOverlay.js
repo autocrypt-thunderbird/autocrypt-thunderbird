@@ -106,23 +106,23 @@ Enigmail.msg = {
       }
     }
 
-    let t = document.getElementById("tabmail");
+    // let t = document.getElementById("tabmail");
 
-    if (t) {
+    // if (t) {
       // TB >= 63
-      t.addEventListener("pageshow", function(e) {
-        if (e.type === "pageshow" && e.target.URL === "about:preferences") {
-          let Overlays = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {}).Overlays;
-          Overlays.loadOverlays("Enigmail", e.target.defaultView, ["chrome://autocrypt/content/ui/enigmailPrivacyOverlay.xul"]);
-        }
-      }, false);
-    }
+    // t.addEventListener("pageshow", function(e) {
+    // if (e.type === "pageshow" && e.target.URL === "about:preferences") {
+    // let Overlays = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {}).Overlays;
+    // Overlays.loadOverlays("Enigmail", e.target.defaultView, ["chrome://autocrypt/content/ui/enigmailPrivacyOverlay.xul"]);
+    // }
+    // }, false);
+    // }
 
-    let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
-    customizeToolbar.addEventListener("pageshow", function(event) {
-      let Overlays = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {}).Overlays;
-      Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://autocrypt/content/ui/enigmailCustToolOverlay.xul"]);
-    }, false);
+    // let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
+    // customizeToolbar.addEventListener("pageshow", function(event) {
+    // let Overlays = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {}).Overlays;
+    // Overlays.loadOverlays("Enigmail", event.target.defaultView, ["chrome://autocrypt/content/ui/enigmailCustToolOverlay.xul"]);
+    // }, false);
 
     Enigmail.msg.messagePane = document.getElementById("messagepane");
 

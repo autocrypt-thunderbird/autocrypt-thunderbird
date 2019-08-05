@@ -25,7 +25,6 @@ UIFILES = \
 	dialogKeyPassword.xul \
 	dialogKeyPassword.js \
 	enigmailCommon.js \
-	enigmailAbCardViewOverlay.xul \
 	enigmailAbContactsPanel.xul \
 	enigmailAbOverlay.js \
 	aboutEnigmail.html \
@@ -41,7 +40,6 @@ UIFILES = \
 	enigmailConsole.xul \
 	enigmailConsole.js \
 	enigmailConsole.htm \
-	enigmailCustToolOverlay.xul \
 	enigmailEncryptionDlg.xul \
 	enigmailEncryptionDlg.js \
 	enigmailGenericDisplay.js \
@@ -81,8 +79,6 @@ UIFILES = \
 	enigmailMessengerOverlay.js \
 	enigmailMsgHdrViewOverlay.xul \
 	enigmailMsgHdrViewOverlay.js \
-	enigmailFilterEditorOverlay.xul \
-	enigmailFilterEditorOverlay.js \
 	enigmailWrapSelection.xul \
 	enigmailWrapSelection.js \
 	enigmailViewFile.js \
