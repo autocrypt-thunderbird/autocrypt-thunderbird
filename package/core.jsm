@@ -94,6 +94,13 @@ var EnigmailCore = {
         // warm up cache
         await getEnigmailKeyring().getAllSecretKeys();
 
+        /*
+          let win = getEnigmailWindows().getBestParentWin();
+          getEnigmailLog().DEBUG("core.jsm: getService: show settings");
+          getEnigmailWindows().openAutocryptSettings(win);
+        */
+
+        getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: ok\n");
       } catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
       }
