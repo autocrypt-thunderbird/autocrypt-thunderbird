@@ -53,7 +53,6 @@ var EnigmailSqliteDb = {
       await checkAutocryptTable(conn);
       await checkWkdTable(conn);
       await createTables(conn);
-      await fixupTables(conn);
       EnigmailLog.DEBUG(`sqliteDb.jsm: checkDatabaseStructure - success\n`);
     }
     catch (ex) {
@@ -473,15 +472,3 @@ async function createTables(connection) {
     ");"
   );
 }
-
-async function fixupTables(connection) {
-  EnigmailLog.DEBUG("sqliteDB.jsm: fixupTables()\n");
-
-  await connection.execute("insert or ignore into autocrypt_peers " +
-    "(email, fpr_primary, last_seen_message) " +
-    "select email, fpr_primary, :last_seen_message " +
-    "from secret_keydata;", {
-      last_seen_message: new Date().toISOString()
-    });
-}
-
