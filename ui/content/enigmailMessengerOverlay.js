@@ -915,8 +915,7 @@ Enigmail.msg = {
   },
 
   getBodyElement: function() {
-    let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-    let bodyElement = msgFrame.document.getElementsByTagName("body")[0];
+    let bodyElement = this.messagePane.getElementsByTagName("body")[0];
     return bodyElement;
   },
 
