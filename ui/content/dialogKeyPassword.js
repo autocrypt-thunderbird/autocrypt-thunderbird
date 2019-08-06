@@ -44,10 +44,9 @@ function dialogAccept(event) {
 
   let password = view.textboxPassword.value;
   let attempt = window.arguments[0].attempt;
-  // couldn't figure out how to do this with async functions.
-  // feel free to waste some time on it, tell when you get it working :)
+  // couldn't figure out how to do this async ¯\_(ツ)_/¯
   setTimeout(async function() {
-    if (await attempt()) {
+    if (await attempt(password)) {
       window.close();
     } else {
       showProgress(false);
