@@ -58,7 +58,6 @@ echo "Creating ${xpiFile} file"
 
 zip -9 --must-match\
     ../${xpiFile} \
-    chrome/content/preferences/defaultPrefs.js \
     chrome/content/modules/*.jsm \
     chrome/content/modules/cryptoAPI/*.js \
     chrome/content/modules/stdlib/*.jsm \

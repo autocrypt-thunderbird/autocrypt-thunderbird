@@ -9,11 +9,8 @@ include $(DEPTH)/config/autoconf.mk
 
 DIRS = cryptoAPI
 
-PREFFILES = prefs/defaultPrefs.js
-
 MODFILES = \
            addrbook.jsm \
-           amPrefsService.jsm \
            app.jsm \
            armor.jsm \
            attachment.jsm \
@@ -100,8 +97,7 @@ ENIG_BUILD_DATE=$(shell TZ=UTC date $(DATE_FMT) -d "@$(SOURCE_DATE_EPOCH)" 2>/de
 
 all: dirs deploy
 
-deploy: $(PREFFILES) $(MODFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/preferences $(PREFFILES)
+deploy: $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules $(MODFILES)
 	echo '"use strict";' > $(DIST)/chrome/content/modules/buildDate.jsm
 	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> $(DIST)/chrome/content/modules/buildDate.jsm
@@ -109,7 +105,6 @@ deploy: $(PREFFILES) $(MODFILES)
 
 
 clean:
-	$(DEPTH)/util/install -u $(DIST)/chrome/content/preferences $(PREFFILES)
 	$(DEPTH)/util/install -u $(DIST)/chrome/content/modules $(MODFILES)
 	$(DEPTH)/util/install -u $(DIST)/bootstrap.js
 

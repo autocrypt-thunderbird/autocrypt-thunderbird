@@ -23,14 +23,12 @@ function startup(data, reason) {
   try {
     const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-    const EnigmailAmPrefsService = ChromeUtils.import("chrome://autocrypt/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
     const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
 
     EnigmailApp.initAddon(data);
-    EnigmailAmPrefsService.startup(reason);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
 
@@ -48,7 +46,6 @@ function shutdown(data, reason) {
     if (reason === APP_SHUTDOWN) return;
 
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-    const EnigmailAmPrefsService = ChromeUtils.import("chrome://autocrypt/content/modules/amPrefsService.jsm").EnigmailAmPrefsService;
     const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
     const EnigmailOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
     const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
@@ -56,7 +53,6 @@ function shutdown(data, reason) {
 
     shutdownModule(EnigmailWindows, reason);
     shutdownModule(EnigmailOverlays, reason);
-    shutdownModule(EnigmailAmPrefsService, reason);
     shutdownModule(EnigmailCore, reason);
     shutdownModule(EnigmailPgpmimeHander, reason);
     unloadModules();
