@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+-->
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://autocrypt/skin/enigmail.css" type="text/css"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % enigMailDTD SYSTEM "chrome://autocrypt/locale/enigmail.dtd" >
+%enigMailDTD;
+]>
+
+<dialog id="dialogBackupCode"
+        title="&enigmail.acSetupPasswd.dlgTitle;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        buttons="accept,cancel"
+        onload="onLoad();">
+
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailCommon.js"/>
+  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/dialogBackupCode.js"/>
+
+  <broadcasterset>
+    <broadcaster id="bc-input"
+          maxlength="4"
+          multiline="false"
+          size="4"
+          oninput="onNumericInput(this)"/>
+  </broadcasterset>
+
+  <vbox>
+    <description>To import this file, please input its backup code:</description>
+
+    <vbox id="dlg9x4" align="center">
+      <hbox align="center">
+        <textbox id="l1" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l2" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l3" observes="bc-input"/>
+      </hbox>
+      <hbox align="center">
+        <textbox id="l4" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l5" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l6" observes="bc-input"/>
+      </hbox>
+      <hbox align="center">
+        <textbox id="l7" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l8" observes="bc-input"/>
+        <label value="-"/>
+        <textbox id="l9" observes="bc-input"/>
+      </hbox>
+    </vbox>
+
+    <vbox id="dlgGeneric" align="center" collapsed="true">
+      <hbox align="center">
+        <label value="&enigmail.acSetupPasswd.password;"/>
+        <textbox id="genericPasswd" size="45"/>
+      </hbox>
+    </vbox>
+  </vbox>
+
+</dialog>

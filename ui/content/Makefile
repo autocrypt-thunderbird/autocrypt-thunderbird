@@ -24,6 +24,8 @@ UIFILES = \
 	dialogDeleteKey.js \
 	dialogKeyPassword.xul \
 	dialogKeyPassword.js \
+	dialogBackupCode.xul \
+	dialogBackupCode.js \
 	enigmailCommon.js \
 	enigmailAbContactsPanel.xul \
 	enigmailAbOverlay.js \

@@ -453,6 +453,29 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
   // TODO this was intended to "warm up" the js crypto routines. doesn't
   // actually help, so we don't do it for now.
+  async decryptSymmetric(ciphertext, password) {
+    EnigmailLog.DEBUG("openpgp-js.js: decryptSymmetric()\n");
+    const start_time = new Date();
+
+    const openpgp = getOpenPGP().openpgp;
+    try {
+      const decrypt_options = {
+        message: await openpgp.message.readArmored(ciphertext),
+        passwords: password
+      };
+
+      let result = await openpgp.decrypt(decrypt_options);
+
+      EnigmailLog.DEBUG(`openpgp-js.js: decryptSymmetric(): ok\n`);
+      return result.data;
+    } catch (ex) {
+      EnigmailLog.DEBUG(`openpgp-js.js: decryptSymmetric(): decrypt error! ex: ${ex}\n`);
+      throw ex;
+    }
+  }
+
+  // TODO this was intended to "warm up" the js crypto routines. doesn't
+  // actually help, so we don't do it for now.
   async initialize() {
     EnigmailLog.DEBUG("openpgp-js.js: initialize()\n");
     const start_time = new Date();

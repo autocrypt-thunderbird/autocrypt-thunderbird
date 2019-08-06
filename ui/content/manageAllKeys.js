@@ -242,7 +242,7 @@ async function importArmoredBlock(armoredBlock, blocktype) {
 
   switch (blocktype) {
     case 'MESSAGE': {
-      // TODO
+      await decryptEncryptedBlock(armoredBlock);
       return true;
     }
     case 'PRIVATE KEY BLOCK': {
@@ -253,6 +253,37 @@ async function importArmoredBlock(armoredBlock, blocktype) {
     }
   }
   return false;
+}
+
+async function decryptEncryptedBlock(armoredBlock) {
+  let armorHdr = EnigmailArmor.getArmorHeaders(armoredBlock);
+  let passphraseFormat = "generic";
+  if ("passphrase-format" in armorHdr) {
+    passphraseFormat = armorHdr["passphrase-format"];
+  }
+  let passphraseHint = "";
+  if ("passphrase-begin" in armorHdr) {
+    passphraseHint = armorHdr["passphrase-begin"];
+  }
+
+  const cApi = EnigmailCryptoAPI();
+  const attempt = async password => {
+    try {
+      await cApi.decryptSymmetric(armoredBlock, password);
+      return true;
+    } catch (ex) {
+      EnigmailLog.DEBUG(`decryptEncryptedBlock(): decryption failure: ${ex}\n`);
+      return false;
+    }
+  };
+  const args = {
+    format: passphraseFormat,
+    hint: passphraseHint,
+    attempt: attempt
+  };
+
+  window.openDialog("chrome://autocrypt/content/ui/dialogBackupCode.xul", "",
+    "chrome,dialog,modal,centerscreen", args);
 }
 
 async function importTransferableSecretKey(armoredBlock) {
