@@ -61,8 +61,6 @@ UIFILES = \
 	enigmailSingleRcptSettings.xul \
 	enigmailSignKeyDlg.js \
 	enigmailSignKeyDlg.xul \
-	pref-enigmail.xul \
-	pref-enigmail.js \
 	am-enigprefs.xul \
 	am-enigprefs.js \
 	editSingleAccount.xul \
@@ -87,10 +85,6 @@ UIFILES = \
 	enigmailViewFile.xul \
 	enigRetrieveProgress.xul \
 	enigRetrieveProgress.js \
-	exportSettingsWizard.js \
-	exportSettingsWizard.xul \
-	importSettings.js \
-	importSettings.xul \
 	manageAllKeys.js \
 	manageAllKeys.xul \
 	upgradeInfo.html \

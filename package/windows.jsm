@@ -310,30 +310,6 @@ var EnigmailWindows = {
   },
 
   /**
-   * Display the preferences dialog
-   *
-   * @win       - |object| holding the parent window for the dialog
-   * @showBasic - |boolean| true if only the 1st page of the preferences window
-   *              should be displayed / false otherwise
-   * @selectTab - |string| ID of the tab element (in XUL) to display when opening
-   *
-   * no return value
-   */
-  openPrefWindow: function(win, showBasic, selectTab) {
-    EnigmailLog.DEBUG("windows.js: openPrefWindow\n");
-
-    EnigmailCore.getService(win, true); // true: starting preferences dialog
-
-    let url = "chrome://autocrypt/content/ui/pref-enigmail.xul";
-    win.openDialog(url,
-      "_blank", "chrome,resizable=yes", {
-        'showBasic': showBasic,
-        'clientType': 'thunderbird',
-        'selectTab': selectTab
-      });
-  },
-
-  /**
    * Display the dialog for changing the expiry date of one or several keys
    *
    * @win        - |object| holding the parent window for the dialog

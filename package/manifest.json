@@ -8,7 +8,7 @@
   "legacy": {
     "type": "bootstrap",
     "options": {
-      "page": "chrome://autocrypt/content/ui/pref-enigmail.xul",
+      "page": "chrome://autocrypt/content/ui/autocryptSettings.xul",
       "open_in_tab": false
     }
   },
