@@ -485,10 +485,13 @@ MimeVerify.prototype = {
           return verify_status;
         } catch (e) {
           EnigmailLog.DEBUG(`mimeVerify.jsm: verify error: ${e}\n`);
-          let verify_status = MessageCryptoStatus.createVerifyErrorStatus(sender_address);
-          return verify_status;
+          return null;
         }
       })());
+
+      if (!verify_status) {
+        verify_status = MessageCryptoStatus.createVerifyErrorStatus(sender_address);
+      }
 
       this.displayStatus(verify_status, protected_headers);
     }
