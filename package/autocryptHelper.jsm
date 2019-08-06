@@ -12,6 +12,7 @@ var EXPORTED_SYMBOLS = ["AutocryptHelper"];
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
+const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 
 var AutocryptHelper = {
   processAutocryptForMessage: async function(uri) {
@@ -34,8 +35,14 @@ var AutocryptHelper = {
     let author = msgDbHdr.author;
     let dateInSeconds = msgDbHdr.dateInSeconds;
     return await new Promise(function(resolve, reject) {
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): k\n`);
+      let finished = false;
       try {
+        EnigmailTimer.setTimeout(function() {
+          if (!finished) {
+            EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): timeout\n`);
+            reject(new Error("couldn't receive headers"));
+          }
+        }, 100);
         EnigmailStdlib.msgHdrGetHeaders(msgDbHdr, function(hdrs) {
           try {
             if (hdrs.has('autocrypt')) {
@@ -47,13 +54,16 @@ var AutocryptHelper = {
               });
             }
             EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): no header\n`);
+            finished = true;
             resolve({});
           } catch (ex) {
             EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): error (inner) ${ex}\n`);
+            finished = true;
             reject(ex);
           }
         });
       } catch (ex) {
+        finished = true;
         EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): error (outer) ${ex}\n`);
         reject(ex);
       }

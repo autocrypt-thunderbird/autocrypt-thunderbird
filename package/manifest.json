@@ -12,6 +12,11 @@
       "open_in_tab": false
     }
   },
+  "icons": {
+    "32": "chrome/content/ui/logo.svg",
+    "48": "chrome/content/ui/logo.svg",
+    "64": "chrome/content/ui/logo.svg"
+  },
   "applications": {
     "gecko": {
       "id": "{c0b84c00-227f-4762-b4fc-354bcfe0f865}", // Autocrypt GUID

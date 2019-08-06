@@ -7,6 +7,7 @@ DEPTH  = ../..
 include $(DEPTH)/config/autoconf.mk
 
 UIFILES = \
+	images/logo.svg \
 	images/check0.png \
 	images/check1.png \
 	images/check2.png
