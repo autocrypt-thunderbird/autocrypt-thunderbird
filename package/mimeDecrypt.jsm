@@ -19,7 +19,6 @@ const EnigmailVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mi
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
 var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
 const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
@@ -42,8 +41,6 @@ const ENCODING_BASE64 = 1;
 const ENCODING_QP = 2;
 
 var gDebugLogLevel = 3;
-
-var gNumProc = 0;
 
 var EnigmailMimeDecrypt = {
   /**
@@ -150,12 +147,6 @@ MimeDecryptHandler.prototype = {
     if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
       return;
     EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest\n"); // always log this one
-
-    ++gNumProc;
-    if (gNumProc > EnigmailPrefs.getPref("maxNumProcesses")) {
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: number of parallel requests above threshold - ignoring requst\n");
-      return;
-    }
 
     this.initOk = true;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
@@ -360,7 +351,6 @@ MimeDecryptHandler.prototype = {
 
   onStopRequest: function(request, status, dummy) {
     LOCAL_DEBUG("mimeDecrypt.jsm: onStopRequest\n");
-    --gNumProc;
     if (!this.initOk) return;
 
     if (this.dataIsBase64) {

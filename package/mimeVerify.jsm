@@ -19,7 +19,6 @@ const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.j
 const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
 const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
 const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
 const EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
@@ -74,16 +73,6 @@ var EnigmailVerify = {
 
     let v = new MimeVerify(protocol);
     return v;
-  },
-
-  setManualUri: function(msgUriSpec) {
-    LOCAL_DEBUG("mimeVerify.jsm: setManualUri: " + msgUriSpec + "\n");
-    this.manualMsgUri = msgUriSpec;
-  },
-
-  getManualUri: function() {
-    EnigmailLog.DEBUG("mimeVerify.jsm: getManualUri\n");
-    return this.manualMsgUri;
   },
 
   /***
@@ -421,30 +410,6 @@ MimeVerify.prototype = {
 
       try {
         var messenger = Cc["@mozilla.org/messenger;1"].getService(Ci.nsIMessenger);
-
-        if (!EnigmailPrefs.getPref("autoDecrypt")) {
-          // "decrypt manually" mode
-          let manUrl = {};
-
-          if (EnigmailVerify.getManualUri()) {
-            let msgSvc = messenger.messageServiceFromURI(EnigmailVerify.getManualUri());
-
-            msgSvc.GetUrlForUri(EnigmailVerify.getManualUri(), manUrl, null);
-          } else {
-            manUrl.value = {
-              spec: "enigmail://invalid/message"
-            };
-          }
-
-          // print a message if not message explicitly decrypted
-          let currUrlSpec = this.uri.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
-          let manUrlSpec = manUrl.value.spec.replace(/(\?.*)(number=[0-9]*)(&.*)?$/, "?$2");
-
-
-          if ((!this.backgroundJob) && currUrlSpec != manUrlSpec) {
-            return; // this.handleManualDecrypt();
-          }
-        }
 
         if (this.msgUriSpec) {
           let msgSvc = messenger.messageServiceFromURI(this.msgUriSpec);

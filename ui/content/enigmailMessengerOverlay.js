@@ -460,44 +460,35 @@ Enigmail.msg = {
   },
 
   // analyse message header and decrypt/verify message
-  messageDecrypt: function(event, isAuto) {
+  messageDecrypt: function(event) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: " + event + "\n");
 
     event = event ? true : false;
-    var cbObj = {
-      event: event,
-      isAuto: isAuto
-    };
 
     this.mimeParts = null;
-
-    if (!isAuto) {
-      EnigmailVerify.setManualUri(this.getCurrentMsgUriSpec());
-    }
 
     let contentType = "text/plain";
     if ('content-type' in currentHeaderData) {
       contentType = currentHeaderData['content-type'].headerValue;
     }
 
-
     // don't parse message if we know it's a PGP/MIME message
     if (contentType.search(/^multipart\/encrypted(;|$)/i) === 0 && contentType.search(/application\/pgp-encrypted/i) > 0) {
-      this.messageDecryptCb(event, isAuto, null);
+      this.messageDecryptCb(event, null);
       return;
     } else if (contentType.search(/^multipart\/signed(;|$)/i) === 0 && contentType.search(/application\/pgp-signature/i) > 0) {
-      this.messageDecryptCb(event, isAuto, null);
+      this.messageDecryptCb(event, null);
       return;
     }
 
     try {
       EnigmailMime.getMimeTreeFromUrl(this.getCurrentMsgUrl().spec, false,
         function _cb(mimeMsg) {
-          Enigmail.msg.messageDecryptCb(event, isAuto, mimeMsg);
+          Enigmail.msg.messageDecryptCb(event, mimeMsg);
         });
     } catch (ex) {
       EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: exception: " + ex.toString() + "\n");
-      this.messageDecryptCb(event, isAuto, null);
+      this.messageDecryptCb(event, null);
     }
   },
 
@@ -534,7 +525,7 @@ Enigmail.msg = {
     }
   },
 
-  messageDecryptCb: function(event, isAuto, mimeMsg) {
+  messageDecryptCb: function(event, mimeMsg) {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecryptCb:\n");
 
     this.buggyExchangeEmailContent = null; // reinit HACK for MS-EXCHANGE-Server Problem
@@ -715,28 +706,11 @@ Enigmail.msg = {
           return;
         }
 
-        if (isAuto && (!EnigmailPrefs.getPref("autoDecrypt"))) {
-
-          if (EnigmailVerify.getManualUri() != this.getCurrentMsgUriSpec()) {
-            // decryption set to manual
-            Enigmail.hdrView.updateHdrIcons(0, // statusFlags
-              "", "", // keyId, userId
-              "", // sigDetails
-              EnigmailLocale.getString("possiblyPgpMime"), // infoMsg
-              null, // blockSeparation
-              "", // encToDetails
-              null); // xtraStatus
-          }
-        } else if (!isAuto) {
-          Enigmail.msg.messageReload(false);
-        }
         return;
       }
 
       // inline-PGP messages
-      if (!isAuto || EnigmailPrefs.getPref("autoDecrypt")) {
-        this.messageParse(event, false, contentEncoding, msgUriSpec);
-      }
+      this.messageParse(event, false, contentEncoding, msgUriSpec);
     } catch (ex) {
       EnigmailLog.writeException("enigmailMessengerOverlay.js: messageDecryptCb", ex);
     }
