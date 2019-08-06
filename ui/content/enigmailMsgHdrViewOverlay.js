@@ -263,23 +263,24 @@ Enigmail.hdrView = {
       if (message_status.isSignOk()) {
         statusLine = `Message is signed`;
         style = "ClearsignOk";
-      } else if (!message_status.isSignKeyKnown()) {
-        statusLine = "Message may be signed: Unknown sender";
-        style = "ClearsignUnknown";
+      } else {
+        statusLine = "Message is not encrypted";
       }
     }
 
     if (statusLine) {
       this.setStatusText(statusLine + " ");
-      enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabel" + style);
-      this.displayExtendedStatus(true);
+      enigmailBox.setAttribute("class", style ? `expandedEnigmailBox enigmailHeaderBoxLabel${style}` : 'expandedEnigmailBox');
+      this.displayExtendedStatus(false);
 
+      /*
       if (message_status.wasSigned() && !message_status.isSignKeyKnown()) {
         document.getElementById("enigmail_importKey").removeAttribute("hidden");
       } else {
         document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
       }
-      // document.getElementById("enigmail_confirmKey").setAttribute("hidden", "true");
+      document.getElementById("enigmail_confirmKey").setAttribute("hidden", "true");
+      */
 
     } else {
       this.setStatusText("");
