@@ -283,6 +283,14 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async parseOpenPgpKey(key_data) {
+    let keys = await this.parseOpenPgpKeys(key_data);
+    if (keys && keys.length) {
+      return keys[0];
+    }
+    return null;
+  }
+
+  async parseOpenPgpKeys(key_data) {
     EnigmailLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
     try {
       const openpgp = getOpenPGP().openpgp;
@@ -298,17 +306,16 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       }
       // EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
 
-      let key = result.keys[0];
-      if (!key) {
+      if (!result || !result.keys || !result.keys.length) {
         EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
-        return null;
+        return [];
       }
 
       EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok\n`);
-      return key;
+      return result.keys;
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
-      return null;
+      return [];
     }
   }
 

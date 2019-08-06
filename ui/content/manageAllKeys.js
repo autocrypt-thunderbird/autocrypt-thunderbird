@@ -14,6 +14,7 @@
 "use strict";
 
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
 const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
@@ -45,6 +46,10 @@ async function onLoad() {
   views.buttonBackup.setAttribute("disabled", "true");
   views.buttonForget.setAttribute("disabled", "true");
 
+  await refreshKeyList();
+}
+
+async function refreshKeyList() {
   let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
   await buildTreeView(secret_keys);
 }
@@ -200,53 +205,97 @@ async function onClickImport() {
   if (!outFile) return;
 
   let content = EnigmailFiles.readFile(outFile);
-  let result;
-  try {
-    result = EnigmailAutocryptSetup.determineImportFormat(content);
-  } catch (ex) {
-    EnigmailLog.writeException(ex);
-    EnigAlert("File format could not be recognized");
-    return;
+  let armored_blocks = EnigmailArmor.locateArmoredBlocks(content);
+  let importOk = false;
+  for (let armored_block of armored_blocks) {
+    let data = content.substring(armored_block.begin, armored_block.end);
+    if (await importArmoredBlock(data, armored_block.blocktype)) {
+      importOk = true;
+    }
   }
 
-  EnigmailLog.DEBUG(`onClickImport(): input type: ${result.format}\n`);
-  switch (result.format) {
-    case 'encrypted':
-    case 'autocrypt-setup': {
-      break;
-    }
-    case 'openpgp-secret': {
-      const cApi = EnigmailCryptoAPI();
-      try {
-        let openpgp_secret_key = await cApi.parseOpenPgpKey(result.data);
-        if (!openpgp_secret_key.isDecrypted()) {
-          EnigmailLog.DEBUG(`onClickImport(): key is encrypted - asking for password\n`);
-          let attempt = async password => {
-            try {
-              await openpgp_secret_key.decrypt(password);
-              return true;
-            } catch (ex) {
-              EnigmailLog.DEBUG(`onClickImport(): decryption failure: ${ex}\n`);
-              return false;
-            }
-          };
-          let args = { attempt: attempt };
+  refreshKeyList();
 
-          window.openDialog("chrome://autocrypt/content/ui/dialogKeyPassword.xul", "",
-            "chrome,dialog,modal,centerscreen", args);
+  if (!importOk) {
+    EnigAlert("File format could not be recognized!");
+  }
+}
 
-          if (!openpgp_secret_key.isDecrypted()) {
-            return;
-          }
-        }
-        await EnigmailKeyRing.insertSecretKey(openpgp_secret_key);
-      } catch (ex) {
-        EnigmailLog.DEBUG(`onClickImport(): ${ex}\n`);
-        EnigAlert("Error parsing key format!");
-        return;
+  /*
+    if (msgType === "MESSAGE") {
+      EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData: got backup key\n");
+      let armorHdr = EnigmailArmor.getArmorHeaders(data);
+
+      let passphraseFormat = "generic";
+      if ("passphrase-format" in armorHdr) {
+        passphraseFormat = armorHdr["passphrase-format"];
       }
-      break;
+      let passphraseHint = "";
+      if ("passphrase-begin" in armorHdr) {
+        passphraseHint = armorHdr["passphrase-begin"];
+      }
     }
+    */
+
+
+async function importArmoredBlock(armoredBlock, blocktype) {
+  EnigmailLog.DEBUG(`importArmoredBlock(): input type: ${blocktype}\n`);
+
+  switch (blocktype) {
+    case 'MESSAGE': {
+      // TODO
+      return true;
+    }
+    case 'PRIVATE KEY BLOCK': {
+      return await importTransferableSecretKey(armoredBlock);
+    }
+    default: {
+      EnigmailLog.DEBUG(`importArmoredBlock(): ignoring block of type ${blocktype}\n`);
+    }
+  }
+  return false;
+}
+
+async function importTransferableSecretKey(armoredBlock) {
+  EnigmailLog.DEBUG(`importTransferableSecretKey()\n`);
+  const cApi = EnigmailCryptoAPI();
+  try {
+    let openpgp_secret_keys = await cApi.parseOpenPgpKeys(armoredBlock);
+    for (let openpgp_secret_key of openpgp_secret_keys) {
+      await importOpenPgpSecretKey(openpgp_secret_key);
+    }
+    return true;
+  } catch (ex) {
+    EnigmailLog.DEBUG(`importTransferableSecretKey(): ${ex}\n`);
+    EnigAlert("Error parsing key format!");
+    return false;
+  }
+}
+
+async function importOpenPgpSecretKey(openpgp_secret_key) {
+  if (!openpgp_secret_key.isDecrypted()) {
+    EnigmailLog.DEBUG(`onClickImport(): key is encrypted - asking for password\n`);
+    let attempt = async password => {
+      try {
+        await openpgp_secret_key.decrypt(password);
+        return true;
+      } catch (ex) {
+        EnigmailLog.DEBUG(`onClickImport(): decryption failure: ${ex}\n`);
+        return false;
+      }
+    };
+    let uids = openpgp_secret_key.getUserIds();
+    let args = {
+      uid: uids && uids.length ? uids[0] : null,
+      attempt: attempt
+    };
+
+    window.openDialog("chrome://autocrypt/content/ui/dialogKeyPassword.xul", "",
+      "chrome,dialog,modal,centerscreen", args);
+  }
+
+  if (openpgp_secret_key.isDecrypted()) {
+    await EnigmailKeyRing.insertSecretKey(openpgp_secret_key);
   }
 }
 
