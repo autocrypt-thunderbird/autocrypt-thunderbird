@@ -164,6 +164,13 @@ ComposeCryptoState.prototype.isEncryptEnabled = function() {
   return this.getDisplayStatus().buttonPressed;
 };
 
+ComposeCryptoState.prototype.isEncryptError = function() {
+  // it is *vital* that this is consistent, so we derive this directly from the
+  // display status.
+  return this.getDisplayStatus() == ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+};
+
+
 ComposeCryptoState.prototype.isSignOnly = function() {
   return this.currentCryptoMode == CRYPTO_MODE.SIGN_ONLY;
 };

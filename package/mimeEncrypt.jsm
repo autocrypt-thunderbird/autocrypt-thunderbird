@@ -89,7 +89,6 @@ PgpMimeEncrypt.prototype = {
   encapsulate: null,
   encHeader: null,
   cryptoBoundary: null,
-  win: null,
   pipe: null,
   proc: null,
   statusStr: "",
@@ -137,9 +136,10 @@ PgpMimeEncrypt.prototype = {
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function(msgIdentity, msgCompFields) {
     let result = this.composeCryptoState && this.composeCryptoState.isEncryptEnabled();
-    // (EnigmailConstants.SEND_SIGNED |
-    // EnigmailConstants.SEND_ENCRYPTED |
-    // EnigmailConstants.SEND_VERBATIM)) !== 0;
+    if (this.composeCryptoState.isEncryptError()) {
+      EnigmailLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: error - can't encrypt!\n`);
+      throw Cr.NS_ERROR_FAILURE;
+    }
     EnigmailLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: ${result}\n`);
     return result;
   },
@@ -156,9 +156,6 @@ PgpMimeEncrypt.prototype = {
 
       this.msgCompFields = msgCompFields;
       this.outStringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-
-      var windowManager = Cc[APPSHELL_MEDIATOR_CONTRACTID].getService(Ci.nsIWindowMediator);
-      this.win = windowManager.getMostRecentWindow(null);
 
       if (this.composeCryptoState.isEnableSendVerbatim) {
         this.recipientList = recipientList;
@@ -367,7 +364,7 @@ PgpMimeEncrypt.prototype = {
       this.encryptedData = cApi.sync(this.signAndEncrypt(this.fromAddr, this.toAddrs, plaintext));
       if (this.encryptedData == "" || !this.encryptedData) throw Cr.NS_ERROR_FAILURE;
 
-      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation " + this.encryptedData + "\n");
+      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
       this.encryptedData = this.encryptedData.replace(/\r/g, "").replace(/\n/g, "\r\n"); // force CRLF
       this.writeOut(this.encryptedData);
@@ -387,22 +384,25 @@ PgpMimeEncrypt.prototype = {
   },
 
   selectPrivKey: async function(fromAddr) {
-    return (await EnigmailKeyRing.getAllSecretKeys())[0];
+    let autocrypt_settings = await EnigmailAutocrypt.getAutocryptSettingsForIdentity(fromAddr);
+    if (!autocrypt_settings) {
+      throw Cr.NS_ERROR_FAILURE;
+    }
+    let openpgp_keys_map = await EnigmailKeyRing.getAllSecretKeysMap();
+    let openpgp_secret_key = openpgp_keys_map[autocrypt_settings.fpr_primary];
+    if (!openpgp_secret_key) {
+      throw Cr.NS_ERROR_FAILURE;
+    }
+    return openpgp_secret_key;
   },
 
   selectPubKeys: async function(toAddrList, bccAddrList) {
-    EnigmailLog.DEBUG("=====> keySelection()\n");
-    EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection()\n");
-
-    // NOTE: If we only have bcc addresses, we currently do NOT process rules and select keys at all
-    //       This is GOOD because sending keys for bcc addresses makes bcc addresses visible
-    //       (thus compromising the concept of bcc)
-    //       THUS, we disable encryption even though all bcc receivers might want to have it encrypted.
+    EnigmailLog.DEBUG("mimeEncrypt.js: selectPubKeys()\n");
     if (toAddrList.length === 0) {
-      EnigmailLog.DEBUG("mimeEncrypt.js: Enigmail.msg.keySelection(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
+      EnigmailLog.DEBUG("mimeEncrypt.js: selectPubKeys(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
 
       // TODO deal with bcc only
-      return [];
+      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
     }
 
     let openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
@@ -413,7 +413,11 @@ PgpMimeEncrypt.prototype = {
       .map(peer => openpgp_keys_map[peer.fpr_primary])
       .filter(x => x);
 
-    EnigmailLog.DEBUG(`mimeEncrypt.js: Enigmail.msg.keySelection(): returning ${selected_openpgp_keys.length} keys\n`);
+    if (!selected_openpgp_keys.length) {
+      throw Cr.NS_ERROR_FAILURE;
+    }
+
+    EnigmailLog.DEBUG(`mimeEncrypt.js: selectPubKeys(): returning ${selected_openpgp_keys.length} keys\n`);
     return selected_openpgp_keys;
   },
 
