@@ -197,10 +197,9 @@ async function onClickBackup() {
 
 async function onClickImport() {
   let outFile = EnigFilePicker(
-    'Select file to import', "", false, "", '', [
-      'Autocrypt key backup (.htm)', "*.htm",
-      'OpenPGP Key (.asc)', "*.asc",
-      'OpenPGP Secret Key (.sec)', "*.sec"
+    'Select file to import', null, false, null, null, [
+      'Autocrypt key backup', "*.htm; *.asc; *.sec; *.pgp",
+      'OpenPGP Key (.sec, .asc, .pgp)', "*.sec; *.asc; *.pgp"
     ]);
   if (!outFile) return;
 
