@@ -318,6 +318,24 @@ async function onClickForget() {
 
   if (result.confirmed) {
     EnigmailLog.DEBUG(`onClickForget(): ok\n`);
+
+    views.labelKeyStatus.value = 'Removing…';
+    views.labelKeyFpr.value = '';
+    views.labelKeyCreated.value = '';
+
+    views.labelKeyCreatedFor.value = '';
+    views.labelKeyUsedFor.value = '';
+    views.labelKeyUsedForAll.setAttribute("hidden", "true");
+    views.labelKeyCreatedForAll.setAttribute("hidden", "true");
+
+    views.buttonForget.setAttribute("disabled", true);
+    views.buttonBackup.setAttribute("disabled", true);
+
+    setTimeout(async function() {
+      await EnigmailKeyRing.forgetSecretKey(identifier);
+      views.labelKeyStatus.value = 'Key removed!';
+      await refreshKeyList();
+    }, 100);
   }
 }
 

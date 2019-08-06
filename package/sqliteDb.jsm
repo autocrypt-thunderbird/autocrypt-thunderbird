@@ -290,12 +290,32 @@ var EnigmailSqliteDb = {
     }
   },
 
-  replacePublicKey: async function(fpr_primary, key_data, key_fprs, key_ids) {
-    EnigmailLog.DEBUG(`sqliteDb.jsm: replacePublicKey(): ${fpr_primary}\n`);
-
+  removeSecretKeyData: async function(fpr_primary) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: removeSecretKeyData(${fpr_primary})\n`);
     let conn;
     try {
       conn = await this.getDbConnection();
+      await conn.execute(
+        "delete from secret_keydata where fpr_primary = :fpr_primary;",
+        { fpr_primary: fpr_primary }
+      );
+      let affected_rows = await this.getAffectedRows();
+      if (affected_rows) {
+        EnigmailLog.DEBUG(`sqliteDb.jsm: removeSecretKeyData: ok\n`);
+      } else {
+        EnigmailLog.DEBUG(`sqliteDb.jsm: removeSecretKeyData: no such key\n`);
+      }
+    }
+    catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: removeSecretKeyData: ERROR: ${ex}\n`);
+    }
+  },
+
+  replacePublicKey: async function(fpr_primary, key_data, key_fprs, key_ids) {
+    EnigmailLog.DEBUG(`sqliteDb.jsm: replacePublicKey(): ${fpr_primary}\n`);
+
+    try {
+      let conn = await this.getDbConnection();
       await conn.execute(
         "replace into public_keydata (fpr_primary, key_data) values (:fpr_primary, :key_data);",
         { fpr_primary: fpr_primary, key_data: key_data }
@@ -317,6 +337,18 @@ var EnigmailSqliteDb = {
     }
     catch (ex) {
       EnigmailLog.ERROR(`sqliteDb.jsm: replacePublicKey: ERROR: ${ex}\n`);
+    }
+  },
+
+  getAffectedRows: async function() {
+    try {
+      let conn = await this.getDbConnection();
+      let result = await conn.execute("SELECT changes() AS affected_rows");
+      let row = result[0];
+      return row.getResultByName("affected_rows");
+    } catch (ex) {
+      EnigmailLog.ERROR(`sqliteDb.jsm: getAffectedRows(): ERROR: ${ex}\n`);
+      return 0;
     }
   }
 };

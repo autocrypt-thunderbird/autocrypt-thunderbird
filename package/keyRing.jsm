@@ -195,5 +195,13 @@ var EnigmailKeyRing = {
       gCachedSecretKeyMap[fpr_primary] = openpgp_secret_key;
       gCachedSecretKeyList.push(openpgp_secret_key);
     }
+  },
+
+  forgetSecretKey: async function(fpr_primary) {
+    await sqlite.removeSecretKeyData(fpr_primary);
+    if (gCachedSecretKeyMap && fpr_primary in gCachedSecretKeyMap) {
+      this.clearSecretKeyCache();
+      await this.ensureSecretKeyCache();
+    }
   }
 };
