@@ -508,7 +508,7 @@ Enigmail.hdrView = {
 
   messageLoad: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
-    Enigmail.msg.messageAutoDecrypt();
+    // Enigmail.msg.messageAutoDecrypt();
     Enigmail.msg.handleAttchmentEvent();
     Enigmail.hdrView.displayStatusBar();
   },
