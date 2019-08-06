@@ -28,22 +28,35 @@ var AutocryptHelper = {
     }
   },
 
-  findAutoryptRelevantHeaders: function (uri) {
-    return new Promise(function(resolve, reject) {
-      let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-      let author = msgDbHdr.author;
-      let dateInSeconds = msgDbHdr.dateInSeconds;
-      EnigmailStdlib.msgHdrGetHeaders(msgDbHdr, function(hdrs) {
-        if (hdrs.has('autocrypt')) {
-          resolve({
-            author: author,
-            dateInSeconds: dateInSeconds,
-            autocrypt_headers: hdrs.getAll('autocrypt')
-          });
-        } else {
-          resolve({});
-        }
-      });
+  findAutoryptRelevantHeaders: async function (uri) {
+    EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders()\n`);
+    let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+    let author = msgDbHdr.author;
+    let dateInSeconds = msgDbHdr.dateInSeconds;
+    return await new Promise(function(resolve, reject) {
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): k\n`);
+      try {
+        EnigmailStdlib.msgHdrGetHeaders(msgDbHdr, function(hdrs) {
+          try {
+            if (hdrs.has('autocrypt')) {
+              EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): found autocrypt header\n`);
+              resolve({
+                author: author,
+                dateInSeconds: dateInSeconds,
+                autocrypt_headers: hdrs.getAll('autocrypt')
+              });
+            }
+            EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): no header\n`);
+            resolve({});
+          } catch (ex) {
+            EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): error (inner) ${ex}\n`);
+            reject(ex);
+          }
+        });
+      } catch (ex) {
+        EnigmailLog.DEBUG(`mimeDecrypt.jsm: findAutoryptRelevantHeaders(): error (outer) ${ex}\n`);
+        reject(ex);
+      }
     });
   }
 };
