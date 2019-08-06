@@ -325,7 +325,7 @@ var EnigmailAutocrypt = {
 
     let preference = "";
     if (include_preference) {
-      let settings = this.getAutocryptSettingsForIdentity(email);
+      let settings = await this.getAutocryptSettingsForIdentity(email);
       if (settings && settings.is_mutual) {
         preference = "prefer-encrypt=mutual; ";
       }
