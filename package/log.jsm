@@ -21,7 +21,6 @@ const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 var EnigmailLog = {
   level: 3,
   data: null,
-  directory: null,
   fileStream: null,
 
   setLogLevel: function(newLogLevel) {
@@ -32,14 +31,9 @@ var EnigmailLog = {
     return EnigmailLog.level;
   },
 
-  setLogDirectory: function(newLogDirectory) {
-    EnigmailLog.directory = newLogDirectory + (EnigmailOS.isDosLike ? "\\" : "/");
-    EnigmailLog.createLogFiles();
-  },
-
-  createLogFiles: function() {
-    if (EnigmailLog.directory && (!EnigmailLog.fileStream) && EnigmailLog.level >= 5) {
-      EnigmailLog.fileStream = EnigmailFiles.createFileStream(EnigmailLog.directory + "enigdbug.txt");
+  setLogFile: function(logFile) {
+    if (!EnigmailLog.fileStream && EnigmailLog.level >= 5) {
+      EnigmailLog.fileStream = EnigmailFiles.createFileStream(logFile);
     }
   },
 

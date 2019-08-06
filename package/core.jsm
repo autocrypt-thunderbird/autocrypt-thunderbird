@@ -212,12 +212,11 @@ function getLogDirectoryPrefix() {
 }
 
 function initializeLogDirectory() {
-  const prefix = getLogDirectoryPrefix();
-  if (prefix) {
-    getEnigmailLog().setLogLevel(5);
-    getEnigmailLog().setLogDirectory(prefix);
-    getEnigmailLog().DEBUG("core.jsm: Logging debug output to " + prefix + "/enigdbug.txt\n");
-  }
+  const log_file = getEnigmailApp().getProfileDirectory();
+  log_file.append('log_autocrypt.txt');
+  getEnigmailLog().setLogLevel(5);
+  getEnigmailLog().setLogFile(log_file);
+  getEnigmailLog().DEBUG(`core.jsm: Logging debug output to ${log_file.path}\n`);
 }
 
 function initializeLogging(env) {
