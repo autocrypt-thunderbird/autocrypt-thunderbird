@@ -290,7 +290,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return null;
   }
 
-  async parseOpenPgpKeys(key_data) {
+  async parseOpenPgpKeys(key_data, clean = true) {
     EnigmailLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
     try {
       const openpgp = getOpenPGP().openpgp;
@@ -311,8 +311,14 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         return [];
       }
 
+      let keys;
+      if (clean) {
+        keys = result.keys.map(key => cleanOpenPgpKey(key));
+      } else {
+        keys = result.keys;
+      }
       EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok\n`);
-      return result.keys;
+      return keys;
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
       return [];
@@ -339,6 +345,8 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
         return null;
       }
+
+      key = cleanOpenPgpKey(key);
 
       const parsed_key = {
         fpr_primary: key.getFingerprint().toUpperCase(),
@@ -466,6 +474,38 @@ jA0EBwMCe6agrgUPkAT/0jkBc+WUaiK5AuuRvVXiS/GSA0HMih5JeTmqqZRmGu9Z
     let time_diff_ms = new Date() - start_time;
     EnigmailLog.DEBUG(`openpgp-js.js: initialize(): ok (${time_diff_ms}ms)\n`);
   }
+}
+
+function cleanOpenPgpKey(openpgp_key) {
+  const openpgp = getOpenPGP().openpgp;
+  const primary_keyid = openpgp_key.getKeyId();
+  const primary_fingerprint = openpgp_key.getFingerprint();
+  const packet_list = openpgp_key.toPacketlist();
+  let filtered_keys = 0;
+  const filtered_list = packet_list.filter(function(packet) {
+    let packetType = openpgp.enums.read(openpgp.enums.packet, packet.tag);
+    switch (packetType) {
+      case 'publicKey':
+      case 'publicSubkey':
+      case 'secretKey':
+      case 'secretSubkey':
+      case 'userid':
+        return true;
+      case 'signature':
+        if (packet.issuerFingerprint && packet.issuerFingerprint == primary_fingerprint ||
+          packet.issuerKeyId && packet.issuerKeyId.equals(primary_keyid)) {
+          return true;
+        }
+        filtered_keys += 1;
+        return false;
+    }
+    EnigmailLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropping unexpected packet ${packetType}\n`);
+    return false;
+  });
+  if (filtered_keys) {
+    EnigmailLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropped ${filtered_keys} third party sigs\n`);
+  }
+  return openpgp.key.Key(filtered_list);
 }
 
 function streamToString(stream, enc, cb) {

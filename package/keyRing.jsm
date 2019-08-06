@@ -54,7 +54,7 @@ var EnigmailKeyRing = {
     const public_key_map = {};
     const public_key_list = [];
     await Promise.all(public_key_rows.map(async row => {
-      let openpgp_public_key = await cApi.parseOpenPgpKey(row.key_data);
+      let openpgp_public_key = await cApi.parseOpenPgpKey(row.key_data, false);
       public_key_map[row.fpr_primary] = openpgp_public_key;
       public_key_list.push(openpgp_public_key);
     }));
@@ -134,7 +134,7 @@ var EnigmailKeyRing = {
     const secret_key_map = {};
     const secret_key_list = [];
     await Promise.all(secret_key_rows.map(async row => {
-      let openpgp_secret_key = await cApi.parseOpenPgpKey(row.key_data_secret);
+      let openpgp_secret_key = await cApi.parseOpenPgpKey(row.key_data_secret, false);
       if (!openpgp_secret_key.isPrivate()) {
         EnigmailLog.ERROR(`ensureSecretKeyCache(): expected secret key, found public!\n`);
         return;
