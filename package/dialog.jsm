@@ -409,35 +409,6 @@ var EnigmailDialog = {
   },
 
   /**
-   * Displays a dialog with success/failure information after importing
-   * keys.
-   *
-   * @param win:           nsIWindow - parent window to display modal dialog; can be null
-   * @param keyList:       Array of String - imported keyIDs
-   *
-   * @return: 0-2: button Number pressed
-   *          -1: ESC or close window button pressed
-   *
-   */
-  keyImportDlg: function(win, keyList) {
-    var result = {
-      value: -1,
-      checked: false
-    };
-
-    if (!win) {
-      win = EnigmailWindows.getBestParentWin();
-    }
-
-    win.openDialog("chrome://autocrypt/content/ui/enigmailKeyImportInfo.xul", "",
-      "chrome,dialog,modal,centerscreen,resizable", {
-        keyList: keyList
-      },
-      result);
-
-    return result.value;
-  },
-  /**
    * return a pre-initialized prompt service
    */
   getPromptSvc: function() {

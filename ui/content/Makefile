@@ -41,36 +41,14 @@ UIFILES = \
 	enigmailAttachmentsDialog.js \
 	enigmailAmIdEditOverlay.xul \
 	enigmailCheckLanguage.xul \
-	enigmailConsole.xul \
-	enigmailConsole.js \
-	enigmailConsole.htm \
-	enigmailEncryptionDlg.xul \
-	enigmailEncryptionDlg.js \
 	enigmailGenericDisplay.js \
 	enigmailGenericDisplay.xul \
 	enigmailGenericDisplay.htm \
 	enigmailHelp.xul \
 	enigmailHelp.js \
-	enigmailImportPhoto.js \
-	enigmailImportPhoto.xul \
-	keyDetailsDlg.js \
-	keyDetailsDlg.xul \
-	enigmailSearchKey.js \
-	enigmailSearchKey.xul \
-	enigmailKeyImportInfo.js \
-	enigmailKeyImportInfo.xul \
-	enigmailSingleRcptSettings.js \
-	enigmailSingleRcptSettings.xul \
-	enigmailSignKeyDlg.js \
-	enigmailSignKeyDlg.xul \
 	am-enigprefs.xul \
 	am-enigprefs.js \
 	editSingleAccount.xul \
-	enigmailKeygen.xul \
-	enigmailKeygen.js \
-	enigmailKeygenConsole.htm \
-	enigmailKeySelection.xul \
-	enigmailKeySelection.js \
 	enigmailMsgComposeOverlay.xul \
 	enigmailMsgComposeOverlay-sm.xul \
 	enigmailMsgComposeOverlay.js \
