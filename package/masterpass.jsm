@@ -22,7 +22,7 @@ var AutocryptMasterpass = {
       try {
         this.loginManager = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
       } catch (ex) {
-        EnigmailLog.writeException(ex);
+        EnigmailLog.writeException("masterpass.jsm", ex);
       }
     }
     return this.loginManager;
@@ -44,7 +44,7 @@ var AutocryptMasterpass = {
 
       this.getLoginManager().addLogin(loginInfo);
     } catch (ex) {
-      EnigmailLog.writeException(ex);
+      EnigmailLog.writeException("masterpass.jsm", ex);
       throw ex;
     }
     EnigmailLog.DEBUG("masterpass.jsm: ensureAutocryptPassword(): ok\n");
@@ -72,7 +72,7 @@ var AutocryptMasterpass = {
         }
       }
     } catch (ex) {
-      EnigmailLog.writeException(ex);
+      EnigmailLog.writeException("masterpass.jsm", ex);
     }
     EnigmailLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword(): not found!\n");
     return null;

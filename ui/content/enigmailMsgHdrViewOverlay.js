@@ -474,7 +474,7 @@ Enigmail.hdrView = {
           Enigmail.hdrView.forgetEncryptedMsgKey();
           Enigmail.hdrView.setWindowCallback();
         } catch (ex) {
-          EnigmailLog.writeException(ex);
+          EnigmailLog.writeException("enigmailMsgHdrViewOverlay.js", ex);
         }
       },
 

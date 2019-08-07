@@ -76,6 +76,15 @@ var EnigmailKeyRing = {
     return gCachedSecretKeyMap;
   },
 
+  getSecretKeyByFingerprint: async function(fpr_primary) {
+    let key_map = await this.getAllSecretKeysMap();
+    if (fpr_primary in key_map) {
+      return key_map[fpr_primary];
+    } else {
+      return null;
+    }
+  },
+
   getPublicKeyByKeyId: async function(key_id) {
     let fpr_primary = await sqlite.findPrimaryFprByKeyId(key_id);
     if (!fpr_primary) {

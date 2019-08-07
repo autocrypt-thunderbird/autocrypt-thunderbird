@@ -42,15 +42,8 @@ function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
 
   // "securityInfo" variables
-  this.sendFlags = 0;
-  this.fromAddr = "";
-  this.toAddrs = "";
-  this.bccAddrs = "";
-  this.senderEmailAddr = "";
-  this.recipients = "";
-  this.bccRecipients = "";
+  this.composeCryptoState = null;
   this.originalSubject = null;
-  this.keyMap = {};
 
   if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
     this.onDataAvailable = this.onDataAvailable68;
@@ -147,7 +140,9 @@ PgpMimeEncrypt.prototype = {
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
     EnigmailLog.DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
 
-    if (!outStream) throw Cr.NS_ERROR_NULL_POINTER;
+    if (!outStream) {
+      throw Cr.NS_ERROR_NULL_POINTER;
+    }
 
     try {
 
@@ -361,10 +356,11 @@ PgpMimeEncrypt.prototype = {
       this.pipeQueue = "";
 
       const cApi = EnigmailCryptoAPI();
-      this.encryptedData = cApi.sync(this.signAndEncrypt(this.fromAddr, this.toAddrs, plaintext));
-      if (this.encryptedData == "" || !this.encryptedData) throw Cr.NS_ERROR_FAILURE;
-
-      LOCAL_DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
+      this.encryptedData = cApi.sync(this.signAndEncrypt(plaintext));
+      if (!this.encryptedData || this.encryptedData == "") {
+        EnigmailLog.ERROR("mimeEncrypt.js: finishCryptoEncapsulation(): failed to encrypt!\n");
+        throw Cr.NS_ERROR_FAILURE;
+      }
 
       this.encryptedData = this.encryptedData.replace(/\r/g, "").replace(/\n/g, "\r\n"); // force CRLF
       this.writeOut(this.encryptedData);
@@ -373,47 +369,53 @@ PgpMimeEncrypt.prototype = {
     }
     catch (ex) {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
-      throw (ex);
+      throw ex;
     }
   },
 
-  signAndEncrypt: async function(fromAddr, toAddrs, plaintext) {
-    let openPgpSecretKey = await this.selectPrivKey(fromAddr);
-    let openPgpPubKeys = await this.selectPubKeys(toAddrs);
+  signAndEncrypt: async function(plaintext) {
+    const openPgpSecretKey = await this.selectPrivKey();
+    const openPgpPubKeys = await this.selectPubKeys();
     return await EnigmailEncryption.encryptMessage(plaintext, openPgpSecretKey, openPgpPubKeys);
   },
 
-  selectPrivKey: async function(fromAddr) {
-    let autocrypt_settings = await EnigmailAutocrypt.getAutocryptSettingsForIdentity(fromAddr);
-    if (!autocrypt_settings) {
+  selectPrivKey: async function() {
+    if (!this.composeCryptoState.senderAutocryptSettings) {
+      EnigmailLog.ERROR("mimeEncrypt.js: selectPrivKey(): missing sender autocrypt settings\n");
       throw Cr.NS_ERROR_FAILURE;
     }
-    let openpgp_keys_map = await EnigmailKeyRing.getAllSecretKeysMap();
-    let openpgp_secret_key = openpgp_keys_map[autocrypt_settings.fpr_primary];
+    if (!this.composeCryptoState.senderAutocryptSettings.fpr_primary) {
+      EnigmailLog.ERROR("mimeEncrypt.js: selectPrivKey(): bad autocrypt sender settings\n");
+      throw Cr.NS_ERROR_FAILURE;
+    }
+    const sender_fpr_primary = this.composeCryptoState.senderAutocryptSettings.fpr_primary;
+    EnigmailLog.DEBUG(`mimeEncrypt.js: selectPrivKey(): sender fpr: ${sender_fpr_primary}\n`);
+
+    const openpgp_secret_key = await EnigmailKeyRing.getSecretKeyByFingerprint(sender_fpr_primary);
     if (!openpgp_secret_key) {
+      EnigmailLog.ERROR(`mimeEncrypt.js: selectPrivKey(): no secret key!\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
     return openpgp_secret_key;
   },
 
-  selectPubKeys: async function(toAddrList, bccAddrList) {
+  selectPubKeys: async function() {
     EnigmailLog.DEBUG("mimeEncrypt.js: selectPubKeys()\n");
-    if (toAddrList.length === 0) {
-      EnigmailLog.DEBUG("mimeEncrypt.js: selectPubKeys(): skip key selection because we neither have \"to\" nor \"cc\" addresses\n");
 
-      // TODO deal with bcc only
-      throw Cr.NS_ERROR_NOT_IMPLEMENTED;
+    if (!this.composeCryptoState.currentAutocryptRecommendation) {
+      EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing recipient autocrypt recommendations\n`);
+      throw Cr.NS_ERROR_FAILURE;
     }
 
-    let openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
-    let recommendations = await EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList);
-    // EnigmailLog.DEBUG(`mimeEncrypt.js: Enigmail.msg.keySelection(): ${JSON.stringify(recommendations)} \n`);
+    const openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
+    const recommendations = this.composeCryptoState.currentAutocryptRecommendation;
 
-    let selected_openpgp_keys = recommendations.peers
+    const selected_openpgp_keys = recommendations.peers
       .map(peer => openpgp_keys_map[peer.fpr_primary])
       .filter(x => x);
 
     if (!selected_openpgp_keys.length) {
+      EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): no recipients!\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
 
