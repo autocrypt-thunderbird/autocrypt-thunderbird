@@ -102,7 +102,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return null;
   }
 
-  async decrypt(ciphertext, openpgp_secret_keys, openpgp_public_key, openpgp_public_key_callback) {
+  async decrypt(ciphertext, openpgp_secret_keys, openpgp_public_key, cached_session_key, openpgp_public_key_callback) {
     EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
 
     const openpgp = getOpenPGP().openpgp;
@@ -118,21 +118,30 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     try {
       const message = await openpgp.message.readArmored(ciphertext);
 
-      const startTimeAsym = new Date();
-      const decrypted_session_keys = await openpgp.decryptSessionKeys({
-        message: message,
-        privateKeys: openpgp_secret_keys
-      });
-      if (!decrypted_session_keys) {
-        throw new Error("session failed to decrypt");
+      let session_key;
+      if (!cached_session_key) {
+        const startTimeAsym = new Date();
+        const decrypted_session_keys = await openpgp.decryptSessionKeys({
+          message: message,
+          privateKeys: openpgp_secret_keys
+        });
+        if (!decrypted_session_keys) {
+          throw new Error("session failed to decrypt");
+        }
+        const time_diff_asym_ms = new Date() - startTimeAsym;
+        EnigmailLog.DEBUG(`openpgp-js.js: asymmetric decrypt took in ${time_diff_asym_ms}ms\n`);
+
+        session_key = decrypted_session_keys[0];
+      } else {
+        EnigmailLog.DEBUG(`openpgp-js.js: got cached session key, skipping asymmetric decrypt\n`);
+        session_key = cached_session_key;
       }
-      const time_diff_asym_ms = new Date() - startTimeAsym;
-      EnigmailLog.DEBUG(`openpgp-js.js: asymmetric decrypt took in ${time_diff_asym_ms}ms\n`);
 
       const openpgp_result = await openpgp.decrypt({
         message: message,
-        sessionKeys: decrypted_session_keys[0],
-        publicKeys: openpgp_public_key
+        sessionKeys: session_key,
+        publicKeys: openpgp_public_key,
+        privateKeys: openpgp_secret_keys
       });
       const plaintext = String(openpgp_result.data);
 
@@ -164,7 +173,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         sig_ok: sig_ok,
         sig_key_id: sig_key_id,
         sig_openpgp_key: sig_openpgp_key,
-        session_key: decrypted_session_keys[0]
+        session_key: session_key
       };
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);

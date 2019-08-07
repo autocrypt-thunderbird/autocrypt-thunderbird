@@ -31,6 +31,7 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/k
 const AutocryptMessageCache = ChromeUtils.import("chrome://autocrypt/content/modules/messageCache.jsm").AutocryptMessageCache;
 const MessageCryptoStatus = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").MessageCryptoStatus;
 const AutocryptHelper = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptHelper.jsm").AutocryptHelper;
+const AutocryptSessionKeyCache = ChromeUtils.import("chrome://autocrypt/content/modules/sessionKeyCache.jsm").AutocryptSessionKeyCache;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
@@ -412,13 +413,18 @@ MimeDecryptHandler.prototype = {
     let [decrypted_plaintext, verify_status] = cApi.sync((async function() {
       await AutocryptHelper.processAutocryptForMessage(uri);
 
+      let cached_session_key = AutocryptSessionKeyCache.getCachedSessionKey(uri);
       let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
       let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
 
       try {
         let return_status = await cApi.decrypt(pgpBlock, openpgp_secret_keys,
-          openpgp_public_key, async (key_id) => await EnigmailKeyRing.getPublicKeyByKeyId(key_id));
+          openpgp_public_key, cached_session_key, async (key_id) => await EnigmailKeyRing.getPublicKeyByKeyId(key_id));
         let verify_status = MessageCryptoStatus.createDecryptOkStatus(sender_address, return_status.sig_ok, return_status.sig_key_id, return_status.sig_openpgp_key);
+
+        if (!cached_session_key && return_status.session_key) {
+          AutocryptSessionKeyCache.putCachedSessionKey(uri, return_status.session_key);
+        }
 
         return [return_status.plaintext, verify_status];
       } catch (e) {

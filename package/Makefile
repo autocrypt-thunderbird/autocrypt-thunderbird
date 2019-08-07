@@ -66,6 +66,7 @@ MODFILES = \
            rng.jsm \
            searchCallback.jsm \
            send.jsm \
+           sessionKeyCache.jsm \
            singletons.jsm \
            sqliteDb.jsm \
            stdlib.jsm \
