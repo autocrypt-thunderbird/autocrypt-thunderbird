@@ -41,9 +41,6 @@ UIFILES = \
 	enigmailAttachmentsDialog.js \
 	enigmailAmIdEditOverlay.xul \
 	enigmailCheckLanguage.xul \
-	enigmailGenericDisplay.js \
-	enigmailGenericDisplay.xul \
-	enigmailGenericDisplay.htm \
 	enigmailHelp.xul \
 	enigmailHelp.js \
 	am-enigprefs.xul \
@@ -63,7 +60,6 @@ UIFILES = \
 	enigRetrieveProgress.js \
 	manageAllKeys.js \
 	manageAllKeys.xul \
-	upgradeInfo.html \
 	setupWizardAutocrypt.js \
 	setupWizardAutocrypt.xul
 	

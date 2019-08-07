@@ -46,15 +46,6 @@ function setAutocryptForOldAccounts() {
 }
 
 
-function displayUpgradeInfo() {
-  EnigmailLog.DEBUG("configure.jsm: displayUpgradeInfo()\n");
-  try {
-    EnigmailWindows.openMailTab("chrome://autocrypt/content/ui/upgradeInfo.html");
-  }
-  catch (ex) {}
-}
-
-
 var EnigmailConfigure = {
   /**
    * configureEnigmail: main function for configuring Enigmail during the first run
