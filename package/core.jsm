@@ -92,7 +92,7 @@ var EnigmailCore = {
         getAutocryptMasterpass().ensureAutocryptPassword();
 
         // warm up cache
-        await getEnigmailKeyring().getAllSecretKeys();
+        // await getEnigmailKeyring().getAllSecretKeys();
 
         /*
           let win = getEnigmailWindows().getBestParentWin();

@@ -113,8 +113,13 @@ Enigmail.hdrView = {
     expStatusText.setAttribute("state", "false");
     icon.setAttribute("collapsed", "true");
 
+    if (this.firstTimeOk) {
+      this.setStatusText("Processing OpenPGP...");
+    } else {
+      this.firstTimeOk = true;
+      this.setStatusText("Processing OpenPGP (first time might take a few seconds)");
+    }
     this.displayExtendedStatus(false);
-    this.setStatusText("Processing OpenPGP...");
     enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
   },
 
