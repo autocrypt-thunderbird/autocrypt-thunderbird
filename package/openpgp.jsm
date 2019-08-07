@@ -47,6 +47,9 @@ function initialize() {
   try {
     gOpenPGPLib = getOpenPGPLibrary();
 
+    // config
+    gOpenPGPLib.config.s2k_iteration_count_byte = 1;
+
     EnigmailLog.DEBUG(`openpgp.jsm: openpgp: ${gOpenPGPLib}\n`);
   }
   catch (ex) {

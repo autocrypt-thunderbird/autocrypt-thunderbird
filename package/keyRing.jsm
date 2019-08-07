@@ -215,5 +215,16 @@ var EnigmailKeyRing = {
       this.clearSecretKeyCache();
       await this.ensureSecretKeyCache();
     }
+  },
+
+  reencryptSecretKeys: async function() {
+    EnigmailLog.DEBUG(`reencryptSecretKeys()\n`);
+    let openpgp_secret_keys = await this.getAllSecretKeys();
+    let startTime = new Date();
+    for (let openpgp_secret_key of openpgp_secret_keys) {
+      await this.insertSecretKey(openpgp_secret_key);
+    }
+    let time_diff_ms = new Date() - startTime;
+    EnigmailLog.DEBUG(`reencryptSecretKeys(): reencrypted ${openpgp_secret_keys.length} keys in ${time_diff_ms}ms\n`);
   }
 };

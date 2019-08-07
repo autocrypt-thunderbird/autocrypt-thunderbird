@@ -93,6 +93,7 @@ var EnigmailCore = {
 
         // warm up cache
         // await getEnigmailKeyring().getAllSecretKeys();
+        // await getEnigmailKeyring().reencryptSecretKeys();
 
         /*
           let win = getEnigmailWindows().getBestParentWin();
