@@ -108,12 +108,6 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     const openpgp = getOpenPGP().openpgp;
     let startTime = new Date();
 
-    const decrypt_options = {
-      message: await openpgp.message.readArmored(ciphertext),
-      publicKeys: openpgp_public_key,
-      privateKeys: openpgp_secret_keys
-    };
-
     if (openpgp_public_key) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt(): expected pubKey: ${openpgp_public_key.getFingerprint().toUpperCase()}\n`);
     }
@@ -122,10 +116,25 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
     EnigmailLog.DEBUG(`openpgp-js.js: decrypting...\n`);
     try {
-      let openpgp_result = await openpgp.decrypt(decrypt_options);
-      // EnigmailLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
+      const message = await openpgp.message.readArmored(ciphertext);
 
-      let plaintext = String(openpgp_result.data);
+      const startTimeAsym = new Date();
+      const decrypted_session_keys = await openpgp.decryptSessionKeys({
+        message: message,
+        privateKeys: openpgp_secret_keys
+      });
+      if (!decrypted_session_keys) {
+        throw new Error("session failed to decrypt");
+      }
+      const time_diff_asym_ms = new Date() - startTimeAsym;
+      EnigmailLog.DEBUG(`openpgp-js.js: asymmetric decrypt took in ${time_diff_asym_ms}ms\n`);
+
+      const openpgp_result = await openpgp.decrypt({
+        message: message,
+        sessionKeys: decrypted_session_keys[0],
+        publicKeys: openpgp_public_key
+      });
+      const plaintext = String(openpgp_result.data);
 
       let sig_ok = false;
       let sig_key_id;
@@ -147,14 +156,15 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         }
       }
 
-      let time_diff_ms = new Date() - startTime;
+      const time_diff_ms = new Date() - startTime;
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
 
       return {
         plaintext: plaintext,
         sig_ok: sig_ok,
         sig_key_id: sig_key_id,
-        sig_openpgp_key: sig_openpgp_key
+        sig_openpgp_key: sig_openpgp_key,
+        session_key: decrypted_session_keys[0]
       };
     } catch (ex) {
       EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);
