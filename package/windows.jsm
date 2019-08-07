@@ -197,19 +197,6 @@ var EnigmailWindows = {
   },
 
   /**
-   * Display the window for the debug log file
-   *
-   * @win       - |object| holding the parent window for the dialog
-   *
-   * no return value
-   */
-  openDebugLog: function(win) {
-    EnigmailWindows.openWin("enigmail:logFile",
-      "chrome://autocrypt/content/ui/enigmailViewFile.xul?viewLog=1&title=" + escape(EnigmailLocale.getString("debugLog.title")),
-      "centerscreen");
-  },
-
-  /**
    * Display Autocrypt Setup Passwd dialog.
    *
    * @param dlgMode:       String - dialog mode: "input" / "display"
