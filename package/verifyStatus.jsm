@@ -89,6 +89,18 @@ MessageCryptoStatus.prototype.isSignKeyTrusted = function() {
   return this.sig_trust_status == SIGNATURE_TRUST_STATUS.TRUSTED;
 };
 
+MessageCryptoStatus.prototype.combineWith = function(verify_status) {
+  return new MessageCryptoStatus(
+    verify_status.signature_status,
+    verify_status.sig_key_status,
+    verify_status.sig_trust_status,
+    this.decryption_status,
+    verify_status.sender_address,
+    verify_status.sig_key_id,
+    verify_status.public_key
+  );
+};
+
 MessageCryptoStatus.createDecryptOkStatus = function(sender_address, sig_ok, sig_key_id, public_key) {
   return new MessageCryptoStatus(
     sig_ok ? SIGNATURE_STATUS.OK : (sig_key_id ? (public_key ? SIGNATURE_STATUS.ERROR : SIGNATURE_STATUS.KEY_MISSING) : SIGNATURE_STATUS.NONE),

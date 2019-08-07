@@ -24,6 +24,7 @@ const EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/module
 const EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const AutocryptHelper = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptHelper.jsm").AutocryptHelper;
+const AutocryptMessageCache = ChromeUtils.import("chrome://autocrypt/content/modules/messageCache.jsm").AutocryptMessageCache;
 const MessageCryptoStatus = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").MessageCryptoStatus;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
@@ -109,7 +110,6 @@ var EnigmailVerify = {
 MimeVerify.prototype = {
   dataCount: 0,
   foundMsg: false,
-  startMsgStr: "",
   msgWindow: null,
   msgUriSpec: null,
   statusDisplayed: false,
@@ -193,16 +193,11 @@ MimeVerify.prototype = {
     this.dataCount = 0;
     this.foundMsg = false;
     this.backgroundJob = false;
-    this.startMsgStr = "";
     this.boundary = "";
-    this.proc = null;
-    this.closePipe = false;
-    this.pipe = null;
     this.readMode = 0;
     this.keepData = "";
     this.last80Chars = "";
     this.signedData = "";
-    this.statusStr = "";
     this.statusDisplayed = false;
     this.parseContentType();
   },
@@ -400,7 +395,13 @@ MimeVerify.prototype = {
     }
 
     // return if not verifying first mime part
-    if (this.mimePartNumber.length > 0 && this.mimePartNumber.search(/^1(\.1)?$/) < 0) return;
+    if (this.mimePartNumber.length > 0 && this.mimePartNumber.search(/^1(\.1)?(\.1)?$/) < 0) {
+      EnigmailLog.DEBUG("mimeVerify.jsm: onStopRequest: \n");
+      return;
+    }
+
+    const cached_message = AutocryptMessageCache.getCachedMessage(this.uri);
+    const decrypt_status = cached_message ? cached_message.verify_status : null;
 
     if (this.uri) {
       // return if not decrypting currently displayed message (except if
@@ -450,8 +451,7 @@ MimeVerify.prototype = {
       var win = windowManager.getMostRecentWindow(null);
       if (!EnigmailDecryption.isReady(win)) return;
 
-      this.displayLoadingProgress();
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting verification\n`);
 
       // discover the pane
       var pane = Cc["@mozilla.org/appshell/window-mediator;1"]
@@ -491,6 +491,19 @@ MimeVerify.prototype = {
 
       if (!verify_status) {
         verify_status = MessageCryptoStatus.createVerifyErrorStatus(sender_address);
+      }
+
+      if (decrypt_status) {
+        const combined_status = decrypt_status.combineWith(verify_status);
+        if (verify_status) {
+          verify_status = combined_status;
+          const cached_message = {
+            decrypted_plaintext: this.signedData,
+            decrypted_headers: protected_headers,
+            verify_status: verify_status
+          };
+          AutocryptMessageCache.putCachedMessage(this.uri, cached_message);
+        }
       }
 
       this.displayStatus(verify_status, protected_headers);
