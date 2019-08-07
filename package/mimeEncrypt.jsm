@@ -410,9 +410,16 @@ PgpMimeEncrypt.prototype = {
     const openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
     const recommendations = this.composeCryptoState.currentAutocryptRecommendation;
 
-    const selected_openpgp_keys = recommendations.peers
-      .map(peer => openpgp_keys_map[peer.fpr_primary])
-      .filter(x => x);
+    const selected_openpgp_keys = [];
+    for (let email in recommendations.peers) {
+      let r = recommendations.peers[email];
+      if (!r.fpr_primary || !(r.fpr_primary in openpgp_keys_map)) {
+        EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing public key from recommendation\n`);
+        throw Cr.NS_ERROR_FAILURE;
+      }
+      let key = openpgp_keys_map[r.fpr_primary];
+      selected_openpgp_keys.push(key);
+    }
 
     if (!selected_openpgp_keys.length) {
       EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): no recipients!\n`);

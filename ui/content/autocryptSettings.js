@@ -109,10 +109,6 @@ async function blinkAutocrpyModeSaved() {
   labelAutocryptModeSaved.hidden = true;
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function onClickSendSetupMessage() {
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
   await EnigmailAutocryptSetup.sendSetupMessage(autocrypt_info.email);

@@ -387,7 +387,6 @@ Enigmail.msg = {
 
     // reset default send settings, unless we have changed them already
     this.determineSendFlags();
-    this.updateStatusBar();
   },
 
   getOriginalMsgUri: function() {
@@ -645,7 +644,6 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags\n");
       try {
         this.determineSendFlags();
-        this.updateStatusBar();
       } catch (ex) {
         EnigmailLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags - ERROR: " + ex.toString() + "\n");
       }
@@ -844,11 +842,34 @@ Enigmail.msg = {
 
   onButtonToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onButtonToggleEncrypt()\n");
-    this.composeCryptoState.toggleUserChoice();
+    if (!this.composeCryptoState.isEncryptError()) {
+      this.composeCryptoState.toggleUserChoice();
+    }
     this.delayedUpdateStatusBar();
+    if (this.composeCryptoState.isEncryptError()) {
+      let self = this;
+      setTimeout(function() {
+        let choice = self.showMissingRecipientsDialog('keep-disabled');
+        if (choice == 'disable') {
+          self.composeCryptoState.toggleUserChoice();
+        }
+        self.fireSendFlags();
+      }, 100);
+    }
   },
 
-  onButtonDisplaySecuritySettings: function() {
+  showMissingRecipientsDialog: function(choiceType) {
+    const args = {
+      recipients: this.findAllRecipients(),
+      choiceType: choiceType
+    };
+    const result = {
+      choice: null
+    };
+    window.openDialog("chrome://autocrypt/content/ui/dialogMissingKeys.xul", "",
+      "chrome,dialog,modal,centerscreen,resizable,titlebar", args, result);
+    EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: showMissingRecipientsDialog(): choice ${result.choice}\n`);
+    return result.choice;
   },
 
   /**
@@ -946,9 +967,8 @@ Enigmail.msg = {
     if (encIcon) {
       // encIcon.setAttribute("tooltiptext", encReasonStr);
     }
-    this.setChecked("enigmail-bc-encrypt", display_status.buttonPressed);
-    // this.setEnabled("enigmail-bc-encrypt", display_status.buttonEnabled);
-    this.setEnabled("menuitem-autocrypt-toggle", display_status.buttonEnabled);
+    // this.setChecked("enigmail-bc-encrypt", display_status.buttonPressed);
+    // this.setEnabled("menuitem-autocrypt-toggle", display_status.buttonEnabled);
 
     this.setChecked("check-autocrypt-status-manual", this.composeCryptoState.isCheckStatusManual());
     this.setChecked("check-autocrypt-status-reply", this.composeCryptoState.isCheckStatusReply());
@@ -989,14 +1009,6 @@ Enigmail.msg = {
       this.identity = getCurrentIdentity();
     }
 
-    var compFields = gMsgCompose.compFields;
-
-    if (!Enigmail.msg.composeBodyReady) {
-      compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
-    }
-    Recipients2CompFields(compFields);
-    gMsgCompose.expandMailingLists();
-
     let fromAddr = this.identity.email;
 
     const autocrypt_settings = EnigmailSync.sync(EnigmailAutocrypt.getAutocryptSettingsForIdentity(fromAddr));
@@ -1007,6 +1019,24 @@ Enigmail.msg = {
       EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: determineSendFlags(): sender autocrypt settings: none\n`);
       this.composeCryptoState.senderAutocryptSettings = null;
     }
+
+    let toAddrList = this.findAllRecipients();
+
+    this.composeCryptoState.currentAutocryptRecommendation =
+      EnigmailSync.sync(EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList));
+
+    // process and signal new resulting state
+    this.updateStatusBar();
+  },
+
+  findAllRecipients: function() {
+    var compFields = gMsgCompose.compFields;
+
+    if (!Enigmail.msg.composeBodyReady) {
+      compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
+    }
+    Recipients2CompFields(compFields);
+    gMsgCompose.expandMailingLists();
 
     // process list of to/cc email addresses
     // - bcc email addresses are ignored, when processing whether to sign/encrypt
@@ -1021,11 +1051,7 @@ Enigmail.msg = {
       toAddrList = addRecipients(toAddrList, recList);
     }
 
-    this.composeCryptoState.currentAutocryptRecommendation =
-      EnigmailSync.sync(EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList));
-
-    // process and signal new resulting state
-    this.updateStatusBar();
+    return toAddrList;
   },
 
   setChecked: function(elementId, checked) {
@@ -1516,8 +1542,20 @@ Enigmail.msg = {
     }
 
     if (this.composeCryptoState.isEncryptError()) {
-      let msg = "Some senders~";
-      return EnigmailDialog.confirmDlg(window, msg, EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encrypt error on send - asking user\n");
+      let result = this.showMissingRecipientsDialog('send-unencrypted');
+      if (result == 'send-unencrypted') {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to send unencrypted\n");
+        this.fireSendFlags();
+        return true;
+      } else if (result == 'send-encrypted') {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to send encrypted\n");
+        this.determineSendFlags();
+      } else {
+        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to abort\n");
+        this.fireSendFlags();
+        return false;
+      }
     }
 
     this.identity = getCurrentIdentity();
