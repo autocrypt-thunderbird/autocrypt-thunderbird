@@ -206,7 +206,7 @@ var EnigmailAutocrypt = {
         return;
     }
 
-    let fpr_primary = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
+    let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
     if (!fpr_primary) {
         return;
     }
@@ -239,6 +239,32 @@ var EnigmailAutocrypt = {
     // 4. Set peers[gossip-addr].gossip_key to the value of the keydata attribute.
     await sqlite.autocryptUpdateKeyGossip(from_addr, effective_date, autocrypt_header.key_data);
   },
+
+  injectAutocryptKey: async function(from_addr, key_data) {
+    EnigmailLog.DEBUG("autocrypt.jsm: injectAutocryptKey()\n");
+    try {
+      let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(key_data);
+
+      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): parsed key ${fpr_primary}\n`);
+
+      if (!addresses.includes(from_addr)) {
+        EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ${from_addr} not in ${JSON.stringify(addresses)}\n`);
+        return false;
+      }
+
+      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): injecting for ${from_addr}\n`);
+      let effective_date = new Date();
+      await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
+      await sqlite.autocryptUpdateKey(from_addr, effective_date, fpr_primary, false);
+
+      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ok\n`);
+      return true;
+    } catch (ex) {
+      EnigmailLog.DEBUG("autocrypt.jsm: injectAutocryptKey()", ex);
+      return false;
+    }
+  },
+
 
   processAutocryptHeaders: async function(from_addr, headerDataArr, dateSent) {
     EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + from_addr + "\n");

@@ -176,7 +176,10 @@ var EnigmailKeyRing = {
     // TODO update in-place
     this.clearPublicKeyCache();
 
-    return parsed_key.fpr_primary;
+    return {
+      fpr_primary: parsed_key.fpr_primary,
+      addresses: parsed_key.addresses
+    };
   },
 
   insertSecretKey: async function(openpgp_secret_key) {

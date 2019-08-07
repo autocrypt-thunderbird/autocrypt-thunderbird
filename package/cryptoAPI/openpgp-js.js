@@ -15,6 +15,7 @@ var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Service
 const EnigmailLog = Cu.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const EnigmailLazy = Cu.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 const EnigmailConstants = Cu.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
+const EnigmailFuncs = Cu.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
 
 const getOpenPGP = EnigmailLazy.loader("autocrypt/openpgp.jsm", "EnigmailOpenPGP");
 const getArmor = EnigmailLazy.loader("autocrypt/armor.jsm", "EnigmailArmor");
@@ -330,14 +331,15 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     try {
       const openpgp = getOpenPGP().openpgp;
 
-      let binary_data;
+      let result;
       if (key_data instanceof Uint8Array) {
-        binary_data = key_data;
+        result = await openpgp.key.read(key_data);
+      } else if (key_data.startsWith('-----')) {
+        result = await openpgp.key.readArmored(key_data);
       } else {
-        binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
+        let binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
+        result = await openpgp.key.read(binary_data);
       }
-
-      let result = await openpgp.key.read(binary_data);
       // EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
 
       let key = result.keys[0];
@@ -352,7 +354,8 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         fpr_primary: key.getFingerprint().toUpperCase(),
         key_data: key.toPacketlist().write(),
         key_fprs: [key.getFingerprint().toUpperCase()],
-        key_ids: [key.getKeyId().toHex().toUpperCase()]
+        key_ids: [key.getKeyId().toHex().toUpperCase()],
+        addresses: key.getUserIds().map(uid => EnigmailFuncs.stripEmail(uid))
       };
 
       for (let subkey of key.getSubkeys()) {
