@@ -58,6 +58,10 @@ function AutocryptKeyRecommendation(email, recommendation, fpr_primary) {
   this.fpr_primary = fpr_primary;
 }
 
+AutocryptKeyRecommendation.prototype.isEncryptionAvailable = function() {
+  return this.recommendation > AUTOCRYPT_RECOMMEND.DISABLE;
+};
+
 function AutocryptHeader(parameters, addr, key_data, is_prefer_encrypt_mutual) {
   this.addr = addr;
   this.key_data = key_data;
@@ -134,26 +138,38 @@ function hasCriticalParameters(parameters) {
 }
 
 var EnigmailAutocrypt = {
+  AUTOCRYPT_RECOMMEND: AUTOCRYPT_RECOMMEND,
+
   determineAutocryptRecommendations: async function(emails) {
     EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${emails.join(', ')}\n`);
+
     let peer_rows = await sqlite.retrieveAutocryptRows(emails);
-    let peers = await Promise.all(peer_rows.map(row =>
+    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peer_rows.length} Autocrypt rows\n`);
+
+    let recommendations = await Promise.all(peer_rows.map(row =>
       this.determineSingleAutocryptRecommendation(row)));
 
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peers.length} Autocrypt rows\n`);
+    let peers = {};
+    for (let recommendation of recommendations) {
+      peers[recommendation.email] = recommendation;
+    }
+
+    for (let email of emails) {
+      if (!(email in peers)) {
+        peers[email] = new AutocryptKeyRecommendation(email, AUTOCRYPT_RECOMMEND.DISABLE, null);
+      }
+    }
 
     var group_recommendation = null;
-    if (emails.length > peers.length) {
-      group_recommendation = AUTOCRYPT_RECOMMEND.DISABLE;
-    } else {
-      for (const r of peers) {
-        if (!group_recommendation || (r.recommendation && r.recommendation < group_recommendation)) {
-          group_recommendation = r.recommendation;
-        }
+    for (const email in peers) {
+      let r = peers[email];
+      if (!group_recommendation || (r.recommendation && r.recommendation < group_recommendation)) {
+        group_recommendation = r.recommendation;
       }
     }
 
     EnigmailLog.DEBUG(`autocrypt.jsm: group recommendation: ${group_recommendation}\n`);
+    EnigmailLog.DEBUG(`autocrypt.jsm: peer state: ${JSON.stringify(peers)}\n`);
 
     return {
       group_recommendation: group_recommendation,
@@ -162,7 +178,7 @@ var EnigmailAutocrypt = {
   },
 
   determineSingleAutocryptRecommendation: async function(row) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineSingleAutocryptRecommendation(): row=${JSON.stringify(row)}\n`);
+    EnigmailLog.DEBUG(`autocrypt.jsm: determineSingleAutocryptRecommendation()\n`);
     if (row.fpr_primary) {
       let isLastSeenOlderThanDiscourageTimespan = row.last_seen_message &&
         row.last_seen_key &&
@@ -235,9 +251,11 @@ var EnigmailAutocrypt = {
         return;
     }
 
+    // TODO gossip doesn't work yet!
+
     // 3. Set peers[gossip-addr].gossip_timestamp to the message’s effective date.
     // 4. Set peers[gossip-addr].gossip_key to the value of the keydata attribute.
-    await sqlite.autocryptUpdateKeyGossip(from_addr, effective_date, autocrypt_header.key_data);
+    // await sqlite.autocryptUpdateGossipKey(from_addr, effective_date, autocrypt_header.key_data);
   },
 
   injectAutocryptKey: async function(from_addr, key_data) {
