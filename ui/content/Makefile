@@ -59,8 +59,6 @@ UIFILES = \
 	enigmailMessengerOverlay.js \
 	enigmailMsgHdrViewOverlay.xul \
 	enigmailMsgHdrViewOverlay.js \
-	enigmailWrapSelection.xul \
-	enigmailWrapSelection.js \
 	enigmailViewFile.js \
 	enigmailViewFile.xul \
 	enigRetrieveProgress.xul \
