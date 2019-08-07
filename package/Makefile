@@ -45,7 +45,6 @@ MODFILES = \
            keyRefreshService.jsm \
            keyRing.jsm \
            keyserver.jsm \
-           keyserverUris.jsm \
            lazy.jsm \
            locale.jsm \
            localizeHtml.jsm \

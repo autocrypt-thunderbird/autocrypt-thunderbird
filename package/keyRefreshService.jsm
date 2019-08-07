@@ -18,7 +18,6 @@ const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/k
 const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
 const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailKeyServer = ChromeUtils.import("chrome://autocrypt/content/modules/keyserver.jsm").EnigmailKeyServer;
-const EnigmailKeyserverURIs = ChromeUtils.import("chrome://autocrypt/content/modules/keyserverUris.jsm").EnigmailKeyserverURIs;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ONE_HOUR_IN_MILLISEC = 60 * 60 * 1000;
@@ -104,7 +103,6 @@ function refreshKeyIfReady(keyserver, readyToRefresh, keyId) {
 async function refreshWith(keyserver, timer, readyToRefresh) {
   const keyId = getRandomKeyId(EnigmailRNG.generateRandomUint32());
   const keyIdsExist = keyId !== null;
-  const validKeyserversExist = EnigmailKeyserverURIs.validKeyserversExist();
   const ioService = Cc[IOSERVICE_CONTRACTID].getService(Ci.nsIIOService);
 
   if (keyIdsExist && validKeyserversExist) {
