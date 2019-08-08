@@ -293,6 +293,43 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     }
   }
 
+  wrap(password, plaintext) {
+    const openpgp = getOpenPGP().openpgp;
+    // This is NOT an actual KDF! We only use this with a full entropy password
+    // from masterpass. do not use otherwise!
+    const password_array = openpgp.util.str_to_Uint8Array(password);
+    const key = this.sync(openpgp.crypto.hash.sha256(password_array));
+
+    const plaintext_array = openpgp.util.str_to_Uint8Array(plaintext);
+    const IV = this.sync(openpgp.crypto.random.getRandomBytes(openpgp.crypto.cipher.aes256.blockSize));
+
+    const ciphertext_array = openpgp.crypto.cfb.encrypt('aes256', key, plaintext_array, IV);
+
+    const result_array = new Uint8Array(IV.length + ciphertext_array.length);
+    result_array.set(IV);
+    result_array.set(ciphertext_array, IV.length);
+
+    const result_string = openpgp.util.Uint8Array_to_b64(result_array);
+    return result_string;
+  }
+
+  unwrap(password, result_string) {
+    const openpgp = getOpenPGP().openpgp;
+    // This is NOT an actual KDF! We only use this with a full entropy password
+    // from masterpass. do not use otherwise!
+    const password_array = openpgp.util.str_to_Uint8Array(password);
+    const key = this.sync(openpgp.crypto.hash.sha256(password_array));
+
+    const result_array = openpgp.util.b64_to_Uint8Array(result_string);
+    const IV = result_array.slice(0, openpgp.crypto.cipher.aes256.blockSize);
+    const ciphertext_array = result_array.slice(openpgp.crypto.cipher.aes256.blockSize);
+
+    const plaintext_array = this.sync(openpgp.crypto.cfb.decrypt('aes256', key, ciphertext_array, IV));
+
+    const plaintext = openpgp.util.Uint8Array_to_str(plaintext_array);
+    return plaintext;
+  }
+
   async parseOpenPgpKey(key_data) {
     let keys = await this.parseOpenPgpKeys(key_data);
     if (keys && keys.length) {
