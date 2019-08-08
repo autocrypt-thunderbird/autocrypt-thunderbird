@@ -29,13 +29,13 @@ async function enigmailDlgOnLoad() {
 
   view.radiogroupSetupChoice = document.getElementById("radiogroupSetupChoice");
   view.radioSetupKeep = document.getElementById("radioSetupKeep");
-  view.radioSetupGenerate = document.getElementById("radioSetupGenerate");
-  view.radioSetupExisting = document.getElementById("radioSetupExisting");
+  view.radioSetupChange = document.getElementById("radioSetupChange");
+  view.radioSetupDisable = document.getElementById("radioSetupDisable");
   view.boxKeep = document.getElementById("boxKeep");
-  view.boxGenerate = document.getElementById("boxGenerate");
-  view.boxExisting = document.getElementById("boxExisting");
+  view.boxChange = document.getElementById("boxChange");
+  view.boxDisable = document.getElementById("boxDisable");
   view.labelSetupCurrentKey = document.getElementById("labelSetupCurrentKey");
-  view.menulistExistingKeys = document.getElementById("menulistExistingKeys");
+  view.menulistChangeKey = document.getElementById("menulistChangeKey");
 
   document.getElementById("labelSetupAddress").value = getSetupEmail();
   let current_key = getCurrentKey();
@@ -49,12 +49,14 @@ async function enigmailDlgOnLoad() {
   } else {
     view.labelSetupCurrentKey.value = "None";
     view.radiogroupSetupChoice.selectedIndex = 1;
-    view.radioSetupGenerate.setAttribute("class", "setupRecommended");
+    view.radioSetupChange.setAttribute("label", "Configure Autocrypt");
+    view.radioSetupChange.setAttribute("class", "setupRecommended");
     view.radioSetupKeep.setAttribute("disabled", "true");
-    showOnly(view.boxGenerate);
+    showOnly(view.boxChange);
   }
 
-  await refreshExistingKeys();
+  let should_preselect = !current_key;
+  await refreshChangeKey(should_preselect);
 }
 
 function getCurrentKey() {
@@ -76,26 +78,28 @@ async function findRelevantSecretKeys() {
   return secret_keys.filter(email_filter);
 }
 
-async function refreshExistingKeys() {
-  EnigmailLog.DEBUG(`refreshExistingKeys()\n`);
+async function refreshChangeKey(preselect = false) {
+  EnigmailLog.DEBUG(`refreshChangeKey()\n`);
 
-  view.menulistExistingKeys.removeAllItems();
+  view.menulistChangeKey.removeAllItems();
+  view.menulistChangeKey.appendItem("Generate new", "generate");
 
   const secret_keys = await findRelevantSecretKeys();
 
   if (secret_keys.length) {
-    EnigmailLog.DEBUG(`refreshExistingKeys(): ${secret_keys.length}\n`);
+    EnigmailLog.DEBUG(`refreshChangeKey(): ${secret_keys.length}\n`);
     for (let secret_key of secret_keys) {
       let fingerprint = secret_key.getFingerprint().toUpperCase();
       const formatted_fpr = EnigmailKey.formatFpr(fingerprint);
-      view.menulistExistingKeys.appendItem(formatted_fpr, fingerprint);
+      view.menulistChangeKey.appendItem(formatted_fpr, fingerprint);
     }
-    view.radioSetupExisting.setAttribute("disabled", "false");
-  } else {
-    view.radioSetupExisting.setAttribute("disabled", "true");
   }
 
-  // view.menulistExistingKeys.label = 'heyho'; // `(${secret_keys.length} keys available)`;
+  if (preselect) {
+    view.menulistChangeKey.selectedIndex = secret_keys.length ? 1 : 0;
+  }
+
+  // view.menulistChangeKey.label = 'heyho'; // `(${secret_keys.length} keys available)`;
 }
 
 function disableAllChildren(el, disabled) {
@@ -107,8 +111,8 @@ function disableAllChildren(el, disabled) {
 
 function showOnly(group) {
   disableAllChildren(view.boxKeep, true);
-  disableAllChildren(view.boxGenerate, true);
-  disableAllChildren(view.boxExisting, true);
+  disableAllChildren(view.boxChange, true);
+  disableAllChildren(view.boxDisable, true);
 
   disableAllChildren(group, false);
 }
@@ -121,12 +125,12 @@ async function onRadioChangeSetup() {
       showOnly(view.boxKeep);
       break;
     }
-    case 'generate': {
-      showOnly(view.boxGenerate);
+    case 'change': {
+      showOnly(view.boxChange);
       break;
     }
-    case 'existing': {
-      showOnly(view.boxExisting);
+    case 'disable': {
+      showOnly(view.boxDisable);
       break;
     }
   }
@@ -135,8 +139,8 @@ async function onRadioChangeSetup() {
 function dialogConfirm() {
   let choice = view.radiogroupSetupChoice.selectedItem.value;
   window.arguments[1].choice = choice;
-  if (choice == 'existing') {
-    window.arguments[1].fpr_primary = view.menulistExistingKeys.value;
+  if (choice == 'change') {
+    window.arguments[1].fpr_primary = view.menulistChangeKey.value;
   }
   window.close();
 }

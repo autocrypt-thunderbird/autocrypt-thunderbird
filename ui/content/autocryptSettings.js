@@ -8,7 +8,7 @@
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
 /* global EnigConfirm: false, EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
-/* global EnigmailWindows: false */
+/* global EnigmailWindows: false, sleep: false */
 
 "use strict";
 
@@ -23,6 +23,7 @@ EnigInitCommon("autocryptSettings");
 
 const INPUT = 0;
 const RESULT = 1;
+let blinkTimeout = null;
 
 function enigmailDlgOnLoad() {
   EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
@@ -66,7 +67,7 @@ async function onCommandMenulistAutocryptEmail() {
   labelAutocryptModeSaved.hidden = true;
 
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
-  if (autocrypt_info) {
+  if (autocrypt_info && autocrypt_info.fpr_primary) {
     const formatted_fpr = EnigmailKey.formatFpr(autocrypt_info.fpr_primary);
     EnigmailLog.DEBUG(`selectIdentityByIndex(): ${JSON.stringify(autocrypt_info)}\n`);
 
@@ -88,7 +89,7 @@ async function onCommandMenulistAutocryptEmail() {
 
 async function onCommandMenulistAutocryptMode() {
   const menulistAutocryptMode = document.getElementById("menulistAutocryptMode");
-  const is_mutual_new = (menulistAutocryptMode.selectedItem.value == 'mutual');
+  const is_mutual_new = (menulistAutocryptMode.selectedItem.value === 'mutual');
 
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
   const is_value_unchanged = autocrypt_info.is_mutual == is_mutual_new;
@@ -105,8 +106,14 @@ async function onCommandMenulistAutocryptMode() {
 async function blinkAutocrpyModeSaved() {
   const labelAutocryptModeSaved = document.getElementById("labelAutocryptModeSaved");
   labelAutocryptModeSaved.hidden = false;
-  await sleep(800);
-  labelAutocryptModeSaved.hidden = true;
+  if (blinkTimeout) {
+    clearTimeout(blinkTimeout);
+    blinkTimeout = null;
+  }
+  blinkTimeout = setTimeout(function() {
+    labelAutocryptModeSaved.hidden = true;
+    blinkTimeout = null;
+  }, 800);
 }
 
 async function onClickSendSetupMessage() {
@@ -138,21 +145,32 @@ async function onClickRunSetup() {
   window.openDialog("chrome://autocrypt/content/ui/autocryptSetup.xul", "",
     "chrome,dialog,modal,centerscreen", args, result);
 
-  if (result.choice == 'generate') {
-    EnigmailLog.DEBUG(`selectIdentityByIndex(): generate\n`);
-    const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
-    textboxConfiguredKey.value = "Generating…";
+  EnigmailLog.DEBUG(`selectIdentityByIndex(): result: ${result.choice}\n`);
 
-    setTimeout(async function() {
-      await AutocryptSecret.generateKeyForEmail(email);
+  switch (result.choice) {
+    case 'change':
+      if (result.fpr_primary == 'generate') {
+        EnigmailLog.DEBUG(`selectIdentityByIndex(): generate\n`);
+        const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
+        textboxConfiguredKey.value = "Generating…";
+
+        setTimeout(async function() {
+          await AutocryptSecret.generateKeyForEmail(email);
+          await onCommandMenulistAutocryptEmail();
+        }, 50);
+      } else {
+        EnigmailLog.DEBUG(`selectIdentityByIndex(): existing (${result.fpr_primary})\n`);
+        if (result.fpr_primary && (!autocrypt_info || result.fpr_primary != autocrypt_info.fpr_primary)) {
+          await AutocryptSecret.changeSecretKeyForEmail(email, result.fpr_primary);
+          await onCommandMenulistAutocryptEmail();
+        }
+      }
+      break;
+    case 'disable':
+      EnigmailLog.DEBUG(`selectIdentityByIndex(): disable\n`);
+      await AutocryptSecret.changeSecretKeyForEmail(email, null);
       await onCommandMenulistAutocryptEmail();
-    }, 100);
-  } else if (result.choice == 'existing') {
-    EnigmailLog.DEBUG(`selectIdentityByIndex(): existing (${result.fpr_primary})\n`);
-    if (result.fpr_primary && (!autocrypt_info || result.fpr_primary != autocrypt_info.fpr_primary)) {
-      await AutocryptSecret.changeSecretKeyForEmail(email, result.fpr_primary);
-      await onCommandMenulistAutocryptEmail();
-    }
+      break;
   }
 }
 

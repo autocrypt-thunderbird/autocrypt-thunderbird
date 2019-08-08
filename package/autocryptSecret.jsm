@@ -57,8 +57,8 @@ var AutocryptSecret = {
     EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail()\n`);
 
     let secret_keys_map = await EnigmailKeyRing.getAllSecretKeysMap();
-    if (!(fpr_primary in secret_keys_map)) {
-      EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail(): unknown fpr_primary!\n`);
+    if (fpr_primary && !(fpr_primary in secret_keys_map)) {
+      EnigmailLog.DEBUG(`keyRing.jsm: changeSecretKeyForEmail(): unknown key!\n`);
       return;
     }
 

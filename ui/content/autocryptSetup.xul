@@ -48,24 +48,23 @@
         </hbox>
       </vbox>
       <vbox style="margin: 10px;">
-        <hbox align="center" style="height: 3em;">
-          <radio id="radioSetupGenerate" value="generate" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Create new key" />
+        <hbox align="center">
+          <radio id="radioSetupChange" value="change" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Use a different key" />
           <spacer flex="1" />
         </hbox>
-        <hbox id="boxGenerate">
-          <label value="Generates a new key for this address." />
+        <hbox align="center" id="boxChange" style="height: 3em;">
+          <label value="Choose a key: " control="menulistChangeKey" disabled="true" />
+          <menulist id="menulistChangeKey" label="(generate new, or use archived key)" flex="1">
+          </menulist>
         </hbox>
       </vbox>
       <vbox style="margin: 10px;">
         <hbox align="center">
-          <radio id="radioSetupExisting" value="existing" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Use other key" />
+          <radio id="radioSetupDisable" value="disable" oncommand="onRadioChangeSetup();" style="text-indent: 5px;" label="Disable Autocrypt" />
           <spacer flex="1" />
         </hbox>
-        <hbox align="center" id="boxExisting" style="height: 3em;">
-          <label value="Known keys: " control="menulistExistingKeys" disabled="true" />
-          <menulist id="menulistExistingKeys" oncommand="onCommandMenulistChoiceExisting();" label="(choose key)">
-          </menulist>
-          <spacer flex="1" />
+        <hbox id="boxDisable">
+          <label value="Do not use Autocrypt for this identity" />
         </hbox>
       </vbox>
     </radiogroup>
