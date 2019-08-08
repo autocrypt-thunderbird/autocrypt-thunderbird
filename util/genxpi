@@ -62,7 +62,6 @@ zip -9 --must-match\
     chrome/content/modules/cryptoAPI/*.js \
     chrome/content/modules/stdlib/*.jsm \
     chrome/content/modules/stdlib/*.js \
-    chrome/content/modules/*.js \
     chrome/content/modules/all-modules.txt \
     chrome/content/am-enigprefs.xul
 
