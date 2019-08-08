@@ -11,6 +11,18 @@ var EXPORTED_SYMBOLS = ["AutocryptMessageCache"];
 
 var AutocryptMessageCache = {
   message_cache: [],
+  current_folder: null,
+
+  maybeHandleFolderSwitch: function(folder) {
+    if (this.current_folder && this.current_folder === folder) {
+      return;
+    }
+    if (this.current_folder) {
+      EnigmailLog.DEBUG(`messageCache.jsm: maybeHandleFolderSwitch(): dropping cache for folder ${this.current_folder}\n`);
+      this.message_cache = [];
+    }
+    this.current_folder = folder;
+  },
 
   getCachedMessage: function(uri) {
     if (!uri || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
@@ -43,6 +55,7 @@ var AutocryptMessageCache = {
     if (!msg_identifier) {
       return;
     }
+    this.maybeHandleFolderSwitch(msg_identifier.folder);
     this.message_cache.push({msg_identifier: msg_identifier, decrypted_message: decrypted_message});
   }
 };
