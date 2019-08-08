@@ -26,7 +26,6 @@ MODFILES = \
            cryptoAPI.jsm \
            data.jsm \
            decryption.jsm \
-           execution.jsm \
            persistentCrypto.jsm \
            dialog.jsm \
            encryption.jsm \
@@ -37,7 +36,6 @@ MODFILES = \
            filters.jsm \
            filtersWrapper.jsm \
            fixExchangeMsg.jsm \
-           gpgImport.jsm \
            glodaUtils.jsm \
            key.jsm \
            keyRefreshService.jsm \
@@ -70,7 +68,6 @@ MODFILES = \
            stdlib.jsm \
            streams.jsm \
            sync.jsm \
-           system.jsm \
            tb60compat.jsm \
            time.jsm \
            timer.jsm \

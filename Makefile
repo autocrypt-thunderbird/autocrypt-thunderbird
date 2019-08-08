@@ -8,7 +8,7 @@ DEPTH		= .
 
 include $(DEPTH)/config/autoconf.mk
 
-DIRS = ipc ui package lang stdlib
+DIRS = ui package lang stdlib
 
 ALL = dirs
 
@@ -34,14 +34,12 @@ check:
 	util/checkFiles.py
 
 eslint:
-	static_analysis/eslint ipc
 	static_analysis/eslint package
 	static_analysis/eslint ui
 
 unit:
 	make -C package/tests
 	make -C ui/tests
-	make -C ipc/tests
 
 test: eslint check unit
 

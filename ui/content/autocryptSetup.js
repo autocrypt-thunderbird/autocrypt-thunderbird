@@ -14,7 +14,6 @@
 
 const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
 const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
-const AutocryptGpgImport = ChromeUtils.import("chrome://autocrypt/content/modules/gpgImport.jsm").AutocryptGpgImport;
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 
 // Initialize enigmailCommon
@@ -95,20 +94,6 @@ async function refreshExistingKeys() {
   } else {
     view.radioSetupExisting.setAttribute("disabled", "true");
   }
-
-  /* TODO finish or remove
-  let gpg_keys = await AutocryptGpgImport.obtainKeyList(getSetupEmail());
-  if (gpg_keys) {
-    for (let gpg_fpr in gpg_keys) {
-      if (secret_keys.find(key => key.getFingerprint().toUpperCase() == gpg_fpr)) {
-        EnigmailLog.DEBUG(`refreshExistingKeys(): skipping gpg key ${gpg_fpr}, no matching uid\n`);
-        continue;
-      }
-      EnigmailLog.DEBUG(`refreshExistingKeys(): found gpg key ${gpg_fpr}\n`);
-      view.menulistExistingKeys.appendItem(`${gpg_fpr} (from GnuPG)`, gpg_fpr);
-    }
-  }
-  */
 
   // view.menulistExistingKeys.label = 'heyho'; // `(${secret_keys.length} keys available)`;
 }
