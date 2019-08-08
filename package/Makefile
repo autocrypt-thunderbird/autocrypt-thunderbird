@@ -40,8 +40,6 @@ MODFILES = \
            gpgImport.jsm \
            glodaUtils.jsm \
            key.jsm \
-           keyObj.jsm \
-           keyUsability.jsm \
            keyRefreshService.jsm \
            keyRing.jsm \
            keyserver.jsm \
@@ -76,7 +74,6 @@ MODFILES = \
            tb60compat.jsm \
            time.jsm \
            timer.jsm \
-           trust.jsm \
            uris.jsm \
            verify.jsm \
            verifyStatus.jsm \

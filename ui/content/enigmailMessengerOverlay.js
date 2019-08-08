@@ -39,7 +39,6 @@ var EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/key
 var EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
 var EnigmailAttachment = ChromeUtils.import("chrome://autocrypt/content/modules/attachment.jsm").EnigmailAttachment;
 var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailKeyUsability = ChromeUtils.import("chrome://autocrypt/content/modules/keyUsability.jsm").EnigmailKeyUsability;
 var EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
 var EnigmailProtocolHandler = ChromeUtils.import("chrome://autocrypt/content/modules/protocolHandler.jsm").EnigmailProtocolHandler;
 var EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;

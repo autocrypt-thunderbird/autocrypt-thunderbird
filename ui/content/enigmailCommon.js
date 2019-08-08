@@ -32,7 +32,6 @@ var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/win
 var EnigmailTime = ChromeUtils.import("chrome://autocrypt/content/modules/time.jsm").EnigmailTime;
 var EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
 var EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-var EnigmailTrust = ChromeUtils.import("chrome://autocrypt/content/modules/trust.jsm").EnigmailTrust;
 var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 var EnigmailKeyServer = ChromeUtils.import("chrome://autocrypt/content/modules/keyserver.jsm").EnigmailKeyServer;
 var EnigmailEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").EnigmailEvents;
@@ -429,25 +428,8 @@ function EnigDownloadKeys(inputObj, resultObj) {
   return EnigmailWindows.downloadKeys(window, inputObj, resultObj);
 }
 
-function EnigGetTrustCode(keyObj) {
-  return EnigmailTrust.getTrustCode(keyObj);
-}
-
-function EnigEditKeyTrust(userIdArr, keyIdArr) {
-  return EnigmailWindows.editKeyTrust(window, userIdArr, keyIdArr);
-}
-
-
-function EnigEditKeyExpiry(userIdArr, keyIdArr) {
-  return EnigmailWindows.editKeyExpiry(window, userIdArr, keyIdArr);
-}
-
 function EnigDisplayKeyDetails(keyId, refresh) {
   return EnigmailWindows.openKeyDetails(window, keyId, refresh);
-}
-
-function EnigSignKey(userId, keyId) {
-  return EnigmailWindows.signKey(window, userId, keyId);
 }
 
 
@@ -455,17 +437,8 @@ function EnigGetLocalFileApi() {
   return Components.interfaces.nsIFile;
 }
 
-function EnigShowPhoto(keyId, userId, photoNumber) {
-  EnigmailWindows.showPhoto(window, keyId, userId, photoNumber);
-}
-
 function EnigGetFilePath(nsFileObj) {
   return EnigmailFiles.getFilePath(nsFileObj);
-}
-
-// return the label of trust for a given trust code
-function EnigGetTrustLabel(trustCode) {
-  return EnigmailTrust.getTrustLabel(trustCode);
 }
 
 function EnigGetDateTime(dateNum, withDate, withTime) {
@@ -618,90 +591,6 @@ function createCell(label) {
   var cell = document.createXULElement("treecell");
   cell.setAttribute("label", label);
   return cell;
-}
-
-
-/**
- * Process the output of GPG and return the key details
- *
- * @param   String  Values separated by colons and linebreaks
- *
- * @return  Object with the following keys:
- *    gUserId: Main user ID
- *    calcTrust,
- *    ownerTrust,
- *    fingerprint,
- *    showPhoto,
- *    uidList: List of Pseudonyms and E-Mail-Addresses,
- *    subkeyList: List of Subkeys
- */
-function EnigGetKeyDetails(sigListStr) {
-  var gUserId;
-  var calcTrust;
-  var ownerTrust;
-  var fingerprint;
-  var creationDate;
-  var expiryDate;
-  var uidList = [];
-  var subkeyList = [];
-  var showPhoto = false;
-
-  var sigList = sigListStr.split(/[\n\r]+/);
-  for (var i = 0; i < sigList.length; i++) {
-    var aLine = sigList[i].split(/:/);
-    switch (aLine[0]) {
-      case "pub":
-        gUserId = EnigConvertGpgToUnicode(aLine[9]);
-        calcTrust = aLine[1];
-        if (aLine[11].indexOf("D") >= 0) {
-          calcTrust = "d";
-        }
-        ownerTrust = aLine[8];
-        creationDate = EnigmailTime.getDateTime(aLine[5], true, false);
-        expiryDate = EnigmailTime.getDateTime(aLine[6], true, false);
-        subkeyList.push(aLine);
-        if (!gUserId) {
-          gUserId = EnigConvertGpgToUnicode(aLine[9]);
-        } else if (uidList !== false) {
-          uidList.push(aLine);
-        }
-        break;
-      case "uid":
-        if (!gUserId) {
-          gUserId = EnigConvertGpgToUnicode(aLine[9]);
-        } else if (uidList !== false) {
-          uidList.push(aLine);
-        }
-        break;
-      case "uat":
-        // User Attributes with "1 " in field 9 determine JPEG pictures
-        if (aLine[9].search("1 ") === 0) {
-          showPhoto = true;
-        }
-        break;
-      case "sub":
-        subkeyList.push(aLine);
-        break;
-      case "fpr":
-        if (!fingerprint) {
-          fingerprint = aLine[9];
-        }
-        break;
-    }
-  }
-
-  var keyDetails = {
-    gUserId: gUserId,
-    calcTrust: calcTrust,
-    ownerTrust: ownerTrust,
-    fingerprint: fingerprint,
-    showPhoto: showPhoto,
-    uidList: uidList,
-    creationDate: creationDate,
-    expiryDate: expiryDate,
-    subkeyList: subkeyList
-  };
-  return keyDetails;
 }
 
 function sleep(ms) {
