@@ -26,11 +26,31 @@ var EnigmailSqliteDb = {
   getDbConnection: async function() {
     EnigmailLog.DEBUG("sqliteDb.jsm: getDbConnection()\n");
     if (!this.cachedConnection) {
+      EnigmailLog.DEBUG("sqliteDb.jsm: getDbConnection(): opening new sqlite connection\n");
       this.cachedConnection = await new Promise((resolve, reject) => {
         openDatabaseConn(resolve, reject, 100, Date.now() + 10000);
       });
+    } else {
+      EnigmailLog.DEBUG("sqliteDb.jsm: getDbConnection(): reusing connection\n");
     }
+    this.refreshConnectionTimeout();
     return this.cachedConnection;
+  },
+
+  refreshConnectionTimeout() {
+    if (this.currentTimeout) {
+      EnigmailTimer.clearTimeout(this.currentTimeout);
+    }
+
+    let self = this;
+    this.lastOpened = new Date();
+    this.currentTimeout = EnigmailTimer.setTimeout(function() {
+      let sinceLastOpen = new Date() - self.lastOpened;
+      if (sinceLastOpen > 2000) {
+        EnigmailLog.DEBUG("sqliteDb.jsm: dropping cached sqlite connection\n");
+        self.clearCachedConnections();
+      }
+    }, 2010);
   },
 
   clearCachedConnections: function() {
