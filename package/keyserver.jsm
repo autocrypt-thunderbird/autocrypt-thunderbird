@@ -10,12 +10,9 @@
 const EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
 const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
 const EnigmailXhrUtils = ChromeUtils.import("chrome://autocrypt/content/modules/xhrUtils.jsm").EnigmailXhrUtils;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";

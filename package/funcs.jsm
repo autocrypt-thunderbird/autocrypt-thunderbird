@@ -102,49 +102,6 @@ var EnigmailFuncs = {
   },
 
   /**
-   * Hide all menu entries and other XUL elements that are considered for
-   * advanced users. The XUL items must contain 'advanced="true"' or
-   * 'advanced="reverse"'.
-   *
-   * @obj:       |object| - XUL tree element
-   * @attribute: |string| - attribute to set or remove (i.e. "hidden" or "collapsed")
-   * @dummy:     |object| - anything
-   *
-   * no return value
-   */
-
-
-  collapseAdvanced: function(obj, attribute, dummy) {
-    EnigmailLog.DEBUG("funcs.jsm: collapseAdvanced:\n");
-
-    var advancedUser = EnigmailPrefs.getPref("advancedUser");
-
-    obj = obj.firstChild;
-    while (obj) {
-      if ("getAttribute" in obj) {
-        if (obj.getAttribute("advanced") == "true") {
-          if (advancedUser) {
-            obj.removeAttribute(attribute);
-          }
-          else {
-            obj.setAttribute(attribute, "true");
-          }
-        }
-        else if (obj.getAttribute("advanced") == "reverse") {
-          if (advancedUser) {
-            obj.setAttribute(attribute, "true");
-          }
-          else {
-            obj.removeAttribute(attribute);
-          }
-        }
-      }
-
-      obj = obj.nextSibling;
-    }
-  },
-
-  /**
    * this function tries to mimic the Thunderbird plaintext viewer
    *
    * @plainTxt - |string| containing the plain text data

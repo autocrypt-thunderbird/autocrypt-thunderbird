@@ -20,7 +20,7 @@ const {
   Services
 } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-const ENIGMAIL_PREFS_ROOT = "extensions.enigmail.";
+const AUTOCRYPT_PREFS_ROOT = "extensions.autocrypt.";
 
 const p = {
   service: null,
@@ -34,7 +34,7 @@ function initPrefService() {
     p.service = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
     p.root = p.service.getBranch(null);
-    p.branch = p.service.getBranch(ENIGMAIL_PREFS_ROOT);
+    p.branch = p.service.getBranch(AUTOCRYPT_PREFS_ROOT);
     p.defaultBranch = p.service.getDefaultBranch(null);
 
     try {
@@ -203,11 +203,8 @@ var EnigmailPrefs = {
     for (var q in allPrefs) {
       var name = allPrefs[q];
 
-      /*
-       * agentPath is system-depend, configuredVersion build-depend and
-       * advancedUser must be set in order to save the profile.
-       */
-      if (name == "agentPath" || name == "configuredVersion") {
+      /* configuredVersion is build-depend */
+      if (name == "configuredVersion") {
         continue;
       }
 
@@ -244,7 +241,7 @@ var EnigmailPrefs = {
     let observer = {
       observe: function(aSubject, aTopic, aData) {
         try {
-          if (String(aData) == ENIGMAIL_PREFS_ROOT + this.prefName) {
+          if (String(aData) == AUTOCRYPT_PREFS_ROOT + this.prefName) {
             EnigmailLog.DEBUG("prefs.jsm: preference observed: " + aData + "\n");
             observerFunc();
           }
@@ -263,7 +260,7 @@ var EnigmailPrefs = {
         throw Components.results.NS_NOINTERFACE;
       }
     };
-    branch.addObserver(ENIGMAIL_PREFS_ROOT, observer, false);
+    branch.addObserver(AUTOCRYPT_PREFS_ROOT, observer, false);
     return observer;
   },
 
@@ -277,6 +274,6 @@ var EnigmailPrefs = {
 
     let branch = this.getPrefRoot();
 
-    branch.removeObserver(ENIGMAIL_PREFS_ROOT, observer);
+    branch.removeObserver(AUTOCRYPT_PREFS_ROOT, observer);
   }
 };

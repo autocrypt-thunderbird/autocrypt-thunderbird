@@ -64,8 +64,7 @@
             accesskey="&enigmail.composemenu.accesskey;"
             insertbefore="tasksMenu">
 
-        <menupopup id="menu_EnigmailPopup"
-                   onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
+        <menupopup id="menu_EnigmailPopup">
 
           <!-- encryption state / toggle menu -->
           <menuitem id="enigmail_compose_encrypt_item"
@@ -167,7 +166,7 @@
                 label="&enigmail.prefs.label;"
                 accesskey="&enigmail.prefs.accesskey;">
 
-            <menupopup onpopupshowing="EnigmailFuncs.collapseAdvanced(this, 'hidden', Enigmail.msg.setMenuSettings(''))">
+            <menupopup>
 
               <menuitem id="enigmail_accountSettings"
                 label="&enigmail.pgpAccountSettings.label;"

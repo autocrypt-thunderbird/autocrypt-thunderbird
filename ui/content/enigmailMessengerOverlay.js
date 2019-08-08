@@ -402,12 +402,10 @@ Enigmail.msg = {
 
   displayAppmenu: function(targetId, targetObj) {
     let menuElem = document.getElementById("appmenu_enigmailMenuPlaceholder");
-    this.displayMainMenu(menuElem);
     PanelUI.showSubView(targetId, targetObj);
   },
 
   displayMainMenu: function(menuPopup) {
-    EnigmailFuncs.collapseAdvanced(menuPopup, 'hidden', Enigmail.msg.updateOptionsDisplay());
   },
 
   toggleAttribute: function(attrName) {

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, EnigmailPrefs: false */
+/*global Components: false, EnigmailLog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public

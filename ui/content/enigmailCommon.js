@@ -461,10 +461,6 @@ function enigGetService(aURL, aInterface) {
   }
 }
 
-function EnigCollapseAdvanced(obj, attribute, dummy) {
-  return EnigmailFuncs.collapseAdvanced(obj, attribute, dummy);
-}
-
 /**
  * EnigOpenUrlExternally
  *

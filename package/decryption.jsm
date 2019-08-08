@@ -10,7 +10,6 @@ var EXPORTED_SYMBOLS = ["EnigmailDecryption"];
 
 const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
@@ -223,7 +222,7 @@ var EnigmailDecryption = {
 
       var doubleDashSeparator = false;
       try {
-        doubleDashSeparator = EnigmailPrefs.getPrefBranch().getBoolPref("doubleDashSeparator");
+        doubleDashSeparator = true;
       }
       catch (ex) {}
 

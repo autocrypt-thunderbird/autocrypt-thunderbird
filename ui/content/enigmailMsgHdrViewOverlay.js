@@ -77,8 +77,6 @@ Enigmail.hdrView = {
   },
 
   displayAddressPopup: function(event) {
-    let target = event.target;
-    EnigmailFuncs.collapseAdvanced(target, 'hidden');
   },
 
   statusBarHide: function() {

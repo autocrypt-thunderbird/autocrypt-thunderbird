@@ -17,7 +17,6 @@ const ctypes = ChromeUtils.import("resource://gre/modules/ctypes.jsm").ctypes;
 const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
 const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 const subprocess = ChromeUtils.import("chrome://autocrypt/content/modules/subprocess.jsm").subprocess;
 
 var gKernel32Dll = null;
@@ -75,10 +74,6 @@ const CODEPAGE_MAPPING = {
  */
 function getWindowsCopdepage() {
   EnigmailLog.DEBUG("system.jsm: getWindowsCopdepage\n");
-
-  if (EnigmailPrefs.getPref("gpgLocaleEn")) {
-    return "437";
-  }
 
   let output = "";
   let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
