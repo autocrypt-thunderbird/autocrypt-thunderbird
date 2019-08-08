@@ -117,7 +117,7 @@ function buildTreeRow(key_info) {
   createdCol.setAttribute("id", "created");
   inUseCol.setAttribute("id", "inuse");
 
-  keyFpCol.setAttribute("label", key_info.fpr_short);
+  keyFpCol.setAttribute("label", key_info.fpr);
   createdCol.setAttribute("label", key_info.created_date);
   inUseCol.setAttribute("label", key_info.is_active ? "Yes" : "");
 
