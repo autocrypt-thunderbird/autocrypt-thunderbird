@@ -300,18 +300,18 @@ Enigmail.msg = {
 
     // manually load overlay for contacts sidebar
     // wait 2 seconds because loading of the sidebar is slightly delayed
-    let sb = document.getElementById("sidebar");
-    if (sb) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
-      EnigmailTimer.setTimeout(function _f() {
-        loadOverlay(sb.contentDocument.defaultView, "chrome://autocrypt/content/ui/enigmailAbContactsPanel.xul");
-      }, 2000);
-    }
+    // let sb = document.getElementById("sidebar");
+    // if (sb) {
+    // EnigmailLog.DEBUG("enigmailMsgComposeOverlay: contentDocument=" + sb.contentDocument + "\n");
+    // EnigmailTimer.setTimeout(function _f() {
+    // loadOverlay(sb.contentDocument.defaultView, "chrome://autocrypt/content/ui/enigmailAbContactsPanel.xul");
+    // }, 2000);
+    // }
 
-    let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
-    customizeToolbar.addEventListener("pageshow", function(event) {
-      loadOverlay(event.target.defaultView, "chrome://autocrypt/content/ui/enigmailCustToolOverlay.xul");
-    }, false);
+    // let customizeToolbar = document.getElementById("customizeToolbarSheetIFrame");
+    // customizeToolbar.addEventListener("pageshow", function(event) {
+    // loadOverlay(event.target.defaultView, "chrome://autocrypt/content/ui/enigmailCustToolOverlay.xul");
+    // }, false);
 
     gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
     Enigmail.msg.composeBodyReady = false;

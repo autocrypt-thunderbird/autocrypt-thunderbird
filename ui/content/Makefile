@@ -29,23 +29,17 @@ UIFILES = \
 	dialogBackupCode.xul \
 	dialogBackupCode.js \
 	enigmailCommon.js \
-	enigmailAbContactsPanel.xul \
-	enigmailAbOverlay.js \
 	aboutEnigmail.html \
 	aboutEnigmail.js \
-	enigmailAddUidDlg.js \
-	enigmailAddUidDlg.xul \
 	enigmailMsgBox.js \
 	enigmailMsgBox.xul \
 	enigmailAttachmentsDialog.xul \
 	enigmailAttachmentsDialog.js \
-	enigmailAmIdEditOverlay.xul \
 	enigmailCheckLanguage.xul \
 	enigmailHelp.xul \
 	enigmailHelp.js \
 	am-enigprefs.xul \
 	am-enigprefs.js \
-	editSingleAccount.xul \
 	enigmailMsgComposeOverlay.xul \
 	enigmailMsgComposeOverlay-sm.xul \
 	enigmailMsgComposeOverlay.js \
@@ -56,8 +50,6 @@ UIFILES = \
 	enigmailMessengerOverlay.js \
 	enigmailMsgHdrViewOverlay.xul \
 	enigmailMsgHdrViewOverlay.js \
-	enigRetrieveProgress.xul \
-	enigRetrieveProgress.js \
 	manageAllKeys.js \
 	manageAllKeys.xul \
 	setupWizardAutocrypt.js \
