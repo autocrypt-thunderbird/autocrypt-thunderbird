@@ -375,45 +375,12 @@ Enigmail.prototype = {
         // Initialize enigmail
         EnigmailCore.init(getEnigmailApp().getVersion());
         this.initialize(win, getEnigmailApp().getVersion());
-
-        try {
-          // Reset alert count to default value
-          getEnigmailPrefs().getPrefBranch().clearUserPref("initAlert");
-        } catch (ex) {}
       } catch (ex) {
-        if (firstInitialization) {
-          // Display initialization error alert
-          const errMsg = (this.initializationError ? this.initializationError : getEnigmailLocale().getString("accessError")) +
-            "\n\n" + getEnigmailLocale().getString("initErr.howToFixIt");
-
-          const checkedObj = {
-            value: false
-          };
-          if (getEnigmailPrefs().getPref("initAlert")) {
-            const r = getEnigmailDialog().longAlert(win, "Enigmail: " + errMsg,
-              getEnigmailLocale().getString("dlgNoPrompt"),
-              null, getEnigmailLocale().getString("initErr.setupWizard.button"),
-              null, checkedObj);
-            if (r >= 0 && checkedObj.value) {
-              getEnigmailPrefs().setPref("initAlert", false);
-            }
-            if (r == 1) {
-              // start setup wizard
-              getEnigmailWindows().openSetupWizard(win, false);
-              return Enigmail.getService(win);
-            }
-          }
-          if (getEnigmailPrefs().getPref("initAlert")) {
-            this.initializationAttempted = false;
-            gEnigmailService = null;
-          }
-        }
-
+        getEnigmailLog().DEBUG("core.jsm: getService: init failed!\n");
         return null;
       }
 
       const configuredVersion = getEnigmailPrefs().getPref("configuredVersion");
-
       getEnigmailLog().DEBUG("core.jsm: getService: last used version: " + configuredVersion + "\n");
 
       if (this.initialized && (getEnigmailApp().getVersion() != configuredVersion)) {

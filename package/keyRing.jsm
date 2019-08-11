@@ -199,12 +199,14 @@ var EnigmailKeyRing = {
     await sqlite.storeSecretKeyData(fpr_primary, key_data_secret);
     await this.insertOrUpdate(key_data_public);
 
-    // TODO there is a better way to do this
+    // better way to do this? then again, we use a quick s2k
     await openpgp_secret_key.decrypt(master_password);
-    if (fpr_primary in gCachedSecretKeyMap) {
+    if (gCachedSecretKeyMap && fpr_primary in gCachedSecretKeyMap) {
       gCachedSecretKeyMap[fpr_primary] = openpgp_secret_key;
     } else {
+      gCachedSecretKeyMap = {};
       gCachedSecretKeyMap[fpr_primary] = openpgp_secret_key;
+      gCachedSecretKeyList = [];
       gCachedSecretKeyList.push(openpgp_secret_key);
     }
   },

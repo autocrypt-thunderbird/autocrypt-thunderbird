@@ -24,24 +24,11 @@ const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 var EnigmailWindows = {
-  /**
-   * Display the OpenPGP setup wizard window
-   *
-   * win      : nsIWindow - the parent window
-   * skipIntro: Boolean   - optional, if true, skip the introduction page
-   *
-   * no return value
-   */
   openSetupWizard: function(win, setupType) {
     EnigmailLog.DEBUG("windows.jsm: openSetupWizard()\n");
 
-    if (!EnigmailStdlib.hasConfiguredAccounts()) {
-      EnigmailLog.DEBUG("windows.jsm: openSetupWizard: no configured accounts\n");
-      return;
-    }
-
     win.open("chrome://autocrypt/content/ui/setupWizardAutocrypt.xul",
-      "", "chrome,centerscreen,resizable");
+      "", "chrome,dialog,centerscreen,resizable,modal");
   },
 
   openAutocryptSettings: function(win) {
