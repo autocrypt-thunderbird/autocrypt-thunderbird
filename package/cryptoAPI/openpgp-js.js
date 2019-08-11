@@ -116,13 +116,11 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
     EnigmailLog.DEBUG(`openpgp-js.js: decrypting...\n`);
     try {
-      const message = await openpgp.message.readArmored(ciphertext);
-
       let session_key;
       if (!cached_session_key) {
         const startTimeAsym = new Date();
         const decrypted_session_keys = await openpgp.decryptSessionKeys({
-          message: message,
+          message: await openpgp.message.readArmored(ciphertext),
           privateKeys: openpgp_secret_keys
         });
         if (!decrypted_session_keys) {
@@ -138,7 +136,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       }
 
       const openpgp_result = await openpgp.decrypt({
-        message: message,
+        message: await openpgp.message.readArmored(ciphertext),
         sessionKeys: session_key,
         publicKeys: openpgp_public_key,
         privateKeys: openpgp_secret_keys

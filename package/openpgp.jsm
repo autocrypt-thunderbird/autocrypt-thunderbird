@@ -42,18 +42,24 @@ function initialize() {
   const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
   const getOpenPGPLibrary = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/openpgp-lib.jsm").getOpenPGPLibrary;
 
-  EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
-
   try {
-    gOpenPGPLib = getOpenPGPLibrary();
+    EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
 
+    gOpenPGPLib = getOpenPGPLibrary();
     // config
     gOpenPGPLib.config.s2k_iteration_count_byte = 1;
-
-    EnigmailLog.DEBUG(`openpgp.jsm: openpgp: ${gOpenPGPLib}\n`);
+    EnigmailLog.DEBUG("openpgp.jsm: initialize(): openpgp.js ok\n");
+  } catch (ex) {
+    EnigmailLog.ERROR(`openpgp.jsm: failed to initialize: ${ex.toString()}\n${ex.stack}\n`);
+    return;
   }
-  catch (ex) {
-    EnigmailLog.ERROR(`openpgp.jsm: initialize: error: ${ex.toString()}\n${ex.stack}\n`);
+
+  try {
+    let worker = new Worker('chrome://autocrypt/content/modules/stdlib/openpgp.worker.js');
+    let init_result = gOpenPGPLib.initWorker({ workers: [worker] });
+    EnigmailLog.DEBUG("openpgp.jsm: initialize(): worker ok\n");
+  } catch (ex) {
+    EnigmailLog.ERROR(`openpgp.jsm: failed to initialize worker: ${ex.toString()}\n${ex.stack}\n`);
   }
 }
 
