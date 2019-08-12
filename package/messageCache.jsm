@@ -18,6 +18,10 @@ var AutocryptMessageCache = {
     this.disabled = disabled;
   },
 
+  shouldCacheByStatus: function(verify_status) {
+    return verify_status && (verify_status.isDecryptOk() || verify_status.isSignOk());
+  },
+
   maybeHandleFolderSwitch: function(folder) {
     if (this.current_folder && this.current_folder === folder) {
       return;

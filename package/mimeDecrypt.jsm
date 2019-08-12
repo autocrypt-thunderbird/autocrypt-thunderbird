@@ -462,6 +462,7 @@ MimeDecryptHandler.prototype = {
     // don't remember the last message if it contains an embedded PGP/MIME message
     // to avoid ending up in a loop
     if (this.mimePartNumber === "1" &&
+      AutocryptMessageCache.shouldCacheByStatus(verify_status) &&
       decrypted_plaintext.search(/^Content-Type:[\t ]+multipart\/encrypted/mi) < 0) {
       const cached_message = {
         decrypted_plaintext: decrypted_plaintext,

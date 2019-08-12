@@ -492,16 +492,16 @@ MimeVerify.prototype = {
       }
 
       if (decrypt_status) {
-        const combined_status = decrypt_status.combineWith(verify_status);
-        if (verify_status) {
-          verify_status = combined_status;
-          const cached_message = {
-            decrypted_plaintext: this.signedData,
-            decrypted_headers: protected_headers,
-            verify_status: verify_status
-          };
-          AutocryptMessageCache.putCachedMessage(this.uri, cached_message);
-        }
+        verify_status = decrypt_status.combineWith(verify_status);
+      }
+
+      if (AutocryptMessageCache.shouldCacheByStatus(verify_status)) {
+        const cached_message = {
+          decrypted_plaintext: this.signedData,
+          decrypted_headers: protected_headers,
+          verify_status: verify_status
+        };
+        AutocryptMessageCache.putCachedMessage(this.uri, cached_message);
       }
 
       this.displayStatus(verify_status, protected_headers);
