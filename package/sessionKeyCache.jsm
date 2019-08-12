@@ -14,21 +14,34 @@ const HEADER_KEY = "autocrypt-sessionkey-v1";
 const SALT = "session-key-cache";
 
 var AutocryptSessionKeyCache = {
+  disabled: false,
+
+  setDisabled(disabled) {
+    this.disabled = disabled;
+  },
+
   getCachedSessionKey: function(uri) {
-    EnigmailLog.DEBUG(`messageCache.jsm: getCachedSessionKey(): ${uri}\n`);
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
+
+    if (this.disabled) {
+      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): cache is disabled\n`);
+      return null;
+    }
+
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
     if (!uri || !uri.spec || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
       return null;
     }
 
     let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     if (!msgDbHdr) {
-      EnigmailLog.DEBUG(`messageCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
+      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
       return null;
     }
 
     let session_key_encrypted = msgDbHdr.getStringProperty(HEADER_KEY);
     if (!session_key_encrypted) {
-      EnigmailLog.DEBUG(`messageCache.jsm: getCachedSessionKey(): session key not cached\n`);
+      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): session key not cached\n`);
       return null;
     }
 
@@ -38,34 +51,34 @@ var AutocryptSessionKeyCache = {
       return null;
     }
 
-    EnigmailLog.DEBUG(`messageCache.jsm: getCachedSessionKey(): ok`);
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ok`);
     return session_key;
   },
 
   putCachedSessionKey: function(uri, session_key) {
-    EnigmailLog.DEBUG(`messageCache.jsm: putCachedSessionKey(): ${uri}\n`);
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ${uri}\n`);
     if (!uri || !uri.spec || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
       return;
     }
 
     if (!session_key || !session_key.algorithm || !session_key.data) {
-      EnigmailLog.ERROR(`messageCache.jsm: putCachedSessionKey(): malformed session key!\n`);
+      EnigmailLog.ERROR(`sessionKeyCache.jsm: putCachedSessionKey(): malformed session key!\n`);
       return;
     }
 
     let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     if (!msgDbHdr) {
-      EnigmailLog.DEBUG(`messageCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
+      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
       return;
     }
 
     let session_key_string = this.serializeSessionKey(session_key);
     let session_key_encrypted = this.encryptString(session_key_string);
-    EnigmailLog.DEBUG(`messageCache.jsm: putCachedSessionKey()\n`);
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey()\n`);
 
     msgDbHdr.setStringProperty(HEADER_KEY, session_key_encrypted);
 
-    EnigmailLog.DEBUG(`messageCache.jsm: putCachedSessionKey(): ok\n`);
+    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ok\n`);
   },
 
   encryptString: function(plaintext) {

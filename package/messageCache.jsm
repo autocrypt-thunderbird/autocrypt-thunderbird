@@ -12,6 +12,11 @@ var EXPORTED_SYMBOLS = ["AutocryptMessageCache"];
 var AutocryptMessageCache = {
   message_cache: [],
   current_folder: null,
+  disabled: false,
+
+  setDisabled(disabled) {
+    this.disabled = disabled;
+  },
 
   maybeHandleFolderSwitch: function(folder) {
     if (this.current_folder && this.current_folder === folder) {
@@ -25,10 +30,14 @@ var AutocryptMessageCache = {
   },
 
   getCachedMessage: function(uri) {
+    EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): ${uri}\n`);
+    if (this.disabled) {
+      EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): cache is disabled\n`);
+      return null;
+    }
     if (!uri || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
       return null;
     }
-    EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): ${uri}\n`);
     let msg_identifier = getMsgIdentifier(uri);
     if (!msg_identifier) {
       return null;
