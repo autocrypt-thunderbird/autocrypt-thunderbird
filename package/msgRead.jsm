@@ -19,7 +19,7 @@ const EnigmailApp = (ChromeUtils.import("chrome://autocrypt/content/modules/app.
 const EnigmailFuncs = (ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm", {})).EnigmailFuncs;
 const EnigmailAutocrypt = (ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
 
-const ExtraHeaders = ["autocrypt", "openpgp"];
+const ExtraHeaders = ["autocrypt", "autocrypt-setup-message" ];
 
 var EnigmailMsgRead = {
   /**

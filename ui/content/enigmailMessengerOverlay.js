@@ -480,6 +480,7 @@ Enigmail.msg = {
     }
 
     this.processAutocryptHeaders();
+    this.processAutocryptSetupMessage();
 
     /*
     try {
@@ -568,6 +569,26 @@ Enigmail.msg = {
     );
 
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: ok:\n");
+  },
+
+  processAutocryptSetupMessage: function() {
+    if (!("autocrypt-setup-message" in currentHeaderData)) {
+      return;
+    }
+
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptSetupMessage: found autocrypt setup message\n");
+
+    if (currentHeaderData["autocrypt-setup-message"].headerValue.toLowerCase() !== "v1") {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptSetupMessage: version is not v1\n");
+      return;
+    }
+
+    if (!currentAttachments.length || currentAttachments[0].contentType.search(/^application\/autocrypt-setup$/i) !== 0) {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptSetupMessage: no setup message attachment\n");
+      return;
+    }
+
+    Enigmail.hdrView.displayAutoCryptSetupMsgHeader();
   },
 
   messageDecryptCb: function(event, mimeMsg) {

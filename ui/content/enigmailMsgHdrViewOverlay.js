@@ -11,7 +11,7 @@
 /* globals from Thunderbird: */
 /* global gFolderDisplay: false, currentAttachments: false, gSMIMEContainer: false, gSignedUINode: false, gEncryptedUINode: false */
 /* global gDBView: false, msgWindow: false, messageHeaderSink: false, gMessageListeners: false, findEmailNodeFromPopupNode: true */
-/* global gExpandedHeaderView: false, CanDetachAttachments: true, gEncryptedURIService: false */
+/* global gExpandedHeaderView: false, CanDetachAttachments: true, gEncryptedURIService: false, gMessageNotificationBar: false */
 /* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
 
 var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
@@ -162,45 +162,20 @@ Enigmail.hdrView = {
     this.updateMsgDb();
   },
 
-  /**
-   * Display the Enigmail status bar and ask for handling the Setup Message
-   */
   displayAutoCryptSetupMsgHeader: function() {
-    if (!Enigmail.msg.securityInfo) {
-      Enigmail.msg.securityInfo = {};
-    }
-    Enigmail.msg.securityInfo.xtraStatus = "autocrypt-setup";
+    let buttons = [{
+      label: 'import dis mofo',
+      accessKey: 's',
+      popup: null,
+      callback(aNotification, aButton) {
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: click!\n");
+        return true; // keep notification open
+      }
+    }];
 
-    let view = Enigmail.hdrView;
-
-    view.setStatusText(EnigmailLocale.getString("autocryptSetupReq"));
-    let confirm = document.getElementById("enigmail_confirmKey");
-    confirm.setAttribute("label", EnigmailLocale.getString("autocryptSetupReq.button.label"));
-    confirm.removeAttribute("hidden");
-
-    document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
-    view.enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureUnknown");
-    this.displayAutocryptMessage(true);
-  },
-
-  displayAutocryptMessage: function(allowImport) {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayAutocryptMessage()\n");
-
-    let enigMsgPane = document.getElementById("enigmailMsgDisplay");
-    let bodyElement = document.getElementById("messagepane");
-    bodyElement.setAttribute("collapsed", true);
-
-    let txt = EnigmailLocale.getString("autocryptSetupReq.setupMsg.desc") + "\n\n";
-    if (allowImport) {
-      txt += EnigmailLocale.getString("autocryptSetupReq.message.import");
-    } else {
-      txt += EnigmailLocale.getString("autocryptSetupReq.message.sent");
-    }
-    txt += "\n\n" + EnigmailLocale.getString("autocryptSetupReq.setupMsg.backup");
-
-    enigMsgPane.textContent = txt;
-    enigMsgPane.removeAttribute("collapsed");
-
+    let msgNotificationBar = gMessageNotificationBar.msgNotificationBar;
+    msgNotificationBar.appendNotification("This is an Autocrypt Setup Message!", "autocryptSetupMsgContent",
+      "chrome://autocrypt/content/ui/logo.svg", msgNotificationBar.PRIORITY_INFO_HIGH, buttons);
   },
 
   displayStatusBar: function() {
