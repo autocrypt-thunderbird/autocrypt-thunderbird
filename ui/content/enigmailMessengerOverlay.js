@@ -126,6 +126,11 @@ Enigmail.msg = {
 
     Enigmail.msg.messagePane = document.getElementById("messagepane");
 
+    if (!window.syncGridColumnWidthsOriginal) {
+      window.syncGridColumnWidthsOriginal = window.syncGridColumnWidths;
+      window.syncGridColumnWidths = autocryptSyncGridColumnWidths;
+    }
+
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Startup\n");
 
     // Override SMIME ui
@@ -2277,6 +2282,11 @@ Enigmail.msg = {
     window.removeEventListener("unload-enigmail", Enigmail.boundOnUnloadEnigmail, false);
     window.removeEventListener("load-enigmail", Enigmail.boundMessengerStartup, false);
 
+    if (window.originalSyncGridColumnWidths) {
+      window.syncGridColumnWidths = window.originalSyncGridColumnWidths;
+      window.originalSyncGridColumnWidths = undefined;
+    }
+
     this.messageCleanup();
 
     if (this.messagePane) {
@@ -2316,6 +2326,35 @@ Enigmail.msg = {
     Enigmail = undefined;
   }
 };
+
+function autocryptSyncGridColumnWidths() {
+  try {
+    let nameColumn = document.getElementById("expandedHeadersNameColumn");
+    let nameColumn2 = document.getElementById("expandedHeaders2NameColumn");
+    let nameColumn3 = document.getElementById("enigmailStatusTextBox");
+
+    // Reset the minimum widths to 0 so that clientWidth will return the
+    // preferred intrinsic width of each column.
+    nameColumn.minWidth = nameColumn2.minWidth = nameColumn3.minWidth = 0;
+
+    // Set minWidth on the smaller of the three columns to be the width of the
+    // larger of the three.
+    if (nameColumn.clientWidth > nameColumn2.clientWidth && nameColumn.clientWidth > nameColumn3.clientWidth) {
+      nameColumn2.minWidth = nameColumn.clientWidth;
+      nameColumn3.minWidth = nameColumn.clientWidth;
+    } else if (nameColumn2.clientWidth > nameColumn.clientWidth && nameColumn2.clientWidth > nameColumn3.clientWidth) {
+      nameColumn.minWidth = nameColumn2.clientWidth;
+      nameColumn3.minWidth = nameColumn2.clientWidth;
+    } else if (nameColumn3.clientWidth > nameColumn.clientWidth && nameColumn3.clientWidth > nameColumn2.clientWidth) {
+      nameColumn.minWidth = nameColumn3.clientWidth;
+      nameColumn2.minWidth = nameColumn3.clientWidth;
+    }
+  } catch (ex) {
+    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: something went wrong overriding syncGridColumnWidths! reverting to original..\n");
+    window.syncGridColumnWidths = window.syncGridColumnWidthsOriginal;
+    window.syncGridColumnWidths();
+  }
+}
 
 Enigmail.boundMessengerStartup = Enigmail.msg.messengerStartup.bind(Enigmail.msg);
 Enigmail.boundMessengerClose = Enigmail.msg.messengerClose.bind(Enigmail.msg);

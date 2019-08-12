@@ -100,10 +100,6 @@
           class="expandedEnigmailBox"
           align="center">
 
-      <vbox>
-        <spacer class="enigmailHeaderSpacer"/>
-      </vbox>
-
       <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
         <label class="enigmailHeaderName" id="enigmailStatusHdr" flex="1" value="&enigmail.label;" control="enigmailStatusText" />
       </hbox>
