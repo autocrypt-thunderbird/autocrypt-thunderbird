@@ -61,6 +61,9 @@ Enigmail.columnHandler = {
     let observerService = Components.classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
     observerService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
+    if (gDBView) {
+      gDBView.addColumnHandler("autocryptStatusCol", Enigmail.columnHandler);
+    }
   },
 
   onUnloadEnigmail: function() {
