@@ -16,9 +16,7 @@
   <!--tree id="threadTree" -->
    <treecols id="threadCols">
     <splitter class="tree-splitter" />
-    <treecol id="enigmailStatusCol" persist="hidden ordinal width"
-             currentView="unthreaded" flex="2"
-             label="" tooltiptext="&enigmail.msgViewColumn.tooltip;" />
+    <treecol id="autocryptStatusCol" class="treecol-image autocryptStatusCol" persist="hidden ordinal width" currentView="unthreaded" fixed="true" is="treecol-image" label="Encryption status" tooltiptext="Sort by encryption status" />
    </treecols>
   <!--/tree -->
 

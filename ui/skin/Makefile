@@ -256,12 +256,14 @@ SKIN_TB_LINUX = \
 	images/password-error.svg \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
-	images/status-lock-18.svg \
+	images/status-lock-14.svg \
+	images/status-lock-bw-14.svg \
 	images/status-lock-disabled-18.svg \
 	images/status-lock-error-18.svg \
 	images/status-lock-unknown-18.svg \
 	images/autocrypt-18.svg \
 	images/autocrypt-bw-18.svg \
+	images/autocrypt-bw-14.svg \
 	images/autocrypt-inactive-18.svg \
 	images/autocrypt-disabled-18.svg
 

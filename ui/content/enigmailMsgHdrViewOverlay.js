@@ -370,9 +370,10 @@ Enigmail.hdrView = {
     var msg = gFolderDisplay.selectedMessage;
     if (!msg || !msg.folder) return;
 
-    //  TODO?
-    // var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-    // msgHdr.setUint32Property("enigmail", Enigmail.msg.securityInfo.statusFlags);
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.verify_status) {
+      var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
+      msgHdr.setUint32Property("autocrypt-status", Enigmail.msg.securityInfo.verify_status.getColumnStatusInt());
+    }
   },
 
   enigCanDetachAttachments: function() {

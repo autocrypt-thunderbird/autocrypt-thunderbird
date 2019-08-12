@@ -317,6 +317,11 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
   font-weight: bold;
 }
 
+.autocryptStatusCol {
+  list-style-image: url("chrome://autocrypt/skin/status-lock-bw-14.svg");
+  padding-inline-end: 2px;
+}
+
 .autocryptIcon {
   list-style-image: url("chrome://autocrypt/skin/autocrypt-18.svg");
 }
@@ -342,16 +347,8 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
   list-style-image: url("chrome://autocrypt/skin/warning-16.png");
 }
 
-treechildren::-moz-tree-image(enigSignedEncrypted) {
-  list-style-image: url("chrome://autocrypt/skin/col-encrypted-signed.png");
-}
-
-treechildren::-moz-tree-image(enigSigned) {
-  list-style-image: url("chrome://autocrypt/skin/enigSignOk.png");
-}
-
-treechildren::-moz-tree-image(enigEncrypted) {
-  list-style-image: url("chrome://autocrypt/skin/enigEncOk.png");
+treechildren::-moz-tree-image(statusColEncrypted) {
+  list-style-image: url("chrome://autocrypt/skin/status-lock-14.svg");
 }
 
 /*

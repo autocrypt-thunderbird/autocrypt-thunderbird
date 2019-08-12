@@ -9,7 +9,8 @@
 
 /* global Components: false, gDBView: false */
 
-var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
+var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+var COLUMN_STATUS = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").COLUMN_STATUS;
 
 if (!Enigmail) var Enigmail = {};
 
@@ -26,60 +27,48 @@ Enigmail.columnHandler = {
   getCellProperties: function(row, col, props) {
     let key = gDBView.getKeyAt(row);
     let hdr = gDBView.db.GetMsgHdrForKey(key);
-    let newProp = null;
 
-    let statusFlags = hdr.getUint32Property("enigmail");
-    if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
-      (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
-      newProp = "enigSignedEncrypted";
-    else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
-      newProp = "enigSigned";
-    else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
-      newProp = "enigEncrypted";
-
-    if (newProp) {
-      return newProp;
+    const statusInt = hdr.getUint32Property("autocrypt-status");
+    switch(statusInt) {
+      case COLUMN_STATUS.E2E: return "statusColEncrypted";
     }
-
     return null;
   },
 
   getRowProperties: function(row, props) {},
   getImageSrc: function(row, col) {},
   getSortLongForRow: function(hdr) {
-    var statusFlags = hdr.getUint32Property("enigmail");
-    if ((statusFlags & EnigmailConstants.GOOD_SIGNATURE) &&
-      (statusFlags & EnigmailConstants.DECRYPTION_OKAY))
-      return 3;
-    else if (statusFlags & EnigmailConstants.GOOD_SIGNATURE)
-      return 2;
-    else if (statusFlags & EnigmailConstants.DECRYPTION_OKAY)
-      return 1;
-
+    const statusInt = hdr.getUint32Property("autocrypt-status");
+    switch(statusInt) {
+      case COLUMN_STATUS.E2E: return 1;
+    }
     return 0;
   },
 
   createDbObserver: {
     // Components.interfaces.nsIObserver
-    observe: function(aMsgFolder, aTopic, aData) {
+    observe: function() {
+      EnigmailLog.DEBUG("columnOverlay.js: registering column handler\n");
       try {
-        gDBView.addColumnHandler("enigmailStatusCol", Enigmail.columnHandler);
+        gDBView.addColumnHandler("autocryptStatusCol", Enigmail.columnHandler);
+      } catch (ex) {
+        EnigmailLog.DEBUG("columnOverlay.js: error registering handler!\n");
       }
-      catch (ex) {}
     }
   },
 
   onLoadEnigmail: function() {
-    let observerService = Components.classes["@mozilla.org/observer-service;1"].
-    getService(Components.interfaces.nsIObserverService);
+    let observerService = Components.classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService);
     observerService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
   },
 
   onUnloadEnigmail: function() {
     // triggered from enigmailMessengerOverlay.js
-    let observerService = Components.classes["@mozilla.org/observer-service;1"].
-    getService(Components.interfaces.nsIObserverService);
+    let observerService = Components.classes["@mozilla.org/observer-service;1"]
+      .getService(Components.interfaces.nsIObserverService);
     observerService.removeObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView");
+    window.removeEventListener("load-enigmail", Enigmail.columnHandler.onLoadEnigmail, false);
   }
 };
 

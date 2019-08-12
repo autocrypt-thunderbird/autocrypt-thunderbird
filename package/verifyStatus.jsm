@@ -9,7 +9,7 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["MessageCryptoStatus"];
+var EXPORTED_SYMBOLS = ["MessageCryptoStatus", "COLUMN_STATUS"];
 
 const SIGNATURE_STATUS = {
   NONE: -1,
@@ -35,6 +35,12 @@ const DECRYPTION_STATUS = {
   NONE: -1,
   ERROR: 0,
   OK: 1
+};
+
+const COLUMN_STATUS = {
+  NONE: 0,
+  E2E: 1,
+  SIGNED: 2
 };
 
 function MessageCryptoStatus(signature_status, sig_key_status, sig_trust_status, decryption_status, sender_address, sig_key_id, public_key) {
@@ -66,6 +72,15 @@ MessageCryptoStatus.prototype.isSignOk = function() {
 MessageCryptoStatus.prototype.isSignKeyKnown = function() {
   return this.signature_status != SIGNATURE_STATUS.NONE &&
     this.signature_status != SIGNATURE_STATUS.KEY_MISSING;
+};
+
+MessageCryptoStatus.prototype.getColumnStatusInt = function() {
+  if (this.isDecryptOk() && this.isSignOk()) {
+    return COLUMN_STATUS.E2E;
+  } else if (this.isSignOk()) {
+    return COLUMN_STATUS.SIGNED;
+  }
+  return COLUMN_STATUS.NONE;
 };
 
 MessageCryptoStatus.prototype.getSignKeyId = function() {
