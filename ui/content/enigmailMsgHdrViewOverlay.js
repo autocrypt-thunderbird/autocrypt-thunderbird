@@ -171,13 +171,13 @@ Enigmail.hdrView = {
     let enigmailBox = document.getElementById("enigmailBox");
 
     if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.is_autocrypt_setup) {
-      this.setStatusText("Message is encrypted with a password");
+      this.setStatusText("Encrypted with a password");
       enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxSetupMessage");
       return;
     }
 
     if (!Enigmail.msg.securityInfo || !Enigmail.msg.securityInfo.verify_status) {
-      this.setStatusText("Message is not encrypted ");
+      this.setStatusText("Not encrypted");
       enigmailBox.setAttribute("class", "expandedEnigmailBox");
       return;
     }
@@ -191,24 +191,21 @@ Enigmail.hdrView = {
         statusLine = `Message failed to decrypt :(`;
         style = "EncryptError";
       } else if (!message_status.wasSigned()) {
-        statusLine = "Message is transport encrypted";
+        statusLine = "Transport encrypted";
         style = "EncryptTransportOk";
       } else if (message_status.isSignOk()) {
-        statusLine = `Message is end-to-end encrypted`;
+        statusLine = `End-to-end encrypted`;
         style = "EncryptE2eOk";
-      } else if (!message_status.isSignKeyKnown()) {
-        statusLine = "Message is transport encrypted (end-to-end check failed)";
-        style = "EncryptTransportOk"; // EncryptE2eUnknown
       } else {
-        statusLine = "Message is encrypted";
-        style = "EncryptE2eError";
+        statusLine = "Transport encrypted (end-to-end check failed)";
+        style = "EncryptTransportOk"; // EncryptE2eUnknown
       }
     } else if (message_status.wasSigned()) {
       if (message_status.isSignOk()) {
-        statusLine = `Message is signed`;
+        statusLine = `Signed`;
         style = "ClearsignOk";
       } else {
-        statusLine = "Message is not encrypted";
+        statusLine = "Not encrypted";
       }
     }
 
@@ -751,7 +748,6 @@ function hasUnauthenticatedParts(mimePartNumber) {
 
   return false;
 }
-
 
 Enigmail.boundHdrViewLoad = Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView);
 window.addEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);
