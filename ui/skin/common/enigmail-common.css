@@ -13,9 +13,11 @@
   width: 100px
 }
 
-#expandedEnigmailBox {
-  background-color: #d8e0e8;
-  color: black;
+.expandedEnigmailBox {
+  /* background-color: #d8e0e8; */
+  /* color: black; */
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .enigmailHeaderName {

@@ -121,18 +121,6 @@ Enigmail.hdrView = {
       EnigmailURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
     }
 
-    // if (verify_status.isDecrypted() && verify_status.isSigned()) {
-    //   statusLine = `Message is end-to-end encrypted (${verify_status.getSignKeyId()})`;
-    // } else if (verify_status.isDecrypted()) {
-    //   statusLine = "Message is encrypted, but not end-to-end!";
-    // } else if (verify_status.isSigned()) {
-    //   statusLine = "Message is signed";
-    // }
-
-    // if (!statusLine) {
-    //   return;
-    // }
-
     Enigmail.msg.securityInfo = {
       verify_status: verify_status
     };
@@ -197,7 +185,7 @@ Enigmail.hdrView = {
         statusLine = `End-to-end encrypted`;
         style = "EncryptE2eOk";
       } else {
-        statusLine = "Transport encrypted (end-to-end check failed)";
+        statusLine = "Transport encrypted (end-to-end failed)";
         style = "EncryptTransportOk"; // EncryptE2eUnknown
       }
     } else if (message_status.wasSigned()) {
@@ -293,6 +281,10 @@ Enigmail.hdrView = {
 
     Enigmail.msg.handleAttchmentEvent();
     Enigmail.hdrView.displayStatusBar();
+
+    // move some pixels of padding around
+    document.getElementById("expandedBoxSpacer").setAttribute("style", "height: 2px;");
+    document.getElementById("otherActionsBox").setAttribute("style", "padding-top: 4px;");
   },
 
   forgetEncryptedMsgKey: function() {
