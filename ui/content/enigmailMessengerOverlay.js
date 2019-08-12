@@ -574,7 +574,7 @@ Enigmail.msg = {
       return;
     }
 
-    Enigmail.hdrView.displayAutoCryptSetupMsgHeader(currentAttachments[0].url);
+    Enigmail.hdrView.displayAutoCryptSetupMessage(currentAttachments[0].url);
   },
 
   messageDecryptCb: function(event, mimeMsg) {

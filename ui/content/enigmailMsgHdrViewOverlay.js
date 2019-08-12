@@ -110,14 +110,6 @@ Enigmail.hdrView = {
     enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
   },
 
-  showMessageUnencrypted: function() {
-    let enigmailBox = document.getElementById("enigmailBox");
-
-    this.setStatusText("Message is not encrypted");
-    enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
-
-  },
-
   updateHdrIcons: function(verify_status, encMimePartNumber) {
     EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: verify_status=${verify_status}\n`);
 
@@ -148,7 +140,15 @@ Enigmail.hdrView = {
     this.updateMsgDb();
   },
 
-  displayAutoCryptSetupMsgHeader: function(url) {
+  displayAutoCryptSetupMessage: function(url) {
+    Enigmail.msg.securityInfo = {
+      verify_status: null,
+      is_autocrypt_setup: true
+    };
+    this.showMessageAutocryptNotification(url);
+  },
+
+  showMessageAutocryptNotification: function(url) {
     let buttons = [{
       label: 'Run setup from message',
       accessKey: 's',
@@ -161,13 +161,20 @@ Enigmail.hdrView = {
     }];
 
     let msgNotificationBar = gMessageNotificationBar.msgNotificationBar;
-    msgNotificationBar.appendNotification("This is an Autocrypt Setup Message!", "autocryptSetupMsgContent",
-      "chrome://autocrypt/content/ui/logo.svg", msgNotificationBar.PRIORITY_INFO_HIGH, buttons);
+    let notification = msgNotificationBar.appendNotification("This is an Autocrypt Setup Message", "autocryptSetupMsgContent",
+      "chrome://autocrypt/content/ui/logo.svg", msgNotificationBar.PRIORITY_WARNING_HIGH, buttons);
+
   },
 
   displayStatusBar: function() {
     let bodyElement = document.getElementById("messagepanebox");
     let enigmailBox = document.getElementById("enigmailBox");
+
+    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.is_autocrypt_setup) {
+      this.setStatusText("Message is encrypted with a password");
+      enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxSetupMessage");
+      return;
+    }
 
     if (!Enigmail.msg.securityInfo || !Enigmail.msg.securityInfo.verify_status) {
       this.setStatusText("Message is not encrypted ");
@@ -176,14 +183,6 @@ Enigmail.hdrView = {
     }
 
     let message_status = Enigmail.msg.securityInfo.verify_status;
-
-    // if (secInfo.statusArr.length > 0) {
-    // expStatusText.value = secInfo.statusArr[0];
-    // expStatusText.setAttribute("state", "true");
-    // icon.removeAttribute("collapsed");
-    // }
-
-    // (${message_status.getSignKeyId()})`;
 
     let statusLine;
     let style;
@@ -198,8 +197,8 @@ Enigmail.hdrView = {
         statusLine = `Message is end-to-end encrypted`;
         style = "EncryptE2eOk";
       } else if (!message_status.isSignKeyKnown()) {
-        statusLine = "Message may be end-to-end encrypted: Unknown sender";
-        style = "EncryptE2eUnknown";
+        statusLine = "Message is transport encrypted (end-to-end check failed)";
+        style = "EncryptTransportOk"; // EncryptE2eUnknown
       } else {
         statusLine = "Message is encrypted";
         style = "EncryptE2eError";
