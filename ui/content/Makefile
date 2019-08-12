@@ -6,8 +6,6 @@ DEPTH  = ../..
 
 include $(DEPTH)/config/autoconf.mk
 
-AM_FILES = am-enigprefs.xul
-
 UIFILES = \
 	autocryptInitiateBackup.xul \
 	autocryptInitiateBackup.js \
@@ -38,8 +36,6 @@ UIFILES = \
 	enigmailCheckLanguage.xul \
 	enigmailHelp.xul \
 	enigmailHelp.js \
-	am-enigprefs.xul \
-	am-enigprefs.js \
 	enigmailMsgComposeOverlay.xul \
 	enigmailMsgComposeOverlay-sm.xul \
 	enigmailMsgComposeOverlay.js \
@@ -57,6 +53,5 @@ UIFILES = \
 	
 all: deploy
 
-deploy: $(UIFILES) $(AM_FILES)
+deploy: $(UIFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/ui $(UIFILES)
-	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content $(AM_FILES)
