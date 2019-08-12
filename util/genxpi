@@ -65,15 +65,17 @@ zip -9 --must-match\
     chrome/content/modules/all-modules.txt \
     chrome/content/am-enigprefs.xul
 
+# TODO skins?
+# chrome/skin/aero/*.* \
+# chrome/skin/modern/*.* \
+# chrome/skin/tb-mac/*.* \
+# chrome/skin/classic-seamonkey/*.* \
+# chrome/skin/tb-win-xp/*.* \
+
 zip -9 \
     ../${xpiFile} \
     chrome/content/ui/*.* \
-    chrome/skin/aero/*.* \
-    chrome/skin/modern/*.* \
-    chrome/skin/tb-mac/*.* \
-    chrome/skin/classic-seamonkey/*.* \
     chrome/skin/tb-linux/*.* \
-    chrome/skin/tb-win-xp/*.* \
     chrome/locale/*/*.* \
     chrome/locale/*/help/*.* \
     bootstrap.js \

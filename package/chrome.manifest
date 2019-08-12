@@ -2,24 +2,28 @@ content       autocrypt                chrome/content/
 locale        autocrypt    en-US       chrome/locale/en-US/
 
 
-# Skin for TBird Mac OS X
-skin          autocrypt    classic/1.0 chrome/skin/tb-mac/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
-# Skin for TBird Windows
-skin          autocrypt    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
-skin          autocrypt    classic/1.0 chrome/skin/aero/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
-skin          autocrypt    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
-# Skin for TBird other OS (e.g. Linux)
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
-skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
-# Skin for SeaMonkey
-skin          autocrypt    classic/1.0 chrome/skin/classic-seamonkey/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-skin          autocrypt    modern/1.0 chrome/skin/modern/
+skin          autocrypt    classic/1.0 chrome/skin/tb-linux/
+skin          autocrypt    modern/1.0 chrome/skin/tb-linux/
+
+# TODO reskin for other OSes?
+# # Skin for TBird Mac OS X
+# skin          autocrypt    classic/1.0 chrome/skin/tb-mac/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Darwin
+# # Skin for TBird Windows
+# skin          autocrypt    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion<6
+# skin          autocrypt    classic/1.0 chrome/skin/aero/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=WINNT osversion>=6
+# skin          autocrypt    classic/1.0 chrome/skin/tb-win-xp/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OS2
+# # Skin for TBird other OS (e.g. Linux)
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=Linux
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=SunOS
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=FreeBSD
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=OpenBSD
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=NetBSD
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=AIX
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=HP-UX
+# skin          autocrypt    classic/1.0 chrome/skin/tb-linux/ application!={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a} os=DragonFly
+# # Skin for SeaMonkey
+# skin          autocrypt    classic/1.0 chrome/skin/classic-seamonkey/ application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+# skin          autocrypt    modern/1.0 chrome/skin/modern/
 
 
 # Resource module registration
