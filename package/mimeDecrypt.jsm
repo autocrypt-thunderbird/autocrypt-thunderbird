@@ -460,8 +460,7 @@ MimeDecryptHandler.prototype = {
     }
 
     // HACK: remove filename from 1st HTML and plaintext parts to make TB display message without attachment
-    decrypted_plaintext = decrypted_plaintext.replace(/^Content-Disposition: inline; filename="msg.txt"/m, "Content-Disposition: inline");
-    decrypted_plaintext = decrypted_plaintext.replace(/^Content-Disposition: inline; filename="msg.html"/m, "Content-Disposition: inline");
+    decrypted_plaintext = decrypted_plaintext.replace(/^Content-Disposition: inline; filename="[^"]+"/m, "Content-Disposition: inline");
 
     this.displayStatus(verify_status, decrypted_headers);
 

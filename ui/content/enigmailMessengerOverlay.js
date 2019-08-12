@@ -453,13 +453,13 @@ Enigmail.msg = {
 
   // callback function for automatic decryption
   messageAutoDecrypt: function() {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageAutoDecrypt:\n");
+    // TODO get rid of this?
     Enigmail.msg.messageDecrypt(null, true);
   },
 
   // analyse message header and decrypt/verify message
   messageDecrypt: function(event) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: " + event + "\n");
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt\n");
 
     event = event ? true : false;
 
