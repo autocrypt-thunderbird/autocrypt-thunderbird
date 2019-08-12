@@ -508,8 +508,6 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
     return gen_result.key;
   }
 
-  // TODO this was intended to "warm up" the js crypto routines. doesn't
-  // actually help, so we don't do it for now.
   async decryptSymmetric(ciphertext, password) {
     EnigmailLog.DEBUG("openpgp-js.js: decryptSymmetric()\n");
     const start_time = new Date();

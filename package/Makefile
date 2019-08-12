@@ -19,6 +19,7 @@ MODFILES = \
            autocryptHelper.jsm \
            autoSetup.jsm \
            autocryptSetup.jsm \
+           autocryptSetupImport.jsm \
            clipboard.jsm \
            configure.jsm \
            constants.jsm \
