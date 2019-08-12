@@ -143,13 +143,6 @@ Enigmail.hdrView = {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
     }
 
-    if (Enigmail.msg.savedHeaders && "x-pgp-encoding-format" in Enigmail.msg.savedHeaders &&
-      (Enigmail.msg.savedHeaders["x-pgp-encoding-format"].search(/partitioned/i) === 0)) {
-      if (currentAttachments && currentAttachments.length) {
-        Enigmail.msg.setAttachmentReveal(currentAttachments);
-      }
-    }
-
     if (verify_status.wasEncrypted() && this.lastEncryptedMsgKey) {
       EnigmailURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
     }
@@ -512,7 +505,10 @@ Enigmail.hdrView = {
 
   messageLoad: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
-    // Enigmail.msg.messageAutoDecrypt();
+    // TODO rework - this used to be used for pgp inline. now it parses
+    // autocrypt headers, but doesn't actually "auto decrypt" anything!
+    Enigmail.msg.messageAutoDecrypt();
+
     Enigmail.msg.handleAttchmentEvent();
     Enigmail.hdrView.displayStatusBar();
   },

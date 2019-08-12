@@ -311,6 +311,8 @@ var EnigmailAutocrypt = {
     let effective_date;
     if (typeof dateSent === "string") {
       effective_date = jsmime.headerparser.parseDateHeader(dateSent);
+    } else if (dateSent instanceof Date) {
+      effective_date = dateSent;
     } else {
       effective_date = new Date(dateSent * 1000);
     }

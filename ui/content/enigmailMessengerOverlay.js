@@ -46,6 +46,7 @@ var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.j
 var EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
 var EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
 var EnigmailConfigure = ChromeUtils.import("chrome://autocrypt/content/modules/configure.jsm").EnigmailConfigure;
+var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 var Enigmail;
@@ -471,13 +472,16 @@ Enigmail.msg = {
 
     // don't parse message if we know it's a PGP/MIME message
     if (contentType.search(/^multipart\/encrypted(;|$)/i) === 0 && contentType.search(/application\/pgp-encrypted/i) > 0) {
-      this.messageDecryptCb(event, null);
+      // this.messageDecryptCb(event, null);
       return;
     } else if (contentType.search(/^multipart\/signed(;|$)/i) === 0 && contentType.search(/application\/pgp-signature/i) > 0) {
-      this.messageDecryptCb(event, null);
+      // this.messageDecryptCb(event, null);
       return;
     }
 
+    this.processAutocryptHeaders();
+
+    /*
     try {
       EnigmailMime.getMimeTreeFromUrl(this.getCurrentMsgUrl().spec, false,
         function _cb(mimeMsg) {
@@ -487,6 +491,7 @@ Enigmail.msg = {
       EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageDecrypt: exception: " + ex.toString() + "\n");
       this.messageDecryptCb(event, null);
     }
+    */
   },
 
   /***
@@ -520,6 +525,49 @@ Enigmail.msg = {
     for (i in mimePart.subParts) {
       this.enumerateMimeParts(mimePart.subParts[i], resultObj);
     }
+  },
+
+  processAutocryptHeaders: function() {
+    if (!("autocrypt" in currentHeaderData)) {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: no autocrypt header\n");
+      return;
+    }
+    if (!("from" in currentHeaderData)) {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: no from\n");
+      return;
+    }
+    if (!("date" in currentHeaderData)) {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: no date\n");
+      return;
+    }
+
+    let effective_date;
+    try {
+      effective_date = jsmime.headerparser.parseDateHeader(currentHeaderData.date.headerValue);
+    } catch (ex) {
+      EnigmailLog.ERROR("enigmailMessengerOverlay.js: processAutocryptHeaders: failed parsing date header\n");
+      return;
+    }
+
+    let autocrypt_headers = [];
+    for (let h in currentHeaderData) {
+      if (h.search(/^autocrypt\d*$/) === 0) {
+        autocrypt_headers.push(currentHeaderData[h].headerValue);
+      }
+    }
+
+    if (!autocrypt_headers.length) {
+      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: no autocrypt headers found\n");
+      return;
+    }
+
+    EnigmailAutocrypt.processAutocryptHeaders(
+      currentHeaderData.from.headerValue,
+      autocrypt_headers,
+      effective_date
+    );
+
+    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: processAutocryptHeaders: ok:\n");
   },
 
   messageDecryptCb: function(event, mimeMsg) {
@@ -558,15 +606,7 @@ Enigmail.msg = {
       }
 
       // Copy selected headers
-      Enigmail.msg.savedHeaders = {
-        autocrypt: []
-      };
-
-      for (let h in currentHeaderData) {
-        if (h.search(/^autocrypt\d*$/) === 0) {
-          Enigmail.msg.savedHeaders.autocrypt.push(currentHeaderData[h].headerValue);
-        }
-      }
+      Enigmail.msg.savedHeaders = { };
 
       if (!mimeMsg.fullContentType) {
         mimeMsg.fullContentType = "text/plain";
@@ -589,21 +629,6 @@ Enigmail.msg = {
         }
         Enigmail.msg.savedHeaders[headerName] = headerValue;
         EnigmailLog.DEBUG("enigmailMessengerOverlay.js: header " + headerName + ": '" + headerValue + "'\n");
-      }
-
-      if (("autocrypt" in Enigmail.msg.savedHeaders) && Enigmail.msg.savedHeaders.autocrypt.length > 0 &&
-        ("from" in currentHeaderData)) {
-
-        let dateValue = "";
-        if ("date" in currentHeaderData) {
-          dateValue = currentHeaderData.date.headerValue;
-        }
-
-        EnigmailAutocrypt.processAutocryptHeaders(
-          currentHeaderData.from.headerValue,
-          Enigmail.msg.savedHeaders.autocrypt,
-          dateValue
-        );
       }
 
       var msgSigned = (mimeMsg.fullContentType.search(/^multipart\/signed/i) === 0 &&
