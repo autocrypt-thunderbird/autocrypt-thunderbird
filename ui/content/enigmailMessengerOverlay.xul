@@ -30,28 +30,6 @@
     <broadcaster id="enigmailBcDisplayClass" class="headerValue"/>
   </broadcasterset>
 
-  <!-- submenu Debugging -->
-  <panelmultiview id="appMenu-multiView">
-     <panelview id="appMenu-enigmailDebugView" class="PanelUI-subView"
-                title="&enigmail.decryptToFolder.label;"
-                insertbefore="appMenu-editView">
-      <vbox class="panel-subview-body" id="appmenu_enigmailDebugMenu">
-        <toolbarbutton id="enigmail_console2"
-             class="subviewbutton subviewbutton-iconic"
-             label="&enigmail.viewconsole.label;"
-             accesskey="&enigmail.viewconsole.accesskey;"
-             oncommand="EnigmailWindows.openConsoleWindow();" />
-
-        <toolbarbutton id="enigmail_debug_log2"
-             class="subviewbutton subviewbutton-iconic"
-             label="&enigmail.viewlog.label;"
-             accesskey="&enigmail.viewlog.accesskey;"
-             oncommand="EnigmailWindows.openDebugLog(window);" />
-      </vbox>
-    </panelview>
-  </panelmultiview>
-
-
   <!-- submenu Decrypt to Folder  -->
   <panelmultiview id="appMenu-multiView">
      <panelview id="appMenu-enigmailDecryptToFolderView" class="PanelUI-subView"
@@ -77,43 +55,6 @@
                      favoritesAccessKey="&contextMoveCopyMsgFavoritesMenu.accesskey;"
                      hasbeenopened="false" />
         </menu>
-      </vbox>
-    </panelview>
-  </panelmultiview>
-
-
-  <!-- submenu Senders Key  -->
-  <panelmultiview id="appMenu-multiView">
-     <panelview id="appMenu-enigmailSendersKeyMenuView" class="PanelUI-subView"
-                title="&enigmail.sendersKeyMenu.label;"
-                insertbefore="appMenu-editView">
-      <vbox class="panel-subview-body" id="appmenu_enigmailSendersKeyMenu">
-
-        <toolbarbutton id="enigmail_importpublickey2"
-             class="subviewbutton subviewbutton-iconic"
-             label="&enigmail.importpublickey.label;"
-             accesskey="&enigmail.importpublickey.accesskey;"
-             disabled="true"
-             oncommand="Enigmail.msg.messageImport();" />
-
-        <toolbarseparator/>
-
-        <toolbarbutton label="&enigmail.displayKeyProperties.label;"
-                  class="subviewbutton subviewbutton-iconic"
-                  id="enigmail_keyMgmtDispKeyDetails2"
-                  oncommand="Enigmail.hdrView.dispKeyDetails();"/>
-        <toolbarbutton label="&enigmail.signSenderKey.label;"
-                  class="subviewbutton subviewbutton-iconic"
-                  id="enigmail_keyMgmtSignKey2"
-                  oncommand="Enigmail.hdrView.signKey();"/>
-        <toolbarbutton label="&enigmail.trustSenderKey.label;"
-                  class="subviewbutton subviewbutton-iconic"
-                  id="enigmail_keyMgmtKeyTrust2"
-                  oncommand="Enigmail.hdrView.editKeyTrust();"/>
-        <toolbarbutton label="&enigmail.showPhoto.label;"
-                  class="subviewbutton subviewbutton-iconic"
-                  id="enigmail_keyMgmtShowPhoto2"
-                  oncommand="Enigmail.hdrView.showPhoto();"/>
       </vbox>
     </panelview>
   </panelmultiview>
@@ -164,13 +105,7 @@
       </vbox>
 
       <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
-        <image id="enigToggleHeaderView2"
-               class="enigmailExpandViewButton" onclick="Enigmail.hdrView.toggleHeaderView();"
-               state="false" persist="state class"/>
-        <spacer flex="1"/>
-        <label class="enigmailHeaderName"
-              id="enigmailStatusHdr" flex="1"
-              value="&enigmail.label;" control="enigmailStatusText"/>
+        <label class="enigmailHeaderName" id="enigmailStatusHdr" flex="1" value="&enigmail.label;" control="enigmailStatusText" />
       </hbox>
 
       <hbox flex="1" pack="start" class="headerValueBox">
@@ -189,69 +124,7 @@
                  collapsed="true" display="false" state="false"
                  persist="display" aria-labelledby="enigmailStatusHdr"/>
         </vbox>
-        <vbox flex="0" pack="center">
-          <button id="enigmail_importKey" pack="center"
-                  label="&enigmail.importKey.label;"
-                  hidden="true"
-                  class="enigMsgHdrView-flat-button"
-                  oncommand="Enigmail.msg.handleUnknownKey();"/>
-        </vbox>
-        <vbox flex="0" pack="center">
-          <button id="enigmail_confirmKey" pack="center"
-                  label="..."
-                  hidden="true"
-                  class="enigMsgHdrView-flat-button"
-                  oncommand="Enigmail.msg.confirmKeyRequest();"/>
-        </vbox>
-        <vbox class="enigmailHeaderNameBox" flex="0" pack="center">
-          <observes element="enigmailStatusText" attribute="class"/>
-          <button id="enigmailStatusHdrDetails" pack="center"
-                  label="&enigmail.detailsHdrButton.label;"
-                  type="menu"
-                  class="enigMsgHdrView-flat-button">
-            <menupopup id="enigSecurityContext"
-                   onpopupshowing="Enigmail.hdrView.dispSecurityContext();">
-              <menuitem label="&enigmail.importpublickey.label;"
-                        id="enigmail_importKeyunused"
-                        hidden="true"
-                        oncommand="Enigmail.msg.handleUnknownKey();"/>
-              <menuitem label="&enigmail.reload.label;"
-                        id="enigmail_reloadMessage"
-                        disabled="true"
-                        oncommand="Enigmail.msg.reloadCompleteMsg();"/>
-              <menuitem label="&enigmail.pgpSecurityInfo.label;"
-                        id="enigmail_pgpSecurityInfo"
-                        oncommand="Enigmail.msg.viewOpenpgpInfo(null, false);"/>
-              <menuitem label="&enigmail.copySecurityInfo.label;"
-                        id="enigmail_copySecurityInfo"
-                        oncommand="Enigmail.hdrView.copyStatusInfo();"/>
-              <menuseparator/>
-              <menuitem label="&enigmail.displayKeyProperties.label;"
-                        id="enigmail_dispKeyDetails"
-                        oncommand="Enigmail.hdrView.dispKeyDetails();"/>
-              <menuitem label="&enigmail.showPhoto.label;"
-                        id="enigmail_showPhoto"
-                        oncommand="Enigmail.hdrView.showPhoto();"/>
-              <menuitem label="&enigmail.signSenderKeyPopup.label;"
-                        id="enigmail_signSenderKey"
-                        oncommand="Enigmail.hdrView.signKey();"/>
-              <menuitem label="&enigmail.trustSenderKeyPopup.label;"
-                        id="enigmail_editSenderKeyTrust"
-                        oncommand="Enigmail.hdrView.editKeyTrust();"/>
-            </menupopup>
-          </button>
-        </vbox>
       </hbox>
-    </hbox>
-
-    <hbox id="enigmailRevealAttachments" hidden="true" class="enigmailHeaderNameBox enigmailHeaderBoxLabelSignatureUnknown" flex="0" pack="center">
-      <vbox flex="1" pack="start">
-        <textbox flex="1" readonly="true" align="center" class="enigmailHeaderValue" chromedir="ltr"
-          value="&enigmail.revealAttachmentsButton.label;"/>
-      </vbox>
-      <button class="enigMsgHdrView-flat-button"
-              label="&enigmail.revealAttachments.button;"
-              oncommand="Enigmail.msg.revealAttachments();"/>
     </hbox>
 
     <vbox id="enigmailBrokenExchangeBox"
@@ -272,49 +145,6 @@
       </hbox>
     </vbox>
   </vbox>
-
-
-  <!-- Thunderbird -->
-  <popup id="attachmentItemContext" onpopupshowing="return Enigmail.hdrView.enigOnShowAttachmentContextMenu();">
-    <menuseparator/>
-    <menuitem id="enigmail_ctxImportKey"
-      label="&enigmail.ctxImportKey.label;"
-      accesskey="&enigmail.ctxImportKey.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('importKey');"/>
-    <menuitem id="enigmail_ctxDecryptOpen"
-      label="&enigmail.ctxDecryptOpen.label;"
-      accesskey="&enigmail.ctxDecryptOpen.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('openAttachment');"/>
-    <menuitem id="enigmail_ctxDecryptSave"
-      label="&enigmail.ctxDecryptSave.label;"
-      accesskey="&enigmail.ctxDecryptSave.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('saveAttachment');"/>
-    <menuitem id="enigmail_ctxVerifyAtt"
-      label="&enigmail.ctxVerifyAtt.label;"
-      accesskey="&enigmail.ctxVerifyAtt.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
-  </popup>
-
-  <!-- SeaMonkey -->
-  <popup id="attachmentListContext">
-    <menuseparator/>
-    <menuitem id="enigmail_ctxImportKey_SM"
-      label="&enigmail.ctxImportKey.label;"
-      accesskey="&enigmail.ctxImportKey.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('importKey');"/>
-    <menuitem id="enigmail_ctxDecryptOpen_SM"
-      label="&enigmail.ctxDecryptOpen.label;"
-      accesskey="&enigmail.ctxDecryptOpen.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('openAttachment');"/>
-    <menuitem id="enigmail_ctxDecryptSave_SM"
-      label="&enigmail.ctxDecryptSave.label;"
-      accesskey="&enigmail.ctxDecryptSave.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('saveAttachment');"/>
-    <menuitem id="enigmail_ctxVerifyAtt_SM"
-      label="&enigmail.ctxVerifyAtt.label;"
-      accesskey="&enigmail.ctxVerifyAtt.accesskey;"
-      oncommand="Enigmail.msg.handleAttachmentSel('verifySig');"/>
-  </popup>
 
   <hbox id="messagepanewrapper">
     <description id="enigmailMsgDisplay"

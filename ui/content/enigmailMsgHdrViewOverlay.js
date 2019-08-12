@@ -82,7 +82,6 @@ Enigmail.hdrView = {
 
   statusBarHide: function() {
     try {
-      Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo = {};
       }
@@ -100,13 +99,7 @@ Enigmail.hdrView = {
   },
 
   showLoading: function() {
-    let expStatusText = document.getElementById("expandedEnigmailStatusText");
-    let icon = document.getElementById("enigToggleHeaderView2");
     let enigmailBox = document.getElementById("enigmailBox");
-
-    expStatusText.value = "";
-    expStatusText.setAttribute("state", "false");
-    icon.setAttribute("collapsed", "true");
 
     if (this.firstTimeOk) {
       this.setStatusText("Processing OpenPGP...");
@@ -114,20 +107,12 @@ Enigmail.hdrView = {
       this.firstTimeOk = true;
       this.setStatusText("Processing OpenPGP (first time might take a few seconds)");
     }
-    this.displayExtendedStatus(false);
     enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
   },
 
   showMessageUnencrypted: function() {
-    let expStatusText = document.getElementById("expandedEnigmailStatusText");
-    let icon = document.getElementById("enigToggleHeaderView2");
     let enigmailBox = document.getElementById("enigmailBox");
 
-    expStatusText.value = "";
-    expStatusText.setAttribute("state", "false");
-    icon.setAttribute("collapsed", "true");
-
-    this.displayExtendedStatus(false);
     this.setStatusText("Message is not encrypted");
     enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
 
@@ -181,17 +166,8 @@ Enigmail.hdrView = {
   },
 
   displayStatusBar: function() {
-    let expStatusText = document.getElementById("expandedEnigmailStatusText");
-    let icon = document.getElementById("enigToggleHeaderView2");
     let bodyElement = document.getElementById("messagepanebox");
     let enigmailBox = document.getElementById("enigmailBox");
-
-    // reset everything
-    expStatusText.value = "";
-    expStatusText.setAttribute("state", "false");
-    icon.setAttribute("collapsed", "true");
-
-    this.displayExtendedStatus(false);
 
     if (!Enigmail.msg.securityInfo || !Enigmail.msg.securityInfo.verify_status) {
       this.setStatusText("Message is not encrypted ");
@@ -240,20 +216,8 @@ Enigmail.hdrView = {
     if (statusLine) {
       this.setStatusText(statusLine + " ");
       enigmailBox.setAttribute("class", style ? `expandedEnigmailBox enigmailHeaderBoxLabel${style}` : 'expandedEnigmailBox');
-      this.displayExtendedStatus(false);
-
-      /*
-      if (message_status.wasSigned() && !message_status.isSignKeyKnown()) {
-        document.getElementById("enigmail_importKey").removeAttribute("hidden");
-      } else {
-        document.getElementById("enigmail_importKey").setAttribute("hidden", "true");
-      }
-      document.getElementById("enigmail_confirmKey").setAttribute("hidden", "true");
-      */
-
     } else {
       this.setStatusText("");
-      this.displayExtendedStatus(false);
     }
 
     if (!gSMIMEContainer)
@@ -264,106 +228,6 @@ Enigmail.hdrView = {
       gSignedUINode.collapsed = false;
       gEncryptedUINode.collapsed = false;
     } catch (e) { }
-  },
-
-  dispSecurityContext: function() {
-
-    try {
-      if (Enigmail.msg.securityInfo) {
-        if ((Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.NODATA) &&
-          (Enigmail.msg.securityInfo.statusFlags &
-            (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED))) {
-          document.getElementById("enigmail_reloadMessage").removeAttribute("hidden");
-        } else {
-          document.getElementById("enigmail_reloadMessage").setAttribute("hidden", "true");
-        }
-      }
-
-      var optList = ["pgpSecurityInfo", "copySecurityInfo"];
-      for (var j = 0; j < optList.length; j++) {
-        var menuElement = document.getElementById("enigmail_" + optList[j]);
-        if (Enigmail.msg.securityInfo) {
-          menuElement.removeAttribute("disabled");
-        } else {
-          menuElement.setAttribute("disabled", "true");
-        }
-      }
-
-      this.setSenderStatus("signSenderKey", "editSenderKeyTrust", "dispKeyDetails");
-    } catch (ex) {
-      EnigmailLog.ERROR("error on displaying Security menu:\n" + ex.toString() + "\n");
-    }
-  },
-
-
-  updateSendersKeyMenu: function() {
-    this.setSenderStatus("keyMgmtSignKey",
-      "keyMgmtKeyTrust",
-      "keyMgmtShowPhoto",
-      "keyMgmtDispKeyDetails",
-      "importpublickey");
-  },
-
-  setSenderStatus: function(elemSign, elemTrust, elemKeyProps, elemImportKey) {
-
-    function setElemStatus(elemName, disabledValue) {
-      document.getElementById("enigmail_" + elemName).setAttribute("disabled", !disabledValue);
-
-      let secondElem = document.getElementById("enigmail_" + elemName + "2");
-      if (secondElem) secondElem.setAttribute("disabled", !disabledValue);
-    }
-
-    var sign = false;
-    var trust = false;
-    var unknown = false;
-    var signedMsg = false;
-    var keyObj = null;
-
-    if (Enigmail.msg.securityInfo) {
-      if (Enigmail.msg.securityInfo.keyId) {
-        keyObj = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
-      }
-      if (Enigmail.msg.securityInfo.msgSigned) {
-        signedMsg = true;
-        if (!(Enigmail.msg.securityInfo.statusFlags &
-            (EnigmailConstants.REVOKED_KEY | EnigmailConstants.EXPIRED_KEY_SIGNATURE | EnigmailConstants.UNVERIFIED_SIGNATURE))) {
-          sign = true;
-        }
-        if (keyObj && keyObj.isOwnerTrustUseful()) {
-          trust = true;
-        }
-
-        if (Enigmail.msg.securityInfo.statusFlags & EnigmailConstants.UNVERIFIED_SIGNATURE) {
-          unknown = true;
-        }
-      }
-    }
-
-    if (elemTrust) setElemStatus(elemTrust, trust);
-    if (elemSign) setElemStatus(elemSign, sign);
-    if (elemKeyProps) setElemStatus(elemKeyProps, (signedMsg && !unknown));
-    if (elemImportKey) setElemStatus(elemImportKey, unknown);
-  },
-
-  editKeyExpiry: function() {
-    EnigmailWindows.editKeyExpiry(window, [Enigmail.msg.securityInfo.userId], [Enigmail.msg.securityInfo.keyId]);
-    gDBView.reloadMessageWithAllParts();
-  },
-
-  editKeyTrust: function() {
-    let enigmailSvc = EnigmailCore.getService();
-    let key = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
-
-    EnigmailWindows.editKeyTrust(window, [Enigmail.msg.securityInfo.userId], [key.keyId]);
-    gDBView.reloadMessageWithAllParts();
-  },
-
-  signKey: function() {
-    let enigmailSvc = EnigmailCore.getService();
-    let key = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
-
-    EnigmailWindows.signKey(window, Enigmail.msg.securityInfo.userId, key.keyId, null);
-    gDBView.reloadMessageWithAllParts();
   },
 
   msgHdrViewLoad: function() {
@@ -435,15 +299,6 @@ Enigmail.hdrView = {
     Enigmail.hdrView.displayStatusBar();
   },
 
-  dispKeyDetails: function() {
-    if (!Enigmail.msg.securityInfo) return;
-
-    let enigmailSvc = EnigmailCore.getService();
-    let key = EnigmailKeyRing.getKeyById(Enigmail.msg.securityInfo.keyId);
-
-    EnigmailWindows.openKeyDetails(window, key.keyId, false);
-  },
-
   forgetEncryptedMsgKey: function() {
     if (Enigmail.hdrView.lastEncryptedMsgKey) {
       EnigmailURIs.forgetEncryptedUri(Enigmail.hdrView.lastEncryptedMsgKey);
@@ -453,37 +308,6 @@ Enigmail.hdrView = {
     if (Enigmail.hdrView.lastEncryptedUri && gEncryptedURIService) {
       gEncryptedURIService.forgetEncrypted(Enigmail.hdrView.lastEncryptedUri);
       Enigmail.hdrView.lastEncryptedUri = null;
-    }
-  },
-
-  displayExtendedStatus: function(displayOn) {
-    var expStatusText = document.getElementById("expandedEnigmailStatusText");
-    if (displayOn && expStatusText.getAttribute("state") == "true") {
-      if (expStatusText.getAttribute("display") == "true") {
-        expStatusText.removeAttribute("collapsed");
-      } else {
-        expStatusText.setAttribute("collapsed", "true");
-      }
-    } else {
-      expStatusText.setAttribute("collapsed", "true");
-    }
-  },
-
-  toggleHeaderView: function() {
-    var viewToggle = document.getElementById("enigToggleHeaderView2");
-    var expandedText = document.getElementById("expandedEnigmailStatusText");
-    var state = viewToggle.getAttribute("state");
-
-    if (state == "true") {
-      viewToggle.setAttribute("state", "false");
-      viewToggle.setAttribute("class", "enigmailExpandViewButton");
-      expandedText.setAttribute("display", "false");
-      this.displayExtendedStatus(false);
-    } else {
-      viewToggle.setAttribute("state", "true");
-      viewToggle.setAttribute("class", "enigmailCollapseViewButton");
-      expandedText.setAttribute("display", "true");
-      this.displayExtendedStatus(true);
     }
   },
 

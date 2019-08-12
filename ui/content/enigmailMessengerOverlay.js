@@ -262,18 +262,6 @@ Enigmail.msg = {
     gDBView.reloadMessageWithAllParts();
   },
 
-
-  setAttachmentReveal: function(attachmentList) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: setAttachmentReveal\n");
-
-    var revealBox = document.getElementById("enigmailRevealAttachments");
-    if (revealBox) {
-      // there are situations when evealBox is not yet present
-      revealBox.setAttribute("hidden", !attachmentList ? "true" : "false");
-    }
-  },
-
-
   messageCleanup: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messageCleanup\n");
 
@@ -281,8 +269,6 @@ Enigmail.msg = {
     if (exchBox) {
       exchBox.setAttribute("collapsed", "true");
     }
-
-    this.setAttachmentReveal(null);
 
     if (Enigmail.msg.createdURIs.length) {
       // Cleanup messages belonging to this window (just in case)
@@ -1997,7 +1983,6 @@ Enigmail.msg = {
       if (origFilename && origFilename.length > 0) {
         Enigmail.msg.setAttachmentName(callbackArg.attachment, origFilename + ".pgp", callbackArg.actionType.substr(11, 10));
       }
-      Enigmail.msg.setAttachmentReveal(null);
       return;
     } else {
       // open
@@ -2230,14 +2215,6 @@ Enigmail.msg = {
     }
 
     return null;
-  },
-
-  confirmKeyRequest: function() {
-    switch (Enigmail.msg.securityInfo.xtraStatus) {
-      case "autocrypt-setup":
-        this.performAutocryptSetup();
-        break;
-    }
   },
 
   performAutocryptSetup: function(passwd = null) {
