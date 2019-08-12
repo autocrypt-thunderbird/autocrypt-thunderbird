@@ -41,8 +41,6 @@ const ENCODING_DEFAULT = 0;
 const ENCODING_BASE64 = 1;
 const ENCODING_QP = 2;
 
-var gDebugLogLevel = 3;
-
 var EnigmailMimeDecrypt = {
   /**
    * create a new instance of a PGP/MIME decryption handler
@@ -322,9 +320,6 @@ MimeDecryptHandler.prototype = {
 
   // cache encrypted data for writing to subprocess
   cacheData: function(str) {
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeDecrypt.jsm: cacheData: " + str.length + "\n");
-
     this.outQueue += str;
   },
 
@@ -440,9 +435,6 @@ MimeDecryptHandler.prototype = {
     if (!decrypted_plaintext.endsWith("\n")) {
       decrypted_plaintext += "\r\n";
     }
-
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeDecrypt.jsm: done'\n");
 
     // this is async, but we don't have to wait
     this.extractAutocryptGossip(decrypted_plaintext);
@@ -697,17 +689,7 @@ MimeDecryptHandler.prototype = {
 // General-purpose functions, not exported
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLogLevel) EnigmailLog.DEBUG(str);
-}
-
-function initModule() {
-  var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  var nspr_log_modules = env.get("NSPR_LOG_MODULES");
-  var matches = nspr_log_modules.match(/mimeDecrypt:(\d+)/);
-
-  if (matches && (matches.length > 1)) {
-    gDebugLogLevel = matches[1];
-  }
+  EnigmailLog.DEBUG(str);
 }
 
 // Note: cache should not be re-used by repeated calls to JSON.stringify.

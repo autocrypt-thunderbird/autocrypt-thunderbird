@@ -36,8 +36,6 @@ const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
 const maxBufferLen = 102400;
 
-var gDebugLogLevel = 3;
-
 function PgpMimeEncrypt() {
   this.wrappedJSObject = this;
 
@@ -431,9 +429,6 @@ PgpMimeEncrypt.prototype = {
   },
 
   mimeCryptoWriteBlock: function(buffer, length) {
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeEncrypt.js: mimeCryptoWriteBlock: " + length + "\n");
-
     try {
       let line = buffer.substr(0, length);
       if (this.inputMode === 0) {
@@ -487,9 +482,6 @@ PgpMimeEncrypt.prototype = {
   },
 
   writeOut: function(str) {
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeEncrypt.js: writeOut: " + str.length + "\n");
-
     this.outQueue += str;
 
     if (this.outQueue.length > maxBufferLen)
@@ -508,9 +500,6 @@ PgpMimeEncrypt.prototype = {
   },
 
   writeToPipe: function(str) {
-    if (gDebugLogLevel > 4)
-      LOCAL_DEBUG("mimeEncrypt.js: writeToPipe: " + str.length + "\n");
-
     this.pipeQueue += str;
   },
 
@@ -553,26 +542,13 @@ PgpMimeEncrypt.prototype = {
 
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLogLevel) EnigmailLog.DEBUG(str);
-}
-
-function initModule() {
-  var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  var nspr_log_modules = env.get("NSPR_LOG_MODULES");
-  var matches = nspr_log_modules.match(/mimeEncrypt:(\d+)/);
-
-  if (matches && (matches.length > 1)) {
-    gDebugLogLevel = matches[1];
-    LOCAL_DEBUG("mimeEncrypt.js: enabled debug logging\n");
-  }
+  EnigmailLog.DEBUG(str);
 }
 
 var EnigmailMimeEncrypt = {
   Handler: PgpMimeEncrypt,
 
-  startup: function(reason) {
-    initModule();
-  },
+  startup: function(reason) {},
   shutdown: function(reason) {},
 
   createMimeEncrypt: function(sMimeSecurityInfo) {

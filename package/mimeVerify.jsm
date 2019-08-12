@@ -32,8 +32,6 @@ const PGPMIME_PROTO = "application/pgp-signature";
 
 const maxBufferLen = 102400;
 
-var gDebugLog = false;
-
 // MimeVerify Constructor
 function MimeVerify(protocol) {
   if (!protocol) {
@@ -592,17 +590,5 @@ MimeVerify.prototype = {
 // General-purpose functions, not exported
 
 function LOCAL_DEBUG(str) {
-  if (gDebugLog) EnigmailLog.DEBUG(str);
+  EnigmailLog.DEBUG(str);
 }
-
-function initModule() {
-  var env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
-  var nspr_log_modules = env.get("NSPR_LOG_MODULES");
-  var matches = nspr_log_modules.match(/mimeVerify:(\d+)/);
-
-  if (matches && (matches.length > 1)) {
-    if (matches[1] > 2) gDebugLog = true;
-  }
-}
-
-initModule();
