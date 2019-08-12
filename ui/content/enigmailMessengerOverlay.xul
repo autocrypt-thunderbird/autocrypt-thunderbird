@@ -324,17 +324,4 @@
         flex="1"
         collapsed="true"/>
   </hbox>
-
-  <hbox class="statusbar" id="status-bar">
-    <hbox id="enigmail-status-bar"
-          insertafter="totalMessageCount"
-          app="mailnews">
-      <label id="enigmail-encrypted-status"
-        class="statusbarpanel-iconic statusbarpanel"
-        collapsed="true"/>
-      <label id="enigmail-signed-status"
-        class="statusbarpanel-iconic statusbarpanel"
-        collapsed="true"/>
-    </hbox>
-  </hbox>
 </overlay>

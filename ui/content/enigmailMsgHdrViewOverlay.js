@@ -81,10 +81,6 @@ Enigmail.hdrView = {
 
   statusBarHide: function() {
     try {
-      let statusBar = document.getElementById("enigmail-status-bar");
-      statusBar.removeAttribute("signed");
-      statusBar.removeAttribute("encrypted");
-
       Enigmail.msg.setAttachmentReveal(null);
       if (Enigmail.msg.securityInfo) {
         Enigmail.msg.securityInfo = {};
@@ -291,57 +287,6 @@ Enigmail.hdrView = {
       gSignedUINode.collapsed = false;
       gEncryptedUINode.collapsed = false;
     } catch (e) { }
-
-    /* TODO display status in S/MIME icons as well?
-    let statusBar = document.getElementById("enigmail-status-bar");
-    // Update icons and header-box css-class
-    try {
-      gSMIMEContainer.collapsed = false;
-      gSignedUINode.collapsed = false;
-      gEncryptedUINode.collapsed = false;
-
-      if (verify_status.isSignOk()) {
-        if (verify_status.isTrusted()) {
-          // Display trusted good signature icon
-          gSignedUINode.setAttribute("signed", "ok");
-          statusBar.setAttribute("signed", "ok");
-          bodyElement.setAttribute("enigSigned", "ok");
-        } else {
-          // Display untrusted/bad signature icon
-          gSignedUINode.setAttribute("signed", "unknown");
-          statusBar.setAttribute("signed", "unknown");
-        }
-      }
-
-        // Display unverified signature icon
-        // gSignedUINode.setAttribute("signed", "unknown");
-        // statusBar.setAttribute("signed", "unknown");
-
-        // Display unverified signature icon
-        // gSignedUINode.setAttribute("signed", "unknown");
-        // statusBar.setAttribute("signed", "unknown");
-
-      if (verify_status.isDecrypted()) {
-        EnigmailURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
-
-        // Display encrypted icon
-        gEncryptedUINode.setAttribute("encrypted", "ok");
-        statusBar.setAttribute("encrypted", "ok");
-      } else if (verify_status.isDecryptFailed()) {
-        // Display un-encrypted icon
-        gEncryptedUINode.setAttribute("encrypted", "notok");
-        statusBar.setAttribute("encrypted", "notok");
-        enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelSignatureNotOk");
-      }
-
-      // special handling after trying to fix buggy mail format (see buggyExchangeEmailContent in code)
-      // if (secInfo.xtraStatus && secInfo.xtraStatus == "buggyMailFormat") {
-      // enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLabelBuggyMailFormat");
-      // }
-    } catch (ex) {
-      EnigmailLog.writeException("displayStatusBar", ex);
-    }
-    */
   },
 
   dispSecurityContext: function() {
@@ -637,10 +582,7 @@ Enigmail.hdrView = {
     if (!msg || !msg.folder) return;
 
     //  TODO?
-    // let statusBar = document.getElementById("enigmail-status-bar");
     // var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-    // if (statusBar.getAttribute("encrypted") == "ok")
-    // Enigmail.msg.securityInfo.statusFlags |= EnigmailConstants.DECRYPTION_OKAY;
     // msgHdr.setUint32Property("enigmail", Enigmail.msg.securityInfo.statusFlags);
   },
 
