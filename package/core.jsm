@@ -20,7 +20,7 @@ const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy
 const getEnigmailConsole = EnigmailLazy.loader("autocrypt/pipeConsole.jsm", "EnigmailConsole");
 const getEnigmailMimeEncrypt = EnigmailLazy.loader("autocrypt/mimeEncrypt.jsm", "EnigmailMimeEncrypt");
 const getEnigmailProtocolHandler = EnigmailLazy.loader("autocrypt/protocolHandler.jsm", "EnigmailProtocolHandler");
-const getEnigmailFiltersWrapper = EnigmailLazy.loader("autocrypt/filtersWrapper.jsm", "EnigmailFiltersWrapper");
+const getEnigmailFilters = EnigmailLazy.loader("autocrypt/filters.jsm", "EnigmailFilters");
 const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
 const getEnigmailOS = EnigmailLazy.loader("autocrypt/os.jsm", "EnigmailOS");
 const getEnigmailKeyring = EnigmailLazy.loader("autocrypt/keyRing.jsm", "EnigmailKeyRing");
@@ -100,7 +100,7 @@ var EnigmailCore = {
     // cApi.initialize();
 
     getEnigmailVerify().registerContentTypeHandler();
-    getEnigmailFiltersWrapper().onStartup();
+    getEnigmailFilters().onStartup();
     await continueStartup();
   },
 
@@ -113,7 +113,7 @@ var EnigmailCore = {
       }
     }
 
-    getEnigmailFiltersWrapper().onShutdown();
+    getEnigmailFilters().onShutdown();
     getEnigmailVerify().unregisterContentTypeHandler();
 
     getEnigmailSqlite().clearCachedConnections();
