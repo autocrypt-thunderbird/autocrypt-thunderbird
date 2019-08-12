@@ -8,8 +8,14 @@ const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/di
 const EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
 const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
 
 var AutocryptSetupImport = {
+  importSetupMessage: async function(win, url) {
+    const content = await EnigmailStreams.getDataFromUrl(url);
+    return this.importContent(win, content);
+  },
+
   importContent: async function(win, content) {
     let armored_blocks = EnigmailArmor.locateArmoredBlocks(content);
     let importOk = false;

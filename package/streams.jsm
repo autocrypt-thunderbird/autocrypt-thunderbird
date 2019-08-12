@@ -22,6 +22,20 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 var EnigmailStreams = {
 
+  /** Read data from a url, used for attachments */
+  getDataFromUrl: function(url) {
+    EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData()\n");
+
+    return new Promise((resolve, reject) => {
+      let s = this.newStringStreamListener(data => {
+        resolve(data);
+      });
+
+      let channel = this.createChannel(url);
+      channel.asyncOpen(s, null);
+    });
+  },
+
   /**
    * Create a new channel from a URL or URI.
    *

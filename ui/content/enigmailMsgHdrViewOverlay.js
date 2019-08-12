@@ -33,6 +33,7 @@ var EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdl
 var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
 var EnigmailMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").EnigmailMsgRead;
 var EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
+var AutocryptSetupImport = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetupImport.jsm").AutocryptSetupImport;
 
 if (!Enigmail) var Enigmail = {};
 
@@ -162,13 +163,14 @@ Enigmail.hdrView = {
     this.updateMsgDb();
   },
 
-  displayAutoCryptSetupMsgHeader: function() {
+  displayAutoCryptSetupMsgHeader: function(url) {
     let buttons = [{
-      label: 'import dis mofo',
+      label: 'Run setup from message',
       accessKey: 's',
       popup: null,
-      callback(aNotification, aButton) {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: click!\n");
+      callback: async function(aNotification, aButton) {
+        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayAutoCryptSetupMsgHeader(): click!\n");
+        await AutocryptSetupImport.importSetupMessage(window, url);
         return true; // keep notification open
       }
     }];
