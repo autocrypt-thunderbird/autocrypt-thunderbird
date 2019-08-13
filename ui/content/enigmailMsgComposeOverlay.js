@@ -836,12 +836,16 @@ Enigmail.msg = {
 
   onPressKeyToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPressKeyToggleEncrypt()\n");
-    this.composeCryptoState.toggleUserChoice();
-    this.delayedUpdateStatusBar();
+    this.onButtonToggleEncrypt();
   },
 
   onButtonToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onButtonToggleEncrypt()\n");
+    if (!this.composeCryptoState.isAutocryptConfiguredForIdentity()) {
+      EnigmailWindows.openAutocryptSettings(window, this.identity.email);
+      this.fireSendFlags();
+      return;
+    }
     if (!this.composeCryptoState.isEncryptError()) {
       this.composeCryptoState.toggleUserChoice();
     }
