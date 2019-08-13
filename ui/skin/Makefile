@@ -257,6 +257,7 @@ SKIN_TB_LINUX = \
 	images/headerProtected-18.svg \
 	images/headerUnprotected-18.svg \
 	images/status-lock-14.svg \
+	images/status-lock-18.svg \
 	images/status-lock-bw-14.svg \
 	images/status-lock-bw-16.svg \
 	images/status-lock-disabled-18.svg \
