@@ -78,8 +78,8 @@
       </grid>
     </vbox>
 
-    <hbox>
-      <label value="Manage all keys" class="text-link" onclick="onClickManageAllKeys();" />
+    <hbox style="margin-left: 6px; margin-top: 4px;">
+      <label value="Manage" class="text-link" onclick="onClickManageAllKeys();" />
       <spacer flex="1" />
     </hbox>
   </vbox>
