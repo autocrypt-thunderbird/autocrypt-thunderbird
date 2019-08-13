@@ -81,6 +81,7 @@ var EnigmailCore = {
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
         self.factories.push(new Factory(mimeEncrypt.Handler));
 
+        // getAutocryptQuickFilter().onStartup();
         getAutocryptMasterpass().ensureAutocryptPassword();
 
         /*
@@ -99,7 +100,6 @@ var EnigmailCore = {
     }
 
     getEnigmailVerify().registerContentTypeHandler();
-    getAutocryptQuickFilter().onStartup();
     await continueStartup();
   },
 
