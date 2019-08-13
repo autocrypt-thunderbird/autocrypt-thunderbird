@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Autocrypt",
-  "description": "OpenPGP message encryption and authentication",
+  "description": "E-Mail encryption that gets out of your way. Compatible with Autocrypt and OpenPGP. EARLY ACCESS, MAY CONTAIN BUGS!",
   "version": "0.9.1",
   "author": "Vincent Breitmoser",
   "homepage_url": "https://autocrypt.org/",
