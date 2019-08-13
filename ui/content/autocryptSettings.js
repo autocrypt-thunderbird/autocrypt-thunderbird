@@ -28,20 +28,27 @@ let blinkTimeout = null;
 function enigmailDlgOnLoad() {
   EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
 
+  let email = window.arguments && window.arguments[0] && window.arguments[0].email;
+
   let menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
   menulistAutocryptEmail.removeAllItems();
 
   EnigmailLog.DEBUG("enigmailDlgOnLoad(): loading identities\n");
   let identities = EnigmailStdlib.getIdentities();
+  let selectedItem = null;
   for (const { isDefault, identity } of identities) {
     EnigmailLog.DEBUG(`enigmailDlgOnLoad(): identity ${identity.email}\n`);
-    menulistAutocryptEmail.appendItem(identity.email, String(identity.email));
+    let item = menulistAutocryptEmail.appendItem(identity.email, String(identity.email));
+    if (identity.email == email) {
+      selectedItem = item;
+    }
   }
-  menulistAutocryptEmail.selectedIndex = 0;
+  if (selectedItem) {
+    menulistAutocryptEmail.selectedItem = selectedItem;
+  } else {
+    menulistAutocryptEmail.selectedIndex = 0;
+  }
   onCommandMenulistAutocryptEmail();
-
-  // ruleEmail.value = window.arguments[INPUT].toAddress.replace(/[{}]/g, "");
-  // window.arguments[RESULT].cancelled = true;
 }
 
 async function getCurrentlySelectedAutocryptRow() {

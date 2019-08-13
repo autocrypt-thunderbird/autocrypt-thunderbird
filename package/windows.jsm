@@ -31,7 +31,7 @@ var EnigmailWindows = {
       "", "chrome,dialog,centerscreen,resizable,modal");
   },
 
-  openAutocryptSettings: function(win) {
+  openAutocryptSettings: function(win, email) {
     EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings()\n");
 
     if (!EnigmailStdlib.hasConfiguredAccounts()) {
@@ -39,8 +39,12 @@ var EnigmailWindows = {
       return;
     }
 
-    win.open("chrome://autocrypt/content/ui/autocryptSettings.xul",
-      "", "chrome,dialog,centerscreen,resizable,modal");
+    const args = {
+      email: email
+    };
+
+    win.openDialog("chrome://autocrypt/content/ui/autocryptSettings.xul",
+      "", "chrome,dialog,centerscreen,resizable,modal", args);
   },
 
   openManageAllKeys: function(win) {
