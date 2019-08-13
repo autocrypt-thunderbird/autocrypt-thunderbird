@@ -56,6 +56,7 @@ MODFILES = \
            overlays.jsm \
            pgpmimeHandler.jsm \
            pipeConsole.jsm \
+           quickFilter.jsm \
            prefs.jsm \
            protocolHandler.jsm \
            rng.jsm \

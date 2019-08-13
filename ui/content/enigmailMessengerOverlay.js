@@ -46,6 +46,7 @@ var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.j
 var EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
 var EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
 var EnigmailConfigure = ChromeUtils.import("chrome://autocrypt/content/modules/configure.jsm").EnigmailConfigure;
+var AutocryptQuickFilter = ChromeUtils.import("chrome://autocrypt/content/modules/quickFilter.jsm").AutocryptQuickFilter;
 var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
@@ -161,6 +162,8 @@ Enigmail.msg = {
     // Adding to msgFrame doesn't seem to work
     Enigmail.boundMessageFrameUnload = Enigmail.msg.messageFrameUnload.bind(Enigmail.msg);
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.boundMessageFrameUnload, true);
+
+    AutocryptQuickFilter.registerButtonHandler(document);
 
     this.treeController = {
       supportsCommand: function(command) {
