@@ -31,13 +31,33 @@
   <script type="application/x-javascript" src="chrome://autocrypt/content/ui/setupWizardAutocrypt.js" />
   <script type="application/x-javascript" src="chrome://autocrypt/content/ui/commonWorkflows.js"/>
 
-  <html:div id="onboardingMsg" style="width: 440px">
-    <html:p>&autocrypt.onboarding.welcome0;</html:p>
-    <html:p>&autocrypt.onboarding.welcome1;</html:p>
-    <html:p>&autocrypt.onboarding.welcome2;</html:p>
-    <html:p>&autocrypt.onboarding.welcome3;</html:p>
-    <html:p>&autocrypt.onboarding.welcome4;</html:p>
-    <html:p>&autocrypt.onboarding.welcome5;<html:br />&autocrypt.onboarding.welcome6;</html:p>
+  <html:div id="onboardingMsg" style="width: 440px; margin-left: 16px; margin-right: 16px; margin-top: 8px;">
+    <hbox align="center">
+      <image src="chrome://autocrypt/skin/autocrypt-18.svg" width="36" />
+      <spacer width="12" />
+      <label value="Autocrypt for Thunderbird successfully configured!" />
+    </hbox>
+
+    <html:p>We set up everything to get you started, no further configuration is
+      necessary.  Just two things:</html:p>
+    <html:ul>
+      <html:li style="padding-bottom: 5px;">Encryption is automatically available for all contacts with Autocrypt-compatible clients.</html:li>
+      <html:li>If you already have some keys and want to import them, check out the Autocrypt settings.</html:li>
+    </html:ul>
+
+    <html:p>While writing messages, just click this button:</html:p>
+    <html:center>
+      <button class="toolbarbutton-1 fakeAutocryptButton" align="center">
+        <image class="toolbarbutton-icon" />
+        <label value="Autocrypt" flex="1" align="center" crop="right" />
+        <dropmarker type="menu" class="toolbarbutton-menu-dropmarker" />
+      </button>
+    </html:center>
+
+    <html:p>That's it. I'll get out of your way now.</html:p>
   </html:div>
-    
+
+  <!--
+    <html:li style="padding-bottom: 5px;">Sensitive data is always encrypted with your Thunderbird master password.</html:li>
+  -->
 </dialog>

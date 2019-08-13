@@ -347,6 +347,22 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
   list-style-image: url("chrome://autocrypt/skin/warning-16.png");
 }
 
+.fakeAutocryptButton {
+  -moz-box-orient: horizontal;
+  background: var(--toolbarbutton-hover-background) !important;
+  border-color: var(--toolbarbutton-hover-bordercolor) !important;
+  box-shadow: var(--toolbarbutton-hover-boxshadow) !important;
+}
+
+.fakeAutocryptButton > image {
+  list-style-image: url("chrome://autocrypt/skin/status-lock-disabled-18.svg");
+}
+
+.fakeAutocryptButton > label {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
 #qfb-autocrypt-encrypted {
   list-style-image: url("chrome://autocrypt/skin/status-lock-bw-16.svg");
 }
