@@ -34,7 +34,6 @@ MODFILES = \
            events.jsm \
            funcs.jsm \
            files.jsm \
-           filters.jsm \
            fixExchangeMsg.jsm \
            glodaUtils.jsm \
            key.jsm \
