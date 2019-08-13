@@ -48,6 +48,9 @@ function initialize() {
     gOpenPGPLib = getOpenPGPLibrary();
     // config
     gOpenPGPLib.config.s2k_iteration_count_byte = 1;
+    gOpenPGPLib.config.show_comment = false;
+    gOpenPGPLib.config.show_version = false;
+    // gOpenPGPLib.config.debug = true;
     EnigmailLog.DEBUG("openpgp.jsm: initialize(): openpgp.js ok\n");
   } catch (ex) {
     EnigmailLog.ERROR(`openpgp.jsm: failed to initialize: ${ex.toString()}\n${ex.stack}\n`);
