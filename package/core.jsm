@@ -98,10 +98,6 @@ var EnigmailCore = {
       }
     }
 
-    // TODO not doing this currently, doesn't actually help :(
-    // const cApi = EnigmailCryptoAPI();
-    // cApi.initialize();
-
     getEnigmailVerify().registerContentTypeHandler();
     getAutocryptQuickFilter().onStartup();
     await continueStartup();

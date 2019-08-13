@@ -528,30 +528,6 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       throw ex;
     }
   }
-
-  // TODO this was intended to "warm up" the js crypto routines. doesn't
-  // actually help, so we don't do it for now.
-  async initialize() {
-    EnigmailLog.DEBUG("openpgp-js.js: initialize()\n");
-    const start_time = new Date();
-    const dummy_msg = `-----BEGIN PGP MESSAGE-----
-
-jA0EBwMCe6agrgUPkAT/0jkBc+WUaiK5AuuRvVXiS/GSA0HMih5JeTmqqZRmGu9Z
-8kFeiOjkuwu+L6ttYjpH5lTIwR7LwaTljE4=
-=fWHy
------END PGP MESSAGE-----`;
-
-    const openpgp = getOpenPGP().openpgp;
-    const decrypt_options = {
-      message: await openpgp.message.readArmored(dummy_msg),
-      passwords: 'abc'
-    };
-
-    await openpgp.decrypt(decrypt_options);
-
-    let time_diff_ms = new Date() - start_time;
-    EnigmailLog.DEBUG(`openpgp-js.js: initialize(): ok (${time_diff_ms}ms)\n`);
-  }
 }
 
 function cleanOpenPgpKey(openpgp_key) {
