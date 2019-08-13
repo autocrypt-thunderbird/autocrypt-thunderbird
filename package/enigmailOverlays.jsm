@@ -227,6 +227,8 @@ var EnigmailOverlays = {
    * and then add Enigmail UI
    */
   mailStartupDone: function() {
+    DEBUG_LOG(`overlay.jsm: mailStartupDone\n`);
+
     gMailStartupDone = true;
 
     if (gCoreStartup) {
@@ -239,7 +241,7 @@ var EnigmailOverlays = {
    * and then add Enigmail UI
    */
   startupCore: function(reason) {
-    DEBUG_LOG(`overlay.jsm: initiating startup (${reason})\n`);
+    DEBUG_LOG(`overlay.jsm: initiating startup (core startup done ${reason})\n`);
 
     gCoreStartup = true;
 

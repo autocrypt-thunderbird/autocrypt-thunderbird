@@ -22,12 +22,14 @@ function uninstall() {}
 function startup(data, reason) {
   try {
     const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
+    const EnigmailOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
     const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
 
+    Services.obs.addObserver(EnigmailOverlays.mailStartupDone, "mail-startup-done", false);
     EnigmailApp.initAddon(data);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);

@@ -63,7 +63,7 @@ var EnigmailCore = {
 
     // Wait for TB Startup to be complete to initialize window overlays
     let enigmailOverlays = getEnigmailOverlays();
-    Services.obs.addObserver(enigmailOverlays.mailStartupDone, "mail-startup-done", false);
+    // Services.obs.addObserver(enigmailOverlays.mailStartupDone, "mail-startup-done", false);
 
     await getEnigmailSqlite().checkDatabaseStructure();
     getEnigmailPrefs().startup(reason);
