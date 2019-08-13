@@ -13,7 +13,6 @@ MODFILES = \
            addrbook.jsm \
            app.jsm \
            armor.jsm \
-           attachment.jsm \
            autocrypt.jsm \
            autocryptSecret.jsm \
            autocryptHelper.jsm \
@@ -72,7 +71,6 @@ MODFILES = \
            time.jsm \
            timer.jsm \
            uris.jsm \
-           verify.jsm \
            verifyStatus.jsm \
            wkdLookup.jsm \
            windows.jsm \

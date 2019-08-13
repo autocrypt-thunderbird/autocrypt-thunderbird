@@ -279,7 +279,6 @@ Enigmail.hdrView = {
     // autocrypt headers, but doesn't actually "auto decrypt" anything!
     Enigmail.msg.messageAutoDecrypt();
 
-    Enigmail.msg.handleAttchmentEvent();
     Enigmail.hdrView.displayStatusBar();
 
     // move some pixels of padding around
