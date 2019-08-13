@@ -11,14 +11,14 @@
 var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
 
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailBuildDate = ChromeUtils.import("chrome://autocrypt/content/modules/buildDate.jsm").EnigmailBuildDate;
+const AutocryptBuildDate = ChromeUtils.import("chrome://autocrypt/content/modules/buildDate.jsm").AutocryptBuildDate;
 const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
 const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
 const EnigmailGpgAgent = ChromeUtils.import("chrome://autocrypt/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 function getEnigmailVersion() {
-  let versionStr = EnigmailApp.getVersion() + " (" + EnigmailBuildDate.built + ")";
+  let versionStr = EnigmailApp.getVersion() + " (" + AutocryptBuildDate.built + ")";
   return EnigmailLocale.getString("usingVersion", versionStr);
 }
 

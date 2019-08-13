@@ -22,14 +22,14 @@ function uninstall() {}
 function startup(data, reason) {
   try {
     const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
-    const EnigmailOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
+    const AutocryptOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptOverlays.jsm").AutocryptOverlays;
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
     const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
 
-    Services.obs.addObserver(EnigmailOverlays.mailStartupDone, "mail-startup-done", false);
+    Services.obs.addObserver(AutocryptOverlays.mailStartupDone, "mail-startup-done", false);
     EnigmailApp.initAddon(data);
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
@@ -46,12 +46,12 @@ function shutdown(data, reason) {
 
     const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
     const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
-    const EnigmailOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/enigmailOverlays.jsm").EnigmailOverlays;
+    const AutocryptOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptOverlays.jsm").AutocryptOverlays;
     const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     shutdownModule(EnigmailWindows, reason);
-    shutdownModule(EnigmailOverlays, reason);
+    shutdownModule(AutocryptOverlays, reason);
     shutdownModule(EnigmailCore, reason);
     shutdownModule(EnigmailPgpmimeHander, reason);
     unloadModules();

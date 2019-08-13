@@ -71,8 +71,8 @@ Enigmail.columnHandler = {
     let observerService = Components.classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
     observerService.removeObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView");
-    window.removeEventListener("load-enigmail", Enigmail.columnHandler.onLoadEnigmail, false);
+    window.removeEventListener("load-autocrypt", Enigmail.columnHandler.onLoadEnigmail, false);
   }
 };
 
-window.addEventListener("load-enigmail", Enigmail.columnHandler.onLoadEnigmail, false);
+window.addEventListener("load-autocrypt", Enigmail.columnHandler.onLoadEnigmail, false);

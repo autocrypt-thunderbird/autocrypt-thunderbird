@@ -33,7 +33,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailOverlays"];
+var EXPORTED_SYMBOLS = ["AutocryptOverlays"];
 
 const {
   classes: Cc,
@@ -52,7 +52,7 @@ Components.utils.importGlobalProperties(["XMLHttpRequest"]);
 
 // the following constants need to be customized for each addon
 const BASE_PATH = "chrome://autocrypt/content/ui/";
-const MY_ADDON_ID = "enigmail";
+const MY_ADDON_ID = "autocrypt";
 
 var gMailStartupDone = false;
 var gCoreStartup = false;
@@ -97,17 +97,17 @@ const overlays = {
     application: "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
   }]
 
-  // "chrome://messenger/content/FilterEditor.xul": ["enigmailFilterEditorOverlay.xul"],
-  // "chrome://messenger/content/FilterListDialog.xul": ["enigmailFilterListOverlay.xul"],
-  // "chrome://messenger/content/addressbook/addressbook.xul": ["enigmailAbCardViewOverlay.xul"],
-  // "chrome://autocrypt/content/ui/editSingleAccount.xul": ["enigmailEditIdentity.xul"],
+  // "chrome://messenger/content/FilterEditor.xul": ["autocryptFilterEditorOverlay.xul"],
+  // "chrome://messenger/content/FilterListDialog.xul": ["autocryptFilterListOverlay.xul"],
+  // "chrome://messenger/content/addressbook/addressbook.xul": ["autocryptAbCardViewOverlay.xul"],
+  // "chrome://autocrypt/content/ui/editSingleAccount.xul": ["autocryptEditIdentity.xul"],
 
   // Overlay for privacy preferences in Thunderbird
-  // "chrome://messenger/content/preferences/preferencesTab.xul": ["enigmailPrivacyOverlay.xul"]
+  // "chrome://messenger/content/preferences/preferencesTab.xul": ["autocryptPrivacyOverlay.xul"]
 
   // Overlay for Customize Toolbar (Windows, Linux)
-  // "chrome://messenger/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB 60+
-  // "chrome://global/content/customizeToolbar.xul": ["enigmailCustToolOverlay.xul"], // TB <= 52.x
+  // "chrome://messenger/content/customizeToolbar.xul": ["autocryptCustToolOverlay.xul"], // TB 60+
+  // "chrome://global/content/customizeToolbar.xul": ["autocryptCustToolOverlay.xul"], // TB <= 52.x
 
   // Overlay for Account Manager
   // "chrome://messenger/content/AccountManager.xul": ["accountManagerOverlay.xul"]
@@ -130,11 +130,11 @@ function ERROR_LOG(str) {
 
 var WindowListener = {
   setupUI: function(window, overlayDefs) {
-    DEBUG_LOG("enigmailOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
+    DEBUG_LOG("autocryptOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
     let ovl = [];
 
     if (window.isAutocryptOverlaysLoaded) {
-      DEBUG_LOG("enigmailOverlays.jsm: overlays for this window already loaded\n");
+      DEBUG_LOG("autocryptOverlays.jsm: overlays for this window already loaded\n");
       return;
     }
     window.isAutocryptOverlaysLoaded = true;
@@ -160,7 +160,7 @@ var WindowListener = {
   },
 
   tearDownUI: function(window) {
-    DEBUG_LOG("enigmailOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
+    DEBUG_LOG("autocryptOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
     Overlays.unloadOverlays(MY_ADDON_ID, window);
   },
 
@@ -200,7 +200,7 @@ function loadUiForWindow(domWindow) {
 }
 
 
-var EnigmailOverlays = {
+var AutocryptOverlays = {
   startupDone: false,
 
   /**
@@ -209,10 +209,10 @@ var EnigmailOverlays = {
    *
    */
   startup: function() {
-    DEBUG_LOG("enigmailOverlays.jsm: startup()\n");
+    DEBUG_LOG("autocryptOverlays.jsm: startup()\n");
 
     if (this.startupDone) {
-      DEBUG_LOG("enigmailOverlays.jsm: startup(): already done, skipping\n");
+      DEBUG_LOG("autocryptOverlays.jsm: startup(): already done, skipping\n");
       return;
     }
     this.startupDone = true;
@@ -227,18 +227,18 @@ var EnigmailOverlays = {
       try {
         let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
 
-        DEBUG_LOG("enigmailOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
+        DEBUG_LOG("autocryptOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
 
         loadUiForWindow(domWindow);
       } catch (ex) {
-        DEBUG_LOG("enigmailOverlays.jsm: startup: error " + ex.message + "\n");
+        DEBUG_LOG("autocryptOverlays.jsm: startup: error " + ex.message + "\n");
       }
     }
   },
 
   /**
-   * callback from mail-startup-done event. Wait for Enigmail-core-startup to be also done
-   * and then add Enigmail UI
+   * callback from mail-startup-done event. Wait for Autocrypt-core-startup to be also done
+   * and then add Autocrypt UI
    */
   mailStartupDone: function() {
     DEBUG_LOG(`overlay.jsm: mailStartupDone\n`);
@@ -246,13 +246,13 @@ var EnigmailOverlays = {
     gMailStartupDone = true;
 
     if (gCoreStartup) {
-      EnigmailOverlays.startup();
+      AutocryptOverlays.startup();
     }
   },
 
   /**
-   * callback from Enigmail-core-startup event. Wait for mail-startup-done to be also done
-   * and then add Enigmail UI
+   * callback from Autocrypt-core-startup event. Wait for mail-startup-done to be also done
+   * and then add Autocrypt UI
    */
   startupCore: function(reason) {
     DEBUG_LOG(`overlay.jsm: initiating startup (core startup done ${reason})\n`);
@@ -264,7 +264,7 @@ var EnigmailOverlays = {
     }
 
     if (gMailStartupDone) {
-      EnigmailOverlays.startup();
+      AutocryptOverlays.startup();
     }
   },
 

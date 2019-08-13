@@ -32,7 +32,7 @@ const getEnigmailConfigure = EnigmailLazy.loader("autocrypt/configure.jsm", "Eni
 const getEnigmailApp = EnigmailLazy.loader("autocrypt/app.jsm", "EnigmailApp");
 const getEnigmailKeyRefreshService = EnigmailLazy.loader("autocrypt/keyRefreshService.jsm", "EnigmailKeyRefreshService");
 const getEnigmailKeyServer = EnigmailLazy.loader("autocrypt/keyserver.jsm", "EnigmailKeyServer");
-const getEnigmailOverlays = EnigmailLazy.loader("autocrypt/enigmailOverlays.jsm", "EnigmailOverlays");
+const getAutocryptOverlays = EnigmailLazy.loader("autocrypt/autocryptOverlays.jsm", "AutocryptOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("autocrypt/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailCryptoAPI = EnigmailLazy.loader("autocrypt/cryptoAPI.jsm", "EnigmailCryptoAPI");
 const getAutocryptMasterpass = EnigmailLazy.loader("autocrypt/masterpass.jsm", "AutocryptMasterpass");
@@ -62,7 +62,7 @@ var EnigmailCore = {
     getEnigmailLog().DEBUG("core.jsm: startup()\n");
 
     // Wait for TB Startup to be complete to initialize window overlays
-    let enigmailOverlays = getEnigmailOverlays();
+    let autocryptOverlays = getAutocryptOverlays();
     // Services.obs.addObserver(enigmailOverlays.mailStartupDone, "mail-startup-done", false);
 
     await getEnigmailSqlite().checkDatabaseStructure();
@@ -77,7 +77,7 @@ var EnigmailCore = {
       try {
         let mimeEncrypt = getEnigmailMimeEncrypt();
         mimeEncrypt.startup(reason);
-        enigmailOverlays.startupCore(reason);
+        autocryptOverlays.startupCore(reason);
         self.factories.push(new Factory(getEnigmailProtocolHandler()));
         self.factories.push(new Factory(mimeEncrypt.Handler));
 

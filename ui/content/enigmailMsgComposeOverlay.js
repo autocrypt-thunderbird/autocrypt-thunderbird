@@ -2588,8 +2588,8 @@ Enigmail.composeStateListener = {
  * Unload Enigmail for update or uninstallation
  */
 Enigmail.composeUnload = function _unload_Enigmail() {
-  window.removeEventListener("unload-enigmail", Enigmail.boundComposeUnload, false);
-  window.removeEventListener("load-enigmail", Enigmail.boundComposeStartup, false);
+  window.removeEventListener("unload-autocrypt", Enigmail.boundComposeUnload, false);
+  window.removeEventListener("load-autocrypt", Enigmail.boundComposeStartup, false);
   window.removeEventListener("compose-window-unload", Enigmail.boundMsgComposeClose, true);
   window.removeEventListener('compose-send-message', Enigmail.boundSendMessageListener, true);
 
@@ -2636,7 +2636,7 @@ Enigmail.boundComposeUnload = Enigmail.composeUnload.bind(Enigmail.msg);
 Enigmail.boundMsgComposeClose = Enigmail.msg.msgComposeClose.bind(Enigmail.msg);
 Enigmail.boundSendMessageListener = Enigmail.msg.sendMessageListener.bind(Enigmail.msg);
 
-window.addEventListener("load-enigmail", Enigmail.boundComposeStartup, false);
-window.addEventListener("unload-enigmail", Enigmail.boundComposeUnload, false);
+window.addEventListener("load-autocrypt", Enigmail.boundComposeStartup, false);
+window.addEventListener("unload-autocrypt", Enigmail.boundComposeUnload, false);
 window.addEventListener('compose-window-unload', Enigmail.boundMsgComposeClose, true);
 window.addEventListener('compose-send-message', Enigmail.boundSendMessageListener, true);

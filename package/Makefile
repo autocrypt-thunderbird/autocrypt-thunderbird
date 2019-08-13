@@ -30,7 +30,7 @@ MODFILES = \
            persistentCrypto.jsm \
            dialog.jsm \
            encryption.jsm \
-           enigmailOverlays.jsm \
+           autocryptOverlays.jsm \
            events.jsm \
            funcs.jsm \
            files.jsm \
@@ -93,8 +93,8 @@ all: dirs deploy
 deploy: $(MODFILES)
 	$(DEPTH)/util/install -m 644 $(DIST)/chrome/content/modules $(MODFILES)
 	echo '"use strict";' > $(DIST)/chrome/content/modules/buildDate.jsm
-	echo 'var EXPORTED_SYMBOLS = ["EnigmailBuildDate"];' >> $(DIST)/chrome/content/modules/buildDate.jsm
-	echo 'var EnigmailBuildDate = { built: "$(ENIG_BUILD_DATE)" };' >> $(DIST)/chrome/content/modules/buildDate.jsm
+	echo 'var EXPORTED_SYMBOLS = ["AutocryptBuildDate"];' >> $(DIST)/chrome/content/modules/buildDate.jsm
+	echo 'var AutocryptBuildDate = { built: "$(ENIG_BUILD_DATE)" };' >> $(DIST)/chrome/content/modules/buildDate.jsm
 
 
 clean:

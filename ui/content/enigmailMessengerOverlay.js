@@ -2282,8 +2282,8 @@ Enigmail.msg = {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: onUnloadEnigmail()\n");
 
     window.removeEventListener("unload", Enigmail.boundMessengerClose, false);
-    window.removeEventListener("unload-enigmail", Enigmail.boundOnUnloadEnigmail, false);
-    window.removeEventListener("load-enigmail", Enigmail.boundMessengerStartup, false);
+    window.removeEventListener("unload-autocrypt", Enigmail.boundOnUnloadEnigmail, false);
+    window.removeEventListener("load-autocrypt", Enigmail.boundMessengerStartup, false);
 
     if (window.originalSyncGridColumnWidths) {
       window.syncGridColumnWidths = window.originalSyncGridColumnWidths;
@@ -2362,6 +2362,6 @@ function autocryptSyncGridColumnWidths() {
 Enigmail.boundMessengerStartup = Enigmail.msg.messengerStartup.bind(Enigmail.msg);
 Enigmail.boundMessengerClose = Enigmail.msg.messengerClose.bind(Enigmail.msg);
 Enigmail.boundOnUnloadEnigmail = Enigmail.msg.onUnloadEnigmail.bind(Enigmail.msg);
-window.addEventListener("load-enigmail", Enigmail.boundMessengerStartup, false);
+window.addEventListener("load-autocrypt", Enigmail.boundMessengerStartup, false);
 window.addEventListener("unload", Enigmail.boundMessengerClose, false);
-window.addEventListener("unload-enigmail", Enigmail.boundOnUnloadEnigmail, false);
+window.addEventListener("unload-autocrypt", Enigmail.boundOnUnloadEnigmail, false);

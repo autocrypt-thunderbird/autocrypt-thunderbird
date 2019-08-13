@@ -620,7 +620,7 @@ Enigmail.hdrView = {
 
   onUnloadEnigmail: function() {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: onUnloadEnigmail()\n");
-    window.removeEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);
+    window.removeEventListener("load-autocrypt", Enigmail.boundHdrViewLoad, false);
     for (let i = 0; i < gMessageListeners.length; i++) {
       if (gMessageListeners[i] === Enigmail.hdrView.messageListener) {
         gMessageListeners.splice(i, 1);
@@ -743,4 +743,4 @@ function hasUnauthenticatedParts(mimePartNumber) {
 }
 
 Enigmail.boundHdrViewLoad = Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView);
-window.addEventListener("load-enigmail", Enigmail.boundHdrViewLoad, false);
+window.addEventListener("load-autocrypt", Enigmail.boundHdrViewLoad, false);
