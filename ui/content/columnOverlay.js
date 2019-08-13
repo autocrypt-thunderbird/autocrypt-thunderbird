@@ -52,7 +52,7 @@ Enigmail.columnHandler = {
       try {
         gDBView.addColumnHandler("autocryptStatusCol", Enigmail.columnHandler);
       } catch (ex) {
-        EnigmailLog.DEBUG("columnOverlay.js: error registering handler!\n");
+        // nvm, this might happen under some circumstances
       }
     }
   },

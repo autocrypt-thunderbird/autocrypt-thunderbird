@@ -133,6 +133,12 @@ var WindowListener = {
     DEBUG_LOG("enigmailOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
     let ovl = [];
 
+    if (window.isAutocryptOverlaysLoaded) {
+      DEBUG_LOG("enigmailOverlays.jsm: overlays for this window already loaded\n");
+      return;
+    }
+    window.isAutocryptOverlaysLoaded = true;
+
     for (let index = 0; index < overlayDefs.length; index++) {
       let overlayDef = overlayDefs[index];
       let url = overlayDef;
@@ -195,6 +201,8 @@ function loadUiForWindow(domWindow) {
 
 
 var EnigmailOverlays = {
+  startupDone: false,
+
   /**
    * Called by bootstrap.js upon startup of the addon
    * (e.g. enabling, instalation, update, application startup)
@@ -202,6 +210,12 @@ var EnigmailOverlays = {
    */
   startup: function() {
     DEBUG_LOG("enigmailOverlays.jsm: startup()\n");
+
+    if (this.startupDone) {
+      DEBUG_LOG("enigmailOverlays.jsm: startup(): already done, skipping\n");
+      return;
+    }
+    this.startupDone = true;
 
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
 
