@@ -89,6 +89,9 @@ var EnigmailCore = {
           getEnigmailWindows().openAutocryptSettings(win);
         */
 
+        // perform initialization of the service
+        self.getService();
+
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: ok\n");
       } catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
