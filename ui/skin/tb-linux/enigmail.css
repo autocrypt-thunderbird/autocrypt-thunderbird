@@ -40,6 +40,11 @@
   list-style-image : url("chrome://autocrypt/skin/status-lock-disabled-18.svg");
 }
 
+#button-enigmail-encrypt[encrypted="empty"]
+{
+  list-style-image : url("chrome://autocrypt/skin/status-lock-unknown-18.svg");
+}
+
 #button-enigmail-encrypt[encrypted="activeNone"]
 {
   list-style-image : url("chrome://autocrypt/skin/status-lock-18.svg");

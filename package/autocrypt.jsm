@@ -44,6 +44,7 @@ const AUTOCRYPT_STATE = {
 const CRITICAL = [ 'addr', 'type', 'keydata', 'type', 'prefer-encrypt' ];
 
 const AUTOCRYPT_RECOMMEND = {
+  NO_RECIPIENTS: '00-no-recipients',
   DISABLE: '10-disable',
   DISCOURAGED: '20-discouraged',
   DISCOURAGED_OLD: '25-discouraged_old',
@@ -142,6 +143,13 @@ var EnigmailAutocrypt = {
 
   determineAutocryptRecommendations: async function(emails) {
     EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${emails.join(', ')}\n`);
+
+    if (!emails.length) {
+      return {
+        group_recommendation: AUTOCRYPT_RECOMMEND.NO_RECIPIENTS,
+        peers: {}
+      };
+    }
 
     let peer_rows = await sqlite.retrieveAutocryptRows(emails);
     EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peer_rows.length} Autocrypt rows\n`);

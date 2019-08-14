@@ -86,6 +86,12 @@ const ENCRYPT_DISPLAY_STATUS = {
     buttonPressed: false,
     buttonEnabled: false
   },
+  NO_RECIPIENTS: {
+    encSymbol: "empty",
+    encStr: "No recipients",
+    buttonPressed: false,
+    buttonEnabled: false
+  },
   ENABLED_MANUAL: {
     encSymbol: "activeNone",
     encStr: "Encryption is enabled",
@@ -233,12 +239,16 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
   if (!this.isAutocryptConfiguredForIdentity()) {
     return ENCRYPT_DISPLAY_STATUS.UNCONFIGURED;
   }
-  let can_encrypt = this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.DISCOURAGED;
+  let no_recipients = this.currentAutocryptRecommendation.group_recommendation == AUTOCRYPT_RECOMMEND.NO_RECIPIENTS;
+  let can_encrypt = no_recipients || this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.DISCOURAGED;
   let is_mutual_peers = this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL;
   switch(this.currentCryptoMode) {
     case CRYPTO_MODE.NO_CHOICE:
       if (this.isReplyToOpenPgpEncryptedMessage) {
         return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+      }
+      if (no_recipients) {
+        return ENCRYPT_DISPLAY_STATUS.NO_RECIPIENTS;
       }
       if (is_mutual_peers && this.isAutocryptMutual()) {
         return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
