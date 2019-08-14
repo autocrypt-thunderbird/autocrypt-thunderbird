@@ -147,6 +147,8 @@ Enigmail.msg = {
     Enigmail.msg.prepareAppMenu();
     Enigmail.msg.setMainMenuLabel();
 
+    AutocryptQuickFilter.onStartup(document);
+
     let statusCol = document.getElementById("enigmailStatusCol");
     if (statusCol) {
       statusCol.setAttribute("label", EnigmailLocale.getString("enigmail.msgViewColumn.label"));
@@ -160,8 +162,6 @@ Enigmail.msg = {
     // Adding to msgFrame doesn't seem to work
     Enigmail.boundMessageFrameUnload = Enigmail.msg.messageFrameUnload.bind(Enigmail.msg);
     Enigmail.msg.messagePane.addEventListener("unload", Enigmail.boundMessageFrameUnload, true);
-
-    AutocryptQuickFilter.registerButtonHandler(document);
 
     this.treeController = {
       supportsCommand: function(command) {

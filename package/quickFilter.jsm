@@ -18,25 +18,26 @@ const filterId = 'qfb-autocrypt-encrypted';
 const nsMsgSearchOp = Ci.nsMsgSearchOp;
 const nsMsgSearchAttrib = Ci.nsMsgSearchAttrib;
 
-var AutocryptQuickFilter = {
-  quickFilterTerm: {
-    name: 'Encrypted',
-    id: termId,
-    needsBody: false,
-    getEnabled: function (scope, op) { return true; },
-    getAvailable: function (scope, op) { return true; },
-    getAvailableOperators: function (scope, length) {
-      length.value = 2;
-      return [nsMsgSearchOp.Is, nsMsgSearchOp.Isnt];
-    },
-    match: function (aMsgHdr, aSearchValue, aSearchOp) {
-      try {
-        return aMsgHdr.getUint32Property("autocrypt-status") == COLUMN_STATUS.E2E;
-      } catch (ex) {
-        return false;
-      }
-    }
+var QuickFilterTerm = {
+  name: 'Encrypted',
+  id: termId,
+  needsBody: false,
+  getEnabled: function (scope, op) { return true; },
+  getAvailable: function (scope, op) { return true; },
+  getAvailableOperators: function (scope, length) {
+    length.value = 2;
+    return [nsMsgSearchOp.Is, nsMsgSearchOp.Isnt];
   },
+  match: function (aMsgHdr, aSearchValue, aSearchOp) {
+    try {
+      return aMsgHdr.getUint32Property("autocrypt-status") == 1;
+    } catch (ex) {
+      return false;
+    }
+  }
+};
+
+var AutocryptQuickFilter = {
 
   quickFilter: {
     name: filterId,
@@ -54,22 +55,23 @@ var AutocryptQuickFilter = {
     }
   },
 
-  addFilterTermIfNotExists: function(filterObj) {
+  addFilterTermIfNotExists: function() {
     let foundFilter = null;
     try {
-      foundFilter = MailServices.filters.getCustomTerm(filterObj.id);
+      foundFilter = MailServices.filters.getCustomTerm(QuickFilterTerm.id);
     } catch (ex) {}
 
     if (!foundFilter) {
-      EnigmailLog.DEBUG("quickFilter.jsm: addFilterTermIfNotExists: " + filterObj.id + "\n");
+      EnigmailLog.DEBUG("quickFilter.jsm: addFilterTermIfNotExists: " + QuickFilterTerm.id + "\n");
       // filterService.addCustomAction(filterObj);
-      MailServices.filters.addCustomTerm(this.quickFilterTerm);
+      MailServices.filters.addCustomTerm(QuickFilterTerm);
     }
   },
 
-  onStartup: function() {
+  onStartup: function(document) {
     QuickFilterManager.defineFilter(this.quickFilter);
-    this.addFilterTermIfNotExists(this.quickFilterTerm);
+    this.addFilterTermIfNotExists(QuickFilterTerm);
+    this.registerButtonHandler(document);
   },
 
   onShutdown: function() {
