@@ -1255,6 +1255,7 @@ function autocryptSyncGridColumnWidths() {
   } catch (ex) {
     EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: something went wrong overriding syncGridColumnWidths! reverting to original..\n");
     window.syncGridColumnWidths = window.syncGridColumnWidthsOriginal;
+    window.syncGridColumnWidthsOriginal = undefined;
     window.syncGridColumnWidths();
   }
 }
