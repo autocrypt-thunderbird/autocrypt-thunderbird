@@ -261,6 +261,7 @@ Enigmail.msg = {
 
   messengerClose: function() {
     EnigmailLog.DEBUG("enigmailMessengerOverlay.js: messengerClose()\n");
+    AutocryptQuickFilter.onShutdown();
   },
 
   reloadCompleteMsg: function() {

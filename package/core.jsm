@@ -36,7 +36,6 @@ const getAutocryptOverlays = EnigmailLazy.loader("autocrypt/autocryptOverlays.js
 const getEnigmailSqlite = EnigmailLazy.loader("autocrypt/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailCryptoAPI = EnigmailLazy.loader("autocrypt/cryptoAPI.jsm", "EnigmailCryptoAPI");
 const getAutocryptMasterpass = EnigmailLazy.loader("autocrypt/masterpass.jsm", "AutocryptMasterpass");
-const getAutocryptQuickFilter = EnigmailLazy.loader("autocrypt/quickFilter.jsm", "AutocryptQuickFilter");
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 var EXPORTED_SYMBOLS = ["EnigmailCore"];
@@ -125,7 +124,6 @@ var EnigmailCore = {
       }
     }
 
-    getAutocryptQuickFilter().onShutdown();
     getEnigmailVerify().unregisterContentTypeHandler();
 
     getEnigmailSqlite().clearCachedConnections();

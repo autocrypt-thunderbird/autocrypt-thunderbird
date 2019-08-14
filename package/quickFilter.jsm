@@ -38,6 +38,7 @@ var QuickFilterTerm = {
 };
 
 var AutocryptQuickFilter = {
+  quickFilterRegistered: false,
 
   quickFilter: {
     name: filterId,
@@ -69,13 +70,20 @@ var AutocryptQuickFilter = {
   },
 
   onStartup: function(document) {
-    QuickFilterManager.defineFilter(this.quickFilter);
+    EnigmailLog.DEBUG("quickFilter.jsm: onStartup()\n");
+    if (!this.quickFilterRegistered) {
+      EnigmailLog.DEBUG("quickFilter.jsm: onStartup(): registering quickfilter\n");
+      QuickFilterManager.defineFilter(this.quickFilter);
+      this.quickFilterRegistered = true;
+    }
     this.addFilterTermIfNotExists(QuickFilterTerm);
     this.registerButtonHandler(document);
   },
 
   onShutdown: function() {
+    EnigmailLog.DEBUG("quickFilter.jsm: onShutdown()\n");
     QuickFilterManager.killFilter(filterId);
+    this.quickFilterRegistered = false;
   },
 
   // unfortunately, QuickFilterBarMuxer._bindUI is only called once on startup,
