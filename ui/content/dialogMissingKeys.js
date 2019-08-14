@@ -123,7 +123,7 @@ async function onClickLookup(address) {
     EnigmailLog.DEBUG(`dialogMissingKeys.js: keyserver ok\n`);
     downloaded_keys.push(address);
     if (result.keyData) {
-      if (!await EnigmailAutocrypt.injectAutocryptKey(address, result.keyData)) {
+      if (!await EnigmailAutocrypt.injectAutocryptKey(address, result.keyData, true)) {
         EnigmailDialog.alert(window, `Error importing downloaded key for ${address}`);
       }
     }

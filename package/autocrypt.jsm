@@ -266,7 +266,7 @@ var EnigmailAutocrypt = {
     // await sqlite.autocryptUpdateGossipKey(from_addr, effective_date, autocrypt_header.key_data);
   },
 
-  injectAutocryptKey: async function(from_addr, key_data) {
+  injectAutocryptKey: async function(from_addr, key_data, is_mutual = false) {
     EnigmailLog.DEBUG("autocrypt.jsm: injectAutocryptKey()\n");
     try {
       let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(key_data);
@@ -281,7 +281,7 @@ var EnigmailAutocrypt = {
       EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): injecting for ${from_addr}\n`);
       let effective_date = new Date();
       await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
-      await sqlite.autocryptUpdateKey(from_addr, effective_date, fpr_primary, false);
+      await sqlite.autocryptUpdateKey(from_addr, effective_date, fpr_primary, is_mutual);
 
       EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ok\n`);
       return true;
