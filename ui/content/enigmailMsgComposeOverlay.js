@@ -225,7 +225,10 @@ ComposeCryptoState.prototype.isAutocryptMutual = function() {
 };
 
 ComposeCryptoState.prototype.isCheckStatusMutual = function() {
-  return this.isAutocryptMutual() && this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL;
+  return this.isAutocryptMutual() && (
+    this.currentAutocryptRecommendation.group_recommendation == AUTOCRYPT_RECOMMEND.NO_RECIPIENTS ||
+    this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL
+  );
 };
 
 ComposeCryptoState.prototype.isCheckStatusReply = function() {
