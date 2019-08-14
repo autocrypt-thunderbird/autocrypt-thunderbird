@@ -85,6 +85,8 @@ var EnigmailSqliteDb = {
     const placeholders = Array(emails.length).fill('?');
     const where = "email IN (" + placeholders.join(',') + ")";
 
+    emails = emails.map(email => email.toLowerCase());
+
     return await this.retrieveAutocryptRowsInternal(where, emails);
   },
 
@@ -210,7 +212,7 @@ var EnigmailSqliteDb = {
     try {
       conn = await this.getDbConnection();
       let data = {
-          email: String(email),
+          email: String(email).toLowerCase(),
           last_seen_message: last_seen_message.toISOString()
       };
       await conn.execute(
@@ -234,7 +236,7 @@ var EnigmailSqliteDb = {
     try {
       conn = await this.getDbConnection();
       let data = {
-        email: String(email),
+        email: String(email).toLowerCase(),
         last_seen_key: last_seen_key.toISOString(),
         fpr_primary: fpr_primary,
         is_mutual: is_mutual ? 1 : 0
@@ -257,7 +259,7 @@ var EnigmailSqliteDb = {
     try {
       conn = await this.getDbConnection();
       let data = {
-        email: String(email),
+        email: String(email).toLowerCase(),
         last_seen_gossip: last_seen_gossip.toISOString(),
         fpr_primary_gossip: fpr_primary_gossip
       };
@@ -278,7 +280,7 @@ var EnigmailSqliteDb = {
     try {
       conn = await this.getDbConnection();
       let data = {
-        email: String(email),
+        email: String(email).toLowerCase(),
         fpr_primary: fpr_primary,
         is_mutual: is_mutual ? 1 : 0
       };

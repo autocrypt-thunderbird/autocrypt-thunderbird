@@ -151,6 +151,8 @@ var EnigmailAutocrypt = {
       };
     }
 
+    emails = emails.map(email => email.toLowerCase());
+
     let peer_rows = await sqlite.retrieveAutocryptRows(emails);
     EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peer_rows.length} Autocrypt rows\n`);
 
