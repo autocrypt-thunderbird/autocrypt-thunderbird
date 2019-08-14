@@ -112,7 +112,7 @@ const ENCRYPT_DISPLAY_STATUS = {
   },
   ENABLED_ERROR: {
     encSymbol: "activeConflict",
-    encStr: "Encryption is enabled, but not available!",
+    encStr: "Missing recipient keys",
     buttonPressed: true,
     buttonEnabled: true
   },
