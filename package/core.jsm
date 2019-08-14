@@ -89,6 +89,20 @@ var EnigmailCore = {
           getEnigmailLog().DEBUG("core.jsm: getService: show settings");
           getEnigmailWindows().openAutocryptSettings(win);
         */
+        /*
+        let win = getEnigmailWindows().getBestParentWin();
+        let args = {
+          recipients: [
+            'look@my.amazin.horse',
+            'nope@nope.com',
+            'vincent@cotech.de'
+          ]
+        };
+        win.openDialog("chrome://autocrypt/content/ui/dialogMissingKeys.xul", "",
+          "chrome,dialog,modal,centerscreen,resizable,titlebar", args);
+        */
+
+        // getEnigmailSqlite().autocryptUpdateKey('look@my.amazin.horse', new Date(), null, null, true);
 
         // perform initialization of the service
         self.getService();
