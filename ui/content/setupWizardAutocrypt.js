@@ -16,6 +16,7 @@ function onLoad() {
   EnigmailLog.DEBUG(`setupWizardAutocrypt.js: onLoad()\n`);
   const dlg = document.getElementById("setupWizardDlg");
   dlg.getButton("accept").setAttribute("disabled", "true");
+  dlg.getButton("accept").setAttribute("label", "Got it");
 
   // let the dialog be loaded asynchronously such that we can disply the dialog
   // before we start working on it.
