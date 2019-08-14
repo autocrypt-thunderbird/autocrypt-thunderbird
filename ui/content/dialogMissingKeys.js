@@ -10,6 +10,7 @@
 
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+const EnigmailWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").EnigmailWkdLookup;
 
 function getChoiceType() {
   let args = window.arguments[0];
@@ -119,7 +120,10 @@ async function onClickLookup(address) {
   row.buttonLookup.setAttribute("label", "Searching…");
 
   let delay = sleep(700);
-  let result = await EnigmailKeyServer.download(address);
+  let result = await EnigmailWkdLookup.download(address, 1500);
+  if (!result || result.result !== 0) {
+    result = await EnigmailKeyServer.download(address);
+  }
   await delay;
 
   if (result.result === 0) {
