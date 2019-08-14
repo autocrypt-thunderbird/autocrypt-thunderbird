@@ -29,7 +29,6 @@
   minwidth="460px">
 
   <script type="application/x-javascript" src="chrome://autocrypt/content/ui/setupWizardAutocrypt.js" />
-  <script type="application/x-javascript" src="chrome://autocrypt/content/ui/commonWorkflows.js"/>
 
   <html:div id="onboardingMsg" style="width: 440px; margin-left: 16px; margin-right: 16px; margin-top: 8px;">
     <hbox align="center">

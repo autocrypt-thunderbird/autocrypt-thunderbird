@@ -17,7 +17,6 @@ UIFILES = \
 	autocryptSettings.xul \
 	columnOverlay.xul \
 	columnOverlay.js \
-	commonWorkflows.js \
 	dialogDeleteKey.xul \
 	dialogDeleteKey.js \
 	dialogKeyPassword.xul \
