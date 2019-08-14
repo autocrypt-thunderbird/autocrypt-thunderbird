@@ -30,8 +30,6 @@ UIFILES = \
 	aboutEnigmail.js \
 	enigmailMsgBox.js \
 	enigmailMsgBox.xul \
-	enigmailAttachmentsDialog.xul \
-	enigmailAttachmentsDialog.js \
 	enigmailCheckLanguage.xul \
 	enigmailHelp.xul \
 	enigmailHelp.js \
