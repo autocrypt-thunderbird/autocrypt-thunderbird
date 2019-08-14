@@ -248,7 +248,7 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
         return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
       }
       if (no_recipients) {
-        return ENCRYPT_DISPLAY_STATUS.NO_RECIPIENTS;
+        return this.isAutocryptMutual() ? ENCRYPT_DISPLAY_STATUS.NO_RECIPIENTS : ENCRYPT_DISPLAY_STATUS.DISABLE;
       }
       if (is_mutual_peers && this.isAutocryptMutual()) {
         return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
