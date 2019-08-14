@@ -364,7 +364,7 @@ treechildren::-moz-tree-cell-text(fixedWidthFont) {
 }
 
 #qfb-autocrypt-encrypted {
-  list-style-image: url("chrome://autocrypt/skin/status-lock-bw-16.svg");
+  list-style-image: url("chrome://autocrypt/skin/status-lock-darkgrey-16.svg");
 }
 
 treechildren::-moz-tree-image(statusColEncrypted) {

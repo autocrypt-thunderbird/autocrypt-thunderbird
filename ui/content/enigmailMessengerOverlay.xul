@@ -152,6 +152,13 @@
   </hbox>
 
   <hbox id="quick-filter-bar-collapsible-buttons">
-    <toolbarbutton id="qfb-autocrypt-encrypted" class="toolbarbutton-1" type="checkbox" orient="horizontal" label="Encrypted" tooltiptext="Show only encrypted messages" />
+    <toolbarbutton
+      id="qfb-autocrypt-encrypted"
+      class="toolbarbutton-1"
+      type="checkbox"
+      orient="horizontal"
+      label="Encrypted"
+      tooltiptext="Show only encrypted messages"
+      />
   </hbox>
 </overlay>
