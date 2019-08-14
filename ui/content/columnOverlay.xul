@@ -16,7 +16,16 @@
   <!--tree id="threadTree" -->
    <treecols id="threadCols">
     <splitter class="tree-splitter" />
-    <treecol id="autocryptStatusCol" class="treecol-image autocryptStatusCol" persist="hidden ordinal width" currentView="unthreaded" fixed="true" is="treecol-image" label="Encryption status" tooltiptext="Sort by encryption status" />
+    <treecol
+      id="autocryptStatusCol"
+      class="treecol-image autocryptStatusCol"
+      fixed="true"
+      resizeafter="farthest"
+      is="treecol-image"
+      label="Encryption status"
+      tooltiptext="Sort by encryption status"
+      insertafter="flaggedCol"
+      />
    </treecols>
   <!--/tree -->
 
