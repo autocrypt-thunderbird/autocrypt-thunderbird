@@ -162,6 +162,7 @@ var WindowListener = {
   tearDownUI: function(window) {
     DEBUG_LOG("autocryptOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
     Overlays.unloadOverlays(MY_ADDON_ID, window);
+    window.isAutocryptOverlaysLoaded = undefined;
   },
 
   // nsIWindowMediatorListener functions
