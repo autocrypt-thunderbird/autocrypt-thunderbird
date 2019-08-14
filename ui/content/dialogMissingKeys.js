@@ -78,9 +78,8 @@ function updateAcceptButtonState(all_recipients_ok) {
       views.buttonAccept.setAttribute("choice", all_recipients_ok ? "send-encrypted" : "send-unencrypted");
       break;
     case 'keep-disabled':
-      views.buttonAccept.label = all_recipients_ok ? "Enable encryption" : "Disable encryption";
-      views.buttonCancel.label = "Enable anyways";
-      views.buttonCancel.setAttribute("disabled", all_recipients_ok);
+      views.buttonAccept.label = all_recipients_ok ? "Ok" : "Disable encryption";
+      views.buttonCancel.setAttribute("collapsed", "true");
       views.buttonAccept.setAttribute("choice", all_recipients_ok ? "ok" : "disable");
       break;
     default:
