@@ -120,7 +120,7 @@ async function onClickLookup(address) {
 
   let delay = sleep(700);
   let result = await EnigmailWkdLookup.download(address, 1500);
-  if (!result || result.result !== 0) {
+  if (!result || !result.keyData) {
     result = await EnigmailKeyServer.download(address);
   }
   await delay;
