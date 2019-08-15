@@ -32,6 +32,7 @@ const getEnigmailConfigure = EnigmailLazy.loader("autocrypt/configure.jsm", "Eni
 const getEnigmailApp = EnigmailLazy.loader("autocrypt/app.jsm", "EnigmailApp");
 const getEnigmailKeyRefreshService = EnigmailLazy.loader("autocrypt/keyRefreshService.jsm", "EnigmailKeyRefreshService");
 const getEnigmailKeyServer = EnigmailLazy.loader("autocrypt/keyserver.jsm", "EnigmailKeyServer");
+const getEnigmailTimer = EnigmailLazy.loader("autocrypt/timer.jsm", "EnigmailTimer");
 const getAutocryptOverlays = EnigmailLazy.loader("autocrypt/autocryptOverlays.jsm", "AutocryptOverlays");
 const getEnigmailSqlite = EnigmailLazy.loader("autocrypt/sqliteDb.jsm", "EnigmailSqliteDb");
 const getEnigmailCryptoAPI = EnigmailLazy.loader("autocrypt/cryptoAPI.jsm", "EnigmailCryptoAPI");
@@ -60,9 +61,7 @@ var EnigmailCore = {
 
     getEnigmailLog().DEBUG("core.jsm: startup()\n");
 
-    // Wait for TB Startup to be complete to initialize window overlays
     let autocryptOverlays = getAutocryptOverlays();
-    // Services.obs.addObserver(enigmailOverlays.mailStartupDone, "mail-startup-done", false);
 
     await getEnigmailSqlite().checkDatabaseStructure();
     getEnigmailPrefs().startup(reason);
@@ -81,6 +80,11 @@ var EnigmailCore = {
         self.factories.push(new Factory(mimeEncrypt.Handler));
 
         getAutocryptMasterpass().ensureAutocryptPassword();
+
+        // Wait for TB Startup to be complete to initialize window overlays
+        // For some reason, we are sometimes missing this callback..
+        getEnigmailTimer().setTimeout(autocryptOverlays.mailStartupDoneBackup, 1000);
+        // Services.obs.addObserver(autocryptOverlays.mailStartupDone, "mail-startup-done", false);
 
         /*
           let win = getEnigmailWindows().getBestParentWin();

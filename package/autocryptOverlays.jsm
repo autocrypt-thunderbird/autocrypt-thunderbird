@@ -251,6 +251,15 @@ var AutocryptOverlays = {
     }
   },
 
+  mailStartupDoneBackup: function() {
+    DEBUG_LOG(`overlay.jsm: mailStartupDoneBackup\n`);
+
+    if (!gMailStartupDone) {
+      gMailStartupDone = true;
+      AutocryptOverlays.startup();
+    }
+  },
+
   /**
    * callback from Autocrypt-core-startup event. Wait for mail-startup-done to be also done
    * and then add Autocrypt UI
@@ -277,6 +286,9 @@ var AutocryptOverlays = {
    */
   shutdown: function(reason) {
     DEBUG_LOG("overlay.jsm: initiating shutdown\n");
+
+    this.startupDone = false;
+
     // When the application is shutting down we normally don't have to clean
     // up any UI changes made
     if (reason == APP_SHUTDOWN)
