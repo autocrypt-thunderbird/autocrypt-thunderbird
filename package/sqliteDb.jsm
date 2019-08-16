@@ -265,7 +265,7 @@ var EnigmailSqliteDb = {
       };
       // EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey(): data = ` + JSON.stringify(data) + "\n");
       await conn.execute(
-        "update autocrypt_peers set last_seen_gossip = :last_seen_gossip, fpr_primary = :fpr_primary_gossip where email = :email;",
+        "update autocrypt_peers set last_seen_gossip = :last_seen_gossip, fpr_primary_gossip = :fpr_primary_gossip where email = :email;",
         data
       );
       EnigmailLog.DEBUG(`sqliteDb.jsm: autocryptUpdateGossipKey - success\n`);

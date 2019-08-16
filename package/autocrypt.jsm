@@ -261,11 +261,19 @@ var EnigmailAutocrypt = {
         return;
     }
 
-    // TODO gossip doesn't work yet!
+    // If peer has no entry so far: Set initial "last seen" timestamp
+    if (!current_peer) {
+      await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
+    }
+
+    let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
+    if (!fpr_primary) {
+        return;
+    }
 
     // 3. Set peers[gossip-addr].gossip_timestamp to the message’s effective date.
     // 4. Set peers[gossip-addr].gossip_key to the value of the keydata attribute.
-    // await sqlite.autocryptUpdateGossipKey(from_addr, effective_date, autocrypt_header.key_data);
+    await sqlite.autocryptUpdateGossipKey(from_addr, effective_date, fpr_primary);
   },
 
   injectAutocryptKey: async function(from_addr, key_data, is_mutual = false) {
@@ -330,7 +338,7 @@ var EnigmailAutocrypt = {
     await this.updateAutocryptPeerState(from_addr, effective_date, autocrypt_header);
   },
 
-  processAutocryptGossipHeaders: async function(headerDataArr, dateSent) {
+  processAutocryptGossipHeaders: async function(headerDataArr, recipientArray, dateSent) {
     EnigmailLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): ${headerDataArr.length} headers\n`);
 
     let autocrypt_headers = headerDataArr
@@ -341,14 +349,26 @@ var EnigmailAutocrypt = {
       return;
     }
 
+    autocrypt_headers = autocrypt_headers
+      .filter(header => {
+        if (recipientArray.indexOf(header.addr) >= 0) {
+          return true;
+        } else {
+          EnigmailLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): not in recipients: ${header.addr}\n`);
+          return false;
+        }
+      });
+
     let effective_date;
     if (typeof dateSent === "string") {
       effective_date = jsmime.headerparser.parseDateHeader(dateSent);
-    } else {
+    } else if (typeof dateSent === "number") {
       effective_date = new Date(dateSent * 1000);
+    } else {
+      effective_date = new Date();
     }
 
-    Promise.all(autocrypt_headers.map(autocrypt_header =>
+    await Promise.all(autocrypt_headers.map(autocrypt_header =>
       this.updateAutocryptGossipPeerState(effective_date, autocrypt_header)));
   },
 

@@ -390,15 +390,15 @@ var EnigmailFuncs = {
   },
 
   /**
-   * Determine the distinct number of non-self recipients of a message.
-   * Only To: and Cc: fields are considered.
+   * Determine the distinct non-self recipients
    */
-  getNumberOfRecipients: function(msgCompField) {
-    let recipients = {},
-      ownEmails = this.getOwnEmailAddresses();
+  getDistinctNonSelfRecipients: function(...emailStrings) {
+    let recipients = {}, ownEmails = this.getOwnEmailAddresses();
 
-    let allAddr = (this.stripEmail(msgCompField.to) + "," + this.stripEmail(msgCompField.cc)).toLowerCase();
-    let emails = allAddr.split(/,+/);
+    let addressStrings = emailStrings
+      .filter(x => x)
+      .map(arg => this.stripEmail(arg).toLowerCase());
+    let emails = addressStrings.join(',').split(/,+/);
 
     for (let i = 0; i < emails.length; i++) {
       let r = this.getBaseEmail(emails[i]);
@@ -407,12 +407,15 @@ var EnigmailFuncs = {
       }
     }
 
-    let numRecipients = 0;
-    for (let i in recipients) {
-      ++numRecipients;
-    }
+    return Object.keys(recipients);
+  },
 
-    return numRecipients;
+  /**
+   * Determine the distinct number of non-self recipients of a message.
+   * Only To: and Cc: fields are considered.
+   */
+  getNumberOfRecipients: function(msgCompField) {
+    return this.getDistinctNonSelfRecipients(msgCompField.to, msgCompField.cc).length;
   },
 
   /**

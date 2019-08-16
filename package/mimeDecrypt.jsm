@@ -20,6 +20,7 @@ const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.j
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
 const EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
+const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
 var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
 const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
 const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
@@ -665,20 +666,24 @@ MimeDecryptHandler.prototype = {
 
   extractAutocryptGossip: async function(decrypted_plaintext) {
     try {
-      let m = decrypted_plaintext.search(/^--/m);
-
-      let hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
+      const m = decrypted_plaintext.search(/^--/m);
+      const hdr = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
       hdr.initialize(decrypted_plaintext.substr(0, m));
 
-      let gossip = hdr.getHeader("autocrypt-gossip") || [];
+      const gossip = hdr.getHeader("autocrypt-gossip") || [];
       EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
+
+      const msgHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
 
       let msgDate = null;
       try {
-        msgDate = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader.dateInSeconds;
+        msgDate = msgHdr.dateInSeconds;
       } catch (x) {}
 
-      await EnigmailAutocrypt.processAutocryptGossipHeaders(gossip, msgDate);
+      const recipients = EnigmailFuncs.getDistinctNonSelfRecipients(msgHdr.recipients, msgHdr.ccList);
+      EnigmailLog.DEBUG(`mimeDecrypt.jsm: allowed addresses: ${recipients.join(', ')}\n`);
+
+      await EnigmailAutocrypt.processAutocryptGossipHeaders(gossip, recipients, msgDate);
     } catch (ex) {
       EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${ex}\n`);
     }
