@@ -257,27 +257,24 @@ PgpMimeEncrypt.prototype = {
   },
 
   getAutocryptGossip: function() {
-    // TODO
-    return '';
-    /*
-    let gossip = "";
-    if (this.msgCompFields.hasHeader("autocrypt") &&
-      this.keyMap &&
-      EnigmailFuncs.getNumberOfRecipients(this.msgCompFields) > 1) {
-      for (let email in this.keyMap) {
-        let keyObj = EnigmailKeyRing.getKeyById(this.keyMap[email]);
-        if (keyObj) {
-          let k = keyObj.getMinimalPubKey(email);
-          if (k.exitCode === 0) {
-            let keyData = " " + k.keyData.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
-            gossip += 'Autocrypt-Gossip: addr=' + email + '; keydata=\r\n' + keyData + "\r\n";
-          }
-        }
-      }
+    const recipients = Object.keys(this.composeCryptoState.currentAutocryptRecommendation.peers);
+    if (recipients < 2) {
+      EnigmailLog.DEBUG("mimeEncrypt.js: getAutocryptGossip(): only one recipient, skipping gossip\n");
+      return '';
     }
 
-    return gossip;
-    */
+    const cApi = EnigmailCryptoAPI();
+    return cApi.sync((async function() {
+      let result = '';
+      for (let email of recipients) {
+        EnigmailLog.DEBUG(`mimeEncrypt.js: getAutocryptGossip(): adding gossip for ${email}\n`);
+        let gossip_header = await EnigmailAutocrypt.getAutocryptHeaderContentFor(email, false);
+        if (gossip_header) {
+          result += `Autocrypt-Gossip: ${gossip_header}\r\n`;
+        }
+      }
+      return result;
+    })());
   },
 
   encryptedHeaders: function(isEightBit) {
