@@ -42,16 +42,10 @@ function PgpMimeEncrypt() {
   // "securityInfo" variables
   this.composeCryptoState = null;
   this.originalSubject = null;
-
-  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
-    this.onDataAvailable = this.onDataAvailable68;
-  } else {
-    this.onDataAvailable = this.onDataAvailable60;
-  }
 }
 
 PgpMimeEncrypt.prototype = {
-  classDescription: "Enigmail JS Encryption Handler",
+  classDescription: "Autocrypt PGP/MIME Encryption Handler",
   classID: PGPMIME_ENCRYPT_CID,
   get contractID() {
     return PGPMIME_ENCRYPT_CONTRACTID;
@@ -61,9 +55,6 @@ PgpMimeEncrypt.prototype = {
     "nsIStreamListener",
     "nsIMsgSMIMECompFields" // TB < 64
   ]),
-
-  signMessage: false,
-  requireEncryptMessage: false,
 
   // private variables
 
@@ -80,17 +71,10 @@ PgpMimeEncrypt.prototype = {
   encapsulate: null,
   encHeader: null,
   cryptoBoundary: null,
-  pipe: null,
-  proc: null,
-  statusStr: "",
   encryptedData: "",
   hashAlgorithm: null,
   pipeQueue: "",
   outQueue: "",
-  closePipe: false,
-  cryptoMode: 0,
-  exitCode: -1,
-  inspector: null,
 
   // nsIStreamListener interface
   onStartRequest: function(request) {
@@ -98,26 +82,10 @@ PgpMimeEncrypt.prototype = {
     this.encHeader = null;
   },
 
-  /**
-   * onDataAvailable for TB <= 66
-   */
-  onDataAvailable60: function(req, ctxt, stream, offset, count) {
+  onDataAvailable: function(req, stream, offset, count) {
     LOCAL_DEBUG("mimeEncrypt.js: onDataAvailable\n");
     this.inStream.init(stream);
-    var data = this.inStream.read(count);
-    //LOCAL_DEBUG("mimeEncrypt.js: >"+data+"<\n");
-
-  },
-
-  /**
-   * onDataAvailable for TB >= 67
-   */
-  onDataAvailable68: function(req, stream, offset, count) {
-    LOCAL_DEBUG("mimeEncrypt.js: onDataAvailable\n");
-    this.inStream.init(stream);
-    var data = this.inStream.read(count);
-    //LOCAL_DEBUG("mimeEncrypt.js: >"+data+"<\n");
-
+    this.inStream.read(count);
   },
 
   onStopRequest: function(request, status) {
@@ -149,14 +117,6 @@ PgpMimeEncrypt.prototype = {
 
       this.msgCompFields = msgCompFields;
       this.outStringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
-
-      if (this.composeCryptoState.isEnableSendVerbatim) {
-        this.recipientList = recipientList;
-        this.msgIdentity = msgIdentity;
-        this.msgCompFields = msgCompFields;
-        this.inputMode = 2;
-        return null;
-      }
 
       if (this.composeCryptoState.isEncryptEnabled() &&
         this.composeCryptoState.isEnablePgpInline) {
@@ -335,11 +295,6 @@ PgpMimeEncrypt.prototype = {
   finishCryptoEncapsulation: function(abort, sendReport) {
     EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
-    if (this.composeCryptoState.isEnableSendVerbatim) {
-      this.flushOutput();
-      return;
-    }
-
     try {
       if (this.encapsulate) this.writeToPipe("--" + this.encapsulate + "--\r\n");
 
@@ -429,14 +384,7 @@ PgpMimeEncrypt.prototype = {
     try {
       let line = buffer.substr(0, length);
       if (this.inputMode === 0) {
-        if (this.composeCryptoState.isEnableSendVerbatim) {
-          line = EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", ""));
-        }
-
-        if (!this.composeCryptoState.isEnableSendVerbatim ||
-          line.match(/^(From|To|Subject|Message-ID|Date|User-Agent|MIME-Version):/i) === null) {
-          this.headerData += line;
-        }
+        this.headerData += line;
 
         if (line.replace(/[\r\n]/g, "").length === 0) {
           this.inputMode = 1;
@@ -452,25 +400,16 @@ PgpMimeEncrypt.prototype = {
           }
 
           this.writeToPipe(this.headerData);
-          if (this.composeCryptoState.isEnableSendVerbatim) {
-            this.writeOut(this.headerData);
-          }
         }
 
-      }
-      else if (this.inputMode == 1) {
+      } else if (this.inputMode == 1) {
         this.writeToPipe(line);
-        if (this.composeCryptoState.isEnableSendVerbatim) {
-          this.writeOut(EnigmailData.decodeQuotedPrintable(line.replace("=\r\n", "")));
-        }
-      }
-      else if (this.inputMode == 2) {
+      } else if (this.inputMode == 2) {
         if (line.replace(/[\r\n]/g, "").length === 0) {
           this.inputMode = 0;
         }
       }
-    }
-    catch (ex) {
+    } catch (ex) {
       EnigmailLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
