@@ -50,6 +50,8 @@ function shutdown(data, reason) {
     const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
+    Services.obs.removeObserver(AutocryptOverlays.mailStartupDone, "mail-startup-done");
+
     shutdownModule(EnigmailWindows, reason);
     shutdownModule(AutocryptOverlays, reason);
     shutdownModule(EnigmailCore, reason);
