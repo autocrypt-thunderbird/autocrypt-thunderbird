@@ -7,8 +7,6 @@ DEPTH  = ../..
 include $(DEPTH)/config/autoconf.mk
 
 UIFILES = \
-	autocryptInitiateBackup.xul \
-	autocryptInitiateBackup.js \
 	autocryptSetupPasswd.xul \
 	autocryptSetupPasswd.js \
 	autocryptSetup.xul \
@@ -26,17 +24,13 @@ UIFILES = \
 	dialogBackupCode.xul \
 	dialogBackupCode.js \
 	enigmailCommon.js \
-	aboutEnigmail.html \
-	aboutEnigmail.js \
 	enigmailMsgBox.js \
 	enigmailMsgBox.xul \
-	enigmailCheckLanguage.xul \
 	enigmailHelp.xul \
 	enigmailHelp.js \
 	enigmailMsgComposeOverlay.xul \
 	enigmailMsgComposeOverlay-sm.xul \
 	enigmailMsgComposeOverlay.js \
-	enigmailMsgComposeHelper.js \
 	messengerOverlay-tbird.xul \
 	messengerOverlay-sm.xul \
 	enigmailMessengerOverlay.xul \

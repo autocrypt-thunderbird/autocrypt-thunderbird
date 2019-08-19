@@ -24,13 +24,6 @@ const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 var EnigmailWindows = {
-  openSetupWizard: function(win, setupType) {
-    EnigmailLog.DEBUG("windows.jsm: openSetupWizard()\n");
-
-    win.open("chrome://autocrypt/content/ui/setupWizardAutocrypt.xul",
-      "", "chrome,dialog,centerscreen,resizable,modal");
-  },
-
   openAutocryptSettings: function(win, email) {
     EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings()\n");
 
@@ -150,43 +143,6 @@ var EnigmailWindows = {
     return windowManager.getMostRecentWindow(null);
   },
 
-
-  /**
-   * Display the key help window
-   *
-   * @source - |string| containing the name of the file to display
-   *
-   * no return value
-   */
-
-  openHelpWindow: function(source) {
-    EnigmailWindows.openWin("enigmail:help",
-      "chrome://autocrypt/content/ui/enigmailHelp.xul?src=" + source,
-      "centerscreen,resizable");
-  },
-
-  /**
-   * Display the "About Enigmail" window
-   *
-   * no return value
-   */
-  openAboutWindow: function() {
-    EnigmailWindows.openMailTab("chrome://autocrypt/content/ui/aboutEnigmail.html");
-  },
-
-    /**
-   * Open the Enigmail Documentation page in a new window
-   *
-   * no return value
-   */
-  openEnigmailDocu: function(parent) {
-    if (!parent) {
-      parent = this.getMostRecentWindow();
-    }
-
-    parent.open("https://enigmail.net/faq/docu.php", "", "chrome,width=600,height=500,resizable");
-  },
-
   /**
    * Display Autocrypt Setup Passwd dialog.
    *
@@ -213,19 +169,6 @@ var EnigmailWindows = {
       "", "dialog,modal,centerscreen", inputObj);
 
     return inputObj.password;
-  },
-
-  /**
-   * Display dialog to initiate the Autocrypt Setup Message.
-   *
-   */
-  inititateAcSetupMessage: function(window) {
-    if (!window) {
-      window = this.getBestParentWin();
-    }
-
-    window.openDialog("chrome://autocrypt/content/ui/autocryptInitiateBackup.xul",
-      "", "dialog,centerscreen");
   },
 
   /**
