@@ -44,9 +44,7 @@ UIFILES = \
 	enigmailMsgHdrViewOverlay.xul \
 	enigmailMsgHdrViewOverlay.js \
 	manageAllKeys.js \
-	manageAllKeys.xul \
-	setupWizardAutocrypt.js \
-	setupWizardAutocrypt.xul
+	manageAllKeys.xul
 	
 all: deploy
 

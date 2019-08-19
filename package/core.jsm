@@ -151,10 +151,8 @@ var EnigmailCore = {
    * including the handling for upgrading old preferences to new versions
    *
    * @win:                - nsIWindow: parent window (optional)
-   * @startingPreferences - Boolean: true - called while switching to new preferences
-   *                        (to avoid re-check for preferences)
    */
-  getService: function(win, startingPreferences) {
+  getService: function(win) {
     // Lazy initialization of Enigmail JS component (for efficiency)
 
     if (gEnigmailService) {
@@ -163,7 +161,7 @@ var EnigmailCore = {
 
     try {
       this.createInstance();
-      return gEnigmailService.getService(win, startingPreferences);
+      return gEnigmailService.getService(win);
     } catch (ex) {
       return null;
     }
@@ -245,7 +243,7 @@ Enigmail.prototype = {
     this.initialized = true;
   },
 
-  getService: function(win, startingPreferences) {
+  getService: function(win) {
     if (!win) {
       win = getEnigmailWindows().getBestParentWin();
     }
@@ -254,21 +252,22 @@ Enigmail.prototype = {
 
     if (!this.initialized) {
       const firstInitialization = !this.initializationAttempted;
+      const appVersion = getEnigmailApp().getVersion();
 
       try {
         // Initialize enigmail
-        EnigmailCore.init(getEnigmailApp().getVersion());
-        this.initialize(win, getEnigmailApp().getVersion());
+        EnigmailCore.init(appVersion);
+        this.initialize(win, appVersion);
       } catch (ex) {
         getEnigmailLog().DEBUG("core.jsm: getService: init failed!\n");
         return null;
       }
 
-      const configuredVersion = getEnigmailPrefs().getPref("configuredVersion");
-      getEnigmailLog().DEBUG("core.jsm: getService: last used version: " + configuredVersion + "\n");
-
-      if (this.initialized && (getEnigmailApp().getVersion() != configuredVersion)) {
-        getEnigmailConfigure().configureEnigmail(win, startingPreferences);
+      if (this.initialized) {
+        const configuredVersion = getEnigmailPrefs().getPref("configuredVersion");
+        getEnigmailTimer().setTimeout(function() {
+          getEnigmailConfigure().configureAutocrypt(configuredVersion, appVersion);
+        }, 0);
       }
     }
 
