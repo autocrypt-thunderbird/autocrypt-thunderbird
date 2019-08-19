@@ -34,7 +34,7 @@ function startup(data, reason) {
     EnigmailCore.startup(reason);
     EnigmailPgpmimeHander.startup(reason);
 
-    Services.console.logStringMessage("Enigmail bootstrap completed");
+    Services.console.logStringMessage("Autocrypt bootstrap completed");
   } catch (ex) {
     logException(ex);
   }

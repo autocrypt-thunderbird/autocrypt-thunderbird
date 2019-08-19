@@ -72,6 +72,7 @@ MODFILES = \
            timer.jsm \
            uris.jsm \
            verifyStatus.jsm \
+           welcomeMessage.jsm \
            wkdLookup.jsm \
            windows.jsm \
            xhrUtils.jsm \

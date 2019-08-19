@@ -21,6 +21,7 @@ const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/st
 const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
 const EnigmailAutoSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autoSetup.jsm").EnigmailAutoSetup;
 const EnigmailSqliteDb = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptWelcomeMessage = ChromeUtils.import("chrome://autocrypt/content/modules/welcomeMessage.jsm").AutocryptWelcomeMessage;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -36,6 +37,7 @@ var EnigmailConfigure = {
 
     if (EnigmailStdlib.hasConfiguredAccounts()) {
       EnigmailWindows.openSetupWizard(win, false);
+      AutocryptWelcomeMessage.sendWelcomeMessage();
     }
   }
 };
