@@ -102,6 +102,25 @@ var EnigmailFuncs = {
   },
 
   /**
+   * Format a key fingerprint
+   * @fingerprint |string|  -  unformated OpenPGP fingerprint
+   *
+   * @return |string| - formatted string
+   */
+  formatFpr: function(fingerprint) {
+    //EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
+    // format key fingerprint
+    let r = "";
+    const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
+    if (fpr && fpr.length > 2) {
+      fpr.shift();
+      r = fpr.join(" ");
+    }
+
+    return r;
+  },
+
+  /**
    * this function tries to mimic the Thunderbird plaintext viewer
    *
    * @plainTxt - |string| containing the plain text data

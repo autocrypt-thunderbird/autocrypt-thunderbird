@@ -10,7 +10,6 @@ include $(DEPTH)/config/autoconf.mk
 DIRS = cryptoAPI
 
 MODFILES = \
-           addrbook.jsm \
            app.jsm \
            armor.jsm \
            autocrypt.jsm \
@@ -35,7 +34,6 @@ MODFILES = \
            files.jsm \
            fixExchangeMsg.jsm \
            glodaUtils.jsm \
-           key.jsm \
            keyRefreshService.jsm \
            keyRing.jsm \
            keyserver.jsm \

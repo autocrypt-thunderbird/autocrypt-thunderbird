@@ -5,7 +5,7 @@ var EXPORTED_SYMBOLS = ["AutocryptSetupImport"];
 const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
 const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
+const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
@@ -130,7 +130,7 @@ var AutocryptSetupImport = {
       await EnigmailKeyRing.insertSecretKey(openpgp_secret_key);
 
       let fpr = openpgp_secret_key.getFingerprint().toUpperCase();
-      let fpr_string = EnigmailKey.formatFpr(fpr);
+      let fpr_string = EnigmailFuncs.formatFpr(fpr);
       EnigmailDialog.info(win, "Key import ok");
 
       return true;

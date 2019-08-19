@@ -19,13 +19,10 @@ const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy
 const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
 const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
 const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
 const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
-const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
 const EnigmailOpenPGP = ChromeUtils.import("chrome://autocrypt/content/modules/openpgp.jsm").EnigmailOpenPGP;
 const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
 const EnigmailSend = ChromeUtils.import("chrome://autocrypt/content/modules/send.jsm").EnigmailSend;
 const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
 

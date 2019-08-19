@@ -16,7 +16,6 @@ const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data
 const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
 const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
 const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
 const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
 const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
 const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
@@ -335,68 +334,4 @@ var EnigmailDecryption = {
 
     return text;
   },
-
-  decryptAttachment: function(parent, outFile, displayName, byteData,
-    exitCodeObj, statusFlagsObj, errorMsgObj) {
-    const esvc = EnigmailCore.getEnigmailService();
-
-    EnigmailLog.DEBUG("decryption.jsm: decryptAttachment(parent=" + parent + ", outFileName=" + outFile.path + ")\n");
-
-    let attachmentHead = byteData.substr(0, 200);
-    if (attachmentHead.match(/-----BEGIN PGP \w{5,10} KEY BLOCK-----/)) {
-      // attachment appears to be a PGP key file
-
-      if (EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("attachmentPgpKey", [displayName]),
-          EnigmailLocale.getString("keyMan.button.import"), EnigmailLocale.getString("dlg.button.view"))) {
-
-        let preview = EnigmailKey.getKeyListFromKeyBlock(byteData, errorMsgObj);
-        exitCodeObj.keyList = preview;
-        let exitStatus = 0;
-
-        if (errorMsgObj.value === "") {
-          if (preview.length > 0) {
-            if (preview.length == 1) {
-              exitStatus = EnigmailDialog.confirmDlg(parent, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
-            }
-            else {
-              exitStatus = EnigmailDialog.confirmDlg(parent,
-                EnigmailLocale.getString("doImportMultiple", [
-                  preview.map(function(a) {
-                    return "\t" + a.name + " (" + a.id + ")";
-                  }).
-                  join("\n")
-                ]));
-            }
-
-            if (exitStatus) {
-              exitCodeObj.value = EnigmailKeyRing.importKey(parent, false, byteData, "", errorMsgObj);
-              statusFlagsObj.value = EnigmailConstants.IMPORTED_KEY;
-            }
-            else {
-              exitCodeObj.value = 0;
-              statusFlagsObj.value = EnigmailConstants.DISPLAY_MESSAGE;
-            }
-          }
-        }
-      }
-      else {
-        exitCodeObj.value = 0;
-        statusFlagsObj.value = EnigmailConstants.DISPLAY_MESSAGE;
-      }
-      return true;
-    }
-
-    //var outFileName = EnigmailFiles.getEscapedFilename(EnigmailFiles.getFilePathReadonly(outFile.QueryInterface(Ci.nsIFile), NS_WRONLY));
-
-    const cApi = EnigmailCryptoAPI();
-    let result = cApi.sync(cApi.decryptAttachment(byteData));
-
-    exitCodeObj.value = result.exitCode;
-    statusFlagsObj.value = result.statusFlags;
-    if (result.stdoutData.length > 0) {
-      return EnigmailFiles.writeFileContents(outFile, result.stdoutData);
-    }
-
-    return false;
-  }
 };

@@ -7,7 +7,7 @@
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, EnigGetString: false */
-/* global EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
+/* global EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 /* global EnigmailWindows: false, EnigmailFuncs: false */
 
 "use strict";
@@ -40,7 +40,7 @@ async function enigmailDlgOnLoad() {
   document.getElementById("labelSetupAddress").value = getSetupEmail();
   let current_key = getCurrentKey();
   if (current_key) {
-    const formatted_fpr = EnigmailKey.formatFpr(current_key);
+    const formatted_fpr = EnigmailFuncs.formatFpr(current_key);
     view.labelSetupCurrentKey.value = formatted_fpr;
     view.radiogroupSetupChoice.selectedIndex = 0;
     view.radioSetupKeep.setAttribute("class", "setupRecommended");
@@ -90,7 +90,7 @@ async function refreshChangeKey(preselect = false) {
     EnigmailLog.DEBUG(`refreshChangeKey(): ${secret_keys.length}\n`);
     for (let secret_key of secret_keys) {
       let fingerprint = secret_key.getFingerprint().toUpperCase();
-      const formatted_fpr = EnigmailKey.formatFpr(fingerprint);
+      const formatted_fpr = EnigmailFuncs.formatFpr(fingerprint);
       view.menulistChangeKey.appendItem(formatted_fpr, fingerprint);
     }
   }

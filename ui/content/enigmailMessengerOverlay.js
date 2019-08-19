@@ -24,7 +24,6 @@ var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs
 var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
 var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
 var EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-var EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
 var EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
 var EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
 var EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
@@ -588,61 +587,6 @@ Enigmail.msg = {
   getBodyElement: function() {
     let bodyElement = this.messagePane.getElementsByTagName("body")[0];
     return bodyElement;
-  },
-
-
-  importKeyFromMsgBody: function(msgData) {
-    let beginIndexObj = {};
-    let endIndexObj = {};
-    let indentStrObj = {};
-    let blockType = EnigmailArmor.locateArmoredBlock(msgData, 0, "", beginIndexObj, endIndexObj, indentStrObj);
-    if (!blockType || blockType !== "PUBLIC KEY BLOCK") {
-      return;
-    }
-
-    let keyData = msgData.substring(beginIndexObj.value, endIndexObj.value);
-
-    let errorMsgObj = {};
-    let preview = EnigmailKey.getKeyListFromKeyBlock(keyData, errorMsgObj);
-    if (errorMsgObj.value === "") {
-      this.importKeyDataWithConfirmation(preview, keyData);
-    } else {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("previewFailed") + "\n" + errorMsgObj.value);
-    }
-  },
-
-  importKeyDataWithConfirmation: function(preview, keyData) {
-    let exitStatus = -1,
-      errorMsgObj = {};
-    if (preview.length > 0) {
-      if (preview.length == 1) {
-        exitStatus = EnigmailDialog.confirmDlg(window, EnigmailLocale.getString("doImportOne", [preview[0].name, preview[0].id]));
-      } else {
-        exitStatus = EnigmailDialog.confirmDlg(window,
-          EnigmailLocale.getString("doImportMultiple", [
-            preview.map(function(a) {
-              return "\t" + a.name + " (" + a.id + ")";
-            }).join("\n")
-          ]));
-      }
-
-      if (exitStatus) {
-        try {
-          exitStatus = EnigmailKeyRing.importKey(window, false, keyData, "", errorMsgObj);
-        } catch (ex) {}
-
-        if (exitStatus === 0) {
-          var keyList = preview.map(function(a) {
-            return a.id;
-          });
-          EnigmailDialog.keyImportDlg(window, keyList);
-        } else {
-          EnigmailDialog.alert(window, EnigmailLocale.getString("failKeyImport") + "\n" + errorMsgObj.value);
-        }
-      }
-    } else {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("noKeyFound"));
-    }
   },
 
   /**

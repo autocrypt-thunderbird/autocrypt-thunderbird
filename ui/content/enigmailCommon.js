@@ -19,7 +19,6 @@
 // Many of these components are not used in this file, but are instead used in other files that are loaded together with EnigmailCommon
 var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
 var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailKey = ChromeUtils.import("chrome://autocrypt/content/modules/key.jsm").EnigmailKey;
 var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
 var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
 var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
@@ -75,67 +74,6 @@ const ENIG_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 const ENIG_C = Components.classes;
 const ENIG_I = Components.interfaces;
-
-
-// field ID's of key list (as described in the doc/DETAILS file in the GnuPG distribution)
-const ENIG_KEY_TRUST = 1;
-const ENIG_KEY_ID = 4;
-const ENIG_CREATED = 5;
-const ENIG_EXPIRY = 6;
-const ENIG_UID_ID = 7;
-const ENIG_OWNERTRUST = 8;
-const ENIG_USER_ID = 9;
-const ENIG_SIG_TYPE = 10;
-const ENIG_KEY_USE_FOR = 11;
-
-const ENIG_KEY_EXPIRED = "e";
-const ENIG_KEY_REVOKED = "r";
-const ENIG_KEY_INVALID = "i";
-const ENIG_KEY_DISABLED = "d";
-const ENIG_KEY_NOT_VALID = ENIG_KEY_EXPIRED + ENIG_KEY_REVOKED + ENIG_KEY_INVALID + ENIG_KEY_DISABLED;
-
-
-// GUI List: The corresponding image to set the "active" flag / checkbox
-const ENIG_IMG_NOT_SELECTED = "chrome://autocrypt/content/ui/check0.png";
-const ENIG_IMG_SELECTED = "chrome://autocrypt/content/ui/check1.png";
-const ENIG_IMG_DISABLED = "chrome://autocrypt/content/ui/check2.png";
-
-
-// Encryption flags
-if (EnigmailConstants) {
-  const ENIG_SIGN = EnigmailConstants.SEND_SIGNED;
-  const ENIG_ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
-  const ENIG_ENCRYPT_OR_SIGN = ENIG_ENCRYPT | ENIG_SIGN;
-}
-
-// UsePGPMimeOption values
-const PGP_MIME_NEVER = 0;
-const PGP_MIME_POSSIBLE = 1;
-const PGP_MIME_ALWAYS = 2;
-
-const ENIG_POSSIBLE_PGPMIME = EnigmailConstants.POSSIBLE_PGPMIME;
-const ENIG_PGP_DESKTOP_ATT = -2082;
-
-var gUsePGPMimeOptionList = ["usePGPMimeNever",
-  "usePGPMimePossible",
-  "usePGPMimeAlways"
-];
-
-// sending options:
-var gEnigEncryptionModel = ["encryptionModelConvenient",
-  "encryptionModelManually"
-];
-var gEnigAcceptedKeys = ["acceptedKeysValid",
-  "acceptedKeysAll"
-];
-var gEnigAutoSendEncrypted = ["autoSendEncryptedNever",
-  "autoSendEncryptedIfKeys"
-];
-var gEnigConfirmBeforeSending = ["confirmBeforeSendingNever",
-  "confirmBeforeSendingAlways",
-  "confirmBeforeSendingIfEncrypted",
-  "confirmBeforeSendingIfNotEncrypted"
-];
 
 const ENIG_BUTTON_POS_0 = 1;
 const ENIG_BUTTON_POS_1 = 1 << 8;
@@ -356,12 +294,8 @@ function EnigConvertToUnicode(text, charset) {
   }
 }
 
-function EnigConvertGpgToUnicode(text) {
-  return EnigmailData.convertGpgToUnicode(text);
-}
-
 function EnigFormatFpr(fingerprint) {
-  return EnigmailKey.formatFpr(fingerprint);
+  return EnigmailFuncs.formatFpr(fingerprint);
 }
 
 /////////////////////////
@@ -539,31 +473,6 @@ function EnigGetHttpUri(aEvent) {
 
   return null;
 }
-
-
-/**
- * GUI List: Set the "active" flag and the corresponding image
- */
-function EnigSetActive(element, status) {
-  if (status >= 0) {
-    element.setAttribute("active", status.toString());
-  }
-
-  switch (status) {
-    case 0:
-      element.setAttribute("src", ENIG_IMG_NOT_SELECTED);
-      break;
-    case 1:
-      element.setAttribute("src", ENIG_IMG_SELECTED);
-      break;
-    case 2:
-      element.setAttribute("src", ENIG_IMG_DISABLED);
-      break;
-    default:
-      element.setAttribute("active", -1);
-  }
-}
-
 
 /**
  * Receive a GUI List and remove all entries
