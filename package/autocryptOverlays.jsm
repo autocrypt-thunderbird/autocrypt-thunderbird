@@ -222,7 +222,11 @@ var AutocryptOverlays = {
     let windows = wm.getEnumerator(null);
     while (windows.hasMoreElements()) {
       try {
-        let domWindow = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
+        let domWindow = windows.getNext();
+        try {
+          domWindow = domWindow.QueryInterface(Ci.nsIDOMWindow);
+        }
+        catch(x) {}
 
         EnigmailLog.DEBUG("autocryptOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
 
