@@ -7,7 +7,7 @@
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
-/* global EnigConfirm: false, EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
+/* global EnigConfirm: false, EnigmailLog: false, EnigmailFuncs: false, EnigmailKeyRing: false, EnigmailDialog: false */
 /* global EnigmailWindows: false, sleep: false */
 
 "use strict";
@@ -75,7 +75,7 @@ async function onCommandMenulistAutocryptEmail() {
 
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
   if (autocrypt_info && autocrypt_info.fpr_primary) {
-    const formatted_fpr = EnigmailKey.formatFpr(autocrypt_info.fpr_primary);
+    const formatted_fpr = EnigmailFuncs.formatFpr(autocrypt_info.fpr_primary);
     EnigmailLog.DEBUG(`selectIdentityByIndex(): ${JSON.stringify(autocrypt_info)}\n`);
 
     textboxConfiguredStatus.value = "Configured";

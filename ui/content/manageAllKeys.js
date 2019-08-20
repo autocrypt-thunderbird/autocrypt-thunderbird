@@ -7,7 +7,7 @@
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
-/* global EnigConfirm: false, EnigmailLog: false, EnigmailKey: false, EnigmailKeyRing: false, EnigmailDialog: false */
+/* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
 /* global EnigmailWindows: false, EnigmailFuncs: false, EnigFilePicker: false, EnigAlert: false */
 /* global EnigmailFiles: false */
 
@@ -94,7 +94,7 @@ async function getKeyInfo(secret_key) {
   return {
     'identifier': fingerprint,
     'fpr_short': fingerprint,
-    'fpr': EnigmailKey.formatFpr(fingerprint),
+    'fpr': EnigmailFuncs.formatFpr(fingerprint),
     'created': creation,
     'created_date': creation.toLocaleDateString(),
     'created_full': creation.toLocaleString(),
