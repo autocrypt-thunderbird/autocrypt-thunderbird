@@ -117,6 +117,8 @@ That's it. I'll get out of your way now.
  - Alice, the Autocrypt bot
 
 PS: This message was generated locally by the Autocrypt extension.
+
+PPS: This message, and bot replies, are still a work in progress :)
 </pre>
 `.replace(/\n/gm, '\r\n');
 
