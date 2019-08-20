@@ -62,86 +62,87 @@ const ENCRYPT_DISPLAY_STATUS = {
   UNCONFIGURED: {
     encSymbol: "inactiveNone",
     encStr: "Encryption not configured for this address",
-    buttonPressed: false,
-    buttonEnabled: true
+    buttonPressed: false
   },
   SIGN_ONLY: {
     encSymbol: "activeNone",
     encStr: "Sign-only mode",
-    buttonPressed: false,
-    buttonEnabled: true
+    buttonPressed: false
   },
   UNAVAILABLE: {
     encSymbol: "forceNo",
     encStr: "Encryption is not available",
-    buttonPressed: false,
-    buttonEnabled: false
+    buttonPressed: false
   },
   NO_RECIPIENTS: {
     encSymbol: "empty",
     encStr: "No recipients",
-    buttonPressed: false,
-    buttonEnabled: false
+    buttonPressed: false
   },
   ENABLED_MANUAL: {
     encSymbol: "activeNone",
     encStr: "Encryption is enabled",
-    buttonPressed: true,
-    buttonEnabled: true
+    buttonPressed: true
   },
   ENABLED_REPLY: {
     encSymbol: "activeNone",
     encStr: "Encryption is enabled (automatic)",
-    buttonPressed: true,
-    buttonEnabled: true
+    buttonPressed: true
   },
   ENABLED_MUTUAL: {
     encSymbol: "activeNone",
     encStr: "Encryption is enabled (automatic)",
-    buttonPressed: true,
-    buttonEnabled: true
+    buttonPressed: true
   },
-  ENABLED_ERROR: {
+  ERROR_MISSING_KEYS: {
     encSymbol: "activeConflict",
     encStr: "Missing recipient keys",
-    buttonPressed: true,
-    buttonEnabled: true
+    buttonPressed: true
   },
   ENABLED_TRUSTED: {
     encSymbol: "activeNone",
     encStr: "Encryption is enabled (trusted)",
-    buttonPressed: true,
-    buttonEnabled: true
+    buttonPressed: true
   },
   AVAILABLE: {
     encSymbol: "inactiveNone",
     encStr: "Encryption is available",
-    buttonPressed: false,
-    buttonEnabled: true
+    buttonPressed: false
   },
   DISABLE: {
     encSymbol: "forceNo",
     encStr: "Encryption is disabled",
-    buttonPressed: false,
-    buttonEnabled: true
+    buttonPressed: false
   },
   SMIME: {
     encSymbol: "forceNo",
     encStr: "Disabled, using S/MIME",
-    buttonPressed: false,
-    buttonEnabled: false
+    buttonPressed: false
+  },
+  ERROR_NEWSGROUPS: {
+    encSymbol: "activeConflict",
+    encStr: "Disabled, sending to newsgroup",
+    buttonPressed: true
   },
   NEWSGROUPS: {
     encSymbol: "forceNo",
     encStr: "Disabled, sending to newsgroup",
-    buttonPressed: false,
-    buttonEnabled: false
+    buttonPressed: false
+  },
+  ERROR_BCC: {
+    encSymbol: "activeConflict",
+    encStr: "Enabled, but bcc recipients not supported",
+    buttonPressed: true
+  },
+  BCC: {
+    encSymbol: "forceNo",
+    encStr: "Disabled, bcc recipients not supported",
+    buttonPressed: false
   },
   UNKNOWN: {
     encSymbol: "forceNo",
     encStr: "Unknown state (should not happen!)",
-    buttonPressed: false,
-    buttonEnabled: true
+    buttonPressed: false
   }
 };
 
@@ -165,10 +166,13 @@ ComposeCryptoState.prototype.isEncryptEnabled = function() {
   return this.getDisplayStatus().buttonPressed;
 };
 
+ComposeCryptoState.prototype.isEnabledAndMissingKeys = function() {
+  return this.getDisplayStatus() == ENCRYPT_DISPLAY_STATUS.ERROR_MISSING_KEYS;
+};
+
 ComposeCryptoState.prototype.isEncryptError = function() {
-  // it is *vital* that this is consistent, so we derive this directly from the
-  // display status.
-  return this.getDisplayStatus() == ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+  // TODO terrible check, improve!
+  return this.getDisplayStatus().encStr == 'activeConflict';
 };
 
 ComposeCryptoState.prototype.isAutocryptConfiguredForIdentity = function() {
@@ -183,6 +187,10 @@ ComposeCryptoState.prototype.isWouldEncryptAutomatically = function() {
   let is_mutual_peers = this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL;
   let is_encrypt_mutual = is_mutual_peers && this.isAutocryptMutual();
   return is_encrypt_mutual || this.isReplyToOpenPgpEncryptedMessage;
+};
+
+ComposeCryptoState.prototype.resetUserChoice = function() {
+  this.currentCryptoMode = CRYPTO_MODE.NO_CHOICE;
 };
 
 ComposeCryptoState.prototype.toggleUserChoice = function() {
@@ -236,9 +244,6 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
   if (this.isAnySmimeEnabled) {
     return ENCRYPT_DISPLAY_STATUS.SMIME;
   }
-  if (this.isAnyRecipientNewsgroup) {
-    return ENCRYPT_DISPLAY_STATUS.NEWSGROUPS;
-  }
   if (!this.isAutocryptConfiguredForIdentity()) {
     return ENCRYPT_DISPLAY_STATUS.UNCONFIGURED;
   }
@@ -247,21 +252,33 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
   let is_mutual_peers = this.currentAutocryptRecommendation.group_recommendation >= AUTOCRYPT_RECOMMEND.MUTUAL;
   switch(this.currentCryptoMode) {
     case CRYPTO_MODE.NO_CHOICE:
+      if (this.isAnyRecipientNewsgroup) {
+        return ENCRYPT_DISPLAY_STATUS.NEWSGROUPS;
+      }
+      if (this.isAnyRecipientBcc) {
+        return ENCRYPT_DISPLAY_STATUS.BCC;
+      }
       if (this.isReplyToOpenPgpEncryptedMessage) {
-        return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+        return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_REPLY : ENCRYPT_DISPLAY_STATUS.ERROR_MISSING_KEYS;
       }
       if (no_recipients) {
         return this.isAutocryptMutual() ? ENCRYPT_DISPLAY_STATUS.NO_RECIPIENTS : ENCRYPT_DISPLAY_STATUS.DISABLE;
       }
       if (is_mutual_peers && this.isAutocryptMutual()) {
-        return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+        return ENCRYPT_DISPLAY_STATUS.ENABLED_MUTUAL;
       }
       if (can_encrypt) {
         return ENCRYPT_DISPLAY_STATUS.AVAILABLE;
       }
       return ENCRYPT_DISPLAY_STATUS.UNAVAILABLE;
     case CRYPTO_MODE.CHOICE_ENABLED:
-      return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MANUAL : ENCRYPT_DISPLAY_STATUS.ENABLED_ERROR;
+      if (this.isAnyRecipientNewsgroup) {
+        return ENCRYPT_DISPLAY_STATUS.ERROR_NEWSGROUPS;
+      }
+      if (this.isAnyRecipientBcc) {
+        return ENCRYPT_DISPLAY_STATUS.ERROR_BCC;
+      }
+      return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MANUAL : ENCRYPT_DISPLAY_STATUS.ERROR_MISSING_KEYS;
     case CRYPTO_MODE.CHOICE_DISABLED:
       return ENCRYPT_DISPLAY_STATUS.DISABLE;
     case CRYPTO_MODE.SIGN_ONLY:
@@ -749,6 +766,22 @@ Enigmail.msg = {
     this.setIdentityDefaults();
   },
 
+  showDialogOnErrorState: function() {
+    if (!this.composeCryptoState.isAutocryptConfiguredForIdentity()) {
+      EnigmailWindows.openAutocryptSettings(window, this.identity.email);
+      return true;
+    }
+    if (this.composeCryptoState.isAnyRecipientNewsgroup) {
+      EnigmailDialog.alert(window, "Encryption to Newsgroups is not supported!");
+      return true;
+    }
+    if (this.composeCryptoState.isAnyRecipientBcc) {
+      EnigmailDialog.alert(window, "Encryption to Bcc recipients is not yet supported, sorry.");
+      return true;
+    }
+    return false;
+  },
+
   onPressKeyToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPressKeyToggleEncrypt()\n");
     this.onButtonToggleEncrypt();
@@ -756,16 +789,16 @@ Enigmail.msg = {
 
   onButtonToggleEncrypt: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onButtonToggleEncrypt()\n");
-    if (!this.composeCryptoState.isAutocryptConfiguredForIdentity()) {
-      EnigmailWindows.openAutocryptSettings(window, this.identity.email);
+    if (this.showDialogOnErrorState()) {
+      this.composeCryptoState.resetUserChoice();
       this.fireSendFlags();
       return;
     }
-    if (!this.composeCryptoState.isEncryptError()) {
+    if (!this.composeCryptoState.isEnabledAndMissingKeys()) {
       this.composeCryptoState.toggleUserChoice();
     }
     this.delayedUpdateStatusBar();
-    if (this.composeCryptoState.isEncryptError()) {
+    if (this.composeCryptoState.isEnabledAndMissingKeys()) {
       let self = this;
       setTimeout(function() {
         let choice = self.showMissingRecipientsDialog('keep-disabled');
@@ -826,7 +859,6 @@ Enigmail.msg = {
       // encIcon.setAttribute("tooltiptext", encReasonStr);
     }
     // this.setChecked("enigmail-bc-encrypt", display_status.buttonPressed);
-    // this.setEnabled("menuitem-autocrypt-toggle", display_status.buttonEnabled);
 
     this.setChecked("check-autocrypt-status-manual", this.composeCryptoState.isCheckStatusManual());
     this.setChecked("check-autocrypt-status-reply", this.composeCryptoState.isCheckStatusReply());
@@ -884,6 +916,7 @@ Enigmail.msg = {
       EnigmailSync.sync(EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList));
 
     this.composeCryptoState.isAnyRecipientNewsgroup = Boolean(gMsgCompose.compFields.newsgroups);
+    this.composeCryptoState.isAnyRecipientBcc = Boolean(gMsgCompose.compFields.bcc.length);
 
     // process and signal new resulting state
     this.updateStatusBar();
@@ -982,27 +1015,13 @@ Enigmail.msg = {
   saveDraftMessage: function() {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: saveDraftMessage()\n");
 
-
     let doEncrypt = this.identity.getBoolAttribute("autoEncryptDrafts");
 
     this.setDraftStatus(doEncrypt);
 
     if (!doEncrypt) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
-
-      try {
-        if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
-          Enigmail.msg.getSecurityParams().wrappedJSObject.sendFlags = 0;
-        }
-      } catch (ex) {}
-
       return true;
-    }
-
-    let sendFlags = EnigmailConstants.SEND_PGP_MIME | EnigmailConstants.SEND_ENCRYPTED | EnigmailConstants.SAVE_MESSAGE | EnigmailConstants.SEND_ALWAYS_TRUST;
-
-    if (this.protectHeaders) {
-      sendFlags |= EnigmailConstants.ENCRYPT_HEADERS;
     }
 
     let fromAddr = this.identity.email;
@@ -1013,10 +1032,6 @@ Enigmail.msg = {
 
     let enigmailSvc = EnigmailCore.getService(window);
     if (!enigmailSvc) return true;
-
-    if (this.isSendAsSmimeEnabled(sendFlags)) return true; // use S/MIME
-
-    // this.notifyUser(3, EnigmailLocale.getString("msgCompose.cannotSaveDraft"), "saveDraftFailed", testErrorMsgObj.value);
 
     let secInfo;
 
@@ -1034,8 +1049,6 @@ Enigmail.msg = {
       }
     }
 
-    secInfo.sendFlags = sendFlags;
-    secInfo.UIFlags = 0;
     secInfo.senderEmailAddr = fromAddr;
     secInfo.recipients = fromAddr;
     secInfo.bccRecipients = "";
@@ -1056,53 +1069,6 @@ Enigmail.msg = {
       throw Components.results.NS_ERROR_FAILURE;
 
     Enigmail.msg.setSecurityParams(newSecurityInfo);
-  },
-
-  isSendConfirmationRequired: function(sendFlags) {
-    // TODO?
-    return false;
-  },
-
-  compileFromAndTo: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.compileFromAndTo\n");
-    let compFields = gMsgCompose.compFields;
-    let toAddrList = [];
-    let recList;
-    let arrLen = {};
-
-    if (!Enigmail.msg.composeBodyReady) {
-      compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
-    }
-    Recipients2CompFields(compFields);
-    gMsgCompose.expandMailingLists();
-
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: to='" + compFields.to + "'\n");
-    if (compFields.to.length > 0) {
-      toAddrList = EnigmailFuncs.parseEmails(compFields.to, false);
-    }
-
-    if (compFields.cc.length > 0) {
-      toAddrList = toAddrList.concat(EnigmailFuncs.parseEmails(compFields.cc, false));
-    }
-
-    if (compFields.bcc.length > 0) {
-      toAddrList = toAddrList.concat(EnigmailFuncs.parseEmails(compFields.bcc, false));
-    }
-
-    for (let addr of toAddrList) {
-      // determine incomplete addresses --> do not attempt pEp encryption
-      if (addr.email.search(/.@./) < 0) return null;
-    }
-
-    this.identity = getCurrentIdentity();
-    let from = {
-      email: this.identity.email,
-      name: this.identity.fullName
-    };
-    return {
-      from: from,
-      toAddrList: toAddrList
-    };
   },
 
   resetDirty: function() {
@@ -1229,10 +1195,6 @@ Enigmail.msg = {
     };
   },
 
-  prepareSecurityInfo: function(sendFlags, uiFlags, rcpt, newSecurityInfo, keyMap = {}) {
-    return newSecurityInfo;
-  },
-
   encryptMsg: async function(msgSendType) {
     EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + "\n");
 
@@ -1255,6 +1217,7 @@ Enigmail.msg = {
     }
 
     this.unsetAdditionalHeader("x-enigmail-draft-status");
+    this.unsetAdditionalHeader("autocrypt-draft-state");
 
     let msgCompFields = gMsgCompose.compFields;
     let newsgroups = msgCompFields.newsgroups; // Check if sending to any newsgroups
@@ -1266,7 +1229,12 @@ Enigmail.msg = {
       return false;
     }
 
-    if (this.composeCryptoState.isEncryptError()) {
+    if (this.composeCryptoState.isEncryptEnabled() && this.showDialogOnErrorState()) {
+      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: some encryption error on send - reporting\n");
+      return false;
+    }
+
+    if (this.composeCryptoState.isEnabledAndMissingKeys()) {
       EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encrypt error on send - asking user\n");
       let result = this.showMissingRecipientsDialog('send-unencrypted');
       if (result == 'send-unencrypted') {
@@ -1312,17 +1280,6 @@ Enigmail.msg = {
       if (!rcpt) {
         return false;
       }
-
-      // if (this.preferPgpOverSmime(sendFlags) === 0) {
-        // use S/MIME
-      // Attachments2CompFields(gMsgCompose.compFields); // update list of attachments
-      // sendFlags = 0;
-      // return true;
-      // }
-
-      // if (!this.checkProtectHeaders(this.composeCryptoState.isEncryptEnabled(), this.isEnablePgpInline)) {
-      // return false;
-      // }
 
       // ----------------------- Rewrapping code, taken from function "encryptInline"
 
@@ -1468,38 +1425,6 @@ Enigmail.msg = {
 
     return prefValue;
   },
-
-  messageSendCheck: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.messageSendCheck\n");
-
-    try {
-      var warn = this.getMailPref("mail.warn_on_send_accel_key");
-
-      if (warn) {
-        var checkValue = {
-          value: false
-        };
-        var bundle = document.getElementById("bundle_composeMsgs");
-        var buttonPressed = EnigmailDialog.getPromptSvc().confirmEx(window,
-          bundle.getString('sendMessageCheckWindowTitle'),
-          bundle.getString('sendMessageCheckLabel'), (EnigmailDialog.getPromptSvc().BUTTON_TITLE_IS_STRING * EnigmailDialog.getPromptSvc().BUTTON_POS_0) +
-          (EnigmailDialog.getPromptSvc().BUTTON_TITLE_CANCEL * EnigmailDialog.getPromptSvc().BUTTON_POS_1),
-          bundle.getString('sendMessageCheckSendButtonLabel'),
-          null, null,
-          bundle.getString('CheckMsg'),
-          checkValue);
-        if (buttonPressed !== 0) {
-          return false;
-        }
-        if (checkValue.value) {
-          EnigmailPrefs.getPrefRoot().setBoolPref("mail.warn_on_send_accel_key", false);
-        }
-      }
-    } catch (ex) {}
-
-    return true;
-  },
-
 
   /**
    * set non-standard message Header

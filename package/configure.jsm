@@ -23,6 +23,7 @@ const nsIMsgAccountManager = Ci.nsIMsgAccountManager;
 var EnigmailConfigure = {
   configureAutocrypt: async function(oldVersion, newVersion) {
     EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
+    // oldVersion = null;
     if (oldVersion == newVersion) {
       EnigmailLog.DEBUG("configure.jsm: configureEnigmail(): version up to date,nothing to do)\n");
       return;
