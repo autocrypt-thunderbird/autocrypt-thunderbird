@@ -5,7 +5,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
+var EXPORTED_SYMBOLS = ["AutocryptMimeDecrypt"];
 
 /**
  *  Module for handling PGP/MIME encrypted messages
@@ -14,21 +14,21 @@ var EXPORTED_SYMBOLS = ["EnigmailMimeDecrypt"];
 
 /*global atob: false */
 
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").EnigmailVerify;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").AutocryptVerify;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").AutocryptDecryption;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+var AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").AutocryptURIs;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").AutocryptSingletons;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
 const AutocryptMessageCache = ChromeUtils.import("chrome://autocrypt/content/modules/messageCache.jsm").AutocryptMessageCache;
 const MessageCryptoStatus = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").MessageCryptoStatus;
 const AutocryptHelper = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptHelper.jsm").AutocryptHelper;
@@ -42,7 +42,7 @@ const ENCODING_DEFAULT = 0;
 const ENCODING_BASE64 = 1;
 const ENCODING_QP = 2;
 
-var EnigmailMimeDecrypt = {
+var AutocryptMimeDecrypt = {
   /**
    * create a new instance of a PGP/MIME decryption handler
    */
@@ -57,10 +57,10 @@ var EnigmailMimeDecrypt = {
    * @return {String}: MIME string (HTML text)
    */
   emptyAttachment: function() {
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: emptyAttachment()\n");
+    AutocryptLog.DEBUG("mimeDecrypt.jsm: emptyAttachment()\n");
 
-    let encPart = EnigmailLocale.getString("mimeDecrypt.encryptedPart.attachmentLabel");
-    let concealed = EnigmailLocale.getString("mimeDecrypt.encryptedPart.concealedData");
+    let encPart = AutocryptLocale.getString("mimeDecrypt.encryptedPart.attachmentLabel");
+    let concealed = AutocryptLocale.getString("mimeDecrypt.encryptedPart.concealedData");
     let retData =
       `Content-Type: message/rfc822; name="${encPart}.eml"
 Content-Transfer-Encoding: 7bit
@@ -85,7 +85,7 @@ Content-Type: text/html
     if (decryptingMimePartNum === "1" || !uri) return "";
 
     let msg = "";
-    let mimePartNumber = EnigmailMime.getMimePartNumber(uri.spec);
+    let mimePartNumber = AutocryptMime.getMimePartNumber(uri.spec);
 
     if (mimePartNumber === decryptingMimePartNum + ".1") {
       msg = 'Content-Type: message/rfc822; name="attachment.eml"\r\n' +
@@ -111,7 +111,7 @@ Content-Type: text/html
 
 function MimeDecryptHandler() {
 
-  EnigmailLog.DEBUG("mimeDecrypt.jsm: MimeDecryptHandler()\n"); // always log this one
+  AutocryptLog.DEBUG("mimeDecrypt.jsm: MimeDecryptHandler()\n"); // always log this one
   this.mimeSvc = null;
   this.initOk = false;
   this.boundary = "";
@@ -133,7 +133,7 @@ function MimeDecryptHandler() {
   this.dataIsBase64 = null;
   this.base64Cache = "";
 
-  if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+  if (AutocryptTb60Compat.isMessageUriInPgpMime()) {
     this.onDataAvailable = this.onDataAvailable68;
   } else {
     this.onDataAvailable = this.onDataAvailable60;
@@ -144,9 +144,9 @@ MimeDecryptHandler.prototype = {
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, uri) {
-    if (!EnigmailCore.getService()) // Ensure Enigmail is initialized
+    if (!AutocryptCore.getService()) // Ensure Autocrypt is initialized
       return;
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest\n"); // always log this one
+    AutocryptLog.DEBUG("mimeDecrypt.jsm: onStartRequest\n"); // always log this one
 
     this.initOk = true;
     this.mimeSvc = request.QueryInterface(Ci.nsIPgpMimeProxy);
@@ -159,20 +159,20 @@ MimeDecryptHandler.prototype = {
     if ("messageURI" in this.mimeSvc) {
       this.uri = this.mimeSvc.messageURI;
       if (this.uri) {
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
+        AutocryptLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
       }
       else {
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri=null\n");
+        AutocryptLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri=null\n");
       }
     } else {
       if (uri) {
         this.uri = uri.QueryInterface(Ci.nsIURI);
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
+        AutocryptLog.DEBUG("mimeDecrypt.jsm: onStartRequest: uri='" + this.uri.spec + "'\n");
       }
     }
 
-    this.msgWindow = EnigmailVerify.lastMsgWindow;
-    this.msgUriSpec = EnigmailVerify.lastMsgUri;
+    this.msgWindow = AutocryptVerify.lastMsgWindow;
+    this.msgUriSpec = AutocryptVerify.lastMsgUri;
 
     this.statusDisplayed = false;
     this.dataLength = 0;
@@ -185,7 +185,7 @@ MimeDecryptHandler.prototype = {
     this.statusStr = "";
     this.headerMode = 0;
     this.xferEncoding = ENCODING_DEFAULT;
-    this.boundary = EnigmailMime.getBoundary(this.mimeSvc.contentType);
+    this.boundary = AutocryptMime.getBoundary(this.mimeSvc.contentType);
   },
 
   processData: function(data) {
@@ -222,7 +222,7 @@ MimeDecryptHandler.prototype = {
       } else {
         // PGP/MIME main part body
         if (this.xferEncoding == ENCODING_QP) {
-          this.cacheData(EnigmailData.decodeQuotedPrintable(data));
+          this.cacheData(AutocryptData.decodeQuotedPrintable(data));
         } else {
           this.cacheData(data);
         }
@@ -328,7 +328,7 @@ MimeDecryptHandler.prototype = {
     LOCAL_DEBUG("mimeDecrypt.jsm: processBase64Message\n");
 
     try {
-      this.base64Cache = EnigmailData.decodeBase64(this.base64Cache);
+      this.base64Cache = AutocryptData.decodeBase64(this.base64Cache);
     } catch (ex) {
       // if decoding failed, try non-encoded version
     }
@@ -340,7 +340,7 @@ MimeDecryptHandler.prototype = {
     }
   },
 
-  isUrlEnigmailConvert: function() {
+  isUrlAutocryptConvert: function() {
     if (!this.uri) return false;
 
     return (this.uri.spec.search(/[&?]header=enigmailConvert/) >= 0);
@@ -354,8 +354,8 @@ MimeDecryptHandler.prototype = {
       this.processBase64Message();
     }
 
-    this.msgWindow = EnigmailVerify.lastMsgWindow;
-    this.msgUriSpec = EnigmailVerify.lastMsgUri;
+    this.msgWindow = AutocryptVerify.lastMsgWindow;
+    this.msgUriSpec = AutocryptVerify.lastMsgUri;
 
     this.backgroundJob = (this.uri && this.uri.spec.search(/[&?]header=(print|quotebody|enigmailConvert)/) >= 0);
 
@@ -366,11 +366,11 @@ MimeDecryptHandler.prototype = {
     }
 
     let spec = this.uri ? this.uri.spec : null;
-    EnigmailLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
+    AutocryptLog.DEBUG(`mimeDecrypt.jsm: checking MIME structure for ${this.mimePartNumber} / ${spec}\n`);
 
-    if (!EnigmailMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
-      if (!this.isUrlEnigmailConvert()) {
-        this.returnDataToLibMime(EnigmailMimeDecrypt.emptyAttachment());
+    if (!AutocryptMime.isRegularMimeStructure(this.mimePartNumber, spec, false)) {
+      if (!this.isUrlAutocryptConvert()) {
+        this.returnDataToLibMime(AutocryptMimeDecrypt.emptyAttachment());
       } else {
         throw "mimeDecrypt.jsm: Cannot decrypt messages with mixed (encrypted/non-encrypted) content";
       }
@@ -386,36 +386,36 @@ MimeDecryptHandler.prototype = {
     }
 
     if (this.xferEncoding == ENCODING_BASE64) {
-      this.outQueue = EnigmailData.decodeBase64(this.outQueue) + "\n";
+      this.outQueue = AutocryptData.decodeBase64(this.outQueue) + "\n";
     }
 
     let win = this.msgWindow;
 
-    if (!EnigmailDecryption.isReady(win)) return;
+    if (!AutocryptDecryption.isReady(win)) return;
 
     // discover the pane
     var pane = Cc["@mozilla.org/appshell/window-mediator;1"]
         .getService(Components.interfaces.nsIWindowMediator)
         .getMostRecentWindow("mail:3pane");
-    let sender_address = EnigmailDecryption.getFromAddr(pane);
+    let sender_address = AutocryptDecryption.getFromAddr(pane);
 
     this.displayLoadingProgress();
 
-    EnigmailLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
+    AutocryptLog.DEBUG(`mimeDecrypt.jsm: starting decryption\n`);
 
     let uri = this.uri;
     let pgpBlock = this.outQueue;
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     let [decrypted_plaintext, verify_status] = cApi.sync((async function() {
       await AutocryptHelper.processAutocryptForMessage(uri);
 
       let cached_session_key = AutocryptSessionKeyCache.getCachedSessionKey(uri);
-      let openpgp_secret_keys = await EnigmailKeyRing.getAllSecretKeys();
-      let openpgp_public_key = await EnigmailKeyRing.getPublicKeyByEmail(sender_address);
+      let openpgp_secret_keys = await AutocryptKeyRing.getAllSecretKeys();
+      let openpgp_public_key = await AutocryptKeyRing.getPublicKeyByEmail(sender_address);
 
       try {
         let return_status = await cApi.decrypt(pgpBlock, openpgp_secret_keys,
-          openpgp_public_key, cached_session_key, async (key_id) => await EnigmailKeyRing.getPublicKeyByKeyId(key_id));
+          openpgp_public_key, cached_session_key, async (key_id) => await AutocryptKeyRing.getPublicKeyByKeyId(key_id));
         let verify_status = MessageCryptoStatus.createDecryptOkStatus(sender_address, return_status.sig_ok, return_status.sig_key_id, return_status.sig_openpgp_key);
 
         if (!cached_session_key && return_status.session_key) {
@@ -424,7 +424,7 @@ MimeDecryptHandler.prototype = {
 
         return [return_status.plaintext, verify_status];
       } catch (e) {
-        EnigmailLog.DEBUG(`mimeDecrypt.jsm: decrypt error: ${e}\n`);
+        AutocryptLog.DEBUG(`mimeDecrypt.jsm: decrypt error: ${e}\n`);
         let verify_status = MessageCryptoStatus.createDecryptErrorStatus(sender_address);
         return ["", verify_status];
       }
@@ -457,7 +457,7 @@ MimeDecryptHandler.prototype = {
 
     this.displayStatus(verify_status, decrypted_headers);
 
-    let prefix = EnigmailMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
+    let prefix = AutocryptMimeDecrypt.pretendAttachment(this.mimePartNumber, this.uri);
     this.returnDataToLibMime(prefix + decrypted_plaintext);
 
     // don't remember the last message if it contains an embedded PGP/MIME message
@@ -472,20 +472,20 @@ MimeDecryptHandler.prototype = {
       };
       AutocryptMessageCache.putCachedMessage(this.uri, cached_message);
     }
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
+    AutocryptLog.DEBUG("mimeDecrypt.jsm: onStopRequest: process terminated\n"); // always log this one
     this.proc = null;
   },
 
   displayLoadingProgress: function() {
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: displayLoadingProgress()\n");
-      let headerSink = EnigmailSingletons.messageReader;
+      AutocryptLog.DEBUG("mimeDecrypt.jsm: displayLoadingProgress()\n");
+      let headerSink = AutocryptSingletons.messageReader;
       if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.showLoading();
       }
   },
 
   displayStatus: function(verify_status, decrypted_headers) {
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus\n");
+    AutocryptLog.DEBUG("mimeDecrypt.jsm: displayStatus\n");
 
     if (this.msgWindow === null || this.statusDisplayed)
       return;
@@ -493,8 +493,8 @@ MimeDecryptHandler.prototype = {
     let uriSpec = (this.uri ? this.uri.spec : null);
 
     try {
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: displayStatus for uri " + uriSpec + "\n");
-      let headerSink = EnigmailSingletons.messageReader;
+      AutocryptLog.DEBUG("mimeDecrypt.jsm: displayStatus for uri " + uriSpec + "\n");
+      let headerSink = AutocryptSingletons.messageReader;
 
       if (headerSink && this.uri && !this.backgroundJob) {
         headerSink.processDecryptionResult(this.uri, "modifyMessageHeaders", JSON.stringify(decrypted_headers), this.mimePartNumber);
@@ -508,7 +508,7 @@ MimeDecryptHandler.prototype = {
       }
       this.statusDisplayed = true;
     } catch (ex) {
-      EnigmailLog.writeException("mimeDecrypt.jsm", ex);
+      AutocryptLog.writeException("mimeDecrypt.jsm", ex);
     }
     LOCAL_DEBUG("mimeDecrypt.jsm: displayStatus done\n");
   },
@@ -532,7 +532,7 @@ MimeDecryptHandler.prototype = {
         uri.spec.search(/[&?]examineEncryptedParts=true/) < 0) {
 
         if (uri.spec.search(/[&?]header=(filter|enigmailFilter)(&.*)?$/) > 0) {
-          EnigmailLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
+          AutocryptLog.DEBUG("mimeDecrypt.jsm: onStopRequest: detected incoming message processing\n");
           return false;
         }
       }
@@ -557,8 +557,8 @@ MimeDecryptHandler.prototype = {
         }
       }
     } catch (ex) {
-      EnigmailLog.writeException("mimeDecrypt.js", ex);
-      EnigmailLog.DEBUG("mimeDecrypt.jsm: error while processing " + msgUriSpec + "\n");
+      AutocryptLog.writeException("mimeDecrypt.js", ex);
+      AutocryptLog.DEBUG("mimeDecrypt.jsm: error while processing " + msgUriSpec + "\n");
     }
 
     return true;
@@ -577,8 +577,8 @@ MimeDecryptHandler.prototype = {
       }
 
       LOCAL_DEBUG("mimeDecrypt.jsm: done: adding multipart/mixed around " + hdr[j] + "\n");
-      if (!this.isUrlEnigmailConvert()) {
-        let wrapper = EnigmailMime.createBoundary();
+      if (!this.isUrlAutocryptConvert()) {
+        let wrapper = AutocryptMime.createBoundary();
 
         return 'Content-Type: multipart/mixed; boundary="' + wrapper + '"\r\n' +
           'Content-Disposition: inline\r\n\r\n' +
@@ -601,22 +601,22 @@ MimeDecryptHandler.prototype = {
 
   // return data to libMime
   returnDataToLibMime: function(data) {
-    EnigmailLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: " + data.length + " bytes\n");
+    AutocryptLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: " + data.length + " bytes\n");
 
     let proto = null;
     let ct = this.extractContentType(data);
     if (ct && ct.search(/multipart\/signed/i) >= 0) {
-      proto = EnigmailMime.getProtocol(ct);
+      proto = AutocryptMime.getProtocol(ct);
     }
 
     try {
       if (proto && proto.search(/application\/(pgp|pkcs7|x-pkcs7)-signature/i) >= 0) {
-        EnigmailLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: using direct verification\n");
+        AutocryptLog.DEBUG("mimeDecrypt.jsm: returnDataToLibMime: using direct verification\n");
         this.mimeSvc.contentType = ct;
         if ("mimePart" in this.mimeSvc) {
           this.mimeSvc.mimePart = this.mimeSvc.mimePart + ".1";
         }
-        let veri = EnigmailVerify.newVerifier(proto);
+        let veri = AutocryptVerify.newVerifier(proto);
         veri.onStartRequest(this.mimeSvc, this.uri);
         veri.onTextData(data);
         veri.onStopRequest(null, 0);
@@ -633,7 +633,7 @@ MimeDecryptHandler.prototype = {
         }
       }
     } catch (ex) {
-      EnigmailLog.ERROR("mimeDecrypt.jsm: returnDataToLibMime(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
+      AutocryptLog.ERROR("mimeDecrypt.jsm: returnDataToLibMime(): mimeSvc.onDataAvailable failed:\n" + ex.toString());
     }
   },
 
@@ -644,14 +644,14 @@ MimeDecryptHandler.prototype = {
     if (decrypted_headers && ("subject" in decrypted_headers)) {
       try {
         let msgDbHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-        msgDbHdr.subject = EnigmailData.convertFromUnicode(decrypted_headers.subject, "utf-8");
+        msgDbHdr.subject = AutocryptData.convertFromUnicode(decrypted_headers.subject, "utf-8");
       } catch (x) {}
     }
   },
 
   extractEncryptedHeaders: function(decrypted_plaintext) {
     try {
-      let r = EnigmailMime.extractProtectedHeaders(decrypted_plaintext);
+      let r = AutocryptMime.extractProtectedHeaders(decrypted_plaintext);
       if (!r) return null;
 
       const decrypted_headers = r.newHeaders;
@@ -659,7 +659,7 @@ MimeDecryptHandler.prototype = {
         return [decrypted_plaintext.substr(0, r.startPos) + decrypted_plaintext.substr(r.endPos), decrypted_headers];
       }
     } catch (ex) {
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractEncryptedHeaders: Error: ${ex}\n`);
+      AutocryptLog.DEBUG(`mimeDecrypt.jsm: extractEncryptedHeaders: Error: ${ex}\n`);
     }
     return null;
   },
@@ -671,7 +671,7 @@ MimeDecryptHandler.prototype = {
       hdr.initialize(decrypted_plaintext.substr(0, m));
 
       const gossip = hdr.getHeader("autocrypt-gossip") || [];
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
+      AutocryptLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: found ${gossip.length} headers\n`);
 
       const msgHdr = this.uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
 
@@ -680,12 +680,12 @@ MimeDecryptHandler.prototype = {
         msgDate = msgHdr.dateInSeconds;
       } catch (x) {}
 
-      const recipients = EnigmailFuncs.getDistinctNonSelfRecipients(msgHdr.recipients, msgHdr.ccList);
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: allowed addresses: ${recipients.join(', ')}\n`);
+      const recipients = AutocryptFuncs.getDistinctNonSelfRecipients(msgHdr.recipients, msgHdr.ccList);
+      AutocryptLog.DEBUG(`mimeDecrypt.jsm: allowed addresses: ${recipients.join(', ')}\n`);
 
-      await EnigmailAutocrypt.processAutocryptGossipHeaders(gossip, recipients, msgDate);
+      await AutocryptAutocrypt.processAutocryptGossipHeaders(gossip, recipients, msgDate);
     } catch (ex) {
-      EnigmailLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${ex}\n`);
+      AutocryptLog.DEBUG(`mimeDecrypt.jsm: extractAutocryptGossip: Error: ${ex}\n`);
     }
   }
 };
@@ -695,7 +695,7 @@ MimeDecryptHandler.prototype = {
 // General-purpose functions, not exported
 
 function LOCAL_DEBUG(str) {
-  EnigmailLog.DEBUG(str);
+  AutocryptLog.DEBUG(str);
 }
 
 // Note: cache should not be re-used by repeated calls to JSON.stringify.

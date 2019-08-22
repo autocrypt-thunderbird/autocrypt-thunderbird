@@ -78,7 +78,7 @@ const {
   msgHdrGetHeaders,
   msgHdrsModifyRaw
 } = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/msgHdrUtils.jsm");
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 
 function getEditorForIframe(aIframe) {
@@ -108,7 +108,7 @@ function composeInIframe(aIframe, {
   params.type = compType;
 
   let compose = MailServices.compose.initCompose(params, getMail3Pane(), aIframe.docShell);
-  EnigmailLog.DEBUG("editor= " + getEditorForIframe(aIframe).toString() + ", iframe= " + aIframe.toString() + "\n");
+  AutocryptLog.DEBUG("editor= " + getEditorForIframe(aIframe).toString() + ", iframe= " + aIframe.toString() + "\n");
   compose.initEditor(getEditorForIframe(aIframe), aIframe.contentWindow);
 }
 
@@ -444,7 +444,7 @@ function getSignatureContentsForAccount(aIdentity) {
         cstream.init(fstream, charset, 1024, replacementChar);
       }
       catch (e) {
-        EnigmailLog.ERROR("ConverterInputStream init error: " + e +
+        AutocryptLog.ERROR("ConverterInputStream init error: " + e +
           "\n charset: " + charset + "\n");
         cstream.init(fstream, "UTF-8", 1024, replacementChar);
       }
@@ -457,7 +457,7 @@ function getSignatureContentsForAccount(aIdentity) {
       }
     }
     catch (e) {
-      EnigmailLog.ERROR("Signature file stream error: " + e + "\n");
+      AutocryptLog.ERROR("Signature file stream error: " + e + "\n");
     }
     cstream.close();
     fstream.close();

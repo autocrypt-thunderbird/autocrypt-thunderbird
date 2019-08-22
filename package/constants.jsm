@@ -9,9 +9,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConstants"];
+var EXPORTED_SYMBOLS = ["AutocryptConstants"];
 
-var EnigmailConstants = {
+var AutocryptConstants = {
   POSSIBLE_PGPMIME: -2081,
 
   // possible values for
@@ -41,7 +41,7 @@ var EnigmailConstants = {
   FILTER_ENCRYPT: "enigmail@enigmail.net#filterActionEncrypt",
   FILTER_TERM_PGP_ENCRYPTED: "enigmail@enigmail.net#filterTermPGPEncrypted",
 
-  /* taken over from old nsIEnigmail */
+  /* taken over from old nsIAutocrypt */
 
   /* Cleartext signature parts */
   SIGNATURE_TEXT: 1,

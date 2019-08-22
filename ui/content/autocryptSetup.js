@@ -7,14 +7,14 @@
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, EnigGetString: false */
-/* global EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
-/* global EnigmailWindows: false, EnigmailFuncs: false */
+/* global AutocryptLog: false, AutocryptKeyRing: false, AutocryptDialog: false */
+/* global AutocryptWindows: false, AutocryptFuncs: false */
 
 "use strict";
 
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
-const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
+const AutocryptAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").AutocryptAutocryptSetup;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
 // Initialize enigmailCommon
 EnigInitCommon("autocryptSettings");
@@ -25,7 +25,7 @@ const RESULT = 1;
 let view = { };
 
 async function enigmailDlgOnLoad() {
-  EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
+  AutocryptLog.DEBUG("enigmailDlgOnLoad()\n");
 
   view.radiogroupSetupChoice = document.getElementById("radiogroupSetupChoice");
   view.radioSetupKeep = document.getElementById("radioSetupKeep");
@@ -40,7 +40,7 @@ async function enigmailDlgOnLoad() {
   document.getElementById("labelSetupAddress").value = getSetupEmail();
   let current_key = getCurrentKey();
   if (current_key) {
-    const formatted_fpr = EnigmailFuncs.formatFpr(current_key);
+    const formatted_fpr = AutocryptFuncs.formatFpr(current_key);
     view.labelSetupCurrentKey.value = formatted_fpr;
     view.radiogroupSetupChoice.selectedIndex = 0;
     view.radioSetupKeep.setAttribute("class", "setupRecommended");
@@ -71,15 +71,15 @@ async function findRelevantSecretKeys() {
   let email = getSetupEmail();
   let current_key = getCurrentKey();
 
-  let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
+  let secret_keys = await AutocryptKeyRing.getAllSecretKeys();
 
-  let uid_predicate = uid => EnigmailFuncs.stripEmail(uid).toLowerCase() == email;
+  let uid_predicate = uid => AutocryptFuncs.stripEmail(uid).toLowerCase() == email;
   let email_filter = (key => key.getFingerprint().toUpperCase() != current_key && key.getUserIds().find(uid_predicate));
   return secret_keys.filter(email_filter);
 }
 
 async function refreshChangeKey(preselect = false) {
-  EnigmailLog.DEBUG(`refreshChangeKey()\n`);
+  AutocryptLog.DEBUG(`refreshChangeKey()\n`);
 
   view.menulistChangeKey.removeAllItems();
   view.menulistChangeKey.appendItem("Generate new", "generate");
@@ -87,10 +87,10 @@ async function refreshChangeKey(preselect = false) {
   const secret_keys = await findRelevantSecretKeys();
 
   if (secret_keys.length) {
-    EnigmailLog.DEBUG(`refreshChangeKey(): ${secret_keys.length}\n`);
+    AutocryptLog.DEBUG(`refreshChangeKey(): ${secret_keys.length}\n`);
     for (let secret_key of secret_keys) {
       let fingerprint = secret_key.getFingerprint().toUpperCase();
-      const formatted_fpr = EnigmailFuncs.formatFpr(fingerprint);
+      const formatted_fpr = AutocryptFuncs.formatFpr(fingerprint);
       view.menulistChangeKey.appendItem(formatted_fpr, fingerprint);
     }
   }
@@ -118,7 +118,7 @@ function showOnly(group) {
 }
 
 async function onRadioChangeSetup() {
-  EnigmailLog.DEBUG(`onRadioChangeSetup(): ${view.radiogroupSetupChoice.selectedItem.value}\n`);
+  AutocryptLog.DEBUG(`onRadioChangeSetup(): ${view.radiogroupSetupChoice.selectedItem.value}\n`);
 
   switch (view.radiogroupSetupChoice.selectedItem.value) {
     case 'keep': {

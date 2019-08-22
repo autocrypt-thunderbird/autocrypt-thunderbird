@@ -8,7 +8,7 @@
 
 "use strict";
 
-/* global EnigmailLog: false */
+/* global AutocryptLog: false */
 /* global Components: false */
 
 
@@ -19,7 +19,7 @@
 EnigInitCommon("enigmailHelp");
 
 function enigHelpLoad() {
-  EnigmailLog.DEBUG("enigmailHelp.js: enigHelpLoad\n");
+  AutocryptLog.DEBUG("enigmailHelp.js: enigHelpLoad\n");
 
   var contentFrame = EnigGetFrame(window, "contentFrame");
   if (!contentFrame)

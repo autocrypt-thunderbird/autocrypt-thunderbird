@@ -7,14 +7,14 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailXhrUtils"];
+const EXPORTED_SYMBOLS = ["AutocryptXhrUtils"];
 
 
 
 
 
 
-var EnigmailXhrUtils = {
+var AutocryptXhrUtils = {
 
   /**
    * Create an error description from an XMLHttpRequest error.

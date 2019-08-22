@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false */
+/*global Components: false, AutocryptLog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,14 +8,14 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailTimer"];
+const EXPORTED_SYMBOLS = ["AutocryptTimer"];
 
 const {
   setTimeout,
   clearTimeout
 } = ChromeUtils.import("resource://gre/modules/Timer.jsm");
 
-var EnigmailTimer = {
+var AutocryptTimer = {
   /**
    * wait a defined number of miliseconds, then call a callback function
    * asynchronously

@@ -12,13 +12,13 @@ var EXPORTED_SYMBOLS = ["getOpenPGPjsAPI"];
 
 
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
-const EnigmailLog = Cu.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailLazy = Cu.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
-const EnigmailConstants = Cu.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailFuncs = Cu.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
+const AutocryptLog = Cu.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptLazy = Cu.import("chrome://autocrypt/content/modules/lazy.jsm").AutocryptLazy;
+const AutocryptConstants = Cu.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptFuncs = Cu.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
 
-const getOpenPGP = EnigmailLazy.loader("autocrypt/openpgp.jsm", "EnigmailOpenPGP");
-const getArmor = EnigmailLazy.loader("autocrypt/armor.jsm", "EnigmailArmor");
+const getOpenPGP = AutocryptLazy.loader("autocrypt/openpgp.jsm", "AutocryptOpenPGP");
+const getArmor = AutocryptLazy.loader("autocrypt/armor.jsm", "AutocryptArmor");
 
 // Load generic API
 Services.scriptloader.loadSubScript("chrome://autocrypt/content/modules/cryptoAPI/interface.js",
@@ -36,7 +36,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async getStrippedKey(armoredKey, emailAddr) {
-    EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey()\n");
+    AutocryptLog.DEBUG("openpgp-js.js: getStrippedKey()\n");
 
     let searchUid = undefined;
     if (emailAddr) {
@@ -51,7 +51,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
       if (!msg || msg.keys.length === 0) {
         if (msg.err) {
-          EnigmailLog.writeException("openpgp-js.js", msg.err[0]);
+          AutocryptLog.writeException("openpgp-js.js", msg.err[0]);
         }
         return null;
       }
@@ -97,24 +97,24 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
       return p.write();
     } catch (ex) {
-      EnigmailLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n" + ex.stack + "\n");
+      AutocryptLog.DEBUG("openpgp-js.js: getStrippedKey: ERROR " + ex.message + "\n" + ex.stack + "\n");
     }
     return null;
   }
 
   async decrypt(ciphertext, openpgp_secret_keys, openpgp_public_key, cached_session_key, openpgp_public_key_callback) {
-    EnigmailLog.DEBUG(`openpgp-js.js: decrypt()\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: decrypt()\n`);
 
     const openpgp = getOpenPGP().openpgp;
     let startTime = new Date();
 
     if (openpgp_public_key) {
-      EnigmailLog.DEBUG(`openpgp-js.js: decrypt(): expected pubKey: ${openpgp_public_key.getFingerprint().toUpperCase()}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: decrypt(): expected pubKey: ${openpgp_public_key.getFingerprint().toUpperCase()}\n`);
     }
 
     // TODO limit output to 100 times message size to avoid DoS attack?
 
-    EnigmailLog.DEBUG(`openpgp-js.js: decrypting...\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: decrypting...\n`);
     try {
       let session_key;
       if (!cached_session_key) {
@@ -127,11 +127,11 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
           throw new Error("session failed to decrypt");
         }
         const time_diff_asym_ms = new Date() - startTimeAsym;
-        EnigmailLog.DEBUG(`openpgp-js.js: asymmetric decrypt took in ${time_diff_asym_ms}ms\n`);
+        AutocryptLog.DEBUG(`openpgp-js.js: asymmetric decrypt took in ${time_diff_asym_ms}ms\n`);
 
         session_key = decrypted_session_keys[0];
       } else {
-        EnigmailLog.DEBUG(`openpgp-js.js: got cached session key, skipping asymmetric decrypt\n`);
+        AutocryptLog.DEBUG(`openpgp-js.js: got cached session key, skipping asymmetric decrypt\n`);
         session_key = cached_session_key;
       }
 
@@ -164,7 +164,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       }
 
       const time_diff_ms = new Date() - startTime;
-      EnigmailLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: decrypt ok in ${time_diff_ms}ms\n`);
 
       return {
         plaintext: plaintext,
@@ -174,53 +174,53 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         session_key: session_key
       };
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: decrypt error! ex: ${ex}\n`);
       throw ex;
     }
   }
 
   async verifyWith(message, signature, sig_key_id, openpgp_public_key_callback, excluded_keys) {
     // TODO make this less ugly? :)
-    EnigmailLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
     let foreign_key = await openpgp_public_key_callback(sig_key_id);
     if (!foreign_key) {
-      EnigmailLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
       return false;
     }
     let is_different = excluded_keys && foreign_key.getFingerprint() == excluded_keys.getFingerprint();
     if (is_different) {
-      EnigmailLog.DEBUG(`openpgp-js.js: foreign signing key was previously checked\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: foreign signing key was previously checked\n`);
       return false;
     }
     const openpgp = getOpenPGP().openpgp;
 
-    EnigmailLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
     try {
       let foreign_result = await openpgp.verify({
         message: message,
         publicKeys: foreign_key,
         signature: signature
       });
-      EnigmailLog.DEBUG(`openpgp-js.js: verified ${stringify(foreign_result)}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: verified ${stringify(foreign_result)}\n`);
       if (foreign_result && foreign_result.signatures && foreign_result.signatures.length) {
         let sig = foreign_result.signatures[0];
         if (sig.valid) {
-          EnigmailLog.DEBUG(`openpgp-js.js: foreign signature ok\n`);
+          AutocryptLog.DEBUG(`openpgp-js.js: foreign signature ok\n`);
           return {
             sig_ok: true,
             sig_openpgp_key: foreign_key
           };
         }
-        EnigmailLog.DEBUG(`openpgp-js.js: foreign signature failed to verify\n`);
+        AutocryptLog.DEBUG(`openpgp-js.js: foreign signature failed to verify\n`);
       }
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: signature verification error: ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: signature verification error: ${ex}\n`);
     }
     return false;
   }
 
   async verify(plaintext, sig_data, openpgp_public_key, openpgp_public_key_callback) {
-    EnigmailLog.DEBUG(`openpgp-js.js: verify()\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: verify()\n`);
 
     const openpgp = getOpenPGP().openpgp;
     let startTime = new Date();
@@ -231,15 +231,15 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       signature: await openpgp.signature.readArmored(sig_data)
     };
 
-    // EnigmailLog.DEBUG(`openpgp-js.js: ${JSON.stringify(verify_options)}\n`);
+    // AutocryptLog.DEBUG(`openpgp-js.js: ${JSON.stringify(verify_options)}\n`);
     // TODO limit output to 100 times message size to avoid DoS attack?
 
-    EnigmailLog.DEBUG(`openpgp-js.js: verifying...\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: verifying...\n`);
     try {
       let openpgp_result = await openpgp.verify(verify_options);
       let time_diff_ms = new Date() - startTime;
-      EnigmailLog.DEBUG(`openpgp-js.js: verify ok in ${time_diff_ms}ms\n`);
-      // EnigmailLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: verify ok in ${time_diff_ms}ms\n`);
+      // AutocryptLog.DEBUG(`openpgp-js.js: ${stringify(openpgp_result)}\n`);
 
       let sig_key_id;
       let sig_ok;
@@ -251,15 +251,15 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         sig_key_id = sig.keyid.toHex().toUpperCase();
 
         if (!sig_ok && openpgp_public_key_callback) {
-          EnigmailLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
+          AutocryptLog.DEBUG(`openpgp-js.js: bad sig, looking for foreign signing key..\n`);
           let foreign_keys = await openpgp_public_key_callback(sig_key_id);
           if (foreign_keys) {
             verify_options.publicKeys = foreign_keys;
-            EnigmailLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
+            AutocryptLog.DEBUG(`openpgp-js.js: found foreign signing key\n`);
             let foreign_signature = await openpgp.verify(verify_options);
             sig_ok = foreign_signature.valid;
           } else {
-            EnigmailLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
+            AutocryptLog.DEBUG(`openpgp-js.js: no foreign signing key found\n`);
           }
         }
       }
@@ -269,13 +269,13 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         sig_ok: sig_ok
       };
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: verify error! ex: ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: verify error! ex: ${ex}\n`);
       throw ex;
     }
   }
 
   async encrypt(plaintext, openPgpSecretKey, openPgpPubKeys) {
-    EnigmailLog.DEBUG(`openpgp-js.js: encrypt()\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: encrypt()\n`);
     const openpgp = getOpenPGP().openpgp;
 
     // encrypt to self, too
@@ -290,12 +290,12 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         privateKeys: [openPgpSecretKey]
       };
 
-      EnigmailLog.DEBUG(`openpgp-js.js: encrypting to ${encrypt_options.publicKeys.length} pubkeys..\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: encrypting to ${encrypt_options.publicKeys.length} pubkeys..\n`);
       let openpgp_result = await openpgp.encrypt(encrypt_options);
-      EnigmailLog.DEBUG("openpgp-js.js: encrypt ok\n");
+      AutocryptLog.DEBUG("openpgp-js.js: encrypt ok\n");
       return openpgp_result.data;
     } catch (ex) {
-      EnigmailLog.DEBUG("openpgp-js.js: encrypt error: " + ex + "\n");
+      AutocryptLog.DEBUG("openpgp-js.js: encrypt error: " + ex + "\n");
       throw ex;
     }
   }
@@ -346,7 +346,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async parseOpenPgpKeys(key_data, clean = true) {
-    EnigmailLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
+    AutocryptLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
     try {
       const openpgp = getOpenPGP().openpgp;
 
@@ -359,10 +359,10 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         let binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
         result = await openpgp.key.read(binary_data);
       }
-      // EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
+      // AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
 
       if (!result || !result.keys || !result.keys.length) {
-        EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
+        AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
         return [];
       }
 
@@ -372,16 +372,16 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
       } else {
         keys = result.keys;
       }
-      EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok\n`);
       return keys;
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
       return [];
     }
   }
 
   async parseOpenPgpKeyInfo(key_data) {
-    EnigmailLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
+    AutocryptLog.DEBUG("openpgp-js.js: parseOpenPgpKey()\n");
     try {
       const openpgp = getOpenPGP().openpgp;
 
@@ -394,11 +394,11 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         let binary_data = Uint8Array.from(key_data, c => c.charCodeAt(0));
         result = await openpgp.key.read(binary_data);
       }
-      // EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
+      // AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): parsed ${JSON.stringify(result)}\n`);
 
       let key = result.keys[0];
       if (!key) {
-        EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
+        AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): no key parsed\n`);
         return null;
       }
 
@@ -409,7 +409,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         key_data: key.toPacketlist().write(),
         key_fprs: [key.getFingerprint().toUpperCase()],
         key_ids: [key.getKeyId().toHex().toUpperCase()],
-        addresses: key.getUserIds().map(uid => EnigmailFuncs.stripEmail(uid))
+        addresses: key.getUserIds().map(uid => AutocryptFuncs.stripEmail(uid))
       };
 
       for (let subkey of key.getSubkeys()) {
@@ -417,10 +417,10 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
         parsed_key.key_ids.push(subkey.getKeyId().toHex().toUpperCase());
       }
 
-      EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok (${parsed_key.fpr_primary})\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): ok (${parsed_key.fpr_primary})\n`);
       return parsed_key;
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: parseOpenPgpKey(): error ${ex}\n`);
       return null;
     }
   }
@@ -430,7 +430,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async OPENPGPjs_getKeyListFromKeyBlock(keyBlockStr) {
-    EnigmailLog.DEBUG("openpgp-js.js: getKeyListFromKeyBlock()\n");
+    AutocryptLog.DEBUG("openpgp-js.js: getKeyListFromKeyBlock()\n");
 
     const SIG_TYPE_REVOCATION = 0x20;
 
@@ -496,7 +496,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async generateAutocryptKey(email) {
-    EnigmailLog.DEBUG(`autocryptSetup.jsm: createAutocryptKey(): ${email}\n`);
+    AutocryptLog.DEBUG(`autocryptSetup.jsm: createAutocryptKey(): ${email}\n`);
 
     const openpgp = getOpenPGP().openpgp;
     var options = {
@@ -509,7 +509,7 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
   }
 
   async decryptSymmetric(ciphertext, password) {
-    EnigmailLog.DEBUG("openpgp-js.js: decryptSymmetric()\n");
+    AutocryptLog.DEBUG("openpgp-js.js: decryptSymmetric()\n");
     const start_time = new Date();
 
     const openpgp = getOpenPGP().openpgp;
@@ -521,10 +521,10 @@ class OpenPGPjsCryptoAPI extends CryptoAPI {
 
       let result = await openpgp.decrypt(decrypt_options);
 
-      EnigmailLog.DEBUG(`openpgp-js.js: decryptSymmetric(): ok\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: decryptSymmetric(): ok\n`);
       return result.data;
     } catch (ex) {
-      EnigmailLog.DEBUG(`openpgp-js.js: decryptSymmetric(): decrypt error! ex: ${ex}\n`);
+      AutocryptLog.DEBUG(`openpgp-js.js: decryptSymmetric(): decrypt error! ex: ${ex}\n`);
       throw ex;
     }
   }
@@ -553,11 +553,11 @@ function cleanOpenPgpKey(openpgp_key) {
         filtered_keys += 1;
         return false;
     }
-    EnigmailLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropping unexpected packet ${packetType}\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropping unexpected packet ${packetType}\n`);
     return false;
   });
   if (filtered_keys) {
-    EnigmailLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropped ${filtered_keys} third party sigs\n`);
+    AutocryptLog.DEBUG(`openpgp-js.js: cleanOpenPgpKey(): dropped ${filtered_keys} third party sigs\n`);
   }
   return openpgp.key.Key(filtered_list);
 }

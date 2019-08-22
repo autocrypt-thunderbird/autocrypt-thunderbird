@@ -12,7 +12,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailStdlib"];
+var EXPORTED_SYMBOLS = ["AutocryptStdlib"];
 
 const {
   composeInIframe,
@@ -73,7 +73,7 @@ const {
   msgHdrsModifyRaw
 } = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/msgHdrUtils.jsm");
 
-var EnigmailStdlib = {
+var AutocryptStdlib = {
   // compose.jsm
   'composeInIframe': composeInIframe,
   'getEditorForIframe': getEditorForIframe,

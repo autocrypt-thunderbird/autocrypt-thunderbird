@@ -8,40 +8,40 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLog"];
+var EXPORTED_SYMBOLS = ["AutocryptLog"];
 
-const EnigmailConsole = ChromeUtils.import("chrome://autocrypt/content/modules/pipeConsole.jsm").EnigmailConsole;
-const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
+const AutocryptConsole = ChromeUtils.import("chrome://autocrypt/content/modules/pipeConsole.jsm").AutocryptConsole;
+const AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+const AutocryptOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").AutocryptOS;
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 const NS_IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
 
-var EnigmailLog = {
+var AutocryptLog = {
   level: 3,
   data: null,
   fileStream: null,
 
   setLogLevel: function(newLogLevel) {
-    EnigmailLog.level = newLogLevel;
+    AutocryptLog.level = newLogLevel;
   },
 
   getLogLevel: function() {
-    return EnigmailLog.level;
+    return AutocryptLog.level;
   },
 
   setLogFile: function(logFile) {
-    if (!EnigmailLog.fileStream && EnigmailLog.level >= 5) {
-      EnigmailLog.fileStream = EnigmailFiles.createFileStream(logFile);
+    if (!AutocryptLog.fileStream && AutocryptLog.level >= 5) {
+      AutocryptLog.fileStream = AutocryptFiles.createFileStream(logFile);
     }
   },
 
   onShutdown: function() {
-    if (EnigmailLog.fileStream) {
-      EnigmailLog.fileStream.close();
+    if (AutocryptLog.fileStream) {
+      AutocryptLog.fileStream.close();
     }
-    EnigmailLog.fileStream = null;
+    AutocryptLog.fileStream = null;
   },
 
   getLogData: function(version, prefs) {
@@ -58,7 +58,7 @@ var EnigmailLog = {
     }
     catch (ex) {}
 
-    let data = "Enigmail version " + version + "\n" +
+    let data = "Autocrypt version " + version + "\n" +
       "OS/CPU=" + oscpu + "\n" +
       "Platform=" + platform + "\n" +
       "Non-default preference values:\n";
@@ -81,7 +81,7 @@ var EnigmailLog = {
         data += ex.toString() + "\n";
       }
     }
-    return data + "\n" + EnigmailLog.data;
+    return data + "\n" + AutocryptLog.data;
   },
 
   WRITE: function(str) {
@@ -92,57 +92,57 @@ var EnigmailLog = {
     var d = new Date();
     var datStr = d.getFullYear() + "-" + withZeroes(d.getMonth() + 1, 2) + "-" + withZeroes(d.getDate(), 2) + " " + withZeroes(d.getHours(), 2) + ":" + withZeroes(d.getMinutes(), 2) + ":" +
       withZeroes(d.getSeconds(), 2) + "." + withZeroes(d.getMilliseconds(), 3) + " ";
-    if (EnigmailLog.level >= 4)
+    if (AutocryptLog.level >= 4)
       dump(datStr + str);
 
-    if (EnigmailLog.data === null) {
-      EnigmailLog.data = "";
+    if (AutocryptLog.data === null) {
+      AutocryptLog.data = "";
       let appInfo = Cc[XPCOM_APPINFO].getService(Ci.nsIXULAppInfo);
-      EnigmailLog.WRITE("Mozilla Platform: " + appInfo.name + " " + appInfo.version + "\n");
+      AutocryptLog.WRITE("Mozilla Platform: " + appInfo.name + " " + appInfo.version + "\n");
     }
     // truncate first part of log data if it grow too much
-    if (EnigmailLog.data.length > 5120000) {
-      EnigmailLog.data = EnigmailLog.data.substr(-400000);
+    if (AutocryptLog.data.length > 5120000) {
+      AutocryptLog.data = AutocryptLog.data.substr(-400000);
     }
 
-    EnigmailLog.data += datStr + str;
+    AutocryptLog.data += datStr + str;
 
-    if (EnigmailLog.fileStream) {
-      EnigmailLog.fileStream.write(datStr, datStr.length);
-      EnigmailLog.fileStream.write(str, str.length);
+    if (AutocryptLog.fileStream) {
+      AutocryptLog.fileStream.write(datStr, datStr.length);
+      AutocryptLog.fileStream.write(str, str.length);
     }
   },
 
   DEBUG: function(str) {
     try {
-      EnigmailLog.WRITE("[DEBUG] " + str);
+      AutocryptLog.WRITE("[DEBUG] " + str);
     }
     catch (ex) {}
   },
 
   WARNING: function(str) {
-    EnigmailLog.WRITE("[WARN] " + str);
-    EnigmailConsole.write(str);
+    AutocryptLog.WRITE("[WARN] " + str);
+    AutocryptConsole.write(str);
   },
 
   ERROR: function(str) {
     try {
       var consoleSvc = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
       var scriptError = Cc["@mozilla.org/scripterror;1"].createInstance(Ci.nsIScriptError);
-      scriptError.init(str, null, null, 0, 0, scriptError.errorFlag, "Enigmail");
+      scriptError.init(str, null, null, 0, 0, scriptError.errorFlag, "Autocrypt");
       consoleSvc.logMessage(scriptError);
     }
     catch (ex) {}
 
-    EnigmailLog.WRITE("[ERROR] " + str);
+    AutocryptLog.WRITE("[ERROR] " + str);
   },
 
   CONSOLE: function(str) {
-    if (EnigmailLog.level >= 3) {
-      EnigmailLog.WRITE("[CONSOLE] " + str);
+    if (AutocryptLog.level >= 3) {
+      AutocryptLog.WRITE("[CONSOLE] " + str);
     }
 
-    EnigmailConsole.write(str);
+    AutocryptConsole.write(str);
   },
 
   /**
@@ -152,7 +152,7 @@ var EnigmailLog = {
    *  ex:            exception object
    */
   writeException: function(referenceInfo, ex) {
-    EnigmailLog.ERROR(referenceInfo + ": caught exception: " +
+    AutocryptLog.ERROR(referenceInfo + ": caught exception: " +
       ex.name + "\n" +
       "Message: '" + ex.message + "'\n" +
       "File:    " + ex.fileName + "\n" +

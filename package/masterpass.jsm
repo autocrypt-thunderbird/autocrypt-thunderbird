@@ -10,7 +10,7 @@
 
 var EXPORTED_SYMBOLS = ["AutocryptMasterpass"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 const PASS_URI = 'chrome://autocrypt';
 const PASS_REALM = 'DO NOT DELETE';
@@ -22,7 +22,7 @@ var AutocryptMasterpass = {
       try {
         this.loginManager = Components.classes["@mozilla.org/login-manager;1"].getService(Components.interfaces.nsILoginManager);
       } catch (ex) {
-        EnigmailLog.writeException("masterpass.jsm", ex);
+        AutocryptLog.writeException("masterpass.jsm", ex);
       }
     }
     return this.loginManager;
@@ -37,17 +37,17 @@ var AutocryptMasterpass = {
     try {
       let pass = this.generatePassword();
 
-      EnigmailLog.DEBUG("masterpass.jsm: ensureAutocryptPassword()\n");
+      AutocryptLog.DEBUG("masterpass.jsm: ensureAutocryptPassword()\n");
       let nsLoginInfo = new Components.Constructor("@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");
       //                 new nsLoginInfo(aHostname, aFormSubmitURL, aHttpRealm, aUsername, aPassword, aUsernameField, aPasswordField)
       let loginInfo = new nsLoginInfo(PASS_URI, null, PASS_REALM, PASS_USER, pass, '', '');
 
       this.getLoginManager().addLogin(loginInfo);
     } catch (ex) {
-      EnigmailLog.writeException("masterpass.jsm", ex);
+      AutocryptLog.writeException("masterpass.jsm", ex);
       throw ex;
     }
-    EnigmailLog.DEBUG("masterpass.jsm: ensureAutocryptPassword(): ok\n");
+    AutocryptLog.DEBUG("masterpass.jsm: ensureAutocryptPassword(): ok\n");
   },
 
   generatePassword: function() {
@@ -61,20 +61,20 @@ var AutocryptMasterpass = {
   },
 
   retrieveAutocryptPassword: function() {
-    EnigmailLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword()\n");
+    AutocryptLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword()\n");
     try {
       var logins = this.getLoginManager().findLogins(PASS_URI, null, PASS_REALM);
 
       for (let i = 0; i < logins.length; i++) {
         if (logins[i].username == PASS_USER) {
-          EnigmailLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword(): ok\n");
+          AutocryptLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword(): ok\n");
           return logins[i].password;
         }
       }
     } catch (ex) {
-      EnigmailLog.writeException("masterpass.jsm", ex);
+      AutocryptLog.writeException("masterpass.jsm", ex);
     }
-    EnigmailLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword(): not found!\n");
+    AutocryptLog.DEBUG("masterpass.jsm: retrieveAutocryptPassword(): not found!\n");
     return null;
   }
 };

@@ -14,7 +14,7 @@
 /* global Components: false */
 /* eslint no-invalid-this: 0 */
 
-var EXPORTED_SYMBOLS = ["EnigmailOpenPGP"];
+var EXPORTED_SYMBOLS = ["AutocryptOpenPGP"];
 
 var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0315aa1a, 0x021933ec, 0x029f7f17, 0x07a18139, 0x0727cdc2, 0x062b5434, 0x06ad18cf, 0x043267d8, 0x04b42b23,
   0x05b8b2d5, 0x053efe2e, 0x0fc54e89, 0x0f430272, 0x0e4f9b84, 0x0ec9d77f, 0x0c56a868, 0x0cd0e493, 0x0ddc7d65, 0x0d5a319e, 0x0864cfb0, 0x08e2834b, 0x09ee1abd, 0x09685646, 0x0bf72951,
@@ -39,11 +39,11 @@ var crc_table = [0x00000000, 0x00864cfb, 0x018ad50d, 0x010c99f6, 0x0393e6e1, 0x0
 var gOpenPGPLib;
 
 function initialize() {
-  const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+  const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
   const getOpenPGPLibrary = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/openpgp-lib.jsm").getOpenPGPLibrary;
 
   try {
-    EnigmailLog.DEBUG("openpgp.jsm: initialize()\n");
+    AutocryptLog.DEBUG("openpgp.jsm: initialize()\n");
 
     gOpenPGPLib = getOpenPGPLibrary();
     // config
@@ -51,22 +51,22 @@ function initialize() {
     gOpenPGPLib.config.show_comment = false;
     gOpenPGPLib.config.show_version = false;
     // gOpenPGPLib.config.debug = true;
-    EnigmailLog.DEBUG("openpgp.jsm: initialize(): openpgp.js ok\n");
+    AutocryptLog.DEBUG("openpgp.jsm: initialize(): openpgp.js ok\n");
   } catch (ex) {
-    EnigmailLog.ERROR(`openpgp.jsm: failed to initialize: ${ex.toString()}\n${ex.stack}\n`);
+    AutocryptLog.ERROR(`openpgp.jsm: failed to initialize: ${ex.toString()}\n${ex.stack}\n`);
     return;
   }
 
   try {
     let worker = new Worker('chrome://autocrypt/content/modules/stdlib/openpgp.worker.js');
     let init_result = gOpenPGPLib.initWorker({ workers: [worker] });
-    EnigmailLog.DEBUG("openpgp.jsm: initialize(): worker ok\n");
+    AutocryptLog.DEBUG("openpgp.jsm: initialize(): worker ok\n");
   } catch (ex) {
-    EnigmailLog.ERROR(`openpgp.jsm: failed to initialize worker: ${ex.toString()}\n${ex.stack}\n`);
+    AutocryptLog.ERROR(`openpgp.jsm: failed to initialize worker: ${ex.toString()}\n${ex.stack}\n`);
   }
 }
 
-var EnigmailOpenPGP = {
+var AutocryptOpenPGP = {
   get openpgp() {
     if (!gOpenPGPLib) {
       initialize();
@@ -140,7 +140,7 @@ var EnigmailOpenPGP = {
      */
     bytesToArmor: function(msgType, str) {
 
-      const ARMOR_TYPE = EnigmailOpenPGP.openpgp.enums.armor;
+      const ARMOR_TYPE = AutocryptOpenPGP.openpgp.enums.armor;
 
       let hdr = "";
       switch (msgType) {
@@ -159,7 +159,7 @@ var EnigmailOpenPGP = {
           break;
       }
 
-      let crc = EnigmailOpenPGP.enigmailFuncs.createcrc24(EnigmailOpenPGP.enigmailFuncs.str2Uint8Array(str));
+      let crc = AutocryptOpenPGP.enigmailFuncs.createcrc24(AutocryptOpenPGP.enigmailFuncs.str2Uint8Array(str));
       let crcAsc = String.fromCharCode(crc >> 16) + String.fromCharCode(crc >> 8 & 0xFF) + String.fromCharCode(crc & 0xFF);
 
       let s = "-----BEGIN PGP " + hdr + "-----\n\n" +

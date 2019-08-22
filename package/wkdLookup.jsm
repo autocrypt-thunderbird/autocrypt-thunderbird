@@ -10,14 +10,14 @@
  *  once a day. (see https://tools.ietf.org/html/draft-koch-openpgp-webkey-service)
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailWkdLookup"];
+var EXPORTED_SYMBOLS = ["AutocryptWkdLookup"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailZBase32 = ChromeUtils.import("chrome://autocrypt/content/modules/zbase32.jsm").EnigmailZBase32;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptZBase32 = ChromeUtils.import("chrome://autocrypt/content/modules/zbase32.jsm").AutocryptZBase32;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
 
-var EnigmailWkdLookup = {
+var AutocryptWkdLookup = {
   getDownloadUrlFromEmail: async function(email, advancedMethod) {
     email = email.toLowerCase().trim();
 
@@ -34,7 +34,7 @@ var EnigmailWkdLookup = {
     ch.init(ch.SHA1);
     ch.update(data, data.length);
     let gotHash = ch.finish(false);
-    let encodedHash = EnigmailZBase32.encode(gotHash);
+    let encodedHash = AutocryptZBase32.encode(gotHash);
 
     let url;
     if (advancedMethod) {
@@ -47,12 +47,12 @@ var EnigmailWkdLookup = {
   },
 
   download: async function(email, timeoutMs = 500) {
-    EnigmailLog.DEBUG("wkdLookup.jsm: download(" + email + ")\n");
+    AutocryptLog.DEBUG("wkdLookup.jsm: download(" + email + ")\n");
 
     try {
       let keyData = await Promise.race([
         Promise.all([this.doWkdKeyDownload(email, true), this.doWkdKeyDownload(email, false)]),
-        new Promise((_, reject) => EnigmailTimer.setTimeout(() => reject(new Error('Timeout')), timeoutMs))
+        new Promise((_, reject) => AutocryptTimer.setTimeout(() => reject(new Error('Timeout')), timeoutMs))
       ]);
 
       if (keyData && keyData.length) {
@@ -81,9 +81,9 @@ var EnigmailWkdLookup = {
   },
 
   doWkdKeyDownload: async function(email, advancedMethod) {
-    EnigmailLog.DEBUG(`wkdLookup.jsm: doWkdKeyDownload(${email}, ${advancedMethod})\n`);
+    AutocryptLog.DEBUG(`wkdLookup.jsm: doWkdKeyDownload(${email}, ${advancedMethod})\n`);
 
-    let url = await EnigmailWkdLookup.getDownloadUrlFromEmail(email, advancedMethod);
+    let url = await AutocryptWkdLookup.getDownloadUrlFromEmail(email, advancedMethod);
 
     let hdrs = new Headers({
       'Authorization': 'Basic ' + btoa("no-user:")
@@ -101,22 +101,22 @@ var EnigmailWkdLookup = {
 
     let response;
     try {
-      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: requesting " + url + "\n");
+      AutocryptLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: requesting " + url + "\n");
       response = await fetch(myRequest);
       if (!response.ok) {
         return null;
       }
     } catch (ex) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
+      AutocryptLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
       return null;
     }
 
     try {
-      let keyData = EnigmailData.arrayBufferToString(Cu.cloneInto(await response.arrayBuffer(), this));
-      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: got data for " + email + "\n");
+      let keyData = AutocryptData.arrayBufferToString(Cu.cloneInto(await response.arrayBuffer(), this));
+      AutocryptLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: got data for " + email + "\n");
       return keyData;
     } catch (ex) {
-      EnigmailLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
+      AutocryptLog.DEBUG("wkdLookup.jsm: doWkdKeyDownload: error " + ex.toString() + "\n");
       return null;
     }
   }

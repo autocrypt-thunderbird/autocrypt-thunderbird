@@ -14,5 +14,5 @@
 
   <script type="application/x-javascript" src="chrome://autocrypt/content/ui/enigmailMsgHdrViewOverlay.js"/>
 
-  <menupopup id="attachmentMenuList" onpopupshowing="Enigmail.hdrView.fillAttachmentListPopup(this);"/>
+  <menupopup id="attachmentMenuList" onpopupshowing="Autocrypt.hdrView.fillAttachmentListPopup(this);"/>
 </overlay>

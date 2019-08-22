@@ -41,7 +41,7 @@
             label="&enigmail.decryptToFolder.label;"
             accesskey="&enigmail.decryptToFolder.accesskey;"
             enigmailtype="enigmail"
-            oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
+            oncommand="Autocrypt.msg.decryptToFolder(event.target._folder)">
 
           <menupopup id="enigmailDecryptfileHereMenu2"
                      is="folder-menupopup"
@@ -64,7 +64,7 @@
     <menuitem id="enigmail_prefs"
           label="Autocrypt Settings"
           accesskey="&enigmail.prefs.accesskey;"
-          oncommand="EnigmailWindows.openAutocryptSettings(window);"
+          oncommand="AutocryptWindows.openAutocryptSettings(window);"
           insertbefore="menu_accountmgr"
           class="menuitem-iconic autocryptIcon"
         />
@@ -76,7 +76,7 @@
         id="enigmailContext-decryptToFolder"
         label="&enigmail.decryptToFolder.label;"
         accesskey="&enigmail.decryptToFolder.accesskey;"
-        oncommand="Enigmail.msg.decryptToFolder(event.target._folder)">
+        oncommand="Autocrypt.msg.decryptToFolder(event.target._folder)">
       <menupopup id="enigmailCtxDecrypt-fileHereMenu"
                  is="folder-menupopup"
                  mode="filing"
@@ -91,13 +91,13 @@
     </menu>
   </menupopup>
 
-  <!-- the default set does not include the Enigmail decryption icon anymore -->
+  <!-- the default set does not include the Autocrypt decryption icon anymore -->
 
   <!-- enigmailHdrBox is defined in messengerOverlay-(tbird|sm).xul -->
 
   <vbox id="enigmailHdrBox">
     <hbox id="enigmailBox"
-          class="expandedEnigmailBox"
+          class="expandedAutocryptBox"
           align="center">
 
       <hbox class="headerNameBox" align="start" id="enigmailStatusTextBox" pack="start">
@@ -113,7 +113,7 @@
             </label>
           </hbox>
           <textbox flex="1" readonly="true"
-                 id="expandedEnigmailStatusText"
+                 id="expandedAutocryptStatusText"
                  class="enigmailHeaderValue"
                  observes="enigmailStatusText"
                  chromedir="ltr"
@@ -135,7 +135,7 @@
           <button id="enigmailFixBrokenMessageButton"
                 class="enigMsgHdrView-flat-button"
                 label="&enigmail.exchangeGarbage.fixButton.label;"
-                oncommand="Enigmail.msg.fixBuggyExchangeMail()"/>
+                oncommand="Autocrypt.msg.fixBuggyExchangeMail()"/>
           <label id="enigmailFixBrokenMessageProgress" value="&enigmail.exchangeGarbage.waitMessage;" collapsed="true"/>
         </vbox>
       </hbox>

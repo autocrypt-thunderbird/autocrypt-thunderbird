@@ -9,10 +9,10 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
+var EXPORTED_SYMBOLS = ["AutocryptFuncs"];
 
 /*
- * Common Enigmail crypto-related GUI functionality
+ * Common Autocrypt crypto-related GUI functionality
  *
  */
 
@@ -20,14 +20,14 @@ var EXPORTED_SYMBOLS = ["EnigmailFuncs"];
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
 
 var gTxtConverter = null;
 
-var EnigmailFuncs = {
+var AutocryptFuncs = {
   /**
    * get a list of plain email addresses without name or surrounding <>
    * @param mailAddrs |string| - address-list encdoded in Unicode as specified in RFC 2822, 3.4
@@ -36,7 +36,7 @@ var EnigmailFuncs = {
    * @return |string|          - list of pure email addresses separated by ","
    */
   stripEmail: function(mailAddresses) {
-    // EnigmailLog.DEBUG("funcs.jsm: stripEmail(): mailAddresses=" + mailAddresses + "\n");
+    // AutocryptLog.DEBUG("funcs.jsm: stripEmail(): mailAddresses=" + mailAddresses + "\n");
 
     const SIMPLE = "[^<>,]+"; // RegExp for a simple email address (e.g. a@b.c)
     const COMPLEX = "[^<>,]*<[^<>, ]+>"; // RegExp for an address containing <...> (e.g. Name <a@b.c>)
@@ -48,7 +48,7 @@ var EnigmailFuncs = {
     while ((qStart = mailAddrs.indexOf('"')) >= 0) {
       qEnd = mailAddrs.indexOf('"', qStart + 1);
       if (qEnd < 0) {
-        EnigmailLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: '" + mailAddresses + "'\n");
+        AutocryptLog.ERROR("funcs.jsm: stripEmail: Unmatched quote in mail address: '" + mailAddresses + "'\n");
         throw Components.results.NS_ERROR_FAILURE;
       }
 
@@ -62,7 +62,7 @@ var EnigmailFuncs = {
 
     // having two <..> <..> in one email, or things like <a@b.c,><d@e.f> is an error
     if (mailAddrs.search(MatchAddr) < 0) {
-      EnigmailLog.ERROR("funcs.jsm: stripEmail: Invalid <..> brackets in mail address: '" + mailAddresses + "'\n");
+      AutocryptLog.ERROR("funcs.jsm: stripEmail: Invalid <..> brackets in mail address: '" + mailAddresses + "'\n");
       throw Components.results.NS_ERROR_FAILURE;
     }
 
@@ -108,7 +108,7 @@ var EnigmailFuncs = {
    * @return |string| - formatted string
    */
   formatFpr: function(fingerprint) {
-    //EnigmailLog.DEBUG("key.jsm: EnigmailKey.formatFpr(" + fingerprint + ")\n");
+    //AutocryptLog.DEBUG("key.jsm: AutocryptKey.formatFpr(" + fingerprint + ")\n");
     // format key fingerprint
     let r = "";
     const fpr = fingerprint.match(/(....)(....)(....)(....)(....)(....)(....)(....)(....)?(....)?/);
@@ -132,7 +132,7 @@ var EnigmailFuncs = {
     if (!gTxtConverter)
       gTxtConverter = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
-    var prefRoot = EnigmailPrefs.getPrefRoot();
+    var prefRoot = AutocryptPrefs.getPrefRoot();
     var fontStyle = "";
 
     // set the style stuff according to perferences
@@ -216,7 +216,7 @@ var EnigmailFuncs = {
     }
 
     var r = '<pre wrap="">' + lines.join("\n") + (isSignature ? '</div>' : '') + '</pre>';
-    //EnigmailLog.DEBUG("funcs.jsm: r='"+r+"'\n");
+    //AutocryptLog.DEBUG("funcs.jsm: r='"+r+"'\n");
     return r;
   },
 
@@ -229,7 +229,7 @@ var EnigmailFuncs = {
    * @return |array| of |arrays| containing pairs of aa/b and cc/d
    */
   getHeaderData: function(data) {
-    EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + data.substr(0, 100) + "\n");
+    AutocryptLog.DEBUG("funcs.jsm: getHeaderData: " + data.substr(0, 100) + "\n");
     var a = data.split(/\n/);
     var res = [];
     for (let i = 0; i < a.length; i++) {
@@ -242,7 +242,7 @@ var EnigmailFuncs = {
         if (m) {
           // m[2]: identifier / m[6]: data
           res[m[2].toLowerCase()] = m[6].replace(/\s*$/, "");
-          EnigmailLog.DEBUG("funcs.jsm: getHeaderData: " + m[2].toLowerCase() + " = " + res[m[2].toLowerCase()] + "\n");
+          AutocryptLog.DEBUG("funcs.jsm: getHeaderData: " + m[2].toLowerCase() + " = " + res[m[2].toLowerCase()] + "\n");
         }
       }
       if (i === 0 && a[i].indexOf(";") < 0) break;
@@ -255,8 +255,8 @@ var EnigmailFuncs = {
    * Get the text for the encrypted subject (either configured by user or default)
    */
   getProtectedSubjectText: function() {
-    if (EnigmailPrefs.getPref("protectedSubjectText").length > 0) {
-      return EnigmailData.convertToUnicode(EnigmailPrefs.getPref("protectedSubjectText"), "utf-8");
+    if (AutocryptPrefs.getPref("protectedSubjectText").length > 0) {
+      return AutocryptData.convertToUnicode(AutocryptPrefs.getPref("protectedSubjectText"), "utf-8");
     }
     else {
       return "...";

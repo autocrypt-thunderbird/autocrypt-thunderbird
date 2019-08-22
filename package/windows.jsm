@@ -8,14 +8,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailWindows"];
+var EXPORTED_SYMBOLS = ["AutocryptWindows"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
 const PromiseUtils = ChromeUtils.import("resource://gre/modules/PromiseUtils.jsm").PromiseUtils;
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
 
 const APPSHELL_MEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
@@ -23,12 +23,12 @@ const APPSHSVC_CONTRACTID = "@mozilla.org/appshell/appShellService;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-var EnigmailWindows = {
+var AutocryptWindows = {
   openAutocryptSettings: function(win, email) {
-    EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings()\n");
+    AutocryptLog.DEBUG("windows.jsm: openAutocryptSettings()\n");
 
-    if (!EnigmailStdlib.hasConfiguredAccounts()) {
-      EnigmailLog.DEBUG("windows.jsm: openAutocryptSettings: no configured accounts\n");
+    if (!AutocryptStdlib.hasConfiguredAccounts()) {
+      AutocryptLog.DEBUG("windows.jsm: openAutocryptSettings: no configured accounts\n");
       return;
     }
 
@@ -41,7 +41,7 @@ var EnigmailWindows = {
   },
 
   openManageAllKeys: function(win) {
-    EnigmailLog.DEBUG("windows.jsm: openManageAllKeys()\n");
+    AutocryptLog.DEBUG("windows.jsm: openManageAllKeys()\n");
 
     win.open("chrome://autocrypt/content/ui/manageAllKeys.xul",
       "", "chrome,dialog,centerscreen,resizable,modal");
@@ -129,7 +129,7 @@ var EnigmailWindows = {
    * @return:    the frame object or null if not found
    */
   getFrame: function(win, frameName) {
-    EnigmailLog.DEBUG("windows.jsm: getFrame: name=" + frameName + "\n");
+    AutocryptLog.DEBUG("windows.jsm: getFrame: name=" + frameName + "\n");
     for (var j = 0; j < win.frames.length; j++) {
       if (win.frames[j].name == frameName) {
         return win.frames[j];
@@ -180,8 +180,8 @@ var EnigmailWindows = {
    */
   openMailTab: function(aURL, windowName) {
 
-    if (!EnigmailApp.isSuite()) {
-      let tabs = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
+    if (!AutocryptApp.isSuite()) {
+      let tabs = AutocryptStdlib.getMail3Pane().document.getElementById("tabmail");
 
       for (let i = 0; i < tabs.tabInfo.length; i++) {
         if ("openedUrl" in tabs.tabInfo[i] && tabs.tabInfo[i].openedUrl.startsWith(aURL)) {
@@ -196,15 +196,15 @@ var EnigmailWindows = {
       gotTab.openedUrl = aURL;
     }
     else {
-      EnigmailWindows.openWin(windowName,
+      AutocryptWindows.openWin(windowName,
         aURL, "resizable,centerscreen");
     }
   },
 
   shutdown: function(reason) {
-    EnigmailLog.DEBUG("windows.jsm: shutdown()\n");
+    AutocryptLog.DEBUG("windows.jsm: shutdown()\n");
 
-    let tabs = EnigmailStdlib.getMail3Pane().document.getElementById("tabmail");
+    let tabs = AutocryptStdlib.getMail3Pane().document.getElementById("tabmail");
 
     for (let i = tabs.tabInfo.length - 1; i >= 0; i--) {
       if ("openedUrl" in tabs.tabInfo[i] && tabs.tabInfo[i].openedUrl.startsWith("chrome://autocrypt/")) {

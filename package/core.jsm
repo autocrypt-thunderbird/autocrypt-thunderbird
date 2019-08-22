@@ -14,85 +14,85 @@ const {
 } = Components;
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
-const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
+const AutocryptLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").AutocryptLazy;
 
 // load all modules lazily to avoid possible cross-reference errors
-const getEnigmailConsole = EnigmailLazy.loader("autocrypt/pipeConsole.jsm", "EnigmailConsole");
-const getEnigmailMimeEncrypt = EnigmailLazy.loader("autocrypt/mimeEncrypt.jsm", "EnigmailMimeEncrypt");
-const getEnigmailProtocolHandler = EnigmailLazy.loader("autocrypt/protocolHandler.jsm", "EnigmailProtocolHandler");
-const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
-const getEnigmailOS = EnigmailLazy.loader("autocrypt/os.jsm", "EnigmailOS");
-const getEnigmailKeyring = EnigmailLazy.loader("autocrypt/keyRing.jsm", "EnigmailKeyRing");
-const getEnigmailLocale = EnigmailLazy.loader("autocrypt/locale.jsm", "EnigmailLocale");
-const getEnigmailPrefs = EnigmailLazy.loader("autocrypt/prefs.jsm", "EnigmailPrefs");
-const getEnigmailVerify = EnigmailLazy.loader("autocrypt/mimeVerify.jsm", "EnigmailVerify");
-const getEnigmailWindows = EnigmailLazy.loader("autocrypt/windows.jsm", "EnigmailWindows");
-const getEnigmailDialog = EnigmailLazy.loader("autocrypt/dialog.jsm", "EnigmailDialog");
-const getEnigmailConfigure = EnigmailLazy.loader("autocrypt/configure.jsm", "EnigmailConfigure");
-const getEnigmailApp = EnigmailLazy.loader("autocrypt/app.jsm", "EnigmailApp");
-const getEnigmailKeyRefreshService = EnigmailLazy.loader("autocrypt/keyRefreshService.jsm", "EnigmailKeyRefreshService");
-const getEnigmailKeyServer = EnigmailLazy.loader("autocrypt/keyserver.jsm", "EnigmailKeyServer");
-const getEnigmailTimer = EnigmailLazy.loader("autocrypt/timer.jsm", "EnigmailTimer");
-const getAutocryptOverlays = EnigmailLazy.loader("autocrypt/autocryptOverlays.jsm", "AutocryptOverlays");
-const getEnigmailSqlite = EnigmailLazy.loader("autocrypt/sqliteDb.jsm", "EnigmailSqliteDb");
-const getEnigmailCryptoAPI = EnigmailLazy.loader("autocrypt/cryptoAPI.jsm", "EnigmailCryptoAPI");
-const getAutocryptMasterpass = EnigmailLazy.loader("autocrypt/masterpass.jsm", "AutocryptMasterpass");
+const getAutocryptConsole = AutocryptLazy.loader("autocrypt/pipeConsole.jsm", "AutocryptConsole");
+const getAutocryptMimeEncrypt = AutocryptLazy.loader("autocrypt/mimeEncrypt.jsm", "AutocryptMimeEncrypt");
+const getAutocryptProtocolHandler = AutocryptLazy.loader("autocrypt/protocolHandler.jsm", "AutocryptProtocolHandler");
+const getAutocryptLog = AutocryptLazy.loader("autocrypt/log.jsm", "AutocryptLog");
+const getAutocryptOS = AutocryptLazy.loader("autocrypt/os.jsm", "AutocryptOS");
+const getAutocryptKeyring = AutocryptLazy.loader("autocrypt/keyRing.jsm", "AutocryptKeyRing");
+const getAutocryptLocale = AutocryptLazy.loader("autocrypt/locale.jsm", "AutocryptLocale");
+const getAutocryptPrefs = AutocryptLazy.loader("autocrypt/prefs.jsm", "AutocryptPrefs");
+const getAutocryptVerify = AutocryptLazy.loader("autocrypt/mimeVerify.jsm", "AutocryptVerify");
+const getAutocryptWindows = AutocryptLazy.loader("autocrypt/windows.jsm", "AutocryptWindows");
+const getAutocryptDialog = AutocryptLazy.loader("autocrypt/dialog.jsm", "AutocryptDialog");
+const getAutocryptConfigure = AutocryptLazy.loader("autocrypt/configure.jsm", "AutocryptConfigure");
+const getAutocryptApp = AutocryptLazy.loader("autocrypt/app.jsm", "AutocryptApp");
+const getAutocryptKeyRefreshService = AutocryptLazy.loader("autocrypt/keyRefreshService.jsm", "AutocryptKeyRefreshService");
+const getAutocryptKeyServer = AutocryptLazy.loader("autocrypt/keyserver.jsm", "AutocryptKeyServer");
+const getAutocryptTimer = AutocryptLazy.loader("autocrypt/timer.jsm", "AutocryptTimer");
+const getAutocryptOverlays = AutocryptLazy.loader("autocrypt/autocryptOverlays.jsm", "AutocryptOverlays");
+const getAutocryptSqlite = AutocryptLazy.loader("autocrypt/sqliteDb.jsm", "AutocryptSqliteDb");
+const getAutocryptCryptoAPI = AutocryptLazy.loader("autocrypt/cryptoAPI.jsm", "AutocryptCryptoAPI");
+const getAutocryptMasterpass = AutocryptLazy.loader("autocrypt/masterpass.jsm", "AutocryptMasterpass");
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
-var EXPORTED_SYMBOLS = ["EnigmailCore"];
+var EXPORTED_SYMBOLS = ["AutocryptCore"];
 
 var gOverwriteEnvVar = [];
-var gEnigmailService = null; // Global Enigmail Service
+var gAutocryptService = null; // Global Autocrypt Service
 
-var EnigmailCore = {
+var AutocryptCore = {
   /**
-   * Create a new instance of Enigmail, or return the already existing one
+   * Create a new instance of Autocrypt, or return the already existing one
    */
   createInstance: function() {
-    if (!gEnigmailService) {
-      gEnigmailService = new Enigmail();
+    if (!gAutocryptService) {
+      gAutocryptService = new Autocrypt();
     }
 
-    return gEnigmailService;
+    return gAutocryptService;
   },
 
   startup: async function(reason) {
     initializeLogDirectory();
 
-    getEnigmailLog().DEBUG("core.jsm: startup()\n");
+    getAutocryptLog().DEBUG("core.jsm: startup()\n");
 
     let autocryptOverlays = getAutocryptOverlays();
 
-    await getEnigmailSqlite().checkDatabaseStructure();
-    getEnigmailPrefs().startup(reason);
+    await getAutocryptSqlite().checkDatabaseStructure();
+    getAutocryptPrefs().startup(reason);
 
     let self = this;
     this.factories = [];
 
     async function continueStartup() {
-      getEnigmailLog().DEBUG("core.jsm: startup.continueStartup()\n");
+      getAutocryptLog().DEBUG("core.jsm: startup.continueStartup()\n");
 
       try {
-        let mimeEncrypt = getEnigmailMimeEncrypt();
+        let mimeEncrypt = getAutocryptMimeEncrypt();
         mimeEncrypt.startup(reason);
         autocryptOverlays.startupCore(reason);
-        self.factories.push(new Factory(getEnigmailProtocolHandler()));
+        self.factories.push(new Factory(getAutocryptProtocolHandler()));
         self.factories.push(new Factory(mimeEncrypt.Handler));
 
         getAutocryptMasterpass().ensureAutocryptPassword();
 
         // Wait for TB Startup to be complete to initialize window overlays
         // For some reason, we are sometimes missing this callback..
-        getEnigmailTimer().setTimeout(autocryptOverlays.mailStartupDoneBackup, 1000);
+        getAutocryptTimer().setTimeout(autocryptOverlays.mailStartupDoneBackup, 1000);
         // Services.obs.addObserver(autocryptOverlays.mailStartupDone, "mail-startup-done", false);
 
         /*
-          let win = getEnigmailWindows().getBestParentWin();
-          getEnigmailLog().DEBUG("core.jsm: getService: show settings");
-          getEnigmailWindows().openAutocryptSettings(win);
+          let win = getAutocryptWindows().getBestParentWin();
+          getAutocryptLog().DEBUG("core.jsm: getService: show settings");
+          getAutocryptWindows().openAutocryptSettings(win);
         */
         /*
-        let win = getEnigmailWindows().getBestParentWin();
+        let win = getAutocryptWindows().getBestParentWin();
         let args = {
           recipients: [
             'look@my.amazin.horse',
@@ -104,23 +104,23 @@ var EnigmailCore = {
           "chrome,dialog,modal,centerscreen,resizable,titlebar", args);
         */
 
-        // getEnigmailSqlite().autocryptUpdateKey('look@my.amazin.horse', new Date(), null, null, true);
+        // getAutocryptSqlite().autocryptUpdateKey('look@my.amazin.horse', new Date(), null, null, true);
 
         // perform initialization of the service
         self.getService();
 
-        getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: ok\n");
+        getAutocryptLog().DEBUG("core.jsm: startup.continueStartup: ok\n");
       } catch (ex) {
-        getEnigmailLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
+        getAutocryptLog().DEBUG("core.jsm: startup.continueStartup: error " + ex.message + "\n" + ex.stack + "\n");
       }
     }
 
-    getEnigmailVerify().registerContentTypeHandler();
+    getAutocryptVerify().registerContentTypeHandler();
     await continueStartup();
   },
 
   shutdown: function(reason) {
-    getEnigmailLog().DEBUG("core.jsm: shutdown():\n");
+    getAutocryptLog().DEBUG("core.jsm: shutdown():\n");
 
     if (this.factories) {
       for (let fct of this.factories) {
@@ -128,16 +128,16 @@ var EnigmailCore = {
       }
     }
 
-    getEnigmailVerify().unregisterContentTypeHandler();
+    getAutocryptVerify().unregisterContentTypeHandler();
 
-    getEnigmailSqlite().clearCachedConnections();
+    getAutocryptSqlite().clearCachedConnections();
 
-    getEnigmailLocale().shutdown();
-    getEnigmailLog().DEBUG("core.jsm: shutdown(): ok (except log)\n");
-    getEnigmailLog().onShutdown();
+    getAutocryptLocale().shutdown();
+    getAutocryptLog().DEBUG("core.jsm: shutdown(): ok (except log)\n");
+    getAutocryptLog().onShutdown();
 
-    getEnigmailLog().setLogLevel(3);
-    gEnigmailService = null;
+    getAutocryptLog().setLogLevel(3);
+    gAutocryptService = null;
   },
 
   version: "",
@@ -147,68 +147,68 @@ var EnigmailCore = {
   },
 
   /**
-   * get and or initialize the Enigmail service,
+   * get and or initialize the Autocrypt service,
    * including the handling for upgrading old preferences to new versions
    *
    * @win:                - nsIWindow: parent window (optional)
    */
   getService: function(win) {
-    // Lazy initialization of Enigmail JS component (for efficiency)
+    // Lazy initialization of Autocrypt JS component (for efficiency)
 
-    if (gEnigmailService) {
-      return gEnigmailService.initialized ? gEnigmailService : null;
+    if (gAutocryptService) {
+      return gAutocryptService.initialized ? gAutocryptService : null;
     }
 
     try {
       this.createInstance();
-      return gEnigmailService.getService(win);
+      return gAutocryptService.getService(win);
     } catch (ex) {
       return null;
     }
 
   },
 
-  getEnigmailService: function() {
-    return gEnigmailService;
+  getAutocryptService: function() {
+    return gAutocryptService;
   },
 
-  setEnigmailService: function(v) {
-    gEnigmailService = v;
+  setAutocryptService: function(v) {
+    gAutocryptService = v;
   }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// Enigmail encryption/decryption service
+// Autocrypt encryption/decryption service
 ///////////////////////////////////////////////////////////////////////////////
 
 function getLogDirectoryPrefix() {
   try {
-    return getEnigmailPrefs().getPrefBranch().getCharPref("logDirectory") || "";
+    return getAutocryptPrefs().getPrefBranch().getCharPref("logDirectory") || "";
   } catch (ex) {
     return "";
   }
 }
 
 function initializeLogDirectory() {
-  const log_file = getEnigmailApp().getProfileDirectory();
+  const log_file = getAutocryptApp().getProfileDirectory();
   log_file.append('log_autocrypt.txt');
-  getEnigmailLog().setLogLevel(5);
-  getEnigmailLog().setLogFile(log_file);
-  getEnigmailLog().DEBUG(`core.jsm: Logging debug output to ${log_file.path}\n`);
+  getAutocryptLog().setLogLevel(5);
+  getAutocryptLog().setLogFile(log_file);
+  getAutocryptLog().DEBUG(`core.jsm: Logging debug output to ${log_file.path}\n`);
 }
 
 function failureOn(ex, status) {
-  status.initializationError = getEnigmailLocale().getString("enigmailNotAvailable");
-  getEnigmailLog().ERROR("core.jsm: Enigmail.initialize: Error - " + status.initializationError + "\n");
-  getEnigmailLog().DEBUG("core.jsm: Enigmail.initialize: exception=" + ex.toString() + "\n");
+  status.initializationError = getAutocryptLocale().getString("enigmailNotAvailable");
+  getAutocryptLog().ERROR("core.jsm: Autocrypt.initialize: Error - " + status.initializationError + "\n");
+  getAutocryptLog().DEBUG("core.jsm: Autocrypt.initialize: exception=" + ex.toString() + "\n");
   throw Components.results.NS_ERROR_FAILURE;
 }
 
-function Enigmail() {
+function Autocrypt() {
   this.wrappedJSObject = this;
 }
 
-Enigmail.prototype = {
+Autocrypt.prototype = {
   initialized: false,
   initializationAttempted: false,
   initializationError: "",
@@ -216,64 +216,64 @@ Enigmail.prototype = {
   initialize: function(domWindow, version) {
     this.initializationAttempted = true;
 
-    getEnigmailLog().DEBUG("core.jsm: Enigmail.initialize: START\n");
+    getAutocryptLog().DEBUG("core.jsm: Autocrypt.initialize: START\n");
 
     if (this.initialized) return;
 
     try {
-      getEnigmailConsole().write("Initializing Enigmail service ...\n");
+      getAutocryptConsole().write("Initializing Autocrypt service ...\n");
     } catch (ex) {
       failureOn(ex, this);
     }
 
     // TODO fix refresh service
-    // getEnigmailKeyRefreshService().start(getEnigmailKeyServer());
+    // getAutocryptKeyRefreshService().start(getAutocryptKeyServer());
 
     this.initialized = true;
 
-    getEnigmailLog().DEBUG("core.jsm: Enigmail.initialize: END\n");
+    getAutocryptLog().DEBUG("core.jsm: Autocrypt.initialize: END\n");
   },
 
   reinitialize: function() {
-    getEnigmailLog().DEBUG("core.jsm: Enigmail.reinitialize:\n");
+    getAutocryptLog().DEBUG("core.jsm: Autocrypt.reinitialize:\n");
     this.initialized = false;
     this.initializationAttempted = true;
 
-    getEnigmailConsole().write("Reinitializing Enigmail service ...\n");
+    getAutocryptConsole().write("Reinitializing Autocrypt service ...\n");
     this.initialized = true;
   },
 
   getService: function(win) {
     if (!win) {
-      win = getEnigmailWindows().getBestParentWin();
+      win = getAutocryptWindows().getBestParentWin();
     }
 
-    getEnigmailLog().DEBUG("core.jsm: svc = " + this + "\n");
+    getAutocryptLog().DEBUG("core.jsm: svc = " + this + "\n");
 
     if (!this.initialized) {
       const firstInitialization = !this.initializationAttempted;
-      const appVersion = getEnigmailApp().getVersion();
+      const appVersion = getAutocryptApp().getVersion();
 
       try {
         // Initialize enigmail
-        EnigmailCore.init(appVersion);
+        AutocryptCore.init(appVersion);
         this.initialize(win, appVersion);
       } catch (ex) {
-        getEnigmailLog().DEBUG("core.jsm: getService: init failed!\n");
+        getAutocryptLog().DEBUG("core.jsm: getService: init failed!\n");
         return null;
       }
 
       if (this.initialized) {
-        const configuredVersion = getEnigmailPrefs().getPref("configuredVersion");
-        getEnigmailTimer().setTimeout(function() {
-          getEnigmailConfigure().configureAutocrypt(configuredVersion, appVersion);
+        const configuredVersion = getAutocryptPrefs().getPref("configuredVersion");
+        getAutocryptTimer().setTimeout(function() {
+          getAutocryptConfigure().configureAutocrypt(configuredVersion, appVersion);
         }, 0);
       }
     }
 
     return this.initialized ? this : null;
   }
-}; // Enigmail.prototype
+}; // Autocrypt.prototype
 
 
 class Factory {

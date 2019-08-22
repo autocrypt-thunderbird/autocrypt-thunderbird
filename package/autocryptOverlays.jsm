@@ -114,23 +114,23 @@ const overlays = {
 };
 
 const {
-  EnigmailLog
+  AutocryptLog
 } = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm", {});
 const {
   Overlays
 } = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {});
 
 function ERROR_LOG(str) {
-  EnigmailLog.ERROR(str);
+  AutocryptLog.ERROR(str);
 }
 
 var WindowListener = {
   setupUI: function(window, overlayDefs) {
-    EnigmailLog.DEBUG("autocryptOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
+    AutocryptLog.DEBUG("autocryptOverlays.jsm: setupUI(" + window.document.location.href + ")\n");
     let ovl = [];
 
     if (window.isAutocryptOverlaysLoaded) {
-      EnigmailLog.DEBUG("autocryptOverlays.jsm: overlays for this window already loaded\n");
+      AutocryptLog.DEBUG("autocryptOverlays.jsm: overlays for this window already loaded\n");
       return;
     }
     window.isAutocryptOverlaysLoaded = true;
@@ -156,7 +156,7 @@ var WindowListener = {
   },
 
   tearDownUI: function(window) {
-    EnigmailLog.DEBUG("autocryptOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
+    AutocryptLog.DEBUG("autocryptOverlays.jsm: tearDownUI(" + window.document.location.href + ")\n");
     Overlays.unloadOverlays(MY_ADDON_ID, window);
     window.isAutocryptOverlaysLoaded = undefined;
   },
@@ -206,10 +206,10 @@ var AutocryptOverlays = {
    *
    */
   startup: function() {
-    EnigmailLog.DEBUG("autocryptOverlays.jsm: startup()\n");
+    AutocryptLog.DEBUG("autocryptOverlays.jsm: startup()\n");
 
     if (this.startupDone) {
-      EnigmailLog.DEBUG("autocryptOverlays.jsm: startup(): already done, skipping\n");
+      AutocryptLog.DEBUG("autocryptOverlays.jsm: startup(): already done, skipping\n");
       return;
     }
     this.startupDone = true;
@@ -228,11 +228,11 @@ var AutocryptOverlays = {
         }
         catch(x) {}
 
-        EnigmailLog.DEBUG("autocryptOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
+        AutocryptLog.DEBUG("autocryptOverlays.jsm: startup: found window: " + domWindow.document.location.href + "\n");
 
         loadUiForWindow(domWindow);
       } catch (ex) {
-        EnigmailLog.DEBUG("autocryptOverlays.jsm: startup: error " + ex.message + "\n");
+        AutocryptLog.DEBUG("autocryptOverlays.jsm: startup: error " + ex.message + "\n");
       }
     }
   },
@@ -242,7 +242,7 @@ var AutocryptOverlays = {
    * and then add Autocrypt UI
    */
   mailStartupDone: function() {
-    EnigmailLog.DEBUG(`overlay.jsm: mailStartupDone\n`);
+    AutocryptLog.DEBUG(`overlay.jsm: mailStartupDone\n`);
 
     gMailStartupDone = true;
 
@@ -252,7 +252,7 @@ var AutocryptOverlays = {
   },
 
   mailStartupDoneBackup: function() {
-    EnigmailLog.DEBUG(`overlay.jsm: mailStartupDoneBackup\n`);
+    AutocryptLog.DEBUG(`overlay.jsm: mailStartupDoneBackup\n`);
 
     if (!gMailStartupDone) {
       gMailStartupDone = true;
@@ -265,7 +265,7 @@ var AutocryptOverlays = {
    * and then add Autocrypt UI
    */
   startupCore: function(reason) {
-    EnigmailLog.DEBUG(`overlay.jsm: initiating startup (core startup done ${reason})\n`);
+    AutocryptLog.DEBUG(`overlay.jsm: initiating startup (core startup done ${reason})\n`);
 
     gCoreStartup = true;
 
@@ -285,7 +285,7 @@ var AutocryptOverlays = {
    * @param reason: Number - bootstrap "reason" constant
    */
   shutdown: function(reason) {
-    EnigmailLog.DEBUG("overlay.jsm: initiating shutdown\n");
+    AutocryptLog.DEBUG("overlay.jsm: initiating shutdown\n");
 
     this.startupDone = false;
 
@@ -311,7 +311,7 @@ var AutocryptOverlays = {
         domWindow.close();
     }
 
-    EnigmailLog.DEBUG("overlay.jsm: shutdown complete\n");
+    AutocryptLog.DEBUG("overlay.jsm: shutdown complete\n");
   }
 
 };

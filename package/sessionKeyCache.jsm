@@ -4,8 +4,8 @@
 
 "use strict";
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
 const AutocryptMasterpass = ChromeUtils.import("chrome://autocrypt/content/modules/masterpass.jsm").AutocryptMasterpass;
 
 var EXPORTED_SYMBOLS = ["AutocryptSessionKeyCache"];
@@ -21,27 +21,27 @@ var AutocryptSessionKeyCache = {
   },
 
   getCachedSessionKey: function(uri) {
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
 
     if (this.disabled) {
-      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): cache is disabled\n`);
+      AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): cache is disabled\n`);
       return null;
     }
 
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ${uri}\n`);
     if (!uri || !uri.spec || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
       return null;
     }
 
     let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     if (!msgDbHdr) {
-      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
+      AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
       return null;
     }
 
     let session_key_encrypted = msgDbHdr.getStringProperty(HEADER_KEY);
     if (!session_key_encrypted) {
-      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): session key not cached\n`);
+      AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): session key not cached\n`);
       return null;
     }
 
@@ -51,46 +51,46 @@ var AutocryptSessionKeyCache = {
       return null;
     }
 
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ok`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): ok`);
     return session_key;
   },
 
   putCachedSessionKey: function(uri, session_key) {
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ${uri}\n`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ${uri}\n`);
     if (!uri || !uri.spec || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
       return;
     }
 
     if (!session_key || !session_key.algorithm || !session_key.data) {
-      EnigmailLog.ERROR(`sessionKeyCache.jsm: putCachedSessionKey(): malformed session key!\n`);
+      AutocryptLog.ERROR(`sessionKeyCache.jsm: putCachedSessionKey(): malformed session key!\n`);
       return;
     }
 
     let msgDbHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     if (!msgDbHdr) {
-      EnigmailLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
+      AutocryptLog.DEBUG(`sessionKeyCache.jsm: getCachedSessionKey(): error retrieving header for uri\n`);
       return;
     }
 
     let session_key_string = this.serializeSessionKey(session_key);
     let session_key_encrypted = this.encryptString(session_key_string);
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey()\n`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey()\n`);
 
     msgDbHdr.setStringProperty(HEADER_KEY, session_key_encrypted);
 
-    EnigmailLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ok\n`);
+    AutocryptLog.DEBUG(`sessionKeyCache.jsm: putCachedSessionKey(): ok\n`);
   },
 
   encryptString: function(plaintext) {
     const password = AutocryptMasterpass.retrieveAutocryptPassword();
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     const ciphertext = cApi.wrap(password + SALT, plaintext);
     return ciphertext;
   },
 
   decryptString: function(ciphertext) {
     const password = AutocryptMasterpass.retrieveAutocryptPassword();
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     const plaintext = cApi.unwrap(password + SALT, ciphertext);
     return plaintext;
   },

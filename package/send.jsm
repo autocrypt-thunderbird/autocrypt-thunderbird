@@ -8,21 +8,21 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailSend"];
+var EXPORTED_SYMBOLS = ["AutocryptSend"];
 
 
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
-const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
+const AutocryptRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").AutocryptRNG;
 const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 
-var EnigmailSend = {
+var AutocryptSend = {
   /**
    * Send out an email
    *
@@ -34,10 +34,10 @@ var EnigmailSend = {
    */
 
   sendMessage: function(msgData, compFields, listener = null) {
-    EnigmailLog.DEBUG("EnigmailSend.sendMessage()\n");
+    AutocryptLog.DEBUG("AutocryptSend.sendMessage()\n");
     let tmpFile, msgIdentity;
     try {
-      tmpFile = EnigmailFiles.getTempDirObj();
+      tmpFile = AutocryptFiles.getTempDirObj();
       tmpFile.append("message.eml");
       tmpFile.createUnique(0, 0o600);
     }
@@ -45,26 +45,26 @@ var EnigmailSend = {
       return false;
     }
 
-    EnigmailFiles.writeFileContents(tmpFile, msgData);
-    EnigmailLog.DEBUG("EnigmailSend.sendMessage: wrote file: " + tmpFile.path + "\n");
+    AutocryptFiles.writeFileContents(tmpFile, msgData);
+    AutocryptLog.DEBUG("AutocryptSend.sendMessage: wrote file: " + tmpFile.path + "\n");
 
     try {
-      msgIdentity = EnigmailStdlib.getIdentityForEmail(compFields.from);
+      msgIdentity = AutocryptStdlib.getIdentityForEmail(compFields.from);
     }
     catch (ex) {
-      msgIdentity = EnigmailStdlib.getDefaultIdentity();
+      msgIdentity = AutocryptStdlib.getDefaultIdentity();
     }
 
     if (!msgIdentity) {
       return false;
     }
 
-    EnigmailLog.DEBUG("EnigmailSend.sendMessage: identity key: " + msgIdentity.identity.key + "\n");
+    AutocryptLog.DEBUG("AutocryptSend.sendMessage: identity key: " + msgIdentity.identity.key + "\n");
 
-    let acct = EnigmailFuncs.getAccountForIdentity(msgIdentity.identity);
+    let acct = AutocryptFuncs.getAccountForIdentity(msgIdentity.identity);
     if (!acct) return false;
 
-    EnigmailLog.DEBUG("EnigmailSend.sendMessage: account key: " + acct.key + "\n");
+    AutocryptLog.DEBUG("AutocryptSend.sendMessage: account key: " + acct.key + "\n");
 
     let msgSend = Cc["@mozilla.org/messengercompose/send;1"].createInstance(Ci.nsIMsgSend);
     msgSend.sendMessageFile(msgIdentity.identity,
@@ -103,7 +103,7 @@ var EnigmailSend = {
    * @return Boolean - true: everything was OK to send the message
    */
   simpleSendMessage: function(aParams, body, callbackFunc) {
-    EnigmailLog.DEBUG("EnigmailSend.simpleSendMessage()\n");
+    AutocryptLog.DEBUG("AutocryptSend.simpleSendMessage()\n");
     let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
       .createInstance(Ci.nsIMsgCompFields);
     let identity = aParams.identity;
@@ -124,7 +124,7 @@ var EnigmailSend = {
         fields.composeSecure = aParams.composeSecure;
     }
 
-    fields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
+    fields.messageId = AutocryptRNG.generateRandomString(27) + "-enigmail";
     body = "Message-Id: " + fields.messageId + "\r\n" + body;
 
     let listener = {

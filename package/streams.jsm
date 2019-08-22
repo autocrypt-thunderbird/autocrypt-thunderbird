@@ -8,11 +8,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailStreams"];
+var EXPORTED_SYMBOLS = ["AutocryptStreams"];
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 
@@ -20,11 +20,11 @@ const NS_STRING_INPUT_STREAM_CONTRACTID = "@mozilla.org/io/string-input-stream;1
 const NS_INPUT_STREAM_CHNL_CONTRACTID = "@mozilla.org/network/input-stream-channel;1";
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
-var EnigmailStreams = {
+var AutocryptStreams = {
 
   /** Read data from a url, used for attachments */
   getDataFromUrl: function(url) {
-    EnigmailLog.DEBUG("autocrypt.jsm: getSetupMessageData()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: getSetupMessageData()\n");
 
     return new Promise((resolve, reject) => {
       let s = this.newStringStreamListener(data => {
@@ -62,40 +62,40 @@ var EnigmailStreams = {
    * @return: the nsIStreamListener to pass to the stream
    */
   newStringStreamListener: function(onStopCallback) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStreamListener\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: newStreamListener\n");
 
     let listener = {
       data: "",
       inStream: Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream),
       _onStopCallback: onStopCallback,
-      QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
+      QueryInterface: AutocryptTb60Compat.generateQI([Ci.nsIStreamListener, Ci.nsIRequestObserver]),
 
       onStartRequest: function(channel) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
+        // AutocryptLog.DEBUG("enigmailCommon.jsm: stringListener.onStartRequest\n");
       },
 
       onStopRequest: function(channel, status) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
+        // AutocryptLog.DEBUG("enigmailCommon.jsm: stringListener.onStopRequest: "+ctxt+"\n");
         this.inStream = null;
         var cbFunc = this._onStopCallback;
         var cbData = this.data;
 
-        EnigmailTimer.setTimeout(function _cb() {
+        AutocryptTimer.setTimeout(function _cb() {
           cbFunc(cbData);
         });
       }
     };
 
-    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    if (AutocryptTb60Compat.isMessageUriInPgpMime()) {
       // TB >= 67
       listener.onDataAvailable = function(req, stream, offset, count) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+        // AutocryptLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
         this.inStream.setInputStream(stream);
         this.data += this.inStream.readBytes(count);
       };
     } else {
       listener.onDataAvailable = function(req, ctxt, stream, offset, count) {
-        // EnigmailLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
+        // AutocryptLog.DEBUG("enigmailCommon.jsm: stringListener.onDataAvailable: "+count+"\n");
         this.inStream.setInputStream(stream);
         this.data += this.inStream.readBytes(count);
       };
@@ -116,7 +116,7 @@ var EnigmailStreams = {
    * @return nsIChannel object
    */
   newStringChannel: function(uri, contentType, contentCharset, data, loadInfo) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: newStringChannel\n");
 
     if (!loadInfo) {
       loadInfo = createLoadInfo();
@@ -144,13 +144,13 @@ var EnigmailStreams = {
     if (contentType && contentType.length) isc.contentType = contentType;
     if (contentCharset && contentCharset.length) isc.contentCharset = contentCharset;
 
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
 
     return isc;
   },
 
   newFileChannel: function(uri, file, contentType, deleteOnClose) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: newFileChannel for '" + file.path + "'\n");
 
     let inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
     let behaviorFlags = Ci.nsIFileInputStream.CLOSE_ON_EOF;
@@ -170,7 +170,7 @@ var EnigmailStreams = {
 
     if (contentType && contentType.length) isc.contentType = contentType;
 
-    EnigmailLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: newStringChannel - done\n");
 
     return isc;
   }

@@ -4,13 +4,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/* global Components: false, EnigmailLog: false, EnigmailKeyServer: false, EnigmailDialog: false, sleep: false */
+/* global Components: false, AutocryptLog: false, AutocryptKeyServer: false, AutocryptDialog: false, sleep: false */
 
 "use strict";
 
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const EnigmailWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").EnigmailWkdLookup;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const AutocryptWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").AutocryptWkdLookup;
 
 function getChoiceType() {
   let args = window.arguments[0];
@@ -32,7 +32,7 @@ async function onLoad() {
   for (let name of ['recipientRows']) {
     let view = document.getElementById(name);
     if (!view) {
-      EnigmailLog.DEBUG(`dialogMissingKeys.js: missing view ${name}\n`);
+      AutocryptLog.DEBUG(`dialogMissingKeys.js: missing view ${name}\n`);
     }
     views[name] = view;
   }
@@ -58,16 +58,16 @@ function refreshRecipients() {
 
 async function refreshRecipientStatus() {
   let addresses = getRecipients();
-  let autocrypt_status = await EnigmailAutocrypt.determineAutocryptRecommendations(addresses);
+  let autocrypt_status = await AutocryptAutocrypt.determineAutocryptRecommendations(addresses);
   for (let address of addresses) {
     let peer_status = autocrypt_status.peers[address];
     if (!peer_status) {
-      EnigmailLog.ERROR(`dialogMissingKeys.js: missing recommendation - this is a bug!\n`);
+      AutocryptLog.ERROR(`dialogMissingKeys.js: missing recommendation - this is a bug!\n`);
     }
     let is_ok = peer_status && peer_status.isEncryptionAvailable();
     setRowStatus(address, is_ok);
   }
-  updateAcceptButtonState(autocrypt_status.group_recommendation > EnigmailAutocrypt.AUTOCRYPT_RECOMMEND.DISABLE);
+  updateAcceptButtonState(autocrypt_status.group_recommendation > AutocryptAutocrypt.AUTOCRYPT_RECOMMEND.DISABLE);
 }
 
 function updateAcceptButtonState(all_recipients_ok) {
@@ -119,22 +119,22 @@ async function onClickLookup(address) {
   row.buttonLookup.setAttribute("label", "Searching…");
 
   let delay = sleep(700);
-  let result = await EnigmailWkdLookup.download(address, 1500);
+  let result = await AutocryptWkdLookup.download(address, 1500);
   if (!result || !result.keyData) {
-    result = await EnigmailKeyServer.download(address);
+    result = await AutocryptKeyServer.download(address);
   }
   await delay;
 
   if (result.result === 0) {
-    EnigmailLog.DEBUG(`dialogMissingKeys.js: keyserver ok\n`);
+    AutocryptLog.DEBUG(`dialogMissingKeys.js: keyserver ok\n`);
     downloaded_keys.push(address);
     if (result.keyData) {
-      if (!await EnigmailAutocrypt.injectAutocryptKey(address, result.keyData, true)) {
-        EnigmailDialog.alert(window, `Error importing downloaded key for ${address}`);
+      if (!await AutocryptAutocrypt.injectAutocryptKey(address, result.keyData, true)) {
+        AutocryptDialog.alert(window, `Error importing downloaded key for ${address}`);
       }
     }
   } else {
-    EnigmailDialog.alert(window, result.errorDetails);
+    AutocryptDialog.alert(window, result.errorDetails);
     row.buttonLookup.setAttribute("label", "Lookup");
     row.buttonLookup.setAttribute("disabled", "false");
   }

@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-/* global Components: false, EnigmailLog: false, EnigAlert: false, tick: false */
+/* global Components: false, AutocryptLog: false, EnigAlert: false, tick: false */
 
 "use strict";
 

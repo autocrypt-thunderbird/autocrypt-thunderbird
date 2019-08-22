@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLocale: false, EnigmailApp: false, Dialog: false, EnigmailTimer: false */
+/*global Components: false, AutocryptLocale: false, AutocryptApp: false, Dialog: false, AutocryptTimer: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,37 +16,37 @@
 /*global CommandUpdate_MsgCompose: false, gSMFields: false, setSecuritySettings: false, getCurrentAccountKey: false */
 /*global Sendlater3Composing: false, MailServices: false */
 
-var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
-var EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
-var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-var EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-var EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
-var EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-var EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
-var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-var EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
-var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").EnigmailDecryption;
-var EnigmailEncryption = ChromeUtils.import("chrome://autocrypt/content/modules/encryption.jsm").EnigmailEncryption;
-var EnigmailClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").EnigmailClipboard;
-var EnigmailWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").EnigmailWkdLookup;
-var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-var EnigmailMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").EnigmailMsgRead;
-var EnigmailMimeEncrypt = ChromeUtils.import("chrome://autocrypt/content/modules/mimeEncrypt.jsm").EnigmailMimeEncrypt;
-var EnigmailSync = ChromeUtils.import("chrome://autocrypt/content/modules/sync.jsm").EnigmailSync ;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
+var AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+var AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+var AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+var AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+var AutocryptOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").AutocryptOS;
+var AutocryptArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").AutocryptArmor;
+var AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+var AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+var AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+var AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
+var AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+var AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
+var AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+var AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+var AutocryptURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").AutocryptURIs;
+var AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+var AutocryptDecryption = ChromeUtils.import("chrome://autocrypt/content/modules/decryption.jsm").AutocryptDecryption;
+var AutocryptEncryption = ChromeUtils.import("chrome://autocrypt/content/modules/encryption.jsm").AutocryptEncryption;
+var AutocryptClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").AutocryptClipboard;
+var AutocryptWkdLookup = ChromeUtils.import("chrome://autocrypt/content/modules/wkdLookup.jsm").AutocryptWkdLookup;
+var AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+var AutocryptMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").AutocryptMsgRead;
+var AutocryptMimeEncrypt = ChromeUtils.import("chrome://autocrypt/content/modules/mimeEncrypt.jsm").AutocryptMimeEncrypt;
+var AutocryptSync = ChromeUtils.import("chrome://autocrypt/content/modules/sync.jsm").AutocryptSync ;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
 var jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
 
 const AUTOCRYPT_RECOMMEND = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AUTOCRYPT_RECOMMEND;
 
 
-if (!Enigmail) var Enigmail = {};
+if (!Autocrypt) var Autocrypt = {};
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
@@ -148,7 +148,7 @@ const ENCRYPT_DISPLAY_STATUS = {
 
 function ComposeCryptoState() {
   // This contains up to date Autocrypt recommendations, as determined by
-  // EnigmailAutocrypt.determineAutocryptRecommendations
+  // AutocryptAutocrypt.determineAutocryptRecommendations
   this.currentAutocryptRecommendation = null;
   this.senderAutocryptSettings = null;
 
@@ -287,7 +287,7 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
   return ENCRYPT_DISPLAY_STATUS.UNKNOWN;
 };
 
-Enigmail.msg = {
+Autocrypt.msg = {
   editor: null,
   dirty: null,
   timeoutId: null,
@@ -306,27 +306,27 @@ Enigmail.msg = {
   /* timeout when entering something into the address field */
 
   composeStartup: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeStartup\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.composeStartup\n");
 
     function loadOverlay(targetWindow, srcUrl) {
       let {
         Overlays
       } = ChromeUtils.import("chrome://autocrypt/content/modules/overlays.jsm", {});
 
-      Overlays.loadOverlays("Enigmail", targetWindow, [srcUrl]);
+      Overlays.loadOverlays("Autocrypt", targetWindow, [srcUrl]);
     }
 
     function addSecurityListener(itemId, func) {
       let s = document.getElementById(itemId);
       if (s) {
-        s.addEventListener("command", func.bind(Enigmail.msg), false);
+        s.addEventListener("command", func.bind(Autocrypt.msg), false);
       } else {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: addSecurityListener - cannot find element " + itemId + "\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: addSecurityListener - cannot find element " + itemId + "\n");
       }
     }
 
-    gMsgCompose.RegisterStateListener(Enigmail.composeStateListener);
-    Enigmail.msg.composeBodyReady = false;
+    gMsgCompose.RegisterStateListener(Autocrypt.composeStateListener);
+    Autocrypt.msg.composeBodyReady = false;
 
     // Relabel SMIME button and menu item
     var smimeButton = document.getElementById("button-security");
@@ -342,11 +342,11 @@ Enigmail.msg = {
 
     var msgId = document.getElementById("msgIdentityPopup");
     if (msgId) {
-      msgId.addEventListener("command", Enigmail.msg.setIdentityCallback, false);
+      msgId.addEventListener("command", Autocrypt.msg.setIdentityCallback, false);
     }
 
     var subj = document.getElementById("msgSubject");
-    subj.addEventListener('focus', Enigmail.msg.fireSendFlags, false);
+    subj.addEventListener('focus', Autocrypt.msg.fireSendFlags, false);
 
     // listen to S/MIME changes to potentially display "conflict" message
     addSecurityListener("menu_securitySign1", this.onUpdateSmimeState);
@@ -354,9 +354,9 @@ Enigmail.msg = {
     addSecurityListener("menu_securityEncryptRequire1", this.onUpdateSmimeState);
     addSecurityListener("menu_securityEncryptRequire2", this.onUpdateSmimeState);
 
-    let numCerts = EnigmailFuncs.getNumOfX509Certs();
+    let numCerts = AutocryptFuncs.getNumOfX509Certs();
     this.addrOnChangeTimeout = Math.max((numCerts - 250) * 2, 250);
-    EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: composeStartup: numCerts=${numCerts}; setting timeout to ${this.addrOnChangeTimeout}\n`);
+    AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: composeStartup: numCerts=${numCerts}; setting timeout to ${this.addrOnChangeTimeout}\n`);
 
     this.msgComposeReset(false); // false => not closing => call setIdentityDefaults()
     this.composeOpen();
@@ -366,34 +366,34 @@ Enigmail.msg = {
 
   delayedUpdateStatusBar: function() {
     let composeCryptoState = this.composeCryptoState;
-    EnigmailTimer.setTimeout(function _f() {
-      Enigmail.msg.updateStatusBar();
+    AutocryptTimer.setTimeout(function _f() {
+      Autocrypt.msg.updateStatusBar();
     }, 100);
   },
 
   refreshSmimeComposeCryptoState: function() {
-    let si = Enigmail.msg.getSecurityParams(null, true);
-    let isSmime = !EnigmailMimeEncrypt.isEnigmailCompField(si);
-    EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: refreshSmimeComposeCryptoState: isSmime=${isSmime}, requireEncryptMessage=${si.requireEncryptMessage}, signMessage=${si.signMessage}\n`);
+    let si = Autocrypt.msg.getSecurityParams(null, true);
+    let isSmime = !AutocryptMimeEncrypt.isAutocryptCompField(si);
+    AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: refreshSmimeComposeCryptoState: isSmime=${isSmime}, requireEncryptMessage=${si.requireEncryptMessage}, signMessage=${si.signMessage}\n`);
     this.composeCryptoState.isAnySmimeEnabled = isSmime && (si.requireEncryptMessage || si.signMessage);
   },
 
   onUpdateSmimeState: function(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onUpdateSmimeState\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.onUpdateSmimeState\n");
     this.delayedUpdateStatusBar();
   },
 
   setIdentityCallback: function(elementId) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityCallback: elementId=" + elementId + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setIdentityCallback: elementId=" + elementId + "\n");
 
-    EnigmailTimer.setTimeout(function _f() {
-        Enigmail.msg.setIdentityDefaults();
+    AutocryptTimer.setTimeout(function _f() {
+        Autocrypt.msg.setIdentityDefaults();
       },
       100);
   },
 
   setIdentityDefaults: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setIdentityDefaults\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setIdentityDefaults\n");
 
     this.identity = getCurrentIdentity();
 
@@ -428,7 +428,7 @@ Enigmail.msg = {
 
   // TODO rewrite
   getMsgProperties: function(draft) {
-    EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties:\n");
+    AutocryptLog.DEBUG("enigmailMessengerOverlay.js: Autocrypt.msg.getMsgProperties:\n");
 
     let msgUri = this.getOriginalMsgUri();
     let self = this;
@@ -436,33 +436,33 @@ Enigmail.msg = {
     try {
       let msgHdr = this.getMsgHdr(msgUri);
       if (msgHdr) {
-        let msgUrl = EnigmailMsgRead.getUrlFromUriSpec(msgUri);
+        let msgUrl = AutocryptMsgRead.getUrlFromUriSpec(msgUri);
         properties = msgHdr.getUint32Property("enigmail");
         try {
-          EnigmailMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
+          AutocryptMime.getMimeTreeFromUrl(msgUrl.spec, false, function _cb(mimeMsg) {
             if (draft) {
               self.setDraftOptions(mimeMsg);
             } else {
-              if (EnigmailURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject, false);
+              if (AutocryptURIs.isEncryptedUri(msgUri)) self.setOriginalSubject(msgHdr.subject, false);
             }
           });
         } catch (ex) {
-          EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: excetion in getMimeTreeFromUrl\n");
+          AutocryptLog.DEBUG("enigmailMessengerOverlay.js: Autocrypt.msg.getMsgProperties: excetion in getMimeTreeFromUrl\n");
         }
       }
     } catch (ex) {
-      EnigmailLog.DEBUG("enigmailMessengerOverlay.js: Enigmail.msg.getMsgProperties: got exception '" + ex.toString() + "'\n");
+      AutocryptLog.DEBUG("enigmailMessengerOverlay.js: Autocrypt.msg.getMsgProperties: got exception '" + ex.toString() + "'\n");
     }
 
-    if (EnigmailURIs.isEncryptedUri(msgUri)) {
-      properties |= EnigmailConstants.DECRYPTION_OKAY;
+    if (AutocryptURIs.isEncryptedUri(msgUri)) {
+      properties |= AutocryptConstants.DECRYPTION_OKAY;
     }
 
     return properties;
   },
 
   setDraftOptions: function(mimeMsg) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftOptions\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions\n");
 
     let stat;
     if (mimeMsg && mimeMsg.headers.has("autocrypt-draft-state")) {
@@ -473,7 +473,7 @@ Enigmail.msg = {
 
     // TODO implement according to https://github.com/autocrypt/autocrypt/pull/376
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftOptions: draftStatus: " + stat + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions: draftStatus: " + stat + "\n");
   },
 
   setOriginalSubject: function(subject, forceSetting) {
@@ -511,7 +511,7 @@ Enigmail.msg = {
     }
 
     if (doSetSubject) {
-      subject = EnigmailData.convertToUnicode(subject, "UTF-8");
+      subject = AutocryptData.convertToUnicode(subject, "UTF-8");
       subject = jsmime.headerparser.decodeRFC2047Words(subject, "utf-8");
 
       if (subjElem.value == "Re: " + subject) return;
@@ -523,7 +523,7 @@ Enigmail.msg = {
   },
 
   setupMenuAndToolbar: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setupMenuAndToolbar\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setupMenuAndToolbar\n");
     let toolbarTxt = document.getElementById("enigmail-toolbar-text");
     let encBroadcaster = document.getElementById("enigmail-bc-encrypt");
 
@@ -534,21 +534,21 @@ Enigmail.msg = {
   },
 
   composeOpen: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.composeOpen\n");
 
     this.setupMenuAndToolbar();
 
     this.determineSendFlagId = null;
     this.disableSmime = false;
-    this.protectHeaders = (EnigmailPrefs.getPref("protectedHeaders") === 2);
+    this.protectHeaders = (AutocryptPrefs.getPref("protectedHeaders") === 2);
 
     var toobarElem = document.getElementById("composeToolbar2");
-    if (toobarElem && (EnigmailOS.getOS() == "Darwin")) {
+    if (toobarElem && (AutocryptOS.getOS() == "Darwin")) {
       toobarElem.setAttribute("platform", "macos");
     }
 
     // remove overlay_source from enigmail-bc-sendprocess, which will be inherited to
-    // addressCol2 and addressCol1 (those would be removed if Enigmail is uninstalled)
+    // addressCol2 and addressCol1 (those would be removed if Autocrypt is uninstalled)
     let bc = document.getElementById("enigmail-bc-sendprocess");
     bc.removeAttribute("overlay_source");
 
@@ -556,15 +556,15 @@ Enigmail.msg = {
     var adrCol = document.getElementById("addressCol2#1"); // recipients field
     if (adrCol) {
       let attr = adrCol.getAttribute("oninput");
-      adrCol.setAttribute("oninput", attr + "; Enigmail.msg.addressOnChange(this);");
+      adrCol.setAttribute("oninput", attr + "; Autocrypt.msg.addressOnChange(this);");
       attr = adrCol.getAttribute("onchange");
-      adrCol.setAttribute("onchange", attr + "; Enigmail.msg.addressOnChange(this);");
+      adrCol.setAttribute("onchange", attr + "; Autocrypt.msg.addressOnChange(this);");
       adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
     adrCol = document.getElementById("addressCol1#1"); // to/cc/bcc/... field
     if (adrCol) {
       let attr = adrCol.getAttribute("oncommand");
-      adrCol.setAttribute("oncommand", attr + "; Enigmail.msg.addressOnChange(this);");
+      adrCol.setAttribute("oncommand", attr + "; Autocrypt.msg.addressOnChange(this);");
       adrCol.setAttribute("observes", "enigmail-bc-sendprocess");
     }
 
@@ -583,11 +583,11 @@ Enigmail.msg = {
     if (msgUri) {
       let msgFlags = this.getMsgProperties(msgIsDraft);
       if (!msgIsDraft) {
-        if (msgFlags & EnigmailConstants.DECRYPTION_OKAY) {
-          EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.composeOpen: has encrypted originalMsgUri\n");
-          EnigmailLog.DEBUG("originalMsgURI=" + gMsgCompose.originalMsgURI + "\n");
+        if (msgFlags & AutocryptConstants.DECRYPTION_OKAY) {
+          AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.composeOpen: has encrypted originalMsgUri\n");
+          AutocryptLog.DEBUG("originalMsgURI=" + gMsgCompose.originalMsgURI + "\n");
           this.composeCryptoState.isReplyToOpenPgpEncryptedMessage = true;
-          let si = Enigmail.msg.getSecurityParams(null, true);
+          let si = Autocrypt.msg.getSecurityParams(null, true);
           si.signMessage = false;
           si.requireEncryptMessage = false;
         }
@@ -644,22 +644,22 @@ Enigmail.msg = {
   },
 
   initialSendFlags: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.initialSendFlags\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.initialSendFlags\n");
     this.fireSendFlags();
 
-    EnigmailTimer.setTimeout(function _f() {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags\n");
+    AutocryptTimer.setTimeout(function _f() {
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags\n");
       try {
         this.determineSendFlags();
       } catch (ex) {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags - ERROR: " + ex.toString() + "\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay: re-determine send flags - ERROR: " + ex.toString() + "\n");
       }
-    }.bind(Enigmail.msg), 1500);
+    }.bind(Autocrypt.msg), 1500);
   },
 
 
   msgComposeClose: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.msgComposeClose\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.msgComposeClose\n");
 
     var ioServ;
     try {
@@ -672,7 +672,7 @@ Enigmail.msg = {
 
         for (var i in this.modifiedAttach) {
           if (this.modifiedAttach[i].origTemp) {
-            EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.msgComposeClose: deleting " + this.modifiedAttach[i].origUrl + "\n");
+            AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.msgComposeClose: deleting " + this.modifiedAttach[i].origUrl + "\n");
             var fileUri = ioServ.newURI(this.modifiedAttach[i].origUrl, null, null);
             var fileHandle = Components.classes[LOCAL_FILE_CONTRACTID].createInstance(Components.interfaces.nsIFile);
             fileHandle.initWithPath(fileUri.path);
@@ -682,7 +682,7 @@ Enigmail.msg = {
         this.modifiedAttach = null;
       }
     } catch (ex) {
-      EnigmailLog.ERROR("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: could not delete all files:\n" + ex.toString() + "\n");
+      AutocryptLog.ERROR("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: could not delete all files:\n" + ex.toString() + "\n");
     }
 
     this.msgComposeReset(true); // true => closing => don't call setIdentityDefaults()
@@ -690,7 +690,7 @@ Enigmail.msg = {
 
 
   msgComposeReset: function(closing) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.msgComposeReset\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.msgComposeReset\n");
 
     this.dirty = 0;
     this.timeoutId = null;
@@ -741,8 +741,8 @@ Enigmail.msg = {
 
   resetUpdatedFields: function() {
     // reset subject
-    if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
-      let si = Enigmail.msg.getSecurityParams().wrappedJSObject;
+    if (AutocryptMimeEncrypt.isAutocryptCompField(Autocrypt.msg.getSecurityParams())) {
+      let si = Autocrypt.msg.getSecurityParams().wrappedJSObject;
       if (si.originalSubject) {
         gMsgCompose.compFields.subject = si.originalSubject;
       }
@@ -751,13 +751,13 @@ Enigmail.msg = {
 
 
   goAccountManager: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.goAccountManager:\n");
-    EnigmailCore.getService(window);
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.goAccountManager:\n");
+    AutocryptCore.getService(window);
     let currentId = null;
     let account = null;
     try {
       currentId = getCurrentIdentity();
-      account = EnigmailFuncs.getAccountForIdentity(currentId);
+      account = AutocryptFuncs.getAccountForIdentity(currentId);
     } catch (ex) {}
     window.openDialog("chrome://autocrypt/content/ui/editSingleAccount.xul", "", "dialog,modal,centerscreen", {
       identity: currentId,
@@ -768,27 +768,27 @@ Enigmail.msg = {
 
   showDialogOnErrorState: function() {
     if (!this.composeCryptoState.isAutocryptConfiguredForIdentity()) {
-      EnigmailWindows.openAutocryptSettings(window, this.identity.email);
+      AutocryptWindows.openAutocryptSettings(window, this.identity.email);
       return true;
     }
     if (this.composeCryptoState.isAnyRecipientNewsgroup) {
-      EnigmailDialog.alert(window, "Encryption to Newsgroups is not supported!");
+      AutocryptDialog.alert(window, "Encryption to Newsgroups is not supported!");
       return true;
     }
     if (this.composeCryptoState.isAnyRecipientBcc) {
-      EnigmailDialog.alert(window, "Encryption to Bcc recipients is not yet supported, sorry.");
+      AutocryptDialog.alert(window, "Encryption to Bcc recipients is not yet supported, sorry.");
       return true;
     }
     return false;
   },
 
   onPressKeyToggleEncrypt: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onPressKeyToggleEncrypt()\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.onPressKeyToggleEncrypt()\n");
     this.onButtonToggleEncrypt();
   },
 
   onButtonToggleEncrypt: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.onButtonToggleEncrypt()\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.onButtonToggleEncrypt()\n");
     if (this.showDialogOnErrorState()) {
       this.composeCryptoState.resetUserChoice();
       this.fireSendFlags();
@@ -820,7 +820,7 @@ Enigmail.msg = {
     };
     window.openDialog("chrome://autocrypt/content/ui/dialogMissingKeys.xul", "",
       "chrome,dialog,modal,centerscreen,resizable,titlebar", args, result);
-    EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: showMissingRecipientsDialog(): choice ${result.choice}\n`);
+    AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: showMissingRecipientsDialog(): choice ${result.choice}\n`);
     return result.choice;
   },
 
@@ -832,7 +832,7 @@ Enigmail.msg = {
   //   - this.statusEncryptStr, this.statusSignStr, this.statusPGPMimeStr, this.statusInlinePGPStr
   //   - this.statusSMimeStr
   updateStatusBar: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.updateStatusBar()\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.updateStatusBar()\n");
 
     this.refreshSmimeComposeCryptoState();
 
@@ -850,7 +850,7 @@ Enigmail.msg = {
     let display_status = this.composeCryptoState.getDisplayStatus();
 
     // process resulting icon symbol and status strings for encrypt mode
-    EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: status: ${JSON.stringify(display_status)}\n`);
+    AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: status: ${JSON.stringify(display_status)}\n`);
 
     // update encrypt icon and tooltip/menu-text
     encBroadcaster.setAttribute("encrypted", display_status.encSymbol);
@@ -873,9 +873,9 @@ Enigmail.msg = {
     if (toolbarTxt) {
       toolbarTxt.value = display_status.encStr;
 
-      if (Enigmail.msg.getSecurityParams()) {
-        let si = Enigmail.msg.getSecurityParams(null, true);
-        let isSmime = !EnigmailMimeEncrypt.isEnigmailCompField(si);
+      if (Autocrypt.msg.getSecurityParams()) {
+        let si = Autocrypt.msg.getSecurityParams(null, true);
+        let isSmime = !AutocryptMimeEncrypt.isAutocryptCompField(si);
 
         // if (!isEncrypt && !isSign && !isSmime && (si.signMessage || si.requireEncryptMessage)) {
         // toolbarTxt.setAttribute("class", "enigmailStrong");
@@ -893,7 +893,7 @@ Enigmail.msg = {
    * - without any interaction, just to process resulting status bar icons
    */
   determineSendFlags: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.focusChange: Enigmail.msg.determineSendFlags\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.focusChange: Autocrypt.msg.determineSendFlags\n");
 
     if (!this.identity) {
       this.identity = getCurrentIdentity();
@@ -901,19 +901,19 @@ Enigmail.msg = {
 
     let fromAddr = this.identity.email;
 
-    const autocrypt_settings = EnigmailSync.sync(EnigmailAutocrypt.getAutocryptSettingsForIdentity(fromAddr));
+    const autocrypt_settings = AutocryptSync.sync(AutocryptAutocrypt.getAutocryptSettingsForIdentity(fromAddr));
     if (autocrypt_settings && autocrypt_settings.is_secret) {
-      EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: determineSendFlags(): sender autocrypt settings: ${JSON.stringify(this.composeCryptoState.senderAutocryptSettings)}\n`);
+      AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: determineSendFlags(): sender autocrypt settings: ${JSON.stringify(this.composeCryptoState.senderAutocryptSettings)}\n`);
       this.composeCryptoState.senderAutocryptSettings = autocrypt_settings;
     } else {
-      EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: determineSendFlags(): sender autocrypt settings: none\n`);
+      AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: determineSendFlags(): sender autocrypt settings: none\n`);
       this.composeCryptoState.senderAutocryptSettings = null;
     }
 
     let toAddrList = this.findAllRecipients();
 
     this.composeCryptoState.currentAutocryptRecommendation =
-      EnigmailSync.sync(EnigmailAutocrypt.determineAutocryptRecommendations(toAddrList));
+      AutocryptSync.sync(AutocryptAutocrypt.determineAutocryptRecommendations(toAddrList));
 
     this.composeCryptoState.isAnyRecipientNewsgroup = Boolean(gMsgCompose.compFields.newsgroups);
     this.composeCryptoState.isAnyRecipientBcc = Boolean(gMsgCompose.compFields.bcc.length);
@@ -925,7 +925,7 @@ Enigmail.msg = {
   findAllRecipients: function() {
     var compFields = gMsgCompose.compFields;
 
-    if (!Enigmail.msg.composeBodyReady) {
+    if (!Autocrypt.msg.composeBodyReady) {
       compFields = Components.classes["@mozilla.org/messengercompose/composefields;1"].createInstance(Components.interfaces.nsIMsgCompFields);
     }
     Recipients2CompFields(compFields);
@@ -968,7 +968,7 @@ Enigmail.msg = {
   },
 
   setDraftStatus: function(doEncrypt) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.setDraftStatus - enabling draft mode\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftStatus - enabling draft mode\n");
 
     // TODO
     // this.setAdditionalHeader("Autocrypt-Draft-State", draftStatus);
@@ -1013,14 +1013,14 @@ Enigmail.msg = {
 
   // Save draft message. We do not want most of the other processing for encrypted mails here...
   saveDraftMessage: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: saveDraftMessage()\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: saveDraftMessage()\n");
 
     let doEncrypt = this.identity.getBoolAttribute("autoEncryptDrafts");
 
     this.setDraftStatus(doEncrypt);
 
     if (!doEncrypt) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
       return true;
     }
 
@@ -1030,21 +1030,21 @@ Enigmail.msg = {
       fromAddr = userIdValue;
     }
 
-    let enigmailSvc = EnigmailCore.getService(window);
+    let enigmailSvc = AutocryptCore.getService(window);
     if (!enigmailSvc) return true;
 
     let secInfo;
 
-    if (EnigmailMimeEncrypt.isEnigmailCompField(Enigmail.msg.getSecurityParams())) {
-      secInfo = Enigmail.msg.getSecurityParams().wrappedJSObject;
+    if (AutocryptMimeEncrypt.isAutocryptCompField(Autocrypt.msg.getSecurityParams())) {
+      secInfo = Autocrypt.msg.getSecurityParams().wrappedJSObject;
     } else {
       try {
-        secInfo = EnigmailMimeEncrypt.createMimeEncrypt(Enigmail.msg.getSecurityParams());
+        secInfo = AutocryptMimeEncrypt.createMimeEncrypt(Autocrypt.msg.getSecurityParams());
         if (secInfo) {
-          Enigmail.msg.setSecurityParams(secInfo);
+          Autocrypt.msg.setSecurityParams(secInfo);
         }
       } catch (ex) {
-        EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.saveDraftMessage", ex);
+        AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.saveDraftMessage", ex);
         return false;
       }
     }
@@ -1062,13 +1062,13 @@ Enigmail.msg = {
     return true;
   },
 
-  createEnigmailSecurityFields: function(oldSecurityInfo) {
-    let newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(Enigmail.msg.getSecurityParams());
+  createAutocryptSecurityFields: function(oldSecurityInfo) {
+    let newSecurityInfo = AutocryptMimeEncrypt.createMimeEncrypt(Autocrypt.msg.getSecurityParams());
 
     if (!newSecurityInfo)
       throw Components.results.NS_ERROR_FAILURE;
 
-    Enigmail.msg.setSecurityParams(newSecurityInfo);
+    Autocrypt.msg.setSecurityParams(newSecurityInfo);
   },
 
   resetDirty: function() {
@@ -1078,22 +1078,22 @@ Enigmail.msg = {
       // make sure the sendFlags are reset before the message is processed
       // (it may have been set by a previously cancelled send operation!)
 
-      let si = Enigmail.msg.getSecurityParams();
+      let si = Autocrypt.msg.getSecurityParams();
 
-      if (EnigmailMimeEncrypt.isEnigmailCompField(si)) {
+      if (AutocryptMimeEncrypt.isAutocryptCompField(si)) {
         si.sendFlags = 0;
         si.originalSubject = gMsgCompose.compFields.subject;
       } else {
         try {
-          newSecurityInfo = EnigmailMimeEncrypt.createMimeEncrypt(si);
+          newSecurityInfo = AutocryptMimeEncrypt.createMimeEncrypt(si);
           if (newSecurityInfo) {
             newSecurityInfo.sendFlags = 0;
             newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
 
-            Enigmail.msg.setSecurityParams(newSecurityInfo);
+            Autocrypt.msg.setSecurityParams(newSecurityInfo);
           }
         } catch (ex) {
-          EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.resetDirty", ex);
+          AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.resetDirty", ex);
         }
       }
     }
@@ -1102,10 +1102,10 @@ Enigmail.msg = {
   },
 
   determineMsgRecipients: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.determineMsgRecipients: currentId=" + this.identity +
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.determineMsgRecipients: currentId=" + this.identity +
       ", " + this.identity.email + "\n");
 
-    let promptSvc = EnigmailDialog.getPromptSvc();
+    let promptSvc = AutocryptDialog.getPromptSvc();
     let fromAddr = this.identity.email;
     let toAddrList = [];
     let recList;
@@ -1116,7 +1116,7 @@ Enigmail.msg = {
     let msgCompFields = gMsgCompose.compFields;
 
     if (msgCompFields.newsgroups) {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("sendingNews"));
+      AutocryptDialog.alert(window, AutocryptLocale.getString("sendingNews"));
       return false;
     }
 
@@ -1125,7 +1125,7 @@ Enigmail.msg = {
       fromAddr = userIdValue;
     }
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.determineMsgRecipients:gMsgCompose=" + gMsgCompose + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.determineMsgRecipients:gMsgCompose=" + gMsgCompose + "\n");
 
     splitRecipients = msgCompFields.splitRecipients;
 
@@ -1147,14 +1147,14 @@ Enigmail.msg = {
 
       var bccLC = "";
       try {
-        bccLC = EnigmailFuncs.stripEmail(msgCompFields.bcc).toLowerCase();
+        bccLC = AutocryptFuncs.stripEmail(msgCompFields.bcc).toLowerCase();
       } catch (ex) {}
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.determineMsgRecipients: BCC: " + bccLC + "\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.determineMsgRecipients: BCC: " + bccLC + "\n");
 
       var selfBCC = this.identity.email && (this.identity.email.toLowerCase() == bccLC);
 
       if (selfBCC) {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.determineMsgRecipients: Self BCC\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.determineMsgRecipients: Self BCC\n");
         addRecipients(toAddrList, recList);
 
       } else {
@@ -1165,13 +1165,13 @@ Enigmail.msg = {
         };
 
         var hideBccUsers = promptSvc.confirmEx(window,
-          EnigmailLocale.getString("enigConfirm"),
-          EnigmailLocale.getString("sendingHiddenRcpt"), (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
+          AutocryptLocale.getString("enigConfirm"),
+          AutocryptLocale.getString("sendingHiddenRcpt"), (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_0) +
           (promptSvc.BUTTON_TITLE_CANCEL * promptSvc.BUTTON_POS_1) +
           (promptSvc.BUTTON_TITLE_IS_STRING * promptSvc.BUTTON_POS_2),
-          EnigmailLocale.getString("sendWithShownBcc"),
+          AutocryptLocale.getString("sendWithShownBcc"),
           null,
-          EnigmailLocale.getString("sendWithHiddenBcc"),
+          AutocryptLocale.getString("sendWithHiddenBcc"),
           null,
           dummy);
         switch (hideBccUsers) {
@@ -1196,10 +1196,10 @@ Enigmail.msg = {
   },
 
   encryptMsg: async function(msgSendType) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: msgSendType=" + msgSendType + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: msgSendType=" + msgSendType + "\n");
 
     const DeliverMode = Components.interfaces.nsIMsgCompDeliverMode;
-    let promptSvc = EnigmailDialog.getPromptSvc();
+    let promptSvc = AutocryptDialog.getPromptSvc();
 
     var ioService = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
     // EnigSend: Handle both plain and encrypted messages below
@@ -1209,9 +1209,9 @@ Enigmail.msg = {
       case DeliverMode.SaveAsDraft:
       case DeliverMode.SaveAsTemplate:
       case DeliverMode.AutoSaveAsDraft:
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: detected save draft\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: detected save draft\n");
 
-        // saving drafts is simpler and works differently than the rest of Enigmail.
+        // saving drafts is simpler and works differently than the rest of Autocrypt.
         // All rules except account-settings are ignored.
         return this.saveDraftMessage();
     }
@@ -1225,27 +1225,27 @@ Enigmail.msg = {
     if (!msgCompFields.to && !msgCompFields.cc && !msgCompFields.bcc && !newsgroups) {
       // don't attempt to send message if no recipient specified
       var bundle = document.getElementById("bundle_composeMsgs");
-      EnigmailDialog.alert(window, bundle.getString("12511"));
+      AutocryptDialog.alert(window, bundle.getString("12511"));
       return false;
     }
 
     if (this.composeCryptoState.isEncryptEnabled() && this.showDialogOnErrorState()) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: some encryption error on send - reporting\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: some encryption error on send - reporting\n");
       return false;
     }
 
     if (this.composeCryptoState.isEnabledAndMissingKeys()) {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encrypt error on send - asking user\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encrypt error on send - asking user\n");
       let result = this.showMissingRecipientsDialog('send-unencrypted');
       if (result == 'send-unencrypted') {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to send unencrypted\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: user requested to send unencrypted\n");
         this.fireSendFlags();
         return true;
       } else if (result == 'send-encrypted') {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to send encrypted\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: user requested to send encrypted\n");
         this.determineSendFlags();
       } else {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: user requested to abort\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: user requested to abort\n");
         this.fireSendFlags();
         return false;
       }
@@ -1254,21 +1254,21 @@ Enigmail.msg = {
     this.identity = getCurrentIdentity();
 
     if (gWindowLocked) {
-      EnigmailDialog.alert(window, EnigmailLocale.getString("windowLocked"));
+      AutocryptDialog.alert(window, AutocryptLocale.getString("windowLocked"));
       return false;
     }
 
     let newSecurityInfo = this.resetDirty();
     this.dirty = 1;
 
-    let enigmailSvc = EnigmailCore.getService(window);
+    let enigmailSvc = AutocryptCore.getService(window);
     if (!enigmailSvc) {
-      var msg = EnigmailLocale.getString("sendUnencrypted");
-      if (EnigmailCore.getEnigmailService() && EnigmailCore.getEnigmailService().initializationError) {
-        msg = EnigmailCore.getEnigmailService().initializationError + "\n\n" + msg;
+      var msg = AutocryptLocale.getString("sendUnencrypted");
+      if (AutocryptCore.getAutocryptService() && AutocryptCore.getAutocryptService().initializationError) {
+        msg = AutocryptCore.getAutocryptService().initializationError + "\n\n" + msg;
       }
 
-      return EnigmailDialog.confirmDlg(window, msg, EnigmailLocale.getString("msgCompose.button.send"));
+      return AutocryptDialog.confirmDlg(window, msg, AutocryptLocale.getString("msgCompose.button.send"));
     }
 
     try {
@@ -1284,17 +1284,17 @@ Enigmail.msg = {
       // ----------------------- Rewrapping code, taken from function "encryptInline"
 
       if (this.composeCryptoState.isEncryptEnabled()) {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encryption enabled\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encryption enabled\n");
 
         // Use PGP/MIME
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encrypting as PGP/MIME\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encrypting as PGP/MIME\n");
 
-        let oldSecurityInfo = Enigmail.msg.getSecurityParams();
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo: oldSecurityInfo = " + oldSecurityInfo + "\n");
+        let oldSecurityInfo = Autocrypt.msg.getSecurityParams();
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.prepareSecurityInfo: oldSecurityInfo = " + oldSecurityInfo + "\n");
 
         if (!newSecurityInfo) {
-          this.createEnigmailSecurityFields(Enigmail.msg.getSecurityParams());
-          newSecurityInfo = Enigmail.msg.getSecurityParams().wrappedJSObject;
+          this.createAutocryptSecurityFields(Autocrypt.msg.getSecurityParams());
+          newSecurityInfo = Autocrypt.msg.getSecurityParams().wrappedJSObject;
         }
 
         newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
@@ -1304,7 +1304,7 @@ Enigmail.msg = {
           if (this.composeCryptoState.isEncryptEnabled()) {
             gMsgCompose.compFields.subject = "";
 
-            if (EnigmailPrefs.getPref("protectReferencesHdr")) {
+            if (AutocryptPrefs.getPref("protectReferencesHdr")) {
               gMsgCompose.compFields.references = "";
             }
           }
@@ -1313,13 +1313,13 @@ Enigmail.msg = {
         newSecurityInfo.composeCryptoState = this.composeCryptoState;
         newSecurityInfo.fromAddr = rcpt.fromAddr;
 
-        EnigmailLog.DEBUG(`enigmailMsgComposeOverlay.js: Enigmail.msg.prepareSecurityInfo\n`);
+        AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: Autocrypt.msg.prepareSecurityInfo\n`);
 
         newSecurityInfo.fromAddr = rcpt.fromAddr;
         newSecurityInfo.toAddrs = rcpt.toAddrList;
         newSecurityInfo.bccAddrs = rcpt.bccAddrList;
       } else {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: encryption not enabled\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encryption not enabled\n");
       }
 
       // update the list of attachments
@@ -1338,25 +1338,25 @@ Enigmail.msg = {
             // make sure plaintext is not changed to 7bit
             if (typeof(msgCompFields.forceMsgEncoding) == "boolean") {
               msgCompFields.forceMsgEncoding = true;
-              EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: enabled forceMsgEncoding\n");
+              AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: enabled forceMsgEncoding\n");
             }
           } catch (ex) {}
         }
       }
     } catch (ex) {
-      EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg", ex);
-      let msg = EnigmailLocale.getString("signFailed");
-      if (EnigmailCore.getEnigmailService() && EnigmailCore.getEnigmailService().initializationError) {
-        msg += "\n" + EnigmailCore.getEnigmailService().initializationError;
+      AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg", ex);
+      let msg = AutocryptLocale.getString("signFailed");
+      if (AutocryptCore.getAutocryptService() && AutocryptCore.getAutocryptService().initializationError) {
+        msg += "\n" + AutocryptCore.getAutocryptService().initializationError;
       }
-      return EnigmailDialog.confirmDlg(window, msg, EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));
+      return AutocryptDialog.confirmDlg(window, msg, AutocryptLocale.getString("msgCompose.button.sendUnencrypted"));
     }
 
     // The encryption process for PGP/MIME messages follows "here". It's
     // called automatically from nsMsgCompose->sendMsg().
     // registration for this is done in core.jsm: startup()
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.encryptMsg: deferring to pgp/mime encryption\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: deferring to pgp/mime encryption\n");
     return true;
   },
 
@@ -1373,29 +1373,29 @@ Enigmail.msg = {
           var reason = tokens[1];
           var key = tokens[2];
           if (reason == "10") {
-            errorMsg += EnigmailLocale.getString("keyNotTrusted", [key]) + "\n";
+            errorMsg += AutocryptLocale.getString("keyNotTrusted", [key]) + "\n";
           } else if (reason == "1") {
-            errorMsg += EnigmailLocale.getString("keyNotFound", [key]) + "\n";
+            errorMsg += AutocryptLocale.getString("keyNotFound", [key]) + "\n";
           } else if (reason == "4") {
-            errorMsg += EnigmailLocale.getString("keyRevoked", [key]) + "\n";
+            errorMsg += AutocryptLocale.getString("keyRevoked", [key]) + "\n";
           } else if (reason == "5") {
-            errorMsg += EnigmailLocale.getString("keyExpired", [key]) + "\n";
+            errorMsg += AutocryptLocale.getString("keyExpired", [key]) + "\n";
           }
         }
       }
       if (errorMsg !== "") {
         txt = errorMsg + "\n" + txt;
       }
-      EnigmailDialog.info(window, EnigmailLocale.getString("sendAborted") + txt);
+      AutocryptDialog.info(window, AutocryptLocale.getString("sendAborted") + txt);
     } else {
-      EnigmailDialog.info(window, EnigmailLocale.getString("sendAborted") + "\n" +
-        EnigmailLocale.getString("msgCompose.internalError"));
+      AutocryptDialog.info(window, AutocryptLocale.getString("sendAborted") + "\n" +
+        AutocryptLocale.getString("msgCompose.internalError"));
     }
   },
 
 
   getMailPref: function(prefName) {
-    let prefRoot = EnigmailPrefs.getPrefRoot();
+    let prefRoot = AutocryptPrefs.getPrefRoot();
 
     var prefValue = null;
     try {
@@ -1420,7 +1420,7 @@ Enigmail.msg = {
       }
     } catch (ex) {
       // Failed to get pref value
-      EnigmailLog.ERROR("enigmailMsgComposeOverlay.js: Enigmail.msg.getMailPref: unknown prefName:" + prefName + " \n");
+      AutocryptLog.ERROR("enigmailMsgComposeOverlay.js: Autocrypt.msg.getMailPref: unknown prefName:" + prefName + " \n");
     }
 
     return prefValue;
@@ -1430,7 +1430,7 @@ Enigmail.msg = {
    * set non-standard message Header
    * (depending on TB version)
    *
-   * hdr: String: header type (e.g. X-Enigmail-Version)
+   * hdr: String: header type (e.g. X-Autocrypt-Version)
    * val: String: header data (e.g. 1.2.3.4)
    */
   setAdditionalHeader: function(hdr, val) {
@@ -1449,7 +1449,7 @@ Enigmail.msg = {
 
       await this.setAutocryptHeader();
     } catch (ex) {
-      EnigmailLog.writeException("enigmailMsgComposeOverlay.js: Enigmail.msg.modifyCompFields", ex);
+      AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.modifyCompFields", ex);
     }
   },
 
@@ -1465,10 +1465,10 @@ Enigmail.msg = {
     let fromMail = this.identity.email;
 
     try {
-      fromMail = EnigmailFuncs.stripEmail(gMsgCompose.compFields.from);
+      fromMail = AutocryptFuncs.stripEmail(gMsgCompose.compFields.from);
     } catch (ex) {}
 
-    let autocrypt_header_content = await EnigmailAutocrypt.getAutocryptHeaderContentFor(fromMail, true);
+    let autocrypt_header_content = await AutocryptAutocrypt.getAutocryptHeaderContentFor(fromMail, true);
     if (autocrypt_header_content) {
       this.setAdditionalHeader('Autocrypt', autocrypt_header_content);
     }
@@ -1478,26 +1478,26 @@ Enigmail.msg = {
    * Handle the 'compose-send-message' event from TB
    */
   sendMessageListener: async function(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.sendMessageListener\n");
 
     // Do nothing if a compatible version of the "SendLater" addon is installed.
     // SendLater will call te quickfix -buffer-name=list
     // handleSendMessageEvent when needed.
 
     try {
-      if (typeof(Sendlater3Composing.callEnigmail) === "function") {
+      if (typeof(Sendlater3Composing.callAutocrypt) === "function") {
         return;
       }
     } catch (ex) {}
 
-    await Enigmail.msg.handleSendMessageEvent(event);
+    await Autocrypt.msg.handleSendMessageEvent(event);
   },
 
   /**
    * Perform handling of the compose-send-message' event from TB (or SendLater)
    */
   handleSendMessageEvent: function(event) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.handleSendMessageEvent\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.handleSendMessageEvent\n");
     let msgcomposeWindow = document.getElementById("msgcomposeWindow");
     let sendMsgType = Number(msgcomposeWindow.getAttribute("msgtype"));
 
@@ -1506,7 +1506,7 @@ Enigmail.msg = {
       let bc = document.getElementById("enigmail-bc-sendprocess");
 
       try {
-        const cApi = EnigmailCryptoAPI();
+        const cApi = AutocryptCryptoAPI();
         cApi.sync(this.modifyCompFields());
         bc.setAttribute("disabled", "true");
         let encryptResult = cApi.sync(this.encryptMsg(sendMsgType));
@@ -1518,7 +1518,7 @@ Enigmail.msg = {
       } catch (ex) {}
       bc.removeAttribute("disabled");
     } else {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.sendMessageListener: sending in progress - autosave aborted\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.sendMessageListener: sending in progress - autosave aborted\n");
       event.preventDefault();
       event.stopPropagation();
     }
@@ -1553,10 +1553,10 @@ Enigmail.msg = {
 
     if (detailsText && detailsText.length > 0) {
       buttonArr.push({
-        accessKey: EnigmailLocale.getString("msgCompose.detailsButton.accessKey"),
-        label: EnigmailLocale.getString("msgCompose.detailsButton.label"),
+        accessKey: AutocryptLocale.getString("msgCompose.detailsButton.accessKey"),
+        label: AutocryptLocale.getString("msgCompose.detailsButton.label"),
         callback: function(aNotificationBar, aButton) {
-          EnigmailDialog.info(window, detailsText);
+          AutocryptDialog.info(window, detailsText);
         }
       });
     }
@@ -1566,13 +1566,13 @@ Enigmail.msg = {
   addrOnChangeTimer: null,
 
   addressOnChange: function(element) {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.addressOnChange\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.addressOnChange\n");
     if (!this.addrOnChangeTimer) {
       var self = this;
-      this.addrOnChangeTimer = EnigmailTimer.setTimeout(function _f() {
+      this.addrOnChangeTimer = AutocryptTimer.setTimeout(function _f() {
         self.fireSendFlags();
         self.addrOnChangeTimer = null;
-      }, Enigmail.msg.addrOnChangeTimeout);
+      }, Autocrypt.msg.addrOnChangeTimeout);
     }
   },
 
@@ -1583,22 +1583,22 @@ Enigmail.msg = {
     var focusedWindow = top.document.commandDispatcher.focusedWindow;
 
     // we're just setting focus to where it was before
-    if (focusedWindow == Enigmail.msg.lastFocusedWindow) {
+    if (focusedWindow == Autocrypt.msg.lastFocusedWindow) {
       // skip
       return;
     }
 
-    Enigmail.msg.lastFocusedWindow = focusedWindow;
+    Autocrypt.msg.lastFocusedWindow = focusedWindow;
 
-    Enigmail.msg.fireSendFlags();
+    Autocrypt.msg.fireSendFlags();
   },
 
   fireSendFlags: function() {
     try {
-      EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: Enigmail.msg.fireSendFlags\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.fireSendFlags\n");
       if (!this.determineSendFlagId) {
         let self = this;
-        this.determineSendFlagId = EnigmailTimer.setTimeout(
+        this.determineSendFlagId = AutocryptTimer.setTimeout(
           function _sendFlagWrapper() {
             try {
               self.determineSendFlags();
@@ -1626,19 +1626,19 @@ Enigmail.msg = {
 };
 
 
-Enigmail.composeStateListener = {
+Autocrypt.composeStateListener = {
   NotifyComposeFieldsReady: function() {
     // Note: NotifyComposeFieldsReady is only called when a new window is created (i.e. not in case a window object is reused).
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.NotifyComposeFieldsReady\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.NotifyComposeFieldsReady\n");
 
     try {
-      Enigmail.msg.editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
+      Autocrypt.msg.editor = gMsgCompose.editor.QueryInterface(Components.interfaces.nsIEditor);
     } catch (ex) {}
 
-    if (!Enigmail.msg.editor)
+    if (!Autocrypt.msg.editor)
       return;
 
-    Enigmail.msg.fixMessageSubject();
+    Autocrypt.msg.fixMessageSubject();
 
     function enigDocStateListener() {}
 
@@ -1652,91 +1652,91 @@ Enigmail.composeStateListener = {
       },
 
       NotifyDocumentCreated: function() {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.NotifyDocumentCreated\n");
       },
 
       NotifyDocumentWillBeDestroyed: function() {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentWillBeDestroyed\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentWillBeDestroyed\n");
       },
 
       NotifyDocumentStateChanged: function(nowDirty) {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentStateChanged\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: EDSL.enigDocStateListener.NotifyDocumentStateChanged\n");
       }
     };
 
     var docStateListener = new enigDocStateListener();
 
-    Enigmail.msg.editor.addDocumentStateListener(docStateListener);
+    Autocrypt.msg.editor.addDocumentStateListener(docStateListener);
   },
 
   ComposeProcessDone: function(aResult) {
     // Note: called after a mail was sent (or saved)
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: " + aResult + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: " + aResult + "\n");
 
     // ensure that securityInfo is set back to S/MIME flags (especially required if draft was saved)
-    if (gSMFields) Enigmail.msg.setSecurityParams(gSMFields);
+    if (gSMFields) Autocrypt.msg.setSecurityParams(gSMFields);
   },
 
   NotifyComposeBodyReady: function() {
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
 
     var isEmpty,
       isEditable;
 
-    isEmpty = Enigmail.msg.editor.documentIsEmpty;
-    isEditable = Enigmail.msg.editor.isDocumentEditable;
-    Enigmail.msg.composeBodyReady = true;
+    isEmpty = Autocrypt.msg.editor.documentIsEmpty;
+    isEditable = Autocrypt.msg.editor.isDocumentEditable;
+    Autocrypt.msg.composeBodyReady = true;
 
-    EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
 
     // TODO still needed?
-    if (Enigmail.msg.disableSmime) {
-      if (gMsgCompose && gMsgCompose.compFields && Enigmail.msg.getSecurityParams()) {
-        let si = Enigmail.msg.getSecurityParams(null, true);
+    if (Autocrypt.msg.disableSmime) {
+      if (gMsgCompose && gMsgCompose.compFields && Autocrypt.msg.getSecurityParams()) {
+        let si = Autocrypt.msg.getSecurityParams(null, true);
         si.signMessage = false;
         si.requireEncryptMessage = false;
       } else {
-        EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: could not disable S/MIME\n");
+        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: could not disable S/MIME\n");
       }
     }
 
     if (!isEditable || isEmpty)
       return;
 
-    let msgHdr = Enigmail.msg.getMsgHdr();
+    let msgHdr = Autocrypt.msg.getMsgHdr();
     if (msgHdr) {
-      Enigmail.msg.setOriginalSubject(msgHdr.subject, true);
+      Autocrypt.msg.setOriginalSubject(msgHdr.subject, true);
     }
-    Enigmail.msg.fixMessageSubject();
+    Autocrypt.msg.fixMessageSubject();
   },
 
   SaveInFolderDone: function(folderURI) {
-    //EnigmailLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.SaveInFolderDone\n");
+    //AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.SaveInFolderDone\n");
   }
 };
 
 
 /**
- * Unload Enigmail for update or uninstallation
+ * Unload Autocrypt for update or uninstallation
  */
-Enigmail.composeUnload = function _unload_Enigmail() {
-  window.removeEventListener("unload-autocrypt", Enigmail.boundComposeUnload, false);
-  window.removeEventListener("load-autocrypt", Enigmail.boundComposeStartup, false);
-  window.removeEventListener("compose-window-unload", Enigmail.boundMsgComposeClose, true);
-  window.removeEventListener('compose-send-message', Enigmail.boundSendMessageListener, true);
+Autocrypt.composeUnload = function _unload_Autocrypt() {
+  window.removeEventListener("unload-autocrypt", Autocrypt.boundComposeUnload, false);
+  window.removeEventListener("load-autocrypt", Autocrypt.boundComposeStartup, false);
+  window.removeEventListener("compose-window-unload", Autocrypt.boundMsgComposeClose, true);
+  window.removeEventListener('compose-send-message', Autocrypt.boundSendMessageListener, true);
 
-  gMsgCompose.UnregisterStateListener(Enigmail.composeStateListener);
+  gMsgCompose.UnregisterStateListener(Autocrypt.composeStateListener);
 
   let msgId = document.getElementById("msgIdentityPopup");
   if (msgId) {
-    msgId.removeEventListener("command", Enigmail.msg.setIdentityCallback, false);
+    msgId.removeEventListener("command", Autocrypt.msg.setIdentityCallback, false);
   }
 
   let subj = document.getElementById("msgSubject");
-  subj.removeEventListener('focus', Enigmail.msg.fireSendFlags, false);
+  subj.removeEventListener('focus', Autocrypt.msg.fireSendFlags, false);
 
   // check rules for status bar icons on each change of the recipients
-  let rep = new RegExp("; Enigmail.msg.addressOnChange\\(this\\);");
+  let rep = new RegExp("; Autocrypt.msg.addressOnChange\\(this\\);");
   var adrCol = document.getElementById("addressCol2#1"); // recipients field
   if (adrCol) {
     let attr = adrCol.getAttribute("oninput");
@@ -1750,25 +1750,25 @@ Enigmail.composeUnload = function _unload_Enigmail() {
     adrCol.setAttribute("oncommand", attr.replace(rep, ""));
   }
 
-  // finally unload Enigmail entirely
-  Enigmail = undefined;
+  // finally unload Autocrypt entirely
+  Autocrypt = undefined;
 };
 
 function addRecipients(toAddrList, recList) {
   for (var i = 0; i < recList.length; i++) {
     try {
-      toAddrList.push(EnigmailFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
+      toAddrList.push(AutocryptFuncs.stripEmail(recList[i].replace(/[",]/g, "")));
     } catch (ex) {}
   }
   return toAddrList;
 }
 
-Enigmail.boundComposeStartup = Enigmail.msg.composeStartup.bind(Enigmail.msg);
-Enigmail.boundComposeUnload = Enigmail.composeUnload.bind(Enigmail.msg);
-Enigmail.boundMsgComposeClose = Enigmail.msg.msgComposeClose.bind(Enigmail.msg);
-Enigmail.boundSendMessageListener = Enigmail.msg.sendMessageListener.bind(Enigmail.msg);
+Autocrypt.boundComposeStartup = Autocrypt.msg.composeStartup.bind(Autocrypt.msg);
+Autocrypt.boundComposeUnload = Autocrypt.composeUnload.bind(Autocrypt.msg);
+Autocrypt.boundMsgComposeClose = Autocrypt.msg.msgComposeClose.bind(Autocrypt.msg);
+Autocrypt.boundSendMessageListener = Autocrypt.msg.sendMessageListener.bind(Autocrypt.msg);
 
-window.addEventListener("load-autocrypt", Enigmail.boundComposeStartup, false);
-window.addEventListener("unload-autocrypt", Enigmail.boundComposeUnload, false);
-window.addEventListener('compose-window-unload', Enigmail.boundMsgComposeClose, true);
-window.addEventListener('compose-send-message', Enigmail.boundSendMessageListener, true);
+window.addEventListener("load-autocrypt", Autocrypt.boundComposeStartup, false);
+window.addEventListener("unload-autocrypt", Autocrypt.boundComposeUnload, false);
+window.addEventListener('compose-window-unload', Autocrypt.boundMsgComposeClose, true);
+window.addEventListener('compose-send-message', Autocrypt.boundSendMessageListener, true);

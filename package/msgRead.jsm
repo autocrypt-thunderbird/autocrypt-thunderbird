@@ -8,25 +8,25 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailMsgRead"];
+var EXPORTED_SYMBOLS = ["AutocryptMsgRead"];
 
 /**
  * Message-reading related functions
  */
 
-const EnigmailPrefs = (ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm", {})).EnigmailPrefs;
-const EnigmailApp = (ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm", {})).EnigmailApp;
-const EnigmailFuncs = (ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm", {})).EnigmailFuncs;
-const EnigmailAutocrypt = (ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm", {})).EnigmailAutocrypt;
+const AutocryptPrefs = (ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm", {})).AutocryptPrefs;
+const AutocryptApp = (ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm", {})).AutocryptApp;
+const AutocryptFuncs = (ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm", {})).AutocryptFuncs;
+const AutocryptAutocrypt = (ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm", {})).AutocryptAutocrypt;
 
 const ExtraHeaders = ["autocrypt", "autocrypt-setup-message" ];
 
-var EnigmailMsgRead = {
+var AutocryptMsgRead = {
   /**
    * Ensure that Thunderbird prepares certain headers during message reading
    */
   ensureExtraAddonHeaders: function() {
-    let r = EnigmailPrefs.getPrefRoot();
+    let r = AutocryptPrefs.getPrefRoot();
 
     // is the Mozilla Platform number >= 59?
     const PREF_NAME = "mailnews.headers.extraAddonHeaders";

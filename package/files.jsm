@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false */
+/*global Components: false, AutocryptLog: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,24 +9,24 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailFiles"];
+const EXPORTED_SYMBOLS = ["AutocryptFiles"];
 
 
 
 
 
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").AutocryptOS;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").AutocryptLazy;
 Components.utils.importGlobalProperties(["TextDecoder"]);
 
 const {
   OS
 } = ChromeUtils.import("resource://gre/modules/osfile.jsm", {});
 
-const lazyStream = EnigmailLazy.loader("autocrypt/streams.jsm", "EnigmailStreams");
-const lazyLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
+const lazyStream = AutocryptLazy.loader("autocrypt/streams.jsm", "AutocryptStreams");
+const lazyLog = AutocryptLazy.loader("autocrypt/log.jsm", "AutocryptLog");
 
 const NS_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 const NS_LOCALFILEOUTPUTSTREAM_CONTRACTID = "@mozilla.org/network/file-output-stream;1";
@@ -41,13 +41,13 @@ const NS_TRUNCATE = 0x20;
 const DEFAULT_FILE_PERMS = 0o600;
 
 function potentialWindowsExecutable(file) {
-  if (EnigmailOS.isDosLike) {
+  if (AutocryptOS.isDosLike) {
     return file + ".exe";
   }
   return file;
 }
 
-var EnigmailFiles = {
+var AutocryptFiles = {
   /**
    * potentialWindowsExecutable appends .exe to a file
    *
@@ -71,7 +71,7 @@ var EnigmailFiles = {
   resolvePath: function(filePath, envPath, isDosLike) {
     lazyLog().DEBUG("files.jsm: resolvePath: filePath=" + filePath + "\n");
 
-    if (EnigmailFiles.isAbsolutePath(filePath, isDosLike))
+    if (AutocryptFiles.isAbsolutePath(filePath, isDosLike))
       return filePath;
 
     if (!envPath)
@@ -88,7 +88,7 @@ var EnigmailFiles = {
 
           lazyLog().DEBUG("files.jsm: resolvePath: checking for " + pathDirs[j] + "/" + fileNames[i] + "\n");
 
-          EnigmailFiles.initPath(pathDir, pathDirs[j]);
+          AutocryptFiles.initPath(pathDir, pathDirs[j]);
 
           try {
             if (pathDir.exists() && pathDir.isDirectory()) {
@@ -112,7 +112,7 @@ var EnigmailFiles = {
       let localFile;
       if (typeof filePath == "string") {
         localFile = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-        EnigmailFiles.initPath(localFile, filePath);
+        AutocryptFiles.initPath(localFile, filePath);
       }
       else {
         localFile = filePath.QueryInterface(Ci.nsIFile);
@@ -171,7 +171,7 @@ var EnigmailFiles = {
 
       let decoder = new TextDecoder();
       OS.File.read(fileObj.path).then(arr => {
-        fileContents = EnigmailData.arrayBufferToString(arr); // Convert the array to a text
+        fileContents = AutocryptData.arrayBufferToString(arr); // Convert the array to a text
         inspector.exitNestedEventLoop();
       }).catch(err => {
         inspector.exitNestedEventLoop();
@@ -224,7 +224,7 @@ var EnigmailFiles = {
     }
 
     if (command instanceof Ci.nsIFile) {
-      command = EnigmailFiles.getFilePathDesc(command);
+      command = AutocryptFiles.getFilePathDesc(command);
     }
 
     const cmdStr = getQuoted(command) + " ";
@@ -233,7 +233,7 @@ var EnigmailFiles = {
   },
 
   getFilePathDesc: function(nsFileObj) {
-    if (EnigmailOS.getOS() == "WINNT") {
+    if (AutocryptOS.getOS() == "WINNT") {
       return nsFileObj.persistentDescriptor;
     }
     else {
@@ -242,16 +242,16 @@ var EnigmailFiles = {
   },
 
   getFilePath: function(nsFileObj) {
-    return EnigmailData.convertToUnicode(EnigmailFiles.getFilePathDesc(nsFileObj), "utf-8");
+    return AutocryptData.convertToUnicode(AutocryptFiles.getFilePathDesc(nsFileObj), "utf-8");
   },
 
   getEscapedFilename: function(fileNameStr) {
-    if (EnigmailOS.isDosLike) {
+    if (AutocryptOS.isDosLike) {
       // escape the backslashes and the " character (for Windows and OS/2)
       fileNameStr = fileNameStr.replace(/([\\"])/g, "\\$1");
     }
 
-    if (EnigmailOS.getOS() == "WINNT") {
+    if (AutocryptOS.getOS() == "WINNT") {
       // replace leading "\\" with "//"
       fileNameStr = fileNameStr.replace(/^\\\\*/, "//");
     }
@@ -274,7 +274,7 @@ var EnigmailFiles = {
     catch (ex) {
       // let's guess ...
       const tmpDirObj = Cc[NS_FILE_CONTRACTID].createInstance(Ci.nsIFile);
-      if (EnigmailOS.getOS() == "WINNT") {
+      if (AutocryptOS.getOS() == "WINNT") {
         tmpDirObj.initWithPath("C:/TEMP");
       }
       else {
@@ -290,7 +290,7 @@ var EnigmailFiles = {
    * @return String containing the temp directory name
    */
   getTempDir: function() {
-    return EnigmailFiles.getTempDirObj().path;
+    return AutocryptFiles.getTempDirObj().path;
   },
 
   /**
@@ -302,7 +302,7 @@ var EnigmailFiles = {
    * @return nsIFile object holding a reference to the created directory
    */
   createTempSubDir: function(dirName, unique = false) {
-    const localFile = EnigmailFiles.getTempDirObj().clone();
+    const localFile = AutocryptFiles.getTempDirObj().clone();
 
     localFile.append(dirName);
     if (unique) {
@@ -375,7 +375,7 @@ var EnigmailFiles = {
       permissions = DEFAULT_FILE_PERMS;
     }
     try {
-      const fileOutStream = EnigmailFiles.createFileStream(filePath, permissions);
+      const fileOutStream = AutocryptFiles.createFileStream(filePath, permissions);
 
       if (data.length) {
         if (fileOutStream.write(data, data.length) != data.length) {
@@ -488,7 +488,7 @@ var EnigmailFiles = {
     }
 
     try {
-      let zipReader = EnigmailFiles.openZipFile(zipFile);
+      let zipReader = AutocryptFiles.openZipFile(zipFile);
       let f = zipReader.findEntries("*");
 
       while (f.hasMore()) {
@@ -496,7 +496,7 @@ var EnigmailFiles = {
         let i = f.getNext();
         let entry = zipReader.getEntry(i);
 
-        if (!EnigmailOS.isDosLike) {
+        if (!AutocryptOS.isDosLike) {
           t.initWithPath(t.path + "/" + i);
         }
         else {

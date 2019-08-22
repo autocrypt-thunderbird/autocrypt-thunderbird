@@ -21,18 +21,18 @@ function uninstall() {}
 
 function startup(data, reason) {
   try {
-    const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
+    const AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
     const AutocryptOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptOverlays.jsm").AutocryptOverlays;
-    const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+    const AutocryptPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").AutocryptPgpmimeHander;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     loadListOfModules();
 
     Services.obs.addObserver(AutocryptOverlays.mailStartupDone, "mail-startup-done", false);
-    EnigmailApp.initAddon(data);
-    EnigmailCore.startup(reason);
-    EnigmailPgpmimeHander.startup(reason);
+    AutocryptApp.initAddon(data);
+    AutocryptCore.startup(reason);
+    AutocryptPgpmimeHander.startup(reason);
 
     Services.console.logStringMessage("Autocrypt bootstrap completed");
   } catch (ex) {
@@ -44,18 +44,18 @@ function shutdown(data, reason) {
   try {
     // if (reason === APP_SHUTDOWN) return;
 
-    const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-    const EnigmailPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").EnigmailPgpmimeHander;
+    const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+    const AutocryptPgpmimeHander = ChromeUtils.import("chrome://autocrypt/content/modules/pgpmimeHandler.jsm").AutocryptPgpmimeHander;
     const AutocryptOverlays = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptOverlays.jsm").AutocryptOverlays;
-    const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
+    const AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
     const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
     Services.obs.removeObserver(AutocryptOverlays.mailStartupDone, "mail-startup-done");
 
-    shutdownModule(EnigmailWindows, reason);
+    shutdownModule(AutocryptWindows, reason);
     shutdownModule(AutocryptOverlays, reason);
-    shutdownModule(EnigmailCore, reason);
-    shutdownModule(EnigmailPgpmimeHander, reason);
+    shutdownModule(AutocryptCore, reason);
+    shutdownModule(AutocryptPgpmimeHander, reason);
     unloadModules();
 
     // HACK WARNING: The Addon Manager does not properly clear all addon related caches on update;
@@ -77,7 +77,7 @@ function shutdownModule(module, reason) {
 }
 
 /**
- * Load list of all Enigmail modules that can be potentially loaded
+ * Load list of all Autocrypt modules that can be potentially loaded
  */
 function loadListOfModules() {
   let request = new XMLHttpRequest();
@@ -100,7 +100,7 @@ function loadListOfModules() {
 
 
 /**
- * Unload all Enigmail modules that were potentially loaded
+ * Unload all Autocrypt modules that were potentially loaded
  */
 function unloadModules() {
   for (let mod of gAllModules) {

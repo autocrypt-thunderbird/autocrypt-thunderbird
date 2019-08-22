@@ -7,13 +7,13 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailKeyServer"];
+const EXPORTED_SYMBOLS = ["AutocryptKeyServer"];
 
 Components.utils.importGlobalProperties(["XMLHttpRequest"]);
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailXhrUtils = ChromeUtils.import("chrome://autocrypt/content/modules/xhrUtils.jsm").EnigmailXhrUtils;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptXhrUtils = ChromeUtils.import("chrome://autocrypt/content/modules/xhrUtils.jsm").AutocryptXhrUtils;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 
@@ -21,26 +21,26 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 function createError(errId) {
   let msg = "";
   switch (errId) {
-    case EnigmailConstants.KEYSERVER_ERR_ABORTED:
-      msg = EnigmailLocale.getString("keyserver.error.aborted");
+    case AutocryptConstants.KEYSERVER_ERR_ABORTED:
+      msg = AutocryptLocale.getString("keyserver.error.aborted");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_SERVER_ERROR:
-      msg = EnigmailLocale.getString("keyserver.error.serverError");
+    case AutocryptConstants.KEYSERVER_ERR_SERVER_ERROR:
+      msg = AutocryptLocale.getString("keyserver.error.serverError");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE:
-      msg = EnigmailLocale.getString("keyserver.error.unavailable");
+    case AutocryptConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE:
+      msg = AutocryptLocale.getString("keyserver.error.unavailable");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_SECURITY_ERROR:
-      msg = EnigmailLocale.getString("keyserver.error.securityError");
+    case AutocryptConstants.KEYSERVER_ERR_SECURITY_ERROR:
+      msg = AutocryptLocale.getString("keyserver.error.securityError");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_CERTIFICATE_ERROR:
-      msg = EnigmailLocale.getString("keyserver.error.certificateError");
+    case AutocryptConstants.KEYSERVER_ERR_CERTIFICATE_ERROR:
+      msg = AutocryptLocale.getString("keyserver.error.certificateError");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_IMPORT_ERROR:
-      msg = EnigmailLocale.getString("keyserver.error.importError");
+    case AutocryptConstants.KEYSERVER_ERR_IMPORT_ERROR:
+      msg = AutocryptLocale.getString("keyserver.error.importError");
       break;
-    case EnigmailConstants.KEYSERVER_ERR_UNKNOWN:
-      msg = EnigmailLocale.getString("keyserver.error.unknown");
+    case AutocryptConstants.KEYSERVER_ERR_UNKNOWN:
+      msg = AutocryptLocale.getString("keyserver.error.unknown");
       break;
   }
 
@@ -64,15 +64,15 @@ const accessVksServer = {
 
     let url = "https://keys.openpgp.org";
 
-    if (actionFlag === EnigmailConstants.UPLOAD_KEY) {
+    if (actionFlag === AutocryptConstants.UPLOAD_KEY) {
       url += "/vks/v1/upload";
       method = "POST";
       contentType = "application/json";
-    } else if (actionFlag === EnigmailConstants.GET_CONFIRMATION_LINK) {
+    } else if (actionFlag === AutocryptConstants.GET_CONFIRMATION_LINK) {
       url += "/vks/v1/request-verify";
       method = "POST";
       contentType = "application/json";
-    } else if (actionFlag === EnigmailConstants.DOWNLOAD_KEY) {
+    } else if (actionFlag === AutocryptConstants.DOWNLOAD_KEY) {
       if (searchTerm) {
         let lookup = "/vks/v1/by-email/" + searchTerm;
         if (searchTerm.indexOf("0x") === 0) {
@@ -85,7 +85,7 @@ const accessVksServer = {
         }
         url += lookup;
       }
-    } else if (actionFlag === EnigmailConstants.SEARCH_KEY) {
+    } else if (actionFlag === AutocryptConstants.SEARCH_KEY) {
       url += "/pks/lookup?search=" + searchTerm + "&fingerprint=on&op=index&options=mr";
     }
 
@@ -105,7 +105,7 @@ const accessVksServer = {
    * @return:   Promise<Number (Status-ID)>
    */
   accessKeyServer: function(keyserver, keyId, listener) {
-    EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer()\n`);
+    AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer()\n`);
     if (keyserver === null) {
       keyserver = "keys.openpgp.org";
     }
@@ -114,11 +114,11 @@ const accessVksServer = {
       let xmlReq = null;
       if (listener && typeof(listener) === "object") {
         listener.onCancel = function() {
-          EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer - onCancel() called\n`);
+          AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer - onCancel() called\n`);
           if (xmlReq) {
             xmlReq.abort();
           }
-          reject(createError(EnigmailConstants.KEYSERVER_ERR_ABORTED));
+          reject(createError(AutocryptConstants.KEYSERVER_ERR_ABORTED));
         };
       }
 
@@ -129,8 +129,8 @@ const accessVksServer = {
           // key not found
           resolve(null);
         } else if (xmlReq.status >= 500) {
-          EnigmailLog.DEBUG("keyserver.jsm: accessVksServer.onload: " + xmlReq.responseText + "\n");
-          reject(createError(EnigmailConstants.KEYSERVER_ERR_SERVER_ERROR));
+          AutocryptLog.DEBUG("keyserver.jsm: accessVksServer.onload: " + xmlReq.responseText + "\n");
+          reject(createError(AutocryptConstants.KEYSERVER_ERR_SERVER_ERROR));
         } else {
           resolve(xmlReq.responseText);
         }
@@ -138,33 +138,33 @@ const accessVksServer = {
       };
 
       xmlReq.onerror = function(e) {
-        EnigmailLog.DEBUG("keyserver.jsm: accessVksServer.accessKeyServer: onerror: " + e + "\n");
-        let err = EnigmailXhrUtils.createTCPErrorFromFailedXHR(e.target);
+        AutocryptLog.DEBUG("keyserver.jsm: accessVksServer.accessKeyServer: onerror: " + e + "\n");
+        let err = AutocryptXhrUtils.createTCPErrorFromFailedXHR(e.target);
         switch (err.type) {
           case 'SecurityCertificate':
-            reject(createError(EnigmailConstants.KEYSERVER_ERR_CERTIFICATE_ERROR));
+            reject(createError(AutocryptConstants.KEYSERVER_ERR_CERTIFICATE_ERROR));
             break;
           case 'SecurityProtocol':
-            reject(createError(EnigmailConstants.KEYSERVER_ERR_SECURITY_ERROR));
+            reject(createError(AutocryptConstants.KEYSERVER_ERR_SECURITY_ERROR));
             break;
           case 'Network':
-            reject(createError(EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE));
+            reject(createError(AutocryptConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE));
             break;
         }
-        reject(createError(EnigmailConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE));
+        reject(createError(AutocryptConstants.KEYSERVER_ERR_SERVER_UNAVAILABLE));
       };
 
       xmlReq.onloadend = function() {
-        EnigmailLog.DEBUG("keyserver.jsm: accessVksServer.accessKeyServer: loadEnd\n");
+        AutocryptLog.DEBUG("keyserver.jsm: accessVksServer.accessKeyServer: loadEnd\n");
       };
 
       let {
         url,
         method,
         contentType
-      } = this.createRequestUrl(EnigmailConstants.DOWNLOAD_KEY, keyId);
+      } = this.createRequestUrl(AutocryptConstants.DOWNLOAD_KEY, keyId);
 
-      EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer: requesting ${method} for ${url}\n`);
+      AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer: requesting ${method} for ${url}\n`);
       xmlReq.open(method, url);
       xmlReq.setRequestHeader("Content-Type", contentType);
       xmlReq.send();
@@ -172,7 +172,7 @@ const accessVksServer = {
   },
 
   download: async function(searchTerm) {
-    EnigmailLog.DEBUG(`keyserver.jsm: accessVksServer.download(${searchTerm})\n`);
+    AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.download(${searchTerm})\n`);
 
     let r = await this.accessKeyServer(null, searchTerm, null);
     return {
@@ -183,7 +183,7 @@ const accessVksServer = {
   }
 };
 
-var EnigmailKeyServer = {
+var AutocryptKeyServer = {
   download: function(searchTerm) {
     return accessVksServer.download(searchTerm);
   }

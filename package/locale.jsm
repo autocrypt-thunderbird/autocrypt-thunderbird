@@ -6,14 +6,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLocale"];
+var EXPORTED_SYMBOLS = ["AutocryptLocale"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 
 var gEnigStringBundle = null;
 
-var EnigmailLocale = {
+var AutocryptLocale = {
   /**
    * Get the application locale. Discrecommended - use getUILocale instead!
    */
@@ -55,11 +55,11 @@ var EnigmailLocale = {
           The loaded string bundle is still cached on startup and should still be cleared out of the cache on addon shutdown.
           This just bypasses the built-in cache for repeated loads of the same path so that a newly installed update loads cleanly. */
         let bundlePath = "chrome://autocrypt/locale/enigmail.properties?" + Math.random();
-        EnigmailLog.DEBUG("locale.jsm: loading stringBundle " + bundlePath + "\n");
+        AutocryptLog.DEBUG("locale.jsm: loading stringBundle " + bundlePath + "\n");
         let strBundleService = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService);
         gEnigStringBundle = strBundleService.createBundle(bundlePath);
       } catch (ex) {
-        EnigmailLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
+        AutocryptLog.ERROR("locale.jsm: Error in instantiating stringBundleService\n");
       }
     }
 
@@ -77,7 +77,7 @@ var EnigmailLocale = {
           return gEnigStringBundle.GetStringFromName(aStr);
         }
       } catch (ex) {
-        EnigmailLog.ERROR("locale.jsm: Error in querying stringBundleService for string '" + aStr + "'\n");
+        AutocryptLog.ERROR("locale.jsm: Error in querying stringBundleService for string '" + aStr + "'\n");
       }
     }
     return aStr;

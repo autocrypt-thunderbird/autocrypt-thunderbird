@@ -8,28 +8,28 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailLocalizeHtml"];
+var EXPORTED_SYMBOLS = ["AutocryptLocalizeHtml"];
 
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
 const AutocryptBuildDate = ChromeUtils.import("chrome://autocrypt/content/modules/buildDate.jsm").AutocryptBuildDate;
-const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailGpgAgent = ChromeUtils.import("chrome://autocrypt/content/modules/gpgAgent.jsm").EnigmailGpgAgent;
+const AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptGpgAgent = ChromeUtils.import("chrome://autocrypt/content/modules/gpgAgent.jsm").AutocryptGpgAgent;
 const Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
-function getEnigmailVersion() {
-  let versionStr = EnigmailApp.getVersion() + " (" + AutocryptBuildDate.built + ")";
-  return EnigmailLocale.getString("usingVersion", versionStr);
+function getAutocryptVersion() {
+  let versionStr = AutocryptApp.getVersion() + " (" + AutocryptBuildDate.built + ")";
+  return AutocryptLocale.getString("usingVersion", versionStr);
 }
 
 function getGpgWorking() {
-  var enigmailSvc = EnigmailCore.getService();
+  var enigmailSvc = AutocryptCore.getService();
 
   var agentStr;
   if (enigmailSvc) {
-    agentStr = EnigmailLocale.getString("usingAgent", [EnigmailGpgAgent.agentType, EnigmailGpgAgent.agentPath.path]);
+    agentStr = AutocryptLocale.getString("usingAgent", [AutocryptGpgAgent.agentType, AutocryptGpgAgent.agentPath.path]);
   } else {
-    agentStr = EnigmailLocale.getString("agentError");
+    agentStr = AutocryptLocale.getString("agentError");
 
     if (enigmailSvc && enigmailSvc.initializationError)
       agentStr += "\n" + enigmailSvc.initializationError;
@@ -38,7 +38,7 @@ function getGpgWorking() {
   return agentStr;
 }
 
-var EnigmailLocalizeHtml = {
+var AutocryptLocalizeHtml = {
   getAllElementsWithAttribute: function(doc, attribute) {
     let matchingElements = [];
     let allElements = doc.getElementsByTagName('*');
@@ -61,13 +61,13 @@ var EnigmailLocalizeHtml = {
 
       switch (txtId) {
         case "FNC_enigmailVersion":
-          node.innerHTML = getEnigmailVersion();
+          node.innerHTML = getAutocryptVersion();
           break;
         case "FNC_isGpgWorking":
           node.innerHTML = getGpgWorking();
           break;
         default:
-          node.innerHTML = EnigmailLocale.getString(txtId, param);
+          node.innerHTML = AutocryptLocale.getString(txtId, param);
       }
 
     }

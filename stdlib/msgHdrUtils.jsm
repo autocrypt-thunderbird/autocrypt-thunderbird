@@ -77,7 +77,7 @@ const {
   isWindows,
   isAccel
 } = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib/misc.jsm");
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 // Adding a messenger lazy getter to the MailServices even though it's not a service
 XPCOMUtils.defineLazyGetter(MailServices, "messenger", function() {

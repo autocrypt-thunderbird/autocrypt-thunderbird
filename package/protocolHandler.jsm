@@ -6,14 +6,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailProtocolHandler"];
+var EXPORTED_SYMBOLS = ["AutocryptProtocolHandler"];
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
-const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").AutocryptStreams;
+const AutocryptURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").AutocryptURIs;
 const NetUtil = ChromeUtils.import("resource://gre/modules/NetUtil.jsm").NetUtil;
 
 const NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID = "@mozilla.org/network/protocol;1?name=enigmail";
@@ -23,16 +23,16 @@ const WMEDIATOR_CONTRACTID = "@mozilla.org/appshell/window-mediator;1";
 
 const nsIProtocolHandler = Ci.nsIProtocolHandler;
 
-var EC = EnigmailCore;
+var EC = AutocryptCore;
 
 const gDummyPKCS7 =
   'Content-Type: multipart/mixed;\r\n boundary="------------060503030402050102040303\r\n\r\nThis is a multi-part message in MIME format.\r\n--------------060503030402050102040303\r\nContent-Type: application/x-pkcs7-mime\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303\r\nContent-Type: application/x-enigmail-dummy\r\nContent-Transfer-Encoding: 8bit\r\n\r\n\r\n--------------060503030402050102040303--\r\n';
 
 
-function EnigmailProtocolHandler() {}
+function AutocryptProtocolHandler() {}
 
-EnigmailProtocolHandler.prototype = {
-  classDescription: "Enigmail Protocol Handler",
+AutocryptProtocolHandler.prototype = {
+  classDescription: "Autocrypt Protocol Handler",
   classID: NS_ENIGMAILPROTOCOLHANDLER_CID,
   contractID: NS_ENIGMAILPROTOCOLHANDLER_CONTRACTID,
   scheme: "enigmail",
@@ -43,10 +43,10 @@ EnigmailProtocolHandler.prototype = {
     nsIProtocolHandler.URI_NOAUTH |
     nsIProtocolHandler.URI_OPENING_EXECUTES_SCRIPT,
 
-  QueryInterface: EnigmailTb60Compat.generateQI([nsIProtocolHandler]),
+  QueryInterface: AutocryptTb60Compat.generateQI([nsIProtocolHandler]),
 
   newURI: function(aSpec, originCharset, aBaseURI) {
-    EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.newURI: aSpec='" + aSpec + "'\n");
+    AutocryptLog.DEBUG("protocolHandler.jsm: AutocryptProtocolHandler.newURI: aSpec='" + aSpec + "'\n");
 
     // cut of any parameters potentially added to the URI; these cannot be handled
     if (aSpec.substr(0, 14) == "enigmail:dummy") aSpec = "enigmail:dummy";
@@ -90,27 +90,27 @@ EnigmailProtocolHandler.prototype = {
   },
 
   newChannel: function(aURI, loadInfo) {
-    EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.newChannel: URI='" + aURI.spec + "'\n");
+    AutocryptLog.DEBUG("protocolHandler.jsm: AutocryptProtocolHandler.newChannel: URI='" + aURI.spec + "'\n");
 
-    var messageId = EnigmailData.extractMessageId(aURI.spec);
-    var mimeMessageId = EnigmailData.extractMimeMessageId(aURI.spec);
+    var messageId = AutocryptData.extractMessageId(aURI.spec);
+    var mimeMessageId = AutocryptData.extractMimeMessageId(aURI.spec);
     var contentType, contentCharset, contentData;
 
     if (messageId) {
       // Handle enigmail:message/...
 
-      if (!EC.getEnigmailService()) {
+      if (!EC.getAutocryptService()) {
         throw Components.results.NS_ERROR_FAILURE;
       }
 
-      if (EnigmailURIs.getMessageURI(messageId)) {
-        var messageUriObj = EnigmailURIs.getMessageURI(messageId);
+      if (AutocryptURIs.getMessageURI(messageId)) {
+        var messageUriObj = AutocryptURIs.getMessageURI(messageId);
 
         contentType = messageUriObj.contentType;
         contentCharset = messageUriObj.contentCharset;
         contentData = messageUriObj.contentData;
 
-        EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.newChannel: messageURL=" + messageUriObj.originalUrl + ", content length=" + contentData.length + ", " + contentType + ", " +
+        AutocryptLog.DEBUG("protocolHandler.jsm: AutocryptProtocolHandler.newChannel: messageURL=" + messageUriObj.originalUrl + ", content length=" + contentData.length + ", " + contentType + ", " +
           contentCharset + "\n");
 
         // do NOT delete the messageUriObj now from the list, this will be done once the message is unloaded (fix for bug 9730).
@@ -121,10 +121,10 @@ EnigmailProtocolHandler.prototype = {
 
         contentType = "text/plain";
         contentCharset = "";
-        contentData = "Enigmail error: invalid URI " + aURI.spec;
+        contentData = "Autocrypt error: invalid URI " + aURI.spec;
       }
 
-      let channel = EnigmailStreams.newStringChannel(aURI, contentType, "UTF-8", contentData, loadInfo);
+      let channel = AutocryptStreams.newStringChannel(aURI, contentType, "UTF-8", contentData, loadInfo);
 
 
       return channel;
@@ -132,12 +132,12 @@ EnigmailProtocolHandler.prototype = {
 
     if (aURI.spec == aURI.scheme + ":dummy") {
       // Dummy PKCS7 content (to access mimeEncryptedClass)
-      return EnigmailStreams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7, loadInfo);
+      return AutocryptStreams.newStringChannel(aURI, "message/rfc822", "", gDummyPKCS7, loadInfo);
     }
 
     var winName, spec;
     if (aURI.spec == "about:" + aURI.scheme) {
-      // About Enigmail
+      // About Autocrypt
       //            winName = "about:"+enigmail;
       winName = "about:enigmail";
       spec = "chrome://autocrypt/content/ui/enigmailAbout.xul";
@@ -153,7 +153,7 @@ EnigmailProtocolHandler.prototype = {
       spec = "chrome://autocrypt/content/ui/enigmailKeygen.xul";
 
     } else {
-      // Display Enigmail about page
+      // Display Autocrypt about page
       winName = "about:enigmail";
       spec = "chrome://autocrypt/content/ui/enigmailAbout.xul";
     }
@@ -182,8 +182,8 @@ EnigmailProtocolHandler.prototype = {
   },
 
   handleMimeMessage: function(messageId) {
-    //        EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.handleMimeMessage: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
-    EnigmailLog.DEBUG("protocolHandler.jsm: EnigmailProtocolHandler.handleMimeMessage: messageURL=, content length=, , \n");
+    //        AutocryptLog.DEBUG("protocolHandler.jsm: AutocryptProtocolHandler.handleMimeMessage: messageURL="+messageUriObj.originalUrl+", content length="+contentData.length+", "+contentType+", "+contentCharset+"\n");
+    AutocryptLog.DEBUG("protocolHandler.jsm: AutocryptProtocolHandler.handleMimeMessage: messageURL=, content length=, , \n");
   },
 
   allowPort: function(port, scheme) {

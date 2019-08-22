@@ -6,12 +6,12 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConfigure"];
+var EXPORTED_SYMBOLS = ["AutocryptConfigure"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+const AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
 const AutocryptWelcomeMessage = ChromeUtils.import("chrome://autocrypt/content/modules/welcomeMessage.jsm").AutocryptWelcomeMessage;
 const AutocryptSecret = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSecret.jsm").AutocryptSecret;
 
@@ -20,19 +20,19 @@ const nsIFolderLookupService = Ci.nsIFolderLookupService;
 const nsIMsgAccountManager = Ci.nsIMsgAccountManager;
 
 
-var EnigmailConfigure = {
+var AutocryptConfigure = {
   configureAutocrypt: async function(oldVersion, newVersion) {
-    EnigmailLog.DEBUG("configure.jsm: configureEnigmail()\n");
+    AutocryptLog.DEBUG("configure.jsm: configureAutocrypt()\n");
     // oldVersion = null;
     if (oldVersion == newVersion) {
-      EnigmailLog.DEBUG("configure.jsm: configureEnigmail(): version up to date,nothing to do)\n");
+      AutocryptLog.DEBUG("configure.jsm: configureAutocrypt(): version up to date,nothing to do)\n");
       return;
     }
 
-    EnigmailPrefs.setPref("configuredVersion", newVersion);
-    EnigmailPrefs.savePrefs();
+    AutocryptPrefs.setPref("configuredVersion", newVersion);
+    AutocryptPrefs.savePrefs();
 
-    if (!oldVersion && EnigmailStdlib.hasConfiguredAccounts()) {
+    if (!oldVersion && AutocryptStdlib.hasConfiguredAccounts()) {
       await AutocryptSecret.generateKeysForAllIdentities();
       await AutocryptWelcomeMessage.sendWelcomeMessage();
     }

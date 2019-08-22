@@ -7,13 +7,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailConsole"];
+var EXPORTED_SYMBOLS = ["AutocryptConsole"];
 
 const MAX_SIZE = 32768;
 var dataCache = "";
 var gotNewData = false;
 
-var EnigmailConsole = {
+var AutocryptConsole = {
   write: function(data) {
     dataCache += data;
     if (dataCache.length > MAX_SIZE) {

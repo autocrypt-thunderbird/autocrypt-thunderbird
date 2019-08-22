@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailWindows: false, EnigmailLocale: false, EnigmailPrefs: false, EnigmailTime: false */
+/*global Components: false, AutocryptWindows: false, AutocryptLocale: false, AutocryptPrefs: false, AutocryptTime: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,42 +14,42 @@
 /* global gExpandedHeaderView: false, CanDetachAttachments: true, gEncryptedURIService: false, gMessageNotificationBar: false */
 /* global attachmentList: false, MailOfflineMgr: false, currentHeaderData: false, ContentTypeIsSMIME: false */
 
-var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").EnigmailVerify;
-var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-var EnigmailTime = ChromeUtils.import("chrome://autocrypt/content/modules/time.jsm").EnigmailTime;
-var EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-var EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
-var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-var EnigmailClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").EnigmailClipboard;
-var EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
-var EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-var EnigmailMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").EnigmailMsgRead;
-var EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
+var AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+var AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+var AutocryptVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").AutocryptVerify;
+var AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+var AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+var AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+var AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+var AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+var AutocryptTime = ChromeUtils.import("chrome://autocrypt/content/modules/time.jsm").AutocryptTime;
+var AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+var AutocryptURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").AutocryptURIs;
+var AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+var AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+var AutocryptClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").AutocryptClipboard;
+var AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
+var AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+var AutocryptMsgRead = ChromeUtils.import("chrome://autocrypt/content/modules/msgRead.jsm").AutocryptMsgRead;
+var AutocryptSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").AutocryptSingletons;
 var AutocryptSetupImport = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetupImport.jsm").AutocryptSetupImport;
 
-if (!Enigmail) var Enigmail = {};
+if (!Autocrypt) var Autocrypt = {};
 
-Enigmail.hdrView = {
+Autocrypt.hdrView = {
   lastEncryptedMsgKey: null,
   lastEncryptedUri: null,
 
 
   hdrViewLoad: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.hdrViewLoad\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.hdrViewLoad\n");
 
     // THE FOLLOWING OVERRIDES CODE IN msgHdrViewOverlay.js
     // which wouldn't work otherwise
 
     this.origCanDetachAttachments = CanDetachAttachments;
     CanDetachAttachments = function() {
-      return Enigmail.hdrView.origCanDetachAttachments() && Enigmail.hdrView.enigCanDetachAttachments();
+      return Autocrypt.hdrView.origCanDetachAttachments() && Autocrypt.hdrView.enigCanDetachAttachments();
     };
 
     this.msgHdrViewLoad();
@@ -57,22 +57,22 @@ Enigmail.hdrView = {
     // Override SMIME ui
     let signedHdrElement = document.getElementById("signedHdrIcon");
     if (signedHdrElement) {
-      signedHdrElement.setAttribute("onclick", "Enigmail.msg.viewSecurityInfo(event, true);");
+      signedHdrElement.setAttribute("onclick", "Autocrypt.msg.viewSecurityInfo(event, true);");
     }
 
     let encryptedHdrElement = document.getElementById("encryptedHdrIcon");
     if (encryptedHdrElement) {
-      encryptedHdrElement.setAttribute("onclick", "Enigmail.msg.viewSecurityInfo(event, true);");
+      encryptedHdrElement.setAttribute("onclick", "Autocrypt.msg.viewSecurityInfo(event, true);");
     }
 
     let addrPopup = document.getElementById("emailAddressPopup");
     if (addrPopup) {
-      addrPopup.addEventListener("popupshowing", Enigmail.hdrView.displayAddressPopup.bind(addrPopup), false);
+      addrPopup.addEventListener("popupshowing", Autocrypt.hdrView.displayAddressPopup.bind(addrPopup), false);
     }
 
     let attCtx = document.getElementById("attachmentItemContext");
     if (attCtx) {
-      attCtx.addEventListener("popupshowing", this.onShowAttachmentContextMenu.bind(Enigmail.hdrView), false);
+      attCtx.addEventListener("popupshowing", this.onShowAttachmentContextMenu.bind(Autocrypt.hdrView), false);
     }
   },
 
@@ -81,8 +81,8 @@ Enigmail.hdrView = {
 
   statusBarHide: function() {
     try {
-      if (Enigmail.msg.securityInfo) {
-        Enigmail.msg.securityInfo = {};
+      if (Autocrypt.msg.securityInfo) {
+        Autocrypt.msg.securityInfo = {};
       }
 
       let enigMsgPane = document.getElementById("enigmailMsgDisplay");
@@ -106,21 +106,21 @@ Enigmail.hdrView = {
       this.firstTimeOk = true;
       this.setStatusText("Processing OpenPGP (first time might take a few seconds)");
     }
-    enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxLoading");
+    enigmailBox.setAttribute("class", "expandedAutocryptBox enigmailHeaderBoxLoading");
   },
 
   updateHdrIcons: function(verify_status, encMimePartNumber) {
-    EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: verify_status=${verify_status}\n`);
+    AutocryptLog.DEBUG(`enigmailMsgHdrViewOverlay.js: this.updateHdrIcons: verify_status=${verify_status}\n`);
 
     if (gFolderDisplay.selectedMessageUris && gFolderDisplay.selectedMessageUris.length > 0) {
       this.lastEncryptedMsgKey = gFolderDisplay.selectedMessageUris[0];
     }
 
     if (verify_status.wasEncrypted() && this.lastEncryptedMsgKey) {
-      EnigmailURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
+      AutocryptURIs.rememberEncryptedUri(this.lastEncryptedMsgKey);
     }
 
-    Enigmail.msg.securityInfo = {
+    Autocrypt.msg.securityInfo = {
       verify_status: verify_status
     };
 
@@ -128,7 +128,7 @@ Enigmail.hdrView = {
   },
 
   displayAutoCryptSetupMessage: function(url) {
-    Enigmail.msg.securityInfo = {
+    Autocrypt.msg.securityInfo = {
       verify_status: null,
       is_autocrypt_setup: true
     };
@@ -141,7 +141,7 @@ Enigmail.hdrView = {
       accessKey: 's',
       popup: null,
       callback: async function(aNotification, aButton) {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayAutoCryptSetupMsgHeader(): click!\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: displayAutoCryptSetupMsgHeader(): click!\n");
         await AutocryptSetupImport.importSetupMessage(window, url);
         return true; // keep notification open
       }
@@ -157,19 +157,19 @@ Enigmail.hdrView = {
     let bodyElement = document.getElementById("messagepanebox");
     let enigmailBox = document.getElementById("enigmailBox");
 
-    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.is_autocrypt_setup) {
+    if (Autocrypt.msg.securityInfo && Autocrypt.msg.securityInfo.is_autocrypt_setup) {
       this.setStatusText("Encrypted with a password");
-      enigmailBox.setAttribute("class", "expandedEnigmailBox enigmailHeaderBoxSetupMessage");
+      enigmailBox.setAttribute("class", "expandedAutocryptBox enigmailHeaderBoxSetupMessage");
       return;
     }
 
-    if (!Enigmail.msg.securityInfo || !Enigmail.msg.securityInfo.verify_status) {
+    if (!Autocrypt.msg.securityInfo || !Autocrypt.msg.securityInfo.verify_status) {
       this.setStatusText("Not encrypted");
-      enigmailBox.setAttribute("class", "expandedEnigmailBox");
+      enigmailBox.setAttribute("class", "expandedAutocryptBox");
       return;
     }
 
-    let message_status = Enigmail.msg.securityInfo.verify_status;
+    let message_status = Autocrypt.msg.securityInfo.verify_status;
 
     let statusLine;
     let style;
@@ -198,7 +198,7 @@ Enigmail.hdrView = {
 
     if (statusLine) {
       this.setStatusText(statusLine + " ");
-      enigmailBox.setAttribute("class", style ? `expandedEnigmailBox enigmailHeaderBoxLabel${style}` : 'expandedEnigmailBox');
+      enigmailBox.setAttribute("class", style ? `expandedAutocryptBox enigmailHeaderBoxLabel${style}` : 'expandedAutocryptBox');
     } else {
       this.setStatusText("");
     }
@@ -214,41 +214,41 @@ Enigmail.hdrView = {
   },
 
   msgHdrViewLoad: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewLoad\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.msgHdrViewLoad\n");
 
     this.messageListener = {
       enigmailBox: document.getElementById("enigmailBox"),
       onStartHeaders: function _listener_onStartHeaders() {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onStartHeaders\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onStartHeaders\n");
 
         try {
-          Enigmail.hdrView.statusBarHide();
-          EnigmailVerify.setMsgWindow(msgWindow, Enigmail.msg.getCurrentMsgUriSpec());
-          // Enigmail.hdrView.setStatusText("");
-          // this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
+          Autocrypt.hdrView.statusBarHide();
+          AutocryptVerify.setMsgWindow(msgWindow, Autocrypt.msg.getCurrentMsgUriSpec());
+          // Autocrypt.hdrView.setStatusText("");
+          // this.enigmailBox.setAttribute("class", "expandedAutocryptBox");
 
-          let msgFrame = Enigmail.msg.messagePane;
-          // let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
-          EnigmailLog.DEBUG(`enigmailMsgHdrViewOverlay.js: current frame: ${msgFrame}\n`);
+          let msgFrame = Autocrypt.msg.messagePane;
+          // let msgFrame = AutocryptWindows.getFrame(window, "messagepane");
+          AutocryptLog.DEBUG(`enigmailMsgHdrViewOverlay.js: current frame: ${msgFrame}\n`);
 
           if (msgFrame) {
-            msgFrame.addEventListener("unload", Enigmail.hdrView.messageUnload, true);
-            msgFrame.addEventListener("DOMContentLoaded", Enigmail.hdrView.messageLoad, false);
+            msgFrame.addEventListener("unload", Autocrypt.hdrView.messageUnload, true);
+            msgFrame.addEventListener("DOMContentLoaded", Autocrypt.hdrView.messageLoad, false);
           }
 
-          Enigmail.hdrView.forgetEncryptedMsgKey();
-          Enigmail.hdrView.setWindowCallback();
+          Autocrypt.hdrView.forgetEncryptedMsgKey();
+          Autocrypt.hdrView.setWindowCallback();
         } catch (ex) {
-          EnigmailLog.writeException("enigmailMsgHdrViewOverlay.js", ex);
+          AutocryptLog.writeException("enigmailMsgHdrViewOverlay.js", ex);
         }
       },
 
       onEndHeaders: function _listener_onEndHeaders() {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onEndHeaders\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: _listener_onEndHeaders\n");
 
         try {
-          Enigmail.hdrView.statusBarHide();
-          // this.enigmailBox.setAttribute("class", "expandedEnigmailBox");
+          Autocrypt.hdrView.statusBarHide();
+          // this.enigmailBox.setAttribute("class", "expandedAutocryptBox");
         } catch (ex) {}
       },
 
@@ -265,20 +265,20 @@ Enigmail.hdrView = {
   },
 
   messageUnload: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageUnload\n");
-    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.xtraStatus) {
-      Enigmail.msg.securityInfo.xtraStatus = "";
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageUnload\n");
+    if (Autocrypt.msg.securityInfo && Autocrypt.msg.securityInfo.xtraStatus) {
+      Autocrypt.msg.securityInfo.xtraStatus = "";
     }
-    Enigmail.hdrView.forgetEncryptedMsgKey();
+    Autocrypt.hdrView.forgetEncryptedMsgKey();
   },
 
   messageLoad: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.messageLoad\n");
     // TODO rework - this used to be used for pgp inline. now it parses
     // autocrypt headers, but doesn't actually "auto decrypt" anything!
-    Enigmail.msg.messageAutoDecrypt();
+    Autocrypt.msg.messageAutoDecrypt();
 
-    Enigmail.hdrView.displayStatusBar();
+    Autocrypt.hdrView.displayStatusBar();
 
     // move some pixels of padding around
     document.getElementById("expandedBoxSpacer").setAttribute("style", "height: 2px;");
@@ -286,19 +286,19 @@ Enigmail.hdrView = {
   },
 
   forgetEncryptedMsgKey: function() {
-    if (Enigmail.hdrView.lastEncryptedMsgKey) {
-      EnigmailURIs.forgetEncryptedUri(Enigmail.hdrView.lastEncryptedMsgKey);
-      Enigmail.hdrView.lastEncryptedMsgKey = null;
+    if (Autocrypt.hdrView.lastEncryptedMsgKey) {
+      AutocryptURIs.forgetEncryptedUri(Autocrypt.hdrView.lastEncryptedMsgKey);
+      Autocrypt.hdrView.lastEncryptedMsgKey = null;
     }
 
-    if (Enigmail.hdrView.lastEncryptedUri && gEncryptedURIService) {
-      gEncryptedURIService.forgetEncrypted(Enigmail.hdrView.lastEncryptedUri);
-      Enigmail.hdrView.lastEncryptedUri = null;
+    if (Autocrypt.hdrView.lastEncryptedUri && gEncryptedURIService) {
+      gEncryptedURIService.forgetEncrypted(Autocrypt.hdrView.lastEncryptedUri);
+      Autocrypt.hdrView.lastEncryptedUri = null;
     }
   },
 
   onShowAttachmentContextMenu: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.onShowAttachmentContextMenu\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.onShowAttachmentContextMenu\n");
 
     // Thunderbird
     var contextMenu = document.getElementById('attachmentItemContext');
@@ -321,7 +321,7 @@ Enigmail.hdrView = {
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
         verifyMenu.setAttribute('disabled', true);
-      } else if (Enigmail.msg.checkEncryptedAttach(selectedAttachments[0])) {
+      } else if (Autocrypt.msg.checkEncryptedAttach(selectedAttachments[0])) {
         if ((typeof(selectedAttachments[0].name) !== 'undefined' && selectedAttachments[0].name.match(/\.asc\.(gpg|pgp)$/i)) ||
           (typeof(selectedAttachments[0].displayName) !== 'undefined' && selectedAttachments[0].displayName.match(/\.asc\.(gpg|pgp)$/i))) {
           importMenu.removeAttribute('disabled');
@@ -330,7 +330,7 @@ Enigmail.hdrView = {
         }
         decryptOpenMenu.removeAttribute('disabled');
         decryptSaveMenu.removeAttribute('disabled');
-        if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
+        if (AutocryptMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
           verifyMenu.removeAttribute('disabled');
         } else {
           verifyMenu.setAttribute('disabled', true);
@@ -342,7 +342,7 @@ Enigmail.hdrView = {
         } else if (!selectedAttachments[0].displayName) {
           selectedAttachments[0].displayName = "message.pgp";
         }
-      } else if (EnigmailMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
+      } else if (AutocryptMsgRead.checkSignedAttachment(selectedAttachments[0], null, currentAttachments)) {
         importMenu.setAttribute('disabled', true);
         decryptOpenMenu.setAttribute('disabled', true);
         decryptSaveMenu.setAttribute('disabled', true);
@@ -364,29 +364,29 @@ Enigmail.hdrView = {
   },
 
   updateMsgDb: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateMsgDb\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.updateMsgDb\n");
     var msg = gFolderDisplay.selectedMessage;
     if (!msg || !msg.folder) return;
 
-    if (Enigmail.msg.securityInfo && Enigmail.msg.securityInfo.verify_status) {
+    if (Autocrypt.msg.securityInfo && Autocrypt.msg.securityInfo.verify_status) {
       var msgHdr = msg.folder.GetMessageHeader(msg.messageKey);
-      msgHdr.setUint32Property("autocrypt-status", Enigmail.msg.securityInfo.verify_status.getColumnStatusInt());
+      msgHdr.setUint32Property("autocrypt-status", Autocrypt.msg.securityInfo.verify_status.getColumnStatusInt());
     }
   },
 
   enigCanDetachAttachments: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.enigCanDetachAttachments\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: this.enigCanDetachAttachments\n");
 
-    if (Enigmail.msg.securityInfo && (typeof(Enigmail.msg.securityInfo.statusFlags) != "undefined")) {
-      let isMimeSignedOrEncrypted = (Enigmail.msg.securityInfo.statusFlags &
-        (EnigmailConstants.PGP_MIME_SIGNED | EnigmailConstants.PGP_MIME_ENCRYPTED));
+    if (Autocrypt.msg.securityInfo && (typeof(Autocrypt.msg.securityInfo.statusFlags) != "undefined")) {
+      let isMimeSignedOrEncrypted = (Autocrypt.msg.securityInfo.statusFlags &
+        (AutocryptConstants.PGP_MIME_SIGNED | AutocryptConstants.PGP_MIME_ENCRYPTED));
       return !isMimeSignedOrEncrypted;
     }
     return true;
   },
 
   fillAttachmentListPopup: function(item) {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: Enigmail.hdrView.fillAttachmentListPopup\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: Autocrypt.hdrView.fillAttachmentListPopup\n");
     FillAttachmentListPopup(item); /* global FillAttachmentListPopup: false */
 
     if (!this.enigCanDetachAttachments()) {
@@ -406,7 +406,7 @@ Enigmail.hdrView = {
 
   setSubject: function(subject) {
     if (gFolderDisplay.selectedMessages.length === 1 && gFolderDisplay.selectedMessage) {
-      let subj = EnigmailData.convertFromUnicode(subject, "utf-8");
+      let subj = AutocryptData.convertFromUnicode(subject, "utf-8");
       if (gFolderDisplay.selectedMessage.flags & Components.interfaces.nsMsgMessageFlags.HasRe) {
         subj = subj.replace(/^(Re: )+(.*)/, "$2");
       }
@@ -428,9 +428,9 @@ Enigmail.hdrView = {
   },
 
   setWindowCallback: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: setWindowCallback\n");
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: setWindowCallback\n");
 
-    EnigmailSingletons.messageReader = this.headerPane;
+    AutocryptSingletons.messageReader = this.headerPane;
   },
 
   headerPane: {
@@ -438,15 +438,15 @@ Enigmail.hdrView = {
     isCurrentMessage: function(uri) {
       let uriSpec = (uri ? uri.spec : null);
 
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: uri.spec=" + uriSpec + "\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: uri.spec=" + uriSpec + "\n");
 
       if (!uriSpec || uriSpec.search(/^enigmail:/) === 0) {
-        // we cannot compare if no URI given or if URI is Enigmail-internal;
+        // we cannot compare if no URI given or if URI is Autocrypt-internal;
         // therefore assuming it's the current message
         return true;
       }
 
-      let msgUriSpec = Enigmail.msg.getCurrentMsgUriSpec();
+      let msgUriSpec = Autocrypt.msg.getCurrentMsgUriSpec();
 
       let currUrl = {};
       try {
@@ -454,7 +454,7 @@ Enigmail.hdrView = {
         let msgSvc = messenger.messageServiceFromURI(msgUriSpec);
         msgSvc.GetUrlForUri(msgUriSpec, currUrl, null);
       } catch (ex) {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: could not determine URL\n");
         currUrl.value = {
           host: "invalid",
           path: "/message",
@@ -466,28 +466,28 @@ Enigmail.hdrView = {
         };
       }
 
-      let currMsgId = EnigmailURIs.msgIdentificationFromUrl(currUrl.value);
-      let gotMsgId = EnigmailURIs.msgIdentificationFromUrl(uri);
+      let currMsgId = AutocryptURIs.msgIdentificationFromUrl(currUrl.value);
+      let gotMsgId = AutocryptURIs.msgIdentificationFromUrl(uri);
 
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url=" + currUrl.value.spec + "\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: url=" + currUrl.value.spec + "\n");
 
       if (uri.host == currUrl.value.host &&
         currMsgId.folder === gotMsgId.folder &&
         currMsgId.msgNum === gotMsgId.msgNum) {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: true\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: true\n");
         return true;
       }
 
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: false\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.isCurrentMessage: false\n");
       return false;
     },
 
     showLoading: function() {
-      Enigmail.hdrView.showLoading();
+      Autocrypt.hdrView.showLoading();
     },
 
     updateSecurityStatus: function(verify_status, uri, mimePartNumber) {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: mimePart=" + mimePartNumber + "\n");
 
 
       let uriSpec = (uri ? uri.spec : null);
@@ -497,19 +497,19 @@ Enigmail.hdrView = {
         if (verify_status.wasEncrypted()) {
           if (gEncryptedURIService) {
             // remember encrypted message URI to enable TB prevention against EFAIL attack
-            Enigmail.hdrView.lastEncryptedUri = gFolderDisplay.selectedMessageUris[0];
-            gEncryptedURIService.rememberEncrypted(Enigmail.hdrView.lastEncryptedUri);
+            Autocrypt.hdrView.lastEncryptedUri = gFolderDisplay.selectedMessageUris[0];
+            gEncryptedURIService.rememberEncrypted(Autocrypt.hdrView.lastEncryptedUri);
           }
         }
 
         if (!shouldDisplaySubPart(mimePartNumber, uriSpec)) return;
         // TODO
         // if (hasUnauthenticatedParts(mimePartNumber)) {
-          // EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: found unauthenticated part\n");
-          // statusFlags |= EnigmailConstants.PARTIALLY_PGP;
+          // AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: updateSecurityStatus: found unauthenticated part\n");
+          // statusFlags |= AutocryptConstants.PARTIALLY_PGP;
         // }
 
-        Enigmail.hdrView.updateHdrIcons(verify_status, mimePartNumber);
+        Autocrypt.hdrView.updateHdrIcons(verify_status, mimePartNumber);
       }
 
       if (uriSpec && uriSpec.search(/^enigmail:message\//) === 0) {
@@ -522,8 +522,8 @@ Enigmail.hdrView = {
     },
 
     processDecryptionResult: function(uri, actionType, processData, mimePartNumber) {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.processDecryptionResult:\n");
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: actionType= " + actionType + ", mimePart=" + mimePartNumber + "\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.processDecryptionResult:\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: actionType= " + actionType + ", mimePart=" + mimePartNumber + "\n");
 
       let msg = gFolderDisplay.selectedMessage;
       if (!msg) return;
@@ -537,16 +537,16 @@ Enigmail.hdrView = {
     },
 
     modifyMessageHeaders: function(uri, headerData, mimePartNumber) {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.modifyMessageHeaders:\n");
 
-      let updateHdrBox = Enigmail.hdrView.updateHdrBox;
+      let updateHdrBox = Autocrypt.hdrView.updateHdrBox;
       let uriSpec = (uri ? uri.spec : null);
       let hdr;
 
       try {
         hdr = JSON.parse(headerData);
       } catch (ex) {
-        EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: modifyMessageHeaders: - no headers to display\n");
+        AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: modifyMessageHeaders: - no headers to display\n");
         return;
       }
 
@@ -556,7 +556,7 @@ Enigmail.hdrView = {
       let msg = gFolderDisplay.selectedMessage;
 
       if ("subject" in hdr) {
-        Enigmail.hdrView.setSubject(hdr.subject);
+        Autocrypt.hdrView.setSubject(hdr.subject);
       }
 
       if ("date" in hdr) {
@@ -573,54 +573,54 @@ Enigmail.hdrView = {
 
             if ("from" in hdr) {
               gExpandedHeaderView.from.outputFunction(gExpandedHeaderView.from, hdr.from);
-              msg.setStringProperty("Enigmail-From", hdr.from);
+              msg.setStringProperty("Autocrypt-From", hdr.from);
             }
 
             if ("to" in hdr) {
               gExpandedHeaderView.to.outputFunction(gExpandedHeaderView.to, hdr.to);
-              msg.setStringProperty("Enigmail-To", hdr.to);
+              msg.setStringProperty("Autocrypt-To", hdr.to);
             }
 
             if ("cc" in hdr) {
               gExpandedHeaderView.cc.outputFunction(gExpandedHeaderView.cc, hdr.cc);
-              msg.setStringProperty("Enigmail-Cc", hdr.cc);
+              msg.setStringProperty("Autocrypt-Cc", hdr.cc);
             }
 
             if ("reply-to" in hdr) {
               gExpandedHeaderView["reply-to"].outputFunction(gExpandedHeaderView["reply-to"], hdr["reply-to"]);
-              msg.setStringProperty("Enigmail-ReplyTo", hdr["reply-to"]);
+              msg.setStringProperty("Autocrypt-ReplyTo", hdr["reply-to"]);
             }
       */
     },
 
     handleSMimeMessage: function(uri) {
       if (this.isCurrentMessage(uri)) {
-        EnigmailVerify.unregisterContentTypeHandler();
-        Enigmail.msg.messageReload(false);
+        AutocryptVerify.unregisterContentTypeHandler();
+        Autocrypt.msg.messageReload(false);
       }
     },
 
     maxWantedNesting: function() {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.maxWantedNesting:\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.maxWantedNesting:\n");
       return this._smimeHeaderSink.maxWantedNesting();
     },
 
     signedStatus: function(aNestingLevel, aSignatureStatus, aSignerCert) {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.signedStatus:\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.signedStatus:\n");
       return this._smimeHeaderSink.signedStatus(aNestingLevel, aSignatureStatus, aSignerCert);
     },
 
     encryptionStatus: function(aNestingLevel, aEncryptionStatus, aRecipientCert) {
-      EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
+      AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: EnigMimeHeaderSink.encryptionStatus:\n");
       return this._smimeHeaderSink.encryptionStatus(aNestingLevel, aEncryptionStatus, aRecipientCert);
     }
   },
 
-  onUnloadEnigmail: function() {
-    EnigmailLog.DEBUG("enigmailMsgHdrViewOverlay.js: onUnloadEnigmail()\n");
-    window.removeEventListener("load-autocrypt", Enigmail.boundHdrViewLoad, false);
+  onUnloadAutocrypt: function() {
+    AutocryptLog.DEBUG("enigmailMsgHdrViewOverlay.js: onUnloadAutocrypt()\n");
+    window.removeEventListener("load-autocrypt", Autocrypt.boundHdrViewLoad, false);
     for (let i = 0; i < gMessageListeners.length; i++) {
-      if (gMessageListeners[i] === Enigmail.hdrView.messageListener) {
+      if (gMessageListeners[i] === Autocrypt.hdrView.messageListener) {
         gMessageListeners.splice(i, 1);
         break;
       }
@@ -638,7 +638,7 @@ Enigmail.hdrView = {
 
     let addrPopup = document.getElementById("emailAddressPopup");
     if (addrPopup) {
-      addrPopup.removeEventListener("popupshowing", Enigmail.hdrView.displayAddressPopup, false);
+      addrPopup.removeEventListener("popupshowing", Autocrypt.hdrView.displayAddressPopup, false);
     }
 
     let attCtx = document.getElementById("attachmentItemContext");
@@ -646,14 +646,14 @@ Enigmail.hdrView = {
       attCtx.removeEventListener("popupshowing", this.onShowAttachmentContextMenu, false);
     }
 
-    let msgFrame = Enigmail.msg.messagePane;
-    // let msgFrame = EnigmailWindows.getFrame(window, "messagepane");
+    let msgFrame = Autocrypt.msg.messagePane;
+    // let msgFrame = AutocryptWindows.getFrame(window, "messagepane");
     if (msgFrame) {
-      msgFrame.removeEventListener("unload", Enigmail.hdrView.messageUnload, true);
-      msgFrame.removeEventListener("DOMContentLoaded", Enigmail.hdrView.messageLoad, false);
+      msgFrame.removeEventListener("unload", Autocrypt.hdrView.messageUnload, true);
+      msgFrame.removeEventListener("DOMContentLoaded", Autocrypt.hdrView.messageLoad, false);
     }
 
-    CanDetachAttachments = Enigmail.hdrView.origCanDetachAttachments;
+    CanDetachAttachments = Autocrypt.hdrView.origCanDetachAttachments;
   }
 };
 
@@ -685,21 +685,21 @@ function isMultipartRelated(mimePart, searchPartNum) {
   */
 function shouldDisplaySubPart(mimePartNumber, uriSpec) {
   if ((!mimePartNumber) || (!uriSpec)) return true;
-  let part = EnigmailMime.getMimePartNumber(uriSpec);
+  let part = AutocryptMime.getMimePartNumber(uriSpec);
 
   if (part.length === 0) {
     // only display header if 1st message part
     if (mimePartNumber.search(/^1(\.1)*$/) < 0) return false;
   } else {
-    let r = EnigmailFuncs.compareMimePartLevel(mimePartNumber, part);
+    let r = AutocryptFuncs.compareMimePartLevel(mimePartNumber, part);
 
     // analyzed mime part is contained in viewed message part
     if (r === 2) {
       if (mimePartNumber.substr(part.length).search(/^\.1(\.1)*$/) < 0) return false;
     } else if (r !== 0) return false;
 
-    if (Enigmail.msg.mimeParts) {
-      if (isMultipartRelated(Enigmail.msg.mimeParts, mimePartNumber)) return false;
+    if (Autocrypt.msg.mimeParts) {
+      if (isMultipartRelated(Autocrypt.msg.mimeParts, mimePartNumber)) return false;
     }
   }
   return true;
@@ -733,12 +733,12 @@ function hasUnauthenticatedParts(mimePartNumber) {
     parentNum = "";
   }
 
-  if (mimePartNumber && Enigmail.msg.mimeParts) {
-    if (hasSiblings(Enigmail.msg.mimeParts, mimePartNumber, parentNum)) return true;
+  if (mimePartNumber && Autocrypt.msg.mimeParts) {
+    if (hasSiblings(Autocrypt.msg.mimeParts, mimePartNumber, parentNum)) return true;
   }
 
   return false;
 }
 
-Enigmail.boundHdrViewLoad = Enigmail.hdrView.hdrViewLoad.bind(Enigmail.hdrView);
-window.addEventListener("load-autocrypt", Enigmail.boundHdrViewLoad, false);
+Autocrypt.boundHdrViewLoad = Autocrypt.hdrView.hdrViewLoad.bind(Autocrypt.hdrView);
+window.addEventListener("load-autocrypt", Autocrypt.boundHdrViewLoad, false);

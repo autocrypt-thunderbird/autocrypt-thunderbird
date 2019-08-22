@@ -9,10 +9,10 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailArmor"];
+var EXPORTED_SYMBOLS = ["AutocryptArmor"];
 
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 
 
@@ -51,7 +51,7 @@ function indexOfNewline(str, off, then) {
   }
 }
 
-var EnigmailArmor = {
+var AutocryptArmor = {
   /**
    * Locates offsets bracketing PGP armored block in text,
    * starting from given offset, and returns block type string.
@@ -67,7 +67,7 @@ var EnigmailArmor = {
    *           If no block is found, an empty String is returned;
    */
   locateArmoredBlock: function(text, offset, indentStr, beginIndexObj, endIndexObj, indentStrObj) {
-    EnigmailLog.DEBUG("armor.jsm: Enigmail.locateArmoredBlock: " + offset + ", '" + indentStr + "'\n");
+    AutocryptLog.DEBUG("armor.jsm: Autocrypt.locateArmoredBlock: " + offset + ", '" + indentStr + "'\n");
 
     beginIndexObj.value = -1;
     endIndexObj.value = -1;
@@ -116,12 +116,12 @@ var EnigmailArmor = {
     var blockType = "";
     if (matches && (matches.length > 1)) {
       blockType = matches[1];
-      EnigmailLog.DEBUG("armor.jsm: Enigmail.locateArmoredBlock: blockType=" + blockType + "\n");
+      AutocryptLog.DEBUG("armor.jsm: Autocrypt.locateArmoredBlock: blockType=" + blockType + "\n");
     }
 
     if (blockType == "UNVERIFIED MESSAGE") {
       // Skip any unverified message block
-      return EnigmailArmor.locateArmoredBlock(text, endIndex + 1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
+      return AutocryptArmor.locateArmoredBlock(text, endIndex + 1, indentStr, beginIndexObj, endIndexObj, indentStrObj);
     }
 
     beginIndexObj.value = beginIndex;
@@ -151,7 +151,7 @@ var EnigmailArmor = {
     var i = 0;
     var b;
 
-    while ((b = EnigmailArmor.locateArmoredBlock(text, i, "", beginObj, endObj, indentStrObj)) !== "") {
+    while ((b = AutocryptArmor.locateArmoredBlock(text, i, "", beginObj, endObj, indentStrObj)) !== "") {
       blocks.push({
         begin: beginObj.value,
         end: endObj.value,
@@ -162,12 +162,12 @@ var EnigmailArmor = {
       i = endObj.value;
     }
 
-    EnigmailLog.DEBUG("armor.jsm: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
+    AutocryptLog.DEBUG("armor.jsm: locateArmorBlocks: Found " + blocks.length + " Blocks\n");
     return blocks;
   },
 
   extractSignaturePart: function(signatureBlock, part) {
-    EnigmailLog.DEBUG("armor.jsm: Enigmail.extractSignaturePart: part=" + part + "\n");
+    AutocryptLog.DEBUG("armor.jsm: Autocrypt.extractSignaturePart: part=" + part + "\n");
 
     return searchBlankLine(signatureBlock, function(offset) {
       return indexOfNewline(signatureBlock, offset + 1, function(offset) {
@@ -176,7 +176,7 @@ var EnigmailArmor = {
           return "";
         }
 
-        if (part === EnigmailConstants.SIGNATURE_TEXT) {
+        if (part === AutocryptConstants.SIGNATURE_TEXT) {
           return signatureBlock.substr(offset + 1, beginIndex - offset - 1).
           replace(/^- -/, "-").
           replace(/\n- -/g, "\n-").
@@ -192,12 +192,12 @@ var EnigmailArmor = {
           var signBlock = signatureBlock.substr(offset, endIndex - offset);
 
           return searchBlankLine(signBlock, function(armorIndex) {
-            if (part == EnigmailConstants.SIGNATURE_HEADERS) {
+            if (part == AutocryptConstants.SIGNATURE_HEADERS) {
               return signBlock.substr(1, armorIndex);
             }
 
             return indexOfNewline(signBlock, armorIndex + 1, function(armorIndex) {
-              if (part == EnigmailConstants.SIGNATURE_ARMOR) {
+              if (part == AutocryptConstants.SIGNATURE_ARMOR) {
                 return signBlock.substr(armorIndex, endIndex - armorIndex).
                 replace(/\s*/g, "");
               } else {

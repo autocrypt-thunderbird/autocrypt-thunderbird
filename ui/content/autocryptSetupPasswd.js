@@ -8,7 +8,7 @@
 
 "use strict";
 
-var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+var AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
 
 var gInputArgs;
 
@@ -17,11 +17,11 @@ function onLoad() {
 
   if (gInputArgs.dlgMode !== "input") {
     document.getElementById("enigmailAutocryptSetupPasswd").buttons = "accept";
-    document.getElementById("dlgDesc").setAttribute("description", EnigmailLocale.getString("enigmail.acSetupPasswd.descCopyPasswd"));
+    document.getElementById("dlgDesc").setAttribute("description", AutocryptLocale.getString("enigmail.acSetupPasswd.descCopyPasswd"));
     let b = document.getElementById("enigmailAutocryptSetupPasswd").getButton("accept");
     b.focus();
   } else {
-    document.getElementById("dlgDesc").setAttribute("description", EnigmailLocale.getString("enigmail.acSetupPasswd.descEnterPasswd"));
+    document.getElementById("dlgDesc").setAttribute("description", AutocryptLocale.getString("enigmail.acSetupPasswd.descEnterPasswd"));
   }
 
   if (gInputArgs.passwdType == "numeric9x4") {

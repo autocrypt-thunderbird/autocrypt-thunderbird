@@ -6,15 +6,15 @@
 
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
-/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
-/* global EnigConfirm: false, EnigmailLog: false, EnigmailKeyRing: false, EnigmailDialog: false */
-/* global EnigmailWindows: false, EnigmailFuncs: false, EnigFilePicker: false, EnigAlert: false */
-/* global EnigmailFiles: false */
+/* global EnigInitCommon: false, GetAutocryptSvc: false, EnigGetString: false, EnigHelpWindow: false */
+/* global EnigConfirm: false, AutocryptLog: false, AutocryptKeyRing: false, AutocryptDialog: false */
+/* global AutocryptWindows: false, AutocryptFuncs: false, EnigFilePicker: false, EnigAlert: false */
+/* global AutocryptFiles: false */
 
 "use strict";
 
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const AutocryptAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").AutocryptAutocryptSetup;
 const AutocryptSetupImport = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetupImport.jsm").AutocryptSetupImport;
 
 // Initialize enigmailCommon
@@ -23,7 +23,7 @@ EnigInitCommon("manageAllKeys");
 const views = { };
 
 async function onLoad() {
-  EnigmailLog.DEBUG("manageAllKeys.js: onLoad()\n");
+  AutocryptLog.DEBUG("manageAllKeys.js: onLoad()\n");
 
   views.dialog = document.getElementById("manageAllKeys");
   views.labelKeyStatus = document.getElementById("labelKeyStatus");
@@ -48,12 +48,12 @@ async function onLoad() {
 }
 
 async function refreshKeyList() {
-  let secret_keys = await EnigmailKeyRing.getAllSecretKeys();
+  let secret_keys = await AutocryptKeyRing.getAllSecretKeys();
   await buildTreeView(secret_keys);
 }
 
 async function buildTreeView(secret_keys) {
-  EnigmailLog.DEBUG("manageAllKeys.js: buildTreeView\n");
+  AutocryptLog.DEBUG("manageAllKeys.js: buildTreeView\n");
 
   clearTreeView();
 
@@ -81,12 +81,12 @@ function clearTreeView() {
 async function getKeyInfo(secret_key) {
   const fingerprint = secret_key.getFingerprint().toString().toUpperCase();
 
-  const autocrypt_infos = await EnigmailAutocrypt.getAutocryptSettingsByFingerprint(fingerprint);
+  const autocrypt_infos = await AutocryptAutocrypt.getAutocryptSettingsByFingerprint(fingerprint);
 
   let used_for_all = autocrypt_infos.map(info => info.email);
   let used_for = used_for_all.length ? used_for_all[0] : null;
 
-  let created_for_all = secret_key.getUserIds().map(addr => EnigmailFuncs.stripEmail(addr));
+  let created_for_all = secret_key.getUserIds().map(addr => AutocryptFuncs.stripEmail(addr));
   created_for_all.sort();
   let created_for = created_for_all.length ? created_for_all[0] : null;
 
@@ -94,7 +94,7 @@ async function getKeyInfo(secret_key) {
   return {
     'identifier': fingerprint,
     'fpr_short': fingerprint,
-    'fpr': EnigmailFuncs.formatFpr(fingerprint),
+    'fpr': AutocryptFuncs.formatFpr(fingerprint),
     'created': creation,
     'created_date': creation.toLocaleDateString(),
     'created_full': creation.toLocaleString(),
@@ -130,11 +130,11 @@ function buildTreeRow(key_info) {
 }
 
 async function onKeySelect() {
-  EnigmailLog.DEBUG("manageAllKeys.js: onKeySelect\n");
+  AutocryptLog.DEBUG("manageAllKeys.js: onKeySelect\n");
 
   const identifier = views.keyList.view.getItemAtIndex(views.keyList.currentIndex).getAttribute("identifier");
 
-  const secret_keys = await EnigmailKeyRing.getAllSecretKeysMap();
+  const secret_keys = await AutocryptKeyRing.getAllSecretKeysMap();
   const secret_key = secret_keys[identifier];
   const key_info = await getKeyInfo(secret_key);
 
@@ -165,14 +165,14 @@ async function onKeySelect() {
 }
 
 async function onClickBackup() {
-  EnigmailLog.DEBUG("manageAllKeys.js: onClickBackup\n");
+  AutocryptLog.DEBUG("manageAllKeys.js: onClickBackup\n");
 
   const identifier = views.keyList.view.getItemAtIndex(views.keyList.currentIndex).getAttribute("identifier");
   if (!identifier) {
     return;
   }
 
-  const secret_keys = await EnigmailKeyRing.getAllSecretKeysMap();
+  const secret_keys = await AutocryptKeyRing.getAllSecretKeysMap();
   const secret_key = secret_keys[identifier];
   if (!secret_key) {
     return;
@@ -184,9 +184,9 @@ async function onClickBackup() {
   var exitCodeObj = {};
   var errorMsgObj = {};
 
-  let setup_message = await EnigmailAutocryptSetup.createBackupFile(secret_key);
+  let setup_message = await AutocryptAutocryptSetup.createBackupFile(secret_key);
 
-  if (!EnigmailFiles.writeFileContents(outFile, setup_message.msg)) {
+  if (!AutocryptFiles.writeFileContents(outFile, setup_message.msg)) {
     EnigAlert("Failed!");
   } else {
     EnigAlert(`Ok: ${setup_message.passwd}`);
@@ -201,7 +201,7 @@ async function onClickImport() {
     ]);
   if (!outFile) return;
 
-  const content = EnigmailFiles.readFile(outFile);
+  const content = AutocryptFiles.readFile(outFile);
   const importOk = await AutocryptSetupImport.importContent(window, content);
 
   if (importOk) {
@@ -229,7 +229,7 @@ async function onClickForget() {
     "chrome,dialog,modal,centerscreen", args, result);
 
   if (result.confirmed) {
-    EnigmailLog.DEBUG(`onClickForget(): ok\n`);
+    AutocryptLog.DEBUG(`onClickForget(): ok\n`);
 
     views.labelKeyStatus.value = 'Removing…';
     views.labelKeyFpr.value = '';
@@ -244,7 +244,7 @@ async function onClickForget() {
     views.buttonBackup.setAttribute("disabled", true);
 
     setTimeout(async function() {
-      await EnigmailKeyRing.forgetSecretKey(identifier);
+      await AutocryptKeyRing.forgetSecretKey(identifier);
       views.labelKeyStatus.value = 'Key removed!';
       await refreshKeyList();
     }, 100);

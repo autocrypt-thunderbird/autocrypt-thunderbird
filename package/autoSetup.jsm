@@ -11,21 +11,21 @@
  *  found in the inbox
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailAutoSetup"];
+var EXPORTED_SYMBOLS = ["AutocryptAutoSetup"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+const AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+const AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
-const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
-const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
+const AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
+const AutocryptStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").AutocryptStreams;
 
 // Interfaces
 const nsIFolderLookupService = Ci.nsIFolderLookupService;
@@ -40,13 +40,13 @@ const nsIMsgFolder = Ci.nsIMsgFolder;
  * the determined setup type
  */
 var gDeterminedSetupType = {
-  value: EnigmailConstants.AUTOSETUP_NOT_INITIALIZED
+  value: AutocryptConstants.AUTOSETUP_NOT_INITIALIZED
 };
 
-var EnigmailAutoSetup = {
+var AutocryptAutoSetup = {
 
   getDeterminedSetupType: async function() {
-    if (gDeterminedSetupType.value === EnigmailConstants.AUTOSETUP_NOT_INITIALIZED) {
+    if (gDeterminedSetupType.value === AutocryptConstants.AUTOSETUP_NOT_INITIALIZED) {
       return await this.determinePreviousInstallType();
     }
     else
@@ -54,26 +54,26 @@ var EnigmailAutoSetup = {
   },
 
   /**
-   * Identify which type of setup the user had before Enigmail was (re-)installed
+   * Identify which type of setup the user had before Autocrypt was (re-)installed
    *
    * @return Promise<Object> with:
-   *   - value : For each case assigned value, see EnigmailConstants.AUTOSETUP_xxx values
+   *   - value : For each case assigned value, see AutocryptConstants.AUTOSETUP_xxx values
    *   - acSetupMessage {nsIMsgDBHdr}  in case value === 1
    *   - msgHeaders {Object}           in case value === 2
    */
   determinePreviousInstallType: function() {
     let self = this;
     gDeterminedSetupType = {
-      value: EnigmailConstants.AUTOSETUP_NOT_INITIALIZED
+      value: AutocryptConstants.AUTOSETUP_NOT_INITIALIZED
     };
 
     return new Promise(async (resolve, reject) => {
-      EnigmailLog.DEBUG("autoSetup.jsm: determinePreviousInstallType()\n");
+      AutocryptLog.DEBUG("autoSetup.jsm: determinePreviousInstallType()\n");
 
       let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
       let folderService = Cc["@mozilla.org/mail/folder-lookup;1"].getService(nsIFolderLookupService);
       let returnMsgValue = {
-        value: EnigmailConstants.AUTOSETUP_NO_HEADER
+        value: AutocryptConstants.AUTOSETUP_NO_HEADER
       };
 
       var accounts = msgAccountManager.accounts;
@@ -83,7 +83,7 @@ var EnigmailAutoSetup = {
 
       // If no account, except Local Folders is configured
       if (accounts.length <= 1) {
-        gDeterminedSetupType.value = EnigmailConstants.AUTOSETUP_NO_ACCOUNT;
+        gDeterminedSetupType.value = AutocryptConstants.AUTOSETUP_NO_ACCOUNT;
         resolve(gDeterminedSetupType);
         return;
       }
@@ -93,7 +93,7 @@ var EnigmailAutoSetup = {
       for (var i = 0; i < accounts.length; i++) {
         var account = accounts.queryElementAt(i, Ci.nsIMsgAccount);
         var accountMsgServer = account.incomingServer;
-        EnigmailLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: scanning account "${accountMsgServer.prettyName}"\n`);
+        AutocryptLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: scanning account "${accountMsgServer.prettyName}"\n`);
 
         let msgFolderArr = [];
 
@@ -101,7 +101,7 @@ var EnigmailAutoSetup = {
           getMsgFolders(account.incomingServer.rootFolder, msgFolderArr);
         }
         catch (e) {
-          EnigmailLog.DEBUG("autoSetup.jsm: determinePreviousInstallType: Error: " + e + "\n");
+          AutocryptLog.DEBUG("autoSetup.jsm: determinePreviousInstallType: Error: " + e + "\n");
         }
 
         if (account.incomingServer.type.search(/^(none|nntp)$/) === 0) {
@@ -121,7 +121,7 @@ var EnigmailAutoSetup = {
             continue;
           }
 
-          EnigmailLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: scanning folder "${msgFolder.name}"\n`);
+          AutocryptLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: scanning folder "${msgFolder.name}"\n`);
 
           let msgEnumerator = msgDatabase.ReverseEnumerateMessages();
 
@@ -132,7 +132,7 @@ var EnigmailAutoSetup = {
 
             let msgAuthor = "";
             try {
-              msgAuthor = EnigmailFuncs.stripEmail(msgHeader.author);
+              msgAuthor = AutocryptFuncs.stripEmail(msgHeader.author);
             }
             catch (x) {}
 
@@ -165,12 +165,12 @@ var EnigmailAutoSetup = {
       }
 
       if (returnMsgValue.acSetupMessage) {
-        EnigmailLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: found AC-Setup message\n`);
+        AutocryptLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: found AC-Setup message\n`);
         gDeterminedSetupType = returnMsgValue;
         resolve(gDeterminedSetupType);
       }
       else {
-        EnigmailLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}\n`);
+        AutocryptLog.DEBUG(`msgHeaders.length: ${msgHeaders.length}\n`);
 
         // find newest message to know the protocol
         let latestMsg = null;
@@ -186,11 +186,11 @@ var EnigmailAutoSetup = {
 
         if (latestMsg) {
           if (latestMsg.msgType === "Autocrypt") {
-            returnMsgValue.value = EnigmailConstants.AUTOSETUP_AC_HEADER;
+            returnMsgValue.value = AutocryptConstants.AUTOSETUP_AC_HEADER;
             returnMsgValue.msgHeaders = msgHeaders;
           }
           else {
-            returnMsgValue.value = EnigmailConstants.AUTOSETUP_ENCRYPTED_MSG;
+            returnMsgValue.value = AutocryptConstants.AUTOSETUP_ENCRYPTED_MSG;
             returnMsgValue.msgHeaders = msgHeaders;
           }
         }
@@ -205,7 +205,7 @@ var EnigmailAutoSetup = {
         }
 
         gDeterminedSetupType = returnMsgValue;
-        EnigmailLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: found type: ${returnMsgValue.value}\n`);
+        AutocryptLog.DEBUG(`autoSetup.jsm: determinePreviousInstallType: found type: ${returnMsgValue.value}\n`);
         resolve(returnMsgValue);
       }
     });
@@ -227,41 +227,41 @@ var EnigmailAutoSetup = {
    */
 
   performAutocryptSetup: async function(headerValue, passwordWindow = null, confirmWindow = null) {
-    EnigmailLog.DEBUG("autoSetup.jsm: performAutocryptSetup()\n");
+    AutocryptLog.DEBUG("autoSetup.jsm: performAutocryptSetup()\n");
 
     let imported = 0;
     if (headerValue.attachment.contentType.search(/^application\/autocrypt-setup$/i) === 0) {
       try {
-        let res = await EnigmailAutocrypt.getSetupMessageData(headerValue.attachment.url);
-        let passwd = EnigmailWindows.autocryptSetupPasswd(passwordWindow, "input", res.passphraseFormat, res.passphraseHint);
+        let res = await AutocryptAutocrypt.getSetupMessageData(headerValue.attachment.url);
+        let passwd = AutocryptWindows.autocryptSetupPasswd(passwordWindow, "input", res.passphraseFormat, res.passphraseHint);
 
         if ((!passwd) || passwd == "") {
           throw "noPasswd";
         }
 
-        await EnigmailAutocrypt.handleBackupMessage(passwd, res.attachmentData, headerValue.acSetupMessage.author);
-        EnigmailDialog.info(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.success", headerValue.acSetupMessage.author));
+        await AutocryptAutocrypt.handleBackupMessage(passwd, res.attachmentData, headerValue.acSetupMessage.author);
+        AutocryptDialog.info(confirmWindow, AutocryptLocale.getString("autocrypt.importSetupKey.success", headerValue.acSetupMessage.author));
         imported = 1;
       }
       catch (err) {
-        EnigmailLog.DEBUG("autoSetup.jsm: performAutocryptSetup got cancel status=" + err + "\n");
+        AutocryptLog.DEBUG("autoSetup.jsm: performAutocryptSetup got cancel status=" + err + "\n");
         imported = -1;
 
         switch (err) {
           case "getSetupMessageData":
-            EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.invalidMessage"));
+            AutocryptDialog.alert(confirmWindow, AutocryptLocale.getString("autocrypt.importSetupKey.invalidMessage"));
             break;
           case "wrongPasswd":
-            if (EnigmailDialog.confirmDlg(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.wrongPasswd"), EnigmailLocale.getString("dlg.button.retry"),
-                EnigmailLocale.getString("dlg.button.cancel"))) {
-              EnigmailAutoSetup.performAutocryptSetup(headerValue);
+            if (AutocryptDialog.confirmDlg(confirmWindow, AutocryptLocale.getString("autocrypt.importSetupKey.wrongPasswd"), AutocryptLocale.getString("dlg.button.retry"),
+                AutocryptLocale.getString("dlg.button.cancel"))) {
+              AutocryptAutoSetup.performAutocryptSetup(headerValue);
             }
             break;
           case "keyImportFailed":
-            EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("autocrypt.importSetupKey.invalidKey"));
+            AutocryptDialog.alert(confirmWindow, AutocryptLocale.getString("autocrypt.importSetupKey.invalidKey"));
             break;
           default:
-            EnigmailDialog.alert(confirmWindow, EnigmailLocale.getString("keyserver.error.unknown"));
+            AutocryptDialog.alert(confirmWindow, AutocryptLocale.getString("keyserver.error.unknown"));
         }
       }
     }
@@ -278,7 +278,7 @@ var EnigmailAutoSetup = {
    */
 
   processAutocryptHeader: function(setupType) {
-    EnigmailLog.DEBUG("autoSetup.jsm: processAutocryptHeader()\n");
+    AutocryptLog.DEBUG("autoSetup.jsm: processAutocryptHeader()\n");
 
     return new Promise(async (resolve, reject) => {
 
@@ -295,13 +295,13 @@ var EnigmailAutoSetup = {
       }
 
       let sysType = latestMsg.msgType;
-      EnigmailLog.DEBUG(`autoSetup.jsm: processAutocryptHeader: got type: ${sysType}\n`);
+      AutocryptLog.DEBUG(`autoSetup.jsm: processAutocryptHeader: got type: ${sysType}\n`);
 
 
       for (let i = 0; i < setupType.msgHeaders.length; i++) {
         if (setupType.msgHeaders[i].msgType === "Autocrypt") {
           // FIXME
-          let success = await EnigmailAutocrypt.processAutocryptHeader(setupType.msgHeaders[i].fromAddr, [setupType.msgHeaders[i].msgData],
+          let success = await AutocryptAutocrypt.processAutocryptHeader(setupType.msgHeaders[i].fromAddr, [setupType.msgHeaders[i].msgData],
             setupType.msgHeaders[i].date);
           if (success !== 0) {
             resolve(1);
@@ -321,10 +321,10 @@ var EnigmailAutoSetup = {
    *                               the process
    */
   createKeyForAllAccounts: function(timeoutValue = 1000) {
-    EnigmailLog.DEBUG("autoSetup.jsm: createKeyForAllAccounts()\n");
+    AutocryptLog.DEBUG("autoSetup.jsm: createKeyForAllAccounts()\n");
     let self = this;
 
-    EnigmailTimer.setTimeout(async function _f() {
+    AutocryptTimer.setTimeout(async function _f() {
       let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
       let accounts = msgAccountManager.accounts;
       let createdKeys = [];
@@ -335,9 +335,9 @@ var EnigmailAutoSetup = {
 
         if (id && id.email) {
           let keyId = await self.createAutocryptKey(id.fullName, id.email);
-          EnigmailLog.DEBUG(`autoSetup.jsm: createKeyForAllAccounts: created key ${keyId}\n`);
+          AutocryptLog.DEBUG(`autoSetup.jsm: createKeyForAllAccounts: created key ${keyId}\n`);
           if (keyId) {
-            let keyObj = EnigmailKeyRing.getKeyById(keyId);
+            let keyObj = AutocryptKeyRing.getKeyById(keyId);
             if (keyObj) createdKeys.push(keyObj);
             id.setBoolAttribute("enablePgp", true);
             id.setCharAttribute("pgpkeyId", keyId);
@@ -363,7 +363,7 @@ var EnigmailAutoSetup = {
    */
   createAutocryptKey: function(userName, userEmail) {
     return new Promise((resolve, reject) => {
-      EnigmailLog.DEBUG("autoSetup.jsm: createAutocryptKey()\n");
+      AutocryptLog.DEBUG("autoSetup.jsm: createAutocryptKey()\n");
 
       let keyType = "ECC",
         keyLength = 0;
@@ -377,23 +377,23 @@ var EnigmailAutoSetup = {
 
           onDataAvailable: function(data) {},
           onStopRequest: function(exitCode) {
-            EnigmailLog.DEBUG("autoSetup.jsm: createAutocryptKey(): key generation complete\n");
+            AutocryptLog.DEBUG("autoSetup.jsm: createAutocryptKey(): key generation complete\n");
             resolve(generateObserver.keyId);
           }
         };
 
       try {
-        let keygenRequest = EnigmailKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
+        let keygenRequest = AutocryptKeyRing.generateKey(userName, "", userEmail, expiry, keyLength, keyType, passphrase, generateObserver);
       }
       catch (ex) {
-        EnigmailLog.DEBUG("autoSetup.jsm: createAutocryptKey: error: " + ex.message);
+        AutocryptLog.DEBUG("autoSetup.jsm: createAutocryptKey: error: " + ex.message);
         resolve(null);
       }
     });
   },
 
   /**
-   * Configure Enigmail to use existing keys
+   * Configure Autocrypt to use existing keys
    */
   applyExistingKeys: function() {
     let msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"].getService(nsIMsgAccountManager);
@@ -403,9 +403,9 @@ var EnigmailAutoSetup = {
       let id = identities.queryElementAt(i, Ci.nsIMsgIdentity);
 
       if (id && id.email) {
-        let keyObj = EnigmailKeyRing.getSecretKeyByEmail(id.email);
+        let keyObj = AutocryptKeyRing.getSecretKeyByEmail(id.email);
         if (keyObj) {
-          EnigmailLog.DEBUG(`autoSetup.jsm: applyExistingKeys: found key ${keyObj.keyId}\n`);
+          AutocryptLog.DEBUG(`autoSetup.jsm: applyExistingKeys: found key ${keyObj.keyId}\n`);
           id.setBoolAttribute("enablePgp", true);
           id.setCharAttribute("pgpkeyId", "0x" + keyObj.fpr);
           id.setIntAttribute("pgpKeyMode", 1);
@@ -592,9 +592,9 @@ function getStreamedHeaders(msgURI, mms) {
     let headers = Cc["@mozilla.org/messenger/mimeheaders;1"].createInstance(Ci.nsIMimeHeaders);
     let headerObj = {};
     try {
-      mms.streamHeaders(msgURI, EnigmailStreams.newStringStreamListener(aRawString => {
+      mms.streamHeaders(msgURI, AutocryptStreams.newStringStreamListener(aRawString => {
         try {
-          //EnigmailLog.DEBUG(`getStreamedHeaders: ${aRawString}\n`);
+          //AutocryptLog.DEBUG(`getStreamedHeaders: ${aRawString}\n`);
           headers.initialize(aRawString);
 
           let i = headers.headerNames;
@@ -609,7 +609,7 @@ function getStreamedHeaders(msgURI, mms) {
             let acHeader = headers.extractHeader("autocrypt", false);
             acHeader = acHeader.replace(/keydata=/i, 'keydata="') + '"';
 
-            let paramArr = EnigmailMime.getAllParameters(acHeader);
+            let paramArr = AutocryptMime.getAllParameters(acHeader);
             paramArr.keydata = paramArr.keydata.replace(/[\r\n\t ]/g, "");
 
             headerObj.autocrypt = "";
@@ -623,14 +623,14 @@ function getStreamedHeaders(msgURI, mms) {
         }
         catch (e) {
           reject({});
-          EnigmailLog.DEBUG("autoSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
+          AutocryptLog.DEBUG("autoSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
         }
         resolve(headerObj);
       }), null, false);
     }
     catch (e) {
       reject({});
-      EnigmailLog.DEBUG("autoSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
+      AutocryptLog.DEBUG("autoSetup.jsm: getStreamedHeaders: Error: " + e + "\n");
     }
   });
 }

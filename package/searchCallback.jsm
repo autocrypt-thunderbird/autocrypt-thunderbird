@@ -6,12 +6,12 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailSearchCallback"];
+const EXPORTED_SYMBOLS = ["AutocryptSearchCallback"];
 
-const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+const AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
 
 
-var EnigmailSearchCallback = {
+var AutocryptSearchCallback = {
   /**
    * Set up a callback function on a textbox that tiggers an action. 
    * If ESC is pressed, the input field is emtpied; return triggers the action immediately.
@@ -26,7 +26,7 @@ var EnigmailSearchCallback = {
 
     function applyActionImmediately() {
       if (timeoutObj.value) {
-        EnigmailTimer.clearTimeout(timeoutObj.value);
+        AutocryptTimer.clearTimeout(timeoutObj.value);
         timeoutObj.value = null;
       }
       applyAction();
@@ -59,7 +59,7 @@ var EnigmailSearchCallback = {
       }
 
       if (!timeoutObj.value) {
-        timeoutObj.value = EnigmailTimer.setTimeout(function() {
+        timeoutObj.value = AutocryptTimer.setTimeout(function() {
             timeoutObj.value = null;
             applyAction();
           },

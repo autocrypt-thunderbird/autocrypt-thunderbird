@@ -7,22 +7,22 @@
 
 var EXPORTED_SYMBOLS = ["AutocryptSecret"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
 
 var AutocryptSecret = {
   generateKeysForAllIdentities: async function() {
-    const identities = EnigmailStdlib.getIdentities();
+    const identities = AutocryptStdlib.getIdentities();
     const emails = identities.map(identity => identity.identity.email);
     const autocrypt_rows = await sqlite.retrieveAutocryptRows(emails);
 
     for (let email of emails) {
       if (autocrypt_rows && autocrypt_rows.find(row => row.email == email && row.fpr_primary)) {
-        EnigmailLog.DEBUG(`autocryptSecret.jsm: generateKeysForAllIdentities(): skipping ${email}\n`);
+        AutocryptLog.DEBUG(`autocryptSecret.jsm: generateKeysForAllIdentities(): skipping ${email}\n`);
         continue;
       }
       await this.generateKeyForEmail(email);
@@ -30,13 +30,13 @@ var AutocryptSecret = {
   },
 
   generateKeyForEmail: async function(email) {
-    EnigmailLog.DEBUG(`autocryptSecret.jsm: generateKeyForEmail(${email})\n`);
+    AutocryptLog.DEBUG(`autocryptSecret.jsm: generateKeyForEmail(${email})\n`);
 
-    const openpgp = EnigmailCryptoAPI();
+    const openpgp = AutocryptCryptoAPI();
     let secret_key = await openpgp.generateAutocryptKey(email);
     let fpr_primary = secret_key.getFingerprint().toUpperCase();
 
-    await EnigmailKeyRing.insertSecretKey(secret_key);
+    await AutocryptKeyRing.insertSecretKey(secret_key);
 
     let is_mutual = false;
     let autocrypt_rows = await sqlite.retrieveAutocryptRows([email]);
@@ -48,15 +48,15 @@ var AutocryptSecret = {
     await sqlite.autocryptInsertOrUpdateLastSeenMessage(email, effective_date);
     await sqlite.autocryptUpdateKey(email, effective_date, fpr_primary, is_mutual, true);
 
-    EnigmailLog.DEBUG(`autocryptSecret.jsm: generateKeyForEmail(): ok\n`);
+    AutocryptLog.DEBUG(`autocryptSecret.jsm: generateKeyForEmail(): ok\n`);
   },
 
   changeSecretKeyForEmail: async function(email, fpr_primary) {
-    EnigmailLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail()\n`);
+    AutocryptLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail()\n`);
 
-    let secret_keys_map = await EnigmailKeyRing.getAllSecretKeysMap();
+    let secret_keys_map = await AutocryptKeyRing.getAllSecretKeysMap();
     if (fpr_primary && !(fpr_primary in secret_keys_map)) {
-      EnigmailLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail(): unknown key!\n`);
+      AutocryptLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail(): unknown key!\n`);
       return;
     }
 
@@ -70,6 +70,6 @@ var AutocryptSecret = {
     await sqlite.autocryptInsertOrUpdateLastSeenMessage(email, effective_date);
     await sqlite.autocryptUpdateKey(email, effective_date, fpr_primary, is_mutual, true);
 
-    EnigmailLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail(): ok\n`);
+    AutocryptLog.DEBUG(`autocryptSecret.jsm: changeSecretKeyForEmail(): ok\n`);
   }
 };

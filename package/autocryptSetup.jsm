@@ -11,47 +11,47 @@
  *  found in the inbox
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailAutocryptSetup"];
+var EXPORTED_SYMBOLS = ["AutocryptAutocryptSetup"];
 
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
-const EnigmailOpenPGP = ChromeUtils.import("chrome://autocrypt/content/modules/openpgp.jsm").EnigmailOpenPGP;
-const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
-const EnigmailSend = ChromeUtils.import("chrome://autocrypt/content/modules/send.jsm").EnigmailSend;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").AutocryptLazy;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const AutocryptArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").AutocryptArmor;
+const AutocryptOpenPGP = ChromeUtils.import("chrome://autocrypt/content/modules/openpgp.jsm").AutocryptOpenPGP;
+const AutocryptRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").AutocryptRNG;
+const AutocryptSend = ChromeUtils.import("chrome://autocrypt/content/modules/send.jsm").AutocryptSend;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
-const getOpenPGP = EnigmailLazy.loader("autocrypt/openpgp.jsm", "EnigmailOpenPGP");
+const getOpenPGP = AutocryptLazy.loader("autocrypt/openpgp.jsm", "AutocryptOpenPGP");
 const openpgp = getOpenPGP().openpgp;
 
 const nsIMsgAccountManager = Ci.nsIMsgAccountManager;
 
 var gCreatedSetupIds = [];
 
-var EnigmailAutocryptSetup = {
+var AutocryptAutocryptSetup = {
   createBackupOuterMsg: function(toEmail, encryptedMsg) {
-    let boundary = EnigmailMime.createBoundary();
+    let boundary = AutocryptMime.createBoundary();
 
     let msgStr = 'To: ' + toEmail + '\r\n' +
       'From: ' + toEmail + '\r\n' +
       'Autocrypt-Setup-Message: v1\r\n' +
-      'Subject: ' + EnigmailLocale.getString("autocrypt.setupMsg.subject") + '\r\n' +
+      'Subject: ' + AutocryptLocale.getString("autocrypt.setupMsg.subject") + '\r\n' +
       'Content-type: multipart/mixed; boundary="' + boundary + '"\r\n\r\n' +
       '--' + boundary + '\r\n' +
       'Content-Type: text/plain\r\n\r\n' +
-      EnigmailLocale.getString("autocryptSetupReq.setupMsg.desc") + '\r\n\r\n' +
-      EnigmailLocale.getString("autocrypt.setupMsg.msgBody") + '\r\n\r\n' +
-      EnigmailLocale.getString("autocryptSetupReq.setupMsg.backup") + '\r\n' +
+      AutocryptLocale.getString("autocryptSetupReq.setupMsg.desc") + '\r\n\r\n' +
+      AutocryptLocale.getString("autocrypt.setupMsg.msgBody") + '\r\n\r\n' +
+      AutocryptLocale.getString("autocryptSetupReq.setupMsg.backup") + '\r\n' +
       '--' + boundary + '\r\n' +
       'Content-Type: application/autocrypt-setup\r\n' +
       'Content-Disposition: attachment; filename="autocrypt-setup-message.html"\r\n\r\n' +
       '<html><body>\r\n' +
-      '<p>' + EnigmailLocale.getString("autocrypt.setupMsg.fileTxt") + '</p>\r\n' +
+      '<p>' + AutocryptLocale.getString("autocrypt.setupMsg.fileTxt") + '</p>\r\n' +
       '<pre>\r\n' +
       encryptedMsg +
       '</pre></body></html>\r\n' +
@@ -68,22 +68,22 @@ var EnigmailAutocryptSetup = {
   */
   importSetupKey: function(keyData) {
 
-    EnigmailLog.DEBUG("autocrypt.jsm: importSetupKey()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: importSetupKey()\n");
 
     let preferEncrypt = "nopreference"; // Autocrypt default according spec
     let start = {},
       end = {},
       keyObj = {};
 
-    let msgType = EnigmailArmor.locateArmoredBlock(keyData, 0, "", start, end, {});
+    let msgType = AutocryptArmor.locateArmoredBlock(keyData, 0, "", start, end, {});
     if (msgType === "PRIVATE KEY BLOCK") {
 
-      let headers = EnigmailArmor.getArmorHeaders(keyData);
+      let headers = AutocryptArmor.getArmorHeaders(keyData);
       if ("autocrypt-prefer-encrypt" in headers) {
         preferEncrypt = headers["autocrypt-prefer-encrypt"];
       }
 
-      let r = EnigmailKeyRing.importKey(null, false, keyData, "", {}, keyObj);
+      let r = AutocryptKeyRing.importKey(null, false, keyData, "", {}, keyObj);
 
       if (r === 0 && keyObj.value && keyObj.value.length > 0) {
         return {
@@ -128,10 +128,10 @@ var EnigmailAutocryptSetup = {
    *             passwd: String - backup password
    */
   createBackupFile: async function(secret_key) {
-    EnigmailLog.DEBUG("autocrypt.jsm: createBackupFile()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: createBackupFile()\n");
 
-    if (!EnigmailCore.getService(null, false)) {
-      throw new Error("EnigmailCore not available!");
+    if (!AutocryptCore.getService(null, false)) {
+      throw new Error("AutocryptCore not available!");
     }
 
     try {
@@ -139,27 +139,27 @@ var EnigmailAutocryptSetup = {
       let armoredBackup = await this.createArmoredBackup(secret_key, preferEncrypt);
       return armoredBackup;
     } catch(e) {
-      EnigmailLog.DEBUG(`autocrypt.jsm: createBackupFile: error ${e}\n`);
+      AutocryptLog.DEBUG(`autocrypt.jsm: createBackupFile: error ${e}\n`);
       throw e;
     }
   },
 
   createArmoredBackup: async function(secret_key, preferEncrypt) {
     let key_data = secret_key.armor();
-    let innerMsg = EnigmailArmor.replaceArmorHeaders(key_data, {
+    let innerMsg = AutocryptArmor.replaceArmorHeaders(key_data, {
       'Autocrypt-Prefer-Encrypt': preferEncrypt
     }) + '\r\n';
 
     let bkpCode = this.createBackupCode();
     let enc = {
-      message: EnigmailOpenPGP.openpgp.message.fromText(innerMsg),
+      message: AutocryptOpenPGP.openpgp.message.fromText(innerMsg),
       passwords: bkpCode,
       armor: true
     };
 
     // create symmetrically encrypted message
-    let msg = await EnigmailOpenPGP.openpgp.encrypt(enc);
-    let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
+    let msg = await AutocryptOpenPGP.openpgp.encrypt(enc);
+    let msgData = AutocryptArmor.replaceArmorHeaders(msg.data, {
       'Passphrase-Format': 'numeric9x4',
       'Passphrase-Begin': bkpCode.substr(0, 2)
     }).replace(/\n/g, "\r\n");
@@ -180,12 +180,12 @@ var EnigmailAutocryptSetup = {
    *             passwd: String - backup password
    */
   createSetupMessage: function(email, secret_key) {
-    EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: createSetupMessage()\n");
 
     return new Promise((resolve, reject) => {
       try {
 
-        if (!EnigmailCore.getService(null, false)) {
+        if (!AutocryptCore.getService(null, false)) {
           reject(0);
           return;
         }
@@ -194,20 +194,20 @@ var EnigmailAutocryptSetup = {
 
         let preferEncrypt = "mutual"; // : "nopreference";
 
-        let innerMsg = EnigmailArmor.replaceArmorHeaders(key_data, {
+        let innerMsg = AutocryptArmor.replaceArmorHeaders(key_data, {
           'Autocrypt-Prefer-Encrypt': preferEncrypt
         }) + '\r\n';
 
         let bkpCode = this.createBackupCode();
         let enc = {
-          message: EnigmailOpenPGP.openpgp.message.fromText(innerMsg),
+          message: AutocryptOpenPGP.openpgp.message.fromText(innerMsg),
           passwords: bkpCode,
           armor: true
         };
 
         // create symmetrically encrypted message
-        EnigmailOpenPGP.openpgp.encrypt(enc).then(msg => {
-          let msgData = EnigmailArmor.replaceArmorHeaders(msg.data, {
+        AutocryptOpenPGP.openpgp.encrypt(enc).then(msg => {
+          let msgData = AutocryptArmor.replaceArmorHeaders(msg.data, {
             'Passphrase-Format': 'numeric9x4',
             'Passphrase-Begin': bkpCode.substr(0, 2)
           }).replace(/\n/g, "\r\n");
@@ -218,31 +218,31 @@ var EnigmailAutocryptSetup = {
             passwd: bkpCode
           });
         }).catch(e => {
-          EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + e + "\n");
+          AutocryptLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + e + "\n");
           reject(2);
         });
       } catch (ex) {
-        EnigmailLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + ex.toString() + "\n");
+        AutocryptLog.DEBUG("autocrypt.jsm: createSetupMessage: error " + ex.toString() + "\n");
         reject(4);
       }
     });
   },
 
   sendSetupMessage: async function(email) {
-    EnigmailLog.DEBUG("autocrypt.jsm: sendSetupMessage()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: sendSetupMessage()\n");
 
-    let autocrypt_info = await EnigmailAutocrypt.getAutocryptSettingsForIdentity(email);
+    let autocrypt_info = await AutocryptAutocrypt.getAutocryptSettingsForIdentity(email);
     if (!autocrypt_info.is_secret) {
       throw "not a secret key!";
     }
-    let secret_keys = await EnigmailKeyRing.getAllSecretKeysMap();
+    let secret_keys = await AutocryptKeyRing.getAllSecretKeysMap();
     let secret_key = secret_keys[autocrypt_info.fpr_primary];
 
     let res = await this.createSetupMessage(email, secret_key);
 
     let composeFields = Cc["@mozilla.org/messengercompose/composefields;1"].createInstance(Ci.nsIMsgCompFields);
     composeFields.characterSet = "UTF-8";
-    composeFields.messageId = EnigmailRNG.generateRandomString(27) + "-enigmail";
+    composeFields.messageId = AutocryptRNG.generateRandomString(27) + "-enigmail";
     composeFields.from = email;
     composeFields.to = email;
     gCreatedSetupIds.push(composeFields.messageId);
@@ -251,7 +251,7 @@ var EnigmailAutocryptSetup = {
     let mimeStr = "Message-Id: " + composeFields.messageId + "\r\n" +
       "Date: " + now.toUTCString() + "\r\n" + res.msg;
 
-    if (EnigmailSend.sendMessage(mimeStr, composeFields, null)) {
+    if (AutocryptSend.sendMessage(mimeStr, composeFields, null)) {
       return res.passwd;
     } else {
       throw "error sending message";

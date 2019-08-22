@@ -6,17 +6,17 @@
 
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
-/* global EnigInitCommon: false, GetEnigmailSvc: false, EnigGetString: false, EnigHelpWindow: false */
-/* global EnigConfirm: false, EnigmailLog: false, EnigmailFuncs: false, EnigmailKeyRing: false, EnigmailDialog: false */
-/* global EnigmailWindows: false, sleep: false */
+/* global EnigInitCommon: false, GetAutocryptSvc: false, EnigGetString: false, EnigHelpWindow: false */
+/* global EnigConfirm: false, AutocryptLog: false, AutocryptFuncs: false, AutocryptKeyRing: false, AutocryptDialog: false */
+/* global AutocryptWindows: false, sleep: false */
 
 "use strict";
 
-const EnigmailStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").EnigmailStdlib;
-const EnigmailAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").EnigmailAutocryptSetup;
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
+const AutocryptStdlib = ChromeUtils.import("chrome://autocrypt/content/modules/stdlib.jsm").AutocryptStdlib;
+const AutocryptAutocryptSetup = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSetup.jsm").AutocryptAutocryptSetup;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
 const AutocryptSecret = ChromeUtils.import("chrome://autocrypt/content/modules/autocryptSecret.jsm").AutocryptSecret;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
 // Initialize enigmailCommon
 EnigInitCommon("autocryptSettings");
@@ -26,18 +26,18 @@ const RESULT = 1;
 let blinkTimeout = null;
 
 function enigmailDlgOnLoad() {
-  EnigmailLog.DEBUG("enigmailDlgOnLoad()\n");
+  AutocryptLog.DEBUG("enigmailDlgOnLoad()\n");
 
   let email = window.arguments && window.arguments[0] && window.arguments[0].email;
 
   let menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
   menulistAutocryptEmail.removeAllItems();
 
-  EnigmailLog.DEBUG("enigmailDlgOnLoad(): loading identities\n");
-  let identities = EnigmailStdlib.getIdentities();
+  AutocryptLog.DEBUG("enigmailDlgOnLoad(): loading identities\n");
+  let identities = AutocryptStdlib.getIdentities();
   let selectedItem = null;
   for (const { isDefault, identity } of identities) {
-    EnigmailLog.DEBUG(`enigmailDlgOnLoad(): identity ${identity.email}\n`);
+    AutocryptLog.DEBUG(`enigmailDlgOnLoad(): identity ${identity.email}\n`);
     let item = menulistAutocryptEmail.appendItem(identity.email, String(identity.email));
     if (identity.email == email) {
       selectedItem = item;
@@ -54,7 +54,7 @@ function enigmailDlgOnLoad() {
 async function getCurrentlySelectedAutocryptRow() {
   const menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
   const item = menulistAutocryptEmail.selectedItem;
-  EnigmailLog.DEBUG(`selectIdentityByIndex(): selected item: ${item.value}\n`);
+  AutocryptLog.DEBUG(`selectIdentityByIndex(): selected item: ${item.value}\n`);
   const autocrypt_rows = await sqlite.retrieveAutocryptRows([item.value]);
   if (autocrypt_rows && autocrypt_rows.length) {
     return autocrypt_rows[0];
@@ -63,7 +63,7 @@ async function getCurrentlySelectedAutocryptRow() {
 }
 
 async function onCommandMenulistAutocryptEmail() {
-  EnigmailLog.DEBUG(`selectIdentityByIndex()\n`);
+  AutocryptLog.DEBUG(`selectIdentityByIndex()\n`);
 
   const menulistAutocryptEmail = document.getElementById("menulistAutocryptEmail");
   const menulistAutocryptMode = document.getElementById("menulistAutocryptMode");
@@ -75,8 +75,8 @@ async function onCommandMenulistAutocryptEmail() {
 
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
   if (autocrypt_info && autocrypt_info.fpr_primary) {
-    const formatted_fpr = EnigmailFuncs.formatFpr(autocrypt_info.fpr_primary);
-    EnigmailLog.DEBUG(`selectIdentityByIndex(): ${JSON.stringify(autocrypt_info)}\n`);
+    const formatted_fpr = AutocryptFuncs.formatFpr(autocrypt_info.fpr_primary);
+    AutocryptLog.DEBUG(`selectIdentityByIndex(): ${JSON.stringify(autocrypt_info)}\n`);
 
     textboxConfiguredStatus.value = "Configured";
     textboxConfiguredKey.value = formatted_fpr;
@@ -84,7 +84,7 @@ async function onCommandMenulistAutocryptEmail() {
     menulistAutocryptMode.selectedIndex = autocrypt_info.is_mutual ? 0 : 1;
     buttonSendSetupMessage.disabled = false;
   } else {
-    EnigmailLog.DEBUG(`selectIdentityByIndex(): no key selected\n`);
+    AutocryptLog.DEBUG(`selectIdentityByIndex(): no key selected\n`);
 
     textboxConfiguredStatus.value = "Not configured";
     textboxConfiguredKey.value = "None";
@@ -125,11 +125,11 @@ async function blinkAutocrpyModeSaved() {
 
 async function onClickSendSetupMessage() {
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
-  await EnigmailAutocryptSetup.sendSetupMessage(autocrypt_info.email);
+  await AutocryptAutocryptSetup.sendSetupMessage(autocrypt_info.email);
 }
 
 async function onClickManageAllKeys() {
-  EnigmailWindows.openManageAllKeys(window);
+  AutocryptWindows.openManageAllKeys(window);
 }
 
 async function onClickRunSetup() {
@@ -152,12 +152,12 @@ async function onClickRunSetup() {
   window.openDialog("chrome://autocrypt/content/ui/autocryptSetup.xul", "",
     "chrome,dialog,modal,centerscreen", args, result);
 
-  EnigmailLog.DEBUG(`selectIdentityByIndex(): result: ${result.choice}\n`);
+  AutocryptLog.DEBUG(`selectIdentityByIndex(): result: ${result.choice}\n`);
 
   switch (result.choice) {
     case 'change':
       if (result.fpr_primary == 'generate') {
-        EnigmailLog.DEBUG(`selectIdentityByIndex(): generate\n`);
+        AutocryptLog.DEBUG(`selectIdentityByIndex(): generate\n`);
         const textboxConfiguredKey = document.getElementById("textboxConfiguredKey");
         textboxConfiguredKey.value = "Generating…";
 
@@ -166,7 +166,7 @@ async function onClickRunSetup() {
           await onCommandMenulistAutocryptEmail();
         }, 50);
       } else {
-        EnigmailLog.DEBUG(`selectIdentityByIndex(): existing (${result.fpr_primary})\n`);
+        AutocryptLog.DEBUG(`selectIdentityByIndex(): existing (${result.fpr_primary})\n`);
         if (result.fpr_primary && (!autocrypt_info || result.fpr_primary != autocrypt_info.fpr_primary)) {
           await AutocryptSecret.changeSecretKeyForEmail(email, result.fpr_primary);
           await onCommandMenulistAutocryptEmail();
@@ -174,7 +174,7 @@ async function onClickRunSetup() {
       }
       break;
     case 'disable':
-      EnigmailLog.DEBUG(`selectIdentityByIndex(): disable\n`);
+      AutocryptLog.DEBUG(`selectIdentityByIndex(): disable\n`);
       await AutocryptSecret.changeSecretKeyForEmail(email, null);
       await onCommandMenulistAutocryptEmail();
       break;

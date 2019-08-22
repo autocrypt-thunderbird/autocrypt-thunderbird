@@ -35,7 +35,7 @@ const {
 
 const fixIterator = ChromeUtils.import("resource:///modules/iteratorUtils.jsm").fixIterator;
 const XPCOMUtils = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm").XPCOMUtils;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 const MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 
 XPCOMUtils.defineLazyServiceGetter(MailServices, "i18nDateFormatter",
@@ -129,8 +129,8 @@ let gIdentities = {};
  * @deprecated Use getIdenties() instead
  */
 function fillIdentities(aSkipNntp) {
-  EnigmailLog.WARNING("fillIdentities is deprecated! Use getIdentities instead!\n");
-  EnigmailLog.DEBUG("Filling identities with skipnntp = " + aSkipNntp.toString() + "\n");
+  AutocryptLog.WARNING("fillIdentities is deprecated! Use getIdentities instead!\n");
+  AutocryptLog.DEBUG("Filling identities with skipnntp = " + aSkipNntp.toString() + "\n");
 
   for (let currentIdentity of getIdentities(aSkipNntp)) {
     gIdentities[currentIdentity.identity.email] = currentIdentity.identity;
@@ -175,11 +175,11 @@ function getIdentities(aSkipNntpIdentities = true) {
     }
   }
   if (identities.length == 0) {
-    EnigmailLog.DEBUG("Didn't find any identities!\n");
+    AutocryptLog.DEBUG("Didn't find any identities!\n");
   }
   else {
     if (!identities.some(x => x.isDefault)) {
-      EnigmailLog.DEBUG("Didn't find any default key - mark the first identity as default!\n");
+      AutocryptLog.DEBUG("Didn't find any default key - mark the first identity as default!\n");
       identities[0].isDefault = true;
     }
   }
@@ -276,7 +276,7 @@ function escapeHtml(s) {
  */
 function parseMimeLine(aMimeLine, aDontFix) {
   if (aMimeLine == null) {
-    EnigmailLog.DEBUG("Empty aMimeLine?!!\n");
+    AutocryptLog.DEBUG("Empty aMimeLine?!!\n");
     return [];
   }
   let emails = {};

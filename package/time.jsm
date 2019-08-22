@@ -6,14 +6,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailTime"];
+var EXPORTED_SYMBOLS = ["AutocryptTime"];
 
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
 
 const DATE_2DIGIT = "2-digit";
 const DATE_4DIGIT = "numeric";
 
-var EnigmailTime = {
+var AutocryptTime = {
   /**
    * Transform a Unix-Timestamp to a human-readable date/time string
    *
@@ -26,7 +26,7 @@ var EnigmailTime = {
   getDateTime: function(dateNum, withDate, withTime) {
     if (dateNum && dateNum !== 0) {
       let dat = new Date(dateNum * 1000);
-      let appLocale = EnigmailLocale.get();
+      let appLocale = AutocryptLocale.get();
 
       var options = {};
 

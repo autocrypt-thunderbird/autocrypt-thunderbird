@@ -6,13 +6,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailSync"];
+var EXPORTED_SYMBOLS = ["AutocryptSync"];
 
 /*global Cc: false, Ci: false */
 
 var inspector;
 
-var EnigmailSync = {
+var AutocryptSync = {
   sync: function(promise) {
     if (!inspector) {
       inspector = Cc["@mozilla.org/jsinspector;1"].createInstance(Ci.nsIJSInspector);

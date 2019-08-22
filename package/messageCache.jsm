@@ -4,8 +4,8 @@
 
 "use strict";
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").EnigmailURIs;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptURIs = ChromeUtils.import("chrome://autocrypt/content/modules/uris.jsm").AutocryptURIs;
 
 var EXPORTED_SYMBOLS = ["AutocryptMessageCache"];
 
@@ -27,16 +27,16 @@ var AutocryptMessageCache = {
       return;
     }
     if (this.current_folder) {
-      EnigmailLog.DEBUG(`messageCache.jsm: maybeHandleFolderSwitch(): dropping cache for folder ${this.current_folder}\n`);
+      AutocryptLog.DEBUG(`messageCache.jsm: maybeHandleFolderSwitch(): dropping cache for folder ${this.current_folder}\n`);
       this.message_cache = [];
     }
     this.current_folder = folder;
   },
 
   getCachedMessage: function(uri) {
-    EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): ${uri}\n`);
+    AutocryptLog.DEBUG(`messageCache.jsm: getCachedMessage(): ${uri}\n`);
     if (this.disabled) {
-      EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): cache is disabled\n`);
+      AutocryptLog.DEBUG(`messageCache.jsm: getCachedMessage(): cache is disabled\n`);
       return null;
     }
     if (!uri || uri.spec.search(/[&?]header=enigmailConvert/) >= 0) {
@@ -48,11 +48,11 @@ var AutocryptMessageCache = {
     }
     for (let cache_entry of this.message_cache) {
       if (msg_identifier.folder === cache_entry.msg_identifier.folder && cache_entry.msg_identifier.msgNum === msg_identifier.msgNum) {
-        EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): ok\n`);
+        AutocryptLog.DEBUG(`messageCache.jsm: getCachedMessage(): ok\n`);
         return cache_entry.decrypted_message;
       }
     }
-    EnigmailLog.DEBUG(`messageCache.jsm: getCachedMessage(): not cached\n`);
+    AutocryptLog.DEBUG(`messageCache.jsm: getCachedMessage(): not cached\n`);
     return null;
   },
 
@@ -63,7 +63,7 @@ var AutocryptMessageCache = {
     if (this.getCachedMessage(uri)) {
       return;
     }
-    EnigmailLog.DEBUG(`messageCache.jsm: putCachedMessage(): ${uri}\n`);
+    AutocryptLog.DEBUG(`messageCache.jsm: putCachedMessage(): ${uri}\n`);
     let msg_identifier = getMsgIdentifier(uri);
     if (!msg_identifier) {
       return;
@@ -74,7 +74,7 @@ var AutocryptMessageCache = {
 };
 
 function getMsgIdentifier(uri) {
-  let msg_identifier = EnigmailURIs.msgIdentificationFromUrl(uri);
-  EnigmailLog.DEBUG(`messageCache.jsm: getMsgIdentifier(): ${JSON.stringify(msg_identifier)}\n`);
+  let msg_identifier = AutocryptURIs.msgIdentificationFromUrl(uri);
+  AutocryptLog.DEBUG(`messageCache.jsm: getMsgIdentifier(): ${JSON.stringify(msg_identifier)}\n`);
   return msg_identifier;
 }

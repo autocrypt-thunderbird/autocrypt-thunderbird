@@ -7,7 +7,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailRNG"];
+const EXPORTED_SYMBOLS = ["AutocryptRNG"];
 
 Components.utils.importGlobalProperties(["crypto"]); /* global crypto: false */
 
@@ -58,7 +58,7 @@ function generateRandomUint32() {
   return randomNumber[0];
 }
 
-var EnigmailRNG = {
+var AutocryptRNG = {
   generateRandomUint32: generateRandomUint32,
   generateRandomString: generateRandomString
 };

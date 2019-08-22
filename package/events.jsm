@@ -9,18 +9,18 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailEvents"];
+var EXPORTED_SYMBOLS = ["AutocryptEvents"];
 
 
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
 
-/**** DEPRECATED - use EnigmailTimer instead *****/
+/**** DEPRECATED - use AutocryptTimer instead *****/
 
-var EnigmailEvents = {
+var AutocryptEvents = {
   /**
    * dispatch event aynchronously to the main thread
    *
@@ -30,9 +30,9 @@ var EnigmailEvents = {
    * @arrayOfArgs:      Array - arguments to pass to callbackFunction
    */
   dispatchEvent: function(callbackFunction, sleepTimeMs, arrayOfArgs) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: dispatchEvent f=" + callbackFunction.name + "\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: dispatchEvent f=" + callbackFunction.name + "\n");
 
-    return EnigmailTimer.setTimeout(() => {
+    return AutocryptTimer.setTimeout(() => {
       callbackFunction(arrayOfArgs);
     }, sleepTimeMs);
   }

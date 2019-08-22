@@ -8,10 +8,10 @@
 
 "use strict";
 
-var EnigmailClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").EnigmailClipboard;
-var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
-var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").EnigmailEvents;
+var AutocryptClipboard = ChromeUtils.import("chrome://autocrypt/content/modules/clipboard.jsm").AutocryptClipboard;
+var AutocryptOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").AutocryptOS;
+var AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+var AutocryptEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").AutocryptEvents;
 
 function onLoad() {
   var dlg = document.getElementById("enigmailMsgBox");
@@ -54,7 +54,7 @@ function onLoad() {
   }
 
   if (args.dialogTitle) {
-    if (EnigmailOS.isMac) {
+    if (AutocryptOS.isMac) {
       let t = document.getElementById("macosDialogTitle");
       t.setAttribute("value", args.dialogTitle);
       t.removeAttribute("collapsed");
@@ -62,7 +62,7 @@ function onLoad() {
 
     dlg.setAttribute("title", args.dialogTitle);
   } else {
-    dlg.setAttribute("title", EnigmailLocale.getString("enigAlert"));
+    dlg.setAttribute("title", AutocryptLocale.getString("enigAlert"));
   }
 
   if (button1) {
@@ -89,7 +89,7 @@ function onLoad() {
   textbox.appendChild(textbox.ownerDocument.createTextNode(msgtext));
 
   window.addEventListener("keypress", onKeyPress);
-  EnigmailEvents.dispatchEvent(resizeDlg, 0);
+  AutocryptEvents.dispatchEvent(resizeDlg, 0);
 }
 
 function resizeDlg() {
@@ -108,7 +108,7 @@ function resizeDlg() {
 }
 
 function centerDialog() {
-  if (!EnigmailOS.isMac)
+  if (!AutocryptOS.isMac)
     document.getElementById("enigmailMsgBox").centerWindowOnScreen();
 }
 
@@ -173,7 +173,7 @@ function checkboxCb() {
 function copyToClipbrd() {
   let s = window.getSelection().toString();
 
-  EnigmailClipboard.setClipboardContent(s);
+  AutocryptClipboard.setClipboardContent(s);
 }
 
 function onKeyPress(event) {

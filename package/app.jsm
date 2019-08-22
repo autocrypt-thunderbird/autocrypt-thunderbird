@@ -8,21 +8,21 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailApp"];
+var EXPORTED_SYMBOLS = ["AutocryptApp"];
 
 
 
 
 
-const EnigmailLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").EnigmailLazy;
-const getEnigmailLog = EnigmailLazy.loader("autocrypt/log.jsm", "EnigmailLog");
+const AutocryptLazy = ChromeUtils.import("chrome://autocrypt/content/modules/lazy.jsm").AutocryptLazy;
+const getAutocryptLog = AutocryptLazy.loader("autocrypt/log.jsm", "AutocryptLog");
 
 const DIR_SERV_CONTRACTID = "@mozilla.org/file/directory_service;1";
 const ENIG_EXTENSION_GUID = "{c0b84c00-227f-4762-b4fc-354bcfe0f865}";
 const SEAMONKEY_ID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}";
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
-var EnigmailApp = {
+var AutocryptApp = {
   /**
    * Platform application name (e.g. Thunderbird)
    */
@@ -53,31 +53,31 @@ var EnigmailApp = {
   },
 
   /**
-   * Get Enigmail version
+   * Get Autocrypt version
    */
   getVersion: function() {
-    getEnigmailLog().DEBUG("app.jsm: getVersion\n");
-    getEnigmailLog().DEBUG("app.jsm: installed version: " + EnigmailApp._version + "\n");
-    return EnigmailApp._version;
+    getAutocryptLog().DEBUG("app.jsm: getVersion\n");
+    getAutocryptLog().DEBUG("app.jsm: installed version: " + AutocryptApp._version + "\n");
+    return AutocryptApp._version;
   },
 
   /**
-   * Get Enigmail installation directory
+   * Get Autocrypt installation directory
    */
   getInstallLocation: function() {
-    return EnigmailApp._installLocation;
+    return AutocryptApp._installLocation;
   },
 
   setVersion: function(version) {
-    EnigmailApp._version = version;
+    AutocryptApp._version = version;
   },
 
   setInstallLocation: function(location) {
-    EnigmailApp._installLocation = location;
+    AutocryptApp._installLocation = location;
   },
 
   initAddon: function(addon) {
-    EnigmailApp.setVersion(addon.version);
-    EnigmailApp.setInstallLocation(addon.installPath);
+    AutocryptApp.setVersion(addon.version);
+    AutocryptApp.setInstallLocation(addon.installPath);
   }
 };

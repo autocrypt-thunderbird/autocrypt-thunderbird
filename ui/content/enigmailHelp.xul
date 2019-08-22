@@ -18,9 +18,9 @@
    %utilDTD;
 ]>
 
-<window id="EnigmailHelp"
+<window id="AutocryptHelp"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        title="Enigmail Help"
+        title="Autocrypt Help"
         minwidth="600"
         minheight="400"
         onload="enigHelpLoad()"

@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailFiles: false, EnigmailCore: false, EnigmailApp: false, EnigmailDialog: false, EnigmailWindows: false, EnigmailTime: false */
+/*global Components: false, AutocryptFiles: false, AutocryptCore: false, AutocryptApp: false, AutocryptDialog: false, AutocryptWindows: false, AutocryptTime: false */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,37 +12,37 @@
 
 "use strict";
 
-// enigmailCommon.js: shared JS functions for Enigmail
+// enigmailCommon.js: shared JS functions for Autocrypt
 
 // WARNING: This module functions must not be loaded in overlays to standard functionality!
 
-// Many of these components are not used in this file, but are instead used in other files that are loaded together with EnigmailCommon
-var EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-var EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-var EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-var EnigmailOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").EnigmailOS;
-var EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-var EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-var EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-var EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
-var EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-var EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-var EnigmailTime = ChromeUtils.import("chrome://autocrypt/content/modules/time.jsm").EnigmailTime;
-var EnigmailTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").EnigmailTimer;
-var EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-var EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-var EnigmailKeyServer = ChromeUtils.import("chrome://autocrypt/content/modules/keyserver.jsm").EnigmailKeyServer;
-var EnigmailEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").EnigmailEvents;
-var EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
+// Many of these components are not used in this file, but are instead used in other files that are loaded together with AutocryptCommon
+var AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+var AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+var AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+var AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+var AutocryptOS = ChromeUtils.import("chrome://autocrypt/content/modules/os.jsm").AutocryptOS;
+var AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+var AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+var AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+var AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
+var AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+var AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+var AutocryptTime = ChromeUtils.import("chrome://autocrypt/content/modules/time.jsm").AutocryptTime;
+var AutocryptTimer = ChromeUtils.import("chrome://autocrypt/content/modules/timer.jsm").AutocryptTimer;
+var AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+var AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+var AutocryptKeyServer = ChromeUtils.import("chrome://autocrypt/content/modules/keyserver.jsm").AutocryptKeyServer;
+var AutocryptEvents = ChromeUtils.import("chrome://autocrypt/content/modules/events.jsm").AutocryptEvents;
+var AutocryptStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").AutocryptStreams;
 
 
 // The compatible Enigmime version
-var gEnigmailSvc;
+var gAutocryptSvc;
 var gEnigPromptSvc;
 
 
-// Maximum size of message directly processed by Enigmail
+// Maximum size of message directly processed by Autocrypt
 const ENIG_PROCESSINFO_CONTRACTID = "@mozilla.org/xpcom/process-info;1";
 const ENIG_ENIGMAIL_CONTRACTID = "@mozdev.org/enigmail/enigmail;1";
 const ENIG_STRINGBUNDLE_CONTRACTID = "@mozilla.org/intl/stringbundle;1";
@@ -86,33 +86,33 @@ const ENIG_HEADERMODE_URL = 0x10;
 
 
 function EnigGetFrame(win, frameName) {
-  return EnigmailWindows.getFrame(win, frameName);
+  return AutocryptWindows.getFrame(win, frameName);
 }
 
 // Initializes enigmailCommon
 function EnigInitCommon(id) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigInitCommon: id=" + id + "\n");
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigInitCommon: id=" + id + "\n");
 
   gEnigPromptSvc = enigGetService("@mozilla.org/embedcomp/prompt-service;1", "nsIPromptService");
 }
 
 
-function GetEnigmailSvc() {
-  if (!gEnigmailSvc)
-    gEnigmailSvc = EnigmailCore.getService(window);
-  return gEnigmailSvc;
+function GetAutocryptSvc() {
+  if (!gAutocryptSvc)
+    gAutocryptSvc = AutocryptCore.getService(window);
+  return gAutocryptSvc;
 }
 
 // maxBytes == -1 => read everything
 function EnigReadURLContents(url, maxBytes) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadURLContents: url=" + url +
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigReadURLContents: url=" + url +
     ", " + maxBytes + "\n");
 
   var ioServ = enigGetService(ENIG_IOSERVICE_CONTRACTID, "nsIIOService");
   if (!ioServ)
     throw Components.results.NS_ERROR_FAILURE;
 
-  var fileChannel = EnigmailStreams.createChannel(url);
+  var fileChannel = AutocryptStreams.createChannel(url);
 
   var rawInStream = fileChannel.open();
 
@@ -133,7 +133,7 @@ function EnigReadURLContents(url, maxBytes) {
 // maxBytes == -1 => read whole file
 function EnigReadFileContents(localFile, maxBytes) {
 
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigReadFileContents: file=" + localFile.leafName +
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigReadFileContents: file=" + localFile.leafName +
     ", " + maxBytes + "\n");
 
   if (!localFile.exists() || !localFile.isReadable())
@@ -153,13 +153,13 @@ function EnigReadFileContents(localFile, maxBytes) {
 
 // write exception information
 function EnigWriteException(referenceInfo, ex) {
-  EnigmailLog.writeException(referenceInfo, ex);
+  AutocryptLog.writeException(referenceInfo, ex);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 function EnigAlert(mesg) {
-  return EnigmailDialog.alert(window, mesg);
+  return AutocryptDialog.alert(window, mesg);
 }
 
 /**
@@ -173,16 +173,16 @@ function EnigAlert(mesg) {
  *
  */
 function EnigLongAlert(mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj) {
-  return EnigmailDialog.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
+  return AutocryptDialog.longAlert(window, mesg, checkBoxLabel, okLabel, labelButton2, labelButton3, checkedObj);
 }
 
 function EnigAlertPref(mesg, prefText) {
-  return EnigmailDialog.alertPref(window, mesg, prefText);
+  return AutocryptDialog.alertPref(window, mesg, prefText);
 }
 
 // Confirmation dialog with OK / Cancel buttons (both customizable)
 function EnigConfirm(mesg, okLabel, cancelLabel) {
-  return EnigmailDialog.confirmDlg(window, mesg, okLabel, cancelLabel);
+  return AutocryptDialog.confirmDlg(window, mesg, okLabel, cancelLabel);
 }
 
 
@@ -192,12 +192,12 @@ function EnigError(mesg) {
 
 
 function EnigHelpWindow(source) {
-  EnigmailWindows.openHelpWindow(source);
+  AutocryptWindows.openHelpWindow(source);
 }
 
 
 function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: " + prefName + ", " + prefValue + "\n");
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigDisplayRadioPref: " + prefName + ", " + prefValue + "\n");
 
   if (prefValue >= optionElementIds.length)
     return;
@@ -212,7 +212,7 @@ function EnigDisplayRadioPref(prefName, prefValue, optionElementIds) {
 }
 
 function EnigSetRadioPref(prefName, optionElementIds) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigSetRadioPref: " + prefName + "\n");
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigSetRadioPref: " + prefName + "\n");
 
   try {
     var groupElement = document.getElementById("enigmail_" + prefName);
@@ -228,32 +228,32 @@ function EnigSetRadioPref(prefName, optionElementIds) {
 }
 
 function EnigSavePrefs() {
-  return EnigmailPrefs.savePrefs();
+  return AutocryptPrefs.savePrefs();
 }
 
 function EnigGetPref(prefName) {
-  return EnigmailPrefs.getPref(prefName);
+  return AutocryptPrefs.getPref(prefName);
 }
 
 function EnigGetDefaultPref(prefName) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName=" + prefName + "\n");
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigGetDefaultPref: prefName=" + prefName + "\n");
   var prefValue = null;
   try {
-    EnigmailPrefs.getPrefBranch().lockPref(prefName);
+    AutocryptPrefs.getPrefBranch().lockPref(prefName);
     prefValue = EnigGetPref(prefName);
-    EnigmailPrefs.getPrefBranch().unlockPref(prefName);
+    AutocryptPrefs.getPrefBranch().unlockPref(prefName);
   } catch (ex) {}
 
   return prefValue;
 }
 
 function EnigSetPref(prefName, value) {
-  return EnigmailPrefs.setPref(prefName, value);
+  return AutocryptPrefs.setPref(prefName, value);
 }
 
 
 function EnigConvertFromUnicode(text, charset) {
-  EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: " + charset + "\n");
+  AutocryptLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: " + charset + "\n");
 
   if (!text)
     return "";
@@ -268,7 +268,7 @@ function EnigConvertFromUnicode(text, charset) {
     return unicodeConv.ConvertFromUnicode(text);
 
   } catch (ex) {
-    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
+    AutocryptLog.DEBUG("enigmailCommon.js: EnigConvertFromUnicode: caught an exception\n");
 
     return text;
   }
@@ -276,7 +276,7 @@ function EnigConvertFromUnicode(text, charset) {
 
 
 function EnigConvertToUnicode(text, charset) {
-  // EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
+  // AutocryptLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: "+charset+"\n");
 
   if (!text || !charset /*|| (charset.toLowerCase() == "iso-8859-1")*/ )
     return text;
@@ -289,13 +289,13 @@ function EnigConvertToUnicode(text, charset) {
     return unicodeConv.ConvertToUnicode(text);
 
   } catch (ex) {
-    EnigmailLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'" + text + "' to " + charset + "\n");
+    AutocryptLog.DEBUG("enigmailCommon.js: EnigConvertToUnicode: caught an exception while converting'" + text + "' to " + charset + "\n");
     return text;
   }
 }
 
 function EnigFormatFpr(fingerprint) {
-  return EnigmailFuncs.formatFpr(fingerprint);
+  return AutocryptFuncs.formatFpr(fingerprint);
 }
 
 /////////////////////////
@@ -317,11 +317,11 @@ function EnigGetWindowOptions() {
 }
 
 function EngmailCardDetails() {
-  EnigmailWindows.openCardDetails();
+  AutocryptWindows.openCardDetails();
 }
 
 function EnigKeygen() {
-  EnigmailWindows.openKeyGen();
+  AutocryptWindows.openKeyGen();
 
 }
 
@@ -334,36 +334,36 @@ function EnigGetString(aStr) {
     for (var i = 1; i < arguments.length; i++) {
       argList.push(arguments[i]);
     }
-  return EnigmailLocale.getString(aStr, (arguments.length > 1 ? argList : null));
+  return AutocryptLocale.getString(aStr, (arguments.length > 1 ? argList : null));
 }
 
 
 //get path for temporary directory (e.g. /tmp, C:\TEMP)
 function EnigGetTempDir() {
-  return EnigmailFiles.getTempDir();
+  return AutocryptFiles.getTempDir();
 }
 
 // get the OS platform
 function EnigGetOS() {
-  return EnigmailOS.getOS();
+  return AutocryptOS.getOS();
 }
 
 function EnigGetVersion() {
-  return EnigmailApp.getVersion();
+  return AutocryptApp.getVersion();
 }
 
 function EnigFilePicker(title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-  return EnigmailDialog.filePicker(window, title, displayDir, save, defaultExtension,
+  return AutocryptDialog.filePicker(window, title, displayDir, save, defaultExtension,
     defaultName, filterPairs);
 }
 
 // get keys from keyserver
 function EnigDownloadKeys(inputObj, resultObj) {
-  return EnigmailWindows.downloadKeys(window, inputObj, resultObj);
+  return AutocryptWindows.downloadKeys(window, inputObj, resultObj);
 }
 
 function EnigDisplayKeyDetails(keyId, refresh) {
-  return EnigmailWindows.openKeyDetails(window, keyId, refresh);
+  return AutocryptWindows.openKeyDetails(window, keyId, refresh);
 }
 
 
@@ -372,11 +372,11 @@ function EnigGetLocalFileApi() {
 }
 
 function EnigGetFilePath(nsFileObj) {
-  return EnigmailFiles.getFilePath(nsFileObj);
+  return AutocryptFiles.getFilePath(nsFileObj);
 }
 
 function EnigGetDateTime(dateNum, withDate, withTime) {
-  return EnigmailTime.getDateTime(dateNum, withDate, withTime);
+  return AutocryptTime.getDateTime(dateNum, withDate, withTime);
 }
 
 function enigCreateInstance(aURL, aInterface) {
@@ -460,7 +460,7 @@ function EnigGetHttpUri(aEvent) {
   let href = hRefForClickEvent(aEvent);
   if (!href) return null;
 
-  EnigmailLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='" + href + "'\n");
+  AutocryptLog.DEBUG("enigmailAbout.js: interpretHtmlClick: href='" + href + "'\n");
 
   var ioServ = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
   var uri = ioServ.newURI(href, null, null);

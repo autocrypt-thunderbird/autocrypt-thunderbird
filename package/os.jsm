@@ -8,7 +8,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailOS"];
+const EXPORTED_SYMBOLS = ["AutocryptOS"];
 
 const XPCOM_APPINFO = "@mozilla.org/xre/app-info;1";
 
@@ -33,7 +33,7 @@ function isWin32() {
   return getOS() === "WINNT";
 }
 
-var EnigmailOS = {
+var AutocryptOS = {
   /*
    * getOS uses the Mozilla nsIXULRuntime Component to retrieve the OS Target
    *

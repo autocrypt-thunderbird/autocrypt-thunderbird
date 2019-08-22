@@ -8,17 +8,17 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailMime"];
+var EXPORTED_SYMBOLS = ["AutocryptMime"];
 
 
 
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
-const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").AutocryptRNG;
+const AutocryptStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").AutocryptStreams;
 
-var EnigmailMime = {
+var AutocryptMime = {
   /***
    * create a string of random characters suitable to use for a boundary in a
    * MIME message following RFC 2045
@@ -26,7 +26,7 @@ var EnigmailMime = {
    * @return: string of 33 random characters and digits
    */
   createBoundary: function() {
-    return EnigmailRNG.generateRandomString(33);
+    return AutocryptRNG.generateRandomString(33);
   },
 
   /***
@@ -39,7 +39,7 @@ var EnigmailMime = {
    */
 
   getBoundary: function(contentTypeStr) {
-    return EnigmailMime.getParameter(contentTypeStr, "boundary");
+    return AutocryptMime.getParameter(contentTypeStr, "boundary");
   },
 
   /***
@@ -52,7 +52,7 @@ var EnigmailMime = {
    */
 
   getProtocol: function(contentTypeStr) {
-    return EnigmailMime.getParameter(contentTypeStr, "protocol");
+    return AutocryptMime.getParameter(contentTypeStr, "protocol");
   },
 
   /***
@@ -68,7 +68,7 @@ var EnigmailMime = {
    */
 
   getParameter: function(headerStr, parameter) {
-    let paramsArr = EnigmailMime.getAllParameters(headerStr);
+    let paramsArr = AutocryptMime.getAllParameters(headerStr);
     parameter = parameter.toLowerCase();
     if (parameter in paramsArr) {
       return paramsArr[parameter];
@@ -114,7 +114,7 @@ var EnigmailMime = {
    */
 
   getCharset: function(contentTypeStr) {
-    return EnigmailMime.getParameter(contentTypeStr, "charset");
+    return AutocryptMime.getParameter(contentTypeStr, "charset");
   },
 
   /**
@@ -124,7 +124,7 @@ var EnigmailMime = {
     let ret = "";
 
     if (aStr.search(/[^\x01-\x7F]/) >= 0) { // eslint-disable-line no-control-regex
-      let s = EnigmailData.convertFromUnicode(aStr, "utf-8");
+      let s = AutocryptData.convertFromUnicode(aStr, "utf-8");
       ret = "=?UTF-8?B?" + btoa(s) + "?=";
     }
     else {
@@ -246,7 +246,7 @@ var EnigmailMime = {
       }
 
 
-      bound = EnigmailMime.getBoundary(ct);
+      bound = AutocryptMime.getBoundary(ct);
       if (bound === "") return null;
 
       // search for "outer" MIME delimiter(s)
@@ -300,7 +300,7 @@ var EnigmailMime = {
 
     if (innerCt.search(/^text\/rfc822-headers/i) === 0) {
 
-      let charset = EnigmailMime.getCharset(innerCt);
+      let charset = AutocryptMime.getCharset(innerCt);
       let ctt = headers.extractHeader("content-transfer-encoding", false) || "";
 
       // determine where the headers end and the MIME-subpart body starts
@@ -313,14 +313,14 @@ var EnigmailMime = {
       let ctBodyData = contentBody.substr(bodyStartPos);
 
       if (ctt.search(/^base64/i) === 0) {
-        ctBodyData = EnigmailData.decodeBase64(ctBodyData) + "\n";
+        ctBodyData = AutocryptData.decodeBase64(ctBodyData) + "\n";
       }
       else if (ctt.search(/^quoted-printable/i) === 0) {
-        ctBodyData = EnigmailData.decodeQuotedPrintable(ctBodyData) + "\n";
+        ctBodyData = AutocryptData.decodeQuotedPrintable(ctBodyData) + "\n";
       }
 
       if (charset) {
-        ctBodyData = EnigmailData.convertToUnicode(ctBodyData, charset);
+        ctBodyData = AutocryptData.convertToUnicode(ctBodyData, charset);
       }
 
       // get the headers of the MIME-subpart body --> that's the ones we need
@@ -414,8 +414,8 @@ var EnigmailMime = {
       callbackFunc(tree);
     }
 
-    let chan = EnigmailStreams.createChannel(url);
-    let bufferListener = EnigmailStreams.newStringStreamListener(onData);
+    let chan = AutocryptStreams.createChannel(url);
+    let bufferListener = AutocryptStreams.newStringStreamListener(onData);
     chan.asyncOpen(bufferListener, null);
   },
 
@@ -508,7 +508,7 @@ function getMimeTree(mimeStr, getBody = false) {
         currentPart.body += data;
       }
       else {
-        currentPart.body += EnigmailData.arrayBufferToString(data);
+        currentPart.body += AutocryptData.arrayBufferToString(data);
       }
     }
   };

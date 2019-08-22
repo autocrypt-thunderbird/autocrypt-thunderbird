@@ -21,15 +21,15 @@ const {
 Cm.QueryInterface(Ci.nsIComponentRegistrar);
 
 
-var EXPORTED_SYMBOLS = ["EnigmailPgpmimeHander"];
+var EXPORTED_SYMBOLS = ["AutocryptPgpmimeHander"];
 
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailMimeDecrypt = ChromeUtils.import("chrome://autocrypt/content/modules/mimeDecrypt.jsm").EnigmailMimeDecrypt;
-const EnigmailVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").EnigmailVerify;
-const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").EnigmailSingletons;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptMimeDecrypt = ChromeUtils.import("chrome://autocrypt/content/modules/mimeDecrypt.jsm").AutocryptMimeDecrypt;
+const AutocryptVerify = ChromeUtils.import("chrome://autocrypt/content/modules/mimeVerify.jsm").AutocryptVerify;
+const AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptSingletons = ChromeUtils.import("chrome://autocrypt/content/modules/singletons.jsm").AutocryptSingletons;
 
 const PGPMIME_JS_DECRYPTOR_CONTRACTID = "@mozilla.org/mime/pgp-mime-js-decrypt;1";
 const PGPMIME_JS_DECRYPTOR_CID = Components.ID("{7514cbeb-2bfd-4b2c-829b-1a4691fa0ac8}");
@@ -75,7 +75,7 @@ UnknownProtoHandler.prototype = {
     if (!("outputDecryptedData" in this.mimeSvc)) {
       this.mimeSvc.onStartRequest(null, ctxt);
     }
-    this.bound = EnigmailMime.getBoundary(this.mimeSvc.contentType);
+    this.bound = AutocryptMime.getBoundary(this.mimeSvc.contentType);
     /*
       readMode:
         0: before message
@@ -86,7 +86,7 @@ UnknownProtoHandler.prototype = {
   },
 
   onDataAvailable: function(p1, p2, p3, p4) {
-    if (EnigmailTb60Compat.isMessageUriInPgpMime()) {
+    if (AutocryptTb60Compat.isMessageUriInPgpMime()) {
       this.processData(p1, p2, p3, p4);
     }
     else {
@@ -145,15 +145,15 @@ UnknownProtoHandler.prototype = {
 
 function PgpMimeHandler() {
 
-  EnigmailLog.DEBUG("pgpmimeHandler.js: PgpMimeHandler()\n"); // always log this one
+  AutocryptLog.DEBUG("pgpmimeHandler.js: PgpMimeHandler()\n"); // always log this one
 
 }
 
 PgpMimeHandler.prototype = {
-  classDescription: "Enigmail JS Decryption Handler",
+  classDescription: "Autocrypt JS Decryption Handler",
   classID: PGPMIME_JS_DECRYPTOR_CID,
   contractID: PGPMIME_JS_DECRYPTOR_CONTRACTID,
-  QueryInterface: EnigmailTb60Compat.generateQI([Ci.nsIStreamListener]),
+  QueryInterface: AutocryptTb60Compat.generateQI([Ci.nsIStreamListener]),
   inStream: Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream),
 
   onStartRequest: function(request, ctxt) {
@@ -168,16 +168,16 @@ PgpMimeHandler.prototype = {
       uri = ctxt;
     }
 
-    if (!EnigmailCore.getService()) {
-      // Ensure Enigmail is initialized
+    if (!AutocryptCore.getService()) {
+      // Ensure Autocrypt is initialized
       if (ct.search(/application\/(x-)?pkcs7-signature/i) > 0) {
         return this.handleSmime(uri);
       }
       return null;
     }
 
-    EnigmailLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
-    EnigmailLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
+    AutocryptLog.DEBUG("pgpmimeHandler.js: onStartRequest\n");
+    AutocryptLog.DEBUG("pgpmimeHandler.js: ct= " + ct + "\n");
 
     let cth = null;
 
@@ -187,12 +187,12 @@ PgpMimeHandler.prototype = {
         gLastEncryptedUri = u.spec;
       }
       // PGP/MIME encrypted message
-      cth = EnigmailMimeDecrypt.newPgpMimeHandler();
+      cth = AutocryptMimeDecrypt.newPgpMimeHandler();
     }
     else if (ct.search(/^multipart\/signed/i) === 0) {
       if (ct.search(/application\/pgp-signature/i) > 0) {
         // PGP/MIME signed message
-        cth = EnigmailVerify.newVerifier();
+        cth = AutocryptVerify.newVerifier();
       }
       else if (ct.search(/application\/(x-)?pkcs7-signature/i) > 0) {
         let lastUriSpec = "";
@@ -201,19 +201,19 @@ PgpMimeHandler.prototype = {
           lastUriSpec = u.spec;
         }
         // S/MIME signed message
-        if (lastUriSpec !== gLastEncryptedUri && EnigmailVerify.lastMsgWindow) {
+        if (lastUriSpec !== gLastEncryptedUri && AutocryptVerify.lastMsgWindow) {
           // if message is displayed then handle like S/MIME message
           return this.handleSmime(uri);
         }
         else {
           // otherwise just make sure message body is returned
-          cth = EnigmailVerify.newVerifier("application/(x-)?pkcs7-signature");
+          cth = AutocryptVerify.newVerifier("application/(x-)?pkcs7-signature");
         }
       }
     }
 
     if (!cth) {
-      EnigmailLog.ERROR("pgpmimeHandler.js: unknown protocol for content-type: " + ct + "\n");
+      AutocryptLog.ERROR("pgpmimeHandler.js: unknown protocol for content-type: " + ct + "\n");
       cth = new UnknownProtoHandler();
     }
 
@@ -237,7 +237,7 @@ PgpMimeHandler.prototype = {
       uri = uri.QueryInterface(Ci.nsIURI);
     }
 
-    let headerSink = EnigmailSingletons.messageReader;
+    let headerSink = AutocryptSingletons.messageReader;
     headerSink.handleSMimeMessage(uri);
   },
 
@@ -285,7 +285,7 @@ class Factory {
 }
 
 
-var EnigmailPgpmimeHander = {
+var AutocryptPgpmimeHander = {
   startup: function(reason) {
     try {
       this.factory = new Factory(PgpMimeHandler);

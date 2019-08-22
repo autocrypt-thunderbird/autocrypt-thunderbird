@@ -7,11 +7,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailZBase32"];
+var EXPORTED_SYMBOLS = ["AutocryptZBase32"];
 
 const ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769";
 
-var EnigmailZBase32 = {
+var AutocryptZBase32 = {
   a: ZBase32Alphabet,
   pad: "=",
 

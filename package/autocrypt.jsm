@@ -10,18 +10,18 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailAutocrypt", "AUTOCRYPT_RECOMMEND"];
+var EXPORTED_SYMBOLS = ["AutocryptAutocrypt", "AUTOCRYPT_RECOMMEND"];
 
 const Cr = Components.results;
 
 Components.utils.importGlobalProperties(["crypto"]); /* global crypto: false */
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+const AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
 const DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
 const AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS = 35 * DAY_IN_MILLIS;
@@ -71,7 +71,7 @@ function AutocryptHeader(parameters, addr, key_data, is_prefer_encrypt_mutual) {
 }
 
 function parseAutocryptHeader(raw_header_value) {
-  EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader()\n");
+  AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader()\n");
   // fix keydata value for mime header parser, by manually quoting it
   let header_value = raw_header_value.replace(/[\r\n \t]/g, "");
   let k = header_value.search(/keydata=/);
@@ -82,11 +82,11 @@ function parseAutocryptHeader(raw_header_value) {
     }
   }
 
-  let parameters = EnigmailMime.getAllParameters(header_value);
+  let parameters = AutocryptMime.getAllParameters(header_value);
 
   if (AUTOCRYPT_PARAM_TYPE in parameters) {
     if (!AUTOCRYPT_TYPE_1.equals(parameters[AUTOCRYPT_PARAM_TYPE])) {
-        EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): unsupported type parameter " + parameters[AUTOCRYPT_PARAM_TYPE] + "\n");
+        AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader(): unsupported type parameter " + parameters[AUTOCRYPT_PARAM_TYPE] + "\n");
         return null;
     }
     delete parameters[AUTOCRYPT_PARAM_TYPE];
@@ -95,20 +95,20 @@ function parseAutocryptHeader(raw_header_value) {
   let base64KeyData = parameters[AUTOCRYPT_PARAM_KEY_DATA];
   delete parameters[AUTOCRYPT_PARAM_KEY_DATA];
   if (!base64KeyData) {
-      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): missing key parameter\n");
+      AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader(): missing key parameter\n");
       return null;
   }
 
   let key_data = atob(base64KeyData);
   if (!key_data) {
-      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): error parsing base64 data\n");
+      AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader(): error parsing base64 data\n");
       return null;
   }
 
   let addr = parameters[AUTOCRYPT_PARAM_ADDR];
   delete parameters[AUTOCRYPT_PARAM_ADDR];
   if (!addr) {
-      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): no addr header!\n");
+      AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader(): no addr header!\n");
       return null;
   }
   addr = addr.toLowerCase();
@@ -121,11 +121,11 @@ function parseAutocryptHeader(raw_header_value) {
   }
 
   if (hasCriticalParameters(parameters)) {
-      EnigmailLog.DEBUG("autocrypt: parseAutocryptHeader(): unknown critical parameter!\n");
+      AutocryptLog.DEBUG("autocrypt: parseAutocryptHeader(): unknown critical parameter!\n");
       return null;
   }
 
-  EnigmailLog.DEBUG(`autocrypt: parseAutocryptHeader(): ok (for ${addr})\n`);
+  AutocryptLog.DEBUG(`autocrypt: parseAutocryptHeader(): ok (for ${addr})\n`);
   return new AutocryptHeader(parameters, addr, key_data, isPreferEncryptMutual);
 }
 
@@ -138,11 +138,11 @@ function hasCriticalParameters(parameters) {
     return false;
 }
 
-var EnigmailAutocrypt = {
+var AutocryptAutocrypt = {
   AUTOCRYPT_RECOMMEND: AUTOCRYPT_RECOMMEND,
 
   determineAutocryptRecommendations: async function(emails) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${emails.join(', ')}\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): ${emails.join(', ')}\n`);
 
     if (!emails.length) {
       return {
@@ -154,7 +154,7 @@ var EnigmailAutocrypt = {
     emails = emails.map(email => email.toLowerCase());
 
     let peer_rows = await sqlite.retrieveAutocryptRows(emails);
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peer_rows.length} Autocrypt rows\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: determineAutocryptRecommendations(): found ${peer_rows.length} Autocrypt rows\n`);
 
     let recommendations = await Promise.all(peer_rows.map(row =>
       this.determineSingleAutocryptRecommendation(row)));
@@ -178,8 +178,8 @@ var EnigmailAutocrypt = {
       }
     }
 
-    EnigmailLog.DEBUG(`autocrypt.jsm: group recommendation: ${group_recommendation}\n`);
-    EnigmailLog.DEBUG(`autocrypt.jsm: peer state: ${JSON.stringify(peers)}\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: group recommendation: ${group_recommendation}\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: peer state: ${JSON.stringify(peers)}\n`);
 
     return {
       group_recommendation: group_recommendation,
@@ -188,7 +188,7 @@ var EnigmailAutocrypt = {
   },
 
   determineSingleAutocryptRecommendation: async function(row) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: determineSingleAutocryptRecommendation()\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: determineSingleAutocryptRecommendation()\n`);
     if (row.fpr_primary) {
       let isLastSeenOlderThanDiscourageTimespan = row.last_seen_message &&
         row.last_seen_key &&
@@ -232,7 +232,7 @@ var EnigmailAutocrypt = {
         return;
     }
 
-    let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
+    let { fpr_primary, addresses } = await AutocryptKeyRing.insertOrUpdate(autocrypt_header.key_data);
     if (!fpr_primary) {
         return;
     }
@@ -266,7 +266,7 @@ var EnigmailAutocrypt = {
       await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
     }
 
-    let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(autocrypt_header.key_data);
+    let { fpr_primary, addresses } = await AutocryptKeyRing.insertOrUpdate(autocrypt_header.key_data);
     if (!fpr_primary) {
         return;
     }
@@ -277,52 +277,52 @@ var EnigmailAutocrypt = {
   },
 
   injectAutocryptKey: async function(from_addr, key_data, is_mutual = false) {
-    EnigmailLog.DEBUG("autocrypt.jsm: injectAutocryptKey()\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: injectAutocryptKey()\n");
     try {
-      let { fpr_primary, addresses } = await EnigmailKeyRing.insertOrUpdate(key_data);
+      let { fpr_primary, addresses } = await AutocryptKeyRing.insertOrUpdate(key_data);
 
-      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): parsed key ${fpr_primary}\n`);
+      AutocryptLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): parsed key ${fpr_primary}\n`);
 
       if (!addresses.includes(from_addr)) {
-        EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ${from_addr} not in ${JSON.stringify(addresses)}\n`);
+        AutocryptLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ${from_addr} not in ${JSON.stringify(addresses)}\n`);
         return false;
       }
 
-      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): injecting for ${from_addr}\n`);
+      AutocryptLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): injecting for ${from_addr}\n`);
       let effective_date = new Date();
       await sqlite.autocryptInsertOrUpdateLastSeenMessage(from_addr, effective_date);
       await sqlite.autocryptUpdateKey(from_addr, effective_date, fpr_primary, is_mutual);
 
-      EnigmailLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ok\n`);
+      AutocryptLog.DEBUG(`autocrypt.jsm: injectAutocryptKey(): ok\n`);
       return true;
     } catch (ex) {
-      EnigmailLog.DEBUG("autocrypt.jsm: injectAutocryptKey()", ex);
+      AutocryptLog.DEBUG("autocrypt.jsm: injectAutocryptKey()", ex);
       return false;
     }
   },
 
 
   processAutocryptHeaders: async function(from_addr, headerDataArr, dateSent) {
-    EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + from_addr + "\n");
+    AutocryptLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): from=" + from_addr + "\n");
 
     let autocrypt_headers = headerDataArr
       .map(header => parseAutocryptHeader(header))
       .filter(x => x);
     if (autocrypt_headers.length != 1) {
-      EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): found more than one autocrypt header\n");
+      AutocryptLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): found more than one autocrypt header\n");
       return;
     }
     let autocrypt_header = autocrypt_headers[0];
 
     try {
-      from_addr = EnigmailFuncs.stripEmail(from_addr).toLowerCase();
+      from_addr = AutocryptFuncs.stripEmail(from_addr).toLowerCase();
     } catch (ex) {
-      EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): error mail address\n");
+      AutocryptLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): error mail address\n");
       return;
     }
 
     if (autocrypt_header.addr != from_addr) {
-      EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): wrong mail address (got " + autocrypt_header.addr + ", expected " + from_addr + ")\n");
+      AutocryptLog.DEBUG("autocrypt.jsm: processAutocryptHeader(): wrong mail address (got " + autocrypt_header.addr + ", expected " + from_addr + ")\n");
       return;
     }
 
@@ -339,13 +339,13 @@ var EnigmailAutocrypt = {
   },
 
   processAutocryptGossipHeaders: async function(headerDataArr, recipientArray, dateSent) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): ${headerDataArr.length} headers\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): ${headerDataArr.length} headers\n`);
 
     let autocrypt_headers = headerDataArr
       .map(header => parseAutocryptHeader(header))
       .filter(x => x);
     if (!autocrypt_headers.length) {
-      EnigmailLog.DEBUG("autocrypt.jsm: processAutocryptGossipHeader(): no valid gossip headers\n");
+      AutocryptLog.DEBUG("autocrypt.jsm: processAutocryptGossipHeader(): no valid gossip headers\n");
       return;
     }
 
@@ -354,7 +354,7 @@ var EnigmailAutocrypt = {
         if (recipientArray.indexOf(header.addr) >= 0) {
           return true;
         } else {
-          EnigmailLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): not in recipients: ${header.addr}\n`);
+          AutocryptLog.DEBUG(`autocrypt.jsm: processAutocryptGossipHeader(): not in recipients: ${header.addr}\n`);
           return false;
         }
       });
@@ -378,7 +378,7 @@ var EnigmailAutocrypt = {
   },
 
   getAutocryptSettingsForIdentity: async function(fromAddr) {
-    const address = EnigmailFuncs.stripEmail(fromAddr).toLowerCase();
+    const address = AutocryptFuncs.stripEmail(fromAddr).toLowerCase();
 
     const autocrypt_rows = await sqlite.retrieveAutocryptRows([fromAddr]);
     if (autocrypt_rows && autocrypt_rows.length) {
@@ -392,10 +392,10 @@ var EnigmailAutocrypt = {
   },
 
   getAutocryptHeaderContentFor: async function(email, include_preference) {
-    EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ${email}\n`);
-    let key_data_b64 = await EnigmailKeyRing.getPublicKeyBase64ForEmail(email);
+    AutocryptLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ${email}\n`);
+    let key_data_b64 = await AutocryptKeyRing.getPublicKeyBase64ForEmail(email);
     if (!key_data_b64) {
-      EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): no data\n`);
+      AutocryptLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): no data\n`);
       return null;
     }
 
@@ -407,7 +407,7 @@ var EnigmailAutocrypt = {
       }
     }
 
-    EnigmailLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ok\n`);
+    AutocryptLog.DEBUG(`autocrypt.jsm: getAutocryptHeaderContentFor(): ok\n`);
     let key_data_wrapped = " " + key_data_b64.replace(/(.{72})/g, "$1\r\n ").replace(/\r\n $/, "");
     return `addr=${email}; ${preference}keydata=\r\n` + key_data_wrapped;
   }

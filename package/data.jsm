@@ -1,4 +1,4 @@
-/*global Components: false, EnigmailLog: false, unescape: false, atob: false, btoa: false */
+/*global Components: false, AutocryptLog: false, unescape: false, atob: false, btoa: false */
 /*jshint -W097 */
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -9,7 +9,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailData"];
+var EXPORTED_SYMBOLS = ["AutocryptData"];
 
 
 
@@ -24,7 +24,7 @@ function converter(charset) {
   return unicodeConv;
 }
 
-var EnigmailData = {
+var AutocryptData = {
   getUnicodeData: function(data) {
     // convert output from subprocess to Unicode
     var tmpStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);

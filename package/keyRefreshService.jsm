@@ -7,9 +7,9 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailKeyRefreshService"];
+const EXPORTED_SYMBOLS = ["AutocryptKeyRefreshService"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const ONE_HOUR_IN_MILLISEC = 60 * 60 * 1000;
@@ -45,12 +45,12 @@ function setupNextRefresh(timer, waitTime) {
 }
 
 function start() {
-  EnigmailLog.DEBUG("keyRefreshService.jsm: Started\n");
+  AutocryptLog.DEBUG("keyRefreshService.jsm: Started\n");
   // TODO
   // const timer = getTimer();
   // restartTimerInOneHour(timer);
 }
 
-var EnigmailKeyRefreshService = {
+var AutocryptKeyRefreshService = {
   start: start
 };

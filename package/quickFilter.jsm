@@ -8,7 +8,7 @@ const Ci = Components.interfaces;
 
 var MailServices = ChromeUtils.import("resource:///modules/MailServices.jsm").MailServices;
 var QuickFilterManager = ChromeUtils.import("resource:///modules/QuickFilterManager.jsm").QuickFilterManager;
-var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+var AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 var COLUMN_STATUS = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").COLUMN_STATUS;
 
 const termId = 'qfb-autocrypt-encrypted';
@@ -63,16 +63,16 @@ var AutocryptQuickFilter = {
     } catch (ex) {}
 
     if (!foundFilter) {
-      EnigmailLog.DEBUG("quickFilter.jsm: addFilterTermIfNotExists: " + QuickFilterTerm.id + "\n");
+      AutocryptLog.DEBUG("quickFilter.jsm: addFilterTermIfNotExists: " + QuickFilterTerm.id + "\n");
       // filterService.addCustomAction(filterObj);
       MailServices.filters.addCustomTerm(QuickFilterTerm);
     }
   },
 
   onStartup: function(document) {
-    EnigmailLog.DEBUG("quickFilter.jsm: onStartup()\n");
+    AutocryptLog.DEBUG("quickFilter.jsm: onStartup()\n");
     if (!this.quickFilterRegistered) {
-      EnigmailLog.DEBUG("quickFilter.jsm: onStartup(): registering quickfilter\n");
+      AutocryptLog.DEBUG("quickFilter.jsm: onStartup(): registering quickfilter\n");
       QuickFilterManager.defineFilter(this.quickFilter);
       this.quickFilterRegistered = true;
     }
@@ -81,7 +81,7 @@ var AutocryptQuickFilter = {
   },
 
   onShutdown: function() {
-    EnigmailLog.DEBUG("quickFilter.jsm: onShutdown()\n");
+    AutocryptLog.DEBUG("quickFilter.jsm: onShutdown()\n");
     QuickFilterManager.killFilter(filterId);
     this.quickFilterRegistered = false;
   },
@@ -99,7 +99,7 @@ var AutocryptQuickFilter = {
         window.QuickFilterBarMuxer.activeFilterer.setFilterValue(self.quickFilter.name, postValue);
         window.QuickFilterBarMuxer.deferredUpdateSearch();
       } catch (ex) {
-        EnigmailLog.DEBUG(`quickFilter.jsm: registerButtonHandler(): error ${ex}\n`);
+        AutocryptLog.DEBUG(`quickFilter.jsm: registerButtonHandler(): error ${ex}\n`);
       }
     });
   }

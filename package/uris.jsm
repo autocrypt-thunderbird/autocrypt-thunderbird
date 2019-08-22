@@ -8,19 +8,19 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailURIs"];
+var EXPORTED_SYMBOLS = ["AutocryptURIs"];
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
 
 const messageIdList = {};
 const encryptedUris = [];
 
-var EnigmailURIs = {
+var AutocryptURIs = {
   createMessageURI: function(originalUrl, contentType, contentCharset, contentData, persist) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.createMessageURI: " + originalUrl +
+    AutocryptLog.DEBUG("enigmail.js: Autocrypt.createMessageURI: " + originalUrl +
       ", " + contentType + ", " + contentCharset + "\n");
 
     const messageId = "msg" + Math.floor(Math.random() * 1.0e9);
@@ -37,9 +37,9 @@ var EnigmailURIs = {
   },
 
   deleteMessageURI: function(uri) {
-    EnigmailLog.DEBUG("enigmail.js: Enigmail.deleteMessageURI: " + uri + "\n");
+    AutocryptLog.DEBUG("enigmail.js: Autocrypt.deleteMessageURI: " + uri + "\n");
 
-    const messageId = EnigmailData.extractMessageId(uri);
+    const messageId = AutocryptData.extractMessageId(uri);
 
     if (!messageId) {
       return false;
@@ -61,7 +61,7 @@ var EnigmailURIs = {
    * @return null
    */
   rememberEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: rememberEncryptedUri: uri=" + uri + "\n");
+    AutocryptLog.DEBUG("uris.jsm: rememberEncryptedUri: uri=" + uri + "\n");
     if (encryptedUris.indexOf(uri) < 0) {
       encryptedUris.push(uri);
     }
@@ -75,7 +75,7 @@ var EnigmailURIs = {
    * @return null
    */
   forgetEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: forgetEncryptedUri: uri=" + uri + "\n");
+    AutocryptLog.DEBUG("uris.jsm: forgetEncryptedUri: uri=" + uri + "\n");
     const pos = encryptedUris.indexOf(uri);
     if (pos >= 0) {
       encryptedUris.splice(pos, 1);
@@ -90,7 +90,7 @@ var EnigmailURIs = {
    * @return: Boolean true if yes, false otherwise
    */
   isEncryptedUri: function(uri) {
-    EnigmailLog.DEBUG("uris.jsm: isEncryptedUri: uri=" + uri + "\n");
+    AutocryptLog.DEBUG("uris.jsm: isEncryptedUri: uri=" + uri + "\n");
     return encryptedUris.indexOf(uri) >= 0;
   },
 
@@ -116,7 +116,7 @@ var EnigmailURIs = {
 
     if (!url) return null;
 
-    EnigmailLog.DEBUG("uris.jsm: msgIdentificationFromUrl: url.pathQueryRef=" + ("path" in url ? url.path : url.pathQueryRef) + "\n");
+    AutocryptLog.DEBUG("uris.jsm: msgIdentificationFromUrl: url.pathQueryRef=" + ("path" in url ? url.path : url.pathQueryRef) + "\n");
 
     let msgNum = "";
     let msgFolder = "";
@@ -137,7 +137,7 @@ var EnigmailURIs = {
       msgFolder = pathQueryRef.replace(/(.*[?&]group=)([^&]+)(&.*)?/, "$2");
     }
 
-    EnigmailLog.DEBUG("uris.jsm: msgIdentificationFromUrl: msgNum=" + msgNum + " / folder=" + msgFolder + "\n");
+    AutocryptLog.DEBUG("uris.jsm: msgIdentificationFromUrl: msgNum=" + msgNum + " / folder=" + msgFolder + "\n");
 
     return {
       msgNum: msgNum,

@@ -8,13 +8,13 @@
  *  TB 60-68 compatibility Module
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailTb60Compat"];
+var EXPORTED_SYMBOLS = ["AutocryptTb60Compat"];
 
 const MailUtils = ChromeUtils.import("resource:///modules/MailUtils.jsm").MailUtils;
 
 var gCompFields, gPgpMimeObj;
 
-var EnigmailTb60Compat = {
+var AutocryptTb60Compat = {
   generateQI: function(aCid) {
     if ("generateQI" in ChromeUtils) {
       // TB > 60

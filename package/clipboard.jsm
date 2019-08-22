@@ -7,7 +7,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailClipboard"];
+var EXPORTED_SYMBOLS = ["AutocryptClipboard"];
 
 // Import the Services module for future use, if we're not in
 // a browser window where it's already loaded.
@@ -42,7 +42,7 @@ function Transferable(source) {
   return res;
 }
 
-var EnigmailClipboard = {
+var AutocryptClipboard = {
 
   /**
    * Get the content string of a clipboard

@@ -8,13 +8,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailCryptoAPI"];
+var EXPORTED_SYMBOLS = ["AutocryptCryptoAPI"];
 
 var gCurrentApi = null;
 var Services = ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
 
 
-function EnigmailCryptoAPI() {
+function AutocryptCryptoAPI() {
   if (!gCurrentApi) {
     const {
       getOpenPGPjsAPI

@@ -9,12 +9,12 @@
 
 /* global Components: false, gDBView: false */
 
-var EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+var AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 var COLUMN_STATUS = ChromeUtils.import("chrome://autocrypt/content/modules/verifyStatus.jsm").COLUMN_STATUS;
 
-if (!Enigmail) var Enigmail = {};
+if (!Autocrypt) var Autocrypt = {};
 
-Enigmail.columnHandler = {
+Autocrypt.columnHandler = {
   getCellText: function(row, col) {
     return null;
   },
@@ -48,31 +48,31 @@ Enigmail.columnHandler = {
   createDbObserver: {
     // Components.interfaces.nsIObserver
     observe: function() {
-      EnigmailLog.DEBUG("columnOverlay.js: registering column handler\n");
+      AutocryptLog.DEBUG("columnOverlay.js: registering column handler\n");
       try {
-        gDBView.addColumnHandler("autocryptStatusCol", Enigmail.columnHandler);
+        gDBView.addColumnHandler("autocryptStatusCol", Autocrypt.columnHandler);
       } catch (ex) {
         // nvm, this might happen under some circumstances
       }
     }
   },
 
-  onLoadEnigmail: function() {
+  onLoadAutocrypt: function() {
     let observerService = Components.classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
-    observerService.addObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView", false);
+    observerService.addObserver(Autocrypt.columnHandler.createDbObserver, "MsgCreateDBView", false);
     if (gDBView) {
-      gDBView.addColumnHandler("autocryptStatusCol", Enigmail.columnHandler);
+      gDBView.addColumnHandler("autocryptStatusCol", Autocrypt.columnHandler);
     }
   },
 
-  onUnloadEnigmail: function() {
+  onUnloadAutocrypt: function() {
     // triggered from enigmailMessengerOverlay.js
     let observerService = Components.classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
-    observerService.removeObserver(Enigmail.columnHandler.createDbObserver, "MsgCreateDBView");
-    window.removeEventListener("load-autocrypt", Enigmail.columnHandler.onLoadEnigmail, false);
+    observerService.removeObserver(Autocrypt.columnHandler.createDbObserver, "MsgCreateDBView");
+    window.removeEventListener("load-autocrypt", Autocrypt.columnHandler.onLoadAutocrypt, false);
   }
 };
 
-window.addEventListener("load-autocrypt", Enigmail.columnHandler.onLoadEnigmail, false);
+window.addEventListener("load-autocrypt", Autocrypt.columnHandler.onLoadAutocrypt, false);

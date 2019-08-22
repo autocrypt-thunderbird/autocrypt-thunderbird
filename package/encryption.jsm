@@ -7,29 +7,29 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailEncryption"];
+var EXPORTED_SYMBOLS = ["AutocryptEncryption"];
 
-const EnigmailCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").EnigmailCore;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").EnigmailApp;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailSqliteDb = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const AutocryptCore = ChromeUtils.import("chrome://autocrypt/content/modules/core.jsm").AutocryptCore;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptApp = ChromeUtils.import("chrome://autocrypt/content/modules/app.jsm").AutocryptApp;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+const AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const AutocryptSqliteDb = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 
 
-var EnigmailEncryption = {
+var AutocryptEncryption = {
   encryptMessage: async function(plainText, encodedPrivKey, encodedPubKeys) {
-    EnigmailLog.DEBUG("encryption.js: Enigmail.encryptMessage: " + plainText.length + " bytes to " + encodedPubKeys.length + " keys\n");
+    AutocryptLog.DEBUG("encryption.js: Autocrypt.encryptMessage: " + plainText.length + " bytes to " + encodedPubKeys.length + " keys\n");
 
     if (!plainText) {
-      EnigmailLog.DEBUG("encryption.js: Enigmail.encryptMessage: NO ENCRYPTION!\n");
-      EnigmailLog.DEBUG("  <=== encryptMessage()\n");
+      AutocryptLog.DEBUG("encryption.js: Autocrypt.encryptMessage: NO ENCRYPTION!\n");
+      AutocryptLog.DEBUG("  <=== encryptMessage()\n");
       return "";
     }
 
@@ -40,17 +40,17 @@ var EnigmailEncryption = {
     // we need all data in CRLF according to RFC 4880
     plainText = plainText.replace(/\n/g, "\r\n");
 
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     let ciphertext = await cApi.encrypt(plainText, encodedPrivKey, encodedPubKeys);
 
     // Normal return
-    EnigmailLog.DEBUG("  <=== encryptMessage()\n");
-    return EnigmailData.getUnicodeData(ciphertext);
+    AutocryptLog.DEBUG("  <=== encryptMessage()\n");
+    return AutocryptData.getUnicodeData(ciphertext);
   },
 
   encryptAttachment: function(parent, fromMailAddr, toMailAddr, bccMailAddr, sendFlags, inFile, outFile,
     exitCodeObj, statusFlagsObj, errorMsgObj) {
-    EnigmailLog.DEBUG("encryption.jsm: EnigmailEncryption.encryptAttachment infileName=" + inFile.path + "\n");
+    AutocryptLog.DEBUG("encryption.jsm: AutocryptEncryption.encryptAttachment infileName=" + inFile.path + "\n");
 
     statusFlagsObj.value = 0;
     errorMsgObj.value = "Not yet implemented";

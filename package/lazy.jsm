@@ -8,10 +8,10 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["EnigmailLazy"];
+const EXPORTED_SYMBOLS = ["AutocryptLazy"];
 
 
-var EnigmailLazy = {
+var AutocryptLazy = {
   loader: function(component, name) {
     let holder = null;
     return function() {

@@ -6,9 +6,9 @@
 
 var EXPORTED_SYMBOLS = ["AutocryptWelcomeMessage"];
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
-const EnigmailRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").EnigmailRNG;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
+const AutocryptRNG = ChromeUtils.import("chrome://autocrypt/content/modules/rng.jsm").AutocryptRNG;
 
 const nsMsgFolderFlags_Inbox = 0x00001000;
 
@@ -30,7 +30,7 @@ var AutocryptWelcomeMessage = {
   },
 
   sendWelcomeMessage: function(msgWindow) {
-    EnigmailLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage()\n`);
+    AutocryptLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage()\n`);
     if (!msgWindow) {
       msgWindow = null;
     }
@@ -40,25 +40,25 @@ var AutocryptWelcomeMessage = {
       .accounts
       .queryElementAt(0, Ci.nsIMsgAccount);
     if (!account) {
-      EnigmailLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no account, aborting\n`);
+      AutocryptLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no account, aborting\n`);
       return;
     }
 
     const inboxFolder = this.findInboxForAccount(account);
     if (!inboxFolder) {
-      EnigmailLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no inbox, aborting\n`);
+      AutocryptLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no inbox, aborting\n`);
       return;
     }
 
     const recipient = account.defaultIdentity.fullAddress;
     if (!recipient) {
-      EnigmailLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no recipient, aborting\n`);
+      AutocryptLog.DEBUG(`welcomeMessage.jsm: sendWelcomeMessage(): no recipient, aborting\n`);
       return;
     }
 
-    const msg_id = EnigmailRNG.generateRandomString(27) + "-autocrypt";
+    const msg_id = AutocryptRNG.generateRandomString(27) + "-autocrypt";
 
-    const tmpFile = EnigmailFiles.getTempDirObj();
+    const tmpFile = AutocryptFiles.getTempDirObj();
     tmpFile.append(`${msg_id}.eml`);
 
     let date_str = new Date().toUTCString();
@@ -122,7 +122,7 @@ PPS: This message, and bot replies, are still a work in progress :)
 </pre>
 `.replace(/\n/gm, '\r\n');
 
-    EnigmailFiles.writeFileContents(tmpFile, msgStr);
+    AutocryptFiles.writeFileContents(tmpFile, msgStr);
 
     // nsIMsgCopyServiceListener
     var deleteTmpFileOnFinishListener = {

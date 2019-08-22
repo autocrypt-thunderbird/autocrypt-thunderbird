@@ -7,13 +7,13 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailDialog"];
+var EXPORTED_SYMBOLS = ["AutocryptDialog"];
 
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").EnigmailWindows;
-const EnigmailPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").EnigmailPrefs;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptWindows = ChromeUtils.import("chrome://autocrypt/content/modules/windows.jsm").AutocryptWindows;
+const AutocryptPrefs = ChromeUtils.import("chrome://autocrypt/content/modules/prefs.jsm").AutocryptPrefs;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
 
 const BUTTON_POS_0 = 1;
 const BUTTON_POS_1 = 1 << 8;
@@ -23,7 +23,7 @@ const gPromptSvc = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.n
 
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
-var EnigmailDialog = {
+var AutocryptDialog = {
 
   /***
    * Confirmation dialog with OK / Cancel buttons (both customizable)
@@ -37,12 +37,12 @@ var EnigmailDialog = {
    */
   confirmDlg: function(win, mesg, okLabel, cancelLabel) {
 
-    let buttonPressed = EnigmailDialog.msgBox(win, {
+    let buttonPressed = AutocryptDialog.msgBox(win, {
         msgtext: mesg,
-        button1: okLabel ? okLabel : EnigmailLocale.getString("dlg.button.ok"),
-        cancelButton: cancelLabel ? cancelLabel : EnigmailLocale.getString("dlg.button.cancel"),
-        iconType: EnigmailConstants.ICONTYPE_QUESTION,
-        dialogTitle: EnigmailLocale.getString("enigConfirm")
+        button1: okLabel ? okLabel : AutocryptLocale.getString("dlg.button.ok"),
+        cancelButton: cancelLabel ? cancelLabel : AutocryptLocale.getString("dlg.button.cancel"),
+        iconType: AutocryptConstants.ICONTYPE_QUESTION,
+        dialogTitle: AutocryptLocale.getString("enigConfirm")
       },
       null);
 
@@ -58,11 +58,11 @@ var EnigmailDialog = {
    * no return value
    */
   alert: function(win, mesg) {
-    EnigmailDialog.msgBox(win, {
+    AutocryptDialog.msgBox(win, {
         msgtext: mesg,
-        button1: EnigmailLocale.getString("dlg.button.close"),
-        iconType: EnigmailConstants.ICONTYPE_ALERT,
-        dialogTitle: EnigmailLocale.getString("enigAlert")
+        button1: AutocryptLocale.getString("dlg.button.close"),
+        iconType: AutocryptConstants.ICONTYPE_ALERT,
+        dialogTitle: AutocryptLocale.getString("enigAlert")
       },
       null);
   },
@@ -76,11 +76,11 @@ var EnigmailDialog = {
    * no return value
    */
   info: function(win, mesg) {
-    EnigmailDialog.msgBox(win, {
+    AutocryptDialog.msgBox(win, {
         msgtext: mesg,
-        button1: EnigmailLocale.getString("dlg.button.close"),
-        iconType: EnigmailConstants.ICONTYPE_INFO,
-        dialogTitle: EnigmailLocale.getString("enigInfo")
+        button1: AutocryptLocale.getString("dlg.button.close"),
+        iconType: AutocryptConstants.ICONTYPE_INFO,
+        dialogTitle: AutocryptLocale.getString("enigInfo")
       },
       null);
   },
@@ -108,14 +108,14 @@ var EnigmailDialog = {
     };
 
     if (!win) {
-      win = EnigmailWindows.getBestParentWin();
+      win = AutocryptWindows.getBestParentWin();
     }
 
     win.openDialog("chrome://autocrypt/content/ui/enigmailMsgBox.xul", "_blank",
       "chrome,dialog,modal,centerscreen,resizable,titlebar", {
         msgtext: mesg,
         checkboxLabel: checkboxLabel,
-        iconType: EnigmailConstants.ICONTYPE_ALERT,
+        iconType: AutocryptConstants.ICONTYPE_ALERT,
         button1: okLabel,
         button2: labelButton2,
         button3: labelButton3
@@ -159,7 +159,7 @@ var EnigmailDialog = {
     };
 
     if (!win) {
-      win = EnigmailWindows.getBestParentWin();
+      win = AutocryptWindows.getBestParentWin();
     }
 
     win.openDialog("chrome://autocrypt/content/ui/enigmailMsgBox.xul", "",
@@ -181,7 +181,7 @@ var EnigmailDialog = {
    * @return:   Boolean - true if OK was pressed / false otherwise
    */
   promptValue: function(win, mesg, valueObj) {
-    return gPromptSvc.prompt(win, EnigmailLocale.getString("enigPrompt"),
+    return gPromptSvc.prompt(win, AutocryptLocale.getString("enigPrompt"),
       mesg, valueObj, "", {});
   },
 
@@ -192,29 +192,29 @@ var EnigmailDialog = {
    *
    * @win:      nsIWindow - the parent window to hold the modal dialog
    * @mesg:     String    - the localized message to display
-   * @prefText: String    - the name of the Enigmail preference to read/store the
+   * @prefText: String    - the name of the Autocrypt preference to read/store the
    *                        the future display status
    */
   alertPref: function(win, mesg, prefText) {
     const display = true;
     const dontDisplay = false;
 
-    let prefValue = EnigmailPrefs.getPref(prefText);
+    let prefValue = AutocryptPrefs.getPref(prefText);
     if (prefValue === display) {
       let checkBoxObj = {
         value: false
       };
 
-      let buttonPressed = EnigmailDialog.msgBox(win, {
+      let buttonPressed = AutocryptDialog.msgBox(win, {
           msgtext: mesg,
-          dialogTitle: EnigmailLocale.getString("enigInfo"),
-          iconType: EnigmailConstants.ICONTYPE_INFO,
-          checkboxLabel: EnigmailLocale.getString("dlgNoPrompt")
+          dialogTitle: AutocryptLocale.getString("enigInfo"),
+          iconType: AutocryptConstants.ICONTYPE_INFO,
+          checkboxLabel: AutocryptLocale.getString("dlgNoPrompt")
         },
         checkBoxObj);
 
       if (checkBoxObj.value && buttonPressed === 0) {
-        EnigmailPrefs.setPref(prefText, dontDisplay);
+        AutocryptPrefs.setPref(prefText, dontDisplay);
       }
     }
   },
@@ -225,29 +225,29 @@ var EnigmailDialog = {
    * If |counter| is 0, the dialog is not displayed.
    *
    * @win:           nsIWindow - the parent window to hold the modal dialog
-   * @countPrefName: String    - the name of the Enigmail preference to read/store the
+   * @countPrefName: String    - the name of the Autocrypt preference to read/store the
    *                             the |counter| value
    * @mesg:          String    - the localized message to display
    *
    */
   alertCount: function(win, countPrefName, mesg) {
-    let alertCount = EnigmailPrefs.getPref(countPrefName);
+    let alertCount = AutocryptPrefs.getPref(countPrefName);
 
     if (alertCount <= 0)
       return;
 
     alertCount--;
-    EnigmailPrefs.setPref(countPrefName, alertCount);
+    AutocryptPrefs.setPref(countPrefName, alertCount);
 
     if (alertCount > 0) {
-      mesg += EnigmailLocale.getString("repeatPrefix", [alertCount]) + " ";
-      mesg += (alertCount == 1) ? EnigmailLocale.getString("repeatSuffixSingular") : EnigmailLocale.getString("repeatSuffixPlural");
+      mesg += AutocryptLocale.getString("repeatPrefix", [alertCount]) + " ";
+      mesg += (alertCount == 1) ? AutocryptLocale.getString("repeatSuffixSingular") : AutocryptLocale.getString("repeatSuffixPlural");
     }
     else {
-      mesg += EnigmailLocale.getString("noRepeat");
+      mesg += AutocryptLocale.getString("noRepeat");
     }
 
-    EnigmailDialog.alert(win, mesg);
+    AutocryptDialog.alert(win, mesg);
   },
 
   /**
@@ -257,7 +257,7 @@ var EnigmailDialog = {
    *
    * @win:         nsIWindow - parent window to display modal dialog; can be null
    * @mesg:        String    - message text
-   * @prefText     String    - the name of the Enigmail preference to read/store the
+   * @prefText     String    - the name of the Autocrypt preference to read/store the
    *                           the future display status.
    *                           the default action is chosen
    * @okLabel:     String    - OPTIONAL label for OK button
@@ -276,7 +276,7 @@ var EnigmailDialog = {
     const display = true;
     const dontDisplay = false;
 
-    var prefValue = EnigmailPrefs.getPref(prefText);
+    var prefValue = AutocryptPrefs.getPref(prefText);
 
     if (typeof(prefValue) != "boolean") {
       // number: remember user's choice
@@ -286,17 +286,17 @@ var EnigmailDialog = {
             let checkBoxObj = {
               value: false
             };
-            let buttonPressed = EnigmailDialog.msgBox(win, {
+            let buttonPressed = AutocryptDialog.msgBox(win, {
               msgtext: mesg,
-              button1: okLabel ? okLabel : EnigmailLocale.getString("dlg.button.ok"),
-              cancelButton: cancelLabel ? cancelLabel : EnigmailLocale.getString("dlg.button.cancel"),
-              checkboxLabel: EnigmailLocale.getString("dlgKeepSetting"),
-              iconType: EnigmailConstants.ICONTYPE_QUESTION,
-              dialogTitle: EnigmailLocale.getString("enigConfirm")
+              button1: okLabel ? okLabel : AutocryptLocale.getString("dlg.button.ok"),
+              cancelButton: cancelLabel ? cancelLabel : AutocryptLocale.getString("dlg.button.cancel"),
+              checkboxLabel: AutocryptLocale.getString("dlgKeepSetting"),
+              iconType: AutocryptConstants.ICONTYPE_QUESTION,
+              dialogTitle: AutocryptLocale.getString("enigConfirm")
             }, checkBoxObj);
 
             if (checkBoxObj.value) {
-              EnigmailPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
+              AutocryptPrefs.setPref(prefText, (buttonPressed === 0 ? yes : no));
             }
             return (buttonPressed === 0 ? 1 : 0);
           }
@@ -316,17 +316,17 @@ var EnigmailDialog = {
             let checkBoxObj = {
               value: false
             };
-            let buttonPressed = EnigmailDialog.msgBox(win, {
+            let buttonPressed = AutocryptDialog.msgBox(win, {
               msgtext: mesg,
-              button1: okLabel ? okLabel : EnigmailLocale.getString("dlg.button.ok"),
-              cancelButton: cancelLabel ? cancelLabel : EnigmailLocale.getString("dlg.button.cancel"),
-              checkboxLabel: EnigmailLocale.getString("dlgNoPrompt"),
-              iconType: EnigmailConstants.ICONTYPE_QUESTION,
-              dialogTitle: EnigmailLocale.getString("enigConfirm")
+              button1: okLabel ? okLabel : AutocryptLocale.getString("dlg.button.ok"),
+              cancelButton: cancelLabel ? cancelLabel : AutocryptLocale.getString("dlg.button.cancel"),
+              checkboxLabel: AutocryptLocale.getString("dlgNoPrompt"),
+              iconType: AutocryptConstants.ICONTYPE_QUESTION,
+              dialogTitle: AutocryptLocale.getString("enigConfirm")
             }, checkBoxObj);
 
             if (checkBoxObj.value) {
-              EnigmailPrefs.setPref(prefText, false);
+              AutocryptPrefs.setPref(prefText, false);
             }
             return (buttonPressed === 0 ? 1 : 0);
           }
@@ -353,7 +353,7 @@ var EnigmailDialog = {
    *  return value:     nsIFile object representing the file to load or save
    */
   filePicker: function(win, title, displayDir, save, defaultExtension, defaultName, filterPairs) {
-    EnigmailLog.DEBUG("enigmailCommon.jsm: filePicker: " + save + "\n");
+    AutocryptLog.DEBUG("enigmailCommon.jsm: filePicker: " + save + "\n");
 
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance();
     filePicker = filePicker.QueryInterface(Ci.nsIFilePicker);
@@ -416,4 +416,4 @@ var EnigmailDialog = {
   }
 };
 
-EnigmailWindows.alert = EnigmailDialog.alert;
+AutocryptWindows.alert = AutocryptDialog.alert;

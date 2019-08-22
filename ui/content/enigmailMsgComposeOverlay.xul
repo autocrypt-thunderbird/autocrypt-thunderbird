@@ -29,7 +29,7 @@
  <commandset id="msgComposeCommandUpdate"
               commandupdater="true"
               events="focus"
-              oncommandupdate="Enigmail.msg.focusChange()"/>
+              oncommandupdate="Autocrypt.msg.focusChange()"/>
 
   <window id="msgcomposeWindow">
     <broadcasterset id="enigmailBroadcasters">
@@ -47,10 +47,10 @@
 
   <keyset id="tasksKeys">
     <key id="key_enigEncrypt" key="&enigmail.encryptedsend.key;"
-         oncommand="Enigmail.msg.onPressKeyToggleEncrypt()" modifiers="accel, shift"/>
+         oncommand="Autocrypt.msg.onPressKeyToggleEncrypt()" modifiers="accel, shift"/>
   </keyset>
 
-  <!-- Enigmail toolbar button -->
+  <!-- Autocrypt toolbar button -->
   <toolbarpalette id="MsgComposeToolbarPalette"
     targetToolbar="composeToolbar2"
     targetToolbarDefaultset="button-send,separator,button-address,spellingButton,button-attach,button-save,button-enigmail-encrypt,spring"
@@ -66,7 +66,7 @@
       buttontype="thunderbird"
       tooltip="aTooltipSet"
       observes="enigmail-bc-encrypt"
-      oncommand="Enigmail.msg.onButtonToggleEncrypt();"
+      oncommand="Autocrypt.msg.onButtonToggleEncrypt();"
       >
       <menupopup>
         <menuitem closemenu="none" id="menuitem-autocrypt-toggle" label="Action: Enable / disable encryption" />
@@ -83,7 +83,7 @@
             id="enigmail-toolbar-text-button"
             label="&enigmail.composetoolbar.desc;"
             buttontype="thunderbird"
-            oncommand="Enigmail.msg.onButtonDisplaySecuritySettings();"
+            oncommand="Autocrypt.msg.onButtonDisplaySecuritySettings();"
             disabled="true">
       <label id="enigmail-toolbar-text" value="&enigmail.composetoolbar.desc;"/>
     </toolbarbutton>

@@ -10,14 +10,14 @@
  *  See details at https://github.com/mailencrypt/autocrypt
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailKeyRing"];
+var EXPORTED_SYMBOLS = ["AutocryptKeyRing"];
 
 const Cr = Components.results;
 
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
 const AutocryptMasterpass = ChromeUtils.import("chrome://autocrypt/content/modules/masterpass.jsm").AutocryptMasterpass;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
 
 var gCachedPublicKeysByFpr = false;
 var gCachedPublicKeyList = false;
@@ -25,7 +25,7 @@ var gCachedPublicKeyList = false;
 var gCachedSecretKeyMap = false;
 var gCachedSecretKeyList = false;
 
-var EnigmailKeyRing = {
+var AutocryptKeyRing = {
   getAllPublicKeys: async function() {
     await this.ensurePublicKeyCache();
     return gCachedPublicKeyList;
@@ -46,8 +46,8 @@ var EnigmailKeyRing = {
       return;
     }
 
-    EnigmailLog.DEBUG("ensurePublicKeyCache(): loading keys...\n");
-    const cApi = EnigmailCryptoAPI();
+    AutocryptLog.DEBUG("ensurePublicKeyCache(): loading keys...\n");
+    const cApi = AutocryptCryptoAPI();
 
     let startTime = new Date();
     let public_key_rows = await sqlite.retrieveAllPublicKeys();
@@ -63,7 +63,7 @@ var EnigmailKeyRing = {
     gCachedPublicKeyList = public_key_list;
 
     let time_diff_ms = new Date() - startTime;
-    EnigmailLog.DEBUG(`ensurePublicKeyCache(): loaded ${public_key_list.length} keys in ${time_diff_ms}ms\n`);
+    AutocryptLog.DEBUG(`ensurePublicKeyCache(): loaded ${public_key_list.length} keys in ${time_diff_ms}ms\n`);
   },
 
   getAllSecretKeys: async function() {
@@ -95,31 +95,31 @@ var EnigmailKeyRing = {
   },
 
   getPublicKeyByEmail: async function(email) {
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ${email}\n`);
+    AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ${email}\n`);
     let public_key_map = await this.getAllPublicKeysMap();
     let autocrypt_row = await sqlite.retrieveAutocryptRows([email]);
     if (autocrypt_row && autocrypt_row.length && autocrypt_row[0].fpr_primary) {
       let public_key = public_key_map[autocrypt_row[0].fpr_primary];
       if (public_key) {
-        EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ok\n`);
+        AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): ok\n`);
         return public_key;
       }
-      EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no key?\n`);
+      AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no key?\n`);
       return null;
     }
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no data\n`);
+    AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyByEmail(): no data\n`);
     return null;
   },
 
   getPublicKeyBase64ForEmail: async function(email) {
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ${email}\n`);
+    AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ${email}\n`);
     let public_key = await this.getPublicKeyByEmail(email);
     if (public_key) {
-        EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ok\n`);
+        AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): ok\n`);
         let public_key_data = public_key.toPacketlist().write();
         return btoa(String.fromCharCode.apply(null, public_key_data));
     }
-    EnigmailLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): no key?\n`);
+    AutocryptLog.DEBUG(`keyRing.jsm: getPublicKeyBase64ForEmail(): no key?\n`);
     return null;
   },
 
@@ -133,8 +133,8 @@ var EnigmailKeyRing = {
       return;
     }
 
-    EnigmailLog.DEBUG("ensureSecretKeyCache(): loading keys...\n");
-    const cApi = EnigmailCryptoAPI();
+    AutocryptLog.DEBUG("ensureSecretKeyCache(): loading keys...\n");
+    const cApi = AutocryptCryptoAPI();
 
     let master_password = AutocryptMasterpass.retrieveAutocryptPassword();
 
@@ -145,12 +145,12 @@ var EnigmailKeyRing = {
     await Promise.all(secret_key_rows.map(async row => {
       let openpgp_secret_key = await cApi.parseOpenPgpKey(row.key_data_secret, false);
       if (!openpgp_secret_key.isPrivate()) {
-        EnigmailLog.ERROR(`ensureSecretKeyCache(): expected secret key, found public!\n`);
+        AutocryptLog.ERROR(`ensureSecretKeyCache(): expected secret key, found public!\n`);
         return;
       }
       if (!openpgp_secret_key.isDecrypted()) {
         await openpgp_secret_key.decrypt(master_password);
-        EnigmailLog.DEBUG(`ensureSecretKeyCache(): decrypt ok for ${row.fpr_primary}\n`);
+        AutocryptLog.DEBUG(`ensureSecretKeyCache(): decrypt ok for ${row.fpr_primary}\n`);
       }
       secret_key_map[row.fpr_primary] = openpgp_secret_key;
       secret_key_list.push(openpgp_secret_key);
@@ -160,11 +160,11 @@ var EnigmailKeyRing = {
     gCachedSecretKeyList = secret_key_list;
 
     let time_diff_ms = new Date() - startTime;
-    EnigmailLog.DEBUG(`ensureSecretKeyCache(): loaded ${secret_key_list.length} keys in ${time_diff_ms}ms\n`);
+    AutocryptLog.DEBUG(`ensureSecretKeyCache(): loaded ${secret_key_list.length} keys in ${time_diff_ms}ms\n`);
   },
 
   insertOrUpdate: async function(key_data) {
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
 
     let parsed_key = await cApi.parseOpenPgpKeyInfo(key_data);
 
@@ -183,9 +183,9 @@ var EnigmailKeyRing = {
   },
 
   insertSecretKey: async function(openpgp_secret_key) {
-    EnigmailLog.DEBUG(`keyRing.jsm: insertSecretKey()\n`);
+    AutocryptLog.DEBUG(`keyRing.jsm: insertSecretKey()\n`);
     if (!openpgp_secret_key.isPrivate()) {
-      EnigmailLog.ERROR(`keyRing.jsm: insertSecretKey(): key is not secret!\n`);
+      AutocryptLog.ERROR(`keyRing.jsm: insertSecretKey(): key is not secret!\n`);
       return;
     }
 
@@ -211,13 +211,13 @@ var EnigmailKeyRing = {
   },
 
   reencryptSecretKeys: async function() {
-    EnigmailLog.DEBUG(`reencryptSecretKeys()\n`);
+    AutocryptLog.DEBUG(`reencryptSecretKeys()\n`);
     let openpgp_secret_keys = await this.getAllSecretKeys();
     let startTime = new Date();
     for (let openpgp_secret_key of openpgp_secret_keys) {
       await this.insertSecretKey(openpgp_secret_key);
     }
     let time_diff_ms = new Date() - startTime;
-    EnigmailLog.DEBUG(`reencryptSecretKeys(): reencrypted ${openpgp_secret_keys.length} keys in ${time_diff_ms}ms\n`);
+    AutocryptLog.DEBUG(`reencryptSecretKeys(): reencrypted ${openpgp_secret_keys.length} keys in ${time_diff_ms}ms\n`);
   }
 };

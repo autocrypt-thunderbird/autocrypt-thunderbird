@@ -4,10 +4,10 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailSingletons"];
+var EXPORTED_SYMBOLS = ["AutocryptSingletons"];
 
 
-var EnigmailSingletons = {
+var AutocryptSingletons = {
   // handle to most recent message reader window
   messageReader: null
 };

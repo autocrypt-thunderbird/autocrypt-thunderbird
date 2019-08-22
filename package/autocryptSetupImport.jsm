@@ -2,22 +2,22 @@
 
 var EXPORTED_SYMBOLS = ["AutocryptSetupImport"];
 
-const EnigmailArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").EnigmailArmor;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").EnigmailStreams;
+const AutocryptArmor = ChromeUtils.import("chrome://autocrypt/content/modules/armor.jsm").AutocryptArmor;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptStreams = ChromeUtils.import("chrome://autocrypt/content/modules/streams.jsm").AutocryptStreams;
 
 var AutocryptSetupImport = {
   importSetupMessage: async function(win, url) {
-    const content = await EnigmailStreams.getDataFromUrl(url);
+    const content = await AutocryptStreams.getDataFromUrl(url);
     return this.importContent(win, content);
   },
 
   importContent: async function(win, content) {
-    let armored_blocks = EnigmailArmor.locateArmoredBlocks(content);
+    let armored_blocks = AutocryptArmor.locateArmoredBlocks(content);
     let importOk = false;
     for (let armored_block of armored_blocks) {
       let data = content.substring(armored_block.begin, armored_block.end);
@@ -29,7 +29,7 @@ var AutocryptSetupImport = {
   },
 
   importArmoredBlock: async function(win, armoredBlock, blocktype) {
-    EnigmailLog.DEBUG(`importArmoredBlock(): input type: ${blocktype}\n`);
+    AutocryptLog.DEBUG(`importArmoredBlock(): input type: ${blocktype}\n`);
 
     switch (blocktype) {
       case 'MESSAGE': {
@@ -39,14 +39,14 @@ var AutocryptSetupImport = {
         return await this.importTransferableSecretKey(win, armoredBlock);
       }
       default: {
-        EnigmailLog.DEBUG(`importArmoredBlock(): ignoring block of type ${blocktype}\n`);
+        AutocryptLog.DEBUG(`importArmoredBlock(): ignoring block of type ${blocktype}\n`);
       }
     }
     return false;
   },
 
   decryptEncryptedBlock: async function(win, armoredBlock) {
-    let armorHdr = EnigmailArmor.getArmorHeaders(armoredBlock);
+    let armorHdr = AutocryptArmor.getArmorHeaders(armoredBlock);
     let passphraseFormat = "generic";
     if ("passphrase-format" in armorHdr) {
       passphraseFormat = armorHdr["passphrase-format"];
@@ -60,13 +60,13 @@ var AutocryptSetupImport = {
       data: null
     };
 
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     const attempt = async password => {
       try {
         decryptResult.data = await cApi.decryptSymmetric(armoredBlock, password);
         return true;
       } catch (ex) {
-        EnigmailLog.DEBUG(`decryptEncryptedBlock(): decryption failure: ${ex}\n`);
+        AutocryptLog.DEBUG(`decryptEncryptedBlock(): decryption failure: ${ex}\n`);
         return false;
       }
     };
@@ -87,8 +87,8 @@ var AutocryptSetupImport = {
   },
 
   importTransferableSecretKey: async function(win, armoredBlock) {
-    EnigmailLog.DEBUG(`importTransferableSecretKey()\n`);
-    const cApi = EnigmailCryptoAPI();
+    AutocryptLog.DEBUG(`importTransferableSecretKey()\n`);
+    const cApi = AutocryptCryptoAPI();
     try {
       let openpgp_secret_keys = await cApi.parseOpenPgpKeys(armoredBlock);
       for (let openpgp_secret_key of openpgp_secret_keys) {
@@ -96,8 +96,8 @@ var AutocryptSetupImport = {
       }
       return true;
     } catch (ex) {
-      EnigmailLog.DEBUG(`importTransferableSecretKey(): ${ex}\n`);
-      EnigmailDialog.alert(win, "Error parsing key format!");
+      AutocryptLog.DEBUG(`importTransferableSecretKey(): ${ex}\n`);
+      AutocryptDialog.alert(win, "Error parsing key format!");
       return true;
     }
   },
@@ -105,13 +105,13 @@ var AutocryptSetupImport = {
   importOpenPgpSecretKey: async function(win, openpgp_secret_key) {
     let dialog_shown = false;
     if (!openpgp_secret_key.isDecrypted()) {
-      EnigmailLog.DEBUG(`onClickImport(): key is encrypted - asking for password\n`);
+      AutocryptLog.DEBUG(`onClickImport(): key is encrypted - asking for password\n`);
       let attempt = async password => {
         try {
           await openpgp_secret_key.decrypt(password);
           return true;
         } catch (ex) {
-          EnigmailLog.DEBUG(`onClickImport(): decryption failure: ${ex}\n`);
+          AutocryptLog.DEBUG(`onClickImport(): decryption failure: ${ex}\n`);
           return false;
         }
       };
@@ -127,11 +127,11 @@ var AutocryptSetupImport = {
     }
 
     if (openpgp_secret_key.isDecrypted()) {
-      await EnigmailKeyRing.insertSecretKey(openpgp_secret_key);
+      await AutocryptKeyRing.insertSecretKey(openpgp_secret_key);
 
       let fpr = openpgp_secret_key.getFingerprint().toUpperCase();
-      let fpr_string = EnigmailFuncs.formatFpr(fpr);
-      EnigmailDialog.info(win, "Key import ok");
+      let fpr_string = AutocryptFuncs.formatFpr(fpr);
+      AutocryptDialog.info(win, "Key import ok");
 
       return true;
     }

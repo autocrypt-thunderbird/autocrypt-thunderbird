@@ -8,14 +8,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["EnigmailPrefs"];
+var EXPORTED_SYMBOLS = ["AutocryptPrefs"];
 
 
 
 
 
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").EnigmailFiles;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptFiles = ChromeUtils.import("chrome://autocrypt/content/modules/files.jsm").AutocryptFiles;
 const {
   Services
 } = ChromeUtils.import("resource://gre/modules/Services.jsm");
@@ -39,27 +39,27 @@ function initPrefService() {
 
     try {
       if (p.branch.getCharPref("logDirectory")) {
-        EnigmailLog.setLogLevel(5);
+        AutocryptLog.setLogLevel(5);
       }
     }
     catch (ex) {} // don't log anythign if accessing logDirectory fails
   }
   catch (ex) {
-    EnigmailLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
-    EnigmailLog.ERROR(ex.toString());
+    AutocryptLog.ERROR("prefs.jsm: Error in instantiating PrefService\n");
+    AutocryptLog.ERROR(ex.toString());
   }
 }
 
 
 var gPrefs = {};
 
-var EnigmailPrefs = {
+var AutocryptPrefs = {
   startup: function(reason) {
     try {
       initPrefService();
     }
     catch (ex) {
-      EnigmailLog.ERROR("prefs.jsm: Error while loading default prefs: " + ex.message + "\n");
+      AutocryptLog.ERROR("prefs.jsm: Error while loading default prefs: " + ex.message + "\n");
     }
   },
 
@@ -105,7 +105,7 @@ var EnigmailPrefs = {
     }
     catch (ex) {
       // Failed to get pref value
-      EnigmailLog.ERROR("prefs.jsm: getPref: unknown prefName:" + prefName + " \n");
+      AutocryptLog.ERROR("prefs.jsm: getPref: unknown prefName:" + prefName + " \n");
     }
 
     return prefValue;
@@ -120,7 +120,7 @@ var EnigmailPrefs = {
    * @return Boolean Was the value stored successfully?
    */
   setPref: function(prefName, value) {
-    EnigmailLog.DEBUG("prefs.jsm: setPref: " + prefName + ", " + value + "\n");
+    AutocryptLog.DEBUG("prefs.jsm: setPref: " + prefName + ", " + value + "\n");
 
     if (!p.branch) {
       initPrefService();
@@ -179,7 +179,7 @@ var EnigmailPrefs = {
    * no return value
    */
   savePrefs: function() {
-    EnigmailLog.DEBUG("prefs.jsm: savePrefs\n");
+    AutocryptLog.DEBUG("prefs.jsm: savePrefs\n");
     try {
       p.service.savePrefFile(null);
     }
@@ -187,10 +187,10 @@ var EnigmailPrefs = {
   },
 
   /**
-   * Compiles all Enigmail preferences into an object
+   * Compiles all Autocrypt preferences into an object
    */
   getAllPrefs: function() {
-    EnigmailLog.DEBUG("prefs.js: getAllPrefs\n");
+    AutocryptLog.DEBUG("prefs.js: getAllPrefs\n");
 
     var retObj = {
       value: 0
@@ -219,7 +219,7 @@ var EnigmailPrefs = {
           prefObj[name] = branch.getBoolPref(name);
           break;
         default:
-          EnigmailLog.ERROR("Pref '" + name + "' has unknown type\n");
+          AutocryptLog.ERROR("Pref '" + name + "' has unknown type\n");
       }
     }
 
@@ -227,22 +227,22 @@ var EnigmailPrefs = {
   },
 
   /**
-   * register a listener to listen to a change in the Enigmail preferences.
+   * register a listener to listen to a change in the Autocrypt preferences.
    *
-   * @param prefName: String        - name of Enigmail preference
+   * @param prefName: String        - name of Autocrypt preference
    * @param observerFunc: Function - callback function to be triggered
    *
    * @return Object: observer object (to be used to deregister the observer)
    */
   registerPrefObserver: function(prefName, observerFunc) {
-    EnigmailLog.DEBUG("prefs.jsm: registerPrefObserver(" + prefName + ")\n");
+    AutocryptLog.DEBUG("prefs.jsm: registerPrefObserver(" + prefName + ")\n");
     let branch = this.getPrefRoot();
 
     let observer = {
       observe: function(aSubject, aTopic, aData) {
         try {
           if (String(aData) == AUTOCRYPT_PREFS_ROOT + this.prefName) {
-            EnigmailLog.DEBUG("prefs.jsm: preference observed: " + aData + "\n");
+            AutocryptLog.DEBUG("prefs.jsm: preference observed: " + aData + "\n");
             observerFunc();
           }
         }
@@ -270,7 +270,7 @@ var EnigmailPrefs = {
    * @param observer: Object - observer object returned by registerPrefObserver
    */
   unregisterPrefObserver(observer) {
-    EnigmailLog.DEBUG("prefs.jsm: unregisterPrefObserver(" + observer.prefName + ")\n");
+    AutocryptLog.DEBUG("prefs.jsm: unregisterPrefObserver(" + observer.prefName + ")\n");
 
     let branch = this.getPrefRoot();
 

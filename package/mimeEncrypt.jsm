@@ -9,24 +9,24 @@
  *  implemented as XPCOM component
  */
 
-var EXPORTED_SYMBOLS = ["EnigmailMimeEncrypt"];
+var EXPORTED_SYMBOLS = ["AutocryptMimeEncrypt"];
 
 const Cr = Components.results;
 
 const jsmime = ChromeUtils.import("resource:///modules/jsmime.jsm").jsmime;
-const EnigmailTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").EnigmailTb60Compat;
-const EnigmailFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").EnigmailFuncs;
-const EnigmailDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").EnigmailDialog;
-const EnigmailLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").EnigmailLog;
-const EnigmailEncryption = ChromeUtils.import("chrome://autocrypt/content/modules/encryption.jsm").EnigmailEncryption;
-const EnigmailMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").EnigmailMime;
-const EnigmailData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").EnigmailData;
-const EnigmailConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").EnigmailConstants;
-const EnigmailLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").EnigmailLocale;
-const EnigmailCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").EnigmailCryptoAPI;
-const EnigmailAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").EnigmailAutocrypt;
-const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").EnigmailSqliteDb;
-const EnigmailKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").EnigmailKeyRing;
+const AutocryptTb60Compat = ChromeUtils.import("chrome://autocrypt/content/modules/tb60compat.jsm").AutocryptTb60Compat;
+const AutocryptFuncs = ChromeUtils.import("chrome://autocrypt/content/modules/funcs.jsm").AutocryptFuncs;
+const AutocryptDialog = ChromeUtils.import("chrome://autocrypt/content/modules/dialog.jsm").AutocryptDialog;
+const AutocryptLog = ChromeUtils.import("chrome://autocrypt/content/modules/log.jsm").AutocryptLog;
+const AutocryptEncryption = ChromeUtils.import("chrome://autocrypt/content/modules/encryption.jsm").AutocryptEncryption;
+const AutocryptMime = ChromeUtils.import("chrome://autocrypt/content/modules/mime.jsm").AutocryptMime;
+const AutocryptData = ChromeUtils.import("chrome://autocrypt/content/modules/data.jsm").AutocryptData;
+const AutocryptConstants = ChromeUtils.import("chrome://autocrypt/content/modules/constants.jsm").AutocryptConstants;
+const AutocryptLocale = ChromeUtils.import("chrome://autocrypt/content/modules/locale.jsm").AutocryptLocale;
+const AutocryptCryptoAPI = ChromeUtils.import("chrome://autocrypt/content/modules/cryptoAPI.jsm").AutocryptCryptoAPI;
+const AutocryptAutocrypt = ChromeUtils.import("chrome://autocrypt/content/modules/autocrypt.jsm").AutocryptAutocrypt;
+const sqlite = ChromeUtils.import("chrome://autocrypt/content/modules/sqliteDb.jsm").AutocryptSqliteDb;
+const AutocryptKeyRing = ChromeUtils.import("chrome://autocrypt/content/modules/keyRing.jsm").AutocryptKeyRing;
 
 // our own contract IDs
 const PGPMIME_ENCRYPT_CID = Components.ID("{96fe88f9-d2cd-466f-93e0-3a351df4c6d2}");
@@ -50,7 +50,7 @@ PgpMimeEncrypt.prototype = {
   get contractID() {
     return PGPMIME_ENCRYPT_CONTRACTID;
   },
-  QueryInterface: EnigmailTb60Compat.generateQI([
+  QueryInterface: AutocryptTb60Compat.generateQI([
     "nsIMsgComposeSecure",
     "nsIStreamListener",
     "nsIMsgSMIMECompFields" // TB < 64
@@ -78,7 +78,7 @@ PgpMimeEncrypt.prototype = {
 
   // nsIStreamListener interface
   onStartRequest: function(request) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: onStartRequest\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: onStartRequest\n");
     this.encHeader = null;
   },
 
@@ -89,22 +89,22 @@ PgpMimeEncrypt.prototype = {
   },
 
   onStopRequest: function(request, status) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: onStopRequest\n");
   },
 
   // nsIMsgComposeSecure interface
   requiresCryptoEncapsulation: function(msgIdentity, msgCompFields) {
     let result = this.composeCryptoState && this.composeCryptoState.isEncryptEnabled();
     if (this.composeCryptoState.isEncryptError()) {
-      EnigmailLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: error - can't encrypt!\n`);
+      AutocryptLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: error - can't encrypt!\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
-    EnigmailLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: ${result}\n`);
+    AutocryptLog.DEBUG(`mimeEncrypt.js: requiresCryptoEncapsulation: ${result}\n`);
     return result;
   },
 
   beginCryptoEncapsulation: function(outStream, recipientList, msgCompFields, msgIdentity, sendReport, isDraft) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: beginCryptoEncapsulation\n");
 
     if (!outStream) {
       throw Cr.NS_ERROR_NULL_POINTER;
@@ -123,12 +123,12 @@ PgpMimeEncrypt.prototype = {
           throw Cr.NS_ERROR_NOT_IMPLEMENTED;
       }
 
-      this.cryptoBoundary = EnigmailMime.createBoundary();
+      this.cryptoBoundary = AutocryptMime.createBoundary();
       this.startCryptoHeaders();
 
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AutocryptLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
 
@@ -136,14 +136,14 @@ PgpMimeEncrypt.prototype = {
   },
 
   startCryptoHeaders: function() {
-    EnigmailLog.DEBUG("mimeEncrypt.js: startCryptoHeaders\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: startCryptoHeaders\n");
 
     this.encryptedHeaders();
     this.writeSecureHeaders();
   },
 
   writeSecureHeaders: function() {
-    this.encHeader = EnigmailMime.createBoundary();
+    this.encHeader = AutocryptMime.createBoundary();
 
     let allHdr = "";
 
@@ -219,16 +219,16 @@ PgpMimeEncrypt.prototype = {
   getAutocryptGossip: function() {
     const recipients = Object.keys(this.composeCryptoState.currentAutocryptRecommendation.peers);
     if (recipients < 2) {
-      EnigmailLog.DEBUG("mimeEncrypt.js: getAutocryptGossip(): only one recipient, skipping gossip\n");
+      AutocryptLog.DEBUG("mimeEncrypt.js: getAutocryptGossip(): only one recipient, skipping gossip\n");
       return '';
     }
 
-    const cApi = EnigmailCryptoAPI();
+    const cApi = AutocryptCryptoAPI();
     return cApi.sync((async function() {
       let result = '';
       for (let email of recipients) {
-        EnigmailLog.DEBUG(`mimeEncrypt.js: getAutocryptGossip(): adding gossip for ${email}\n`);
-        let gossip_header = await EnigmailAutocrypt.getAutocryptHeaderContentFor(email, false);
+        AutocryptLog.DEBUG(`mimeEncrypt.js: getAutocryptGossip(): adding gossip for ${email}\n`);
+        let gossip_header = await AutocryptAutocrypt.getAutocryptHeaderContentFor(email, false);
         if (gossip_header) {
           result += `Autocrypt-Gossip: ${gossip_header}\r\n`;
         }
@@ -238,11 +238,11 @@ PgpMimeEncrypt.prototype = {
   },
 
   encryptedHeaders: function(isEightBit) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: encryptedHeaders\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: encryptedHeaders\n");
     let subj = "";
 
     if (this.composeCryptoState.isEnableProtectedHeaders) {
-      subj = jsmime.headeremitter.emitStructuredHeader("subject", EnigmailFuncs.getProtectedSubjectText(), {});
+      subj = jsmime.headeremitter.emitStructuredHeader("subject", AutocryptFuncs.getProtectedSubjectText(), {});
     }
 
     this.writeOut(subj +
@@ -287,13 +287,13 @@ PgpMimeEncrypt.prototype = {
   },
 
   finishCryptoHeaders: function() {
-    EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoHeaders\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: finishCryptoHeaders\n");
 
     this.writeOut("\r\n--" + this.cryptoBoundary + "--\r\n");
   },
 
   finishCryptoEncapsulation: function(abort, sendReport) {
-    EnigmailLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: finishCryptoEncapsulation\n");
 
     try {
       if (this.encapsulate) this.writeToPipe("--" + this.encapsulate + "--\r\n");
@@ -305,10 +305,10 @@ PgpMimeEncrypt.prototype = {
       let plaintext = this.pipeQueue;
       this.pipeQueue = "";
 
-      const cApi = EnigmailCryptoAPI();
+      const cApi = AutocryptCryptoAPI();
       this.encryptedData = cApi.sync(this.signAndEncrypt(plaintext));
       if (!this.encryptedData || this.encryptedData == "") {
-        EnigmailLog.ERROR("mimeEncrypt.js: finishCryptoEncapsulation(): failed to encrypt!\n");
+        AutocryptLog.ERROR("mimeEncrypt.js: finishCryptoEncapsulation(): failed to encrypt!\n");
         throw Cr.NS_ERROR_FAILURE;
       }
 
@@ -318,7 +318,7 @@ PgpMimeEncrypt.prototype = {
       this.flushOutput();
     }
     catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AutocryptLog.writeException("mimeEncrypt.js", ex);
       throw ex;
     }
   },
@@ -326,45 +326,45 @@ PgpMimeEncrypt.prototype = {
   signAndEncrypt: async function(plaintext) {
     const openPgpSecretKey = await this.selectPrivKey();
     const openPgpPubKeys = await this.selectPubKeys();
-    return await EnigmailEncryption.encryptMessage(plaintext, openPgpSecretKey, openPgpPubKeys);
+    return await AutocryptEncryption.encryptMessage(plaintext, openPgpSecretKey, openPgpPubKeys);
   },
 
   selectPrivKey: async function() {
     if (!this.composeCryptoState.senderAutocryptSettings) {
-      EnigmailLog.ERROR("mimeEncrypt.js: selectPrivKey(): missing sender autocrypt settings\n");
+      AutocryptLog.ERROR("mimeEncrypt.js: selectPrivKey(): missing sender autocrypt settings\n");
       throw Cr.NS_ERROR_FAILURE;
     }
     if (!this.composeCryptoState.senderAutocryptSettings.fpr_primary) {
-      EnigmailLog.ERROR("mimeEncrypt.js: selectPrivKey(): bad autocrypt sender settings\n");
+      AutocryptLog.ERROR("mimeEncrypt.js: selectPrivKey(): bad autocrypt sender settings\n");
       throw Cr.NS_ERROR_FAILURE;
     }
     const sender_fpr_primary = this.composeCryptoState.senderAutocryptSettings.fpr_primary;
-    EnigmailLog.DEBUG(`mimeEncrypt.js: selectPrivKey(): sender fpr: ${sender_fpr_primary}\n`);
+    AutocryptLog.DEBUG(`mimeEncrypt.js: selectPrivKey(): sender fpr: ${sender_fpr_primary}\n`);
 
-    const openpgp_secret_key = await EnigmailKeyRing.getSecretKeyByFingerprint(sender_fpr_primary);
+    const openpgp_secret_key = await AutocryptKeyRing.getSecretKeyByFingerprint(sender_fpr_primary);
     if (!openpgp_secret_key) {
-      EnigmailLog.ERROR(`mimeEncrypt.js: selectPrivKey(): no secret key!\n`);
+      AutocryptLog.ERROR(`mimeEncrypt.js: selectPrivKey(): no secret key!\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
     return openpgp_secret_key;
   },
 
   selectPubKeys: async function() {
-    EnigmailLog.DEBUG("mimeEncrypt.js: selectPubKeys()\n");
+    AutocryptLog.DEBUG("mimeEncrypt.js: selectPubKeys()\n");
 
     if (!this.composeCryptoState.currentAutocryptRecommendation) {
-      EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing recipient autocrypt recommendations\n`);
+      AutocryptLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing recipient autocrypt recommendations\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
 
-    const openpgp_keys_map = await EnigmailKeyRing.getAllPublicKeysMap();
+    const openpgp_keys_map = await AutocryptKeyRing.getAllPublicKeysMap();
     const recommendations = this.composeCryptoState.currentAutocryptRecommendation;
 
     const selected_openpgp_keys = [];
     for (let email in recommendations.peers) {
       let r = recommendations.peers[email];
       if (!r.fpr_primary || !(r.fpr_primary in openpgp_keys_map)) {
-        EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing public key from recommendation\n`);
+        AutocryptLog.ERROR(`mimeEncrypt.js: selectPubKeys(): missing public key from recommendation\n`);
         throw Cr.NS_ERROR_FAILURE;
       }
       let key = openpgp_keys_map[r.fpr_primary];
@@ -372,11 +372,11 @@ PgpMimeEncrypt.prototype = {
     }
 
     if (!selected_openpgp_keys.length) {
-      EnigmailLog.ERROR(`mimeEncrypt.js: selectPubKeys(): no recipients!\n`);
+      AutocryptLog.ERROR(`mimeEncrypt.js: selectPubKeys(): no recipients!\n`);
       throw Cr.NS_ERROR_FAILURE;
     }
 
-    EnigmailLog.DEBUG(`mimeEncrypt.js: selectPubKeys(): returning ${selected_openpgp_keys.length} keys\n`);
+    AutocryptLog.DEBUG(`mimeEncrypt.js: selectPubKeys(): returning ${selected_openpgp_keys.length} keys\n`);
     return selected_openpgp_keys;
   },
 
@@ -392,7 +392,7 @@ PgpMimeEncrypt.prototype = {
           if (!this.encHeader) {
             let ct = this.getHeader("content-type", false);
             if ((ct.search(/text\/plain/i) === 0) || (ct.search(/text\/html/i) === 0)) {
-              this.encapsulate = EnigmailMime.createBoundary();
+              this.encapsulate = AutocryptMime.createBoundary();
               this.writeToPipe('Content-Type: multipart/mixed; boundary="' +
                 this.encapsulate + '"\r\n\r\n');
               this.writeToPipe("--" + this.encapsulate + "\r\n");
@@ -410,7 +410,7 @@ PgpMimeEncrypt.prototype = {
         }
       }
     } catch (ex) {
-      EnigmailLog.writeException("mimeEncrypt.js", ex);
+      AutocryptLog.writeException("mimeEncrypt.js", ex);
       throw (ex);
     }
 
@@ -478,10 +478,10 @@ PgpMimeEncrypt.prototype = {
 
 
 function LOCAL_DEBUG(str) {
-  EnigmailLog.DEBUG(str);
+  AutocryptLog.DEBUG(str);
 }
 
-var EnigmailMimeEncrypt = {
+var AutocryptMimeEncrypt = {
   Handler: PgpMimeEncrypt,
 
   startup: function(reason) {},
@@ -491,7 +491,7 @@ var EnigmailMimeEncrypt = {
     return new PgpMimeEncrypt();
   },
 
-  isEnigmailCompField: function(obj) {
+  isAutocryptCompField: function(obj) {
     return obj instanceof PgpMimeEncrypt;
   }
 };

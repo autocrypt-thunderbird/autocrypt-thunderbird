@@ -6,7 +6,7 @@
 -->
 
 <!--
-  This adds the Enigmail header box to the mail reading window on SeaMonkey
+  This adds the Autocrypt header box to the mail reading window on SeaMonkey
 
   Please not that is is only a placeholder to reference the location in
   enigmailMessengerOverlay.xul properly
@@ -19,7 +19,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <vbox id="messagesBox">
-    <vbox id="enigmailHdrBox" insertbefore="messagepanebox"/> <!-- Enigmail header box is in here -->
+    <vbox id="enigmailHdrBox" insertbefore="messagepanebox"/> <!-- Autocrypt header box is in here -->
   </vbox>
 
   <commandset id="mailToolbarItems">
@@ -33,7 +33,7 @@
             id="button-enigmail-decrypt"
             label="&enigmail.decryptbutton.label;"
             tooltiptext="&enigmail.decryptbutton.tip;"
-            oncommand="Enigmail.msg.messageDecrypt(null, false);"
+            oncommand="Autocrypt.msg.messageDecrypt(null, false);"
             buttontype="thunderbird"
             observes="button_enigmail_decrypt"
             insertafter="button-newmsg"
