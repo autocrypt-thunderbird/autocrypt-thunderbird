@@ -7,7 +7,7 @@
 // Uses: chrome://autocrypt/content/ui/enigmailCommon.js
 /* global Components: false, EnigInitCommon: false */
 /* global EnigInitCommon: false, GetAutocryptSvc: false, EnigGetString: false, EnigHelpWindow: false */
-/* global EnigConfirm: false, AutocryptLog: false, AutocryptFuncs: false, AutocryptKeyRing: false, AutocryptDialog: false */
+/* global EnigConfirm: false, EnigAlert: false, AutocryptLog: false, AutocryptFuncs: false, AutocryptKeyRing: false, AutocryptDialog: false */
 /* global AutocryptWindows: false, sleep: false */
 
 "use strict";
@@ -125,7 +125,8 @@ async function blinkAutocrpyModeSaved() {
 
 async function onClickSendSetupMessage() {
   const autocrypt_info = await getCurrentlySelectedAutocryptRow();
-  await AutocryptAutocryptSetup.sendSetupMessage(autocrypt_info.email);
+  let setup_code = await AutocryptAutocryptSetup.sendSetupMessage(autocrypt_info.email);
+  EnigAlert(`Ok: ${setup_code}`);
 }
 
 async function onClickManageAllKeys() {
