@@ -487,7 +487,7 @@ var AutocryptMimeEncrypt = {
   startup: function(reason) {},
   shutdown: function(reason) {},
 
-  createMimeEncrypt: function(sMimeSecurityInfo) {
+  createMimeEncrypt: function() {
     return new PgpMimeEncrypt();
   },
 

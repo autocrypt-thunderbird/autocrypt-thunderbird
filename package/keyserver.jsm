@@ -100,11 +100,10 @@ const accessVksServer = {
    * Upload, search or download keys from a keyserver
    * @param keyId:       String  - space-separated list of search terms or key IDs
    * @param keyserver:   String  - keyserver URL (optionally incl. protocol)
-   * @param listener:    optional Object implementing the KeySrvListener API (above)
    *
    * @return:   Promise<Number (Status-ID)>
    */
-  accessKeyServer: function(keyserver, keyId, listener) {
+  accessKeyServer: function(keyserver, keyId) {
     AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer()\n`);
     if (keyserver === null) {
       keyserver = "keys.openpgp.org";
@@ -112,16 +111,6 @@ const accessVksServer = {
 
     return new Promise((resolve, reject) => {
       let xmlReq = null;
-      if (listener && typeof(listener) === "object") {
-        listener.onCancel = function() {
-          AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.accessKeyServer - onCancel() called\n`);
-          if (xmlReq) {
-            xmlReq.abort();
-          }
-          reject(createError(AutocryptConstants.KEYSERVER_ERR_ABORTED));
-        };
-      }
-
       xmlReq = new XMLHttpRequest();
 
       xmlReq.onload = function _onLoad() {
@@ -174,7 +163,7 @@ const accessVksServer = {
   download: async function(searchTerm) {
     AutocryptLog.DEBUG(`keyserver.jsm: accessVksServer.download(${searchTerm})\n`);
 
-    let r = await this.accessKeyServer(null, searchTerm, null);
+    let r = await this.accessKeyServer(null, searchTerm);
     return {
       result: 0,
       errorDetails: "",

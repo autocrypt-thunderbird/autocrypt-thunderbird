@@ -52,7 +52,6 @@ const IOSERVICE_CONTRACTID = "@mozilla.org/network/io-service;1";
 const LOCAL_FILE_CONTRACTID = "@mozilla.org/file/local;1";
 
 const CRYPTO_MODE = {
-  SIGN_ONLY: 'sign-only', // not used?
   NO_CHOICE: 'no-choice',
   CHOICE_ENABLED: 'choice-enabled',
   CHOICE_DISABLED: 'choice-disabled'
@@ -62,11 +61,6 @@ const ENCRYPT_DISPLAY_STATUS = {
   UNCONFIGURED: {
     encSymbol: "inactiveNone",
     encStr: "Encryption not configured for this address",
-    buttonPressed: false
-  },
-  SIGN_ONLY: {
-    encSymbol: "activeNone",
-    encStr: "Sign-only mode",
     buttonPressed: false
   },
   UNAVAILABLE: {
@@ -86,12 +80,12 @@ const ENCRYPT_DISPLAY_STATUS = {
   },
   ENABLED_REPLY: {
     encSymbol: "activeNone",
-    encStr: "Encryption is enabled (automatic)",
+    encStr: "Encryption is enabled",
     buttonPressed: true
   },
   ENABLED_MUTUAL: {
     encSymbol: "activeNone",
-    encStr: "Encryption is enabled (automatic)",
+    encStr: "Encryption is enabled",
     buttonPressed: true
   },
   ERROR_MISSING_KEYS: {
@@ -156,7 +150,6 @@ function ComposeCryptoState() {
   this.isAnySmimeEnabled = false;
   this.isEnablePgpInline = false;
   this.isReplyToOpenPgpEncryptedMessage = false;
-  this.isEnableProtectedHeaders = false;
   this.isEnableSendVerbatim = false;
 }
 
@@ -164,6 +157,11 @@ ComposeCryptoState.prototype.isEncryptEnabled = function() {
   // it is *vital* that this is consistent, so we derive this directly from the
   // display status.
   return this.getDisplayStatus().buttonPressed;
+};
+
+ComposeCryptoState.prototype.isCryptoModeUserChoice = function() {
+  return this.currentCryptoMode == CRYPTO_MODE.CHOICE_ENABLED ||
+    this.currentCryptoMode == CRYPTO_MODE.CHOICE_DISABLED;
 };
 
 ComposeCryptoState.prototype.isEnabledAndMissingKeys = function() {
@@ -177,10 +175,6 @@ ComposeCryptoState.prototype.isEncryptError = function() {
 
 ComposeCryptoState.prototype.isAutocryptConfiguredForIdentity = function() {
   return Boolean(this.senderAutocryptSettings);
-};
-
-ComposeCryptoState.prototype.isSignOnly = function() {
-  return this.currentCryptoMode == CRYPTO_MODE.SIGN_ONLY;
 };
 
 ComposeCryptoState.prototype.isWouldEncryptAutomatically = function() {
@@ -281,15 +275,12 @@ ComposeCryptoState.prototype.getDisplayStatus = function() {
       return can_encrypt ? ENCRYPT_DISPLAY_STATUS.ENABLED_MANUAL : ENCRYPT_DISPLAY_STATUS.ERROR_MISSING_KEYS;
     case CRYPTO_MODE.CHOICE_DISABLED:
       return ENCRYPT_DISPLAY_STATUS.DISABLE;
-    case CRYPTO_MODE.SIGN_ONLY:
-      return ENCRYPT_DISPLAY_STATUS.SIGN_ONLY;
   }
   return ENCRYPT_DISPLAY_STATUS.UNKNOWN;
 };
 
 Autocrypt.msg = {
   editor: null,
-  dirty: null,
   timeoutId: null,
 
   composeCryptoState: new ComposeCryptoState(),
@@ -300,7 +291,6 @@ Autocrypt.msg = {
   modifiedAttach: null,
   lastFocusedWindow: null,
   determineSendFlagId: null,
-  protectHeaders: false,
 
   addrOnChangeTimeout: 250,
   /* timeout when entering something into the address field */
@@ -372,15 +362,26 @@ Autocrypt.msg = {
   },
 
   refreshSmimeComposeCryptoState: function() {
-    let si = Autocrypt.msg.getSecurityParams(null, true);
-    let isSmime = !AutocryptMimeEncrypt.isAutocryptCompField(si);
-    AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: refreshSmimeComposeCryptoState: isSmime=${isSmime}, requireEncryptMessage=${si.requireEncryptMessage}, signMessage=${si.signMessage}\n`);
-    this.composeCryptoState.isAnySmimeEnabled = isSmime && (si.requireEncryptMessage || si.signMessage);
+    if (gMsgCompose && gMsgCompose.compFields) {
+      let si = gMsgCompose.compFields.composeSecure;
+      AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: refreshSmimeComposeCryptoState: requireEncryptMessage=${si.requireEncryptMessage}, signMessage=${si.signMessage}\n`);
+      this.composeCryptoState.isAnySmimeEnabled = si.requireEncryptMessage || si.signMessage;
+    }
   },
 
   onUpdateSmimeState: function(event) {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.onUpdateSmimeState\n");
     this.delayedUpdateStatusBar();
+  },
+
+  setSmimeDisabled: function() {
+    if (gMsgCompose && gMsgCompose.compFields) {
+      let si = gMsgCompose.compFields.composeSecure;
+      si.signMessage = false;
+      si.requireEncryptMessage = false;
+    } else {
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: setSmimeDisabled: could not disable S/MIME\n");
+    }
   },
 
   setIdentityCallback: function(elementId) {
@@ -464,16 +465,55 @@ Autocrypt.msg = {
   setDraftOptions: function(mimeMsg) {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions\n");
 
-    let stat;
+    let draftState;
     if (mimeMsg && mimeMsg.headers.has("autocrypt-draft-state")) {
-      stat = String(mimeMsg.headers.get("autocrypt-draft-state").join(""));
-    } else {
+      draftState = String(mimeMsg.headers.get("autocrypt-draft-state")[0]);
+    }
+
+    if (!draftState) {
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions: no autocrypt-draft-state header\n");
       return;
     }
 
-    // TODO implement according to https://github.com/autocrypt/autocrypt/pull/376
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions: draftStatus: " + draftState + "\n");
 
-    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions: draftStatus: " + stat + "\n");
+    // see https://github.com/autocrypt/autocrypt/pull/376
+    let parameters = AutocryptMime.getAllParameters(draftState);
+
+    let isEncrypt = false;
+    if ("encrypt" in parameters) {
+      isEncrypt = (parameters.encrypt.toLowerCase() == 'yes');
+      delete parameters.encrypt;
+    }
+
+    let isByChoice = false;
+    if ("_by-choice" in parameters) {
+      if (parameters["_by-choice"].toLowerCase() == 'yes') {
+        isByChoice = true;
+      }
+      delete parameters["_by-choice"];
+    }
+
+    let isReplyToEncrypted = false;
+    if ("_is-reply-to-encrypted" in parameters) {
+      if (parameters["_is-reply-to-encrypted"].toLowerCase() == 'yes') {
+        isReplyToEncrypted = true;
+      }
+      delete parameters["_is-reply-to-encrypted"];
+    }
+
+    for (const c of Object.keys(parameters)) {
+      if (!c.startsWith("_")) {
+        AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftOptions: unknown critical parameter ${c}\n`);
+        return;
+      }
+    }
+
+    if (isByChoice) {
+      this.composeCryptoState.currentCryptoMode = isEncrypt ?
+        CRYPTO_MODE.CHOICE_ENABLED : CRYPTO_MODE.CHOICE_DISABLED;
+    }
+    this.composeCryptoState.isReplyToOpenPgpEncryptedMessage = isReplyToEncrypted;
   },
 
   setOriginalSubject: function(subject, forceSetting) {
@@ -539,8 +579,6 @@ Autocrypt.msg = {
     this.setupMenuAndToolbar();
 
     this.determineSendFlagId = null;
-    this.disableSmime = false;
-    this.protectHeaders = (AutocryptPrefs.getPref("protectedHeaders") === 2);
 
     var toobarElem = document.getElementById("composeToolbar2");
     if (toobarElem && (AutocryptOS.getOS() == "Darwin")) {
@@ -587,9 +625,7 @@ Autocrypt.msg = {
           AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.composeOpen: has encrypted originalMsgUri\n");
           AutocryptLog.DEBUG("originalMsgURI=" + gMsgCompose.originalMsgURI + "\n");
           this.composeCryptoState.isReplyToOpenPgpEncryptedMessage = true;
-          let si = Autocrypt.msg.getSecurityParams(null, true);
-          si.signMessage = false;
-          si.requireEncryptMessage = false;
+          this.setSmimeDisabled();
         }
       }
     }
@@ -692,7 +728,6 @@ Autocrypt.msg = {
   msgComposeReset: function(closing) {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.msgComposeReset\n");
 
-    this.dirty = 0;
     this.timeoutId = null;
 
     this.modifiedAttach = null;
@@ -714,41 +749,8 @@ Autocrypt.msg = {
     }
   },
 
-  getSecurityParams: function(compFields = null, doQueryInterface = false) {
-    if (!compFields)
-      compFields = gMsgCompose.compFields;
-
-    if ("securityInfo" in compFields) {
-      if (doQueryInterface) {
-        return compFields.securityInfo.QueryInterface(Components.interfaces.nsIMsgSMIMECompFields);
-      } else {
-        return compFields.securityInfo;
-      }
-    } else {
-      return compFields.composeSecure;
-    }
-  },
-
   setSecurityParams: function(newSecurityParams) {
-    if ("securityInfo" in gMsgCompose.compFields) {
-      // TB < 64
-      gMsgCompose.compFields.securityInfo = newSecurityParams;
-    } else {
-      gMsgCompose.compFields.composeSecure = newSecurityParams;
-    }
   },
-
-
-  resetUpdatedFields: function() {
-    // reset subject
-    if (AutocryptMimeEncrypt.isAutocryptCompField(Autocrypt.msg.getSecurityParams())) {
-      let si = Autocrypt.msg.getSecurityParams().wrappedJSObject;
-      if (si.originalSubject) {
-        gMsgCompose.compFields.subject = si.originalSubject;
-      }
-    }
-  },
-
 
   goAccountManager: function() {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.goAccountManager:\n");
@@ -872,19 +874,6 @@ Autocrypt.msg = {
     // process resulting toolbar message
     if (toolbarTxt) {
       toolbarTxt.value = display_status.encStr;
-
-      if (Autocrypt.msg.getSecurityParams()) {
-        let si = Autocrypt.msg.getSecurityParams(null, true);
-        let isSmime = !AutocryptMimeEncrypt.isAutocryptCompField(si);
-
-        // if (!isEncrypt && !isSign && !isSmime && (si.signMessage || si.requireEncryptMessage)) {
-        // toolbarTxt.setAttribute("class", "enigmailStrong");
-        // } else {
-          toolbarTxt.removeAttribute("class");
-        // }
-      } else {
-        toolbarTxt.removeAttribute("class");
-      }
     }
   },
 
@@ -967,11 +956,20 @@ Autocrypt.msg = {
     }
   },
 
-  setDraftStatus: function(doEncrypt) {
-    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.setDraftStatus - enabling draft mode\n");
+  updateAutocryptDraftStateHeader: function() {
+    AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: updateAutocryptDraftStateHeader - enabling draft mode\n");
 
-    // TODO
-    // this.setAdditionalHeader("Autocrypt-Draft-State", draftStatus);
+    let draftStatus = "encrypt=" + (this.composeCryptoState.isEncryptEnabled() ? 'yes' : 'no');
+
+    if (this.composeCryptoState.isCryptoModeUserChoice()) {
+      draftStatus += "; _by-choice=yes";
+    }
+
+    if (this.composeCryptoState.isCheckStatusReply()) {
+      draftStatus += "; _is-reply-to-encrypted=yes";
+    }
+
+    this.setAdditionalHeader("Autocrypt-Draft-State", draftStatus);
   },
 
   getSenderUserId: function() {
@@ -1015,90 +1013,30 @@ Autocrypt.msg = {
   saveDraftMessage: function() {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: saveDraftMessage()\n");
 
-    let doEncrypt = this.identity.getBoolAttribute("autoEncryptDrafts");
+    let doEncrypt = this.composeCryptoState.isEncryptEnabled();
 
-    this.setDraftStatus(doEncrypt);
+    this.updateAutocryptDraftStateHeader();
 
     if (!doEncrypt) {
-      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: drafts disabled\n");
+      AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: message shouldn't be encrypted, saving draft as plaintext\n");
       return true;
-    }
-
-    let fromAddr = this.identity.email;
-    let userIdValue = this.getSenderUserId();
-    if (userIdValue) {
-      fromAddr = userIdValue;
     }
 
     let enigmailSvc = AutocryptCore.getService(window);
     if (!enigmailSvc) return true;
 
-    let secInfo;
-
-    if (AutocryptMimeEncrypt.isAutocryptCompField(Autocrypt.msg.getSecurityParams())) {
-      secInfo = Autocrypt.msg.getSecurityParams().wrappedJSObject;
-    } else {
-      try {
-        secInfo = AutocryptMimeEncrypt.createMimeEncrypt(Autocrypt.msg.getSecurityParams());
-        if (secInfo) {
-          Autocrypt.msg.setSecurityParams(secInfo);
-        }
-      } catch (ex) {
-        AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.saveDraftMessage", ex);
-        return false;
-      }
+    let rcpt = this.determineMsgRecipients();
+    if (!rcpt) {
+      return false;
     }
 
-    secInfo.senderEmailAddr = fromAddr;
-    secInfo.recipients = fromAddr;
-    secInfo.bccRecipients = "";
-    secInfo.originalSubject = gMsgCompose.compFields.subject;
-    this.dirty = true;
-
-    if (this.protectHeaders) {
-      gMsgCompose.compFields.subject = "";
+    try {
+      this.overrideComposeSecureWithAutocrypt(rcpt);
+      return true;
+    } catch (ex) {
+      AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.saveDraftMessage", ex);
+      return false;
     }
-
-    return true;
-  },
-
-  createAutocryptSecurityFields: function(oldSecurityInfo) {
-    let newSecurityInfo = AutocryptMimeEncrypt.createMimeEncrypt(Autocrypt.msg.getSecurityParams());
-
-    if (!newSecurityInfo)
-      throw Components.results.NS_ERROR_FAILURE;
-
-    Autocrypt.msg.setSecurityParams(newSecurityInfo);
-  },
-
-  resetDirty: function() {
-    let newSecurityInfo = null;
-
-    if (this.dirty) {
-      // make sure the sendFlags are reset before the message is processed
-      // (it may have been set by a previously cancelled send operation!)
-
-      let si = Autocrypt.msg.getSecurityParams();
-
-      if (AutocryptMimeEncrypt.isAutocryptCompField(si)) {
-        si.sendFlags = 0;
-        si.originalSubject = gMsgCompose.compFields.subject;
-      } else {
-        try {
-          newSecurityInfo = AutocryptMimeEncrypt.createMimeEncrypt(si);
-          if (newSecurityInfo) {
-            newSecurityInfo.sendFlags = 0;
-            newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
-
-            Autocrypt.msg.setSecurityParams(newSecurityInfo);
-          }
-        } catch (ex) {
-          AutocryptLog.writeException("enigmailMsgComposeOverlay.js: Autocrypt.msg.resetDirty", ex);
-        }
-      }
-    }
-
-    return newSecurityInfo;
   },
 
   determineMsgRecipients: function() {
@@ -1258,9 +1196,6 @@ Autocrypt.msg = {
       return false;
     }
 
-    let newSecurityInfo = this.resetDirty();
-    this.dirty = 1;
-
     let enigmailSvc = AutocryptCore.getService(window);
     if (!enigmailSvc) {
       var msg = AutocryptLocale.getString("sendUnencrypted");
@@ -1289,35 +1224,7 @@ Autocrypt.msg = {
         // Use PGP/MIME
         AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encrypting as PGP/MIME\n");
 
-        let oldSecurityInfo = Autocrypt.msg.getSecurityParams();
-        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.prepareSecurityInfo: oldSecurityInfo = " + oldSecurityInfo + "\n");
-
-        if (!newSecurityInfo) {
-          this.createAutocryptSecurityFields(Autocrypt.msg.getSecurityParams());
-          newSecurityInfo = Autocrypt.msg.getSecurityParams().wrappedJSObject;
-        }
-
-        newSecurityInfo.originalSubject = gMsgCompose.compFields.subject;
-        newSecurityInfo.originalReferences = gMsgCompose.compFields.references;
-
-        if (this.composeCryptoState.isEnableProtectedHeaders) {
-          if (this.composeCryptoState.isEncryptEnabled()) {
-            gMsgCompose.compFields.subject = "";
-
-            if (AutocryptPrefs.getPref("protectReferencesHdr")) {
-              gMsgCompose.compFields.references = "";
-            }
-          }
-
-        }
-        newSecurityInfo.composeCryptoState = this.composeCryptoState;
-        newSecurityInfo.fromAddr = rcpt.fromAddr;
-
-        AutocryptLog.DEBUG(`enigmailMsgComposeOverlay.js: Autocrypt.msg.prepareSecurityInfo\n`);
-
-        newSecurityInfo.fromAddr = rcpt.fromAddr;
-        newSecurityInfo.toAddrs = rcpt.toAddrList;
-        newSecurityInfo.bccAddrs = rcpt.bccAddrList;
+        this.overrideComposeSecureWithAutocrypt(rcpt);
       } else {
         AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: encryption not enabled\n");
       }
@@ -1358,6 +1265,22 @@ Autocrypt.msg = {
 
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: Autocrypt.msg.encryptMsg: deferring to pgp/mime encryption\n");
     return true;
+  },
+
+  overrideComposeSecureWithAutocrypt: function(rcpt) {
+    let pgpMimeSecurityInfo = AutocryptMimeEncrypt.createMimeEncrypt();
+    if (!pgpMimeSecurityInfo) throw Components.results.NS_ERROR_FAILURE;
+    const autocryptComposeSecure = pgpMimeSecurityInfo.wrappedJSObject;
+
+    autocryptComposeSecure.originalSubject = gMsgCompose.compFields.subject;
+    autocryptComposeSecure.originalReferences = gMsgCompose.compFields.references;
+
+    autocryptComposeSecure.composeCryptoState = this.composeCryptoState;
+    autocryptComposeSecure.fromAddr = rcpt.fromAddr;
+    autocryptComposeSecure.toAddrs = rcpt.toAddrList;
+    autocryptComposeSecure.bccAddrs = rcpt.bccAddrList;
+
+    gMsgCompose.compFields.composeSecure = autocryptComposeSecure;
   },
 
   sendAborted: function(window, errorMsgObj) {
@@ -1511,7 +1434,6 @@ Autocrypt.msg = {
         bc.setAttribute("disabled", "true");
         let encryptResult = cApi.sync(this.encryptMsg(sendMsgType));
         if (!encryptResult) {
-          this.resetUpdatedFields();
           event.preventDefault();
           event.stopPropagation();
         }
@@ -1674,14 +1596,13 @@ Autocrypt.composeStateListener = {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeProcessDone: " + aResult + "\n");
 
     // ensure that securityInfo is set back to S/MIME flags (especially required if draft was saved)
-    if (gSMFields) Autocrypt.msg.setSecurityParams(gSMFields);
+    if (gSMFields) gMsgCompose.compFields.composeSecure = gSMFields;
   },
 
   NotifyComposeBodyReady: function() {
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady\n");
 
-    var isEmpty,
-      isEditable;
+    var isEmpty, isEditable;
 
     isEmpty = Autocrypt.msg.editor.documentIsEmpty;
     isEditable = Autocrypt.msg.editor.isDocumentEditable;
@@ -1689,16 +1610,7 @@ Autocrypt.composeStateListener = {
 
     AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: isEmpty=" + isEmpty + ", isEditable=" + isEditable + "\n");
 
-    // TODO still needed?
-    if (Autocrypt.msg.disableSmime) {
-      if (gMsgCompose && gMsgCompose.compFields && Autocrypt.msg.getSecurityParams()) {
-        let si = Autocrypt.msg.getSecurityParams(null, true);
-        si.signMessage = false;
-        si.requireEncryptMessage = false;
-      } else {
-        AutocryptLog.DEBUG("enigmailMsgComposeOverlay.js: ECSL.ComposeBodyReady: could not disable S/MIME\n");
-      }
-    }
+    Autocrypt.msg.setSmimeDisabled();
 
     if (!isEditable || isEmpty)
       return;

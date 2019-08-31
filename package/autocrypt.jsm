@@ -130,8 +130,8 @@ function parseAutocryptHeader(raw_header_value) {
 }
 
 function hasCriticalParameters(parameters) {
-    for (const c of CRITICAL) {
-        if (c in parameters) {
+    for (const c of Object.keys(parameters)) {
+        if (!c.startsWith("_")) {
             return true;
         }
     }
