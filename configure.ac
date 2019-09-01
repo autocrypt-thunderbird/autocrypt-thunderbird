@@ -2,7 +2,7 @@
 AC_PREREQ(2.61)
 min_automake_version="1.10"
 
-AC_INIT([autocrypt],[0.9.1.6], [https://autocrypt.org])
+AC_INIT([autocrypt],[0.9.2], [https://autocrypt.org])
 
 
 AC_PATH_PROG(PYTHON, "python2")
