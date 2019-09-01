@@ -48,7 +48,7 @@
             <hbox align="center">
               <label style="font-family: monospace;" id="textboxConfiguredStatus" />
               <spacer flex="1" />
-              <button label="Run Setup" oncommand="onClickRunSetup();" />
+              <button label="Setup" oncommand="onClickRunSetup();" />
             </hbox>
           </row>
           <row align="center" style="height: 3em;">
@@ -61,7 +61,7 @@
               <menulist id="menulistAutocryptMode" oncommand="onCommandMenulistAutocryptMode();" aria-labelledby="menulistAutocryptMode">
                 <menupopup>
                   <menuitem value="mutual" label="Allow automatic" />
-                  <menuitem value="manual" label="Manual only" />
+                  <menuitem value="manual" label="By choice" />
                 </menupopup>
               </menulist>
               <label id="labelAutocryptModeSaved" value="Saved!" hidden="true" />
